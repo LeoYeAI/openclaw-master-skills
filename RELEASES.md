@@ -6,10 +6,10 @@
 
 ## v0.2.0 — 2026-03-02
 
-### 🚀 Major Update: 127 Curated Skills
+### 🚀 Major Update: 126 Curated Skills
 
-**Total skills: 127**  
-**New this release: 106**
+**Total skills: 126**  
+**New this release: 105**
 
 
 #### AI Tools (anthropics/skills + wshobson)
@@ -20,7 +20,6 @@
 - `prompt-engineering-patterns` — Master advanced prompt engineering techniques to maximize LLM performance, reliability, and controllability in productio
 - `rag-implementation` — Build Retrieval-Augmented Generation (RAG) systems for LLM applications with vector databases and semantic search. Use w
 - `slack-gif-creator` — Knowledge and utilities for creating animated GIFs optimized for Slack. Provides constraints, validation tools, and anim
-- `template-skill` — Replace with description of the skill and when Claude should use it.
 - `theme-factory` — Toolkit for styling artifacts with a theme. These artifacts can be slides, docs, reportings, HTML landing pages, etc. Th
 - `web-artifacts-builder` — Suite of tools for creating elaborate, multi-component claude.ai HTML artifacts using modern frontend web technologies (
 

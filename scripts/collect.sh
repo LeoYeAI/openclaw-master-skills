@@ -23,6 +23,11 @@ info() { log "ℹ️  $1"; }
 ok()   { log "✅ $1"; }
 warn() { log "⚠️  $1"; }
 
+is_placeholder_skill() {
+    local skill_name="$1"
+    [ "$skill_name" = "template-skill" ]
+}
+
 # ── helpers ──────────────────────────────────────────────────────────────────
 
 fetch_json() {
@@ -167,6 +172,11 @@ validate_pending() {
         [ -d "$skill_dir" ] || continue
         skill_name=$(basename "$skill_dir")
 
+        if is_placeholder_skill "$skill_name"; then
+            info "Skipping placeholder scaffold: $skill_name"
+            continue
+        fi
+
         if [ -f "$skill_dir/SKILL.md" ]; then
             # Check frontmatter has name + description
             valid=$(python3 -c "
@@ -206,6 +216,7 @@ update_changelog() {
     for skill_dir in "$SKILLS_DIR"/*/; do
         [ -d "$skill_dir" ] || continue
         skill_name=$(basename "$skill_dir")
+        is_placeholder_skill "$skill_name" && continue
         desc=$(python3 -c "
 import re
 try:
@@ -241,6 +252,7 @@ update_readme() {
     for skill_dir in "$SKILLS_DIR"/*/; do
         [ -d "$skill_dir" ] || continue
         skill_name=$(basename "$skill_dir")
+        is_placeholder_skill "$skill_name" && continue
         desc=$(python3 -c "
 import re
 try:

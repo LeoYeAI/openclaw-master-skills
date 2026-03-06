@@ -7,13 +7,13 @@ Updated every Monday.
 
 ## [v0.2.0] — 2026-03-02
 
-### 🚀 大规模扩充：从 21 → 127 个精选 Skills
+### 🚀 大规模扩充：从 21 → 126 个精选 Skills
 
-新增 106 个 skills，覆盖：AI工具、生产力、营销、前端、移动端、后端、数据库、认证、DevOps、Web自动化等分类。
+新增 105 个 skills，覆盖：AI工具、生产力、营销、前端、移动端、后端、数据库、认证、DevOps、Web自动化等分类。
 
 | 分类 | 数量 |
 |---|---|
-| AI Tools | 18 |
+| AI Tools | 17 |
 | Productivity | 15 |
 | Marketing | 23 |
 | Frontend | 29 |
@@ -61,13 +61,13 @@ Updated every Monday.
 
 ## [v0.2.0] — 2026-03-02
 
-### 🚀 大规模扩充：从 21 → 127 个精选 Skills
+### 🚀 大规模扩充：从 21 → 126 个精选 Skills
 
-新增 106 个 skills，覆盖：AI工具、生产力、营销、前端、移动端、后端、数据库、认证、DevOps、Web自动化等分类。
+新增 105 个 skills，覆盖：AI工具、生产力、营销、前端、移动端、后端、数据库、认证、DevOps、Web自动化等分类。
 
 | 分类 | 数量 |
 |---|---|
-| AI Tools | 18 |
+| AI Tools | 17 |
 | Productivity | 15 |
 | Marketing | 23 |
 | Frontend | 29 |
