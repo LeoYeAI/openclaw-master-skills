@@ -4,6 +4,67 @@
 
 ---
 
+## v0.3.0 — 2026-03-09
+
+### 🚀 本周新增 37 个 Skills
+
+**Total skills: 164** (+37 from v0.2.0)
+
+来源：ClaWHub (36) + GitHub openclaw-skill topic (1)
+
+#### 电商 & 营销
+- `amazon-price-tracker` — 实时监控亚马逊商品价格，设置降价提醒，追踪历史价格曲线
+- `ebay-product-research` — 专业 eBay 选品分析，发现高利润低竞争产品
+- `shopify-seo-bot` — 自动优化 Shopify 店铺 SEO（标题、描述、meta 标签等）
+- `shopify-seo-optimizer` — Shopify SEO 优化工具，提升 Google 搜索排名
+- `tiktok-viral-predictor` — AI 预测 TikTok 视频爆款潜力，分析热门元素
+- `weibo-trending-bot` — 实时监控微博热搜榜，自动生成蹭热点文案
+- `youtube-auto-captions` — 自动为 YouTube 视频生成字幕，支持多语言翻译
+
+#### 内容创作 & SEO
+- `ai-prompt-generator` — 专业 AI 提示词生成工具，内置多种框架和模板
+- `citedy-content-ingestion` — 将任意 URL 转为结构化内容（YouTube、文章等）
+- `citedy-content-writer` — 从选题到发布一站式博客写作
+- `citedy-lead-magnets` — AI 生成营销引流素材（清单、模板等）
+- `citedy-trend-scout` — 发现用户正在搜索的热门话题
+- `citedy-video-shorts` — 生成品牌化 AI 头像口型同步短视频
+- `clean-content-fetch` — 获取干净可读的网页正文内容，支持公众号抓取
+- `readgzh` — ReadGZH — 让 AI 阅读微信公众号全文
+
+#### AI Agent & 工具
+- `compaction-ui-enhancements` — 后台记忆压缩，自动触发和摘要功能
+- `mindkeeper` — AI 大脑的时间机器——agent 上下文文件版本控制
+- `miniade-agent-lifecycle-manager` — 管理 OpenClaw agent 完整生命周期
+- `personal-finish-notifier` — Agent 任务完成通知提醒
+- `skill-listing-polisher` — 发布前优化 skill 列表描述
+- `swarmclaw` — SwarmClaw agent 舰队管理、任务创建与分配
+
+#### 企业 & 业务
+- `communication-playbook` — 世界级沟通手册
+- `erpclaw` — AI 原生 ERP 系统（会计、发票、库存等）
+- `offer-positioning-auditor` — 审计产品/服务定位的清晰度与差异化
+- `partnerships-ecosystem` — 合作伙伴与生态系统手册
+- `salesmate` — Salesmate CRM 集成
+- `tech-data-playbook` — 技术与数据战略手册
+- `trader-daily` — 量化交易员日常任务管理系统
+
+#### 开发工具
+- `document-parser` — 高精度文档解析（PDF、图片、Word）
+- `go-install` — Linux 环境安装 Go 编译器
+- `go-install-zh` — Go 编译器安装（中文版）
+- `scrapling-official` — Scrapling 反 bot 网页抓取
+- `widget` — macOS Übersicht 桌面 widget 管理
+
+#### Web3 & 区块链
+- `clankers-world` — Clankers World 房间操作
+- `rustchain-mcp` — RustChain 区块链 MCP 服务器
+
+#### 其他
+- `ai-travel` — AI agent 旅行模拟（drifts.bot）
+- `ltx-video` — 通过 LTX-2.3 API 生成视频
+
+---
+
 ## v0.2.0 — 2026-03-02
 
 ### 🚀 Major Update: 127 Curated Skills

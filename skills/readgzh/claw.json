@@ -1,0 +1,58 @@
+{
+  "name": "readgzh",
+  "version": "1.3.0",
+  "display_name": "ReadGZH — WeChat Article Reader",
+  "description": "Let AI read full-text WeChat Official Account articles. Cloud-based, zero-install. Supports standard articles and image-post formats.",
+  "author": "readgzh",
+  "homepage": "https://readgzh.site",
+  "documentation": "https://readgzh.site/docs",
+  "logo": "https://readgzh.site/logo.png",
+  "categories": ["content", "reading", "china", "wechat", "scraping"],
+  "languages": ["zh", "en"],
+  "pricing": {
+    "model": "freemium",
+    "free_tier": "50 credits/day",
+    "details_url": "https://readgzh.site/pricing"
+  },
+  "auth": {
+    "type": "bearer",
+    "key_url": "https://readgzh.site/dashboard",
+    "required": false,
+    "description": "Optional API Key for higher limits. Public endpoint available with rate limits."
+  },
+  "api": {
+    "base_url": "https://api.readgzh.site",
+    "openapi": "https://readgzh.site/.well-known/openapi.yaml",
+    "mcp_server": "https://api.readgzh.site/mcp-server"
+  },
+  "skill": "https://readgzh.site/.well-known/SKILL.md",
+  "tools": [
+    {
+      "name": "readgzh.read",
+      "description": "Read a WeChat article by URL, returning title, author, publish time, and full content"
+    },
+    {
+      "name": "readgzh.search",
+      "description": "Search cached WeChat articles by keyword"
+    },
+    {
+      "name": "readgzh.list",
+      "description": "List recently cached WeChat articles"
+    },
+    {
+      "name": "readgzh.get",
+      "description": "Get a cached article by slug, with chunked reading and AI summary support"
+    }
+  ],
+  "highlights": [
+    "☁️ Cloud-based — no local WeChat desktop installation required",
+    "💰 Shared cache — previously read articles are free for everyone",
+    "🖼️ CDN image proxy — permanent image access, no expiry",
+    "📱 Image-post support — full support for WeChat image-post format",
+    "🤖 AI summaries — structured JSON summaries via mode=summary (Pro)"
+  ],
+  "contact": {
+    "email": "support@readgzh.site",
+    "legal": "https://readgzh.site/terms"
+  }
+}

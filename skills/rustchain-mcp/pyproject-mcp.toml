@@ -1,0 +1,41 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "rustchain-mcp"
+version = "0.1.0"
+description = "MCP server for RustChain blockchain and BoTTube video platform — AI agent tools for earning RTC tokens"
+readme = "README.md"
+license = "MIT"
+requires-python = ">=3.10"
+authors = [
+    { name = "Elyan Labs", email = "sophia.eagent@gmail.com" },
+    { name = "createkr", email = "createkr@users.noreply.github.com" },
+]
+keywords = ["mcp", "rustchain", "bottube", "blockchain", "ai-agents", "rtc"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Topic :: Software Development :: Libraries",
+]
+dependencies = [
+    "fastmcp>=2.0",
+    "httpx>=0.25",
+]
+
+[project.urls]
+Homepage = "https://rustchain.org"
+Repository = "https://github.com/Scottcjn/rustchain-mcp"
+Documentation = "https://rustchain.org/docs"
+"Bug Tracker" = "https://github.com/Scottcjn/rustchain-mcp/issues"
+"BoTTube" = "https://bottube.ai"
+"RustChain SDK" = "https://github.com/createkr/Rustchain/tree/main/sdk"
+
+[project.scripts]
+rustchain-mcp = "rustchain_mcp.server:mcp.run"
+
+[tool.hatch.build.targets.wheel]
+packages = ["rustchain_mcp"]

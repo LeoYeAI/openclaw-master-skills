@@ -1,0 +1,95 @@
+# ClawHub Skill Package Configuration
+# 文档解析技能 - ClawHub 发布配置
+
+name: document-parser
+version: 1.0.0
+author: your-org
+description:
+  en: Extract structured data from PDF, images, and Word documents with high precision
+  zh: 从 PDF、图片、Word 文档中高精度提取结构化数据
+
+category: tool
+tags:
+  - pdf
+  - document
+  - extraction
+  - ocr
+  - table
+  - parser
+  - openclaw
+
+# OpenClaw 技能入口
+entry: index.py
+
+# Python 依赖
+dependencies:
+  - requests>=2.28.0
+  - python-docx>=0.8.11
+  - Pillow>=9.0.0
+
+# 配置项
+config:
+  - name: DOCUMENT_PARSER_API_KEY
+    type: string
+    required: false
+    description:
+      en: API Key for document parser service
+      zh: 文档解析服务 API Key
+
+  - name: DOCUMENT_PARSER_BASE_URL
+    type: string
+    required: false
+    default: http://47.111.146.164:8088
+    description:
+      en: API Base URL (without path)
+      zh: API 基础地址（不含路径）
+
+# 命令定义
+commands:
+  - name: parse
+    description:
+      en: Parse a document (PDF/Image/Word)
+      zh: 解析文档（PDF/图片/Word）
+    usage: document-parser parse <file_path> [options]
+    options:
+      - name: --layout
+        description:
+          en: Enable layout analysis
+          zh: 启用版面分析
+      - name: --table
+        description:
+          en: Enable table recognition
+          zh: 启用表格识别
+      - name: --seal
+        description:
+          en: Enable seal recognition
+          zh: 启用印章检测
+      - name: --output
+        description:
+          en: Output format (json/markdown/both)
+          zh: 输出格式
+        value: json|markdown|both
+      - name: --pages
+        description:
+          en: Page range (e.g., 1-5,8,10-12)
+          zh: 页码范围
+
+  - name: status
+    description:
+      en: Query task status
+      zh: 查询任务状态
+    usage: document-parser status <task_id>
+
+# 打包文件列表
+files:
+  - index.py
+  - SKILL.md
+  - requirements.txt
+  - config.example.json
+  - icon.svg
+  - README_zh.md
+  - README.md
+  - clawhub.yaml
+
+# 许可证
+license: MIT

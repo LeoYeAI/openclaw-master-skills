@@ -1,0 +1,217 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "RustChain Bounty Hunter",
+    "description": "Check RTC token balances, browse miners with vintage hardware multipliers, and view network stats. RustChain is a Proof-of-Antiquity blockchain where vintage hardware like PowerPC G4/G5 earns higher rewards. 1 RTC = $0.10 USD.",
+    "version": "0.1.0"
+  },
+  "servers": [
+    {
+      "url": "https://rustchain.org",
+      "description": "RustChain primary attestation node"
+    }
+  ],
+  "paths": {
+    "/health": {
+      "get": {
+        "operationId": "getHealth",
+        "summary": "Check node health",
+        "description": "Returns the current health status of the RustChain node including version, uptime, and database status. Use this to verify the network is online.",
+        "responses": {
+          "200": {
+            "description": "Node health status",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "ok": {
+                      "type": "boolean",
+                      "description": "Whether the node is healthy"
+                    },
+                    "version": {
+                      "type": "string",
+                      "description": "Node software version"
+                    },
+                    "uptime_s": {
+                      "type": "number",
+                      "description": "Uptime in seconds"
+                    },
+                    "db_rw": {
+                      "type": "boolean",
+                      "description": "Whether the database is readable and writable"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/epoch": {
+      "get": {
+        "operationId": "getEpoch",
+        "summary": "Get current epoch info",
+        "description": "Returns the current epoch number, slot, number of enrolled miners, and the epoch reward pot in RTC. Epochs are 600-second intervals during which miners attest and earn rewards.",
+        "responses": {
+          "200": {
+            "description": "Current epoch information",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "epoch": {
+                      "type": "integer",
+                      "description": "Current epoch number"
+                    },
+                    "slot": {
+                      "type": "integer",
+                      "description": "Current slot number"
+                    },
+                    "enrolled_miners": {
+                      "type": "integer",
+                      "description": "Number of miners enrolled in this epoch"
+                    },
+                    "epoch_pot": {
+                      "type": "number",
+                      "description": "Total RTC reward pot for this epoch"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/miners": {
+      "get": {
+        "operationId": "getMiners",
+        "summary": "List active miners",
+        "description": "Returns all currently active miners on the RustChain network with their hardware type and antiquity multiplier. Vintage hardware like PowerPC G4 (2.5x), G5 (2.0x), and Apple Silicon (1.2x) earn higher rewards than modern x86_64 (1.0x).",
+        "responses": {
+          "200": {
+            "description": "List of active miners",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "miner": {
+                        "type": "string",
+                        "description": "Miner wallet ID or name"
+                      },
+                      "hardware_type": {
+                        "type": "string",
+                        "description": "Hardware architecture (e.g. G4, G5, modern, apple_silicon)"
+                      },
+                      "antiquity_multiplier": {
+                        "type": "number",
+                        "description": "Reward multiplier based on hardware vintage (G4=2.5x, G5=2.0x, modern=1.0x)"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/balance": {
+      "get": {
+        "operationId": "getBalance",
+        "summary": "Check RTC balance",
+        "description": "Check the RTC token balance for a specific miner. Provide the miner_id as a query parameter. Returns the balance in RTC (1 RTC = $0.10 USD).",
+        "parameters": [
+          {
+            "name": "miner_id",
+            "in": "query",
+            "required": true,
+            "description": "The miner wallet ID or name to check the balance for",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Balance information for the miner",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "miner_id": {
+                      "type": "string",
+                      "description": "The queried miner ID"
+                    },
+                    "balance_rtc": {
+                      "type": "number",
+                      "description": "RTC token balance"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/stats": {
+      "get": {
+        "operationId": "getNetworkStats",
+        "summary": "Get network statistics",
+        "description": "Returns overall RustChain network statistics including total miners, blocks, transactions, and reward distribution data.",
+        "responses": {
+          "200": {
+            "description": "Network statistics",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/lottery/eligibility": {
+      "get": {
+        "operationId": "checkEligibility",
+        "summary": "Check miner lottery eligibility",
+        "description": "Check whether a specific miner is eligible for the current epoch's reward lottery. Miners must have a valid attestation with passing hardware fingerprint checks to be eligible.",
+        "parameters": [
+          {
+            "name": "miner_id",
+            "in": "query",
+            "required": true,
+            "description": "The miner wallet ID or name to check eligibility for",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Eligibility status for the miner",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

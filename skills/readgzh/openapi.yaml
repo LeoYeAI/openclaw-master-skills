@@ -1,0 +1,307 @@
+openapi: 3.1.0
+info:
+  title: ReadGZH API
+  description: |
+    API for reading WeChat Official Account articles.
+    Provides article scraping, cached reading, search, and listing.
+    
+    ## Authentication
+    Use API Key authentication: add `Authorization: Bearer sk_live_your_key` to request headers.
+    Register and get a free API Key at https://readgzh.site/dashboard.
+    
+    ## Credits
+    - Simple article (text only, < 5 images): 1 credit
+    - Complex article (≥ 5 images or image template): 2 credits
+    - Cached article read: Free
+    - Free tier: 50 credits/day
+  version: 1.3.0
+  contact:
+    url: https://readgzh.site
+servers:
+  - url: https://api.readgzh.site
+    description: Production API
+paths:
+  /rd:
+    get:
+      operationId: readgzh.read
+      summary: Read a WeChat article by URL
+      description: |
+        Provide a WeChat article URL to scrape and extract the full content.
+        If the article is already cached, it redirects to the cached version (no credits consumed).
+        New articles are scraped, cached, and returned.
+      parameters:
+        - name: url
+          in: query
+          required: false
+          description: WeChat article URL (mp.weixin.qq.com)
+          schema:
+            type: string
+            example: https://mp.weixin.qq.com/s/example
+        - name: s
+          in: query
+          required: false
+          description: Article slug for reading a cached article
+          schema:
+            type: string
+            example: minicpm-o-4-5
+        - name: part
+          in: query
+          required: false
+          description: Chunk number (from 1) for paginated reading of long articles
+          schema:
+            type: integer
+            minimum: 1
+        - name: mode
+          in: query
+          required: false
+          description: Set to 'summary' for AI-generated structured summary (JSON) instead of full content
+          schema:
+            type: string
+            enum: [summary]
+        - name: format
+          in: query
+          required: false
+          description: Set to 'text' for plain Markdown (recommended for AI); omit for HTML
+          schema:
+            type: string
+            enum: [text, html]
+        - name: key
+          in: query
+          required: false
+          description: API Key (sk_live_...) as URL parameter, for environments where Authorization header is unavailable
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Article content (HTML or Markdown depending on format parameter)
+          headers:
+            X-Powered-By:
+              description: Fixed value "ReadGZH (readgzh.site)"
+              schema:
+                type: string
+            X-Cache:
+              description: "HIT if served from cache (no credits consumed)"
+              schema:
+                type: string
+            X-Credit-Cost:
+              description: Credits consumed by this request
+              schema:
+                type: integer
+            X-Credits-Remaining:
+              description: Credits remaining today
+              schema:
+                type: integer
+            X-Total-Parts:
+              description: Total chunks for long articles
+              schema:
+                type: integer
+            X-Current-Part:
+              description: Current chunk number
+              schema:
+                type: integer
+          content:
+            text/html:
+              schema:
+                type: string
+            text/plain:
+              schema:
+                type: string
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SummaryResponse'
+        '401':
+          description: Missing API Key (required for summary)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '402':
+          description: Insufficient credits
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InsufficientCreditsError'
+        '403':
+          description: Pro feature required
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: Rate limited
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    head:
+      operationId: readgzh.check
+      summary: Check API availability
+      description: Returns 200 OK for health checks and AI Agent pre-flight
+      responses:
+        '200':
+          description: API is online
+  /articles-api/search:
+    get:
+      operationId: readgzh.search
+      summary: Search cached WeChat articles by keyword
+      description: |
+        Search previously cached articles by keyword. Searches in article titles and content.
+        Returns matching articles with metadata. Does not consume credits.
+      parameters:
+        - name: q
+          in: query
+          required: true
+          description: Search keyword
+          schema:
+            type: string
+            example: AI
+        - name: limit
+          in: query
+          required: false
+          description: Max results to return (default 5, max 20)
+          schema:
+            type: integer
+            default: 5
+            maximum: 20
+      responses:
+        '200':
+          description: Search results
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ArticleListResponse'
+        '429':
+          description: Rate limited
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /articles-api/recent:
+    get:
+      operationId: readgzh.list
+      summary: List recently cached WeChat articles
+      description: |
+        Returns a list of recently cached articles, sorted by creation date (newest first).
+        Useful for browsing available content. Does not consume credits.
+      parameters:
+        - name: limit
+          in: query
+          required: false
+          description: Number of articles to return (default 10, max 50)
+          schema:
+            type: integer
+            default: 10
+            maximum: 50
+      responses:
+        '200':
+          description: List of recent articles
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ArticleListResponse'
+        '429':
+          description: Rate limited
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      description: |
+        API Key authentication. Get a free key at https://readgzh.site/dashboard.
+        Format: `Authorization: Bearer sk_live_your_key`
+        
+        **Fallback**: If HTTP headers are stripped by proxy, use URL parameter: `?key=sk_live_your_key`
+  schemas:
+    Error:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: false
+        error:
+          type: string
+        message:
+          type: string
+        hint:
+          type: string
+    InsufficientCreditsError:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: false
+        error:
+          type: string
+          example: insufficient_credits
+        message:
+          type: string
+        hint:
+          type: string
+        pricing_url:
+          type: string
+          example: https://readgzh.site/pricing
+        dashboard_url:
+          type: string
+          example: https://readgzh.site/dashboard
+        current:
+          type: integer
+        limit:
+          type: integer
+    SummaryResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        title:
+          type: string
+        author:
+          type: string
+        publish_time:
+          type: string
+        summary:
+          type: string
+          description: AI-generated 300-500 word structured summary
+        content_url:
+          type: string
+          description: Full article reading link
+        total_parts:
+          type: integer
+          description: Number of chunks for the full article
+        content_length:
+          type: integer
+          description: Original content length (characters)
+    ArticleListResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        articles:
+          type: array
+          items:
+            $ref: '#/components/schemas/ArticleSummary'
+        total:
+          type: integer
+    ArticleSummary:
+      type: object
+      properties:
+        title:
+          type: string
+        author:
+          type: string
+        publish_time:
+          type: string
+        slug:
+          type: string
+        url:
+          type: string
+          description: Readable link on readgzh.site
+        view_count:
+          type: integer
+security:
+  - BearerAuth: []
