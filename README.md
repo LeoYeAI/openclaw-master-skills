@@ -200,6 +200,7 @@ cp -r openclaw-master-skills/skills/<skill-name> ~/.openclaw/workspace/skills/
 | [`writing-plans`](skills/writing-plans/) | Use when you have a spec or requirements for a multi-step task, before | — | — | — |
 | [`writing-skills`](skills/writing-skills/) | Use when creating new skills, editing existing skills, or verifying sk | — | — | — |
 | [`xlsx`](skills/xlsx/) | "Use this skill any time a spreadsheet file is the primary input or ou | — | — | — |
+| [`x-twitter-scraper`](skills/x-twitter-scraper/) | X API & Twitter scraper skill for AI coding agents. 40+ tools: tweet search, user lookup, follower extraction, engagement metrics, giveaway draws, trending topics, write actions, Telegram integrations. REST API, MCP server & webhooks. | [Source](https://github.com/Xquik-dev/x-twitter-scraper) | — | — |
 | [`youtube-auto-captions`](skills/youtube-auto-captions/) | 自动为 YouTube 视频生成字幕，支持多语言翻译、时间轴校准。提升视频可访问性和 SEO。 | — | — | — |
 ---
 
