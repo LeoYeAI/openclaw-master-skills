@@ -253,25 +253,37 @@ except: print('')
         count=$((count+1))
     done
 
-    python3 -c "
+    if python3 -c "
 import re, sys
 rows = sys.argv[1]
 count = sys.argv[2]
 with open('$README', 'r') as f:
     content = f.read()
+# Always refresh the visible total, even if the detailed table layout no longer
+# matches the legacy flat-index template this script knows how to rewrite.
+content = re.sub(
+    r'## 📦 Skill Index \(\d+ skills\)',
+    f'## 📦 Skill Index ({count} skills)',
+    content,
+    count=1,
+)
 # Replace table content between | Skill | header and next ---
 table_header = '| Skill | Description | Category | Source | Added |'
 table_sep = '|---|---|---|---|---|'
 new_table = table_header + '\n' + table_sep + rows
-content = re.sub(
+content, replacements = re.subn(
     r'\| Skill \| Description \| Category \| Source \| Added \|.*?(?=\n---|\n##)',
     new_table,
     content, flags=re.DOTALL
 )
 with open('$README', 'w') as f:
     f.write(content)
-print(f'README updated: {count} skills in index')
-" "$rows" "$count" 2>/dev/null && ok "README updated ($count skills)"
+sys.exit(0 if replacements > 0 else 2)
+" "$rows" "$count" 2>/dev/null; then
+        ok "README updated ($count skills)"
+    else
+        warn "README skill count refreshed, but the legacy flat-table layout was not found; index rows were left unchanged"
+    fi
 }
 
 # ── Git commit & push ─────────────────────────────────────────────────────────
