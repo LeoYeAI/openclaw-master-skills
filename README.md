@@ -254,6 +254,7 @@ cp -r openclaw-master-skills/skills/<skill-name> ~/.openclaw/workspace/skills/
 | [`marketing-mode`](skills/marketing-mode/) | Marketing Mode combines 23 comprehensive marketing skills covering strategy, psychology, content, SE |
 | [`marketing-psychology`](skills/marketing-psychology/) | When the user wants to apply psychological principles, mental models, or behavioral science to marke |
 | [`marketing-skills`](skills/marketing-skills/) | TL;DR: 23 marketing playbooks (CRO, SEO, copy, analytics, experiments, pricing, launches, ads, socia |
+| [`super-marketing-pro`](skills/super-marketing-pro/) | Full-stack B2B marketing execution skill equivalent to a 10-person agency team. ICP building, multi-platform content repurposing (1 doc → LinkedIn/X/TikTok/Xiaohongshu), cold email sequences, SEO topic clusters, competitor battle cards, and ROI reports. Covers Chinese platforms (Douyin, Xiaohongshu) and Western platforms. |
 | [`offer-positioning-auditor`](skills/offer-positioning-auditor/) | Audit a product or service offer for clarity, differentiation, and buying friction. Use when improvi |
 | [`onboarding-cro`](skills/onboarding-cro/) | When the user wants to optimize post-signup onboarding, user activation, first-run experience, or ti |
 | [`page-cro`](skills/page-cro/) | When the user wants to optimize, improve, or increase conversions on any marketing page — including  |
