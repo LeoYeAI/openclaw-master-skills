@@ -23,7 +23,7 @@ clawdhub install deep-research-pro
 ### Manual
 ```bash
 cd your-workspace/skills
-git clone https://github.com/parags/deep-research-pro.git
+git clone https://github.com/paragshah/deep-research-pro.git
 ```
 
 ## Usage
@@ -39,37 +39,7 @@ Just ask your agent to research something:
 
 The agent will follow the workflow in `SKILL.md` to produce a comprehensive report.
 
-### CLI Tool
-
-The `scripts/research` tool can also be used standalone:
-
-```bash
-# Basic multi-query search
-./scripts/research "query 1" "query 2" "query 3"
-
-# Full research mode (web + news + fetch top pages)
-./scripts/research --full "AI agents 2026" "monetizing AI skills"
-
-# Save to file
-./scripts/research --full "topic" --output results.md
-
-# JSON output
-./scripts/research "topic" --json
-
-# Fetch specific URLs
-./scripts/research --fetch "https://example.com/article"
-```
-
-### Options
-
-| Flag | Description |
-|------|-------------|
-| `--full` | Enable news search + fetch top 3 pages |
-| `--news` | Include news search |
-| `--max N` | Max results per query (default 8) |
-| `--fetch-top N` | Fetch full text of top N results |
-| `--output FILE` | Save results to file |
-| `--json` | Output as JSON |
+This packaged skill currently ships only the authored skill content (`SKILL.md`) and metadata. It does not include a standalone research CLI in this repository snapshot.
 
 ## How It Works
 
