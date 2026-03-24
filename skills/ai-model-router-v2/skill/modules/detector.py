@@ -102,6 +102,14 @@ class ModelDetector:
             ModelInfo("anthropic:claude-opus-4", "Claude Opus 4", "Anthropic", "cloud", 8, 95),
             ModelInfo("openai:gpt-4o-mini", "GPT-4o Mini", "OpenAI", "cloud", 1, 50),
             ModelInfo("openai:gpt-4o", "GPT-4o", "OpenAI", "cloud", 5, 85),
+            ModelInfo("minimax:MiniMax-M2.7", "MiniMax M2.7", "MiniMax", "cloud", 3, 85,
+                      capabilities=["chat", "vision", "tools"]),
+            ModelInfo("minimax:MiniMax-M2.7-highspeed", "MiniMax M2.7 Highspeed", "MiniMax", "cloud", 2, 75,
+                      capabilities=["chat", "vision", "tools"]),
+            ModelInfo("minimax:MiniMax-M2.5", "MiniMax M2.5", "MiniMax", "cloud", 2, 70,
+                      capabilities=["chat", "tools"]),
+            ModelInfo("minimax:MiniMax-M2.5-highspeed", "MiniMax M2.5 Highspeed", "MiniMax", "cloud", 1, 60,
+                      capabilities=["chat", "tools"]),
         ]
 
     def detect_all(self) -> List[ModelInfo]:
