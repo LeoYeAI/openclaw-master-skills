@@ -5,7 +5,7 @@
 <a href="https://myclaw.ai">
   <img src="https://img.shields.io/badge/Powered%20by-MyClaw.ai-blue?style=for-the-badge" alt="Powered by MyClaw.ai" />
 </a>
-<img src="https://img.shields.io/badge/Skills-387%2B-orange?style=for-the-badge" alt="387+ Skills" />
+<img src="https://img.shields.io/badge/Skills-388%2B-orange?style=for-the-badge" alt="387+ Skills" />
 <img src="https://img.shields.io/badge/Updated-Weekly-green?style=for-the-badge" alt="Weekly Updates" />
 
 **Languages:**
@@ -34,7 +34,7 @@ git clone https://github.com/LeoYeAI/openclaw-master-skills.git
 cp -r openclaw-master-skills/skills/<skill-name> ~/.openclaw/workspace/skills/
 ```
 
-## 📦 Skill Index (387 skills)
+## 📦 Skill Index (388 skills)
 
 ### 🤖 AI & LLM Tools (50)
 
@@ -315,10 +315,11 @@ cp -r openclaw-master-skills/skills/<skill-name> ~/.openclaw/workspace/skills/
 | [`youtube-transcript`](skills/youtube-transcript/) | Fetch and summarize YouTube video transcripts. Use when asked to summarize, transcribe, or extract c |
 | [`youtube-watcher`](skills/youtube-watcher/) | Fetch and read transcripts from YouTube videos. Use when you need to summarize a video, answer quest |
 
-### 💰 Finance & Trading (18)
+### 💰 Finance & Trading (19)
 
 | Skill | Description |
 |---|---|
+| [`northstar`](skills/northstar/) | Daily business briefing for founders. Connects Stripe + Shopify, delivers revenue/churn/orders summary via iMessage, Slack, Telegram, or email. Free tier included. |
 | [`stock-analysis`](skills/stock-analysis/) | Analyze stocks and cryptocurrencies using Yahoo Finance data. Supports portfolio management, watchli |
 | [`stock-market-pro`](skills/stock-market-pro/) | >- |
 | [`stock-watcher`](skills/stock-watcher/) | Manage and monitor a personal stock watchlist with support for adding, removing, listing stocks, and |
