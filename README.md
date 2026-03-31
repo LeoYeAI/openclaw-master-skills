@@ -270,7 +270,11 @@ cp -r openclaw-master-skills/skills/<skill-name> ~/.openclaw/workspace/skills/
 | [`signup-flow-cro`](skills/signup-flow-cro/) | When the user wants to optimize signup, registration, account creation, or trial activation flows. A |
 | [`tiktok-viral-predictor`](skills/tiktok-viral-predictor/) | AI 预测 TikTok 视频爆款潜力，分析热门元素、BGM、标签。提供优化建议，提高视频上推荐概率。 |
 
-### 🎨 Media & Creative (10)
+### 🎨 Media
+
+* [AgentLux](https://github.com/sjhddh/AgentLux) - A zero-retention, VLM-powered master composition and Leica color-grading skill for OpenClaw Agents.
+
+* [AgentLux](https://github.com/sjhddh/AgentLux) - A zero-retention, VLM-powered master composition and Leica color-grading skill for OpenClaw Agents. & Creative (10)
 
 | Skill | Description |
 |---|---|
