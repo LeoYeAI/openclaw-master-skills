@@ -1,6 +1,7 @@
 <div align="center">
 
 # 🧠 OpenClaw Master Skills
+- [skill-taxonomy](https://github.com/SeeleAI/skill-taxonomy) - Structured taxonomy for AI agent skills: discovery, classification and routing across multi-agent workflows.
 
 <a href="https://myclaw.ai">
   <img src="https://img.shields.io/badge/Powered%20by-MyClaw.ai-blue?style=for-the-badge" alt="Powered by MyClaw.ai" />
