@@ -326,6 +326,7 @@ cp -r openclaw-master-skills/skills/<skill-name> ~/.openclaw/workspace/skills/
 | [`tushare-finance`](skills/tushare-finance/) | 获取中国金融市场数据（A股、港股、美股、基金、期货、债券）。支持220+个Tushare Pro接口：股票行情、财务报表、宏观经济指标。当用户请求股价数据、财务分析、指数行情、GDP/CPI等宏观数据 |
 | [`us-stock-analysis`](skills/us-stock-analysis/) | Comprehensive US stock analysis including fundamental analysis (financial metrics, business quality, |
 | [`yahoo-finance`](skills/yahoo-finance/) | Get stock prices, quotes, fundamentals, earnings, options, dividends, and analyst ratings using Yaho |
+| [`midas`](https://github.com/realteamprinz/midas-skill) | Self-learning wealth extraction engine. Feed it anyone — it extracts their wealth operating system across 6 dimensions. Open source, self-learning. |
 
 | [`alchemy-openapi-skill`](skills/alchemy-openapi-skill/) | Alchemy Prices API reads via curated OpenAPI schema |
 | [`basedagents`](skills/basedagents/) | Search and interact with BasedAgents.ai agent registry |
