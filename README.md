@@ -108,6 +108,7 @@ cp -r openclaw-master-skills/skills/<skill-name> ~/.openclaw/workspace/skills/
 | [`file-search`](skills/file-search/) | Fast file-name and content search using `fd` and `rg` (ripgrep). |
 | [`firecrawl`](skills/firecrawl/) | | |
 | [`firecrawl-search`](skills/firecrawl-search/) | Web search and scraping via Firecrawl API. Use when you need to search the web, scrape websites (inc |
+| [`paperzilla`](https://clawhub.ai/pors/paperzilla) | Conversational literature monitoring and paper chat for biology and medical research. Supports project-based bioRxiv and medRxiv feeds today, fetches paper markdown for summaries and relevance checks, and has PubMed support planned. |
 | [`google-search`](skills/google-search/) | Search the web using Google Custom Search Engine (PSE). Use this when you need live information, doc |
 | [`multi-search-engine`](skills/multi-search-engine/) | Multi search engine integration with 17 engines (8 CN + 9 Global). Supports advanced search operator |
 | [`openclaw-tavily-search`](skills/openclaw-tavily-search/) | Web search via Tavily API (alternative to Brave). Use when the user asks to search the web / look up |
