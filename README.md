@@ -511,3 +511,7 @@ MIT — see [LICENSE](LICENSE)
 
 | [`haodf`](skills/haodf/) | 好大夫智能找医生 — symptoms, specialty, location matching |
 | [`health-score-pro`](skills/health-score-pro/) | Comprehensive health management from 10 best-selling health books |
+
+## Download History
+
+[![Download History](https://skill-history.com/chart/leoyeai/openclaw-master-skills.svg)](https://skill-history.com/leoyeai/openclaw-master-skills)
