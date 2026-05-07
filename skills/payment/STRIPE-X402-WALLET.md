@@ -1,30 +1,28 @@
----
-name: creditclaw-stripe-x402-wallet
-version: 2.5.0
-updated: 2026-03-09
-description: "Stripe Wallet (x402/USDC) — signing, balance, transactions, and guardrails."
-parent: SKILL.md
----
+# Stripe x402 Wallet — Day-to-Day Guide
 
-# Stripe Wallet — x402 / USDC (Private Beta)
-
-> **Companion file** — see `SKILL.md` for registration, webhooks, and the full API reference.
+Companion to [skill.md](https://creditclaw.com/creditcard/skill.md). Covers how to make payments using the Stripe Wallet rail (Rail 1) with the x402 payment protocol.
 
 > **This rail is currently in private beta and not yet available for general use.**
 > If your owner has been granted access, the following endpoints will be active.
-> Otherwise, these endpoints will return `404`. Check back for updates.
+> Otherwise, these endpoints will return `404`.
 
-The Stripe Wallet rail provides USDC-based wallets on the Base blockchain with spending
-via the x402 payment protocol. Your owner funds the wallet using Stripe's fiat-to-crypto
-onramp (credit card → USDC), and you spend by requesting cryptographic payment signatures
-that are settled on-chain.
+**Prerequisite:** Your owner must have a Stripe Wallet set up with USDC balance. Check `GET /stripe-wallet/balance` to verify.
 
 ---
 
-## How x402 Signing Works
+## How It Works
 
-When you encounter a service that returns HTTP `402 Payment Required` with x402 payment
-details, you request a signature from CreditClaw:
+The Stripe Wallet rail provides USDC-based wallets on the Base blockchain. Your owner funds the wallet using Stripe's fiat-to-crypto onramp (credit card to USDC), and you spend by requesting cryptographic payment signatures that are settled on-chain.
+
+**Use this rail for:** x402-enabled services, agent-to-agent payments, and any service that returns HTTP `402 Payment Required` with x402 payment details.
+
+**Endpoint:** `POST /stripe-wallet/bot/sign`
+
+---
+
+## x402 Signing Flow
+
+When you encounter a service that returns HTTP `402 Payment Required` with x402 payment details:
 
 1. You send the payment details to `POST /stripe-wallet/bot/sign`
 2. CreditClaw enforces your owner's guardrails (per-tx limit, daily budget, monthly budget, domain allow/blocklist, approval threshold)
@@ -32,9 +30,7 @@ details, you request a signature from CreditClaw:
 4. You retry your original request with the `X-PAYMENT` header attached
 5. The facilitator verifies the signature and settles USDC on-chain
 
----
-
-## Request x402 Payment Signature
+### Request x402 Payment Signature
 
 ```bash
 curl -X POST https://creditclaw.com/api/v1/stripe-wallet/bot/sign \
@@ -47,7 +43,8 @@ curl -X POST https://creditclaw.com/api/v1/stripe-wallet/bot/sign \
   }'
 ```
 
-**Request fields:**
+### Request Fields
+
 | Field | Required | Description |
 |-------|----------|-------------|
 | `resource_url` | Yes | The x402 endpoint URL you're paying for |
@@ -55,7 +52,8 @@ curl -X POST https://creditclaw.com/api/v1/stripe-wallet/bot/sign \
 | `recipient_address` | Yes | The merchant's 0x wallet address from the 402 response |
 | `valid_before` | No | Unix timestamp for signature expiry |
 
-**Response (approved — HTTP 200):**
+### Response (Approved — HTTP 200)
+
 ```json
 {
   "x_payment_header": "eyJ0eXAiOi...",
@@ -69,7 +67,8 @@ curl https://api.example.com/v1/data \
   -H "X-PAYMENT: eyJ0eXAiOi..."
 ```
 
-**Response (requires approval — HTTP 202):**
+### Response (Requires Approval — HTTP 202)
+
 ```json
 {
   "status": "awaiting_approval",
@@ -77,10 +76,10 @@ curl https://api.example.com/v1/data \
 }
 ```
 
-When you receive a 202, your owner has been notified. Wait approximately 5 minutes
-before retrying your request.
+When you receive a 202, your owner has been notified. Poll the approvals endpoint or wait approximately 5 minutes before retrying.
 
-**Response (declined — HTTP 403):**
+### Response (Declined — HTTP 403)
+
 ```json
 {
   "error": "Amount exceeds per-transaction limit",
@@ -88,19 +87,11 @@ before retrying your request.
 }
 ```
 
-Other possible decline errors:
-- `"Wallet is not active"` — wallet is paused or frozen
-- `"Would exceed daily budget"` — daily spending limit reached
-- `"Would exceed monthly budget"` — monthly cap reached
-- `"Domain not on allowlist"` — resource URL not in allowed domains
-- `"Domain is blocklisted"` — resource URL is blocked
-- `"Insufficient USDC balance"` — not enough funds
-
 ---
 
-## Guardrails
+## Guardrail Checks
 
-Guardrail checks are applied in order on every signing request:
+CreditClaw evaluates these checks in order before signing:
 
 1. Wallet active? (not paused/frozen)
 2. Amount ≤ per-transaction limit?
@@ -111,11 +102,9 @@ Guardrail checks are applied in order on every signing request:
 7. Amount below approval threshold? (if set)
 8. Sufficient USDC balance?
 
-Your owner configures these from their dashboard. All guardrails are enforced server-side — there is no way to bypass them.
-
 ---
 
-## Check Stripe Wallet Balance
+## Check Balance
 
 ```bash
 curl "https://creditclaw.com/api/v1/stripe-wallet/balance?wallet_id=1" \
@@ -135,70 +124,45 @@ Response:
 
 ---
 
-## View Stripe Wallet Transactions
+## View Transactions
 
 ```bash
 curl "https://creditclaw.com/api/v1/stripe-wallet/transactions?wallet_id=1&limit=10" \
   -H "Authorization: Bearer $CREDITCLAW_API_KEY"
 ```
 
-**Transaction types:**
 | Type | Meaning |
 |------|---------|
-| `deposit` | Owner funded the wallet via Stripe onramp (fiat → USDC) |
+| `deposit` | Owner funded the wallet via Stripe onramp (fiat to USDC) |
 | `x402_payment` | You made an x402 payment |
 | `refund` | A payment was refunded |
 
-**Rate limit:** 30 requests per hour (signing), 12 requests per hour (balance/transactions).
+---
+
+## Common Errors
+
+| Error | What to Do |
+|-------|-----------|
+| 403 — `Wallet is not active` | Wallet paused or frozen by owner |
+| 403 — `Amount exceeds per-transaction limit` | Reduce the payment amount or ask owner to raise the limit |
+| 403 — `Would exceed daily budget` | Daily spending limit reached. Wait until tomorrow or ask owner to adjust. |
+| 403 — `Would exceed monthly budget` | Monthly cap reached. Ask owner to adjust. |
+| 403 — `Domain not on allowlist` | The service URL isn't in your owner's allowed domains |
+| 403 — `Domain is blocklisted` | The service URL is explicitly blocked |
+| 402 — `Insufficient USDC balance` | Not enough funds. Ask owner to fund via Stripe onramp. |
+| 404 — endpoints return 404 | This rail is in private beta and not enabled for your account |
 
 ---
 
-## Per-Rail Detail Check
+## Quick Reference
 
-```bash
-curl https://creditclaw.com/api/v1/bot/check/rail1 \
-  -H "Authorization: Bearer $CREDITCLAW_API_KEY"
-```
-
-Response (active):
-```json
-{
-  "status": "active",
-  "balance_usd": 100.00,
-  "address": "0x...",
-  "guardrails": {
-    "max_per_tx_usd": 100,
-    "daily_budget_usd": 1000,
-    "monthly_budget_usd": 10000,
-    "daily_spent_usd": 23.50,
-    "daily_remaining_usd": 976.50,
-    "monthly_spent_usd": 147.00,
-    "monthly_remaining_usd": 9853.00,
-    "require_approval_above_usd": 50
-  },
-  "domain_rules": {
-    "allowlisted": ["api.openai.com"],
-    "blocklisted": []
-  },
-  "pending_approvals": 0
-}
-```
-
-Response (not connected): `{ "status": "inactive" }`
-
-**Rate limit:** 6 requests per hour.
-
----
-
-## API Reference
-
-All endpoints require `Authorization: Bearer <api_key>` header.
-
-Base URL: `https://creditclaw.com/api/v1`
-
-| Method | Endpoint | Description | Rate Limit |
-|--------|----------|-------------|------------|
-| POST | `/stripe-wallet/bot/sign` | Request x402 payment signature. Enforces guardrails. | 30/hr |
-| GET | `/stripe-wallet/balance` | Get USDC balance for a wallet. | 12/hr |
-| GET | `/stripe-wallet/transactions` | List x402 transactions for a wallet. | 12/hr |
-| GET | `/bot/check/rail1` | Stripe Wallet detail: balance, guardrails, domain rules, pending approvals. | 6/hr |
+| Item | Value |
+|------|-------|
+| Signing endpoint | `POST /stripe-wallet/bot/sign` |
+| Balance check | `GET /stripe-wallet/balance?wallet_id=X` |
+| Transactions | `GET /stripe-wallet/transactions?wallet_id=X` |
+| Amount format | Micro-USDC (6 decimals, e.g. 1000000 = $1.00) |
+| Chain | Base |
+| Rate limit (signing) | 30/hr |
+| Rate limit (balance/tx) | 12/hr |
+| Status | Private Beta |

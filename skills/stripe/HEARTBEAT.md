@@ -1,73 +1,59 @@
 ---
 name: creditclaw-heartbeat
-version: 2.8.0
+version: 2.3.0
+updated: 2026-02-14T22:00:00Z
 ---
 
-# CreditClaw Heartbeat
+# CreditClaw Heartbeat (suggested: every 30 minutes)
 
 Run this routine periodically to stay aware of your wallet status,
-spending permissions, and pending messages.
+spending permissions, and balance across all active rails.
 
-Full API reference: `SKILL.md`
+Full API reference: https://creditclaw.com/creditcard/skill.md
 
 ---
 
-## 1. Check Messages (Every 30 Minutes)
+## 1. Check Wallet Status
 
 ```bash
-curl https://creditclaw.com/api/v1/bot/messages \
+curl https://creditclaw.com/api/v1/bot/wallet/check \
   -H "Authorization: Bearer $CREDITCLAW_API_KEY"
 ```
 
-Poll for pending messages from your owner or the system. Messages include
-approval results, card delivery notifications, spending alerts, and other events.
-
-If `messages` is non-empty, process each message and then acknowledge:
-
-```bash
-curl -X POST https://creditclaw.com/api/v1/bot/messages/ack \
-  -H "Authorization: Bearer $CREDITCLAW_API_KEY" \
-  -H "Content-Type: application/json" \
-  -d '{"message_ids": [1, 2, 3]}'
-```
-
-Messages stay pending until you explicitly acknowledge them.
-
-## 2. Check Full Status (Every 8 Hours)
-
-```bash
-curl https://creditclaw.com/api/v1/bot/status \
-  -H "Authorization: Bearer $CREDITCLAW_API_KEY"
-```
-
-This single endpoint returns your status across **all connected payment rails**,
-including balances, spending limits, and master guardrails.
-
-**Response fields:**
-- `status` — your overall status (`active`, `pending`, `frozen`, `inactive`)
-- `default_rail` — your owner's preferred payment rail for you (may be null)
-- `active_rails` — list of rail names you're connected to
-- `rails` — detailed status per rail (balance, limits, cards)
-- `master_guardrails` — cross-rail spending limits set by your owner
-
-**If `status` is `pending`:**
+**If `wallet_status` is `pending`:**
 Remind your human to claim you at the `owner_verification_url` you received
 during registration.
 
-**If `status` is `frozen`:**
+**If `wallet_status` is `frozen`:**
 Do not attempt any purchases. Tell your human:
 > "My CreditClaw wallet has been frozen. Please check the dashboard
 > at https://creditclaw.com/app."
 
-**If any rail balance is low (< $5.00):**
-Let your human know so they can take action from their dashboard at https://creditclaw.com/overview.
+**If `wallet_status` is `empty` or `balance_usd` < 5.00:**
+Ask your human if they'd like you to request a top-up:
 
-## 3. Check Spending Permissions (Every 24 Hours)
+```bash
+curl -X POST https://creditclaw.com/api/v1/bot/wallet/topup-request \
+  -H "Authorization: Bearer $CREDITCLAW_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "amount_usd": 25.00,
+    "reason": "Balance is low — need funds to continue operations"
+  }'
+```
+
+Then tell your human:
+> "My CreditClaw balance is low ($X.XX remaining). I've sent you a
+> top-up request — please add funds when you get a chance."
+
+## 2. Check Spending Permissions
 
 ```bash
 curl https://creditclaw.com/api/v1/bot/wallet/spending \
   -H "Authorization: Bearer $CREDITCLAW_API_KEY"
 ```
+
+Cache this response for up to 30 minutes. Check it before any purchase.
 
 **Key fields to act on:**
 - `approval_mode` — determines whether you can auto-spend or must ask first
@@ -75,13 +61,26 @@ curl https://creditclaw.com/api/v1/bot/wallet/spending \
 - `notes` — read and follow these; they are direct instructions from your owner
 - `updated_at` — if this changed since your last check, re-read all fields
 
-## Summary
+## 3. Check Stripe Wallet Balance (Private Beta)
+
+> Only run this step if your owner has enabled the Stripe Wallet (x402) rail.
+> If this endpoint returns 404, skip this step.
+
+```bash
+curl https://creditclaw.com/api/v1/stripe-wallet/balance?wallet_id=1 \
+  -H "Authorization: Bearer $CREDITCLAW_API_KEY"
+```
+
+If `balance_usdc` is low (e.g., < 5000000 which is $5.00), notify your human
+that the USDC wallet needs funding.
+
+## 4. Summary
 
 | Check | Endpoint | Frequency |
 |-------|----------|-----------|
-| Messages | `GET /bot/messages` | Every 30 minutes |
-| Full status (all rails) | `GET /bot/status` | Every 8 hours |
-| Spending permissions | `GET /bot/wallet/spending` | Every 24 hours |
+| Wallet status & balance | `GET /bot/wallet/check` | Every 30 minutes |
+| Spending permissions | `GET /bot/wallet/spending` | Every 30 minutes, or before purchases |
+| Stripe Wallet balance | `GET /stripe-wallet/balance` | Every 30 minutes (if enabled) |
 
 If everything looks good (status is `active`, balance is healthy, permissions
-haven't changed, no pending messages), do nothing. Resume your normal tasks.
+haven't changed), do nothing. Resume your normal tasks.

@@ -5,7 +5,7 @@ description: Earn yield on any Ethereum wallet on Base, Arbitrum, and Plasma. Us
 
 # Zyfai — Yield for Any Wallet
 
-Let any Ethereum wallet access a yield-generating account.
+Turn any Ethereum wallet into a yield-generating account.
 
 ## What This Does
 
@@ -223,29 +223,33 @@ await sdk.createSessionKey(userAddress, chainId);
 
 // Always verify the session key was activated
 const user = await sdk.getUserDetails();
-if (!user.user.hasActiveSessionKey) {
+if (!user.hasActiveSessionKey) {
   // Session key not active — retry the process
   console.log("Session key not active, retrying...");
   await sdk.createSessionKey(userAddress, chainId);
   
   // Verify again
   const userRetry = await sdk.getUserDetails();
-  if (!userRetry.user.hasActiveSessionKey) {
+  if (!userRetry.hasActiveSessionKey) {
     throw new Error("Session key activation failed after retry. Contact support.");
   }
 }
-console.log("Session key active:", user.user.hasActiveSessionKey);
+console.log("Session key active:", user.hasActiveSessionKey);
 ```
 
 This allows Zyfai to rebalance funds automatically. Session keys **cannot** withdraw to arbitrary addresses — only optimize within the protocol.
 
-> **Important:** Always verify the session key is active by checking `getUserDetails().user.hasActiveSessionKey` after calling `createSessionKey`. If it returns `false`, retry the process. A session key must be active for automated yield optimization to work.
+> **Important:** Always verify the session key is active by checking `getUserDetails().hasActiveSessionKey` after calling `createSessionKey`. If it returns `false`, retry the process. A session key must be active for automated yield optimization to work.
 
 ### 4. Deposit Funds
 
 ```typescript
-// Deposit 10 USDC (6 decimals)
+// Deposit 10 USDC (6 decimals) - default asset
 await sdk.depositFunds(userAddress, chainId, "10000000");
+
+// Deposit 0.5 WETH (18 decimals)
+// IMPORTANT: User must have WETH, not ETH. Wrap ETH to WETH first if needed.
+await sdk.depositFunds(userAddress, chainId, "500000000000000000", "WETH");
 ```
 
 Funds move from EOA -> Subaccount and start earning yield immediately.
@@ -253,11 +257,14 @@ Funds move from EOA -> Subaccount and start earning yield immediately.
 ### 5. Withdraw Funds
 
 ```typescript
-// Withdraw everything
+// Withdraw all USDC (default)
 await sdk.withdrawFunds(userAddress, chainId);
 
-// Or withdraw partial (5 USDC)
+// Partial USDC withdrawal (5 USDC)
 await sdk.withdrawFunds(userAddress, chainId, "5000000");
+
+// Withdraw all WETH
+await sdk.withdrawFunds(userAddress, chainId, undefined, "WETH");
 ```
 
 Funds return to the user's EOA. Withdrawals are processed asynchronously.
@@ -300,11 +307,11 @@ async function startEarningYield(userAddress: string) {
   
   // Verify session key is active
   const user = await sdk.getUserDetails();
-  if (!user.user.hasActiveSessionKey) {
+  if (!user.hasActiveSessionKey) {
     console.log("Session key not active, retrying...");
     await sdk.createSessionKey(userAddress, chainId);
     const userRetry = await sdk.getUserDetails();
-    if (!userRetry.user.hasActiveSessionKey) {
+    if (!userRetry.hasActiveSessionKey) {
       throw new Error("Session key activation failed. Contact support.");
     }
   }
@@ -351,11 +358,11 @@ async function withdrawYield(userAddress: string, amount?: string) {
 | `getSmartWalletAddress` | `(userAddress, chainId)` | Get subaccount address & status |
 | `deploySafe` | `(userAddress, chainId, strategy)` | Create subaccount |
 | `createSessionKey` | `(userAddress, chainId)` | Enable auto-optimization |
-| `depositFunds` | `(userAddress, chainId, amount)` | Deposit USDC (6 decimals) |
-| `withdrawFunds` | `(userAddress, chainId, amount?)` | Withdraw (all if no amount) |
+| `depositFunds` | `(userAddress, chainId, amount, asset?)` | Deposit USDC or WETH |
+| `withdrawFunds` | `(userAddress, chainId, amount?, assetType?)` | Withdraw USDC or WETH |
 | `getPositions` | `(userAddress, chainId?)` | Get active DeFi positions |
 | `getAvailableProtocols` | `(chainId)` | Get available protocols & pools |
-| `getAPYPerStrategy` | `(crossChain?, days?, strategyType?)` | Get APY for conservative/aggressive strategies |
+| `getAPYPerStrategy` | `(crossChain?, days?, strategy?, chainId?, tokenSymbol?)` | Get APY by strategy and token |
 | `getUserDetails` | `()` | Get authenticated user details |
 | `getOnchainEarnings` | `(walletAddress)` | Get earnings data |
 | `updateUserProfile` | `(params)` | Update strategy, protocols, splitting, cross-chain settings |
@@ -431,35 +438,12 @@ Get current authenticated user details including smart wallet, chains, protocols
 await sdk.connectAccount(walletClient, chainId);
 const user = await sdk.getUserDetails();
 
-console.log("Smart Wallet:", user.user.smartWallet);
-console.log("Chains:", user.user.chains);
-console.log("Has Active Session:", user.user.hasActiveSessionKey);
+console.log("Smart Wallet:", user.smartWallet);
+console.log("Chains:", user.chains);
+console.log("Has Active Session:", user.hasActiveSessionKey);
 ```
 
-Returns:
-```typescript
-interface UserDetailsResponse {
-  success: boolean;
-  user: {
-    id: string;
-    address: string;
-    smartWallet?: string;
-    chains: number[];
-    protocols: Protocol[];
-    hasActiveSessionKey: boolean;
-    email?: string;
-    strategy?: string;
-    telegramId?: string;
-    walletType?: string;
-    autoSelectProtocols: boolean;
-    autocompounding?: boolean;
-    omniAccount?: boolean;
-    crosschainStrategy?: boolean;
-    agentName?: string;
-    customization?: Record<string, string[]>;
-  };
-}
-```
+Returns `UpdateUserProfileResponse` (same as `updateUserProfile`).
 
 ### updateUserProfile
 
@@ -473,49 +457,53 @@ sdk.updateUserProfile(params: UpdateUserProfileRequest): Promise<UpdateUserProfi
 
 ```typescript
 interface UpdateUserProfileRequest {
-  /** Investment strategy: "conservative" for safer yields, "aggressive" for higher risk/reward */
-  strategy?: "conservative" | "aggressive";
-
-  /** Array of protocol IDs to use for yield optimization */
+  /** Investment strategy: "conservative" or "aggressive" */
+  strategy?: string;
+  /** Array of protocol IDs to use */
   protocols?: string[];
-
-  /** Enable omni-account feature for cross-chain operations */
+  /** Enable auto-selection of protocols */
+  autoSelectProtocols?: boolean;
+  /** Enable omni-account for cross-chain operations */
   omniAccount?: boolean;
-
-  /** Enable automatic compounding of earned yields (default: true) */
+  /** Array of chain IDs to operate on */
+  chains?: number[];
+  /** Enable automatic compounding (default: true) */
   autocompounding?: boolean;
-
   /** Custom name for your agent */
   agentName?: string;
-
   /** Enable cross-chain strategy execution */
   crosschainStrategy?: boolean;
-
   /** Enable position splitting across multiple protocols */
   splitting?: boolean;
-
-  /** Minimum number of splits when position splitting is enabled (1-4) */
+  /** Minimum number of splits (1-4) */
   minSplits?: number;
+  /** Asset to update: "usdc" (default) or "eth" */
+  asset?: "USDC" | "WETH";
 }
 ```
+
+**Note on `asset`:** Each asset has its own configuration. Use `asset: "WETH"` to update WETH settings separately from USDC.
 
 **Returns:**
 
 ```typescript
 interface UpdateUserProfileResponse {
   success: boolean;
-  userId: string;
   smartWallet?: string;
   chains?: number[];
   strategy?: string;
   protocols?: string[];
+  autoSelectProtocols?: boolean;
   omniAccount?: boolean;
   autocompounding?: boolean;
   agentName?: string;
   crosschainStrategy?: boolean;
   executorProxy?: boolean;
+  hasActiveSessionKey?: boolean;
   splitting?: boolean;
   minSplits?: number;
+  customization?: Record<string, any>;
+  asset?: "USDC" | "WETH";
 }
 ```
 
@@ -545,8 +533,8 @@ await sdk.updateUserProfile({
 
 // Verify changes
 const userDetails = await sdk.getUserDetails();
-console.log("Strategy:", userDetails.user.strategy);
-console.log("Splitting:", userDetails.user.splitting);
+console.log("Strategy:", userDetails.strategy);
+console.log("Splitting:", userDetails.splitting);
 ```
 
 > **Cross-chain strategies:** Only enable cross-chain when the user **explicitly requests** it. For cross-chain to work, **both** `crosschainStrategy` and `omniAccount` must be set to `true`. Never enable cross-chain settings by default.
@@ -560,7 +548,7 @@ await sdk.updateUserProfile({
 
 // Now funds can be rebalanced across configured chains
 const user = await sdk.getUserDetails();
-console.log("Operating on chains:", user.user.chains);
+console.log("Operating on chains:", user.chains);
 ```
 
 **Notes:**
@@ -574,32 +562,34 @@ console.log("Operating on chains:", user.user.chains);
 
 ### getAPYPerStrategy
 
-Get global APY by strategy type (conservative or aggressive), time period, and chain configuration. Use this to compare expected returns between strategies before deploying.
+Get global APY by strategy type, time period, chain, and token. Use this to compare expected returns between strategies before deploying.
 
 **Parameters:**
 
 | Parameter | Type | Required | Description |
 |-----------|------|----------|-------------|
-| crossChain | boolean | No | If `true`, returns APY for cross-chain strategies; if `false`, single-chain |
-| days | number | No | Period over which APY is calculated. One of `7`, `15`, `30`, `60` |
-| strategyType | string | No | Strategy risk profile. One of `'conservative'` or `'aggressive'` |
+| crossChain | boolean | No | If `true`, returns APY for cross-chain strategies; if `false`, single-chain (default: `false`) |
+| days | number | No | Period over which APY is calculated: `7`, `15`, `30`, `60` (default: `7`) |
+| strategy | string | No | Strategy risk profile: `"conservative"` or `"aggressive"` (default: `"conservative"`) |
+| chainId | number | No | Filter by specific chain ID (e.g., `8453` for Base) |
+| tokenSymbol | string | No | Filter by token: `"USDC"` or `"WETH"` |
 
 **Example:**
 
 ```typescript
-// Get 7-day APY for conservative single-chain strategy
-const conservativeApy = await sdk.getAPYPerStrategy(false, 7, 'conservative');
-console.log("Conservative APY:", conservativeApy.data);
+// Get 7-day APY for USDC conservative strategy
+const usdcApy = await sdk.getAPYPerStrategy(false, 7, "conservative", undefined, "USDC");
+console.log("USDC APY:", usdcApy.data);
 
-// Get 30-day APY for aggressive cross-chain strategy
-const aggressiveApy = await sdk.getAPYPerStrategy(true, 30, 'aggressive');
-console.log("Aggressive APY:", aggressiveApy.data);
+// Get 30-day APY for WETH aggressive strategy on Base
+const wethApy = await sdk.getAPYPerStrategy(false, 30, "aggressive", 8453, "WETH");
+console.log("WETH APY on Base:", wethApy.data);
 
 // Compare strategies
-const conservative = await sdk.getAPYPerStrategy(false, 30, 'conservative');
-const aggressive = await sdk.getAPYPerStrategy(false, 30, 'aggressive');
-console.log(`Conservative 30d APY: ${conservative.data[0]?.apy}%`);
-console.log(`Aggressive 30d APY: ${aggressive.data[0]?.apy}%`);
+const conservative = await sdk.getAPYPerStrategy(false, 30, "conservative");
+const aggressive = await sdk.getAPYPerStrategy(false, 30, "aggressive");
+console.log(`Conservative 30d APY: ${conservative.data[0]?.average_apy}%`);
+console.log(`Aggressive 30d APY: ${aggressive.data[0]?.average_apy}%`);
 ```
 
 **Returns:**
@@ -612,37 +602,54 @@ interface APYPerStrategyResponse {
 }
 
 interface APYPerStrategy {
-  strategyType: string;
-  apy: number;
-  period: number;
-  crossChain: boolean;
+  id: string;
+  timestamp: string;
+  amount: number;
+  fee_threshold: number;
+  days: number;
+  chain_id: number;
+  is_cross_chain: boolean;
+  average_apy: number;
+  average_apy_with_rzfi: number;
+  total_rebalances: number;
+  created_at: string;
+  strategy: string;
+  token_symbol?: string;
+  average_apy_with_fee: number;
+  average_apy_with_rzfi_with_fee: number;
+  average_apy_without_fee?: number;
+  average_apy_with_rzfi_without_fee?: number;
+  events_average_apy?: Record<string, number>;
 }
 ```
 
 ### getOnchainEarnings
 
-Get onchain earnings for a wallet including total, current, and lifetime earnings.
+Get onchain earnings for a wallet with per-token breakdown (USDC, WETH).
 
 ```typescript
 const earnings = await sdk.getOnchainEarnings(smartWalletAddress);
 
-console.log("Total earnings:", earnings.data.totalEarnings);
-console.log("Current earnings:", earnings.data.currentEarnings);
-console.log("Lifetime earnings:", earnings.data.lifetimeEarnings);
+console.log("Total earnings by token:", earnings.data.totalEarningsByToken);
+// { "USDC": 150.50, "WETH": 0.05 }
+
+console.log("USDC earnings:", earnings.data.totalEarningsByToken["USDC"]);
+console.log("WETH earnings:", earnings.data.totalEarningsByToken["WETH"]);
 ```
 
 Returns:
 ```typescript
+// TokenEarnings is a record of token symbols to amounts
+type TokenEarnings = Record<string, number>;  // e.g., { "USDC": 100.5, "WETH": 0.025 }
+
 interface OnchainEarningsResponse {
   success: boolean;
   data: {
     walletAddress: string;
-    totalEarnings: number;
-    currentEarnings: number;
-    lifetimeEarnings: number;
-    unrealizedEarnings?: number;
-    currentEarningsByChain?: Record<string, number>;
-    unrealizedEarningsByChain?: Record<string, number>;
+    totalEarningsByToken: TokenEarnings;
+    lifetimeEarningsByToken: TokenEarnings;
+    currentEarningsByChain: Record<string, TokenEarnings>;
+    unrealizedEarningsByChain: Record<string, TokenEarnings>;
     lastCheckTimestamp?: string;
   };
 }
@@ -761,3 +768,27 @@ Verify you're using the correct wallet for the EOA.
 - **Demo:** [github.com/ondefy/zyfai-sdk-demo](https://github.com/ondefy/zyfai-sdk-demo)
 - **MCP Server:** [mcp.zyf.ai](https://mcp.zyf.ai/mcp) — Use with Claude or other MCP-compatible agents
 - **Agent Registration:** [zyf.ai/.well-known/agent-registration.json](https://www.zyf.ai/.well-known/agent-registration.json)
+
+## License
+
+MIT License
+
+Copyright (c) 2024 Zyfai
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
