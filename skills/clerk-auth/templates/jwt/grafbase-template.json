@@ -1,0 +1,14 @@
+{
+  "$comment": "Grafbase GraphQL Integration JWT Template",
+  "$description": "This template is for Grafbase integration with role-based access control. Grafbase uses 'groups' array for authorization. Name it 'grafbase' in Clerk Dashboard.",
+  "$usage": "const token = await getToken({ template: 'grafbase' }); // Use in GraphQL requests",
+  "$grafbase_config": "In grafbase.toml: [auth.providers.clerk] issuer = 'https://your-app.clerk.accounts.dev' jwks = 'https://your-app.clerk.accounts.dev/.well-known/jwks.json'",
+
+  "sub": "{{user.id}}",
+  "groups": [
+    "org:{{user.public_metadata.org_role || 'member'}}",
+    "user:authenticated"
+  ],
+  "email": "{{user.primary_email_address}}",
+  "name": "{{user.full_name || user.first_name}}"
+}

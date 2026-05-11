@@ -1,0 +1,55 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Upbit Public API",
+    "version": "v1",
+    "description": "Curated Upbit public market-data surface for UXC."
+  },
+  "servers": [
+    { "url": "https://sg-api.upbit.com" }
+  ],
+  "components": {
+    "schemas": {}
+  },
+  "paths": {
+    "/v1/market/all": {
+      "get": {
+        "operationId": "listMarkets",
+        "parameters": [
+          { "name": "isDetails", "in": "query", "schema": { "type": "boolean" } }
+        ],
+        "responses": { "200": { "description": "Markets returned" } }
+      }
+    },
+    "/v1/ticker": {
+      "get": {
+        "operationId": "getTicker",
+        "parameters": [
+          { "name": "markets", "in": "query", "required": true, "schema": { "type": "string" } }
+        ],
+        "responses": { "200": { "description": "Ticker returned" } }
+      }
+    },
+    "/v1/candles/minutes/{unit}": {
+      "get": {
+        "operationId": "getMinuteCandles",
+        "parameters": [
+          { "name": "unit", "in": "path", "required": true, "schema": { "type": "integer" } },
+          { "name": "market", "in": "query", "required": true, "schema": { "type": "string" } },
+          { "name": "count", "in": "query", "schema": { "type": "integer" } },
+          { "name": "to", "in": "query", "schema": { "type": "string" } }
+        ],
+        "responses": { "200": { "description": "Minute candles returned" } }
+      }
+    },
+    "/v1/orderbook": {
+      "get": {
+        "operationId": "getOrderbook",
+        "parameters": [
+          { "name": "markets", "in": "query", "required": true, "schema": { "type": "string" } }
+        ],
+        "responses": { "200": { "description": "Orderbook returned" } }
+      }
+    }
+  }
+}

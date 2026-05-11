@@ -1,0 +1,200 @@
+diff --git a/ui/src/ui/app-render.ts b/ui/src/ui/app-render.ts
+index f9adac183..599bc5b6a 100644
+--- a/ui/src/ui/app-render.ts
++++ b/ui/src/ui/app-render.ts
+@@ -102,6 +102,7 @@ import { renderNodes } from "./views/nodes.ts";
+ import { renderOverview } from "./views/overview.ts";
+ import { renderPipedream } from "./views/pipedream.ts";
+ import { renderSessions } from "./views/sessions.ts";
++import { renderSessionHistoryModal } from "./views/sessions-history-modal.ts";
+ import { renderSkills } from "./views/skills.ts";
+ import { renderZapier } from "./views/zapier.ts";
+ // import { loadPipedreamState, ... } from "./controllers/pipedream.ts";
+@@ -122,6 +123,42 @@ import { renderZapier } from "./views/zapier.ts";
+ const AVATAR_DATA_RE = /^data:/i;
+ const AVATAR_HTTP_RE = /^https?:\/\//i;
+ 
++import type { SessionHistoryResult } from "./views/sessions-history-modal.ts";
++
++async function loadSessionHistory(
++  state: AppViewState,
++  key: string,
++  offset = 0,
++  search?: string,
++  roleFilter?: string,
++  append = false,
++) {
++  if (!state.client || !state.connected) return;
++  state.sessionHistoryLoading = true;
++  state.sessionHistoryError = null;
++  try {
++    const params: Record<string, unknown> = { key, limit: 100, offset };
++    if (search) params.search = search;
++    if (roleFilter && roleFilter !== "all") params.rolesFilter = [roleFilter];
++    const res = await state.client.request<SessionHistoryResult>("sessions.history", params);
++    if (res) {
++      if (append && state.sessionHistoryResult) {
++        state.sessionHistoryResult = {
++          ...res,
++          items: [...state.sessionHistoryResult.items, ...res.items],
++          offset: state.sessionHistoryResult.offset,
++        };
++      } else {
++        state.sessionHistoryResult = res;
++      }
++    }
++  } catch (err) {
++    state.sessionHistoryError = String(err);
++  } finally {
++    state.sessionHistoryLoading = false;
++  }
++}
++
+ function resolveAssistantAvatarUrl(state: AppViewState): string | undefined {
+   const list = state.agentsList?.agents ?? [];
+   const parsed = parseAgentSessionKey(state.sessionKey);
+@@ -343,6 +380,15 @@ export function renderApp(state: AppViewState) {
+                 includeGlobal: state.sessionsIncludeGlobal,
+                 includeUnknown: state.sessionsIncludeUnknown,
+                 basePath: state.basePath,
++                agents: (state.agentsList?.agents ?? []).map((a: { id: string; name?: string; identity?: { emoji?: string } }) => ({
++                  id: a.id,
++                  name: a.identity?.name ?? a.name ?? a.id,
++                  emoji: a.identity?.emoji,
++                })),
++                agentFilter: state.sessionsAgentFilter ?? "",
++                onAgentFilterChange: (agentId: string) => {
++                  state.sessionsAgentFilter = agentId;
++                },
+                 onFiltersChange: (next) => {
+                   state.sessionsFilterActive = next.activeMinutes;
+                   state.sessionsFilterLimit = next.limit;
+@@ -352,10 +398,85 @@ export function renderApp(state: AppViewState) {
+                 onRefresh: () => loadSessions(state),
+                 onPatch: (key, patch) => patchSession(state, key, patch),
+                 onDelete: (key) => deleteSessionAndRefresh(state, key),
++                onViewHistory: (key) => {
++                  // Extract agent from key and pre-select both agent and session
++                  const agentMatch = key.match(/^agent:([^:]+):/);
++                  state.sessionHistoryAgentFilter = agentMatch ? agentMatch[1] : "";
++                  state.sessionHistoryKey = key;
++                  state.sessionHistoryOpen = true;
++                  state.sessionHistoryResult = null;
++                  state.sessionHistorySearch = "";
++                  state.sessionHistoryRoleFilter = "all";
++                  void loadSessionHistory(state, key);
++                },
+               })
+             : nothing
+         }
+ 
++        ${renderSessionHistoryModal({
++          open: state.sessionHistoryOpen,
++          loading: state.sessionHistoryLoading,
++          error: state.sessionHistoryError,
++          result: state.sessionHistoryResult,
++          agents: (state.agentsList?.agents ?? []).map((a: { id: string; name?: string; identity?: { emoji?: string } }) => ({
++            id: a.id,
++            name: a.identity?.name ?? a.name ?? a.id,
++            emoji: a.identity?.emoji,
++          })),
++          agentFilter: state.sessionHistoryAgentFilter,
++          sessions: (state.sessionsResult?.sessions ?? [])
++            .filter((s: { key: string }) => {
++              if (!state.sessionHistoryAgentFilter) return true;
++              const parsed = s.key.match(/^agent:([^:]+):/);
++              return parsed ? parsed[1] === state.sessionHistoryAgentFilter : false;
++            })
++            .map((s: { key: string; displayName?: string; label?: string }) => ({
++              key: s.key,
++              displayName: s.displayName ?? s.label ?? s.key,
++            })),
++          sessionKey: state.sessionHistoryKey,
++          search: state.sessionHistorySearch,
++          roleFilter: state.sessionHistoryRoleFilter,
++          onClose: () => {
++            state.sessionHistoryOpen = false;
++          },
++          onAgentChange: (agentId: string) => {
++            state.sessionHistoryAgentFilter = agentId;
++            state.sessionHistoryKey = "";
++            state.sessionHistoryResult = null;
++          },
++          onSessionChange: (key: string) => {
++            state.sessionHistoryKey = key;
++            state.sessionHistoryResult = null;
++            state.sessionHistorySearch = "";
++            state.sessionHistoryRoleFilter = "all";
++            if (key) void loadSessionHistory(state, key);
++          },
++          onSearchChange: (search: string) => {
++            state.sessionHistorySearch = search;
++            clearTimeout((state as unknown as Record<string, ReturnType<typeof setTimeout>>).__historySearchTimer);
++            (state as unknown as Record<string, ReturnType<typeof setTimeout>>).__historySearchTimer = setTimeout(() => {
++              if (state.sessionHistoryKey) {
++                state.sessionHistoryResult = null;
++                void loadSessionHistory(state, state.sessionHistoryKey, 0, search, state.sessionHistoryRoleFilter);
++              }
++            }, 300);
++          },
++          onRoleFilterChange: (role: string) => {
++            state.sessionHistoryRoleFilter = role;
++            state.sessionHistoryResult = null;
++            if (state.sessionHistoryKey) {
++              void loadSessionHistory(state, state.sessionHistoryKey, 0, state.sessionHistorySearch, role);
++            }
++          },
++          onLoadMore: () => {
++            if (state.sessionHistoryResult && state.sessionHistoryKey) {
++              const nextOffset = state.sessionHistoryResult.offset + state.sessionHistoryResult.items.length;
++              void loadSessionHistory(state, state.sessionHistoryKey, nextOffset, state.sessionHistorySearch, state.sessionHistoryRoleFilter, true);
++            }
++          },
++        })}
++
+         ${renderUsageTab(state)}
+ 
+         ${
+diff --git a/ui/src/ui/app-view-state.ts b/ui/src/ui/app-view-state.ts
+index 013a29e5b..4bdff76c7 100644
+--- a/ui/src/ui/app-view-state.ts
++++ b/ui/src/ui/app-view-state.ts
+@@ -155,6 +155,16 @@ export type AppViewState = {
+   sessionsFilterLimit: string;
+   sessionsIncludeGlobal: boolean;
+   sessionsIncludeUnknown: boolean;
++  sessionsAgentFilter: string;
++  // Session history modal
++  sessionHistoryOpen: boolean;
++  sessionHistoryKey: string;
++  sessionHistoryAgentFilter: string;
++  sessionHistorySearch: string;
++  sessionHistoryRoleFilter: string;
++  sessionHistoryLoading: boolean;
++  sessionHistoryError: string | null;
++  sessionHistoryResult: import("./views/sessions-history-modal.ts").SessionHistoryResult | null;
+   usageLoading: boolean;
+   usageResult: SessionsUsageResult | null;
+   usageCostSummary: CostUsageSummary | null;
+diff --git a/ui/src/ui/app.ts b/ui/src/ui/app.ts
+index 3d23d5469..2669b5ffa 100644
+--- a/ui/src/ui/app.ts
++++ b/ui/src/ui/app.ts
+@@ -260,6 +260,17 @@ export class OpenClawApp extends LitElement {
+   @state() sessionsFilterLimit = "120";
+   @state() sessionsIncludeGlobal = true;
+   @state() sessionsIncludeUnknown = false;
++  @state() sessionsAgentFilter = "";
++
++  // Session history modal state
++  @state() sessionHistoryOpen = false;
++  @state() sessionHistoryKey = "";
++  @state() sessionHistoryAgentFilter = "";
++  @state() sessionHistorySearch = "";
++  @state() sessionHistoryRoleFilter = "all";
++  @state() sessionHistoryLoading = false;
++  @state() sessionHistoryError: string | null = null;
++  @state() sessionHistoryResult: import("./views/sessions-history-modal.ts").SessionHistoryResult | null = null;
+ 
+   @state() usageLoading = false;
+   @state() usageResult: import("./types.js").SessionsUsageResult | null = null;

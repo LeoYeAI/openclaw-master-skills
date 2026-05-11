@@ -1,0 +1,115 @@
+# BatchLiquidator — batch deletion of critical/insolvent flows
+# Allows sentinel bots to liquidate multiple flows in a single transaction,
+# reducing calldata and gas costs (significant on L2s).  Supports both CFA
+# and GDA flow types.
+#
+# For CFA flows, calls host.callAgreement(cfa, cfa.deleteFlow(...)).
+# For GDA flows, calls host.callAgreement(gda, gda.distributeFlow(..., 0, ...))
+# to set the flow rate to zero.
+#
+# After liquidation(s), any Super Token rewards collected by the contract
+# are forwarded to the caller (msg.sender).
+#
+# This contract has no events — all events are emitted by the underlying
+# CFA, GDA, and SuperToken contracts.
+# This contract has no custom errors — deleteFlow (singular) re-throws
+# the underlying revert reason; deleteFlows (plural) silently tolerates
+# individual failures.
+
+meta:
+  name: BatchLiquidator
+  version: v1
+  source:
+    - https://raw.githubusercontent.com/superfluid-org/protocol-monorepo/refs/heads/dev/packages/ethereum-contracts/contracts/utils/BatchLiquidator.sol
+  note: >
+    Utility contract for sentinel bots that monitor and liquidate
+    critical/insolvent Superfluid streams.  The constructor derives the
+    CFA and GDA agreement addresses from the Host, hardcoding them as
+    immutables to save calldata on every invocation.
+  types:
+    FlowType:
+      ConstantFlowAgreement: 0
+      GeneralDistributionAgreement: 1
+    FlowLiquidationData:
+      agreementOperation: uint8    # FlowType enum
+      sender: address              # flow sender being liquidated
+      receiver: address            # flow receiver (or pool address for GDA)
+  deployments:
+    mainnet:
+      eth-mainnet: "0x42B709822F18595443c308c1BE5E63CbFEf06481"
+      polygon-mainnet: "0xA7afDc46999076C295cfC6812dd73d103cF64e19"
+      optimism-mainnet: "0x84956C84c33c38AcE22C9324F1f92028AF2215ce"
+      arbitrum-one: "0x9224413b9177E6c1D5721B4a4D1D00eC84B07Ce7"
+      avalanche-c: "0x3b387638a5d33aE8772715642A21345f23Af824c"
+      bsc-mainnet: "0x27636F8E129cdd4ccA0F30E2b4C116DDaC773bE5"
+      xdai-mainnet: "0x96C3C2d23d143301cF363a02cB7fe3596d2834d7"
+      celo-mainnet: "0xCb0Ff4D0cA186f0Fc0301258066Fe3fA258417a6"
+      base-mainnet: "0x6b008BAc0e5846cB5d9Ca02ca0e801fCbF88B6f9"
+      scroll-mainnet: "0x2eaa49BeB4Aa4fcC709DC14c0FA0fF1B292077b5"
+      degenchain: "0x7BCE8e8401dc98E3Da26F1D701c3C2168b8e466c"
+    testnet:
+      avalanche-fuji: "0x85AfCf531aF1a853AC65F6bfa4de99C742B8e432"
+      eth-sepolia: "0x79aE8BF8EE9238d8E848F7dbBF74Ddb3365f6c11"
+      optimism-sepolia: "0x9539B21cC67844417E80aE168bc28c831E7Ed271"
+      scroll-sepolia: "0x70bbB7a057A13070dF11d533e8f299357D778637"
+      base-sepolia: "0x95043eC349476B413eF5c369c4d2454a1a65eaB9"
+
+# == Protocol Info ==
+
+host:
+  # Public immutable — the Superfluid Host this liquidator is connected to.
+  # Set in the constructor.
+  mutability: view
+  access: anyone
+  inputs: []
+  outputs:
+    - "": address
+
+cfa:
+  # Public immutable — the ConstantFlowAgreementV1 address, derived from
+  # host.getAgreementClass(...) in the constructor.
+  mutability: view
+  access: anyone
+  inputs: []
+  outputs:
+    - "": address
+
+gda:
+  # Public immutable — the GeneralDistributionAgreementV1 address, derived
+  # from host.getAgreementClass(...) in the constructor.
+  mutability: view
+  access: anyone
+  inputs: []
+  outputs:
+    - "": address
+
+# == Liquidation ==
+
+deleteFlows:
+  # Batch-deletes multiple flows in a single transaction.
+  # Tolerates individual failures — if one flow was already liquidated or
+  # is no longer critical, the rest still proceed.
+  #
+  # For CFA flows: calls host.callAgreement(cfa, cfa.deleteFlow(token, sender, receiver)).
+  # For GDA flows: calls host.callAgreement(gda, gda.distributeFlow(token, sender, pool, 0)).
+  #
+  # After all deletions, any Super Token rewards accumulated in the contract
+  # are transferred to msg.sender.  Uses try/catch on transfer to handle
+  # non-transferable tokens gracefully.
+  mutability: nonpayable
+  access: anyone
+  inputs:
+    - superToken: address
+    - data: FlowLiquidationData[]   # array of flows to liquidate
+
+deleteFlow:
+  # Deletes a single flow.  Unlike deleteFlows, this reverts on failure,
+  # re-throwing the underlying error from the Host/agreement.
+  #
+  # After deletion, any Super Token rewards accumulated in the contract
+  # are transferred to msg.sender.
+  mutability: nonpayable
+  access: anyone
+  inputs:
+    - superToken: address
+    - data: FlowLiquidationData     # single flow to liquidate

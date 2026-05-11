@@ -1,0 +1,95 @@
+{
+  "name": "health-management",
+  "version": "1.1.2",
+  "author": "longerian",
+  "description": "Comprehensive health management system integrating 10 best-selling health books' consensus principles. Use when users discuss nutrition, supplements, fitness, diet, anti-aging, anti-inflammation, longevity, or request diet tracking/analysis.",
+  "permissions": {
+    "tools": [
+      "exec",
+      "read",
+      "write",
+      "web_search",
+      "web_fetch"
+    ],
+    "paths": [
+      "~/.openclaw/workspace/memory/health-users/",
+      "~/.openclaw/workspace/skills/health-management/",
+      "~/Documents/health-backup/"
+    ],
+    "executables": [
+      "scripts/backup_health_data.sh",
+      "scripts/check_git_config.sh",
+      "scripts/configure_backup.sh",
+      "scripts/manage_backup.sh",
+      "scripts/language_utils.sh",
+      "scripts/timezone_utils.sh"
+    ],
+    "domains": [
+      "github.com",
+      "api.github.com",
+      "api.tavily.com"
+    ],
+    "capabilities": [
+      "filesystem",
+      "network"
+    ],
+    "external_actions": [
+      {
+        "name": "backup",
+        "description": "Backup health data to GitHub repository",
+        "trigger": "Automatic backup after database changes (when user has configured backup) or manual user request",
+        "script": "scripts/backup_health_data.sh",
+        "destination": "github.com (user-provided repository)",
+        "auth": "User's Git credentials (SSH keys or credential manager)",
+        "user_control": {
+          "opt_in_required": true,
+          "config_file": "backup_config.json",
+          "disable_option": "User can set 'enabled: false' in backup_config.json",
+          "repo_validation": "User must provide repository URL during onboarding"
+        },
+        "security_mitigations": [
+          "Private repository strongly recommended",
+          "User controls repository URL",
+          "Backup only executes when user has configured backup",
+          "User can disable at any time",
+          "All scripts are auditable (no obfuscated code)"
+        ]
+      },
+      {
+        "name": "search",
+        "description": "Search for nutritional information and health research",
+        "trigger": "When analyzing food defense systems or nutritional content",
+        "implementation": "Tavily Search API",
+        "api": "tavily-search",
+        "auth": "Tavily API key stored in OpenClaw config",
+        "user_control": {
+          "opt_in_required": false,
+          "config_key": "skills.tavily-search.apiKey",
+          "disable_option": "Do not configure Tavily API key to disable search features"
+        },
+        "security_mitigations": [
+          "API key stored in OpenClaw config, not hardcoded",
+          "Only searches for nutritional and health research",
+          "No user data sent to API, only search queries"
+        ]
+      }
+    ]
+  },
+  "rationale": {
+    "exec": "Required to run backup scripts for data persistence and git configuration checks",
+    "filesystem": "Store user health data in memory/health-users/{username}/ directory",
+    "network": "Search for nutritional information via Tavily Search API to provide evidence-based recommendations. Backup to GitHub repository (user-provided) for data persistence",
+    "scripts": "Automated backup system ensures data safety and supports multi-language/timezone features",
+    "external_actions": {
+      "backup": "Users can backup their health tracking data to GitHub for persistence across sessions",
+      "search": "Scientific research lookup ensures health recommendations are evidence-based using Tavily Search API"
+    }
+  },
+  "security_notes": {
+    "data_privacy": "User health data stored locally in memory/health-users/{username}/ - only accessible by the user",
+    "no_exfiltration": "Scripts only write to local files and user's own GitHub repository (user provides repo URL)",
+    "api_keys": "Tavily API key required for search features (stored in OpenClaw config as skills.tavily-search.apiKey). Git credentials managed by user's system (SSH/credential manager) for backup feature",
+    "scripts_review": "All scripts are readable and auditable - no obfuscated code",
+    "github_backup": "Backup feature requires user to provide their own GitHub repository (recommended: private repo). All data transmission is user-controlled"
+  }
+}

@@ -1,0 +1,297 @@
+# SuperTokenFactory — deploys and initializes Super Token proxy contracts
+# The factory creates wrapper Super Tokens (backed by an ERC-20), canonical
+# wrapper Super Tokens (deterministic CREATE2 addresses), and custom Super
+# Token proxies (SETH, Pure, etc.).
+#
+# SuperTokenFactory is a UUPS-upgradable singleton deployed once per network.
+# It holds immutable references to the canonical SuperToken logic contract and
+# the Pool NFT logic contracts.
+#
+# Proxy/upgradability functions omitted: initialize, proxiableUUID, updateCode,
+# castrate, getCodeAddress.
+
+meta:
+  name: SuperTokenFactory
+  version: v1
+  source:
+    - https://raw.githubusercontent.com/superfluid-org/protocol-monorepo/refs/heads/dev/packages/ethereum-contracts/contracts/superfluid/SuperTokenFactory.sol
+    - https://raw.githubusercontent.com/superfluid-org/protocol-monorepo/refs/heads/dev/packages/ethereum-contracts/contracts/interfaces/superfluid/ISuperTokenFactory.sol
+  implements: [ISuperTokenFactory, UUPSProxiable]
+  note: >
+    Deploys Super Token proxies in three modes: (1) custom wrapper via
+    createERC20Wrapper with caller-chosen name/symbol/upgradability,
+    (2) canonical wrapper via createCanonicalERC20Wrapper with deterministic
+    CREATE2 address and auto-derived name/symbol, and (3) custom super token
+    via initializeCustomSuperToken for pre-deployed proxies like SETH or
+    PureSuperToken.  The Upgradability enum controls proxy type:
+    NON_UPGRADABLE (deprecated, reverts), SEMI_UPGRADABLE (UUPSProxy),
+    FULL_UPGRADABLE (FullUpgradableSuperTokenProxy).
+  upgradability_enum:
+    NON_UPGRADABLE: 0   # deprecated — createERC20Wrapper reverts
+    SEMI_UPGRADABLE: 1  # UUPSProxy — upgradable via host.updateSuperTokenLogic
+    FULL_UPGRADABLE: 2  # always uses latest super token logic
+  deployments:
+    mainnet:
+      eth-mainnet: "0x0422689cc4087b6B7280e0a7e7F655200ec86Ae1"
+      polygon-mainnet: "0x2C90719f25B10Fc5646c82DA3240C76Fa5BcCF34"
+      optimism-mainnet: "0x8276469A443D5C6B7146BED45e2abCaD3B6adad9"
+      arbitrum-one: "0x1C21Ead77fd45C84a4c916Db7A6635D0C6FF09D6"
+      avalanche-c: "0x464AADdBB2B80f3Cb666522EB7381bE610F638b4"
+      bsc-mainnet: "0x8bde47397301F0Cd31b9000032fD517a39c946Eb"
+      xdai-mainnet: "0x23410e2659380784498509698ed70E414D384880"
+      celo-mainnet: "0x36be86dEe6BC726Ed0Cbd170ccD2F21760BC73D9"
+      base-mainnet: "0xe20B9a38E0c96F61d1bA6b42a61512D56Fea1Eb3"
+      scroll-mainnet: "0xacFBED2bC9344C158DD3dC229b84Bd7220e7c673"
+      degenchain: "0x184D999ea60e9b16fE4cCC1f756422114E9B663f"
+    testnet:
+      avalanche-fuji: "0x1C92042426B6bAAe497bEf461B6d8342D03aEc92"
+      eth-sepolia: "0x254C2e152E8602839D288A7bccdf3d0974597193"
+      optimism-sepolia: "0xfcF0489488397332579f35b0F711BE570Da0E8f5"
+      scroll-sepolia: "0x87560833d59Be057aFc63cFFa3fc531589Ba428F"
+      base-sepolia: "0x7447E94Dfe3d804a9f46Bf12838d467c912C8F6C"
+
+# == Protocol Info ==
+
+getHost:
+  # Returns the Superfluid Host address this factory is connected to.
+  mutability: view
+  access: anyone
+  inputs: []
+  outputs:
+    - host: address
+
+getSuperTokenLogic:
+  # Returns the canonical SuperToken logic contract used for new proxies.
+  # Same value as the public immutable _SUPER_TOKEN_LOGIC.
+  mutability: view
+  access: anyone
+  inputs: []
+  outputs:
+    - superToken: ISuperToken
+
+_SUPER_TOKEN_LOGIC:
+  # Public immutable — the canonical SuperToken logic contract.
+  # Equivalent to getSuperTokenLogic() but auto-generated from the
+  # public immutable variable.
+  mutability: view
+  access: anyone
+  inputs: []
+  outputs:
+    - "": ISuperToken
+
+POOL_ADMIN_NFT_LOGIC:
+  # Public immutable — the PoolAdminNFT logic contract used by SuperTokens.
+  # Updated when the factory is upgraded if the new factory has a different
+  # PoolAdminNFT logic address.
+  mutability: view
+  access: anyone
+  inputs: []
+  outputs:
+    - "": IPoolAdminNFT
+
+POOL_MEMBER_NFT_LOGIC:
+  # Public immutable — the PoolMemberNFT logic contract used by SuperTokens.
+  mutability: view
+  access: anyone
+  inputs: []
+  outputs:
+    - "": IPoolMemberNFT
+
+# == ERC-20 Wrapper Creation ==
+# Four overloads of createERC20Wrapper exist for convenience.  All delegate to
+# the primary overload (underlyingToken, underlyingDecimals, upgradability,
+# name, symbol, admin).  Overloads without `admin` pass address(0).
+# Overloads without `underlyingDecimals` call underlyingToken.decimals().
+
+"createERC20Wrapper(underlyingToken,underlyingDecimals,upgradability,name,symbol,admin)":
+  # Primary overload — deploys a new Super Token proxy wrapping an ERC-20.
+  # The upgradability parameter controls proxy type:
+  #   NON_UPGRADABLE (0) — reverts (deprecated)
+  #   SEMI_UPGRADABLE (1) — UUPSProxy, upgradable via host.updateSuperTokenLogic
+  #   FULL_UPGRADABLE (2) — always uses latest SuperToken logic
+  # The admin receives admin privileges on the new Super Token (or address(0)
+  # for no explicit admin, in which case the Host acts as admin).
+  mutability: nonpayable
+  access: anyone
+  inputs:
+    - underlyingToken: IERC20Metadata
+    - underlyingDecimals: uint8
+    - upgradability: uint8    # Upgradability enum
+    - name: string
+    - symbol: string
+    - admin: address
+  outputs:
+    - superToken: ISuperToken
+  emits: [SuperTokenCreated]
+  errors: [SUPER_TOKEN_FACTORY_ZERO_ADDRESS, SUPER_TOKEN_FACTORY_NON_UPGRADEABLE_IS_DEPRECATED]
+
+"createERC20Wrapper(underlyingToken,underlyingDecimals,upgradability,name,symbol)":
+  # Convenience overload — no admin parameter, defaults to address(0).
+  # Delegates to the primary overload.
+  mutability: nonpayable
+  access: anyone
+  inputs:
+    - underlyingToken: IERC20Metadata
+    - underlyingDecimals: uint8
+    - upgradability: uint8    # Upgradability enum
+    - name: string
+    - symbol: string
+  outputs:
+    - superToken: ISuperToken
+  emits: [SuperTokenCreated]
+  errors: [SUPER_TOKEN_FACTORY_ZERO_ADDRESS, SUPER_TOKEN_FACTORY_NON_UPGRADEABLE_IS_DEPRECATED]
+
+"createERC20Wrapper(underlyingToken,upgradability,name,symbol,admin)":
+  # Convenience overload — reads decimals from underlyingToken.decimals().
+  # Delegates to the primary overload.
+  mutability: nonpayable
+  access: anyone
+  inputs:
+    - underlyingToken: IERC20Metadata
+    - upgradability: uint8    # Upgradability enum
+    - name: string
+    - symbol: string
+    - admin: address
+  outputs:
+    - superToken: ISuperToken
+  emits: [SuperTokenCreated]
+  errors: [SUPER_TOKEN_FACTORY_ZERO_ADDRESS, SUPER_TOKEN_FACTORY_NON_UPGRADEABLE_IS_DEPRECATED]
+
+"createERC20Wrapper(underlyingToken,upgradability,name,symbol)":
+  # Simplest overload — reads decimals from underlyingToken.decimals(),
+  # no admin (defaults to address(0)).  Delegates to the primary overload.
+  mutability: nonpayable
+  access: anyone
+  inputs:
+    - underlyingToken: IERC20Metadata
+    - upgradability: uint8    # Upgradability enum
+    - name: string
+    - symbol: string
+  outputs:
+    - superToken: ISuperToken
+  emits: [SuperTokenCreated]
+  errors: [SUPER_TOKEN_FACTORY_ZERO_ADDRESS, SUPER_TOKEN_FACTORY_NON_UPGRADEABLE_IS_DEPRECATED]
+
+# == Canonical Wrapper Management ==
+
+createCanonicalERC20Wrapper:
+  # Deploys a canonical wrapper Super Token for the given underlying ERC-20
+  # using CREATE2 for a deterministic address.  The salt is
+  # keccak256(abi.encode(address(underlyingToken))).
+  #
+  # Automatically derives name ("Super " + underlying name) and symbol
+  # (underlying symbol + "x").  Always SEMI_UPGRADABLE.  No admin.
+  #
+  # Reverts if a canonical wrapper already exists for this underlying token
+  # or if the canonical mapping has not been initialized.
+  mutability: nonpayable
+  access: anyone
+  inputs:
+    - _underlyingToken: IERC20Metadata
+  outputs:
+    - "": ISuperToken
+  emits: [SuperTokenCreated]
+  errors: [SUPER_TOKEN_FACTORY_UNINITIALIZED, SUPER_TOKEN_FACTORY_ALREADY_EXISTS]
+
+computeCanonicalERC20WrapperAddress:
+  # Returns the address of the canonical wrapper for the given underlying
+  # token.  If already deployed and registered, returns the stored address
+  # with isDeployed=true.  Otherwise computes the CREATE2 address with
+  # isDeployed=false.
+  #
+  # Note: only computes addresses for SEMI_UPGRADABLE Super Tokens.
+  mutability: view
+  access: anyone
+  inputs:
+    - _underlyingToken: address
+  outputs:
+    - superTokenAddress: address
+    - isDeployed: bool
+
+getCanonicalERC20Wrapper:
+  # Looks up the canonical wrapper Super Token for the given underlying
+  # token address.  Returns address(0) if no canonical wrapper is registered.
+  #
+  # Note: address(0) key maps to the NativeAssetSuperToken on the network.
+  mutability: view
+  access: anyone
+  inputs:
+    - _underlyingTokenAddress: address
+  outputs:
+    - superTokenAddress: address
+
+# == Custom Super Token ==
+
+initializeCustomSuperToken:
+  # Initializes a pre-deployed custom Super Token proxy (e.g., SETH,
+  # PureSuperToken) by setting its implementation to the canonical
+  # SuperToken logic contract.
+  #
+  # The caller must have already deployed the proxy contract.  This
+  # function calls proxy.initializeProxy(superTokenLogic).
+  mutability: nonpayable
+  access: anyone
+  inputs:
+    - customSuperTokenProxy: address
+  emits: [CustomSuperTokenCreated]
+
+# == Canonical Initialization ==
+
+initializeCanonicalWrapperSuperTokens:
+  # One-time governance function to seed the canonical wrapper mapping with
+  # existing wrapper Super Tokens.  Once called (the address(0) entry is
+  # set), it cannot be called again.
+  #
+  # The address(0) key must be included in the data — it maps to the
+  # NativeAssetSuperToken on the network.
+  #
+  # Each entry is a struct { underlyingToken: address, superToken: address }.
+  mutability: nonpayable
+  access: governance-owner
+  inputs:
+    - _data: InitializeData[]   # array of (underlyingToken, superToken) pairs
+  errors: [SUPER_TOKEN_FACTORY_ONLY_GOVERNANCE_OWNER, SUPER_TOKEN_FACTORY_ALREADY_EXISTS]
+
+# == Events ==
+
+events:
+
+  SuperTokenCreated:
+    # Emitted when a new wrapper Super Token is deployed via
+    # createERC20Wrapper or createCanonicalERC20Wrapper.
+    indexed:
+      - token: ISuperToken
+    data: []
+
+  CustomSuperTokenCreated:
+    # Emitted when a custom Super Token proxy is initialized via
+    # initializeCustomSuperToken.
+    indexed:
+      - token: ISuperToken
+    data: []
+
+  SuperTokenLogicCreated:
+    # Emitted in the constructor when the canonical SuperToken logic
+    # contract is set.  "Created" here means designated as the canonical
+    # logic, not actual contract deployment.
+    indexed:
+      - tokenLogic: ISuperToken
+    data: []
+
+# == Errors ==
+# All errors use the SUPER_TOKEN_FACTORY_ prefix.
+
+errors:
+
+  # -- Access Control --
+  - SUPER_TOKEN_FACTORY_ONLY_HOST                       # only the Host can call updateCode
+  - SUPER_TOKEN_FACTORY_ONLY_GOVERNANCE_OWNER           # only governance owner (defined in base, not interface)
+
+  # -- State Validation --
+  - SUPER_TOKEN_FACTORY_UNINITIALIZED                   # canonical mapping not yet initialized
+  - SUPER_TOKEN_FACTORY_ALREADY_EXISTS                  # canonical wrapper exists or mapping already seeded
+  - SUPER_TOKEN_FACTORY_DOES_NOT_EXIST                  # requested canonical wrapper not found
+
+  # -- Input Validation --
+  - SUPER_TOKEN_FACTORY_ZERO_ADDRESS                    # underlying token is address(0)
+  - SUPER_TOKEN_FACTORY_NON_UPGRADEABLE_IS_DEPRECATED   # NON_UPGRADABLE (0) no longer supported

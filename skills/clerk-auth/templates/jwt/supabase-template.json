@@ -1,0 +1,17 @@
+{
+  "$comment": "Supabase Integration JWT Template",
+  "$description": "This template is designed for Supabase integration. Name it 'supabase' in Clerk Dashboard. Use with getToken({ template: 'supabase' }) to authenticate Supabase client.",
+  "$usage": "const token = await getToken({ template: 'supabase' }); const supabase = createClient(url, key, { global: { headers: { Authorization: `Bearer ${token}` } } });",
+
+  "aud": "authenticated",
+  "email": "{{user.primary_email_address}}",
+  "app_metadata": {
+    "provider": "clerk",
+    "providers": ["clerk"]
+  },
+  "user_metadata": {
+    "full_name": "{{user.full_name || user.first_name || 'User'}}",
+    "avatar_url": "{{user.image_url}}",
+    "email": "{{user.primary_email_address}}"
+  }
+}

@@ -1,0 +1,36 @@
+# Bug-fixing scripts dependencies
+# Install: pip install -r requirements.txt
+
+# === Required (for scripts to run) ===
+# None - scripts use standard library only
+
+# === Recommended formatters ===
+ruff>=0.1.0          # Fast Python linter + formatter (replaces black, isort, flake8)
+black>=23.0.0        # Python formatter (fallback if ruff unavailable)
+
+# === Recommended linters ===
+mypy>=1.0.0          # Python static type checker
+pylint>=3.0.0        # Python linter (optional, ruff preferred)
+
+# === For JavaScript/TypeScript projects ===
+# Install via npm:
+#   npm install -g prettier    # JS/TS/CSS/HTML formatter
+#   npm install -g eslint      # JS/TS linter
+#   npm install -g typescript  # TypeScript compiler (for type checking)
+
+# === For Go projects ===
+# gofmt is included with Go installation
+
+# === For Rust projects ===
+# rustfmt: rustup component add rustfmt
+
+# === Quick install commands ===
+# Python formatters/linters:
+#   pip install ruff mypy
+#
+# Node.js formatters/linters:
+#   npm install -g prettier eslint typescript
+#
+# Check dependencies:
+#   python format_code.py --check-deps
+#   python lint_check.py --check-deps

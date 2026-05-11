@@ -1,0 +1,621 @@
+{
+  "capabilities": [
+    {
+      "id": "human_detect",
+      "service_id": "svc_cf_human_detect",
+      "summary": "Detect human presence in an image.",
+      "input_schema": {
+        "type": "object",
+        "required": ["image_url"],
+        "properties": {
+          "image_url": {
+            "type": "string",
+            "format": "uri",
+            "description": "Upload an image file/attachment through the host product flow. Use controlled media storage URLs. Do not require manual URL or raw JSON input in user-facing forms."
+          }
+        }
+      },
+      "example_input": {
+        "image_url": "https://demo.public.blob.vercel-storage.com/skill-inputs/images/example.jpg"
+      }
+    },
+    {
+      "id": "image_tagging",
+      "service_id": "svc_cf_image_tagging",
+      "summary": "Generate descriptive tags from an image.",
+      "input_schema": {
+        "type": "object",
+        "required": ["image_url"],
+        "properties": {
+          "image_url": {
+            "type": "string",
+            "format": "uri",
+            "description": "Upload an image file/attachment through the host product flow. Use controlled media storage URLs. Do not require manual URL or raw JSON input in user-facing forms."
+          }
+        }
+      },
+      "example_input": {
+        "image_url": "https://demo.public.blob.vercel-storage.com/skill-inputs/images/example.jpg"
+      }
+    },
+    {
+      "id": "tts_report",
+      "service_id": "svc_cf_tts_report",
+      "summary": "Synthesize a report-style speech clip from text.",
+      "input_schema": {
+        "type": "object",
+        "required": ["text"],
+        "properties": {
+          "text": {
+            "type": "string",
+            "maxLength": 4096
+          },
+          "speaker": {
+            "type": "string",
+            "maxLength": 64
+          }
+        }
+      },
+      "example_input": {
+        "text": "hello from ai task hub",
+        "speaker": "alloy"
+      }
+    },
+    {
+      "id": "embeddings",
+      "service_id": "svc_cf_embeddings",
+      "summary": "Generate embeddings from text batches.",
+      "input_schema": {
+        "type": "object",
+        "required": ["texts"],
+        "properties": {
+          "texts": {
+            "type": "array",
+            "minItems": 1,
+            "maxItems": 128,
+            "items": {
+              "type": "string",
+              "maxLength": 8192
+            }
+          },
+          "truncate": {
+            "type": "boolean"
+          }
+        }
+      },
+      "example_input": {
+        "texts": ["hello world", "ai task hub"],
+        "truncate": true
+      }
+    },
+    {
+      "id": "reranker",
+      "service_id": "svc_cf_reranker",
+      "summary": "Rerank document candidates for a query.",
+      "input_schema": {
+        "type": "object",
+        "required": ["query", "documents"],
+        "properties": {
+          "query": {
+            "type": "string",
+            "maxLength": 4096
+          },
+          "documents": {
+            "type": "array",
+            "minItems": 1,
+            "maxItems": 128,
+            "items": {
+              "type": "string",
+              "maxLength": 8192
+            }
+          },
+          "top_k": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 128
+          }
+        }
+      },
+      "example_input": {
+        "query": "cloud cost optimization",
+        "documents": ["doc1", "doc2"],
+        "top_k": 2
+      }
+    },
+    {
+      "id": "asr",
+      "service_id": "svc_cf_asr",
+      "summary": "Transcribe uploaded audio.",
+      "input_schema": {
+        "type": "object",
+        "required": ["audio_url"],
+        "properties": {
+          "audio_url": {
+            "type": "string",
+            "format": "uri",
+            "description": "Upload an audio file/attachment through the host product flow. Use controlled media storage URLs. Do not require manual URL or raw JSON input in user-facing forms."
+          },
+          "language": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 8
+          },
+          "diarize": {
+            "type": "boolean"
+          }
+        }
+      },
+      "example_input": {
+        "audio_url": "https://demo.public.blob.vercel-storage.com/skill-inputs/audio/example.wav",
+        "language": "en",
+        "diarize": false
+      }
+    },
+    {
+      "id": "tts_low_cost",
+      "service_id": "svc_cf_tts_low_cost",
+      "summary": "Synthesize low-cost speech from text.",
+      "input_schema": {
+        "type": "object",
+        "required": ["text"],
+        "properties": {
+          "text": {
+            "type": "string",
+            "maxLength": 4096
+          },
+          "speaker": {
+            "type": "string",
+            "maxLength": 64
+          }
+        }
+      },
+      "example_input": {
+        "text": "hello from skill hub",
+        "speaker": "alloy"
+      }
+    },
+    {
+      "id": "markdown_convert",
+      "service_id": "svc_cf_markdown_convert",
+      "summary": "Convert uploaded document to markdown.",
+      "input_schema": {
+        "type": "object",
+        "required": ["file_url"],
+        "properties": {
+          "file_url": {
+            "type": "string",
+            "format": "uri",
+            "description": "Upload a document file/attachment through the host product flow. Use controlled media storage URLs. Do not require manual URL or raw JSON input in user-facing forms."
+          },
+          "conversion_options": {
+            "type": "object"
+          }
+        }
+      },
+      "example_input": {
+        "file_url": "https://demo.public.blob.vercel-storage.com/skill-inputs/documents/example.pdf",
+        "conversion_options": {
+          "preserve_tables": true
+        }
+      }
+    },
+    {
+      "id": "face-detect",
+      "service_id": "svc_cv_face_detect",
+      "summary": "Detect faces in an image.",
+      "input_schema": {
+        "type": "object",
+        "required": ["image_url"],
+        "properties": {
+          "image_url": {
+            "type": "string",
+            "format": "uri",
+            "description": "Upload an image file/attachment through the host product flow. Use controlled media storage URLs. Do not require manual URL or raw JSON input in user-facing forms."
+          }
+        }
+      },
+      "example_input": {
+        "image_url": "https://demo.public.blob.vercel-storage.com/skill-inputs/images/example.jpg"
+      }
+    },
+    {
+      "id": "person-detect",
+      "service_id": "svc_cv_person_detect",
+      "summary": "Detect people in an image.",
+      "input_schema": {
+        "type": "object",
+        "required": ["image_url"],
+        "properties": {
+          "image_url": {
+            "type": "string",
+            "format": "uri",
+            "description": "Upload an image file/attachment through the host product flow. Use controlled media storage URLs. Do not require manual URL or raw JSON input in user-facing forms."
+          }
+        }
+      },
+      "example_input": {
+        "image_url": "https://demo.public.blob.vercel-storage.com/skill-inputs/images/example.jpg"
+      }
+    },
+    {
+      "id": "hand-detect",
+      "service_id": "svc_cv_hand_detect",
+      "summary": "Detect hands in an image.",
+      "input_schema": {
+        "type": "object",
+        "required": ["image_url"],
+        "properties": {
+          "image_url": {
+            "type": "string",
+            "format": "uri",
+            "description": "Upload an image file/attachment through the host product flow. Use controlled media storage URLs. Do not require manual URL or raw JSON input in user-facing forms."
+          }
+        }
+      },
+      "example_input": {
+        "image_url": "https://demo.public.blob.vercel-storage.com/skill-inputs/images/example.jpg"
+      }
+    },
+    {
+      "id": "body-keypoints-2d",
+      "service_id": "svc_cv_body_keypoints_2d",
+      "summary": "Estimate 2D body keypoints in an image.",
+      "input_schema": {
+        "type": "object",
+        "required": ["image_url"],
+        "properties": {
+          "image_url": {
+            "type": "string",
+            "format": "uri",
+            "description": "Upload an image file/attachment through the host product flow. Use controlled media storage URLs. Do not require manual URL or raw JSON input in user-facing forms."
+          }
+        }
+      },
+      "example_input": {
+        "image_url": "https://demo.public.blob.vercel-storage.com/skill-inputs/images/example.jpg"
+      }
+    },
+    {
+      "id": "body-contour-63pt",
+      "service_id": "svc_cv_body_contour_63pt",
+      "summary": "Return Roboflow fallback body contour-style landmarks from an image.",
+      "input_schema": {
+        "type": "object",
+        "required": ["image_url"],
+        "properties": {
+          "image_url": {
+            "type": "string",
+            "format": "uri",
+            "description": "Upload an image file/attachment through the host product flow. Use controlled media storage URLs. Do not require manual URL or raw JSON input in user-facing forms."
+          }
+        }
+      },
+      "example_input": {
+        "image_url": "https://demo.public.blob.vercel-storage.com/skill-inputs/images/example.jpg"
+      }
+    },
+    {
+      "id": "face-keypoints-106pt",
+      "service_id": "svc_cv_face_keypoints_106pt",
+      "summary": "Estimate 106 facial keypoints in an image.",
+      "input_schema": {
+        "type": "object",
+        "required": ["image_url"],
+        "properties": {
+          "image_url": {
+            "type": "string",
+            "format": "uri",
+            "description": "Upload an image file/attachment through the host product flow. Use controlled media storage URLs. Do not require manual URL or raw JSON input in user-facing forms."
+          }
+        }
+      },
+      "example_input": {
+        "image_url": "https://demo.public.blob.vercel-storage.com/skill-inputs/images/example.jpg"
+      }
+    },
+    {
+      "id": "head-pose",
+      "service_id": "svc_cv_head_pose",
+      "summary": "Return facial landmarks usable for head-pose estimation from an image.",
+      "input_schema": {
+        "type": "object",
+        "required": ["image_url"],
+        "properties": {
+          "image_url": {
+            "type": "string",
+            "format": "uri",
+            "description": "Upload an image file/attachment through the host product flow. Use controlled media storage URLs. Do not require manual URL or raw JSON input in user-facing forms."
+          }
+        }
+      },
+      "example_input": {
+        "image_url": "https://demo.public.blob.vercel-storage.com/skill-inputs/images/example.jpg"
+      }
+    },
+    {
+      "id": "face-feature-classification",
+      "service_id": "svc_cv_face_feature_classification",
+      "summary": "Classify facial feature attributes from an image.",
+      "input_schema": {
+        "type": "object",
+        "required": ["image_url"],
+        "properties": {
+          "image_url": {
+            "type": "string",
+            "format": "uri",
+            "description": "Upload an image file/attachment through the host product flow. Use controlled media storage URLs. Do not require manual URL or raw JSON input in user-facing forms."
+          }
+        }
+      },
+      "example_input": {
+        "image_url": "https://demo.public.blob.vercel-storage.com/skill-inputs/images/example.jpg"
+      }
+    },
+    {
+      "id": "face-action-classification",
+      "service_id": "svc_cv_face_action_classification",
+      "summary": "Classify face actions from an image.",
+      "input_schema": {
+        "type": "object",
+        "required": ["image_url"],
+        "properties": {
+          "image_url": {
+            "type": "string",
+            "format": "uri",
+            "description": "Upload an image file/attachment through the host product flow. Use controlled media storage URLs. Do not require manual URL or raw JSON input in user-facing forms."
+          }
+        }
+      },
+      "example_input": {
+        "image_url": "https://demo.public.blob.vercel-storage.com/skill-inputs/images/example.jpg"
+      }
+    },
+    {
+      "id": "face-image-quality",
+      "service_id": "svc_cv_face_image_quality",
+      "summary": "Score face image quality.",
+      "input_schema": {
+        "type": "object",
+        "required": ["image_url"],
+        "properties": {
+          "image_url": {
+            "type": "string",
+            "format": "uri",
+            "description": "Upload an image file/attachment through the host product flow. Use controlled media storage URLs. Do not require manual URL or raw JSON input in user-facing forms."
+          }
+        }
+      },
+      "example_input": {
+        "image_url": "https://demo.public.blob.vercel-storage.com/skill-inputs/images/example.jpg"
+      }
+    },
+    {
+      "id": "face-emotion-recognition",
+      "service_id": "svc_cv_face_emotion_recognition",
+      "summary": "Recognize facial emotion from an image.",
+      "input_schema": {
+        "type": "object",
+        "required": ["image_url"],
+        "properties": {
+          "image_url": {
+            "type": "string",
+            "format": "uri",
+            "description": "Upload an image file/attachment through the host product flow. Use controlled media storage URLs. Do not require manual URL or raw JSON input in user-facing forms."
+          }
+        }
+      },
+      "example_input": {
+        "image_url": "https://demo.public.blob.vercel-storage.com/skill-inputs/images/example.jpg"
+      }
+    },
+    {
+      "id": "face-physical-attributes",
+      "service_id": "svc_cv_face_physical_attributes",
+      "summary": "Classify physical face attributes.",
+      "input_schema": {
+        "type": "object",
+        "required": ["image_url"],
+        "properties": {
+          "image_url": {
+            "type": "string",
+            "format": "uri",
+            "description": "Upload an image file/attachment through the host product flow. Use controlled media storage URLs. Do not require manual URL or raw JSON input in user-facing forms."
+          }
+        }
+      },
+      "example_input": {
+        "image_url": "https://demo.public.blob.vercel-storage.com/skill-inputs/images/example.jpg"
+      }
+    },
+    {
+      "id": "face-social-attributes",
+      "service_id": "svc_cv_face_social_attributes",
+      "summary": "Classify social face attributes.",
+      "input_schema": {
+        "type": "object",
+        "required": ["image_url"],
+        "properties": {
+          "image_url": {
+            "type": "string",
+            "format": "uri",
+            "description": "Upload an image file/attachment through the host product flow. Use controlled media storage URLs. Do not require manual URL or raw JSON input in user-facing forms."
+          }
+        }
+      },
+      "example_input": {
+        "image_url": "https://demo.public.blob.vercel-storage.com/skill-inputs/images/example.jpg"
+      }
+    },
+    {
+      "id": "political-figure-recognition",
+      "service_id": "svc_cv_political_figure_recognition",
+      "summary": "Recognize named faces with the Roboflow fallback classifier for political-figure workflows.",
+      "input_schema": {
+        "type": "object",
+        "required": ["image_url"],
+        "properties": {
+          "image_url": {
+            "type": "string",
+            "format": "uri",
+            "description": "Upload an image file/attachment through the host product flow. Use controlled media storage URLs. Do not require manual URL or raw JSON input in user-facing forms."
+          }
+        }
+      },
+      "example_input": {
+        "image_url": "https://demo.public.blob.vercel-storage.com/skill-inputs/images/example.jpg"
+      }
+    },
+    {
+      "id": "designated-person-recognition",
+      "service_id": "svc_cv_designated_person_recognition",
+      "summary": "Recognize designated people from an image.",
+      "input_schema": {
+        "type": "object",
+        "required": ["image_url"],
+        "properties": {
+          "image_url": {
+            "type": "string",
+            "format": "uri",
+            "description": "Upload an image file/attachment through the host product flow. Use controlled media storage URLs. Do not require manual URL or raw JSON input in user-facing forms."
+          }
+        }
+      },
+      "example_input": {
+        "image_url": "https://demo.public.blob.vercel-storage.com/skill-inputs/images/example.jpg"
+      }
+    },
+    {
+      "id": "exhibit-image-recognition",
+      "service_id": "svc_cv_exhibit_image_recognition",
+      "summary": "Recognize exhibit images from an image.",
+      "input_schema": {
+        "type": "object",
+        "required": ["image_url"],
+        "properties": {
+          "image_url": {
+            "type": "string",
+            "format": "uri",
+            "description": "Upload an image file/attachment through the host product flow. Use controlled media storage URLs. Do not require manual URL or raw JSON input in user-facing forms."
+          }
+        }
+      },
+      "example_input": {
+        "image_url": "https://demo.public.blob.vercel-storage.com/skill-inputs/images/example.jpg"
+      }
+    },
+    {
+      "id": "person-instance-segmentation",
+      "service_id": "svc_cv_person_instance_segmentation",
+      "summary": "Segment person instances in an image.",
+      "input_schema": {
+        "type": "object",
+        "required": ["image_url"],
+        "properties": {
+          "image_url": {
+            "type": "string",
+            "format": "uri",
+            "description": "Upload an image file/attachment through the host product flow. Use controlled media storage URLs. Do not require manual URL or raw JSON input in user-facing forms."
+          }
+        }
+      },
+      "example_input": {
+        "image_url": "https://demo.public.blob.vercel-storage.com/skill-inputs/images/example.jpg"
+      }
+    },
+    {
+      "id": "person-semantic-segmentation",
+      "service_id": "svc_cv_person_semantic_segmentation",
+      "summary": "Generate person semantic segmentation masks.",
+      "input_schema": {
+        "type": "object",
+        "required": ["image_url"],
+        "properties": {
+          "image_url": {
+            "type": "string",
+            "format": "uri",
+            "description": "Upload an image file/attachment through the host product flow. Use controlled media storage URLs. Do not require manual URL or raw JSON input in user-facing forms."
+          }
+        }
+      },
+      "example_input": {
+        "image_url": "https://demo.public.blob.vercel-storage.com/skill-inputs/images/example.jpg"
+      }
+    },
+    {
+      "id": "concert-cutout",
+      "service_id": "svc_cv_concert_cutout",
+      "summary": "Cut out concert foreground subjects.",
+      "input_schema": {
+        "type": "object",
+        "required": ["image_url"],
+        "properties": {
+          "image_url": {
+            "type": "string",
+            "format": "uri",
+            "description": "Upload an image file/attachment through the host product flow. Use controlled media storage URLs. Do not require manual URL or raw JSON input in user-facing forms."
+          }
+        }
+      },
+      "example_input": {
+        "image_url": "https://demo.public.blob.vercel-storage.com/skill-inputs/images/example.jpg"
+      }
+    },
+    {
+      "id": "full-body-matting",
+      "service_id": "svc_cv_full_body_matting",
+      "summary": "Generate full-body foreground masks.",
+      "input_schema": {
+        "type": "object",
+        "required": ["image_url"],
+        "properties": {
+          "image_url": {
+            "type": "string",
+            "format": "uri",
+            "description": "Upload an image file/attachment through the host product flow. Use controlled media storage URLs. Do not require manual URL or raw JSON input in user-facing forms."
+          }
+        }
+      },
+      "example_input": {
+        "image_url": "https://demo.public.blob.vercel-storage.com/skill-inputs/images/example.jpg"
+      }
+    },
+    {
+      "id": "head-matting",
+      "service_id": "svc_cv_head_matting",
+      "summary": "Generate head foreground masks.",
+      "input_schema": {
+        "type": "object",
+        "required": ["image_url"],
+        "properties": {
+          "image_url": {
+            "type": "string",
+            "format": "uri",
+            "description": "Upload an image file/attachment through the host product flow. Use controlled media storage URLs. Do not require manual URL or raw JSON input in user-facing forms."
+          }
+        }
+      },
+      "example_input": {
+        "image_url": "https://demo.public.blob.vercel-storage.com/skill-inputs/images/example.jpg"
+      }
+    },
+    {
+      "id": "product-cutout",
+      "service_id": "svc_cv_product_cutout",
+      "summary": "Cut products out from an image.",
+      "input_schema": {
+        "type": "object",
+        "required": ["image_url"],
+        "properties": {
+          "image_url": {
+            "type": "string",
+            "format": "uri",
+            "description": "Upload an image file/attachment through the host product flow. Use controlled media storage URLs. Do not require manual URL or raw JSON input in user-facing forms."
+          }
+        }
+      },
+      "example_input": {
+        "image_url": "https://demo.public.blob.vercel-storage.com/skill-inputs/images/example.jpg"
+      }
+    }
+  ]
+}

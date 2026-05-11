@@ -1,0 +1,104 @@
+{
+  "source": "language_rules.mdx",
+  "relative_source": "styleguide\\language_rules.mdx",
+  "title": "语言规范",
+  "doc_kind": "doc",
+  "is_index_page": false,
+  "section_count": 10,
+  "table_count": 0,
+  "callout_count": 1,
+  "link_count": 0,
+  "image_count": 0,
+  "sections": [
+    {
+      "id": "styleguide.language_rules.语言规范",
+      "title": "语言规范",
+      "level": 1,
+      "content_md": "任何代码语言都有代码规范，有了规范才能让我们写出清晰易读易懂的代码，以下列出 PythonGO 的语言规范，实际上就是 Python 的语言规范。\n \n\n> [!INFO]\n> 代码编辑器统一使用 [Visual Studio Code](https://code.visualstudio.com/download)",
+      "summary": "任何代码语言都有代码规范，有了规范才能让我们写出清晰易读易懂的代码，以下列出 PythonGO 的语言规范，实际上就是 Python 的语言规范。",
+      "block_type": "section"
+    },
+    {
+      "id": "styleguide.language_rules.导入-import",
+      "title": "导入 [#import]",
+      "level": 2,
+      "content_md": "正常情况下，导包使用 `import{:py}` 语句\n\n```python\n\npythongo.utils.KLineGenerator(...)\n```\n\n可以适当使用 `from{:py}` 语句来省略太长的包名\n\n```python\nfrom pythongo import utils\n\nutils.KLineGenerator(...)\n```\n\n或者直接导入包中的对象\n\n```python\nfrom pythongo.utils import KLineGenerator\n\nKLineGenerator(...)\n```",
+      "summary": "正常情况下，导包使用 `import{:py}` 语句",
+      "block_type": "section"
+    },
+    {
+      "id": "styleguide.language_rules.导入顺序-import-sort",
+      "title": "导入顺序 [#import-sort]",
+      "level": 3,
+      "content_md": "按照如下导入顺序来编写你的 `import{:py}` 语句， 标准库 -> 第三方库 -> 本地库，例如：\n\n```python",
+      "summary": "按照如下导入顺序来编写你的 `import{:py}` 语句， 标准库 -> 第三方库 -> 本地库，例如：",
+      "block_type": "section"
+    },
+    {
+      "id": "styleguide.language_rules.标准库",
+      "title": "标准库",
+      "level": 1,
+      "content_md": "from datetime import datetime",
+      "summary": "from datetime import datetime",
+      "block_type": "section"
+    },
+    {
+      "id": "styleguide.language_rules.第三方库",
+      "title": "第三方库",
+      "level": 1,
+      "content_md": "",
+      "summary": "",
+      "block_type": "section"
+    },
+    {
+      "id": "styleguide.language_rules.本地库",
+      "title": "本地库",
+      "level": 1,
+      "content_md": "```",
+      "summary": "```",
+      "block_type": "section"
+    },
+    {
+      "id": "styleguide.language_rules.注意事项-import-tips",
+      "title": "注意事项 [#import-tips]",
+      "level": 3,
+      "content_md": "严格禁止使用星号 `*` 导入\n\n```python\nfrom pythongo import *\n```\n\n缩写导入只适用于库的缩写是约定俗成的，比如 `numpy` 和 `pandas`，其他所有库都不建议使用缩写导入\n\n```python\n\n```",
+      "summary": "严格禁止使用星号 `*` 导入",
+      "block_type": "section"
+    },
+    {
+      "id": "styleguide.language_rules.异常-exception",
+      "title": "异常 [#exception]",
+      "level": 2,
+      "content_md": "任何报错都有解决方法，对于 `try / except{:py}` 语句要严格控制使用频率。",
+      "summary": "任何报错都有解决方法，对于 `try / except{:py}` 语句要严格控制使用频率。",
+      "block_type": "section"
+    },
+    {
+      "id": "styleguide.language_rules.true-false-的求值-true-false-condition",
+      "title": "True / False 的求值 [#true-false-condition]",
+      "level": 2,
+      "content_md": "Python 在计算布尔值时会把一些值视为 `False{:py}`。简单来说，所有的「空」值都是假值。 因此， `0, None, [], {}, \"\"{:py}` 作为布尔值使用时相当于 `False{:py}`\n\n当我们判断一个值 `foo` 是否为 `True{:py}` 或者 `False{:py}` 时，可以直接使用 `if foo:{:py}`\n\n但是当值 `foo` 可能为 `None{:py}` 值时，一定要使用 `if foo is None:{:py}`（或者 `is not None{:py}`）来判断 `None{:py}` 值，因为在某些情况下，`0{:py}` 值并不代表 `False{:py}`\n\n当你想条件为 `False{:py}` 时进入判断，应该写成\n\n```python\nif foo is False:\n    # do something\n```\n\n因为这样明确了当 `foo` 值或结果为 `False{:py}` 时才进入 `if{:py}` 判断，不会造成歧义。",
+      "summary": "Python 在计算布尔值时会把一些值视为 `False{:py}`。简单来说，所有的「空」值都是假值。 因此， `0, None, [], {}, \"\"{:py}` 作为布尔值使用时相当于 `False{:py}`",
+      "block_type": "section"
+    },
+    {
+      "id": "styleguide.language_rules.类型注释-type-hints",
+      "title": "类型注释 [#type-hints]",
+      "level": 2,
+      "content_md": "由于 Python 是动态语言，一个变量被赋值后，运行时可以改变该变量的类型，所以有时候当变量的类型被改变后，我们的编辑器不能识别该变量的类型，导致无法使用编辑器的函数自动补全功能。\n\n而在新版本的 Python 中，我们可以通过类型注释来实现给每个变量定义一个类型，提高代码可读性和可维护性。\n\n以下代码告诉我们 `foo` 函数需要传入两个 `int{:py}` 类型的参数 `a` 和 `b`，函数返回的结果也是 `int{:py}` 类型\n\n```python\ndef foo(a: int, b: int) -> int:\n    return a + b\n```\n\n编写类型注释是一个非常好的习惯，更具体的类型注释文档可以查看 [官方文档 - 对类型提示的支持](https://docs.python.org/zh-cn/3/library/typing.html)，或者网上搜索相关内容。",
+      "summary": "由于 Python 是动态语言，一个变量被赋值后，运行时可以改变该变量的类型，所以有时候当变量的类型被改变后，我们的编辑器不能识别该变量的类型，导致无法使用编辑器的函数自动补全功能。",
+      "block_type": "section"
+    }
+  ],
+  "tables": [],
+  "callouts": [
+    {
+      "kind": "info",
+      "text": "代码编辑器统一使用 [Visual Studio Code](https://code.visualstudio.com/download)",
+      "source": "language_rules.mdx"
+    }
+  ],
+  "links": [],
+  "images": []
+}

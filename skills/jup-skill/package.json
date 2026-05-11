@@ -1,0 +1,37 @@
+{
+  "name": "jup-skill",
+  "version": "1.0.0",
+  "description": "Jupiter API skill for Claude - fetch, sign, and execute Solana transactions",
+  "type": "module",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc",
+    "fetch-api": "tsx scripts/fetch-api.ts",
+    "execute-ultra": "tsx scripts/execute-ultra.ts",
+    "wallet-sign": "tsx scripts/wallet-sign.ts",
+    "send-transaction": "tsx scripts/send-transaction.ts"
+  },
+  "keywords": [
+    "jupiter",
+    "solana",
+    "swap",
+    "defi",
+    "claude",
+    "skill"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "@solana/web3.js": "^1.95.0",
+    "bs58": "^6.0.0",
+    "commander": "^12.1.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "tsx": "^4.19.0",
+    "typescript": "^5.6.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

@@ -1,0 +1,643 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vintage Editorial — slide-creator</title>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,700;0,9..144,900;1,9..144,700&family=Work+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-snap-type: y mandatory; scroll-behavior: smooth; height: 100%; }
+    body { height: 100%; overflow-x: hidden; font-family: 'Work Sans', sans-serif; background: #f5f3ee; color: #1a1a1a; }
+
+    .slide {
+      width: 100vw; height: 100vh; height: 100dvh;
+      scroll-snap-align: start; overflow: hidden;
+      position: relative; display: flex; flex-direction: column;
+      background: #f5f3ee;
+    }
+
+    /* DECORATIVE CIRCLE — CSS only, no SVG */
+    .deco-circle {
+      position: absolute;
+      border-radius: 50%;
+      border: 1.5px solid rgba(26,26,26,0.12);
+      pointer-events: none;
+    }
+
+    /* HORIZONTAL RULE LINE */
+    .rule { width: 100%; height: 1px; background: #1a1a1a; margin: 20px 0; opacity: 0.15; }
+    .rule-thick { width: 48px; height: 3px; background: #8b2635; margin: 12px 0 20px; }
+
+    /* SECTION INDICATOR */
+    .section-id {
+      font-family: 'Fraunces', serif;
+      font-size: clamp(11px, 1.4vw, 13px);
+      font-weight: 700; letter-spacing: 0.12em;
+      color: #8b2635; text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+
+    /* TYPOGRAPHY */
+    .display-title {
+      font-family: 'Fraunces', serif;
+      font-size: clamp(64px, 11vw, 120px);
+      font-weight: 900; line-height: 0.9;
+      color: #1a1a1a; letter-spacing: -0.04em;
+      margin-bottom: 0;
+    }
+    .display-title em { font-style: italic; color: #8b2635; }
+
+    .headline {
+      font-family: 'Fraunces', serif;
+      font-size: clamp(34px, 5.5vw, 62px);
+      font-weight: 700; line-height: 1.08;
+      color: #1a1a1a; letter-spacing: -0.03em;
+      margin-bottom: 16px;
+    }
+    .pullquote {
+      font-family: 'Fraunces', serif;
+      font-size: clamp(20px, 3vw, 30px);
+      font-weight: 700; font-style: italic;
+      color: #1a1a1a; line-height: 1.3;
+      border-left: 3px solid #8b2635;
+      padding-left: 20px; margin: 20px 0;
+    }
+    .body-text {
+      font-family: 'Work Sans', sans-serif;
+      font-size: clamp(14px, 1.8vw, 17px);
+      font-weight: 400; color: #555555; line-height: 1.75;
+      max-width: 560px;
+    }
+    .sub-label {
+      font-size: clamp(10px, 1.3vw, 12px); font-weight: 600;
+      letter-spacing: 0.14em; text-transform: uppercase; color: #888;
+      margin-bottom: 4px;
+    }
+
+    /* LAYOUT HELPERS */
+    .content-wrapper {
+      flex: 1; display: flex; flex-direction: column;
+      padding: clamp(40px, 6vh, 80px) clamp(32px, 6vw, 100px);
+      max-width: 900px; margin: 0 auto; width: 100%;
+      position: relative; z-index: 2;
+    }
+    .content-wrapper.center { justify-content: center; }
+    .content-wrapper.space-between { justify-content: space-between; }
+
+    /* BORDERED BOX */
+    .bordered-box {
+      border: 2px solid #1a1a1a; padding: clamp(16px, 2.5vw, 28px);
+      margin: 16px 0; position: relative;
+    }
+    .bordered-box::before {
+      content: attr(data-label);
+      position: absolute; top: -12px; left: 16px;
+      background: #f5f3ee; padding: 0 8px;
+      font-size: 11px; font-weight: 700; letter-spacing: 0.1em;
+      text-transform: uppercase; color: #8b2635;
+    }
+
+    /* PAIN POINT ROWS */
+    .pain-row {
+      display: flex; align-items: flex-start; gap: 20px;
+      padding: 16px 0; border-bottom: 1px solid rgba(26,26,26,0.1);
+      opacity: 0; transform: translateX(-24px);
+      transition: opacity 0.6s ease, transform 0.6s ease;
+    }
+    .slide.visible .pain-row:nth-child(1) { opacity: 1; transform: translateX(0); transition-delay: 0.1s; }
+    .slide.visible .pain-row:nth-child(2) { opacity: 1; transform: translateX(0); transition-delay: 0.22s; }
+    .slide.visible .pain-row:nth-child(3) { opacity: 1; transform: translateX(0); transition-delay: 0.34s; }
+    .pain-num {
+      font-family: 'Fraunces', serif; font-size: clamp(28px, 4vw, 42px);
+      font-weight: 900; color: rgba(26,26,26,0.1); line-height: 1; flex-shrink: 0; width: 48px;
+    }
+    .pain-title { font-family: 'Fraunces', serif; font-size: clamp(16px, 2.2vw, 20px); font-weight: 700; color: #1a1a1a; margin-bottom: 4px; }
+    .pain-body { font-size: clamp(13px, 1.6vw, 15px); color: #666; line-height: 1.5; }
+
+    /* STEPS — EDITORIAL STYLE */
+    .step-editorial {
+      display: flex; gap: 24px; align-items: flex-start;
+      padding: 20px 0; border-bottom: 1px solid rgba(26,26,26,0.1);
+      opacity: 0; transform: translateY(16px);
+      transition: opacity 0.6s ease, transform 0.6s ease;
+    }
+    .slide.visible .step-editorial:nth-child(1) { opacity: 1; transform: translateY(0); transition-delay: 0.1s; }
+    .slide.visible .step-editorial:nth-child(2) { opacity: 1; transform: translateY(0); transition-delay: 0.22s; }
+    .slide.visible .step-editorial:nth-child(3) { opacity: 1; transform: translateY(0); transition-delay: 0.34s; }
+    .step-ed-num {
+      font-family: 'Fraunces', serif; font-size: 13px; font-weight: 700;
+      color: #8b2635; width: 28px; flex-shrink: 0; padding-top: 2px;
+    }
+    .step-ed-title { font-family: 'Fraunces', serif; font-size: clamp(17px, 2.4vw, 21px); font-weight: 700; color: #1a1a1a; margin-bottom: 4px; }
+    .step-ed-body { font-size: clamp(13px, 1.6vw, 15px); color: #666; line-height: 1.5; }
+
+    /* PRESET GRID */
+    .preset-grid { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px; }
+    .preset-tag {
+      font-size: clamp(11px, 1.4vw, 13px); font-weight: 600;
+      padding: 5px 12px; border: 1.5px solid rgba(26,26,26,0.25);
+      color: #1a1a1a; background: transparent;
+    }
+    .preset-tag.featured { border-color: #8b2635; color: #8b2635; background: rgba(139,38,53,0.05); }
+    .preset-tag.dark { background: #1a1a1a; color: #f5f3ee; border-color: #1a1a1a; }
+
+    /* FEATURE ROWS */
+    .feature-row {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 14px 0; border-bottom: 1px solid rgba(26,26,26,0.1);
+      opacity: 0; transform: translateX(-16px);
+      transition: opacity 0.6s ease, transform 0.6s ease;
+    }
+    .slide.visible .feature-row:nth-child(1) { opacity: 1; transform: translateX(0); transition-delay: 0.08s; }
+    .slide.visible .feature-row:nth-child(2) { opacity: 1; transform: translateX(0); transition-delay: 0.16s; }
+    .slide.visible .feature-row:nth-child(3) { opacity: 1; transform: translateX(0); transition-delay: 0.24s; }
+    .slide.visible .feature-row:nth-child(4) { opacity: 1; transform: translateX(0); transition-delay: 0.32s; }
+    .feature-name { font-family: 'Fraunces', serif; font-size: clamp(16px, 2.2vw, 20px); font-weight: 700; }
+    .feature-desc { font-size: clamp(12px, 1.5vw, 14px); color: #666; max-width: 300px; text-align: right; }
+    .feature-badge { font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; background: #e8d4c0; color: #5a2a1a; padding: 3px 10px; }
+
+    /* HEADLINE ANIMATION */
+    .slide-content-anim {
+      opacity: 0; transform: translateX(-30px);
+      transition: opacity 0.6s ease, transform 0.6s ease;
+    }
+    .slide.visible .slide-content-anim { opacity: 1; transform: translateX(0); }
+    .slide-content-anim.delay-1 { transition-delay: 0.1s; }
+    .slide-content-anim.delay-2 { transition-delay: 0.2s; }
+    .slide-content-anim.delay-3 { transition-delay: 0.3s; }
+
+    .fade-in { opacity: 0; transition: opacity 0.6s ease; }
+    .slide.visible .fade-in { opacity: 1; }
+    .fade-in.delay-1 { transition-delay: 0.15s; }
+    .fade-in.delay-2 { transition-delay: 0.3s; }
+    .fade-in.delay-3 { transition-delay: 0.45s; }
+
+    /* CODE */
+    .code-mono {
+      font-family: 'Courier New', monospace;
+      font-size: clamp(11px, 1.4vw, 13px); color: #1a1a1a;
+      background: #e8d4c0; padding: 12px 18px; display: block;
+      margin: 8px 0; line-height: 1.5; word-break: break-all;
+    }
+
+    /* STATS ROW */
+    .stats-row { display: flex; gap: 40px; margin-top: 8px; }
+    .stat-item { display: flex; flex-direction: column; }
+    .stat-big { font-family: 'Fraunces', serif; font-size: clamp(36px, 5vw, 54px); font-weight: 900; color: #1a1a1a; line-height: 1; }
+    .stat-small { font-size: 11px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: #888; margin-top: 4px; }
+
+    /* CTA */
+    .cta-editorial {
+      display: inline-block; border: 2px solid #1a1a1a;
+      padding: 14px 32px; font-family: 'Work Sans', sans-serif;
+      font-size: clamp(14px, 1.8vw, 16px); font-weight: 600;
+      color: #1a1a1a; text-decoration: none; cursor: pointer;
+      background: transparent; margin-top: 24px;
+      transition: background 0.2s, color 0.2s;
+    }
+    .cta-editorial:hover { background: #1a1a1a; color: #f5f3ee; }
+    .cta-accent { background: #8b2635; border-color: #8b2635; color: #fff; margin-left: 12px; }
+    .cta-accent:hover { background: #6a1c28; }
+
+    /* PROGRESS */
+    #progress-bar {
+      position: fixed; top: 0; left: 0; width: 0%; height: 2px;
+      background: #8b2635; z-index: 100; transition: width 0.4s ease;
+    }
+
+    /* NAV DOTS */
+    #nav-dots {
+      position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
+      display: flex; gap: 12px; z-index: 100;
+    }
+    .nav-dot {
+      width: 6px; height: 6px; border-radius: 50%;
+      cursor: pointer; border: none; background: rgba(26,26,26,0.2);
+      transition: all 0.3s ease;
+    }
+    .nav-dot.active { background: #8b2635; transform: scale(1.4); }
+
+    /* EDIT */
+    #edit-zone { position: fixed; top: 0; left: 0; width: 80px; height: 80px; z-index: 200; cursor: pointer; }
+    #edit-indicator {
+      position: fixed; top: 16px; left: 16px; z-index: 201;
+      background: #8b2635; color: #fff; padding: 4px 12px;
+      font-size: 11px; font-weight: 600; letter-spacing: 0.08em;
+      display: none; align-items: center; gap: 6px;
+    }
+    body.edit-mode [contenteditable] { outline: 1px dashed rgba(139,38,53,0.4); }
+    body.edit-mode #edit-indicator { display: flex; }
+
+    /* FOOTER STRIP */
+    .slide-footer {
+      padding: 12px clamp(32px, 6vw, 100px);
+      display: flex; justify-content: space-between; align-items: center;
+      border-top: 1px solid rgba(26,26,26,0.1);
+      position: relative; z-index: 2;
+    }
+    .footer-brand { font-family: 'Fraunces', serif; font-size: 14px; font-weight: 700; color: #1a1a1a; }
+    .footer-num { font-size: 11px; color: #888; letter-spacing: 0.08em; }
+  </style>
+</head>
+<body>
+
+<div id="progress-bar"></div>
+<div id="edit-zone" title="Click or press E to edit"></div>
+<div id="edit-indicator">&#9998; Edit Mode &middot; Ctrl+S to save</div>
+<div id="nav-dots"></div>
+
+<!-- SLIDE 1: COVER -->
+<section class="slide" data-slide="0">
+  <div class="deco-circle" style="width:600px;height:600px;top:-200px;right:-200px;"></div>
+  <div class="deco-circle" style="width:200px;height:200px;bottom:80px;left:60px;"></div>
+  <div class="content-wrapper space-between">
+    <div style="padding-top: clamp(20px,4vh,60px);">
+      <div class="section-id slide-content-anim">The Tool</div>
+      <div class="rule-thick slide-content-anim delay-1"></div>
+      <h1 class="display-title slide-content-anim delay-1">slide-<br><em>creator</em></h1>
+      <div class="rule slide-content-anim delay-2"></div>
+      <p class="body-text fade-in delay-2" style="margin-top:16px; max-width:460px;">
+        Zero-dependency HTML presentations for Claude Code &amp; OpenClaw.<br>
+        We built this because the alternatives were, frankly, embarrassing.
+      </p>
+      <div class="stats-row fade-in delay-3">
+        <div class="stat-item">
+          <span class="stat-big">19</span>
+          <span class="stat-small">Presets</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-big">0</span>
+          <span class="stat-small">Dependencies</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-big">&#8734;</span>
+          <span class="stat-small">Slides</span>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="slide-footer">
+    <span class="footer-brand">slide-creator</span>
+    <span class="footer-num">&sect;01 / 08</span>
+  </div>
+</section>
+
+<!-- SLIDE 2: THE PROBLEM -->
+<section class="slide" data-slide="1">
+  <div class="deco-circle" style="width:400px;height:400px;top:50%;right:-120px;transform:translateY(-50%);"></div>
+  <div class="content-wrapper space-between">
+    <div>
+      <div class="section-id slide-content-anim">The Problem</div>
+      <div class="rule-thick slide-content-anim delay-1"></div>
+      <h2 class="headline slide-content-anim delay-1" style="max-width:500px;">Presentations shouldn't require a build system</h2>
+      <div class="rule fade-in delay-2" style="opacity:0.15;"></div>
+      <div class="fade-in delay-2" style="margin-top:8px;">
+        <div class="pain-row">
+          <div class="pain-num">01</div>
+          <div>
+            <div class="pain-title">Complex toolchain</div>
+            <div class="pain-body">npm install, webpack config, 300MB node_modules&mdash;just to make slides. Absurd.</div>
+          </div>
+        </div>
+        <div class="pain-row">
+          <div class="pain-num">02</div>
+          <div>
+            <div class="pain-title">Generic output</div>
+            <div class="pain-body">Every AI deck looks the same&mdash;Inter font, purple gradients. Your brand, erased.</div>
+          </div>
+        </div>
+        <div class="pain-row">
+          <div class="pain-num">03</div>
+          <div>
+            <div class="pain-title">No ownership</div>
+            <div class="pain-body">Closed platforms, export locks, monthly fees. Your slides, held hostage.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="slide-footer">
+    <span class="footer-brand">slide-creator</span>
+    <span class="footer-num">&sect;02 / 08</span>
+  </div>
+</section>
+
+<!-- SLIDE 3: SHOW DON'T TELL -->
+<section class="slide" data-slide="2">
+  <div class="deco-circle" style="width:300px;height:300px;bottom:-80px;left:-80px;"></div>
+  <div class="content-wrapper space-between">
+    <div>
+      <div class="section-id slide-content-anim">The Insight</div>
+      <div class="rule-thick slide-content-anim delay-1"></div>
+      <h2 class="headline slide-content-anim delay-1">Style discovery that actually works</h2>
+      <div class="pullquote fade-in delay-2">
+        "You can't describe design preferences in words."
+      </div>
+      <p class="body-text fade-in delay-2">
+        slide-creator generates 3 visual previews&mdash;you react, not describe. No colour theory. No font names. Just: that one.
+      </p>
+      <div style="margin-top:24px;">
+        <div class="step-editorial">
+          <div class="step-ed-num">I.</div>
+          <div>
+            <div class="step-ed-title">Ask mood</div>
+            <div class="step-ed-body">Tell it the vibe. Warm, sharp, playful, corporate-but-not-boring.</div>
+          </div>
+        </div>
+        <div class="step-editorial">
+          <div class="step-ed-num">II.</div>
+          <div>
+            <div class="step-ed-title">Generate 3 mini previews</div>
+            <div class="step-ed-body">Three distinct visual styles, side by side, ready in seconds.</div>
+          </div>
+        </div>
+        <div class="step-editorial">
+          <div class="step-ed-num">III.</div>
+          <div>
+            <div class="step-ed-title">Pick the one that feels right</div>
+            <div class="step-ed-body">Trust your gut. That's the whole point.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="slide-footer">
+    <span class="footer-brand">slide-creator</span>
+    <span class="footer-num">&sect;03 / 08</span>
+  </div>
+</section>
+
+<!-- SLIDE 4: 19 PRESETS -->
+<section class="slide" data-slide="3">
+  <div class="deco-circle" style="width:500px;height:500px;top:-150px;left:-150px;"></div>
+  <div class="content-wrapper space-between">
+    <div>
+      <div class="section-id slide-content-anim">The Catalogue</div>
+      <div class="rule-thick slide-content-anim delay-1"></div>
+      <h2 class="headline slide-content-anim delay-1" style="max-width:480px;">19 curated styles. No generic AI aesthetics.</h2>
+      <p class="body-text fade-in delay-2">Every preset hand-crafted to feel distinct. From brutalist to botanical&mdash;there's a voice for every story.</p>
+      <div class="preset-grid fade-in delay-2">
+        <span class="preset-tag">Bold Signal</span>
+        <span class="preset-tag">Electric Studio</span>
+        <span class="preset-tag">Creative Voltage</span>
+        <span class="preset-tag">Dark Botanical</span>
+        <span class="preset-tag">Blue Sky</span>
+        <span class="preset-tag">Notebook Tabs</span>
+        <span class="preset-tag">Pastel Geometry</span>
+        <span class="preset-tag">Split Pastel</span>
+        <span class="preset-tag featured">Vintage Editorial &#10022;</span>
+        <span class="preset-tag dark">Neon Cyber</span>
+        <span class="preset-tag dark">Terminal Green</span>
+        <span class="preset-tag">Swiss Modern</span>
+        <span class="preset-tag">Paper &amp; Ink</span>
+        <span class="preset-tag">Aurora Mesh</span>
+        <span class="preset-tag dark">Enterprise Dark</span>
+        <span class="preset-tag">Glassmorphism</span>
+        <span class="preset-tag">Neo-Brutalism</span>
+        <span class="preset-tag">Japanese Zen</span>
+        <span class="preset-tag dark">Data Story</span>
+      </div>
+    </div>
+  </div>
+  <div class="slide-footer">
+    <span class="footer-brand">slide-creator</span>
+    <span class="footer-num">&sect;04 / 08</span>
+  </div>
+</section>
+
+<!-- SLIDE 5: HOW IT WORKS -->
+<section class="slide" data-slide="4">
+  <div class="deco-circle" style="width:360px;height:360px;bottom:-80px;right:-80px;"></div>
+  <div class="content-wrapper space-between">
+    <div>
+      <div class="section-id slide-content-anim">The Process</div>
+      <div class="rule-thick slide-content-anim delay-1"></div>
+      <h2 class="headline slide-content-anim delay-1">From idea to presentation in minutes</h2>
+      <div style="margin-top:20px;">
+        <div class="step-editorial">
+          <div class="step-ed-num">I.</div>
+          <div>
+            <div class="step-ed-title">/slide-creator</div>
+            <div class="step-ed-body">Answer a few questions. Content, mood, audience, tone. Two minutes, tops.</div>
+          </div>
+        </div>
+        <div class="step-editorial">
+          <div class="step-ed-num">II.</div>
+          <div>
+            <div class="step-ed-title">Pick from 3 previews</div>
+            <div class="step-ed-body">React to three visual styles side by side. No colour theory required&mdash;promise.</div>
+          </div>
+        </div>
+        <div class="step-editorial">
+          <div class="step-ed-num">III.</div>
+          <div>
+            <div class="step-ed-title">Open your HTML</div>
+            <div class="step-ed-body">Arrow keys &middot; Space &middot; Swipe. Runs in any browser. No installs, ever.</div>
+          </div>
+        </div>
+      </div>
+      <div class="bordered-box fade-in delay-3" data-label="The promise" style="margin-top:24px;">
+        <p class="body-text" style="max-width:100%; color:#1a1a1a;">
+          Start to finish under ten minutes. We timed it. If it takes longer, blame your content&mdash;not the tool.
+        </p>
+      </div>
+    </div>
+  </div>
+  <div class="slide-footer">
+    <span class="footer-brand">slide-creator</span>
+    <span class="footer-num">&sect;05 / 08</span>
+  </div>
+</section>
+
+<!-- SLIDE 6: FEATURES -->
+<section class="slide" data-slide="5">
+  <div class="deco-circle" style="width:280px;height:280px;top:60px;right:60px;"></div>
+  <div class="content-wrapper space-between">
+    <div>
+      <div class="section-id slide-content-anim">The Details</div>
+      <div class="rule-thick slide-content-anim delay-1"></div>
+      <h2 class="headline slide-content-anim delay-1">Everything you need.<br>Nothing you don't.</h2>
+      <div class="rule fade-in delay-2" style="opacity:0.15; margin-top:20px;"></div>
+      <div class="fade-in delay-2">
+        <div class="feature-row">
+          <div class="feature-name">Viewport Fitting</div>
+          <div class="feature-desc">Scales perfectly to any screen&mdash;laptop, TV, projector.</div>
+        </div>
+        <div class="feature-row">
+          <div class="feature-name">Inline Editing</div>
+          <div style="text-align:right;">
+            <div class="feature-badge">E key + Ctrl+S</div>
+          </div>
+        </div>
+        <div class="feature-row">
+          <div class="feature-name">PPTX Export</div>
+          <div class="feature-desc">One click to a proper PowerPoint. Done.</div>
+        </div>
+        <div class="feature-row" style="border-bottom:none;">
+          <div class="feature-name">Two-Stage Workflow</div>
+          <div style="text-align:right;">
+            <div class="feature-badge">--plan &rarr; --generate</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="slide-footer">
+    <span class="footer-brand">slide-creator</span>
+    <span class="footer-num">&sect;06 / 08</span>
+  </div>
+</section>
+
+<!-- SLIDE 7: INSTALL -->
+<section class="slide" data-slide="6">
+  <div class="deco-circle" style="width:450px;height:450px;bottom:-150px;right:-100px;"></div>
+  <div class="content-wrapper space-between">
+    <div>
+      <div class="section-id slide-content-anim">The Setup</div>
+      <div class="rule-thick slide-content-anim delay-1"></div>
+      <h2 class="headline slide-content-anim delay-1">Two ways in.<br>Both take thirty seconds.</h2>
+      <div class="fade-in delay-2" style="margin-top:24px;">
+        <div class="bordered-box" data-label="Claude Code">
+          <span class="sub-label">git clone</span>
+          <code class="code-mono">git clone https://github.com/kaisersong/slide-creator ~/.claude/skills/slide-creator</code>
+        </div>
+        <div class="bordered-box" data-label="OpenClaw">
+          <span class="sub-label">clawhub install</span>
+          <code class="code-mono">clawhub install html-slide-creator</code>
+        </div>
+      </div>
+      <p class="body-text fade-in delay-3" style="margin-top:16px; font-style:italic;">Free. Open source. MIT license. No signup required. We mean it.</p>
+    </div>
+  </div>
+  <div class="slide-footer">
+    <span class="footer-brand">slide-creator</span>
+    <span class="footer-num">&sect;07 / 08</span>
+  </div>
+</section>
+
+<!-- SLIDE 8: GET STARTED -->
+<section class="slide" data-slide="7">
+  <div class="deco-circle" style="width:700px;height:700px;bottom:-300px;right:-200px;"></div>
+  <div class="deco-circle" style="width:120px;height:120px;top:80px;right:120px;"></div>
+  <div class="content-wrapper center">
+    <div class="section-id slide-content-anim">Begin</div>
+    <div class="rule-thick slide-content-anim delay-1"></div>
+    <h2 class="display-title slide-content-anim delay-1" style="font-size:clamp(52px,9vw,100px);">Your next<br>deck<br><em>starts here</em></h2>
+    <div class="rule fade-in delay-2" style="opacity:0.15; margin-top:24px;"></div>
+    <p class="body-text fade-in delay-2" style="margin-top:16px;">
+      Works with Claude Code and OpenClaw. Runs entirely in your browser.<br>No installs&mdash;just results.
+    </p>
+    <div class="fade-in delay-3" style="margin-top:24px;">
+      <code class="code-mono" style="display:inline-block; font-size:clamp(16px,2.5vw,22px); padding:16px 32px; border:2px solid #1a1a1a;">/slide-creator</code>
+    </div>
+    <div class="fade-in delay-3">
+      <button class="cta-editorial" onclick="saveFile()">Save This Presentation</button>
+      <a class="cta-editorial cta-accent" href="https://github.com/kaisersong/slide-creator" target="_blank">View on GitHub &rarr;</a>
+    </div>
+  </div>
+  <div class="slide-footer">
+    <span class="footer-brand">slide-creator</span>
+    <span class="footer-num">&sect;08 / 08</span>
+  </div>
+</section>
+
+<script>
+  const slides = document.querySelectorAll('.slide');
+  const totalSlides = slides.length;
+  let cur = 0;
+
+  // Nav dots
+  const navDotsEl = document.getElementById('nav-dots');
+  slides.forEach((_, i) => {
+    const dot = document.createElement('button');
+    dot.className = 'nav-dot' + (i === 0 ? ' active' : '');
+    dot.setAttribute('aria-label', `Slide ${i + 1}`);
+    dot.addEventListener('click', () => goTo(i));
+    navDotsEl.appendChild(dot);
+  });
+
+  function updateNav(index) {
+    document.querySelectorAll('.nav-dot').forEach((d, i) => d.classList.toggle('active', i === index));
+    const pct = totalSlides > 1 ? (index / (totalSlides - 1)) * 100 : 100;
+    document.getElementById('progress-bar').style.width = pct + '%';
+    cur = index;
+  }
+
+  function goTo(index) {
+    const clamped = Math.max(0, Math.min(totalSlides - 1, index));
+    slides[clamped].scrollIntoView({ behavior: 'smooth' });
+  }
+
+  // IntersectionObserver
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+        updateNav(Array.from(slides).indexOf(entry.target));
+      }
+    });
+  }, { threshold: 0.5 });
+  slides.forEach(s => observer.observe(s));
+
+  // Keyboard
+  document.addEventListener('keydown', e => {
+    if (e.ctrlKey || e.metaKey) {
+      if (e.key === 's') { e.preventDefault(); saveFile(); return; }
+    }
+    if (document.body.classList.contains('edit-mode') && !['ArrowUp','ArrowDown','ArrowLeft','ArrowRight',' '].includes(e.key)) return;
+    switch (e.key) {
+      case 'ArrowDown': case 'ArrowRight': case ' ': e.preventDefault(); goTo(cur + 1); break;
+      case 'ArrowUp': case 'ArrowLeft': e.preventDefault(); goTo(cur - 1); break;
+      case 'e': case 'E': if (!document.body.classList.contains('edit-mode')) toggleEditMode(); break;
+    }
+  });
+
+  // Wheel — debounce-reset (NOT time throttle)
+  let wheelLocked = false, wheelTimer = null;
+  document.addEventListener('wheel', e => {
+    clearTimeout(wheelTimer);
+    if (!wheelLocked) { wheelLocked = true; e.deltaY > 0 ? goTo(cur + 1) : goTo(cur - 1); }
+    wheelTimer = setTimeout(() => { wheelLocked = false; }, 180);
+  }, { passive: true });
+
+  // Touch swipe
+  let touchStartY = 0;
+  document.addEventListener('touchstart', e => { touchStartY = e.touches[0].clientY; }, { passive: true });
+  document.addEventListener('touchend', e => {
+    const dy = touchStartY - e.changedTouches[0].clientY;
+    if (Math.abs(dy) > 50) goTo(dy > 0 ? cur + 1 : cur - 1);
+  }, { passive: true });
+
+  // Edit mode
+  function toggleEditMode() {
+    document.body.classList.toggle('edit-mode');
+    const isEdit = document.body.classList.contains('edit-mode');
+    if (isEdit) {
+      document.querySelectorAll('.headline, .display-title, .body-text, .pullquote, .section-id, .pain-title, .pain-body, .step-ed-title, .step-ed-body, .feature-name, .feature-desc, .stat-big, .stat-small, .preset-tag, .code-mono, .footer-brand').forEach(el => {
+        el.setAttribute('contenteditable', 'true');
+      });
+    } else {
+      document.querySelectorAll('[contenteditable]').forEach(el => el.removeAttribute('contenteditable'));
+    }
+  }
+
+  document.getElementById('edit-zone').addEventListener('click', toggleEditMode);
+
+  async function saveFile() {
+    const html = '<!DOCTYPE html>\n' + document.documentElement.outerHTML;
+    if (window.showSaveFilePicker) {
+      try {
+        const h = await window.showSaveFilePicker({ suggestedName: 'vintage-editorial.html', types: [{ accept: { 'text/html': ['.html'] } }] });
+        const w = await h.createWritable(); await w.write(html); await w.close();
+      } catch(e) { if (e.name !== 'AbortError') fallbackSave(html); }
+    } else fallbackSave(html);
+  }
+  function fallbackSave(html) {
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(new Blob([html], { type: 'text/html' }));
+    a.download = 'vintage-editorial.html'; a.click();
+  }
+</script>
+</body>
+</html>

@@ -1,0 +1,1302 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Factory AI Style Specimen</title>
+  <style>
+    :root {
+      --font-family-sans: "Geist", "Geist Fallback";
+      --font-family-mono: "Geist Mono", "Geist Mono Fallback";
+
+      --font-size-1: 12px;
+      --font-size-2: 14px;
+      --font-size-3: 16px;
+      --font-size-4: 24px;
+      --font-size-5: 32px;
+      --font-size-6: 48px;
+      --font-size-7: 60px;
+
+      --line-height-tight: 1.0;
+      --line-height-normal: 1.5;
+      --line-height-relaxed: 1.6;
+
+      --space-1: 4px;
+      --space-2: 8px;
+      --space-3: 12px;
+      --space-4: 16px;
+      --space-5: 20px;
+      --space-6: 24px;
+      --space-8: 32px;
+      --space-10: 40px;
+      --space-12: 48px;
+
+      --radius-sm: 4px;
+      --radius-md: 6px;
+      --radius-lg: 10px;
+      --radius-xl: 16px;
+
+      --border-width-1: 1px;
+      --border-width-2: 2px;
+
+      --shadow-xs: none;
+      --shadow-sm: none;
+      --shadow-md: none;
+      --shadow-lg: none;
+
+      --motion-duration-fast: 0.15s;
+      --motion-duration-normal: 0.2s;
+      --motion-duration-slow: 0.3s;
+      --motion-ease-standard: cubic-bezier(0.4, 0, 0.2, 1);
+      --motion-ease-emphasized: cubic-bezier(0.4, 0, 0.2, 1);
+
+      --container-max: 1920px;
+
+      --pattern-size-sm: 5px;
+      --pattern-size-md: 7.07px;
+      --pattern-size-lg: 10px;
+      --noise-opacity: 0;
+      --glow-blur-sm: 20px;
+      --glow-blur-md: 40px;
+      --glow-blur-lg: 60px;
+      --decorative-line-opacity: 0.35;
+    }
+
+    [data-theme="light"] {
+      --color-bg-page: rgb(238, 238, 238);
+      --color-surface-1: rgb(250, 250, 250);
+      --color-surface-2: rgb(238, 238, 238);
+      --color-surface-3: rgb(214, 211, 210);
+
+      --color-text-primary: rgb(2, 2, 2);
+      --color-text-secondary: rgb(77, 73, 71);
+      --color-text-muted: rgb(164, 157, 154);
+      --color-text-inverse: rgb(238, 238, 238);
+
+      --color-border-default: rgb(184, 179, 176);
+      --color-border-strong: rgb(77, 73, 71);
+
+      --color-brand-primary: rgb(238, 96, 24);
+      --color-brand-primary-hover: rgb(239, 111, 46);
+
+      --color-success: rgb(34, 197, 94);
+      --color-warning: rgb(234, 179, 8);
+      --color-danger: rgb(239, 68, 68);
+      --color-info: rgb(59, 130, 246);
+
+      --color-code-bg: rgb(16, 16, 16);
+      --color-code-text: rgb(238, 238, 238);
+      --color-code-muted: rgb(164, 157, 154);
+      --color-code-keyword: rgb(238, 96, 24);
+      --color-code-string: rgb(169, 250, 188);
+      --color-code-number: rgb(255, 186, 164);
+      --color-code-comment: rgb(77, 73, 71);
+
+      --focus-ring: 0 0 0 2px rgb(238, 96, 24);
+
+      --bg-page-base: rgb(238, 238, 238);
+      --bg-page-overlay: transparent;
+      --bg-page-pattern: transparent;
+      --bg-hero-gradient: rgb(250, 250, 250);
+      --bg-section-muted: rgb(214, 211, 210);
+      --ambient-glow-primary: rgba(238, 96, 24, 0.15);
+      --ambient-glow-secondary: rgba(209, 80, 16, 0.1);
+      --pattern-stripe-color: rgb(164, 157, 154);
+      --pattern-grid-color: rgb(184, 179, 176);
+      --pattern-dot-color: rgb(77, 73, 71);
+      --motif-line-color: rgb(77, 73, 71);
+    }
+
+    [data-theme="dark"] {
+      --color-bg-page: rgb(2, 2, 2);
+      --color-surface-1: rgb(16, 16, 16);
+      --color-surface-2: rgb(31, 29, 28);
+      --color-surface-3: rgb(61, 58, 57);
+
+      --color-text-primary: rgb(238, 238, 238);
+      --color-text-secondary: rgb(164, 157, 154);
+      --color-text-muted: rgb(77, 73, 71);
+      --color-text-inverse: rgb(2, 2, 2);
+
+      --color-border-default: rgb(61, 58, 57);
+      --color-border-strong: rgb(164, 157, 154);
+
+      --color-brand-primary: rgb(238, 96, 24);
+      --color-brand-primary-hover: rgb(239, 111, 46);
+
+      --color-success: rgb(34, 197, 94);
+      --color-warning: rgb(234, 179, 8);
+      --color-danger: rgb(239, 68, 68);
+      --color-info: rgb(59, 130, 246);
+
+      --color-code-bg: rgb(16, 16, 16);
+      --color-code-text: rgb(238, 238, 238);
+      --color-code-muted: rgb(77, 73, 71);
+      --color-code-keyword: rgb(238, 96, 24);
+      --color-code-string: rgb(169, 250, 188);
+      --color-code-number: rgb(255, 186, 164);
+      --color-code-comment: rgb(164, 157, 154);
+
+      --focus-ring: 0 0 0 2px rgb(238, 96, 24);
+
+      --bg-page-base: rgb(2, 2, 2);
+      --bg-page-overlay: transparent;
+      --bg-page-pattern: transparent;
+      --bg-hero-gradient: rgb(16, 16, 16);
+      --bg-section-muted: rgb(16, 16, 16);
+      --ambient-glow-primary: rgba(238, 96, 24, 0.15);
+      --ambient-glow-secondary: rgba(209, 80, 16, 0.1);
+      --pattern-stripe-color: rgb(77, 73, 71);
+      --pattern-grid-color: rgb(61, 58, 57);
+      --pattern-dot-color: rgb(164, 157, 154);
+      --motif-line-color: rgb(164, 157, 154);
+    }
+
+    * { box-sizing: border-box; }
+    html, body { margin: 0; padding: 0; }
+    html {
+      background: var(--bg-page-base);
+    }
+
+    body {
+      font-family: var(--font-family-sans);
+      color: var(--color-text-primary);
+      line-height: var(--line-height-normal);
+      background:
+        var(--bg-page-overlay),
+        var(--bg-page-pattern),
+        var(--bg-page-base);
+      transition:
+        background var(--motion-duration-normal) var(--motion-ease-standard),
+        color var(--motion-duration-normal) var(--motion-ease-standard);
+    }
+
+    .page {
+      position: relative;
+      max-width: var(--container-max);
+      margin: 0 auto;
+      padding: var(--space-10) var(--space-6) var(--space-12);
+      isolation: isolate;
+    }
+
+    .page::before {
+      content: "";
+      position: fixed;
+      inset: -10% auto auto -10%;
+      width: 280px;
+      height: 280px;
+      background: radial-gradient(circle, var(--ambient-glow-primary), transparent 70%);
+      filter: blur(var(--glow-blur-md));
+      opacity: .7;
+      pointer-events: none;
+      z-index: -2;
+    }
+
+    .page::after {
+      content: "";
+      position: fixed;
+      inset: auto -8% -8% auto;
+      width: 260px;
+      height: 260px;
+      background: radial-gradient(circle, var(--ambient-glow-secondary), transparent 72%);
+      filter: blur(var(--glow-blur-lg));
+      opacity: .65;
+      pointer-events: none;
+      z-index: -2;
+    }
+
+    .section {
+      margin-top: var(--space-12);
+    }
+
+    .section h2 {
+      font-size: var(--font-size-5);
+      margin: 0 0 var(--space-5);
+    }
+
+    .muted { color: var(--color-text-muted); }
+
+    .grid {
+      display: grid;
+      gap: var(--space-4);
+    }
+
+    .grid-2 {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .grid-3 {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .card {
+      position: relative;
+      background: var(--color-surface-1);
+      border: 1px solid var(--color-border-default);
+      border-radius: var(--radius-md);
+      padding: var(--space-5);
+      box-shadow: var(--shadow-xs);
+      overflow: hidden;
+      transition:
+        transform var(--motion-duration-fast) var(--motion-ease-standard),
+        box-shadow var(--motion-duration-fast) var(--motion-ease-standard),
+        border-color var(--motion-duration-fast) var(--motion-ease-standard);
+    }
+
+    .card.interactive:hover {
+      transform: translateY(-2px);
+    }
+
+    .card.interactive::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background:
+        repeating-linear-gradient(
+          45deg,
+          transparent 0 2px,
+          var(--pattern-stripe-color) 2px 3px,
+          transparent 3px 5px
+        );
+      background-size: var(--pattern-size-md) var(--pattern-size-md);
+      opacity: 0;
+      transition:
+        opacity var(--motion-duration-fast) var(--motion-ease-standard);
+      pointer-events: none;
+    }
+
+    .card.interactive:hover::before {
+      opacity: var(--decorative-line-opacity);
+    }
+
+    .surface-muted {
+      background: var(--bg-section-muted);
+    }
+
+    .swatch {
+      border-radius: var(--radius-md);
+      border: 1px solid var(--color-border-default);
+      overflow: hidden;
+      background: var(--color-surface-1);
+    }
+
+    .swatch-color {
+      height: 72px;
+      border-bottom: 1px solid var(--color-border-default);
+    }
+
+    .swatch-meta {
+      padding: var(--space-3);
+      font-size: var(--font-size-2);
+    }
+
+    .btn-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--space-3);
+    }
+
+    .btn {
+      appearance: none;
+      border: 1px solid transparent;
+      border-radius: var(--radius-sm);
+      padding: 0 14px;
+      height: 31px;
+      font: inherit;
+      font-size: var(--font-size-3);
+      cursor: pointer;
+      transition:
+        transform var(--motion-duration-fast) var(--motion-ease-standard),
+        background var(--motion-duration-fast) var(--motion-ease-standard),
+        border-color var(--motion-duration-fast) var(--motion-ease-standard),
+        color var(--motion-duration-fast) var(--motion-ease-standard);
+    }
+
+    .btn:focus-visible {
+      outline: none;
+      box-shadow: var(--focus-ring);
+    }
+
+    .btn-primary {
+      background: var(--color-brand-primary);
+      color: var(--color-text-inverse);
+    }
+
+    .btn-primary:hover {
+      background: var(--color-brand-primary-hover);
+      transform: translateY(-1px);
+    }
+
+    .btn-secondary {
+      background: var(--color-surface-2);
+      color: var(--color-text-primary);
+      border-color: var(--color-border-default);
+    }
+
+    .btn-secondary:hover {
+      border-color: var(--color-brand-primary);
+      color: var(--color-brand-primary);
+    }
+
+    .btn-ghost {
+      background: transparent;
+      color: var(--color-text-primary);
+      border-color: var(--color-border-default);
+    }
+
+    .btn-stripe {
+      position: relative;
+      overflow: hidden;
+    }
+
+    .btn-stripe::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background:
+        repeating-linear-gradient(
+          45deg,
+          transparent 0 2px,
+          var(--pattern-stripe-color) 2px 3px,
+          transparent 3px 5px
+        );
+      background-size: var(--pattern-size-md) var(--pattern-size-md);
+      transform: translateX(-30%);
+      opacity: 0;
+      transition:
+        opacity var(--motion-duration-fast) var(--motion-ease-standard),
+        transform var(--motion-duration-normal) linear;
+      pointer-events: none;
+    }
+
+    .btn-stripe:hover::before {
+      opacity: 1;
+      transform: translateX(0);
+    }
+
+    .input, .select, .textarea {
+      width: 100%;
+      border: 1px solid var(--color-border-default);
+      background: var(--color-surface-1);
+      color: var(--color-text-primary);
+      border-radius: var(--radius-sm);
+      padding: 10px 14px;
+      font: inherit;
+      font-size: var(--font-size-3);
+      transition:
+        border-color var(--motion-duration-fast) var(--motion-ease-standard),
+        box-shadow var(--motion-duration-fast) var(--motion-ease-standard);
+    }
+
+    .input:focus-visible,
+    .select:focus-visible,
+    .textarea:focus-visible {
+      outline: none;
+      border-color: var(--color-brand-primary);
+      box-shadow: var(--focus-ring);
+    }
+
+    .label {
+      display: block;
+      margin-bottom: 8px;
+      font-size: var(--font-size-2);
+      color: var(--color-text-secondary);
+    }
+
+    .form-stack {
+      display: grid;
+      gap: var(--space-4);
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      border-radius: 999px;
+      padding: 6px 10px;
+      background: var(--color-surface-2);
+      border: 1px solid var(--color-border-default);
+      font-size: var(--font-size-1);
+      font-family: var(--font-family-mono);
+    }
+
+    .table {
+      width: 100%;
+      border-collapse: collapse;
+      overflow: hidden;
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--color-border-default);
+    }
+
+    .table th, .table td {
+      text-align: left;
+      padding: 12px 14px;
+      border-bottom: 1px solid var(--color-border-default);
+    }
+
+    .table th {
+      background: var(--color-surface-2);
+      color: var(--color-text-secondary);
+      font-weight: 600;
+    }
+
+    .prose {
+      max-width: 72ch;
+      color: var(--color-text-primary);
+    }
+
+    .prose p { color: var(--color-text-secondary); }
+    .prose a { color: var(--color-brand-primary); text-decoration: none; }
+    .prose a:hover { text-decoration: underline; }
+
+    .code {
+      position: relative;
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      border: 1px solid var(--color-border-default);
+      background: var(--color-code-bg);
+      color: var(--color-code-text);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .code-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 14px;
+      font-size: var(--font-size-2);
+      font-family: var(--font-family-mono);
+      color: var(--color-code-muted);
+      border-bottom: 1px solid var(--color-border-default);
+      background: var(--color-surface-2);
+    }
+
+    .code pre {
+      margin: 0;
+      padding: 16px;
+      overflow: auto;
+      font-family: var(--font-family-mono);
+      font-size: 13px;
+      line-height: 1.6;
+    }
+
+    .token-keyword { color: var(--color-code-keyword); }
+    .token-string { color: var(--color-code-string); }
+    .token-number { color: var(--color-code-number); }
+    .token-comment { color: var(--color-code-comment); }
+
+    .callout {
+      border-radius: var(--radius-lg);
+      padding: var(--space-4);
+      border: 1px solid var(--color-border-default);
+      background: var(--color-surface-2);
+    }
+
+    .callout.info { border-left: 4px solid var(--color-info); }
+    .callout.success { border-left: 4px solid var(--color-success); }
+    .callout.warning { border-left: 4px solid var(--color-warning); }
+    .callout.danger { border-left: 4px solid var(--color-danger); }
+
+    .hero {
+      position: relative;
+      overflow: hidden;
+      padding: var(--space-8);
+      border-radius: calc(var(--radius-xl) + 4px);
+      background:
+        var(--bg-hero-gradient),
+        var(--color-surface-2);
+      border: 1px solid var(--color-border-default);
+      box-shadow: var(--shadow-sm);
+      isolation: isolate;
+    }
+
+    .hero::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background:
+        repeating-linear-gradient(
+          90deg,
+          transparent 0 23px,
+          var(--pattern-stripe-color) 23px 24px
+        );
+      opacity: .2;
+      pointer-events: none;
+      z-index: -1;
+    }
+
+    .hero::after {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 40px;
+      height: 100%;
+      background: linear-gradient(to right in oklab, var(--bg-hero-gradient), transparent);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .toolbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: var(--space-4);
+      margin-bottom: var(--space-6);
+    }
+
+    .theme-toggle {
+      min-width: 120px;
+    }
+
+    .background-board {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: var(--space-4);
+    }
+
+    .bg-sample {
+      min-height: 160px;
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--color-border-default);
+      overflow: hidden;
+      position: relative;
+      box-shadow: var(--shadow-xs);
+    }
+
+    .bg-label {
+      position: absolute;
+      left: 12px;
+      bottom: 12px;
+      padding: 6px 10px;
+      font-size: var(--font-size-2);
+      border-radius: 999px;
+      background: var(--color-surface-2);
+      backdrop-filter: blur(8px);
+      border: 1px solid var(--color-border-default);
+      color: var(--color-text-primary);
+    }
+
+    .bg-page-base {
+      background: var(--bg-page-base);
+    }
+
+    .bg-page-pattern {
+      background:
+        repeating-linear-gradient(
+          45deg,
+          transparent 0 2px,
+          var(--pattern-stripe-color) 2px 3px,
+          transparent 3px 5px
+        ),
+        var(--bg-page-base);
+      background-size: var(--pattern-size-md) var(--pattern-size-md);
+    }
+
+    .bg-hero-atmosphere {
+      background:
+        radial-gradient(circle at top right, var(--ambient-glow-primary), transparent 38%),
+        var(--color-surface-2);
+    }
+
+    .bg-muted-section {
+      background: var(--bg-section-muted);
+    }
+
+    .atmosphere-scene {
+      position: relative;
+      min-height: 280px;
+      border-radius: calc(var(--radius-xl) + 6px);
+      overflow: hidden;
+      border: 1px solid var(--color-border-default);
+      background: var(--bg-page-base);
+      box-shadow: var(--shadow-sm);
+      isolation: isolate;
+    }
+
+    .atmosphere-layer {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+    }
+
+    .atmosphere-base {
+      background: var(--bg-page-base);
+    }
+
+    .atmosphere-pattern {
+      background:
+        repeating-linear-gradient(
+          45deg,
+          transparent 0 2px,
+          var(--pattern-stripe-color) 2px 3px,
+          transparent 3px 5px
+        );
+      background-size: var(--pattern-size-md) var(--pattern-size-md);
+      opacity: .5;
+      animation: pattern-drift 4s linear infinite;
+    }
+
+    .atmosphere-glow::before,
+    .atmosphere-glow::after {
+      content: "";
+      position: absolute;
+      border-radius: 999px;
+      filter: blur(var(--glow-blur-md));
+      opacity: .75;
+    }
+
+    .atmosphere-glow::before {
+      width: 220px;
+      height: 220px;
+      right: 10%;
+      top: 10%;
+      background: radial-gradient(circle, var(--ambient-glow-primary), transparent 70%);
+    }
+
+    .atmosphere-glow::after {
+      width: 180px;
+      height: 180px;
+      left: 8%;
+      bottom: 10%;
+      background: radial-gradient(circle, var(--ambient-glow-secondary), transparent 70%);
+    }
+
+    .atmosphere-content {
+      position: relative;
+      z-index: 2;
+      padding: 32px;
+      max-width: 600px;
+    }
+
+    .atmosphere-content h3 {
+      margin: 0 0 10px;
+      font-size: var(--font-size-6);
+      line-height: var(--line-height-tight);
+      letter-spacing: -2.88px;
+      font-weight: 400;
+    }
+
+    .motif-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: var(--space-4);
+    }
+
+    .motif-card {
+      min-height: 150px;
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--color-border-default);
+      position: relative;
+      overflow: hidden;
+      background: var(--color-surface-1);
+      box-shadow: var(--shadow-xs);
+      padding: 14px;
+      display: flex;
+      align-items: end;
+      font-size: var(--font-size-2);
+      color: var(--color-text-secondary);
+    }
+
+    .motif-card::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+    }
+
+    .motif-stripe::before {
+      background:
+        repeating-linear-gradient(
+          45deg,
+          transparent 0 2px,
+          var(--pattern-stripe-color) 2px 3px,
+          transparent 3px 5px
+        );
+      background-size: var(--pattern-size-md) var(--pattern-size-md);
+    }
+
+    .motif-gridline::before {
+      background:
+        linear-gradient(var(--pattern-grid-color) 1px, transparent 1px),
+        linear-gradient(90deg, var(--pattern-grid-color) 1px, transparent 1px);
+      background-size: var(--pattern-size-md) var(--pattern-size-md);
+    }
+
+    .motif-dots::before {
+      background:
+        radial-gradient(circle, var(--pattern-dot-color) 1px, transparent 1.5px);
+      background-size: 14px 14px;
+    }
+
+    .motif-glow::before {
+      background:
+        radial-gradient(circle at 35% 35%, var(--ambient-glow-primary), transparent 36%),
+        radial-gradient(circle at 70% 65%, var(--ambient-glow-secondary), transparent 34%);
+      filter: blur(var(--glow-blur-sm));
+      opacity: .9;
+    }
+
+    .nav-demo {
+      display: flex;
+      gap: var(--space-3);
+      flex-wrap: wrap;
+    }
+
+    .nav-pill {
+      padding: 8px 12px;
+      border-radius: 999px;
+      border: 1px solid var(--color-border-default);
+      background: var(--color-surface-1);
+      color: var(--color-text-secondary);
+      font-size: var(--font-size-2);
+    }
+
+    .nav-pill.active {
+      background: var(--color-surface-2);
+      color: var(--color-text-primary);
+      border-color: var(--color-border-strong);
+    }
+
+    .overlay-demo {
+      display: grid;
+      place-items: center;
+      min-height: 200px;
+      border-radius: var(--radius-xl);
+      border: 1px solid var(--color-border-default);
+      position: relative;
+      overflow: hidden;
+      background: var(--color-surface-2);
+    }
+
+    .overlay-demo::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: rgba(0,0,0,0.18);
+      pointer-events: none;
+    }
+
+    .modal-card {
+      position: relative;
+      z-index: 2;
+      width: min(420px, calc(100% - 32px));
+      border-radius: var(--radius-xl);
+      border: 1px solid var(--color-border-default);
+      background: var(--color-surface-1);
+      box-shadow: var(--shadow-md);
+      padding: var(--space-5);
+    }
+
+    .progress-loader {
+      height: 4px;
+      border-radius: 2px;
+      background: linear-gradient(90deg, transparent 0%, var(--color-brand-primary) 50%, var(--color-brand-primary) 65%, transparent 100%);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .progress-loader::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.3) 50%, transparent 100%);
+      animation: shimmer 1.5s infinite;
+    }
+
+    @keyframes pattern-drift {
+      from { transform: translateX(-16px); }
+      to { transform: translateX(16px); }
+    }
+
+    @keyframes shimmer {
+      0% { transform: translateX(-100%); }
+      100% { transform: translateX(100%); }
+    }
+
+    /* ===== Keyframe Animations ===== */
+    @keyframes scaleIn {
+      0% { opacity: 0; transform: scale(0.95); }
+      100% { opacity: 1; transform: scale(1); }
+    }
+
+    @keyframes scaleOut {
+      0% { opacity: 1; transform: scale(1); }
+      100% { opacity: 0; transform: scale(0.95); }
+    }
+
+    @keyframes enterFromRight {
+      0% { opacity: 0; transform: translate(100px); }
+      100% { opacity: 1; transform: translate(0px); }
+    }
+
+    @keyframes enterFromLeft {
+      0% { opacity: 0; transform: translate(-100px); }
+      100% { opacity: 1; transform: translate(0px); }
+    }
+
+    @keyframes slidePattern {
+      0% { background-position: 0px 0px; }
+      100% { background-position: 28.28px -28.28px; }
+    }
+
+    @keyframes delayedFadeIn {
+      0%, 80% { opacity: 0; }
+      100% { opacity: 1; }
+    }
+
+    @keyframes spin {
+      100% { transform: rotate(1turn); }
+    }
+
+    @keyframes pulse {
+      50% { opacity: 0.5; }
+    }
+
+    @keyframes progress-slide {
+      0% { transform: translateX(-100%); }
+      50% { transform: translateX(0%); }
+      100% { transform: translateX(100%); }
+    }
+
+    @keyframes accordion-down {
+      0% { height: 0px; }
+      100% { height: var(--accordion-height, 200px); }
+    }
+
+    @keyframes accordion-up {
+      0% { height: var(--accordion-height, 200px); }
+      100% { height: 0px; }
+    }
+
+    /* ===== Animation Demo Classes ===== */
+    .animation-demo {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: var(--space-4);
+    }
+
+    .anim-box {
+      height: 100px;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--color-border-default);
+      background: var(--color-surface-1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: var(--font-size-1);
+      color: var(--color-text-secondary);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .anim-box::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background:
+        repeating-linear-gradient(
+          45deg,
+          transparent 0 2px,
+          var(--pattern-stripe-color) 2px 3px,
+          transparent 3px 5px
+        );
+      background-size: var(--pattern-size-md) var(--pattern-size-md);
+      opacity: 0;
+      transition: opacity 0.15s;
+    }
+
+    .anim-hover:hover::before {
+      opacity: 0.3;
+    }
+
+    .anim-scale { animation: scaleIn 0.3s ease forwards; }
+    .anim-scale-out { animation: scaleOut 0.3s ease forwards; }
+    .anim-enter-right { animation: enterFromRight 0.4s ease forwards; }
+    .anim-enter-left { animation: enterFromLeft 0.4s ease forwards; }
+    .anim-spin { animation: spin 1s linear infinite; }
+    .anim-pulse { animation: pulse 2s ease-in-out infinite; }
+    .anim-progress { 
+      animation: progress-slide 1.5s ease-in-out infinite; 
+      background: linear-gradient(90deg, transparent 0%, var(--color-brand-primary) 50%, var(--color-brand-primary) 65%, transparent 100%);
+    }
+    .anim-slide-pattern {
+      animation: slidePattern 0.5s linear infinite;
+    }
+
+    .progress-bar-container {
+      width: 100%;
+      height: 4px;
+      background: var(--color-border-default);
+      border-radius: 2px;
+      overflow: hidden;
+    }
+
+    @media (max-width: 1000px) {
+      .background-board,
+      .motif-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+      .animation-demo {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
+    @media (max-width: 900px) {
+      .grid-3 { grid-template-columns: 1fr 1fr; }
+    }
+
+    @media (max-width: 700px) {
+      .page { padding: var(--space-8) var(--space-4) var(--space-10); }
+      .grid-2, .grid-3,
+      .background-board,
+      .motif-grid {
+        grid-template-columns: 1fr;
+      }
+      .toolbar {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *,
+      *::before,
+      *::after {
+        animation-duration: 1ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 1ms !important;
+        scroll-behavior: auto !important;
+      }
+    }
+  </style>
+
+  <script id="design-manifest" type="application/json">
+  {
+    "meta": {
+      "title": "Factory AI Style System",
+      "source": "https://factory.ai/"
+    },
+    "style_character": {
+      "summary": "Industrial-technical, precision-engineered, developer-focused AI platform aesthetic with Geist typography and orange accent",
+      "mood": "Technical brutalism meets clean minimalism",
+      "density": "moderate",
+      "contrast": "high"
+    },
+    "primitives": {
+      "fonts": {
+        "sans": "\"Geist\", \"Geist Fallback\"",
+        "mono": "\"Geist Mono\", \"Geist Mono Fallback\""
+      },
+      "spacing": "4px base",
+      "radius": {"default": "6px", "button": "4px"},
+      "shadow": "none",
+      "motion": {"duration": "0.15s", "easing": "cubic-bezier(0.4, 0, 0.2, 1)"}
+    },
+    "semantic": {
+      "colors": {
+        "light": {
+          "brandPrimary": "rgb(238, 96, 24)",
+          "textPrimary": "rgb(2, 2, 2)",
+          "textSecondary": "rgb(77, 73, 71)"
+        },
+        "dark": {
+          "brandPrimary": "rgb(238, 96, 24)",
+          "textPrimary": "rgb(238, 238, 238)",
+          "textSecondary": "rgb(164, 157, 154)"
+        }
+      }
+    },
+    "motifs": ["diagonal-stripe", "edge-vignette", "progress-gradient"],
+    "themes": {
+      "light": {"bgPrimary": "#eee"},
+      "dark": {"bgPrimary": "#020202"}
+    }
+  }
+  </script>
+</head>
+<body>
+  <main class="page">
+    <div class="toolbar">
+      <div>
+        <h1 style="margin:0;font-size:var(--font-size-6);letter-spacing:-2.88px;line-height:1;">Factory AI</h1>
+        <p class="muted" style="margin:8px 0 0;font-size:var(--font-size-3);">Style Specimen</p>
+      </div>
+      <button class="btn btn-secondary theme-toggle" id="themeToggle">Toggle theme</button>
+    </div>
+
+    <section class="section hero">
+      <h2 style="margin-top:0;font-size:var(--font-size-5);letter-spacing:-2px;line-height:1;">Visual Character</h2>
+      <p class="muted">Industrial-technical aesthetic with Geist typography, diagonal stripe hover motifs, and bold orange accent color. Clean surfaces with subtle edge vignette effects.</p>
+      <div class="btn-row" style="margin-top:16px;">
+        <button class="btn btn-primary">Primary action</button>
+        <button class="btn btn-secondary">Secondary action</button>
+        <button class="btn btn-ghost btn-stripe">Motif action</button>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Color Board</h2>
+      <div class="grid grid-3">
+        <div class="swatch">
+          <div class="swatch-color" style="background:var(--color-bg-page);"></div>
+          <div class="swatch-meta"><strong>Page background</strong><br><span class="muted">--color-bg-page</span></div>
+        </div>
+        <div class="swatch">
+          <div class="swatch-color" style="background:var(--color-surface-2);"></div>
+          <div class="swatch-meta"><strong>Surface</strong><br><span class="muted">--color-surface-2</span></div>
+        </div>
+        <div class="swatch">
+          <div class="swatch-color" style="background:var(--color-brand-primary);"></div>
+          <div class="swatch-meta"><strong>Brand primary</strong><br><span class="muted">--color-brand-primary</span></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Typography</h2>
+      <div class="card">
+        <div style="font-size:var(--font-size-7);line-height:var(--line-height-tight);font-weight:400;letter-spacing:-2.88px;">Display / Hero</div>
+        <div style="font-size:var(--font-size-6);line-height:var(--line-height-tight);font-weight:400;letter-spacing:-2px;margin-top:12px;">Heading Large</div>
+        <div style="font-size:var(--font-size-5);line-height:var(--line-height-tight);font-weight:600;margin-top:12px;">Heading Medium</div>
+        <p style="font-size:var(--font-size-3);line-height:var(--line-height-normal);margin-top:16px;">Body text sample for standard reading rhythm and paragraph flow.</p>
+        <p class="muted" style="font-size:var(--font-size-2);">Secondary / caption text sample.</p>
+        <code style="font-family:var(--font-family-mono);font-size:13px;">inline code sample()</code>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Background System</h2>
+      <div class="background-board">
+        <div class="bg-sample bg-page-base">
+          <div class="bg-label">Page Base</div>
+        </div>
+        <div class="bg-sample bg-page-pattern">
+          <div class="bg-label">Diagonal Stripe</div>
+        </div>
+        <div class="bg-sample bg-hero-atmosphere">
+          <div class="bg-label">Hero Atmosphere</div>
+        </div>
+        <div class="bg-sample bg-muted-section">
+          <div class="bg-label">Muted Section</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Atmosphere Demo</h2>
+      <div class="atmosphere-scene">
+        <div class="atmosphere-layer atmosphere-base"></div>
+        <div class="atmosphere-layer atmosphere-pattern"></div>
+        <div class="atmosphere-layer atmosphere-glow"></div>
+        <div class="atmosphere-content">
+          <h3>Hero-style atmosphere</h3>
+          <p class="muted">Combined base, pattern, glow, overlay, and section surface treatment.</p>
+          <div class="btn-row" style="margin-top:16px;">
+            <button class="btn btn-primary">Launch</button>
+            <button class="btn btn-ghost btn-stripe">Preview</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Motif Library</h2>
+      <div class="motif-grid">
+        <div class="motif-card motif-stripe">Diagonal Stripe</div>
+        <div class="motif-card motif-gridline">Gridline</div>
+        <div class="motif-card motif-dots">Dot Field</div>
+        <div class="motif-card motif-glow">Ambient Glow</div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Cards</h2>
+      <div class="grid grid-3">
+        <article class="card">
+          <h3 style="margin-top:0;">Plain Card</h3>
+          <p class="muted">Base informational surface.</p>
+        </article>
+        <article class="card interactive">
+          <h3 style="margin-top:0;">Interactive Card</h3>
+          <p class="muted">Hover to reveal diagonal stripe pattern.</p>
+        </article>
+        <article class="card">
+          <span class="badge">Badge</span>
+          <h3>Stat Card</h3>
+          <p style="font-size:var(--font-size-6);font-weight:600;margin:0;letter-spacing:-2px;">128</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Forms</h2>
+      <div class="card">
+        <div class="form-stack">
+          <div>
+            <label class="label">Name</label>
+            <input class="input" placeholder="Enter name" />
+          </div>
+          <div>
+            <label class="label">Category</label>
+            <select class="select">
+              <option>Option A</option>
+              <option>Option B</option>
+            </select>
+          </div>
+          <div>
+            <label class="label">Notes</label>
+            <textarea class="textarea" rows="4" placeholder="Write something"></textarea>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Navigation</h2>
+      <div class="card">
+        <div class="nav-demo">
+          <span class="nav-pill active">Overview</span>
+          <span class="nav-pill">Components</span>
+          <span class="nav-pill">Patterns</span>
+          <span class="nav-pill">Code</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Table</h2>
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Column</th>
+            <th>Value</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Typography</td>
+            <td>Extracted</td>
+            <td>Ready</td>
+          </tr>
+          <tr>
+            <td>Atmosphere</td>
+            <td>Structured</td>
+            <td>Ready</td>
+          </tr>
+          <tr>
+            <td>Motion</td>
+            <td>Partially inferred</td>
+            <td>Check</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="section">
+      <h2>Prose</h2>
+      <div class="card prose">
+        <p>This section demonstrates article-style reading content. <a href="#">Links</a>, paragraph rhythm, muted explanatory text, and inline emphasis should all reflect the extracted visual language.</p>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Code Block</h2>
+      <div class="code">
+        <div class="code-head">
+          <span>example.ts</span>
+          <span>TypeScript</span>
+        </div>
+        <pre><code><span class="token-comment">// Factory AI code style</span>
+<span class="token-keyword">const</span> motifs = {
+  stripe: <span class="token-string">"diagonal"</span>,
+  glow: <span class="token-string">"ambient"</span>,
+  density: <span class="token-number">0.12</span>
+};</code></pre>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Progress Loader</h2>
+      <div class="card">
+        <p class="muted" style="margin-bottom:16px;">Orange progress gradient used for loading states.</p>
+        <div class="progress-loader" style="width:100%;"></div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Callouts</h2>
+      <div class="grid grid-2">
+        <div class="callout info"><strong>Info</strong><br><span class="muted">Informational style sample.</span></div>
+        <div class="callout success"><strong>Success</strong><br><span class="muted">Success style sample.</span></div>
+        <div class="callout warning"><strong>Warning</strong><br><span class="muted">Warning style sample.</span></div>
+        <div class="callout danger"><strong>Danger</strong><br><span class="muted">Danger style sample.</span></div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Overlay</h2>
+      <div class="overlay-demo">
+        <div class="modal-card">
+          <h3 style="margin-top:0;">Modal Surface</h3>
+          <p class="muted">Use this to demonstrate overlay, scrim, blur, and elevated surface behavior.</p>
+          <div class="btn-row" style="margin-top:16px;">
+            <button class="btn btn-primary">Confirm</button>
+            <button class="btn btn-secondary">Cancel</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Animation System</h2>
+      <p class="muted" style="margin-bottom:16px;">Keyframe animations extracted from factory.ai CSS. Hover to see interactive effects.</p>
+      <div class="animation-demo">
+        <div class="anim-box anim-hover">
+          <span>Hover for Stripe</span>
+        </div>
+        <div class="anim-box">
+          <span>Scale In</span>
+          <div style="width:40px;height:40px;background:var(--color-brand-primary);border-radius:4px;animation:scaleIn 0.3s ease forwards;"></div>
+        </div>
+        <div class="anim-box">
+          <div style="width:40px;height:40px;background:var(--color-brand-primary);border-radius:50%;animation:spin 1s linear infinite;"></div>
+        </div>
+        <div class="anim-box">
+          <div class="progress-bar-container">
+            <div class="progress-bar" style="height:100%;animation:progress-slide 1.5s ease-in-out infinite;background:var(--color-brand-primary);"></div>
+          </div>
+        </div>
+      </div>
+      <div class="grid grid-2" style="margin-top:var(--space-4);">
+        <div class="card anim-enter-right" style="opacity:0;animation-fill-mode:forwards;">
+          <h3 style="margin-top:0;">enterFromRight</h3>
+          <p class="muted">Modal slide in from right</p>
+        </div>
+        <div class="card anim-enter-left" style="opacity:0;animation-fill-mode:forwards;">
+          <h3 style="margin-top:0;">enterFromLeft</h3>
+          <p class="muted">Modal slide in from left</p>
+        </div>
+      </div>
+      <div class="card" style="margin-top:var(--space-4);">
+        <h3 style="margin-top:0;">slidePattern Animation</h3>
+        <p class="muted" style="margin-bottom:12px;">Diagonal stripes that slide - the pattern shifts 28.28px on a 45deg angle</p>
+        <div style="height:60px;background:repeating-linear-gradient(45deg,transparent 0 2px,var(--pattern-stripe-color) 2px 3px,transparent 3px 5px);background-size:7.07px 7.07px;border-radius:var(--radius-md);animation:slidePattern 0.5s linear infinite;"></div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const root = document.documentElement;
+    const button = document.getElementById('themeToggle');
+    button.addEventListener('click', () => {
+      root.dataset.theme = root.dataset.theme === 'dark' ? 'light' : 'dark';
+    });
+
+    window.DesignReference = JSON.parse(
+      document.getElementById('design-manifest').textContent
+    );
+  </script>
+</body>
+</html>

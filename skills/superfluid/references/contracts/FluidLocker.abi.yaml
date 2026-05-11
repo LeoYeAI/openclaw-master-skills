@@ -1,0 +1,616 @@
+# FluidLocker — per-user SUP reserve contract (lock, stake, LP, unlock)
+# Core user-facing contract in the SUP ecosystem. Each user has one FluidLocker
+# deployed by FluidLockerFactory as a beacon proxy. Manages SUP in three states:
+# available (locked but liquid), staked (earning rewards), and in Uniswap V3 LP positions.
+#
+# NOTE: The contracts use "FLUID" and "Locker" internally. In all public-facing
+# communication these have been renamed to "SUP" and "Reserve" respectively.
+# Function/event/error names here match the on-chain Solidity identifiers.
+#
+# NOTE: emits/errors mappings are best-effort — verify against source.
+
+meta:
+  name: FluidLocker
+  version: v1
+  source:
+    - https://raw.githubusercontent.com/superfluid-org/sup-token/refs/heads/dev/packages/contracts/src/FluidLocker.sol
+    - https://raw.githubusercontent.com/superfluid-org/sup-token/refs/heads/dev/packages/contracts/src/interfaces/IFluidLocker.sol
+  implements: [IFluidLocker]
+  # No fixed deployments — FluidLocker instances are created per-user by
+  # FluidLockerFactory as beacon proxies.
+
+# == Abbreviations ==
+# BP  — Basis Points (1 BP = 0.01%, 10000 BP = 100%)
+# CFA — Constant Flow Agreement
+# EP  — Emission Program
+# GDA — General Distribution Agreement
+# LP  — Liquidity Provider (Uniswap V3)
+# SUP — Superfluid Token (contract name: FLUID)
+# TTE — Token Transfer Engine (unlock mechanism)
+
+# == Glossary ==
+# FLUID / SUP              — the Superfluid Token; contracts say FLUID, UI says SUP
+# Locker / Reserve         — this contract; user's lock/stake container; contracts say Locker, UI says Reserve
+# Fontaine                 — single-use unlock stream contract; deployed per-unlock as beacon proxy
+# available balance        — SUP locked in the locker but not staked or in LP positions; can be unlocked
+# staked balance           — SUP committed to staking; earns reward distribution units
+# liquidity balance        — SUP committed to Uniswap V3 ETH/SUP LP positions
+# staking cooldown         — 30-day period after staking before unstaking is allowed (stakingUnlocksAt)
+# LP cooldown              — 7-day period after providing liquidity before withdrawal is allowed
+# tax-free withdraw delay  — 180-day waiting period after LP position creation before tax-free exit
+# unlock period            — duration of a Fontaine unlock stream; longer = lower fee (7–365 days)
+# instant unlock           — unlockPeriod of 0; immediate transfer with 80% penalty
+# unlocking fee            — 0.0001 ETH sent to DAO_TREASURY on every unlock
+# pump ratio               — BP portion of SUP swapped to ETH when providing liquidity (100 BP = 1%)
+# slippage tolerance       — max acceptable slippage for Uniswap swaps (500 BP = 5%)
+# emission program         — distribution campaign; SUP streams from program pools
+# stack signature          — off-chain signed message authorizing emission program claims (legacy parameter name)
+
+# == Constants ==
+
+FLUID:
+  # The SUP SuperToken address (immutable).
+  mutability: view
+  outputs:
+    - address
+
+EP_PROGRAM_MANAGER:
+  # Emission program manager contract (immutable).
+  mutability: view
+  outputs:
+    - address
+
+STAKING_REWARD_CONTROLLER:
+  # Controls staking reward distribution (immutable).
+  mutability: view
+  outputs:
+    - address
+
+FONTAINE_BEACON:
+  # UpgradeableBeacon for Fontaine unlock stream proxies (immutable).
+  mutability: view
+  outputs:
+    - address
+
+DAO_TREASURY:
+  # Receives unlocking fees (immutable).
+  mutability: view
+  outputs:
+    - address
+
+ETH_SUP_POOL:
+  # Uniswap V3 ETH/SUP pool (immutable).
+  mutability: view
+  outputs:
+    - address
+
+NONFUNGIBLE_POSITION_MANAGER:
+  # Uniswap V3 NonfungiblePositionManager (immutable).
+  mutability: view
+  outputs:
+    - address
+
+SWAP_ROUTER:
+  # Uniswap V3 SwapRouter (immutable).
+  mutability: view
+  outputs:
+    - address
+
+STAKER_DISTRIBUTION_POOL:
+  # GDA pool for staking reward distributions (immutable).
+  mutability: view
+  outputs:
+    - address
+
+LP_DISTRIBUTION_POOL:
+  # GDA pool for LP reward distributions (immutable).
+  mutability: view
+  outputs:
+    - address
+
+MIN_UNLOCK_AMOUNT:
+  # 10 SUP — minimum amount that can be unlocked.
+  mutability: view
+  outputs:
+    - uint256
+
+UNLOCKING_FEE:
+  # 0.0001 ETH — flat fee sent to DAO_TREASURY on every unlock.
+  mutability: view
+  outputs:
+    - uint256
+
+TAX_FREE_WITHDRAW_DELAY:
+  # 180 days — waiting period after LP position creation before tax-free exit.
+  mutability: view
+  outputs:
+    - uint256
+
+LP_OPERATION_DEADLINE:
+  # 1 minute — deadline offset for Uniswap LP operations.
+  mutability: view
+  outputs:
+    - uint256
+
+BP_PUMP_RATIO:
+  # 100 BP (1%) — portion of SUP swapped to ETH when providing liquidity.
+  mutability: view
+  outputs:
+    - uint256
+
+BP_SLIPPAGE_TOLERANCE:
+  # 500 BP (5%) — max acceptable slippage for Uniswap swaps.
+  mutability: view
+  outputs:
+    - uint256
+
+UNLOCK_AVAILABLE:
+  # Feature flag; if false, unlock/provideLiquidity/withdrawLiquidity/collectFees revert.
+  mutability: view
+  outputs:
+    - bool
+
+# == Locking ==
+
+lock:
+  # Transfer SUP from msg.sender into this locker, adding to available balance.
+  notes:
+    - "Gotcha: Requires prior ERC-20 approval on the SUP token. Calls FLUID.transferFrom(msg.sender, address(this), amount)."
+    - "Gotcha: Anyone can lock SUP into this locker — no onlyLockerOwner check."
+  mutability: nonpayable
+  access: anyone
+  inputs:
+    - amount: uint256
+  emits: [FluidLocked]
+
+# == Staking ==
+
+stake:
+  # Move SUP from available to staked balance. Imposes a 30-day cooldown
+  # before unstaking (resets on each stake call).
+  notes:
+    - "Gotcha: Stakes the entire available balance if amount > available."
+  mutability: nonpayable
+  access: locker-owner
+  inputs:
+    - amountToStake: uint256
+  emits: [FluidStaked]
+  errors: [INSUFFICIENT_AVAILABLE_BALANCE]
+
+unstake:
+  # Move SUP from staked back to available balance.
+  notes:
+    - "Gotcha: Reverts if the 30-day staking cooldown has not elapsed."
+  mutability: nonpayable
+  access: locker-owner
+  inputs:
+    - amountToUnstake: uint256
+  emits: [FluidUnstaked]
+  errors: [STAKING_COOLDOWN_NOT_ELAPSED, INSUFFICIENT_STAKED_BALANCE]
+
+# == Emission Program Claims ==
+# Claims connect the locker to emission programs and update units via signed messages.
+# Requires a valid signature from the emission program's off-chain signer.
+# The nonce must match getNextValidNonce on FluidEPProgramManager.
+# The signer address is configured per-program in FluidEPProgramManager (createProgram / updateProgramSigner).
+
+"claim(uint256,uint256,uint256,bytes)":
+  # Claim from a single emission program; updates locker's units in the program pool.
+  notes:
+    - "Gotcha: The stackSignature is obtained from the Superfluid points API (GET /points/signed-balance)."
+    - "Gotcha: connect() must be called for the program before claiming."
+    - "Gotcha: No onlyLockerOwner — anyone can submit a valid claim on behalf of the locker."
+  mutability: nonpayable
+  inputs:
+    - programId: uint256
+    - totalProgramUnits: uint256
+    - nonce: uint256
+    - stackSignature: bytes
+  emits: [FluidStreamClaimed]
+
+"claim(uint256[],uint256[],uint256,bytes)":
+  # Batch claim from multiple emission programs in one transaction.
+  mutability: nonpayable
+  inputs:
+    - "programIds: uint256[]"
+    - "totalProgramUnits: uint256[]"
+    - nonce: uint256
+    - stackSignature: bytes
+  emits: [FluidStreamsClaimed]
+
+"claimAndStake(uint256,uint256,uint256,bytes)":
+  # Claim from a single program, then stake ALL available balance.
+  notes:
+    - "Gotcha: Stakes the entire available balance, not just the claimed amount."
+  mutability: nonpayable
+  access: locker-owner
+  inputs:
+    - programId: uint256
+    - totalProgramUnits: uint256
+    - nonce: uint256
+    - stackSignature: bytes
+  emits: [FluidStreamClaimed, FluidStaked]
+  errors: [INSUFFICIENT_AVAILABLE_BALANCE]
+
+"claimAndStake(uint256[],uint256[],uint256,bytes)":
+  # Batch claim from multiple programs, then stake ALL available balance.
+  notes:
+    - "Gotcha: Stakes the entire available balance, not just the claimed amount."
+  mutability: nonpayable
+  access: locker-owner
+  inputs:
+    - "programIds: uint256[]"
+    - "totalProgramUnits: uint256[]"
+    - nonce: uint256
+    - stackSignature: bytes
+  emits: [FluidStreamsClaimed, FluidStaked]
+  errors: [INSUFFICIENT_AVAILABLE_BALANCE]
+
+connect:
+  # Connect this locker to an emission program's GDA pool.
+  # Must be called before claim() for that program.
+  mutability: nonpayable
+  access: locker-owner
+  inputs:
+    - programId: uint256
+
+"disconnect(uint256)":
+  # Disconnect this locker from a single emission program's GDA pool.
+  mutability: nonpayable
+  access: locker-owner
+  inputs:
+    - programId: uint256
+
+"disconnect(uint256[])":
+  # Batch disconnect from multiple emission programs.
+  mutability: nonpayable
+  access: locker-owner
+  inputs:
+    - "programIds: uint256[]"
+
+disconnectAndClaim:
+  # Disconnect from some programs and claim from others in one transaction.
+  notes:
+    - "Gotcha: Combines disconnect + batch claim atomically."
+  mutability: nonpayable
+  access: locker-owner
+  inputs:
+    - "programIdsToDisconnect: uint256[]"
+    - "programIdsToClaim: uint256[]"
+    - "totalProgramUnits: uint256[]"
+    - nonce: uint256
+    - stackSignature: bytes
+  emits: [FluidStreamsClaimed]
+
+disconnectAndClaimAndStake:
+  # Disconnect from some programs, claim from others, then stake ALL available balance.
+  notes:
+    - "Gotcha: Stakes the entire available balance, not just the claimed amount."
+  mutability: nonpayable
+  access: locker-owner
+  inputs:
+    - "programIdsToDisconnect: uint256[]"
+    - "programIdsToClaim: uint256[]"
+    - "totalProgramUnits: uint256[]"
+    - nonce: uint256
+    - stackSignature: bytes
+  emits: [FluidStreamsClaimed, FluidStaked]
+  errors: [INSUFFICIENT_AVAILABLE_BALANCE]
+
+# == Unlocking ==
+# Unlocking creates a Fontaine that streams SUP over the unlock period.
+# unlockPeriod=0 is instant unlock with 80% penalty. Otherwise 7–365 days.
+# Longer unlock periods result in lower effective tax on the unlocked amount.
+
+unlock:
+  # Unlock SUP from available balance via a time-delayed Fontaine stream.
+  notes:
+    - "Gotcha: Payable — msg.value must equal UNLOCKING_FEE (0.0001 ETH), sent to DAO_TREASURY."
+    - "Gotcha: unlockPeriod=0 triggers instant unlock with 80% penalty; remaining 20% transferred immediately, 80% redistributed to stakers/LPs."
+    - "Gotcha: unlockPeriod between 7 and 365 days deploys a Fontaine beacon proxy that streams SUP to the recipient over the unlock period with a proportional tax."
+    - "Gotcha: Requires UNLOCK_AVAILABLE feature flag to be true; otherwise reverts TTE_NOT_ACTIVATED."
+  mutability: payable
+  access: locker-owner
+  inputs:
+    - unlockAmount: uint256
+    - unlockPeriod: uint128      # 0 = instant, or 7–365 days in seconds
+    - recipient: address
+  emits: [FluidUnlocked]
+  errors:
+    - INVALID_UNLOCKING_FEE
+    - TTE_NOT_ACTIVATED
+    - INVALID_UNLOCK_PERIOD
+    - INSUFFICIENT_UNLOCK_AMOUNT
+    - INSUFFICIENT_AVAILABLE_BALANCE
+    - STAKER_DISTRIBUTION_POOL_HAS_NO_UNITS
+    - LP_DISTRIBUTION_POOL_HAS_NO_UNITS
+
+# == Liquidity Provision ==
+# Uniswap V3 ETH/SUP LP positions managed through the locker.
+# Requires UNLOCK_AVAILABLE feature flag.
+
+provideLiquidity:
+  # Take SUP from available balance, swap a portion to ETH via Uniswap, and create
+  # a V3 LP position. Returns the Uniswap NFT position token ID.
+  notes:
+    - "Gotcha: Payable — accepts ETH via msg.value for the LP position."
+    - "Gotcha: Uses BP_PUMP_RATIO (1%) of SUP to swap for ETH."
+    - "Gotcha: Imposes a 7-day LP cooldown before withdrawal is allowed."
+    - "Gotcha: Records a tax-free exit timestamp at creation + TAX_FREE_WITHDRAW_DELAY (180 days)."
+  mutability: payable
+  access: locker-owner
+  inputs:
+    - supAmount: uint256
+  outputs:
+    - positionTokenId: uint256
+  emits: [LiquidityPositionCreated]
+  errors:
+    - TTE_NOT_ACTIVATED
+    - INSUFFICIENT_AVAILABLE_BALANCE
+
+withdrawLiquidity:
+  # Remove liquidity from a Uniswap V3 position and return SUP to available balance.
+  # Burns the NFT if all liquidity is removed.
+  notes:
+    - "Gotcha: Subject to 7-day LP cooldown (LP_COOLDOWN_NOT_ELAPSED)."
+    - "Gotcha: Subject to tax if withdrawn before tax-free exit timestamp (180 days after creation)."
+  mutability: nonpayable
+  access: locker-owner
+  inputs:
+    - tokenId: uint256
+    - liquidityToRemove: uint128
+    - amount0ToRemove: uint256
+    - amount1ToRemove: uint256
+  emits: [LiquidityPositionBurned]
+  errors:
+    - TTE_NOT_ACTIVATED
+    - LOCKER_HAS_NO_POSITION
+    - LP_COOLDOWN_NOT_ELAPSED
+
+collectFees:
+  # Collect accumulated trading fees from a Uniswap V3 LP position.
+  mutability: nonpayable
+  access: locker-owner
+  inputs:
+    - tokenId: uint256
+  outputs:
+    - collectedEthx: uint256
+    - collectedSup: uint256
+  errors:
+    - TTE_NOT_ACTIVATED
+    - LOCKER_HAS_NO_POSITION
+
+withdrawDustETH:
+  # Withdraw any residual ETH left in the locker from LP operations.
+  mutability: nonpayable
+  access: locker-owner
+
+# == Balance Queries ==
+
+getAvailableBalance:
+  # SUP locked but not staked or in LP — can be unlocked or staked.
+  mutability: view
+  outputs:
+    - aBalance: uint256
+
+getStakedBalance:
+  # SUP committed to staking, earning reward distribution units.
+  mutability: view
+  outputs:
+    - sBalance: uint256
+
+getLiquidityBalance:
+  # SUP committed to Uniswap V3 ETH/SUP LP positions.
+  mutability: view
+  outputs:
+    - lBalance: uint256
+
+lockerOwner:
+  # The wallet address that owns this locker.
+  mutability: view
+  outputs:
+    - address
+
+stakingUnlocksAt:
+  # Timestamp when the staking cooldown expires and unstaking is allowed.
+  mutability: view
+  outputs:
+    - uint80
+
+activePositionCount:
+  # Number of active Uniswap V3 LP positions held by this locker.
+  mutability: view
+  outputs:
+    - uint256
+
+# == Program Queries ==
+
+"getUnitsPerProgram(uint256)":
+  # Units this locker holds in a single emission program's GDA pool.
+  mutability: view
+  inputs:
+    - programId: uint256
+  outputs:
+    - units: uint128
+
+"getUnitsPerProgram(uint256[])":
+  # Batch query: units this locker holds across multiple emission programs.
+  mutability: view
+  inputs:
+    - "programIds: uint256[]"
+  outputs:
+    - "units: uint128[]"
+
+"getFlowRatePerProgram(uint256)":
+  # Flow rate this locker receives from a single emission program.
+  mutability: view
+  inputs:
+    - programId: uint256
+  outputs:
+    - flowRate: int96
+
+"getFlowRatePerProgram(uint256[])":
+  # Batch query: flow rates this locker receives from multiple emission programs.
+  mutability: view
+  inputs:
+    - "programIds: uint256[]"
+  outputs:
+    - "flowRates: int96[]"
+
+# == Fontaine & Position Queries ==
+
+fontaines:
+  # Look up the Fontaine contract address for a given unlock ID.
+  mutability: view
+  inputs:
+    - unlockId: uint256
+  outputs:
+    - fontaine: address
+
+fontaineCount:
+  # Total number of Fontaine unlock streams created by this locker.
+  mutability: view
+  outputs:
+    - uint16
+
+getFontaineBeaconImplementation:
+  # Current implementation address behind the Fontaine beacon proxy.
+  mutability: view
+  outputs:
+    - fontaineBeaconImpl: address
+
+lpCooldownTimestamps:
+  # Timestamp when the LP cooldown expires for a given position.
+  mutability: view
+  inputs:
+    - positionTokenId: uint256
+  outputs:
+    - lpCooldownTimestamp: uint256
+
+taxFreeExitTimestamps:
+  # Timestamp after which an LP position can be withdrawn tax-free.
+  mutability: view
+  inputs:
+    - positionTokenId: uint256
+  outputs:
+    - taxFreeWithdrawTimestamp: uint256
+
+getPositionLiquidity:
+  # Uniswap V3 liquidity amount for a given position token ID.
+  mutability: view
+  inputs:
+    - tokenId: uint256
+  outputs:
+    - liquidity: uint128
+
+# == Lifecycle ==
+
+initialize:
+  # Beacon proxy initializer. Called once by FluidLockerFactory during creation.
+  notes:
+    - "Gotcha: Can only be called once (initializer modifier)."
+  mutability: nonpayable
+  inputs:
+    - owner: address
+  emits: [Initialized]
+
+# == Events ==
+
+events:
+
+  FluidLocked:
+    # SUP deposited into the locker.
+    indexed:
+      - amount: uint256
+
+  FluidStaked:
+    # SUP moved from available to staked.
+    indexed:
+      - newTotalStakedBalance: uint256
+      - addedAmount: uint256
+
+  FluidUnstaked:
+    # SUP moved from staked back to available.
+    indexed:
+      - newTotalStakedBalance: uint256
+      - removedAmount: uint256
+
+  FluidStreamClaimed:
+    # Single emission program claim executed.
+    indexed:
+      - programId: uint256
+      - totalProgramUnits: uint256
+
+  FluidStreamsClaimed:
+    # Batch emission program claims executed.
+    indexed:
+      - "programId: uint256[]"
+      - "totalProgramUnits: uint256[]"
+
+  FluidUnlocked:
+    # SUP unlock initiated (instant or Fontaine stream).
+    indexed:
+      - unlockPeriod: uint128
+      - availableBalance: uint256
+      - fontaine: address
+    data:
+      - recipient: address
+
+  LiquidityPositionCreated:
+    # Uniswap V3 LP position minted through the locker.
+    indexed:
+      - tokenId: uint256
+
+  LiquidityPositionBurned:
+    # Uniswap V3 LP position burned (all liquidity removed).
+    indexed:
+      - tokenId: uint256
+
+  Initialized:
+    # OpenZeppelin initializer event (emitted once on proxy setup).
+    data:
+      - version: uint64
+
+# == Errors ==
+
+errors:
+
+  # -- Access --
+  - NOT_LOCKER_OWNER
+  - FORBIDDEN
+
+  # -- Staking --
+  - STAKING_COOLDOWN_NOT_ELAPSED
+  - INSUFFICIENT_STAKED_BALANCE
+  - STAKER_DISTRIBUTION_POOL_HAS_NO_UNITS
+
+  # -- Unlocking --
+  - TTE_NOT_ACTIVATED
+  - INVALID_UNLOCKING_FEE
+  - INVALID_UNLOCK_PERIOD
+  - INSUFFICIENT_UNLOCK_AMOUNT
+  - NO_FLUID_TO_UNLOCK
+  - NO_FLUID_TO_UNSTAKE
+
+  # -- Balance --
+  - INSUFFICIENT_AVAILABLE_BALANCE
+  - INSUFFICIENT_BALANCE
+  - INSUFFICIENT_ETH_SENT
+
+  # -- Liquidity --
+  - LOCKER_HAS_NO_POSITION
+  - LP_COOLDOWN_NOT_ELAPSED
+  - LP_DISTRIBUTION_POOL_HAS_NO_UNITS
+  - LIQUIDITY_POOL_NOT_APPROVED
+
+  # -- Initialization --
+  - InvalidInitialization
+  - NotInitializing
+
+  # -- Safety --
+  - Reentrancy
+  - MathOverflowedMulDiv
+  - SafeCastOverflowedIntDowncast:
+      inputs:
+        - bits: uint8
+        - value: int256

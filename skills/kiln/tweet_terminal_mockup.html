@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: #1a1a2e;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding: 40px;
+    font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+  }
+  .terminal-window {
+    background: #0d1117;
+    border-radius: 12px;
+    width: 780px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+    overflow: hidden;
+  }
+  .terminal-header {
+    background: #161b22;
+    padding: 12px 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .dot { width: 12px; height: 12px; border-radius: 50%; }
+  .dot-red { background: #ff5f57; }
+  .dot-yellow { background: #febc2e; }
+  .dot-green { background: #28c840; }
+  .terminal-title {
+    color: #8b949e;
+    font-size: 13px;
+    margin-left: 8px;
+    font-weight: 500;
+  }
+  .terminal-body {
+    padding: 24px 24px 28px;
+    font-family: 'SF Mono', 'Fira Code', 'JetBrains Mono', 'Cascadia Code', Menlo, Monaco, monospace;
+    font-size: 13.5px;
+    line-height: 1.65;
+    color: #c9d1d9;
+  }
+  .prompt { color: #7ee787; font-weight: 600; }
+  .cmd { color: #f0f6fc; font-weight: 500; }
+  .flag { color: #79c0ff; }
+  .value { color: #ffa657; }
+  .warning { color: #f0883e; font-weight: 600; }
+  .error { color: #f85149; font-weight: 600; }
+  .success { color: #3fb950; font-weight: 600; }
+  .locked { color: #f85149; font-weight: 600; }
+  .dim { color: #6e7681; }
+  .info { color: #c9d1d9; }
+  .muted { color: #8b949e; }
+  .block { margin-bottom: 20px; }
+  .indent { padding-left: 24px; }
+  .separator {
+    border-top: 1px solid #21262d;
+    margin: 16px 0;
+  }
+  .badge {
+    display: inline-block;
+    padding: 1px 8px;
+    border-radius: 4px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+  }
+  .badge-latched { background: rgba(248,81,73,0.15); color: #f85149; border: 1px solid rgba(248,81,73,0.3); }
+  .badge-cleared { background: rgba(63,185,80,0.15); color: #3fb950; border: 1px solid rgba(63,185,80,0.3); }
+</style>
+</head>
+<body>
+<div class="terminal-window">
+  <div class="terminal-header">
+    <div class="dot dot-red"></div>
+    <div class="dot dot-yellow"></div>
+    <div class="dot dot-green"></div>
+    <span class="terminal-title">kiln — safety hardening</span>
+  </div>
+  <div class="terminal-body">
+    <!-- Command 1: Emergency Stop -->
+    <div class="block">
+      <div>
+        <span class="prompt">$</span>
+        <span class="cmd"> kiln emergency-stop</span>
+        <span class="flag"> --printer</span> <span class="value">voron-350</span>
+        <span class="flag"> --reason</span> <span class="value">thermal_runaway</span>
+      </div>
+      <div class="indent">
+        <span class="warning">⚠ EMERGENCY STOP</span> <span class="muted">voron-350</span>
+      </div>
+      <div class="indent">
+        <span class="muted">G-code:</span> <span class="info">M112 → M104 S0 → M140 S0 → M84</span>
+      </div>
+      <div class="indent">
+        <span class="muted">Actions:</span> <span class="info">firmware halt · heaters off · steppers disabled</span>
+      </div>
+      <div class="indent">
+        <span class="muted">Latch:</span> <span class="locked">ACTIVE</span> <span class="dim">— persists across restarts</span>
+      </div>
+    </div>
+
+    <div class="separator"></div>
+
+    <!-- Command 2: Status check -->
+    <div class="block">
+      <div>
+        <span class="prompt">$</span>
+        <span class="cmd"> kiln emergency-status</span>
+        <span class="flag"> --printer</span> <span class="value">voron-350</span>
+      </div>
+      <div class="indent">
+        <span class="locked">🔒 LATCHED</span> <span class="badge badge-latched">E-STOP</span>
+      </div>
+      <div class="indent">
+        <span class="muted">Reason:</span> <span class="info">thermal_runaway</span>
+        <span class="dim"> · </span>
+        <span class="muted">Source:</span> <span class="info">cli</span>
+      </div>
+      <div class="indent">
+        <span class="muted">Blocked:</span> <span class="error">start · resume · dispatch · hazardous G-code</span>
+      </div>
+    </div>
+
+    <div class="separator"></div>
+
+    <!-- Command 3: Blocked operation -->
+    <div class="block">
+      <div>
+        <span class="prompt">$</span>
+        <span class="cmd"> kiln start-print</span>
+        <span class="flag"> --file</span> <span class="value">benchy.gcode</span>
+      </div>
+      <div class="indent">
+        <span class="error">✗ Blocked:</span> <span class="info">Emergency latch active for voron-350.</span>
+      </div>
+      <div class="indent">
+        <span class="dim">Resolve hazards, then clear with</span> <span class="cmd">kiln emergency-clear</span>
+      </div>
+    </div>
+
+    <div class="separator"></div>
+
+    <!-- Command 4: Acknowledge and clear -->
+    <div class="block">
+      <div>
+        <span class="prompt">$</span>
+        <span class="cmd"> kiln emergency-clear</span>
+        <span class="flag"> --printer</span> <span class="value">voron-350</span>
+        <span class="flag"> \</span>
+      </div>
+      <div>
+        <span class="dim">  </span>
+        <span class="flag">--ack-note</span> <span class="value">"Thermal checked, wiring inspected"</span>
+      </div>
+      <div class="indent">
+        <span class="success">✓ E-stop cleared</span> <span class="badge badge-cleared">OK</span>
+      </div>
+      <div class="indent">
+        <span class="muted">Cleared by:</span> <span class="info">adam</span>
+        <span class="dim"> · </span>
+        <span class="muted">Note:</span> <span class="info">Thermal checked, wiring inspected</span>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

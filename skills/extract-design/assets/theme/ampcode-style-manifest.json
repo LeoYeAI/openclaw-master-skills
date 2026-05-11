@@ -1,0 +1,325 @@
+{
+  "meta": {
+    "title": "Amp Style System",
+    "source": "https://ampcode.com/",
+    "captureTime": "2026-03-19",
+    "viewport": "1280x720",
+    "darkModeExists": true,
+    "reducedMotionExists": "inferred",
+    "canvasWebGLHeavy": false,
+    "shadowDOM": false,
+    "extractionMode": "live-render"
+  },
+  "style_character": {
+    "summary": "Amp is a tech blog/news platform with a distinctive editorial-meets-terminal aesthetic. Warm cream/olive tones in light mode transition to deep teal-blacks in dark mode. The design features dramatic serif display typography (Sagittaire), fluid clamp-based type scaling, gruvbox-inspired terminal color palette for code, and sharp-edged UI with large touch targets.",
+    "mood": "Editorial-technical, warm-meets-dark, sophisticated hacker",
+    "density": "spacious",
+    "contrast": "medium-high",
+    "motionIntensity": "low",
+    "componentComplexity": "low",
+    "atmosphereCharacter": "Warm editorial publication with terminal/code aesthetic undertones",
+    "recurringMotifs": [
+      "Fluid typography with clamp() scale",
+      "Gruvbox terminal color palette for code blocks",
+      "Oklab color space usage",
+      "Sharp zero-radius UI elements",
+      "Large 48px touch targets"
+    ]
+  },
+  "primitives": {
+    "fonts": {
+      "sans": "system-ui, -apple-system, \"Segoe UI\", Roboto, sans-serif",
+      "display": "\"Sagittaire Display\", serif",
+      "weights": [400, 500],
+      "sizeScale": "fluid clamp() from 0.69rem to 17rem",
+      "lineHeightTight": 1.1,
+      "lineHeightSnug": 1.25,
+      "lineHeightNormal": 1.414,
+      "lineHeightRelaxed": 1.65,
+      "lineHeightLoose": 1.8
+    },
+    "spacing": {
+      "base": "0.25rem (4px)",
+      "maxWidth": "2560px",
+      "marginRatio": "4.098vw",
+      "cellPadding": "clamp(0.75rem, 1.5vw, 1.5rem)"
+    },
+    "radius": {
+      "default": "0px",
+      "card": "4px",
+      "button": "0px"
+    },
+    "shadow": {
+      "default": "none"
+    },
+    "motion": {
+      "durationFast": "0.15s",
+      "durationNormal": "0.3s",
+      "easing": "ease defaults",
+      "type": "transitions on opacity"
+    },
+    "pattern": {
+      "terminal": "gruvbox-inspired 16-color palette"
+    }
+  },
+  "semantic": {
+    "colors": {
+      "light": {
+        "background": "rgb(223, 223, 193)",
+        "foreground": "rgb(11, 13, 11)",
+        "mutedForeground": "rgb(41, 86, 78)",
+        "accent": "rgb(21, 136, 178)",
+        "accentForeground": "rgb(223, 223, 193)",
+        "border": "rgb(177, 177, 165)"
+      },
+      "dark": {
+        "background": "rgb(9, 28, 30)",
+        "foreground": "rgb(246, 255, 245)",
+        "mutedForeground": "oklab(0.990541 -0.0127878 0.00984484 / 0.8)",
+        "accent": "rgb(21, 136, 178)",
+        "accentForeground": "rgb(223, 223, 193)",
+        "border": "oklab(0.990541 -0.0127878 0.00984484 / 0.5)"
+      }
+    },
+    "surfaces": {
+      "light": {
+        "page": "rgb(223, 223, 193)",
+        "card": "rgba(11, 13, 11, 0.02)",
+        "yolk": "rgb(246, 131, 59)"
+      },
+      "dark": {
+        "page": "rgb(9, 28, 30)",
+        "card": "rgba(246, 255, 245, 0.03)",
+        "yolk": "rgb(246, 131, 59)"
+      }
+    }
+  },
+  "background": {
+    "page": {
+      "light": "rgb(223, 223, 193)",
+      "dark": "rgb(9, 28, 30)"
+    },
+    "sections": [
+      {
+        "type": "hero-image",
+        "backgroundImage": "cover bg-center",
+        "opacity": "0 to 1 on load"
+      }
+    ],
+    "layers": [],
+    "gradients": [],
+    "patterns": [],
+    "images": [
+      {
+        "url": "https://static.ampcode.com/news/*.jpg",
+        "usage": "hero/article images"
+      }
+    ],
+    "overlays": []
+  },
+  "motifs": [
+    {
+      "name": "gruvbox-terminal",
+      "description": "16-color gruvbox-inspired terminal palette for code syntax highlighting",
+      "colors": ["#282828", "#cc241d", "#98971a", "#d79921", "#458588", "#b16286", "#689d6a", "#a89984", "#7c6f65", "#fb4934", "#b8bb26", "#fabd2f", "#83a598", "#d3869b", "#8ec07c", "#fbf1c7"]
+    },
+    {
+      "name": "yolk-orange",
+      "description": "Vibrant orange accent for primary actions and highlights",
+      "color": "#f6833b"
+    },
+    {
+      "name": "sharp-edge",
+      "description": "Zero border-radius for a sharp, technical aesthetic",
+      "type": "shape"
+    },
+    {
+      "name": "fluid-type",
+      "description": "clamp()-based fluid typography that scales with viewport",
+      "type": "typography"
+    }
+  ],
+  "themes": {
+    "light": {
+      "background": "#dfdfc1",
+      "foreground": "#0b0d0b",
+      "accent": "#1588b2",
+      "yolk": "#f6833b"
+    },
+    "dark": {
+      "background": "#091c1e",
+      "foreground": "#f6fff5",
+      "accent": "#1588b2",
+      "yolk": "#f6833b"
+    }
+  },
+  "motion": {
+    "duration": {
+      "fast": "0.15s",
+      "normal": "0.3s"
+    },
+    "easing": "default ease",
+    "hoverEffects": ["opacity change"],
+    "reducedMotion": "opacity transitions should be instant or reduced",
+    "keyframes": [
+      {
+        "name": "spin",
+        "description": "360 degree rotation for loading spinners",
+        "to": "transform: rotate(360deg)"
+      },
+      {
+        "name": "ping",
+        "description": "Ping/pulse effect that scales up and fades out",
+        "keyframes": "75%, 100% { opacity: 0; transform: scale(2); }"
+      },
+      {
+        "name": "pulse",
+        "description": "Opacity pulse for loading states",
+        "keyframes": "50% { opacity: 0.5; }"
+      },
+      {
+        "name": "accordion-down",
+        "description": "Accordion content expand animation",
+        "from": "height: 0px",
+        "to": "height: var(--bits-accordion-content-height)"
+      },
+      {
+        "name": "accordion-up",
+        "description": "Accordion content collapse animation",
+        "from": "height: var(--bits-accordion-content-height)",
+        "to": "height: 0px"
+      },
+      {
+        "name": "caret-blink",
+        "description": "Terminal caret blink effect",
+        "keyframes": "0%, 70%, 100% { opacity: 1; } 20%, 50% { opacity: 0.5; }"
+      },
+      {
+        "name": "loader-spin",
+        "description": "Standard loading spinner rotation",
+        "from": "transform: rotate(0deg)",
+        "to": "transform: rotate(360deg)"
+      },
+      {
+        "name": "loader-dash",
+        "description": "Dash loading animation with pause steps",
+        "keyframes": "0% { rotate: 0deg }, 25% { rotate: 0deg }, 50% { rotate: 45deg }, 75% { rotate: 45deg }, 100% { rotate: 360deg }"
+      },
+      {
+        "name": "border-shimmer",
+        "description": "Border gradient shimmer sweep effect",
+        "from": "background-position: 200% 0px",
+        "to": "background-position: 0px 0px"
+      },
+      {
+        "name": "fade-in",
+        "description": "Simple opacity fade in",
+        "from": "opacity: 0",
+        "to": "opacity: 1"
+      },
+      {
+        "name": "ap-loader-rotation",
+        "description": "AP (animated processing) loader rotation",
+        "from": "transform: rotate(0deg)",
+        "to": "transform: rotate(360deg)"
+      },
+      {
+        "name": "svelte-14276zm-hero-bg-in",
+        "description": "Hero background fade in with opacity target",
+        "from": "opacity: 0",
+        "to": "opacity: 0.6"
+      },
+      {
+        "name": "svelte-3pyi6g-shake",
+        "description": "Shake effect for error/warning states",
+        "keyframes": "0%, 100% { translate: 0px }, 20% { translate: -4px }, 40% { translate: 4px }, 60% { translate: -3px }, 80% { translate: 3px }"
+      },
+      {
+        "name": "svelte-1qyy2z8-fadeIn",
+        "description": "Svelte fade in with slide up",
+        "from": "opacity: 0; transform: translateY(5px)",
+        "to": "opacity: 1; transform: translateY(0px)"
+      },
+      {
+        "name": "svelte-1qyy2z8-fadeOut",
+        "description": "Svelte fade out with slide down",
+        "from": "opacity: 1; transform: translateY(0px)",
+        "to": "opacity: 0; transform: translateY(5px)"
+      },
+      {
+        "name": "svelte-ytt3rv-fadeIn",
+        "description": "Simple fade in",
+        "from": "opacity: 0",
+        "to": "opacity: 1"
+      },
+      {
+        "name": "svelte-ytt3rv-slideUp",
+        "description": "Slide up reveal",
+        "from": "transform: translateY(5px)",
+        "to": "transform: translateY(0px)"
+      }
+    ]
+  },
+  "components": [
+    {
+      "name": "button",
+      "states": {
+        "default": {
+          "bg": "transparent",
+          "color": "foreground",
+          "border": "0px",
+          "radius": "0px",
+          "height": "48px",
+          "fontSize": "13px"
+        },
+        "hover": "opacity shift",
+        "focus": "ring with muted-foreground"
+      }
+    },
+    {
+      "name": "card",
+      "states": {
+        "default": {
+          "bg": "rgba(foreground, 0.02-0.03)",
+          "border": "oklab with 50% opacity",
+          "radius": "4px"
+        }
+      }
+    },
+    {
+      "name": "link",
+      "states": {
+        "default": "foreground color",
+        "hover": "accent color",
+        "focus": "ring"
+      }
+    },
+    {
+      "name": "code-block",
+      "appearance": "gruvbox terminal colors, dark bg (#282828), light text (#fbf1c7)"
+    },
+    {
+      "name": "badge",
+      "appearance": "small pill shape, yolk orange background"
+    }
+  ],
+  "responsive_rules": [
+    {
+      "breakpoint": "fluid",
+      "typeScale": "clamp() based on viewport"
+    },
+    {
+      "grid": "single column with max-width 2560px",
+      "margin": "4.098vw ratio"
+    }
+  ],
+  "accessibility_notes": [
+    "Sufficient color contrast in both themes",
+    "Large 48px touch targets for accessibility",
+    "Focus ring uses muted-foreground color"
+  ],
+  "limitations": [
+    "Theme appears to follow system preference, no manual toggle observed",
+    "Reduced motion behavior not directly observed"
+  ]
+}

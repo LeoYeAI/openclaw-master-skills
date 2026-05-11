@@ -1,0 +1,171 @@
+openapi: 3.0.0
+info:
+  title: [API名称]
+  description: [API描述]
+  version: 1.0.0
+
+servers:
+  - url: http://localhost:8000/api
+    description: 开发环境
+
+paths:
+  /[资源名]:
+    get:
+      summary: [获取列表]
+      tags:
+        - [标签]
+      parameters:
+        - name: page
+          in: query
+          description: 页码
+          schema:
+            type: integer
+            default: 1
+        - name: page_size
+          in: query
+          description: 每页数量
+          schema:
+            type: integer
+            default: 20
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  count:
+                    type: integer
+                    description: 总数
+                  next:
+                    type: string
+                    nullable: true
+                    description: 下一页URL
+                  previous:
+                    type: string
+                    nullable: true
+                    description: 上一页URL
+                  results:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/[资源名]'
+
+    post:
+      summary: [创建]
+      tags:
+        - [标签]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/[资源名]Create'
+      responses:
+        '201':
+          description: 创建成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/[资源名]'
+
+  /[资源名]/{id}:
+    get:
+      summary: [获取详情]
+      tags:
+        - [标签]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/[资源名]'
+
+    put:
+      summary: [更新]
+      tags:
+        - [标签]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/[资源名]Update'
+      responses:
+        '200':
+          description: 更新成功
+
+    delete:
+      summary: [删除]
+      tags:
+        - [标签]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: 删除成功
+
+components:
+  schemas:
+    [资源名]:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        [字段1]:
+          type: string
+        [字段2]:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+
+    [资源名]Create:
+      type: object
+      required:
+        - [必填字段1]
+      properties:
+        [字段1]:
+          type: string
+        [字段2]:
+          type: string
+
+    [资源名]Update:
+      type: object
+      properties:
+        [字段1]:
+          type: string
+        [字段2]:
+          type: string
+
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+security:
+  - BearerAuth: []

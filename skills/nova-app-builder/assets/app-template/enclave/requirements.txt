@@ -1,0 +1,9 @@
+# Core framework
+fastapi>=0.111.0
+uvicorn[standard]>=0.29.0
+
+# HTTP client — proxy-aware (required for egress inside the enclave)
+# Never use requests or urllib in enclave code; they bypass the Odyn egress proxy.
+httpx>=0.27.0
+
+# Add your app-specific dependencies below:

@@ -1,0 +1,92 @@
+# GitLab CI Template for CSV Documentation
+# Include this template in your .gitlab-ci.yml or use as reference
+
+variables:
+  PIP_CACHE_DIR: "$CI_PROJECT_DIR/.cache/pip"
+  PROJECT_NAME: "$CI_PROJECT_NAME"
+  SYSTEM_NAME: "$CI_SYSTEM_NAME"
+  GAMP_CATEGORY: "$GAMP_CATEGORY"
+
+stages:
+  - validate
+  - generate
+  - report
+
+cache:
+  paths:
+    - .cache/pip
+
+.csv-docs-base:
+  image: python:3.11-slim
+  before_script:
+    - pip install --upgrade pip
+    - pip install -r requirements.txt
+
+validate:requirements:
+  stage: validate
+  extends: .csv-docs-base
+  script:
+    - python scripts/generate.py check \
+        --requirements requirements.json \
+        --test-results test_results.json \
+        --output-format json
+  allow_failure: true
+  artifacts:
+    name: compliance-report
+    paths:
+      - compliance_report.json
+    expire_in: 1 year
+
+generate:rtm:
+  stage: generate
+  extends: .csv-docs-base
+  script:
+    - python scripts/generate.py rtm \
+        --project "${PROJECT_NAME:-System}" \
+        --system "${SYSTEM_NAME:-System v1.0}" \
+        --category ${GAMP_CATEGORY:-4} \
+        --output ./validation/ \
+        --diff-only
+  artifacts:
+    name: rtm-document
+    paths:
+      - validation/RTM*.xlsx
+    expire_in: 30 days
+
+generate:all:
+  stage: generate
+  extends: .csv-docs-base
+  script:
+    - python scripts/generate.py all \
+        --project "${PROJECT_NAME:-System}" \
+        --system "${SYSTEM_NAME:-System v1.0}" \
+        --category ${GAMP_CATEGORY:-4} \
+        --output ./validation/
+  artifacts:
+    name: validation-documents
+    paths:
+      - validation/**/*.docx
+      - validation/**/*.xlsx
+    expire_in: 90 days
+  needs:
+    - validate:requirements
+
+generate:single:
+  stage: generate
+  extends: .csv-docs-base
+  script:
+    - |
+      if [ -n "$DOC_TYPE" ]; then
+        python scripts/generate.py $DOC_TYPE \
+          --project "${PROJECT_NAME:-System}" \
+          --system "${SYSTEM_NAME:-System v1.0}" \
+          --category ${GAMP_CATEGORY:-4} \
+          --output ./validation/
+      fi
+  artifacts:
+    name: validation-document
+    paths:
+      - validation/**
+    expire_in: 90 days
+  rules:
+    - if: '$DOC_TYPE'

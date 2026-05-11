@@ -1,0 +1,280 @@
+{
+  "source": "position.mdx",
+  "relative_source": "modules\\pythongo_classdef\\position.mdx",
+  "title": "`Position`",
+  "doc_kind": "doc",
+  "is_index_page": false,
+  "section_count": 4,
+  "table_count": 4,
+  "callout_count": 0,
+  "link_count": 0,
+  "image_count": 0,
+  "sections": [
+    {
+      "id": "modules.pythongo_classdef.position.position",
+      "title": "`Position`",
+      "level": 1,
+      "content_md": "",
+      "summary": "",
+      "block_type": "section"
+    },
+    {
+      "id": "modules.pythongo_classdef.position.position",
+      "title": "`Position`",
+      "level": 2,
+      "content_md": "合约持仓数据类\n\n| 属性名 | 类型 | 说明 |\n|---|---|---|\n| `long` | `Position_p` | 合约多头持仓 |\n| `short` | `Position_p` | 合约空头持仓 |\n| `net_position` | `int` | 合约净持仓 |\n| `position` | `int` | 合约总持仓 |",
+      "summary": "合约持仓数据类",
+      "block_type": "section"
+    },
+    {
+      "id": "modules.pythongo_classdef.position.get_single_position",
+      "title": "`get_single_position()`",
+      "level": 3,
+      "content_md": "获取单边持仓函数\n\n参数：\n\n| 参数名 | 类型 | 描述 | 默认值 |\n|---|---|---|---|\n| `direction` | `Literal[\"long\" | short |\n| ` |\n| 持 | 仓 | 方 | 向 | （ | l | o | n | g |   | 多 | 头 | 持 | 仓 | , |   | s | h | o | r | t |   | 空 | 头 | 持 | 仓 | ） |\n| 必 | 填 |\n\n返回：\n\n| 类型 | 描述 |\n|---|---|\n| `Position_p` | 单向持仓数据类 |",
+      "summary": "获取单边持仓函数",
+      "block_type": "function"
+    },
+    {
+      "id": "modules.pythongo_classdef.position.position_p",
+      "title": "`Position_p`",
+      "level": 2,
+      "content_md": "单向持仓数据类\n\n| 属性名 | 类型 | 说明 |\n|---|---|---|\n| `exchange` | `str` | 交易所代码 |\n| `instrument_id` | `str` | 合约代码 |\n| `position` | `int` | 总持仓量 |\n| `position_close` | `int` | 总持仓可平仓数量（包括平仓冻结持仓） |\n| `frozen_position` | `int` | 总开仓冻结持仓 |\n| `frozen_closing` | `int` | 总平仓冻结持仓 |\n| `td_frozen_closing` | `int` | 今持仓平仓冻结持仓 |\n| `td_close_available` | `int` | 今持仓可平仓数量 |\n| `td_position_close` | `int` | 今持仓可平仓数量（包括平仓冻结持仓） |\n| `yd_frozen_closing` | `int` | 昨持仓平仓冻结持仓 |\n| `yd_close_available` | `int` | 昨持仓可平仓数量 |\n| `yd_position_close` | `int` | 昨持仓可平仓数量（包括平仓冻结持仓） |\n| `open_volume` | `int` | 今日开仓数量（不包括冻结） |\n| `close_volume` | `int` | 今日平仓数量（包括昨持仓的平仓, 不包括冻结） |\n| `strike_frozen_position` | `int` | 执行冻结持仓 |\n| `abandon_frozen_position` | `int` | 放弃执行冻结持仓 |\n| `position_cost` | `float | int` | 总持仓成本 |\n| `yd_position_cost` | `float | int` | 初始昨日持仓成本（当日不变） |\n| `close_profit` | `float | int` | 平仓盈亏 |\n| `position_profit` | `float | int` | 持仓盈亏 |\n| `open_avg_price` | `float | int` | 开仓均价 |\n| `position_avg_price` | `float | int` | 持仓均价 |\n| `used_margin` | `float | int` | 占用保证金 |\n| `close_available` | `int` | 当前总可平持仓数量 |",
+      "summary": "单向持仓数据类",
+      "block_type": "section"
+    }
+  ],
+  "tables": [
+    {
+      "title": "`Position`",
+      "headers": [
+        "属性名",
+        "类型",
+        "说明"
+      ],
+      "rows": [
+        [
+          "`long`",
+          "`Position_p`",
+          "合约多头持仓"
+        ],
+        [
+          "`short`",
+          "`Position_p`",
+          "合约空头持仓"
+        ],
+        [
+          "`net_position`",
+          "`int`",
+          "合约净持仓"
+        ],
+        [
+          "`position`",
+          "`int`",
+          "合约总持仓"
+        ]
+      ],
+      "source": "position.mdx"
+    },
+    {
+      "title": "`get_single_position()`",
+      "headers": [
+        "参数名",
+        "类型",
+        "描述",
+        "默认值"
+      ],
+      "rows": [
+        [
+          "`direction`",
+          "`Literal[\"long\"",
+          "short"
+        ],
+        [
+          "`"
+        ],
+        [
+          "持",
+          "仓",
+          "方",
+          "向",
+          "（",
+          "l",
+          "o",
+          "n",
+          "g",
+          " ",
+          "多",
+          "头",
+          "持",
+          "仓",
+          ",",
+          " ",
+          "s",
+          "h",
+          "o",
+          "r",
+          "t",
+          " ",
+          "空",
+          "头",
+          "持",
+          "仓",
+          "）"
+        ],
+        [
+          "必",
+          "填"
+        ]
+      ],
+      "source": "position.mdx"
+    },
+    {
+      "title": "`Position_p`",
+      "headers": [
+        "类型",
+        "描述"
+      ],
+      "rows": [
+        [
+          "`Position_p`",
+          "单向持仓数据类"
+        ]
+      ],
+      "source": "position.mdx"
+    },
+    {
+      "title": null,
+      "headers": [
+        "属性名",
+        "类型",
+        "说明"
+      ],
+      "rows": [
+        [
+          "`exchange`",
+          "`str`",
+          "交易所代码"
+        ],
+        [
+          "`instrument_id`",
+          "`str`",
+          "合约代码"
+        ],
+        [
+          "`position`",
+          "`int`",
+          "总持仓量"
+        ],
+        [
+          "`position_close`",
+          "`int`",
+          "总持仓可平仓数量（包括平仓冻结持仓）"
+        ],
+        [
+          "`frozen_position`",
+          "`int`",
+          "总开仓冻结持仓"
+        ],
+        [
+          "`frozen_closing`",
+          "`int`",
+          "总平仓冻结持仓"
+        ],
+        [
+          "`td_frozen_closing`",
+          "`int`",
+          "今持仓平仓冻结持仓"
+        ],
+        [
+          "`td_close_available`",
+          "`int`",
+          "今持仓可平仓数量"
+        ],
+        [
+          "`td_position_close`",
+          "`int`",
+          "今持仓可平仓数量（包括平仓冻结持仓）"
+        ],
+        [
+          "`yd_frozen_closing`",
+          "`int`",
+          "昨持仓平仓冻结持仓"
+        ],
+        [
+          "`yd_close_available`",
+          "`int`",
+          "昨持仓可平仓数量"
+        ],
+        [
+          "`yd_position_close`",
+          "`int`",
+          "昨持仓可平仓数量（包括平仓冻结持仓）"
+        ],
+        [
+          "`open_volume`",
+          "`int`",
+          "今日开仓数量（不包括冻结）"
+        ],
+        [
+          "`close_volume`",
+          "`int`",
+          "今日平仓数量（包括昨持仓的平仓, 不包括冻结）"
+        ],
+        [
+          "`strike_frozen_position`",
+          "`int`",
+          "执行冻结持仓"
+        ],
+        [
+          "`abandon_frozen_position`",
+          "`int`",
+          "放弃执行冻结持仓"
+        ],
+        [
+          "`position_cost`",
+          "`float | int`",
+          "总持仓成本"
+        ],
+        [
+          "`yd_position_cost`",
+          "`float | int`",
+          "初始昨日持仓成本（当日不变）"
+        ],
+        [
+          "`close_profit`",
+          "`float | int`",
+          "平仓盈亏"
+        ],
+        [
+          "`position_profit`",
+          "`float | int`",
+          "持仓盈亏"
+        ],
+        [
+          "`open_avg_price`",
+          "`float | int`",
+          "开仓均价"
+        ],
+        [
+          "`position_avg_price`",
+          "`float | int`",
+          "持仓均价"
+        ],
+        [
+          "`used_margin`",
+          "`float | int`",
+          "占用保证金"
+        ],
+        [
+          "`close_available`",
+          "`int`",
+          "当前总可平持仓数量"
+        ]
+      ],
+      "source": "position.mdx"
+    }
+  ],
+  "callouts": [],
+  "links": [],
+  "images": []
+}

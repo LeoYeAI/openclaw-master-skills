@@ -1,0 +1,45 @@
+{
+  "name": "并行调研报告",
+  "description": "并行调研多个主题，然后综合成报告",
+  "phases": [
+    {
+      "name": "并行调研",
+      "mode": "parallel",
+      "aggregation": "synthesize",
+      "agents": [
+        {
+          "task": "调研 LangChain 框架：架构、优缺点、适用场景、最新动态。输出结构化 Markdown。",
+          "model": "kimi",
+          "role": "研究员",
+          "label": "research-langchain"
+        },
+        {
+          "task": "调研 CrewAI 框架：架构、优缺点、适用场景、最新动态。输出结构化 Markdown。",
+          "model": "glm",
+          "role": "研究员",
+          "label": "research-crewai"
+        },
+        {
+          "task": "调研 AutoGen 框架：架构、优缺点、适用场景、最新动态。输出结构化 Markdown。",
+          "model": "gemini",
+          "role": "研究员",
+          "label": "research-autogen"
+        }
+      ]
+    },
+    {
+      "name": "综合报告",
+      "mode": "sequential",
+      "aggregation": "last",
+      "depends_on": ["并行调研"],
+      "agents": [
+        {
+          "task": "基于以上3个框架的调研结果，撰写一篇完整的对比分析报告。包含：总结表格、各框架详细分析、选型建议。",
+          "model": "claude",
+          "role": "技术写作者",
+          "label": "final-report"
+        }
+      ]
+    }
+  ]
+}

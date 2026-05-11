@@ -1,0 +1,13 @@
+diff --git a/ui/src/ui/app-chat.ts b/ui/src/ui/app-chat.ts
+index 1e824fb4f..aef188737 100644
+--- a/ui/src/ui/app-chat.ts
++++ b/ui/src/ui/app-chat.ts
+@@ -24,7 +24,7 @@ export type ChatHost = {
+   refreshSessionsAfterChat: Set<string>;
+ };
+ 
+-export const CHAT_SESSIONS_ACTIVE_MINUTES = 120;
++export const CHAT_SESSIONS_ACTIVE_MINUTES = 0;
+ 
+ export function isChatBusy(host: ChatHost) {
+   return host.chatSending || Boolean(host.chatRunId);

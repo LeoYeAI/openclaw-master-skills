@@ -1,0 +1,35 @@
+{
+  "name": "@silkysquad/silk",
+  "version": "1.0.7",
+  "description": "Agent banking and payments on Solana — cancellable escrow stablecoin transfers and policy-controlled accounts",
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "bin": {
+    "silk": "dist/cli.js"
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "clean": "rm -rf dist",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "@solana/web3.js": "^1.98.4",
+    "axios": "^1.11.0",
+    "bs58": "^6.0.0",
+    "commander": "^12.1.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.7",
+    "typescript": "^5.7.3"
+  },
+  "private": false,
+  "publishConfig": {
+    "access": "public"
+  },
+  "license": "MIT"
+}

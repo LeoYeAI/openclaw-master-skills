@@ -1,0 +1,64 @@
+name: Paper Breakdown to Insight
+slug: paper-breakdown-insight
+version: "0.3.2"
+status: needs-review
+priority: p0
+platforms:
+  - linkedin
+  - reddit
+  - x
+private: false
+owner: null
+
+source_prerequisites:
+  min_sources: 1
+  source_types:
+    - research-paper
+
+brand_graph:
+  required: false
+  required_layers: []
+
+prerequisites:
+  - name: extract-paper
+    action: extract-text
+    description: Extract the full text from the research paper (PDF or web page).
+  - name: summarize-findings
+    action: summarize
+    description: Summarize the paper into 3-5 key findings or insights.
+  - name: generate-title
+    action: generate-title
+    description: Generate a compelling title that captures the paper's most interesting finding.
+  - name: identify-implications
+    action: research-context
+    description: Identify practical implications and why this matters for the target audience.
+
+blocks:
+  - name: insight-post
+    format: text
+    sub_format: insight-post
+    agent: insight-post.md
+    depends_on: null
+    rules:
+      - Lead with the most surprising or valuable finding
+      - Translate academic language into accessible insights
+      - Include specific data points or numbers from the paper
+      - End with a takeaway the reader can act on
+      - Keep under 1500 characters for LinkedIn, 300 for X
+    examples:
+      - https://www.linkedin.com/posts/romejgeorgio_the-start-of-machine-to-machine-marketing-activity-7430322995220459520-gU7Q
+
+  - name: infographic
+    format: image
+    sub_format: infographic
+    agent: infographic.md
+    depends_on: null
+    rules:
+      - Visualize the 3-5 key findings
+      - Use a clear visual hierarchy
+      - Include the paper title and source
+      - Keep text concise, let visuals carry the message
+      - Use brand colors if brand graph is loaded
+    examples:
+      - https://x.com/omarsar0/status/2030403147588604376
+      - https://x.com/omarsar0/status/2029926242640912429

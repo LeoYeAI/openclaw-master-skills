@@ -1,0 +1,69 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "code-cover-inst.schema.json",
+  "title": "CodeCoverInst Task",
+  "description": "代码覆盖度插桩任务配置（Jacoco插桩）",
+  "type": "object",
+  "required": ["taskCategory", "jobType", "name"],
+  "properties": {
+    "taskCategory": {
+      "type": "string",
+      "const": "CodeCover"
+    },
+    "jobType": {
+      "type": "string",
+      "const": "CodeCoverInst"
+    },
+    "name": {
+      "type": "string",
+      "maxLength": 100,
+      "description": "任务名称"
+    },
+    "workPath": {
+      "type": "string",
+      "description": "工作目录"
+    },
+    "sourceId": {
+      "type": "string",
+      "description": "代码源ID"
+    },
+    "buildImageModel": {
+      "type": "string",
+      "enum": ["default", "custom"],
+      "default": "default"
+    },
+    "executeImageId": {
+      "type": "string"
+    },
+    "classPath": {
+      "type": "string",
+      "default": "target/classes",
+      "description": "类文件路径"
+    },
+    "destPath": {
+      "type": "string",
+      "default": "target/jacoco",
+      "description": "插桩输出路径"
+    },
+    "excludes": {
+      "type": "array",
+      "items": { "type": "string" },
+      "default": [],
+      "description": "排除的类"
+    },
+    "includes": {
+      "type": "array",
+      "items": { "type": "string" },
+      "default": [],
+      "description": "包含的类"
+    },
+    "idInTemplate": {
+      "type": "string"
+    },
+    "dependencies": {
+      "type": "array",
+      "items": { "type": "string" },
+      "default": []
+    }
+  }
+}

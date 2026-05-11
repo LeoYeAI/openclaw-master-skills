@@ -1,0 +1,102 @@
+[
+  {
+    "id": 0,
+    "prompt": "Prepare E1 tax return for a Greek employee earning €32,000 annually with a spouse and two children. Include medical expenses of €1,500, education costs of €3,000, and insurance premiums of €800. Calculate optimal tax burden with all available deductions and credits.",
+    "expectations": [
+      "Calculates progressive tax on €32,000 employment income using current Greek tax brackets",
+      "Applies basic tax credit of €2,100 plus spouse credit €2,100 plus children credits (2 × €777)",
+      "Includes all medical expenses (no limit for medical in Greece)",
+      "Includes all education expenses (no limit for education in Greece)", 
+      "Applies insurance premium deductions up to €1,200 per person limit",
+      "Generates E1 form with accurate calculations and TAXIS submission format",
+      "Provides tax optimization recommendations for family situation",
+      "Calculates final tax due after withholding and credits"
+    ],
+    "files": [
+      {
+        "name": "employee_tax_data.json",
+        "content": "{\n  \"taxpayer\": {\n    \"afm\": \"123456789\",\n    \"name\": \"Nikos Papadopoulos\",\n    \"address\": \"Ermou 15, Athens 10563\",\n    \"marital_status\": \"married\",\n    \"spouse\": {\n      \"name\": \"Maria Papadopoulos\",\n      \"income\": 0,\n      \"afm\": \"987654321\"\n    },\n    \"children\": [\n      {\"name\": \"Dimitris\", \"age\": 12, \"education\": \"primary_school\"},\n      {\"name\": \"Elena\", \"age\": 16, \"education\": \"high_school\"}\n    ]\n  },\n  \"income_2025\": {\n    \"employment\": {\n      \"gross_salary\": 32000,\n      \"employer\": \"TECH COMPANY AE\",\n      \"withholding_tax\": 5800,\n      \"social_security\": 3840,\n      \"net_salary\": 22360\n    }\n  },\n  \"deductions_2025\": {\n    \"medical_expenses\": [\n      {\"type\": \"doctor_visits\", \"amount\": 600, \"payment_method\": \"card\"},\n      {\"type\": \"pharmacy\", \"amount\": 450, \"payment_method\": \"cash\"},\n      {\"type\": \"dental\", \"amount\": 450, \"payment_method\": \"card\"}\n    ],\n    \"education_expenses\": [\n      {\"child\": \"Dimitris\", \"type\": \"private_tutoring\", \"amount\": 1500},\n      {\"child\": \"Elena\", \"type\": \"language_school\", \"amount\": 1500}\n    ],\n    \"insurance_premiums\": [\n      {\"type\": \"life_insurance\", \"amount\": 400, \"insured\": \"taxpayer\"},\n      {\"type\": \"health_insurance\", \"amount\": 400, \"insured\": \"spouse\"}\n    ]\n  }\n}"
+      }
+    ]
+  },
+  {
+    "id": 1,
+    "prompt": "Process individual tax return for a Greek professional with both employment income (€45,000) and freelance consulting income (€18,000). Include property rental income of €12,000 and optimize deductions. Calculate withholding tax credits and net tax due.",
+    "expectations": [
+      "Calculates tax on multiple income sources using correct Greek tax treatment",
+      "Applies progressive tax rates to total income of €75,000",
+      "Handles withholding tax credits from employment and professional income",
+      "Calculates rental income tax at progressive rates (15%/35%/45%)",
+      "Applies solidarity tax on income over €30,000",
+      "Optimizes professional expense deductions for consulting income",
+      "Includes property-related deductions (maintenance, management fees)",
+      "Generates comprehensive tax calculation with breakdown by income type"
+    ],
+    "files": [
+      {
+        "name": "professional_tax_data.json",
+        "content": "{\n  \"taxpayer\": {\n    \"afm\": \"456789123\",\n    \"name\": \"Sophia Konstantinou\",\n    \"address\": \"Tsimiski 25, Thessaloniki 54624\",\n    \"marital_status\": \"single\",\n    \"profession\": \"IT Consultant\"\n  },\n  \"income_2025\": {\n    \"employment\": {\n      \"gross_salary\": 45000,\n      \"employer\": \"SOFTWARE SOLUTIONS AE\",\n      \"withholding_tax\": 9500,\n      \"social_security\": 5400\n    },\n    \"professional\": {\n      \"consulting_fees\": 18000,\n      \"withholding_tax\": 3600,\n      \"business_expenses\": {\n        \"office_rent\": 3600,\n        \"equipment\": 1200,\n        \"professional_development\": 800,\n        \"transportation\": 600\n      }\n    },\n    \"property\": {\n      \"rental_income\": 12000,\n      \"property_address\": \"Apartment in Thessaloniki center\",\n      \"expenses\": {\n        \"property_management\": 720,\n        \"maintenance_repairs\": 800,\n        \"insurance\": 300,\n        \"enfia_tax\": 480\n      }\n    }\n  },\n  \"deductions_2025\": {\n    \"medical_expenses\": 2200,\n    \"insurance_premiums\": 1200,\n    \"charitable_donations\": 500\n  }\n}"
+      }
+    ]
+  },
+  {
+    "id": 2,
+    "prompt": "Calculate ENFIA property tax for an individual owning primary residence (€280,000 value) and a rental property (€150,000 value). Include insurance discounts and coordinate with individual income tax return. The taxpayer lives in Athens.",
+    "expectations": [
+      "Calculates primary residence ENFIA with appropriate base rates",
+      "Applies supplementary tax for total property value over €500,000 threshold",
+      "Includes insurance discount (20%) for properties with comprehensive coverage",
+      "Calculates municipal TAP tax at Athens rate (0.025%)",
+      "Coordinates ENFIA payments as deductions for rental income tax",
+      "Provides payment schedule options (up to 10 installments)",
+      "Integrates property taxes with individual E1 form preparation",
+      "Calculates early payment discount (3%) if applicable"
+    ],
+    "files": [
+      {
+        "name": "property_tax_data.json",
+        "content": "{\n  \"taxpayer\": {\n    \"afm\": \"789123456\",\n    \"name\": \"Yannis Dimitriou\",\n    \"municipality\": \"Athens\",\n    \"tax_office\": \"A' ΑΘΔÎΩÎ\"\n  },\n  \"properties\": [\n    {\n      \"type\": \"primary_residence\",\n      \"address\": \"Patission 123, Athens 11251\",\n      \"objective_value\": 280000,\n      \"area_sqm\": 95,\n      \"construction_year\": 1985,\n      \"floor\": 3,\n      \"zone_value\": 2200,\n      \"insurance\": {\n        \"comprehensive_coverage\": true,\n        \"provider\": \"INTERAMERICAN\",\n        \"premium_annual\": 450\n      },\n      \"energy_class\": \"D\"\n    },\n    {\n      \"type\": \"rental_property\",\n      \"address\": \"Kifissias 45, Marousi 15122\",\n      \"objective_value\": 150000,\n      \"area_sqm\": 70,\n      \"construction_year\": 1995,\n      \"floor\": 2,\n      \"zone_value\": 1800,\n      \"rental_income_annual\": 7200,\n      \"insurance\": {\n        \"comprehensive_coverage\": true,\n        \"provider\": \"ETHNIKI ASFALISTIKI\",\n        \"premium_annual\": 320\n      },\n      \"energy_class\": \"C\"\n    }\n  ],\n  \"previous_year_enfia\": {\n    \"primary_residence\": 825,\n    \"rental_property\": 385,\n    \"total_paid\": 1210\n  }\n}"
+      }
+    ]
+  },
+  {
+    "id": 3,
+    "prompt": "Optimize tax strategy for a Greek family where husband earns €55,000 and wife earns €28,000. They have three children and significant medical expenses (€4,500). Determine if separate or joint optimization provides better tax outcome.",
+    "expectations": [
+      "Calculates tax burden for both separate and joint optimization strategies",
+      "Allocates medical expenses optimally between spouses for maximum benefit",
+      "Applies family tax credits correctly (€777 per child × 3)",
+      "Compares total family tax burden under different scenarios",
+      "Recommends optimal strategy with detailed justification",
+      "Considers solidarity tax implications for both spouses",
+      "Provides specific advice on expense allocation and timing",
+      "Generates family tax optimization report with savings amount"
+    ],
+    "files": [
+      {
+        "name": "family_tax_optimization.json",
+        "content": "{\n  \"family\": {\n    \"husband\": {\n      \"name\": \"Petros Nikolaou\",\n      \"afm\": \"321654987\",\n      \"annual_income\": 55000,\n      \"employer_withholding\": 12500,\n      \"social_security\": 6600\n    },\n    \"wife\": {\n      \"name\": \"Anna Nikolaou\",\n      \"afm\": \"654987321\",\n      \"annual_income\": 28000,\n      \"employer_withholding\": 4200,\n      \"social_security\": 3360\n    },\n    \"children\": [\n      {\"name\": \"Kostas\", \"age\": 8, \"education\": \"primary\"},\n      {\"name\": \"Maria\", \"age\": 14, \"education\": \"middle_school\"},\n      {\"name\": \"Alexandros\", \"age\": 19, \"education\": \"university\"}\n    ]\n  },\n  \"shared_expenses_2025\": {\n    \"medical_expenses\": [\n      {\"type\": \"surgery_husband\", \"amount\": 2500, \"patient\": \"husband\"},\n      {\"type\": \"orthodontics_maria\", \"amount\": 1200, \"patient\": \"daughter\"},\n      {\"type\": \"therapy_kostas\", \"amount\": 800, \"patient\": \"son\"}\n    ],\n    \"education_expenses\": [\n      {\"child\": \"Kostas\", \"type\": \"private_school\", \"amount\": 2400},\n      {\"child\": \"Maria\", \"type\": \"tutoring\", \"amount\": 1800},\n      {\"child\": \"Alexandros\", \"type\": \"university_tuition\", \"amount\": 3500}\n    ],\n    \"insurance_premiums\": {\n      \"family_health_insurance\": 1500,\n      \"life_insurance_husband\": 800,\n      \"life_insurance_wife\": 600\n    },\n    \"charitable_donations\": 1000\n  },\n  \"optimization_scenarios\": {\n    \"scenario_1\": \"allocate_medical_to_higher_earner\",\n    \"scenario_2\": \"allocate_medical_to_lower_earner\", \n    \"scenario_3\": \"split_expenses_proportionally\",\n    \"scenario_4\": \"optimize_each_expense_separately\"\n  }\n}"
+      }
+    ]
+  },
+  {
+    "id": 4,
+    "prompt": "Prepare comprehensive E1 tax return package for deadline submission including document collection checklist, TAXIS electronic submission preparation, and payment planning with installment options.",
+    "expectations": [
+      "Generates complete document collection checklist for E1 submission",
+      "Validates all required supporting documents and certificates",
+      "Prepares TAXIS electronic submission format with digital signature requirements", 
+      "Calculates payment options and installment schedules",
+      "Creates submission timeline to meet June 30 deadline",
+      "Provides post-submission follow-up actions and confirmation procedures",
+      "Includes backup plans for technical issues during submission",
+      "Generates professional client communication materials in Greek"
+    ],
+    "files": [
+      {
+        "name": "e1_submission_package.json",
+        "content": "{\n  \"submission_details\": {\n    \"tax_year\": 2025,\n    \"submission_deadline\": \"2026-06-30\",\n    \"current_date\": \"2026-05-15\",\n    \"days_remaining\": 46\n  },\n  \"taxpayer_info\": {\n    \"afm\": \"159753486\",\n    \"name\": \"Dimitris Georgiadis\",\n    \"address\": \"Voukourestiou 8, Athens 10671\",\n    \"email\": \"d.georgiadis@email.gr\",\n    \"phone\": \"+30-210-1234567\",\n    \"tax_office\": \"Β' ΑΘΔÎΩÎ\",\n    \"taxis_credentials\": \"configured\",\n    \"digital_certificate\": \"valid_until_2027\"\n  },\n  \"income_summary\": {\n    \"employment_income\": 42000,\n    \"professional_income\": 8000,\n    \"property_income\": 4800,\n    \"investment_income\": 1200,\n    \"total_gross_income\": 56000\n  },\n  \"deductions_summary\": {\n    \"medical_expenses\": 1800,\n    \"education_expenses\": 2200,\n    \"insurance_premiums\": 1000,\n    \"charitable_donations\": 400,\n    \"total_deductions\": 5400\n  },\n  \"required_documents\": [\n    {\n      \"type\": \"employer_certificate\",\n      \"description\": \"Βεβαίωση αποδοχών από εÏγοδότη\",\n      \"status\": \"received\"\n    },\n    {\n      \"type\": \"professional_income_receipts\",\n      \"description\": \"Αποδείξεις επαγγελματικών εσόδων\",\n      \"status\": \"pending\"\n    },\n    {\n      \"type\": \"property_income_records\",\n      \"description\": \"Στοιχεία εισοδήματος από ακίνητα\",\n      \"status\": \"received\"\n    },\n    {\n      \"type\": \"medical_expense_receipts\",\n      \"description\": \"Αποδείξεις ιατÏικών δαπανών\",\n      \"status\": \"organizing\"\n    }\n  ],\n  \"submission_options\": {\n    \"electronic_submission\": {\n      \"platform\": \"TAXIS\",\n      \"requirements\": [\"Digital certificate\", \"Login credentials\"],\n      \"estimated_time\": \"30 minutes\"\n    },\n    \"paper_submission\": {\n      \"location\": \"Tax office or authorized agent\",\n      \"requirements\": [\"Printed forms\", \"Supporting documents\"],\n      \"deadline_consideration\": \"Must account for processing time\"\n    }\n  }\n}"
+      }
+    ]
+  }
+]

@@ -1,0 +1,910 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Tiwis Style Specimen</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500&display=swap');
+
+    :root {
+      --font-family-sans: "Aratigo", "DM Sans", Arial, sans-serif;
+      --font-family-display: "AlmarenaNeueDisplay", "DM Sans", Arial, sans-serif;
+
+      --font-size-1: 12px;
+      --font-size-2: 14px;
+      --font-size-3: 16px;
+      --font-size-4: 20px;
+      --font-size-5: 28px;
+      --font-size-6: 48px;
+      --font-size-7: 72px;
+      --font-size-hero: 88.88px;
+
+      --line-height-tight: 1.0;
+      --line-height-normal: 1.5;
+      --line-height-relaxed: 1.65;
+
+      --space-1: 4px;
+      --space-2: 8px;
+      --space-3: 12px;
+      --space-4: 16px;
+      --space-5: 20px;
+      --space-6: 24px;
+      --space-8: 32px;
+      --space-10: 40px;
+      --space-12: 48px;
+
+      --radius-sm: 0px;
+      --radius-md: 0px;
+      --radius-lg: 0px;
+      --radius-xl: 0px;
+
+      --border-width-1: 1px;
+      --border-width-2: 2px;
+
+      --shadow-xs: none;
+      --shadow-sm: none;
+      --shadow-md: none;
+      --shadow-lg: none;
+
+      --motion-duration-fast: 0.1s;
+      --motion-duration-normal: 0.2s;
+      --motion-ease-standard: ease;
+
+      --container-max: 1440px;
+
+      --noise-opacity: 0;
+      --glow-blur-sm: 20px;
+      --glow-blur-md: 40px;
+      --glow-blur-lg: 60px;
+
+      --color-black: #000;
+      --color-white: #fff;
+      --color-orange: #fa4838;
+      --color-blue: rgb(0, 0, 238);
+    }
+
+    * { box-sizing: border-box; }
+    html, body { margin: 0; padding: 0; }
+    html {
+      background: var(--color-black);
+    }
+
+    body {
+      font-family: var(--font-family-sans);
+      font-size: var(--font-size-2);
+      font-weight: 300;
+      color: var(--color-white);
+      line-height: var(--line-height-normal);
+      background: var(--color-black);
+      transition:
+        background var(--motion-duration-normal) var(--motion-ease-standard),
+        color var(--motion-duration-normal) var(--motion-ease-standard);
+    }
+
+    .page {
+      position: relative;
+      max-width: var(--container-max);
+      margin: 0 auto;
+      padding: var(--space-10) var(--space-6) var(--space-12);
+    }
+
+    .section {
+      margin-top: var(--space-12);
+    }
+
+    .section h2 {
+      font-family: var(--font-family-display);
+      font-size: var(--font-size-5);
+      font-weight: 500;
+      letter-spacing: -1px;
+      margin: 0 0 var(--space-5);
+    }
+
+    .muted { color: rgba(255, 255, 255, 0.6); }
+
+    .grid {
+      display: grid;
+      gap: var(--space-4);
+    }
+
+    .grid-2 {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .grid-3 {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .grid-4 {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+
+    .card {
+      position: relative;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: var(--radius-md);
+      padding: var(--space-5);
+      box-shadow: var(--shadow-xs);
+      transition:
+        border-color var(--motion-duration-fast) var(--motion-ease-standard);
+    }
+
+    .card:hover {
+      border-color: rgba(255, 255, 255, 0.3);
+    }
+
+    .swatch {
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .swatch-color {
+      height: 72px;
+    }
+
+    .swatch-meta {
+      padding: var(--space-3);
+      font-size: var(--font-size-1);
+      color: rgba(255, 255, 255, 0.7);
+    }
+
+    .btn-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--space-3);
+    }
+
+    .btn {
+      appearance: none;
+      border: 1px solid var(--color-white);
+      border-radius: var(--radius-md);
+      padding: 0 24px;
+      height: 48px;
+      min-width: 120px;
+      font: inherit;
+      font-size: var(--font-size-2);
+      font-weight: 400;
+      cursor: pointer;
+      background: transparent;
+      color: var(--color-white);
+      transition:
+        background var(--motion-duration-fast) var(--motion-ease-standard),
+        color var(--motion-duration-fast) var(--motion-ease-standard),
+        border-color var(--motion-duration-fast) var(--motion-ease-standard);
+    }
+
+    .btn:hover {
+      background: var(--color-orange);
+      border-color: var(--color-orange);
+      color: var(--color-white);
+    }
+
+    .btn:focus-visible {
+      outline: 2px solid var(--color-orange);
+      outline-offset: 2px;
+    }
+
+    .btn-primary {
+      background: var(--color-orange);
+      border-color: var(--color-orange);
+      color: var(--color-white);
+    }
+
+    .btn-primary:hover {
+      background: transparent;
+      border-color: var(--color-white);
+    }
+
+    .btn-ghost {
+      background: transparent;
+      border-color: rgba(255, 255, 255, 0.3);
+      color: var(--color-white);
+    }
+
+    .input, .select, .textarea {
+      width: 100%;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      background: rgba(255, 255, 255, 0.05);
+      color: var(--color-white);
+      border-radius: var(--radius-md);
+      padding: 12px 16px;
+      font: inherit;
+      font-size: var(--font-size-2);
+      transition:
+        border-color var(--motion-duration-fast) var(--motion-ease-standard);
+    }
+
+    .input:focus-visible,
+    .select:focus-visible,
+    .textarea:focus-visible {
+      outline: none;
+      border-color: var(--color-orange);
+    }
+
+    .input::placeholder {
+      color: rgba(255, 255, 255, 0.4);
+    }
+
+    .label {
+      display: block;
+      margin-bottom: 8px;
+      font-size: var(--font-size-1);
+      color: rgba(255, 255, 255, 0.6);
+    }
+
+    .form-stack {
+      display: grid;
+      gap: var(--space-4);
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      border-radius: 999px;
+      padding: 4px 12px;
+      background: var(--color-orange);
+      color: var(--color-white);
+      font-size: var(--font-size-1);
+      font-weight: 400;
+    }
+
+    .table {
+      width: 100%;
+      border-collapse: collapse;
+      overflow: hidden;
+      border-radius: var(--radius-md);
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .table th, .table td {
+      text-align: left;
+      padding: 14px 16px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .table th {
+      background: rgba(255, 255, 255, 0.05);
+      color: rgba(255, 255, 255, 0.6);
+      font-weight: 500;
+    }
+
+    .prose {
+      max-width: 72ch;
+      color: var(--color-white);
+    }
+
+    .prose p { color: rgba(255, 255, 255, 0.8); }
+    .prose a { color: var(--color-orange); text-decoration: none; }
+    .prose a:hover { text-decoration: underline; }
+
+    .code {
+      position: relative;
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      background: rgba(255, 255, 255, 0.03);
+      color: var(--color-white);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .code-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 16px;
+      font-size: var(--font-size-1);
+      background: rgba(255, 255, 255, 0.05);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .code pre {
+      margin: 0;
+      padding: 16px;
+      overflow: auto;
+      font-family: var(--font-family-sans);
+      font-size: 13px;
+      line-height: 1.6;
+    }
+
+    .token-keyword { color: var(--color-orange); font-weight: 500; }
+    .token-string { color: rgba(255, 255, 255, 0.8); }
+    .token-number { color: rgba(255, 255, 255, 0.6); }
+    .token-comment { color: rgba(255, 255, 255, 0.4); }
+
+    .callout {
+      border-radius: var(--radius-md);
+      padding: var(--space-4);
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .callout.info { border-left: 3px solid var(--color-blue); }
+    .callout.success { border-left: 3px solid rgba(255, 255, 255, 0.5); }
+    .callout.warning { border-left: 3px solid var(--color-orange); }
+    .callout.danger { border-left: 3px solid rgb(255, 80, 80); }
+
+    .hero {
+      position: relative;
+      overflow: hidden;
+      padding: var(--space-10);
+      border-radius: var(--radius-lg);
+      background: var(--color-black);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      isolation: isolate;
+    }
+
+    .display-heading {
+      font-family: var(--font-family-display);
+      font-size: var(--font-size-hero);
+      font-weight: 500;
+      line-height: 0.95;
+      letter-spacing: -3.56px;
+      margin: 0;
+      color: var(--color-white);
+    }
+
+    .toolbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: var(--space-4);
+      margin-bottom: var(--space-6);
+    }
+
+    .background-board {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: var(--space-4);
+    }
+
+    .bg-sample {
+      min-height: 160px;
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      position: relative;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .bg-label {
+      position: absolute;
+      left: 12px;
+      bottom: 12px;
+      padding: 6px 10px;
+      font-size: var(--font-size-1);
+      border-radius: 999px;
+      background: rgba(0, 0, 0, 0.8);
+      color: var(--color-white);
+      backdrop-filter: blur(8px);
+    }
+
+    .bg-black { background: var(--color-black); }
+    .bg-orange { background: var(--color-orange); }
+    .bg-white { background: var(--color-white); }
+    .bg-surface { background: rgba(255, 255, 255, 0.03); border-color: rgba(255, 255, 255, 0.1); }
+
+    .atmosphere-scene {
+      position: relative;
+      min-height: 320px;
+      border-radius: calc(var(--radius-lg) + 4px);
+      overflow: hidden;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      background: var(--color-black);
+      isolation: isolate;
+    }
+
+    .atmosphere-layer {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+    }
+
+    .atmosphere-base {
+      background: var(--color-black);
+    }
+
+    .atmosphere-glow {
+      background:
+        radial-gradient(circle at 30% 40%, rgba(250, 72, 56, 0.15), transparent 50%),
+        radial-gradient(circle at 70% 60%, rgba(255, 255, 255, 0.05), transparent 40%);
+    }
+
+    .atmosphere-content {
+      position: relative;
+      z-index: 2;
+      padding: clamp(1.5rem, 3vw, 2.5rem);
+      max-width: 700px;
+    }
+
+    .atmosphere-content h3 {
+      margin: 0 0 10px;
+      font-family: var(--font-family-display);
+      font-size: var(--font-size-6);
+      font-weight: 500;
+      letter-spacing: -2px;
+    }
+
+    .motif-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: var(--space-4);
+    }
+
+    .motif-card {
+      min-height: 150px;
+      border-radius: var(--radius-md);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      position: relative;
+      overflow: hidden;
+      background: rgba(255, 255, 255, 0.03);
+      padding: 14px;
+      display: flex;
+      align-items: end;
+      font-size: var(--font-size-2);
+    }
+
+    .motif-card::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+    }
+
+    .motif-black { background: var(--color-black); border-color: rgba(255,255,255,0.2); }
+    .motif-orange { background: var(--color-orange); }
+    .motif-white { background: var(--color-white); color: var(--color-black); }
+    .motif-surface { background: rgba(255, 255, 255, 0.05); }
+
+    .nav-demo {
+      display: flex;
+      gap: var(--space-3);
+      flex-wrap: wrap;
+    }
+
+    .nav-pill {
+      padding: 10px 16px;
+      border-radius: 0px;
+      background: transparent;
+      color: var(--color-white);
+      font-size: var(--font-size-2);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      cursor: pointer;
+      transition:
+        border-color var(--motion-duration-fast) var(--motion-ease-standard),
+        color var(--motion-duration-fast) var(--motion-ease-standard);
+    }
+
+    .nav-pill:hover {
+      border-color: var(--color-orange);
+      color: var(--color-orange);
+    }
+
+    .nav-pill.active {
+      background: var(--color-orange);
+      border-color: var(--color-orange);
+    }
+
+    .overlay-demo {
+      display: grid;
+      place-items: center;
+      min-height: 200px;
+      border-radius: var(--radius-lg);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      position: relative;
+      overflow: hidden;
+      background: rgba(255, 255, 255, 0.02);
+    }
+
+    .overlay-demo::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(circle at 50% 50%, rgba(250, 72, 56, 0.1), transparent 60%);
+      pointer-events: none;
+    }
+
+    .modal-card {
+      position: relative;
+      z-index: 2;
+      width: min(420px, calc(100% - 32px));
+      border-radius: var(--radius-md);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      background: rgba(0, 0, 0, 0.8);
+      backdrop-filter: blur(20px);
+      padding: var(--space-5);
+    }
+
+    .accent-line {
+      width: 60px;
+      height: 3px;
+      background: var(--color-orange);
+      margin: var(--space-4) 0;
+    }
+
+    /* ===== Keyframe Animations ===== */
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    /* ===== Animation Demo Classes ===== */
+    .animation-demo {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: var(--space-4);
+    }
+
+    .anim-box {
+      height: 100px;
+      border-radius: var(--radius-md);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      background: rgba(255, 255, 255, 0.03);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: var(--space-3);
+      font-size: var(--font-size-1);
+      color: rgba(255, 255, 255, 0.5);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .anim-box span {
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .spinner {
+      width: 24px;
+      height: 24px;
+      border: 2px solid rgba(255, 255, 255, 0.2);
+      border-top-color: var(--color-orange);
+      border-radius: 50%;
+    }
+
+    .spin-demo { animation: spin 1s linear infinite; }
+
+    @media (max-width: 1000px) {
+      .background-board,
+      .motif-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+      .animation-demo {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
+    @media (max-width: 900px) {
+      .grid-3 { grid-template-columns: 1fr 1fr; }
+    }
+
+    @media (max-width: 700px) {
+      .page { padding: var(--space-6) var(--space-4); }
+      .grid-2, .grid-3,
+      .background-board,
+      .motif-grid {
+        grid-template-columns: 1fr;
+      }
+      .toolbar {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      .display-heading {
+        font-size: var(--font-size-7);
+        letter-spacing: -2px;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *,
+      *::before,
+      *::after {
+        animation-duration: 1ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 1ms !important;
+        scroll-behavior: auto !important;
+      }
+    }
+  </style>
+
+  <script id="design-manifest" type="application/json">
+  {
+    "meta": {
+      "title": "Tiwis Style System",
+      "source": "https://www.tiwis.fr/en/notre-approche"
+    },
+    "style_character": {
+      "summary": "Ultra-minimal consulting aesthetic - stark black with white and vivid orange (#fa4838) accent. AlmarenaNeueDisplay for large headings, Blizar dot pattern as signature texture.",
+      "mood": "Minimal, stark, premium consulting",
+      "density": "low",
+      "contrast": "maximum"
+    },
+    "primitives": {
+      "fonts": {
+        "sans": "Aratigo, Arial",
+        "display": "AlmarenaNeueDisplay"
+      },
+      "radius": "0px",
+      "shadow": "none",
+      "motion": {"duration": "0.1s"}
+    },
+    "semantic": {
+      "colors": {
+        "black": "#000",
+        "white": "#fff",
+        "orange": "#fa4838"
+      }
+    },
+    "motifs": ["blizar-dot-pattern", "orange-flash", "maximum-contrast", "tight-tracking-display"],
+    "themes": {
+      "default": {"background": "#000", "foreground": "#fff", "accent": "#fa4838"}
+    }
+  }
+  </script>
+</head>
+<body>
+  <main class="page">
+    <div class="toolbar">
+      <div>
+        <h1 class="display-heading" style="margin:0;">Tiwis</h1>
+        <p class="muted" style="margin:8px 0 0;font-size:var(--font-size-3);">Style Specimen</p>
+      </div>
+    </div>
+
+    <section class="section hero">
+      <h2 style="margin-top:0;font-family:var(--font-family-display);font-size:var(--font-size-5);letter-spacing:-1px;">Visual Character</h2>
+      <p class="muted" style="max-width:60ch;margin-bottom:16px;">Ultra-minimal consulting aesthetic. Stark black background with pure white text and vivid orange (#fa4838) accent. Maximum contrast, minimal UI, confident presence.</p>
+      <div class="btn-row">
+        <button class="btn btn-primary">Primary</button>
+        <button class="btn btn-ghost">Ghost</button>
+        <button class="btn">Outline</button>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Color Palette</h2>
+      <div class="background-board">
+        <div class="bg-sample bg-black">
+          <div class="bg-label">Black #000</div>
+        </div>
+        <div class="bg-sample bg-orange">
+          <div class="bg-label" style="background:rgba(0,0,0,0.8);">Orange #fa4838</div>
+        </div>
+        <div class="bg-sample bg-white">
+          <div class="bg-label" style="background:rgba(255,255,255,0.2);color:#000;">White #fff</div>
+        </div>
+        <div class="bg-sample bg-surface">
+          <div class="bg-label">Surface 5%</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Background System</h2>
+      <div class="background-board">
+        <div class="bg-sample bg-black">
+          <div class="bg-label">Pure Black</div>
+        </div>
+        <div class="bg-sample bg-orange">
+          <div class="bg-label" style="background:rgba(0,0,0,0.8);">Orange Accent</div>
+        </div>
+        <div class="bg-sample bg-surface">
+          <div class="bg-label">Surface Tint</div>
+        </div>
+        <div class="bg-sample bg-black" style="background:radial-gradient(circle at 30% 40%, rgba(250,72,56,0.2), transparent 50%), #000;">
+          <div class="bg-label">Glow Effect</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Atmosphere Demo</h2>
+      <div class="atmosphere-scene">
+        <div class="atmosphere-layer atmosphere-base"></div>
+        <div class="atmosphere-layer atmosphere-glow"></div>
+        <div class="atmosphere-content">
+          <h3>Hero atmosphere</h3>
+          <p class="muted">Stark black with subtle orange glow and white typography.</p>
+          <div class="accent-line"></div>
+          <div class="btn-row" style="margin-top:16px;">
+            <button class="btn btn-primary">Launch</button>
+            <button class="btn btn-ghost">Preview</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Motif Library</h2>
+      <div class="motif-grid">
+        <div class="motif-card motif-black">Pure Black</div>
+        <div class="motif-card motif-orange">Orange Accent</div>
+        <div class="motif-card motif-white">White Surface</div>
+        <div class="motif-card motif-surface">Surface Tint</div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Typography</h2>
+      <div class="card">
+        <div class="display-heading" style="font-size:var(--font-size-7);">Display</div>
+        <div style="font-size:var(--font-size-6);font-family:var(--font-family-display);letter-spacing:-2px;margin-top:12px;">Heading Large</div>
+        <div style="font-size:var(--font-size-5);font-family:var(--font-family-display);letter-spacing:-1px;margin-top:12px;">Heading Medium</div>
+        <p style="font-size:var(--font-size-3);margin-top:16px;">Body text sample for reading rhythm and content flow.</p>
+        <p class="muted" style="font-size:var(--font-size-1);margin-top:8px;">Caption / muted text sample.</p>
+        <code style="font-size:13px;background:rgba(255,255,255,0.1);color:var(--color-orange);padding:4px 8px;border-radius:2px;display:inline-block;margin-top:8px;">inline code</code>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Cards</h2>
+      <div class="grid grid-3">
+        <article class="card">
+          <h3 style="margin-top:0;">Surface Card</h3>
+          <p class="muted">Subtle surface with hover border reveal.</p>
+        </article>
+        <article class="card" style="border-color:var(--color-orange);">
+          <h3 style="margin-top:0;">Accent Card</h3>
+          <p class="muted">Orange border accent.</p>
+        </article>
+        <article class="card">
+          <span class="badge">Badge</span>
+          <h3>Badge Card</h3>
+          <p style="font-size:var(--font-size-5);font-weight:500;margin:8px 0 0;">42</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Forms</h2>
+      <div class="card">
+        <div class="form-stack">
+          <div>
+            <label class="label">Name</label>
+            <input class="input" placeholder="Enter name" />
+          </div>
+          <div>
+            <label class="label">Category</label>
+            <select class="select">
+              <option>Option A</option>
+              <option>Option B</option>
+            </select>
+          </div>
+          <div>
+            <label class="label">Notes</label>
+            <textarea class="textarea" rows="4" placeholder="Write something"></textarea>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Navigation</h2>
+      <div class="card">
+        <div class="nav-demo">
+          <span class="nav-pill active">Overview</span>
+          <span class="nav-pill">Expertise</span>
+          <span class="nav-pill">Offre</span>
+          <span class="nav-pill">Contact</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Table</h2>
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Column</th>
+            <th>Value</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Strategy</td>
+            <td>Design Thinking</td>
+            <td>Ready</td>
+          </tr>
+          <tr>
+            <td>Approach</td>
+            <td>Agility</td>
+            <td>Ready</td>
+          </tr>
+          <tr>
+            <td>Style</td>
+            <td>Minimal</td>
+            <td>Ready</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="section">
+      <h2>Prose</h2>
+      <div class="card prose">
+        <p>Consulting content with <a href="#">links in orange</a>, clean typography, and maximum contrast aesthetic.</p>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Code Block</h2>
+      <div class="code">
+        <div class="code-head">
+          <span>example.js</span>
+          <span>JavaScript</span>
+        </div>
+        <pre><code><span class="token-comment">// Tiwis code style</span>
+<span class="token-keyword">const</span> motif = {
+  black: <span class="token-string">"#000"</span>,
+  orange: <span class="token-string">"#fa4838"</span>,
+  white: <span class="token-string">"#fff"</span>
+};
+
+<span class="token-keyword">export</span> { motif };</code></pre>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Callouts</h2>
+      <div class="grid grid-2">
+        <div class="callout info"><strong>Info</strong><br><span class="muted">Blue accent for information.</span></div>
+        <div class="callout success"><strong>Success</strong><br><span class="muted">Neutral white accent.</span></div>
+        <div class="callout warning"><strong>Warning</strong><br><span class="muted">Orange accent.</span></div>
+        <div class="callout danger"><strong>Danger</strong><br><span class="muted">Red accent.</span></div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Overlay</h2>
+      <div class="overlay-demo">
+        <div class="modal-card">
+          <h3 style="margin-top:0;">Modal Surface</h3>
+          <p class="muted">Dark glass surface with orange glow accent.</p>
+          <div class="btn-row" style="margin-top:16px;">
+            <button class="btn btn-primary">Confirm</button>
+            <button class="btn btn-ghost">Cancel</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Animation System</h2>
+      <p class="muted" style="margin-bottom:16px;">Minimal animation system - only spin loading animation found. Ultra-minimal approach to motion.</p>
+      <div class="animation-demo">
+        <div class="anim-box">
+          <div class="spinner spin-demo"></div>
+          <span>spin</span>
+        </div>
+        <div class="anim-box">
+          <div class="spinner" style="border-top-color:rgba(255,255,255,0.5);"></div>
+          <span>subtle spin</span>
+        </div>
+        <div class="anim-box">
+          <div style="width:60px;height:3px;background:var(--color-orange);"></div>
+          <span>accent line</span>
+        </div>
+        <div class="anim-box">
+          <div style="width:40px;height:40px;background:radial-gradient(circle,var(--color-orange),transparent 70%);opacity:0.6;"></div>
+          <span>orange glow</span>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    window.DesignReference = JSON.parse(
+      document.getElementById('design-manifest').textContent
+    );
+  </script>
+</body>
+</html>

@@ -1,0 +1,166 @@
+{
+  "category": "office chair",
+  "category_type": "durable_goods",
+  "locale": "en-US",
+  "language": "en",
+  "currency": "USD",
+  "evaluation_dimensions": [
+    {
+      "name": "Ergonomic Comfort",
+      "weight": 0.30,
+      "description": "Long-term sitting comfort, lumbar support, seat depth adjustment, headrest",
+      "key_parameters": ["lumbar support type", "seat depth adjustment", "recline range", "armrest dimensions"],
+      "data_sources": ["long-term user reviews", "ergonomic expert reviews"]
+    },
+    {
+      "name": "Breathability & Materials",
+      "weight": 0.20,
+      "description": "Mesh quality, breathability in warm conditions, material durability",
+      "key_parameters": ["mesh type", "foam density", "frame material"],
+      "data_sources": ["summer usage reviews", "long-term durability reports"]
+    },
+    {
+      "name": "Build Quality & Durability",
+      "weight": 0.20,
+      "description": "Construction quality, component longevity, warranty coverage",
+      "key_parameters": ["gas cylinder class", "base material", "weight capacity", "warranty years"],
+      "data_sources": ["2+ year usage reviews", "warranty claim reports"]
+    },
+    {
+      "name": "Adjustability",
+      "weight": 0.15,
+      "description": "Range of adjustable features, ease of adjustment",
+      "key_parameters": ["tilt lock positions", "armrest adjustability", "seat height range"],
+      "data_sources": ["setup reviews", "ergonomic assessments"]
+    },
+    {
+      "name": "Value for Money",
+      "weight": 0.15,
+      "description": "Features and quality relative to price point",
+      "key_parameters": ["price", "included features", "assembly experience"],
+      "data_sources": ["comparison reviews", "deal tracking sites"]
+    }
+  ],
+  "pain_point_keywords": {
+    "safety": ["gas cylinder failure", "base cracking", "tilt mechanism breaking"],
+    "quality": ["squeaking", "armrest wobble", "mesh sagging", "seat cushion flattening", "peeling"],
+    "experience": ["lower back pain", "hot in summer", "uncomfortable after 4 hours", "hard to assemble"],
+    "trust": ["fake reviews", "astroturfing", "paid promotion", "misleading specs"]
+  },
+  "safety_risk_types": {
+    "critical": ["gas cylinder explosion", "base collapse causing injury"],
+    "high": ["tilt mechanism failure", "caster breakage"],
+    "medium": ["off-gassing", "skin irritation from materials"],
+    "low": ["minor assembly defects"]
+  },
+  "platform_relevance": {
+    "reddit_officechairs": 0.9,
+    "reddit_ergonomics": 0.85,
+    "amazon_reviews": 0.7,
+    "youtube_comments": 0.5,
+    "wirecutter": 0.75,
+    "rtings": 0.8
+  },
+  "regional_platforms": {
+    "reddit_officechairs": {
+      "name": "Reddit r/OfficeChairs",
+      "site": "reddit.com/r/OfficeChairs",
+      "description": "Dedicated office chair subreddit, enthusiast community",
+      "base_weight": 0.9
+    },
+    "reddit_ergonomics": {
+      "name": "Reddit r/ErgonomicSetups",
+      "site": "reddit.com/r/ErgonomicSetups",
+      "description": "Ergonomic workspace community",
+      "base_weight": 0.85
+    },
+    "amazon_reviews": {
+      "name": "Amazon Reviews",
+      "site": "amazon.com",
+      "description": "Verified purchase reviews, large volume",
+      "base_weight": 0.7
+    },
+    "wirecutter": {
+      "name": "Wirecutter",
+      "site": "nytimes.com/wirecutter",
+      "description": "NY Times product reviews, editorial independence",
+      "base_weight": 0.75
+    },
+    "rtings": {
+      "name": "RTINGS",
+      "site": "rtings.com",
+      "description": "Objective testing methodology",
+      "base_weight": 0.8
+    }
+  },
+  "category_positive_signals": [
+    {"pattern_description": "mentions height and weight for fit assessment", "regex_hint": "(\\d+'\\d+\"|\\d+\\s*(?:lbs|kg|cm|feet))", "score": 15, "label": "body_fit_mention"},
+    {"pattern_description": "describes long-term usage change", "regex_hint": "(after \\d+ months|used for \\d+ years|update after)", "score": 20, "label": "long_term_update"}
+  ],
+  "has_variant_issue": false,
+  "variant_types": [],
+  "variant_search_keywords": [],
+  "non_commercial_indicators": [
+    "been using for over a year, here's my update",
+    "bought with my own money",
+    "no affiliate link",
+    "not sponsored"
+  ],
+  "commercial_bias_sources": [
+    "brand official store reviews",
+    "affiliate review blogs",
+    "sponsored YouTube reviews"
+  ],
+  "regulatory_authorities": ["CPSC", "BIFMA"],
+  "marketing_signals": {
+    "high_neg": ["best ever", "game changer", "must buy", "life changing", "amazing deal"],
+    "medium_neg": ["use code", "discount link", "affiliate", "sponsored", "partnership"],
+    "low_neg": ["subscribe for more", "like and share", "check out my other reviews"]
+  },
+  "authenticity_signals": {
+    "long_term_use": ["used for 6 months", "after a year", "2 year update", "long-term review"],
+    "defect_description": ["started squeaking", "armrest wobbles", "cushion flattened", "mesh stretched"],
+    "purchase_proof": ["verified purchase", "bought from", "paid $ for", "ordered on"],
+    "time_units": ["months", "years", "weeks", "days"]
+  },
+  "ecommerce_search_strategy": {
+    "enabled": true,
+    "primary_platforms": ["Amazon", "Wayfair"],
+    "search_templates": {
+      "review_aggregation": ["[product] Amazon review real honest", "[product] verified purchase review long-term"],
+      "negative_reviews": ["[product] 1 star review problems issues", "[product] negative review returned why"],
+      "long_term_reviews": ["[product] review after 1 year update", "[product] long-term use honest review 6 months"]
+    },
+    "high_value_indicators": ["update after", "used for months", "follow-up review", "long-term update"],
+    "low_value_indicators": ["received free", "in exchange for review", "gifted product", "vine review"]
+  },
+  "comment_section_strategy": {
+    "enabled": true,
+    "primary_platforms": ["Reddit", "YouTube"],
+    "search_templates": {
+      "debunk_feedback": ["[product] Reddit honest opinion overrated", "[product] not worth it regret bought"],
+      "experience_sharing": ["[product] actual experience vs reviews", "[product] real user opinion after months"]
+    },
+    "high_value_indicators": ["I also bought", "same experience here", "can confirm", "owner here"],
+    "low_value_indicators": ["where to buy", "link please", "just ordered", "looks great"]
+  },
+  "safety_search_config": {
+    "general_keywords": ["recall", "safety warning", "banned", "defective", "injury report"],
+    "regulatory_keywords": ["CPSC recall", "BIFMA certification", "safety standard"],
+    "source_domains": ["cpsc.gov", "recalls.gov", "consumer.ftc.gov"]
+  },
+  "report_labels": {
+    "recommend": "Recommend",
+    "conditional_recommend": "Conditional Recommend",
+    "caution": "Caution",
+    "avoid": "Avoid",
+    "high_credibility": "High Credibility",
+    "medium_credibility": "Medium Credibility",
+    "low_credibility": "Low Credibility",
+    "suspected_ad": "Suspected Ad",
+    "sufficient": "Sufficient",
+    "mostly_sufficient": "Mostly Sufficient",
+    "insufficient": "Insufficient",
+    "severely_insufficient": "Severely Insufficient"
+  }
+}

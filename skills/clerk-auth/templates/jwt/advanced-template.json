@@ -1,0 +1,23 @@
+{
+  "$comment": "Advanced Clerk JWT Template - Multi-Tenant with Fallbacks",
+  "$description": "This template demonstrates advanced features: string interpolation, conditional expressions, nested metadata access, and organization claims. Copy this JSON (without $ prefixed fields) into Clerk Dashboard.",
+
+  "user_id": "{{user.id}}",
+  "email": "{{user.primary_email_address}}",
+  "full_name": "{{user.last_name}} {{user.first_name}}",
+  "avatar": "{{user.image_url}}",
+
+  "role": "{{user.public_metadata.role || 'user'}}",
+  "department": "{{user.public_metadata.department || 'general'}}",
+  "permissions": "{{user.public_metadata.permissions}}",
+
+  "org_id": "{{user.public_metadata.org_id}}",
+  "org_slug": "{{user.public_metadata.org_slug}}",
+  "org_role": "{{user.public_metadata.org_role}}",
+
+  "interests": "{{user.public_metadata.profile.interests}}",
+  "has_verified_contact": "{{user.email_verified || user.phone_number_verified}}",
+
+  "age": "{{user.public_metadata.age || user.unsafe_metadata.age || 18}}",
+  "onboarding_complete": "{{user.public_metadata.onboardingComplete || false}}"
+}

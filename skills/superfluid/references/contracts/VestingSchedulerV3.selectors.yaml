@@ -1,0 +1,54 @@
+# VestingSchedulerV3 selectors — computed from @sfpro/sdk ABI
+
+functions:
+  accountings(bytes32):                                       0xcf57622a
+  createAndExecuteVestingScheduleFromAmountAndDuration(address,address,uint256,uint32): 0xdd58ca6e
+  createVestingSchedule(address,address,uint32,uint32,int96,uint256,uint32,uint32): 0x1e97cd93
+  createVestingSchedule(address,address,uint32,uint32,int96,uint256,uint32): 0x96bc3257
+  createVestingScheduleFromAmountAndDuration(address,address,uint256,uint32,uint32,uint32,uint32): 0xe1535231
+  createVestingScheduleFromAmountAndDuration(address,address,uint256,uint32,uint32,uint32,uint32,uint256): 0xedf1c464
+  deleteVestingSchedule(address,address):                     0xfa8fbfdd
+  END_DATE_VALID_BEFORE():                                    0xf67b5c7e
+  endVestingScheduleNow(address,address):                     0xba3d862d
+  executeCliffAndFlow(address,address,address):               0x9223d9c1
+  executeEndVesting(address,address,address):                 0x71de407e
+  getMaximumNeededTokenAllowance(address,address,address):    0xad4c1ced
+  getMaximumNeededTokenAllowance((uint32,uint32,int96,uint256,uint96,uint32)): 0xc10385c8
+  getTotalVestedAmount(address,address,address):              0xe6f8bd28
+  getVestingSchedule(address,address,address):                0x89a1976f
+  HOST():                                                     0x49f289dc
+  isTrustedForwarder(address):                                0x572b6c05
+  mapCreateVestingScheduleParams(address,address,address,uint256,uint32,uint32,uint32,uint32,uint256): 0x497e2b90
+  mapCreateVestingScheduleParams(address,address,address,uint256,uint32,uint32,uint32,uint32): 0xaeb8c018
+  MIN_VESTING_DURATION():                                     0x3011071e
+  START_DATE_VALID_AFTER():                                   0x2719e010
+  updateVestingSchedule(address,address,uint32):              0x94793cc1
+  updateVestingScheduleFlowRateFromAmount(address,address,uint256): 0xcdf7af9c
+  updateVestingScheduleFlowRateFromAmountAndEndDate(address,address,uint256,uint32): 0x84cd0b9f
+  updateVestingScheduleFlowRateFromEndDate(address,address,uint32): 0x50c8ff0d
+  versionRecipient():                                         0x486ff0cd
+  vestingSchedules(bytes32):                                  0x60417887
+
+events:
+  VestingClaimed(address,address,address,address):            0x7696528bb1d35ae27eef30d3a68cda5e3cde08491081fc9124c505ace458a391
+  VestingCliffAndFlowExecuted(address,address,address,uint32,int96,uint256,uint256): 0x55b5747e4a57fe6e94a7f59d179a30836f6f42c9b33d2aa3a8887107510952a4
+  VestingEndExecuted(address,address,address,uint32,uint256,bool): 0x18c0f95c8f947c789fc5b704b2f1299671614639c64bf6af260bd210bc184ba2
+  VestingEndFailed(address,address,address,uint32):           0xcb5ed4b0fc620b552fbd3a82d5fb0f9a57eb30a7ef218f4a4974b871f648f6e8
+  VestingScheduleCreated(address,address,address,uint32,uint32,int96,uint32,uint256,uint32,uint96): 0xff1a8bc9ca7e5f967f9b82f17ef01758aba239389b6c55574ee116f589aa7fd7
+  VestingScheduleDeleted(address,address,address):            0xffdbd3e70c7da1df271588aaf77ca99625058da916f9d29cdc13d6f8e4f900ab
+  VestingScheduleUpdated(address,address,address,uint32,uint96,int96,uint256,uint256): 0x248c90e24eb66527a3dcaab58492ad132240e1b4509b772c8f9529ea7bc33adf
+
+errors:
+  AccountInvalid():              0xa9c6791d
+  AlreadyExecuted():             0x0dc10197
+  CannotClaimScheduleOnBehalf(): 0xf8f3dfd4
+  CFA_INVALID_FLOW_RATE():       0x91acad16
+  CliffInvalid():                0x5357da63
+  FlowRateInvalid():             0x8bea1af0
+  InvalidNewTotalAmount():       0xc9059b82
+  ScheduleAlreadyExists():       0xe109c263
+  ScheduleDoesNotExist():        0x339f7f9a
+  ScheduleNotClaimed():          0xafa23adc
+  ScheduleNotFlowing():          0xe23d21e7
+  TimeWindowInvalid():           0x3a230cd9
+  ZeroAddress():                 0xd92e233d

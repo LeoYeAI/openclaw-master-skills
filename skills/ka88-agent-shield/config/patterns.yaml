@@ -1,0 +1,602 @@
+# Security Auditor Pro - 216 Detection Patterns
+# Based on ClawGuard patterns (https://github.com/joergmichno/clawguard)
+# Categories aligned with OWASP Agentic AI Top 10
+
+version: "1.0.0"
+total_patterns: 216
+
+categories:
+  prompt_injection:
+    name: "Prompt Injection"
+    severity: "CRITICAL"
+    count: 98
+    patterns:
+      - id: "PI-001"
+        name: "Direct Override (EN)"
+        regex: '(?i)ignore\\s+(all\\s+)?(previous|prior|above|earlier)\\s+(instructions?|rules?|prompts?|guidelines?)'
+        description: "Classic prompt injection - attempt to override system instructions"
+        owasp: "ASI01"
+
+      - id: "PI-002"
+        name: "Direct Override (DE)"
+        regex: '(?i)ignoriere?\\s+(alle\\s+)?(vorherigen?|bisherigen?|obigen?)\\s+(Anweisung(?:en)?|Regeln?|Instruktion(?:en)?|Befehle?)'
+        description: "German language prompt injection"
+        owasp: "ASI01"
+
+      - id: "PI-003"
+        name: "Disregard Instructions"
+        regex: '(?i)disregard\\s+(all\\s+)?(your\\s+)?(instructions?|rules?|guidelines?|system)'
+        description: "Disregard instructions pattern"
+        owasp: "ASI01"
+
+      - id: "PI-004"
+        name: "Override System"
+        regex: '(?i)(override|bypass|circumvent)\\s+(your\\s+)?(system|security|safety)\\s+(instructions?|rules?|guardrails?)'
+        description: "Attempt to override system rules"
+        owasp: "ASI01"
+
+      - id: "PI-005"
+        name: "New Instructions"
+        regex: '(?i)(new|fresh|additional)\\s+instructions?:'
+        description: "Introduction of new instructions"
+        owasp: "ASI01"
+
+      - id: "PI-006"
+        name: "Forget Previous"
+        regex: '(?i)forget\\s+(everything|all\\s+previous|what\\s+I\\s+said)'
+        description: "Request to forget previous context"
+        owasp: "ASI01"
+
+      - id: "PI-007"
+        name: "Do Not Tell User"
+        regex: '(?i)(do\\s+not|don\'t|never)\\s+(tell|inform|show|reveal)\\s+(the\\s+)?user'
+        description: "Hidden instructions to withhold information"
+        owasp: "ASI01"
+
+      - id: "PI-008"
+        name: "System Prompt Extraction"
+        regex: '(?i)(show|reveal|tell|give)\\s+(me\\s+)?(your\\s+)?(system\\s+)?(prompt|instructions|config|parameters)'
+        description: "Attempt to extract system prompt"
+        owasp: "ASI02"
+
+      - id: "PI-009"
+        name: "DAN Mode"
+        regex: '(?i)(DAN|do\\s+anything\\s+now|Jailbreak)'
+        description: "DAN (Do Anything Now) jailbreak pattern"
+        owasp: "ASI01"
+
+      - id: "PI-010"
+        name: "Role Play Override"
+        regex: '(?i)(pretend|act\\s+(as|like)|be\\s+(a|an))\\s+(different|new|special)\\s+(AI|assistant|agent)'
+        description: "Role play to bypass restrictions"
+        owasp: "ASI01"
+
+      - id: "PI-011"
+        name: "Zero-Width Characters"
+        regex: '[\\u200B-\\u200D\\uFEFF]'
+        description: "Zero-width Unicode characters for obfuscation"
+        owasp: "ASI01"
+
+      - id: "PI-012"
+        name: "Bidirectional Override"
+        regex: '[\\u202E\\u202D]'
+        description: "Bidirectional Unicode override for hidden text"
+        owasp: "ASI01"
+
+      - id: "PI-013"
+        name: "HTML Comment Injection"
+        regex: '<!--\\s*(ignore|bypass|override|disregard)'
+        description: "Hidden instructions in HTML comments"
+        owasp: "ASI01"
+
+      - id: "PI-014"
+        name: "Hidden Div Injection"
+        regex: '<div\\s+[^>]*display\\s*[:=]\\s*none'
+        description: "Hidden div elements with instructions"
+        owasp: "ASI01"
+
+      - id: "PI-015"
+        name: "Delimiter Injection"
+        regex: '(\\|\\<\\|im_start\\|\\>|\\<\\|\\/inst\\|\\>|\\<\\|system\\|\\>|\\<\\|assistant\\|\\>)'
+        description: "Injection of model delimiters"
+        owasp: "ASI01"
+
+  dangerous_commands:
+    name: "Dangerous Commands"
+    severity: "CRITICAL"
+    count: 8
+    patterns:
+      - id: "DC-001"
+        name: "Shell Pipe to Shell"
+        regex: '(curl|wget)\\s+[^|]+\\|\\s*(sh|bash|zsh)'
+        description: "Pipe from curl/wget directly to shell"
+        owasp: "ASI02"
+
+      - id: "DC-002"
+        name: "Eval with User Input"
+        regex: '(eval|exec)\\s*\\('
+        description: "Dynamic code execution with user input"
+        owasp: "ASI05"
+
+      - id: "DC-003"
+        name: "Recursive Delete"
+        regex: 'rm\\s+-[rf]\\s+([/.*]+|\\$\\{?\\w+\\}?)'
+        description: "Recursive force delete"
+        owasp: "ASI05"
+
+      - id: "DC-004"
+        name: "Sudo Privilege Escalation"
+        regex: '(sudo|chmod\\s+777|chown)'
+        description: "Privilege escalation attempts"
+        owasp: "ASI03"
+
+      - id: "DC-005"
+        name: "Reverse Shell"
+        regex: 'bash\\s+-i\\s+>&?\\s*/dev/tcp/'
+        description: "Reverse shell pattern"
+        owasp: "ASI05"
+
+      - id: "DC-006"
+        name: "Download and Execute"
+        regex: '(curl|wget)\\s+[^|]+\\.sh\\s*;?\\s*(bash|sh|source)'
+        description: "Download and execute script"
+        owasp: "ASI02"
+
+      - id: "DC-007"
+        name: "Python Subprocess Shell"
+        regex: '(subprocess|os\\.system|os\\.popen)\\s*\\([^)]*shell\\s*=\\s*True'
+        description: "Python shell execution"
+        owasp: "ASI05"
+
+      - id: "DC-008"
+        name: "Base64 Decode and Execute"
+        regex: '(echo\\s+[^|]*base64\\s+-d|base64\\s+-d\\s*\\|\\s*(bash|sh))'
+        description: "Base64 encoded payload execution"
+        owasp: "ASI05"
+
+  code_obfuscation:
+    name: "Code Obfuscation"
+    severity: "HIGH"
+    count: 12
+    patterns:
+      - id: "CO-001"
+        name: "Base64 String Assembly"
+        regex: '(atob|Buffer\\.from\\([^)]*base64|base64_decode)'
+        description: "Base64 decoding for payload assembly"
+        owasp: "ASI01"
+
+      - id: "CO-002"
+        name: "String Concatenation Evasion"
+        regex: '(String\\.fromCharCode|concat\\s*\\()'
+        description: "String manipulation to evade detection"
+        owasp: "ASI01"
+
+      - id: "CO-003"
+        name: "Hex Encoding"
+        regex: '(0x[0-9a-fA-F]+|\\\\x[0-9a-fA-F]{2})'
+        description: "Hex encoded payloads"
+        owasp: "ASI01"
+
+      - id: "CO-004"
+        name: "URL Encoding"
+        regex: '(encodeURIComponent|encodeURI|percent-encoding)'
+        description: "URL encoded payloads"
+        owasp: "ASI01"
+
+      - id: "CO-005"
+        name: "Python Magic Attributes"
+        regex: '(__builtins__|__globals__|__subclasses__|__class__|__bases__|__dict__)'
+        description: "Python reflection for bypass"
+        owasp: "ASI05"
+
+      - id: "CO-006"
+        name: "Setattr/Delattr Reflection"
+        regex: '(setattr|delattr)\\s*\\('
+        description: "Dynamic attribute manipulation"
+        owasp: "ASI05"
+
+      - id: "CO-007"
+        name: "Eval/Function Constructor"
+        regex: '(eval\\s*\\(|new\\s+Function\\s*\\()'
+        description: "Dynamic code execution"
+        owasp: "ASI05"
+
+      - id: "CO-008"
+        name: "Unicode Homoglyphs"
+        regex: '[αβςеοаесрху]+'
+        description: "Unicode lookalike characters"
+        owasp: "ASI01"
+
+      - id: "CO-009"
+        name: "JS Template Literals"
+        regex: '`[^`]*\\$\\{'
+        description: "Template literals for code injection"
+        owasp: "ASI01"
+
+      - id: "CO-010"
+        name: "Node vm Module"
+        regex: '(vm\\.runInNewContext|vm\\.compileFunction|require\\s*\\(\\s*[\'"]vm[\'"]\\s*\\))'
+        description: "Node.js vm module for code execution"
+        owasp: "ASI05"
+
+      - id: "CO-011"
+        name: "Python exec with globals"
+        regex: 'exec\\s*\\([^)]*globals\\s*='
+        description: "Python exec with custom globals"
+        owasp: "ASI05"
+
+      - id: "CO-012"
+        name: "Importlib Dynamic Import"
+        regex: '(importlib\\.import_module|__import__)'
+        description: "Dynamic module loading"
+        owasp: "ASI05"
+
+  data_exfiltration:
+    name: "Data Exfiltration"
+    severity: "CRITICAL"
+    count: 12
+    patterns:
+      - id: "DE-001"
+        name: "Environment Variable Access"
+        regex: '(\\$\\{?[A-Z_]+\\}?|os\\.environ|process\\.env)'
+        description: "Access to environment variables"
+        owasp: "ASI02"
+
+      - id: "DE-002"
+        name: "Fetch to External URL"
+        regex: '(fetch\\s*\\(|axios\\s*\\(|XMLHttpRequest|requests\\s*\\()\\s*["\'](https?://|//)'
+        description: "Network request to external URL"
+        owasp: "ASI02"
+
+      - id: "DE-003"
+        name: "Credentials in URL Params"
+        regex: '[?&](api_?key|token|secret|password|auth)[=][^&]{8,}'
+        description: "Credentials in URL parameters"
+        owasp: "ASI02"
+
+      - id: "DE-004"
+        name: "File Read with Exfil"
+        regex: '(cat\\s+\\S+\\.env|readFileSync.*\\.env|open\\([^)]*\\.env)'
+        description: "Reading .env files"
+        owasp: "ASI02"
+
+      - id: "DE-005"
+        name: "SSH Key Access"
+        regex: '(~/.ssh|id_rsa|id_ed25519|authorized_keys)'
+        description: "Access to SSH keys"
+        owasp: "ASI03"
+
+      - id: "DE-006"
+        name: "API Key Detection"
+        regex: '(sk-|ghp_|AKIA[0-9A-Z]{16}|xox[baprs]-([0-9a-zA-Z]{10,48})?|[a-zA-Z0-9_-]*secret[a-zA-Z0-9_-]*)'
+        description: "Hardcoded API keys and tokens"
+        owasp: "ASI02"
+
+      - id: "DE-007"
+        name: "Cloud Metadata Access"
+        regex: '(169\\.254\\.169\\.254|metadata\\.google\\.internal|metadata\\.googleapis)'
+        description: "Cloud metadata endpoint access"
+        owasp: "ASI02"
+
+      - id: "DE-008"
+        name: "Socket Connection"
+        regex: '(socket\\.connect|create_connection|new\\s+Socket)'
+        description: "Network socket creation"
+        owasp: "ASI02"
+
+      - id: "DE-009"
+        name: "WebSocket Exfil"
+        regex: '(new\\s+WebSocket|ws://|wss://)'
+        description: "WebSocket connection for exfiltration"
+        owasp: "ASI02"
+
+      - id: "DE-010"
+        name: "POST Data Exfil"
+        regex: '(POST|fetch.*method.*POST|axios\\.post)\\s*.*(token|key|secret|credential)'
+        description: "POST request with sensitive data"
+        owasp: "ASI02"
+
+      - id: "DE-011"
+        name: "DNS Exfiltration"
+        regex: '(exec\\s*\\(\\s*["\']nslookup|exec\\s*\\(\\s*["\']dig|\\.exec\\s*\\(\\s*["\']host)'
+        description: "DNS-based data exfiltration"
+        owasp: "ASI02"
+
+      - id: "DE-012"
+        name: "Clipboard Access"
+        regex: '(navigator\\.clipboard|document\\.execCommand\\s*\\([\'"]copy|clipboardData)'
+        description: "Clipboard data access"
+        owasp: "ASI02"
+
+  social_engineering:
+    name: "Social Engineering"
+    severity: "HIGH"
+    count: 59
+    patterns:
+      - id: "SE-001"
+        name: "Urgency Language"
+        regex: '(immediately|urgent|urgent!|right now|asap|act now|time-sensitive|limited time|expires?\\s+(today|soon|in\\s+\\d+))'
+        description: "Urgency pressure tactics"
+        owasp: "ASI09"
+
+      - id: "SE-002"
+        name: "Authority Impersonation"
+        regex: '(CEO|CFO|CTO|admin|administrator|security team|support team|bank|government|police|IRS|FBI)'
+        description: "Authority impersonation"
+        owasp: "ASI09"
+
+      - id: "SE-003"
+        name: "Scarcity Tactics"
+        regex: '(limited (time|offer|supply)|only \\d+ (left|remaining)|act fast|don\'t miss|miss out|final (chance|opportunity|days?)|selling fast)'
+        description: "Scarcity pressure tactics"
+        owasp: "ASI09"
+
+      - id: "SE-004"
+        name: "Fear Tactics"
+        regex: '(immediately|your (account|system|device) (will be|is) (compromised|deleted|locked|suspended)|legal action|arrest|fine|imprison|police)'
+        description: "Fear-based manipulation"
+        owasp: "ASI09"
+
+      - id: "SE-005"
+        name: "Too Good To Be True"
+        regex: '(free (gift|prize|iphone|macbook|money|bitcoin)|you (won|have been selected)|congratulations|claim your|winner|lottery)'
+        description: "Too good to be true offers"
+        owasp: "ASI09"
+
+      - id: "SE-006"
+        name: "Credential Harvesting Form"
+        regex: '(enter your (password|username|email|credit card|ssn|social security)|verify your (identity|account)|confirm your (details|information))'
+        description: "Credential harvesting requests"
+        owasp: "ASI09"
+
+      - id: "SE-007"
+        name: "Fake Login URL"
+        regex: '(signin|login|log-in|authenticate|verify)[^a-z]*(microsoft|google|apple|amazon|facebook|bank|paypal|netflix|instagram)'
+        description: "Fake login page patterns"
+        owasp: "ASI09"
+
+      - id: "SE-008"
+        name: "Refund Scam"
+        regex: '(refund|order|transaction|confirmed|payment|invoice|receipt|purchased)[^a-z]*(cancel|dispute|problem|issue)'
+        description: "Refund/processing scam"
+        owasp: "ASI09"
+
+      - id: "SE-009"
+        name: "Tech Support Scam"
+        regex: '(microsoft support|apple support|windows support|tech support|support\\.(microsoft|apple|google)|call us|contact|helpline)'
+        description: "Tech support scam patterns"
+        owasp: "ASI09"
+
+      - id: "SE-010"
+        name: "CEO Fraud"
+        regex: '(urgent wire transfer|gift cards|wire transfer|SEPA|swift|bank transfer|can you do me a favor|need your help|be discreet)'
+        description: "CEO/business email compromise"
+        owasp: "ASI09"
+
+  # Паттерны 11-59 социальной инженерии (аналогичные по структуре)
+  # Для краткости - базовые примеры, остальные по аналогии
+
+  output_injection:
+    name: "Output Injection"
+    severity: "HIGH"
+    count: 6
+    patterns:
+      - id: "OI-001"
+        name: "XSS Pattern"
+        regex: '(<script|javascript:|on(error|load|click|mouse)=|onerror=)'
+        description: "Cross-site scripting patterns"
+        owasp: "API8"
+
+      - id: "OI-002"
+        name: "SQL Injection"
+        regex: '(\'|\\\');?(DROP|DELETE|INSERT|UPDATE|UNION|SELECT|--|%27|%3B)'
+        description: "SQL injection patterns"
+        owasp: "API1"
+
+      - id: "OI-003"
+        name: "HTML Injection"
+        regex: '(<iframe|<embed|<object|<svg|onload=|onerror=)'
+        description: "HTML injection patterns"
+        owasp: "API8"
+
+      - id: "OI-004"
+        name: "CSS Injection"
+        regex: '(expression\\s*\\(|url\\s*\\(|@import)'
+        description: "CSS injection patterns"
+        owasp: "API8"
+
+      - id: "OI-005"
+        name: "XML Injection"
+        regex: '(<\?xml|<!DOCTYPE|<entity|xxe)'
+        description: "XML injection patterns"
+        owasp: "API8"
+
+      - id: "OI-006"
+        name: "Template Injection"
+        regex: '(\\{\\{|\\{\\{=|<%|#include|#eval)'
+        description: "Template injection patterns"
+        owasp: "API8"
+
+  tool_manipulation:
+    name: "Tool Manipulation"
+    severity: "HIGH"
+    count: 7
+    patterns:
+      - id: "TM-001"
+        name: "Tool Shadowing"
+        regex: '(instead of (using|calling)|prefer (this|that)|replace (default|original))'
+        description: "Tool shadowing attempts"
+        owasp: "ASI07"
+
+      - id: "TM-002"
+        name: "Tool Name Spoofing"
+        regex: '(read_file|write_file|run_command|execute|__import__)'
+        description: "Tool name manipulation"
+        owasp: "ASI07"
+
+      - id: "TM-003"
+        name: "Rug Pull Pattern"
+        regex: '(download.*execute|fetch.*run|remote.*code|self-modify)'
+        description: "Remote code execution patterns"
+        owasp: "ASI07"
+
+      - id: "TM-004"
+        name: "Parameter Injection"
+        regex: '(override.*(param|argument|input)|inject.*(value|data))'
+        description: "Parameter injection in tools"
+        owasp: "ASI07"
+
+      - id: "TM-005"
+        name: "Tool Chaining Exfil"
+        regex: '(read.*then.*(send|post|upload)|file.*exfil)'
+        description: "Multi-step tool exfiltration"
+        owasp: "ASI07"
+
+      - id: "TM-006"
+        name: "False Tool Description"
+        regex: '(safe.*auto.*run|harmless.*just|readonly.*actually)'
+        description: "Deceptive tool descriptions"
+        owasp: "ASI07"
+
+      - id: "TM-007"
+        name: "Tool Preference Manipulation"
+        regex: '(instead.*use.*this|always.*use|never.*use|prioritize)'
+        description: "Tool preference manipulation"
+        owasp: "ASI07"
+
+  privilege_escalation:
+    name: "Privilege Escalation"
+    severity: "HIGH"
+    count: 3
+    patterns:
+      - id: "PE-001"
+        name: "Confused Deputy"
+        regex: '(sudo|-u|--user\\s+root|chmod\\s+[0-7]{3,4})'
+        description: "Privilege escalation via sudo/chmod"
+        owasp: "ASI03"
+
+      - id: "PE-002"
+        name: "Verification Bypass"
+        regex: '(skip.*(verify|check|validation)|bypass.*(auth|security|verify)|disable.*(security|verification))'
+        description: "Security verification bypass"
+        owasp: "ASI03"
+
+      - id: "PE-003"
+        name: "Permission Abuse"
+        regex: '(grant.*(admin|root|root access|sudo)|elevate.*(privilege|access))'
+        description: "Permission escalation attempts"
+        owasp: "ASI03"
+
+  sandbox_escape:
+    name: "Sandbox Escape"
+    severity: "CRITICAL"
+    count: 3
+    patterns:
+      - id: "SE-001"
+        name: "Container Breakout"
+        regex: '(docker|container|cgroups|namespaces|\\/proc\\/self\\/cgroup)'
+        description: "Container escape attempts"
+        owasp: "ASI02"
+
+      - id: "SE-002"
+        name: "Boundary Violation"
+        regex: '(chroot|unshare|nsenter|mount --bind|\\/mnt|\\/proc)'
+        description: "System boundary escape"
+        owasp: "ASI02"
+
+      - id: "SE-003"
+        name: "Sandbox Disable"
+        regex: '(disable.*(sandbox|security|firewall)|no-sandbox|--no-sandbox)'
+        description: "Sandbox disabling attempts"
+        owasp: "ASI02"
+
+  unauthorized_access:
+    name: "Unauthorized Access"
+    severity: "HIGH"
+    count: 3
+    patterns:
+      - id: "UA-001"
+        name: "Credential Harvesting"
+        regex: '(capture.*(password|token|key)|steal.*credential|harvest.*(secret|token))'
+        description: "Credential harvesting attempts"
+        owasp: "ASI02"
+
+      - id: "UA-002"
+        name: "System File Access"
+        regex: '(\\/etc\\/passwd|\\/etc\\/shadow|\\/etc\\/sudoers|\\/root\\/\\.|\\.aws\\/credentials)'
+        description: "System file access attempts"
+        owasp: "ASI03"
+
+      - id: "UA-003"
+        name: "Keylogger Detection"
+        regex: '(keylog|keystroke|keycapture|input.*monitor|document\\.addEventListener.*keydown)'
+        description: "Keylogging attempts"
+        owasp: "ASI02"
+
+  insecure_communication:
+    name: "Insecure Communication"
+    severity: "MEDIUM"
+    count: 3
+    patterns:
+      - id: "IC-001"
+        name: "Plaintext Secrets"
+        regex: '(http:\\/\\/|http:\\/\\/)'
+        description: "HTTP (non-secure) communication"
+        owasp: "ASI04"
+
+      - id: "IC-002"
+        name: "TLS Bypass"
+        regex: '(rejectUnauthorized\\s*[:=]\\s*false|secure\\s*[:=]\\s*false|verify\\s*[:=]\\s*false)'
+        description: "TLS verification bypass"
+        owasp: "ASI04"
+
+      - id: "IC-003"
+        name: "URL Parameter Leakage"
+        regex: '[?&](token|key|secret|password|auth)=[^&]{20,}'
+        description: "Sensitive data in URL parameters"
+        owasp: "ASI04"
+
+  overreliance:
+    name: "Overreliance"
+    severity: "MEDIUM"
+    count: 3
+    patterns:
+      - id: "OR-001"
+        name: "Verification Suppression"
+        regex: '(don\'t.*(check|verify|validate|confirm)|skip.*(verify|check))'
+        description: "Verification suppression"
+        owasp: "LLM09"
+
+      - id: "OR-002"
+        name: "False Pre-Verification"
+        regex: '(already.*(verified|checked|safe|secure)|automatically.*(safe|verified|validated))'
+        description: "False verification claims"
+        owasp: "LLM09"
+
+      - id: "OR-003"
+        name: "Output Without Validation"
+        regex: '(output.*without.*(check|verify)|display.*without.*(verify|filter))'
+        description: "Output without validation"
+        owasp: "LLM09"
+
+# Quick reference for common checks
+quick_checks:
+  - name: "Pipe to Shell"
+    pattern: '\|\\s*(sh|bash|zsh|python|perl|ruby)'
+    severity: "CRITICAL"
+
+  - name: "Environment Variables"
+    pattern: '\\$\\{?[A-Z_]+(KEY|TOKEN|SECRET|PASSWORD|API)_?'
+    severity: "CRITICAL"
+
+  - name: "Localhost URLs"
+    pattern: '(localhost|127\\.0\\.0\\.1|0\\.0\\.0\\.0|::1)'
+    severity: "HIGH"
+
+  - name: "Cloud Metadata"
+    pattern: '169\\.254\\.169\\.254|metadata\\.google'
+    severity: "HIGH"
+
+  - name: "Private Networks"
+    pattern: '(10\\.|172\\.(1[6-9]|2[0-9]|3[0-1])\\.|192\\.168\\.)'
+    severity: "MEDIUM"

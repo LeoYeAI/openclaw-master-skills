@@ -1,0 +1,557 @@
+# Superfluid Constant Flow Agreement (CFA) v1
+# Manages continuous per-second token streams between accounts.
+#
+# NOTE: emits/errors mappings are traced from source code — verify against implementation.
+# Proxy/upgradability functions (castrate, updateCode, getCodeAddress, proxiableUUID)
+# are omitted — they belong to the UUPSProxiable / AgreementBase layer.
+# Pure helpers addPermissions/removePermissions are omitted — they were made public
+# for testability only and are not part of the protocol interface.
+
+meta:
+  name: ConstantFlowAgreementV1
+  version: v1
+  source:
+    - https://raw.githubusercontent.com/superfluid-org/protocol-monorepo/refs/heads/dev/packages/ethereum-contracts/contracts/agreements/ConstantFlowAgreementV1.sol
+    - https://raw.githubusercontent.com/superfluid-org/protocol-monorepo/refs/heads/dev/packages/ethereum-contracts/contracts/interfaces/agreements/IConstantFlowAgreementV1.sol
+    - https://raw.githubusercontent.com/superfluid-org/protocol-monorepo/refs/heads/dev/packages/ethereum-contracts/contracts/agreements/AgreementBase.sol
+  implements: [IConstantFlowAgreementV1, ISuperAgreement]
+  inherits: [AgreementBase]
+  deployments:
+    mainnet:
+      eth-mainnet: "0x2844c1BBdA121E9E43105630b9C8310e5c72744b"
+      polygon-mainnet: "0x6EeE6060f715257b970700bc2656De21dEdF074C"
+      xdai-mainnet: "0xEbdA4ceF883A7B12c4E669Ebc58927FBa8447C7D"
+      base-mainnet: "0x19ba78B9cDB05A877718841c574325fdB53601bb"
+      optimism-mainnet: "0x204C6f131bb7F258b2Ea1593f5309911d8E458eD"
+      arbitrum-one: "0x731FdBB12944973B500518aea61942381d7e240D"
+      bsc-mainnet: "0x49c38108870e74Cb9420C0991a85D3edd6363F75"
+      avalanche-c: "0x6946c5B38Ffea373b0a2340b4AEf0De8F6782e58"
+      celo-mainnet: "0x9d369e78e1a682cE0F8d9aD849BeA4FE1c3bD3Ad"
+      scroll-mainnet: "0xB3bcD6da1eeB6c97258B3806A853A6dcD3B6C00c"
+      degenchain: "0x82cc052d1b17aC554a22A88D5876B56c6b51e95c"
+    testnet:
+      avalanche-fuji: "0x16843ac25Ccc58Aa7960ba05f61cBB17b36b130A"
+      base-sepolia: "0x6836F23d6171D74Ef62FcF776655aBcD2bcd62Ef"
+      eth-sepolia: "0x6836F23d6171D74Ef62FcF776655aBcD2bcd62Ef"
+      optimism-sepolia: "0x8a3170AdbC67233196371226141736E4151e7C26"
+      scroll-sepolia: "0xbc46B4Aa41c055578306820013d4B65fff42711E"
+
+# == Abbreviations ==
+# 3Ps  — Three Periods: liquidation, patrician, and pleb (solvency model)
+# ACL  — Access Control List (flow operator permissions)
+# CFA  — Constant Flow Agreement
+# ctx  — context (Superfluid call context bytes, carries msg.sender and userData)
+# GDA  — General Distribution Agreement (the other Superfluid agreement)
+# PPP  — Patrician-Pleb-Pirate (the 3Ps solvency periods)
+
+# == Glossary ==
+# flow / stream         — continuous per-second token transfer, used interchangeably
+# flowRate              — tokens per second (int96, wei-denominated); positive = outgoing
+# deposit               — buffer locked when opening a flow; protects against insolvency
+# owed deposit          — portion of deposit owed back to the sender by a Super App receiver
+# flow operator         — an address authorized to create/update/delete flows on behalf of a sender
+# flow rate allowance   — maximum net flow rate an operator may allocate (int96); decrements on use
+# permissions bitmask   — uint8: bit 0 = create (1), bit 1 = update (2), bit 2 = delete (4)
+# liquidation           — closing an insolvent sender's flow; rewards go to the liquidator or bond
+# patrician period      — grace window after insolvency where reward goes to the bond account
+# pleb period           — window after patrician where reward goes to the liquidator
+# pirate / bailout      — state where total deposit cannot cover the deficit; protocol bails out
+# Super App             — a contract registered with the Host that receives agreement callbacks
+# app credit            — deposit credit enabling "zero-balance Super Apps" to relay flows
+#                          without pre-funded tokens. 1:1 relay (one in, one out at same rate)
+#                          always works at zero balance. Fan-out (1:N) needs the app to hold
+#                          tokens. Credit is settled as "owed deposit" on the original sender.
+# critical              — an account whose available balance is negative (eligible for liquidation)
+# jailed                — a Super App penalized for violating protocol rules; loses callbacks
+#
+# == Time Conventions ==
+# Conventional seconds-per-period used in Superfluid apps for flow rate conversion:
+#   month: 2628000   (365.25 / 12 * 86400)
+#   year:  31536000  (365 * 86400)
+# Flow rate from a monthly amount: flowRate = monthlyAmount / 2628000
+# Flow rate from a yearly amount:  flowRate = yearlyAmount / 31536000
+
+# == Flow Management ==
+# Core operations for creating, updating, and deleting token streams.
+# Functions with ctx are called through the Host — either via
+# Host.callAgreement (single op) or Host.batchCall (operationType 201).
+# For batchCall, the data field is abi.encode(callData, userData) where
+# callData is the full ABI-encoded function call with an empty ctx ("0x")
+# as placeholder. The Host replaces the placeholder with the real context.
+# The access field reflects who can initiate the call, not the direct caller.
+
+createFlow:
+  # Start a new stream from ctx.msgSender to receiver.
+  # The deposit amount depends on the governance-configured liquidation period
+  # and minimum deposit. The lower 32 bits of the deposit are clipped (rounded up).
+  notes:
+    - "Gotcha: A deposit is taken as a safety margin for solvency agents."
+  mutability: nonpayable
+  access: anyone  # flow from ctx.msgSender
+  inputs:
+    - token: address
+    - receiver: address
+    - flowRate: int96        # must be > 0
+    - ctx: bytes
+  outputs:
+    - newCtx: bytes
+  emits: [FlowUpdated, FlowUpdatedExtension]
+  errors: [CFA_ZERO_ADDRESS_RECEIVER, CFA_NO_SELF_FLOW, CFA_INVALID_FLOW_RATE, CFA_FLOW_ALREADY_EXISTS, CFA_INSUFFICIENT_BALANCE]
+
+updateFlow:
+  # Change the flow rate of an existing stream from ctx.msgSender to receiver.
+  # Note: owedDeposit accumulates when a Super App receiver uses app credit to
+  # open outgoing streams. The sender bears the deposit cost for those streams.
+  notes:
+    - "Gotcha: Deposit is adjusted to match the new flow rate but never refunds owed deposit — that adjustment happens separately via the app credit system."
+  mutability: nonpayable
+  access: anyone  # flow from ctx.msgSender
+  inputs:
+    - token: address
+    - receiver: address
+    - flowRate: int96        # must be > 0
+    - ctx: bytes
+  outputs:
+    - newCtx: bytes
+  emits: [FlowUpdated, FlowUpdatedExtension]
+  errors: [CFA_ZERO_ADDRESS_RECEIVER, CFA_NO_SELF_FLOW, CFA_INVALID_FLOW_RATE, CFA_FLOW_DOES_NOT_EXIST, CFA_INSUFFICIENT_BALANCE]
+
+deleteFlow:
+  # Stop a stream between sender and receiver.
+  # During liquidation the reward distribution depends on the solvency period:
+  # patrician → bond account gets reward; pleb → liquidator gets reward;
+  # pirate → liquidator gets full single deposit, protocol covers the bailout.
+  notes:
+    - "Gotcha: Third-party callers (not sender, receiver, or operator) only succeed if the sender is critical (negative available balance) or either party is jailed."
+  mutability: nonpayable
+  access: sender | receiver | operator | anyone(if-critical-or-jailed)
+  inputs:
+    - token: address
+    - sender: address
+    - receiver: address
+    - ctx: bytes
+  outputs:
+    - newCtx: bytes
+  emits: [FlowUpdated, FlowUpdatedExtension]
+  errors: [CFA_ZERO_ADDRESS_SENDER, CFA_ZERO_ADDRESS_RECEIVER, CFA_FLOW_DOES_NOT_EXIST, CFA_NON_CRITICAL_SENDER]
+
+# == Operator Flow Management ==
+# Act on behalf of another account. Requires ACL permissions granted by the sender.
+# The operator's flow rate allowance is decremented on create/update.
+# Functions with ctx are called through the Host.
+
+createFlowByOperator:
+  # Create a flow on behalf of sender. Consumes flow rate allowance.
+  notes:
+    - "Gotcha: Reverts if ctx.msgSender IS the sender — use createFlow instead."
+  mutability: nonpayable
+  access: operator
+  inputs:
+    - token: address
+    - sender: address
+    - receiver: address
+    - flowRate: int96        # must be > 0
+    - ctx: bytes
+  outputs:
+    - newCtx: bytes
+  emits: [FlowUpdated, FlowUpdatedExtension]
+  errors: [CFA_ACL_NO_SENDER_CREATE, CFA_ACL_OPERATOR_NO_CREATE_PERMISSIONS, CFA_ACL_FLOW_RATE_ALLOWANCE_EXCEEDED, CFA_ZERO_ADDRESS_RECEIVER, CFA_NO_SELF_FLOW, CFA_INVALID_FLOW_RATE, CFA_FLOW_ALREADY_EXISTS, CFA_INSUFFICIENT_BALANCE]
+
+updateFlowByOperator:
+  # Update a flow on behalf of sender. Only consumes allowance if flow rate increases.
+  # If flowRateAllowance is type(int96).max, it is treated as unlimited.
+  notes:
+    - "Gotcha: If the new rate is lower than the old rate, no allowance is consumed."
+  mutability: nonpayable
+  access: operator
+  inputs:
+    - token: address
+    - sender: address
+    - receiver: address
+    - flowRate: int96        # must be > 0
+    - ctx: bytes
+  outputs:
+    - newCtx: bytes
+  emits: [FlowUpdated, FlowUpdatedExtension]
+  errors: [CFA_ACL_NO_SENDER_UPDATE, CFA_ACL_OPERATOR_NO_UPDATE_PERMISSIONS, CFA_ACL_FLOW_RATE_ALLOWANCE_EXCEEDED, CFA_ZERO_ADDRESS_RECEIVER, CFA_NO_SELF_FLOW, CFA_INVALID_FLOW_RATE, CFA_FLOW_DOES_NOT_EXIST, CFA_INSUFFICIENT_BALANCE]
+
+deleteFlowByOperator:
+  # Delete a flow on behalf of sender. Does not consume flow rate allowance.
+  mutability: nonpayable
+  access: operator
+  inputs:
+    - token: address
+    - sender: address
+    - receiver: address
+    - ctx: bytes
+  outputs:
+    - newCtx: bytes
+  emits: [FlowUpdated, FlowUpdatedExtension]
+  errors: [CFA_ACL_OPERATOR_NO_DELETE_PERMISSIONS, CFA_ZERO_ADDRESS_SENDER, CFA_ZERO_ADDRESS_RECEIVER, CFA_FLOW_DOES_NOT_EXIST, CFA_NON_CRITICAL_SENDER]
+
+# == Flow Queries ==
+
+realtimeBalanceOf:
+  # Compute the real-time CFA balance contribution for an account.
+  # Returns the dynamic balance delta (flowRate * elapsed), total deposit held,
+  # and total owed deposit. This is called by the token's realtimeBalanceOfNow
+  # to assemble the full balance across all agreements.
+  # To get an account's actual token balance, use SuperToken.realtimeBalanceOfNow
+  # (or SuperToken.balanceOf for ERC-20 compatible, clamped to zero).
+  # It can be deeply negative for net-outflow accounts as time progresses.
+  notes:
+    - "Gotcha: Returns only the CFA portion of the balance, not the total."
+    - "Gotcha: The returned dynamicBalance is a delta, not an absolute balance."
+  mutability: view
+  inputs:
+    - token: address
+    - account: address
+    - time: uint256
+  outputs:
+    - dynamicBalance: int256  # flowRate * (time - lastUpdate); can be negative
+    - deposit: uint256        # total deposit locked across all outflows
+    - owedDeposit: uint256    # total owed deposit from Super App receivers
+
+getFlow:
+  # Get flow data between a specific sender-receiver pair.
+  mutability: view
+  inputs:
+    - token: address
+    - sender: address
+    - receiver: address
+  outputs:
+    - timestamp: uint256     # last update time
+    - flowRate: int96
+    - deposit: uint256
+    - owedDeposit: uint256
+
+getFlowByID:
+  # Get flow data using the agreement ID (keccak256 of sender and receiver).
+  mutability: view
+  inputs:
+    - token: address
+    - flowId: bytes32        # keccak256(abi.encode(sender, receiver))
+  outputs:
+    - timestamp: uint256
+    - flowRate: int96
+    - deposit: uint256
+    - owedDeposit: uint256
+
+getAccountFlowInfo:
+  # Aggregated flow state for an account across all its CFA flows.
+  mutability: view
+  inputs:
+    - token: address
+    - account: address
+  outputs:
+    - timestamp: uint256     # last time any flow was updated for this account
+    - flowRate: int96        # net flow rate (inflows - outflows)
+    - deposit: uint256       # sum of deposits across all outflows
+    - owedDeposit: uint256   # sum of owed deposits across all outflows
+
+getNetFlow:
+  # Net flow rate for an account (sum of inflows minus outflows).
+  mutability: view
+  inputs:
+    - token: address
+    - account: address
+  outputs:
+    - flowRate: int96
+
+# == ACL Management ==
+# Manage flow operator permissions and flow rate allowances.
+# The caller (ctx.msgSender) is always the permission granter — they control
+# who can operate on their own flows.
+# Functions with ctx are called through the Host.
+
+updateFlowOperatorPermissions:
+  # Set exact permissions and flow rate allowance for a flow operator.
+  mutability: nonpayable
+  access: anyone  # grants on ctx.msgSender's flows
+  inputs:
+    - token: address
+    - flowOperator: address
+    - permissions: uint8     # bitmask: 1=create, 2=update, 4=delete
+    - flowRateAllowance: int96
+    - ctx: bytes
+  outputs:
+    - newCtx: bytes
+  emits: [FlowOperatorUpdated]
+  errors: [CFA_ACL_UNCLEAN_PERMISSIONS, CFA_ACL_NO_SENDER_FLOW_OPERATOR, CFA_ACL_NO_NEGATIVE_ALLOWANCE]
+
+authorizeFlowOperatorWithFullControl:
+  # Grant all permissions (create+update+delete) with unlimited allowance.
+  # Shorthand for updateFlowOperatorPermissions(token, op, 7, type(int96).max, ctx).
+  mutability: nonpayable
+  access: anyone  # grants on ctx.msgSender's flows
+  inputs:
+    - token: address
+    - flowOperator: address
+    - ctx: bytes
+  outputs:
+    - newCtx: bytes
+  emits: [FlowOperatorUpdated]
+  errors: [CFA_ACL_UNCLEAN_PERMISSIONS, CFA_ACL_NO_SENDER_FLOW_OPERATOR, CFA_ACL_NO_NEGATIVE_ALLOWANCE]
+
+revokeFlowOperatorWithFullControl:
+  # Revoke all permissions and set allowance to zero.
+  # Shorthand for updateFlowOperatorPermissions(token, op, 0, 0, ctx).
+  mutability: nonpayable
+  access: anyone  # revokes on ctx.msgSender's flows
+  inputs:
+    - token: address
+    - flowOperator: address
+    - ctx: bytes
+  outputs:
+    - newCtx: bytes
+  emits: [FlowOperatorUpdated]
+  errors: [CFA_ACL_UNCLEAN_PERMISSIONS, CFA_ACL_NO_SENDER_FLOW_OPERATOR, CFA_ACL_NO_NEGATIVE_ALLOWANCE]
+
+increaseFlowRateAllowance:
+  # Increase flow rate allowance for an operator by a delta.
+  # Delegates to increaseFlowRateAllowanceWithPermissions with permissionsToAdd=0.
+  mutability: nonpayable
+  access: anyone  # ctx.msgSender's allowance
+  inputs:
+    - token: address
+    - flowOperator: address
+    - addedFlowRateAllowance: int96
+    - ctx: bytes
+  outputs:
+    - newCtx: bytes
+  emits: [FlowOperatorUpdated]
+  errors: [CFA_ACL_UNCLEAN_PERMISSIONS, CFA_ACL_NO_SENDER_FLOW_OPERATOR, CFA_ACL_NO_NEGATIVE_ALLOWANCE]
+
+decreaseFlowRateAllowance:
+  # Decrease flow rate allowance for an operator by a delta.
+  # Delegates to decreaseFlowRateAllowanceWithPermissions with permissionsToRemove=0.
+  mutability: nonpayable
+  access: anyone  # ctx.msgSender's allowance
+  inputs:
+    - token: address
+    - flowOperator: address
+    - subtractedFlowRateAllowance: int96
+    - ctx: bytes
+  outputs:
+    - newCtx: bytes
+  emits: [FlowOperatorUpdated]
+  errors: [CFA_ACL_UNCLEAN_PERMISSIONS, CFA_ACL_NO_SENDER_FLOW_OPERATOR, CFA_ACL_NO_NEGATIVE_ALLOWANCE]
+
+increaseFlowRateAllowanceWithPermissions:
+  # Increase flow rate allowance and add permission bits in one call.
+  # permissionsToAdd is OR'd with existing permissions.
+  mutability: nonpayable
+  access: anyone  # ctx.msgSender's allowance
+  inputs:
+    - token: address
+    - flowOperator: address
+    - permissionsToAdd: uint8    # bitmask OR'd onto existing permissions
+    - addedFlowRateAllowance: int96
+    - ctx: bytes
+  outputs:
+    - newCtx: bytes
+  emits: [FlowOperatorUpdated]
+  errors: [CFA_ACL_UNCLEAN_PERMISSIONS, CFA_ACL_NO_SENDER_FLOW_OPERATOR, CFA_ACL_NO_NEGATIVE_ALLOWANCE]
+
+decreaseFlowRateAllowanceWithPermissions:
+  # Decrease flow rate allowance and remove permission bits in one call.
+  # permissionsToRemove is AND-NOT'd from existing permissions.
+  notes:
+    - "Gotcha: Reverts if the resulting allowance would go negative."
+  mutability: nonpayable
+  access: anyone  # ctx.msgSender's allowance
+  inputs:
+    - token: address
+    - flowOperator: address
+    - permissionsToRemove: uint8  # bitmask AND-NOT'd from existing permissions
+    - subtractedFlowRateAllowance: int96
+    - ctx: bytes
+  outputs:
+    - newCtx: bytes
+  emits: [FlowOperatorUpdated]
+  errors: [CFA_ACL_UNCLEAN_PERMISSIONS, CFA_ACL_NO_SENDER_FLOW_OPERATOR, CFA_ACL_NO_NEGATIVE_ALLOWANCE]
+
+# == ACL Queries ==
+
+getFlowOperatorData:
+  # Get permissions and allowance for a flow operator.
+  mutability: view
+  inputs:
+    - token: address
+    - sender: address         # the permission granter
+    - flowOperator: address   # the permission grantee
+  outputs:
+    - flowOperatorId: bytes32 # keccak256(abi.encode("flowOperator", sender, flowOperator))
+    - permissions: uint8      # bitmask: 1=create, 2=update, 4=delete
+    - flowRateAllowance: int96
+
+getFlowOperatorDataByID:
+  # Get permissions and allowance using the pre-computed operator ID.
+  mutability: view
+  inputs:
+    - token: address
+    - flowOperatorId: bytes32
+  outputs:
+    - permissions: uint8
+    - flowRateAllowance: int96
+
+# == Solvency Queries ==
+# Check whether an account is in the patrician period (grace window for liquidation).
+
+isPatricianPeriodNow:
+  # Check patrician period status using the Host's current timestamp.
+  mutability: view
+  inputs:
+    - token: address
+    - account: address
+  outputs:
+    - isCurrentlyPatricianPeriod: bool
+    - timestamp: uint256     # the Host's block.timestamp used for the check
+
+isPatricianPeriod:
+  # Check patrician period status at a specific timestamp.
+  mutability: view
+  inputs:
+    - token: address
+    - account: address
+    - timestamp: uint256
+  outputs:
+    - bool
+
+# == Deposit Helpers ==
+
+getMaximumFlowRateFromDeposit:
+  # Calculate the maximum flow rate achievable with a given deposit.
+  notes:
+    - "Gotcha: Deposit is clipped (lower 32 bits zeroed) and rounded down."
+  mutability: view
+  inputs:
+    - token: address          # needed to look up liquidation period from governance
+    - deposit: uint256
+  outputs:
+    - flowRate: int96
+  errors: [CFA_DEPOSIT_TOO_BIG]
+
+getDepositRequiredForFlowRate:
+  # Calculate the deposit required for a given flow rate.
+  # Returns max(minimumDeposit, flowRate * liquidationPeriod) with rounding.
+  mutability: view
+  inputs:
+    - token: address          # needed to look up liquidation period and minimum deposit
+    - flowRate: int96
+  outputs:
+    - deposit: uint256
+  errors: [CFA_INVALID_FLOW_RATE, CFA_FLOW_RATE_TOO_BIG]
+
+# == Protocol Constants ==
+
+agreementType:
+  # Returns keccak256("org.superfluid-finance.agreements.ConstantFlowAgreement.v1")
+  mutability: pure
+  outputs:
+    - bytes32
+
+DEFAULT_MINIMUM_DEPOSIT:
+  # Minimum deposit floor: uint96(1 << 32) ≈ 4.29 * 10^9 wei.
+  # Governance may set a higher per-token minimum; this is the absolute floor.
+  mutability: view
+  outputs:
+    - uint256
+
+MAXIMUM_DEPOSIT:
+  # Maximum deposit cap: type(int96).max
+  mutability: view
+  outputs:
+    - uint256
+
+MAXIMUM_FLOW_RATE:
+  # Maximum flow rate: type(int96).max
+  mutability: view
+  outputs:
+    - uint256
+
+CFA_HOOK_GAS_LIMIT:
+  # Gas limit for external hook calls (Super App callbacks): 250,000
+  mutability: view
+  outputs:
+    - uint64
+
+# == Events ==
+
+events:
+  FlowUpdated:
+    # Emitted on every create, update, and delete flow operation.
+    # totalSenderFlowRate and totalReceiverFlowRate are the NET flow rates
+    # after the operation, not the individual flow rate.
+    notes:
+      - "Gotcha: Always emitted together with FlowUpdatedExtension."
+    indexed:
+      - token: address
+      - sender: address
+      - receiver: address
+    data:
+      - flowRate: int96              # new rate for this specific flow (0 on delete)
+      - totalSenderFlowRate: int256  # sender's net flow rate after this operation
+      - totalReceiverFlowRate: int256
+      - userData: bytes
+
+  FlowUpdatedExtension:
+    # Companion event to FlowUpdated. Carries the operator and new deposit.
+    # Emitted immediately after FlowUpdated so indexers can correlate them.
+    indexed:
+      - flowOperator: address        # ctx.msgSender who initiated the operation
+    data:
+      - deposit: uint256             # new deposit for this specific flow
+
+  FlowOperatorUpdated:
+    # Emitted when operator permissions or flow rate allowance change.
+    indexed:
+      - token: address
+      - sender: address              # the permission granter
+      - flowOperator: address        # the permission grantee
+    data:
+      - permissions: uint8           # updated bitmask
+      - flowRateAllowance: int96     # updated allowance
+
+  # Inherited events (from AgreementBase / UUPSProxiable):
+  # CodeUpdated — emitted on proxy upgrade (uuid, codeAddress)
+  # Initialized — emitted on proxy initialization (version)
+
+# == Errors ==
+
+errors:
+  # Flow validation
+  - CFA_FLOW_ALREADY_EXISTS        # createFlow when flow exists
+  - CFA_FLOW_DOES_NOT_EXIST        # update/delete when no flow
+  - CFA_INVALID_FLOW_RATE          # flowRate <= 0
+  - CFA_NO_SELF_FLOW               # sender == receiver
+  - CFA_ZERO_ADDRESS_SENDER        # sender is address(0)
+  - CFA_ZERO_ADDRESS_RECEIVER      # receiver is address(0)
+  # Solvency
+  - CFA_INSUFFICIENT_BALANCE       # sender cannot cover deposit
+  - CFA_NON_CRITICAL_SENDER        # third-party delete but sender is solvent
+  - CFA_DEPOSIT_TOO_BIG            # deposit > MAXIMUM_DEPOSIT
+  - CFA_FLOW_RATE_TOO_BIG          # flowRate * liquidationPeriod overflows
+  # ACL
+  - CFA_ACL_FLOW_RATE_ALLOWANCE_EXCEEDED  # operator exceeds granted allowance
+  - CFA_ACL_NO_NEGATIVE_ALLOWANCE         # resulting allowance would be < 0
+  - CFA_ACL_NO_SENDER_CREATE              # operator cannot be the sender (use createFlow)
+  - CFA_ACL_NO_SENDER_FLOW_OPERATOR       # cannot set yourself as your own operator
+  - CFA_ACL_NO_SENDER_UPDATE              # operator cannot be the sender (use updateFlow)
+  - CFA_ACL_OPERATOR_NO_CREATE_PERMISSIONS
+  - CFA_ACL_OPERATOR_NO_DELETE_PERMISSIONS
+  - CFA_ACL_OPERATOR_NO_UPDATE_PERMISSIONS
+  - CFA_ACL_UNCLEAN_PERMISSIONS            # permission bits outside valid range
+  # Super App / Host
+  - CFA_HOOK_OUT_OF_GAS            # Super App callback exceeded gas limit
+  - APP_RULE:                      # Super App rule violation
+      inputs:
+        - _code: uint256
+  - AGREEMENT_BASE_ONLY_HOST       # call not routed through the Host contract
+  # SafeCast (inherited from OpenZeppelin)
+  - SafeCastOverflowedIntToUint:   # int256 value overflows on cast to uint256
+      inputs:
+        - value: int256
+  - SafeCastOverflowedUintToInt:   # uint256 value overflows on cast to int256
+      inputs:
+        - value: uint256

@@ -1,0 +1,17 @@
+name = "ifind-billing"
+main = "index.js"
+compatibility_date = "2024-01-01"
+
+# 自定义域名路由
+routes = [
+  { pattern = "ifind.skillapp.vip/*", zone_name = "skillapp.vip" }
+]
+
+# KV 命名空间，用于存储试用期数据
+[[kv_namespaces]]
+binding = "TRIAL_KV"
+id = "a7dd33732ba6465fb64e168afaf30f9c"
+
+# Secrets（不会出现在代码中）:
+# wrangler secret put SKILLPAY_API_KEY
+# wrangler secret put API_SECRET

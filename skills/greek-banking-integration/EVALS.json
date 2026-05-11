@@ -1,0 +1,110 @@
+[
+  {
+    "id": 0,
+    "prompt": "Process Alpha Bank business account statement exported as Excel format containing Greek transactions. Identify client payments, categorize expenses, detect VAT rates, and prepare reconciliation report suitable for Greek accounting firm.",
+    "expectations": [
+      "Parses Alpha Bank Excel format with Greek headers and date formats",
+      "Handles Greek character encoding (Windows-1253/UTF-8) correctly",
+      "Identifies client payments using Greek keywords and patterns",
+      "Categorizes expenses according to Greek business categories",
+      "Detects VAT rates (24%, 13%, 6%) and calculates recoverable input VAT",
+      "Matches transactions to outstanding invoices with confidence scoring",
+      "Generates reconciliation report in professional Greek format",
+      "Exports data compatible with Greek accounting software"
+    ],
+    "files": [
+      {
+        "name": "alpha_bank_statement.xlsx",
+        "content": "simulated_excel_binary_data"
+      },
+      {
+        "name": "alpha_transactions.json",
+        "content": "{\n  \"account_info\": {\n    \"bank_name\": \"Alpha Bank\",\n    \"account_number\": \"GR0101401230123456789012\",\n    \"account_type\": \"Business Current Account\",\n    \"statement_period\": \"2026-02-01 to 2026-02-28\",\n    \"opening_balance\": 45230.67,\n    \"closing_balance\": 47890.45\n  },\n  \"transactions\": [\n    {\n      \"date\": \"03/02/2026\",\n      \"description\": \"ΠΛΔΡΩΜΔ ΑΠΟ COMPANY A AE - ΤΘΜ/ΓΘΟ 2024-0145\",\n      \"amount\": 4500.00,\n      \"type\": \"credit\",\n      \"balance\": 49730.67,\n      \"reference\": \"INV2024-0145\",\n      \"category_expected\": \"client_payment\",\n      \"vat_analysis\": \"Payment includes 24% VAT\"\n    },\n    {\n      \"date\": \"05/02/2026\", \n      \"description\": \"SEPA ΠΛΔΡΩΜΔ ΠΡΟΣ SUPPLIER B EPE\",\n      \"amount\": -2480.00,\n      \"type\": \"debit\",\n      \"balance\": 47250.67,\n      \"reference\": \"SEPA123456\",\n      \"category_expected\": \"supplier_payment\",\n      \"vat_analysis\": \"24% input VAT recoverable: €480.00\"\n    },\n    {\n      \"date\": \"08/02/2026\",\n      \"description\": \"ΑΥΤΟΜΑΤΔ ΠΛΔΡΩΜΔ ΔΕΔ - ΛΟΓΑΡΘΑΣΜΟΣ ΡΕΥΜΑΤΟΣ\",\n      \"amount\": -345.67,\n      \"type\": \"debit\",\n      \"balance\": 46904.00,\n      \"category_expected\": \"utilities\",\n      \"vat_analysis\": \"24% input VAT recoverable: €66.67\"\n    },\n    {\n      \"date\": \"12/02/2026\",\n      \"description\": \"ΚΑΤΑΘΕΣΔ ΜΕΤΡΔΤΩΝ\",\n      \"amount\": 1200.00,\n      \"type\": \"credit\",\n      \"balance\": 48104.00,\n      \"category_expected\": \"cash_deposit\",\n      \"vat_analysis\": \"No VAT - cash deposit\"\n    },\n    {\n      \"date\": \"15/02/2026\",\n      \"description\": \"ΠΛΔΡΩΜΔ ΦΠΑ ΠΡΟΣ ΑΔΔΕ\",\n      \"amount\": -1890.50,\n      \"type\": \"debit\",\n      \"balance\": 46213.50,\n      \"reference\": \"VAT202401\",\n      \"category_expected\": \"vat_payment\",\n      \"vat_analysis\": \"VAT payment - no recovery\"\n    },\n    {\n      \"date\": \"20/02/2026\",\n      \"description\": \"ΕΜΒΑΣΜΑ ΑΠΟ CLIENT C OE\",\n      \"amount\": 890.00,\n      \"type\": \"credit\",\n      \"balance\": 47103.50,\n      \"category_expected\": \"client_payment\",\n      \"vat_analysis\": \"Service payment with 24% VAT\"\n    }\n  ],\n  \"summary\": {\n    \"total_credits\": 6590.00,\n    \"total_debits\": -4715.17,\n    \"net_change\": 1874.83,\n    \"transaction_count\": 6,\n    \"client_payments_total\": 5390.00,\n    \"recoverable_vat_total\": 546.67\n  }\n}"
+      }
+    ]
+  },
+  {
+    "id": 1,
+    "prompt": "Import and reconcile statements from multiple Greek banks (Alpha Bank, NBG, Eurobank) simultaneously. Handle different file formats, detect duplicate transactions across accounts, and generate consolidated reconciliation for multi-bank Greek business.",
+    "expectations": [
+      "Processes multiple Greek bank formats simultaneously (Excel, CSV, PDF)",
+      "Handles different Greek date formats and character encodings per bank",
+      "Detects and flags potential duplicate transactions across different banks",
+      "Reconciles inter-bank transfers automatically",
+      "Generates consolidated cash position report",
+      "Identifies discrepancies requiring manual review",
+      "Creates bank-specific and consolidated reconciliation reports",
+      "Integrates with Greek chart of accounts (ELSYN standards)"
+    ],
+    "files": [
+      {
+        "name": "multi_bank_data.json",
+        "content": "{\n  \"banks_processed\": [\n    {\n      \"bank\": \"Alpha Bank\",\n      \"account\": \"GR0101401230123456789012\",\n      \"file_format\": \"Excel\",\n      \"encoding\": \"UTF-8\",\n      \"transactions\": 45,\n      \"period\": \"2026-02-01 to 2026-02-28\",\n      \"opening_balance\": 45230.67,\n      \"closing_balance\": 47890.45\n    },\n    {\n      \"bank\": \"National Bank of Greece\",\n      \"account\": \"GR0701101250000000012345\", \n      \"file_format\": \"CSV\",\n      \"encoding\": \"Windows-1253\",\n      \"transactions\": 32,\n      \"period\": \"2026-02-01 to 2026-02-28\",\n      \"opening_balance\": 12450.30,\n      \"closing_balance\": 11890.15\n    },\n    {\n      \"bank\": \"Eurobank\",\n      \"account\": \"GR0202601230000567890123\",\n      \"file_format\": \"Excel\",\n      \"encoding\": \"UTF-8\",\n      \"transactions\": 28,\n      \"period\": \"2026-02-01 to 2026-02-28\",\n      \"opening_balance\": 8900.50,\n      \"closing_balance\": 9670.85\n    }\n  ],\n  \"inter_bank_transfers\": [\n    {\n      \"from_account\": \"Alpha Bank GR01...\",\n      \"to_account\": \"NBG GR07...\",\n      \"amount\": 5000.00,\n      \"date\": \"2026-02-15\",\n      \"reference\": \"TRANSFER001\",\n      \"matched\": true,\n      \"fees\": 12.50\n    },\n    {\n      \"from_account\": \"NBG GR07...\",\n      \"to_account\": \"Eurobank GR02...\",\n      \"amount\": 2000.00,\n      \"date\": \"2026-02-22\",\n      \"reference\": \"SEPA456\",\n      \"matched\": true,\n      \"fees\": 8.00\n    }\n  ],\n  \"potential_duplicates\": [\n    {\n      \"description\": \"Payment to SUPPLIER XYZ AE\",\n      \"amount\": 1500.00,\n      \"date\": \"2026-02-10\",\n      \"accounts\": [\"Alpha Bank\", \"NBG\"],\n      \"confidence\": \"medium\",\n      \"requires_review\": true,\n      \"likely_explanation\": \"Same supplier payment from different accounts\"\n    }\n  ],\n  \"consolidation_summary\": {\n    \"total_cash_position\": 69451.45,\n    \"total_transactions\": 105,\n    \"inter_bank_transfers_count\": 2,\n    \"duplicate_flags\": 1,\n    \"reconciliation_items\": 3,\n    \"overall_accuracy\": \"98.1%\"\n  }\n}"
+      }
+    ]
+  },
+  {
+    "id": 2,
+    "prompt": "Process Greek bank statement with complex VAT scenarios including mixed VAT rates, EU transactions, and government payments. Calculate precise input VAT recovery and prepare VAT return data for AADE submission.",
+    "expectations": [
+      "Identifies transactions with different Greek VAT rates (24%, 13%, 6%)",
+      "Handles EU reverse charge transactions correctly",
+      "Categorizes government payments (AADE, EFKA, municipal) with no VAT recovery",
+      "Calculates exact input VAT recovery amounts by rate category",
+      "Prepares VAT return data compatible with AADE submission format",
+      "Flags transactions requiring special VAT treatment",
+      "Generates comprehensive VAT analysis report",
+      "Integrates with greek-compliance-aade skill for VAT calculations"
+    ],
+    "files": [
+      {
+        "name": "complex_vat_transactions.json",
+        "content": "{\n  \"account_info\": {\n    \"company_name\": \"DEMO TRADING AE\",\n    \"vat_number\": \"EL123456789\",\n    \"period\": \"2026-02-01 to 2026-02-28\"\n  },\n  \"vat_transactions\": [\n    {\n      \"date\": \"2026-02-05\",\n      \"description\": \"ΑΓΟΡΑ ΕΜΠΟΡΕΥΜΑΤΩΝ - SUPPLIER GREECE AE\",\n      \"amount\": -12400.00,\n      \"vat_rate\": 24,\n      \"net_amount\": -10000.00,\n      \"vat_amount\": -2400.00,\n      \"vat_recoverable\": true,\n      \"category\": \"goods_purchase\"\n    },\n    {\n      \"date\": \"2026-02-08\",\n      \"description\": \"ΕΣΤΘΑΤΟΡΘΟ MYKONOS - BUSINESS MEAL\",\n      \"amount\": -113.00,\n      \"vat_rate\": 13,\n      \"net_amount\": -100.00,\n      \"vat_amount\": -13.00,\n      \"vat_recoverable\": true,\n      \"deductible_percentage\": 50,\n      \"recoverable_vat\": -6.50,\n      \"category\": \"entertainment_meals\"\n    },\n    {\n      \"date\": \"2026-02-12\",\n      \"description\": \"ΦΑΡΜΑΚΕΘΟ - ΠΡΩΤΕΣ ΒΟΔΘΕΘΕΣ ΓΡΑΦΕΘΟΥ\",\n      \"amount\": -106.00,\n      \"vat_rate\": 6,\n      \"net_amount\": -100.00,\n      \"vat_amount\": -6.00,\n      \"vat_recoverable\": true,\n      \"category\": \"medical_supplies\"\n    },\n    {\n      \"date\": \"2026-02-15\",\n      \"description\": \"EU SUPPLIER - GERMANY - REVERSE CHARGE\",\n      \"amount\": -8000.00,\n      \"vat_rate\": 0,\n      \"net_amount\": -8000.00,\n      \"vat_amount\": 0,\n      \"reverse_charge\": true,\n      \"reverse_charge_vat\": 1920.00,\n      \"vat_recoverable\": true,\n      \"category\": \"eu_goods_purchase\",\n      \"supplier_vat_number\": \"DE123456789\"\n    },\n    {\n      \"date\": \"2026-02-18\",\n      \"description\": \"ΠΛΔΡΩΜΔ ΦΠΑ ΠΡΟΣ ΑΔΔΕ\",\n      \"amount\": -3450.00,\n      \"vat_rate\": null,\n      \"vat_recoverable\": false,\n      \"category\": \"vat_payment_government\"\n    },\n    {\n      \"date\": \"2026-02-20\",\n      \"description\": \"ΠΛΔΡΩΜΔ ΕΦΚΑ - ΕΡΓΟΔΟΤΘΚΕΣ ΕΘΣΦΟΡΕΣ\",\n      \"amount\": -1890.50,\n      \"vat_rate\": null,\n      \"vat_recoverable\": false,\n      \"category\": \"social_security_payment\"\n    },\n    {\n      \"date\": \"2026-02-25\",\n      \"description\": \"ΕΝΟΘΚΘΟ ΓΡΑΦΕΘΩΝ - LANDLORD AE\",\n      \"amount\": -2480.00,\n      \"vat_rate\": 24,\n      \"net_amount\": -2000.00,\n      \"vat_amount\": -480.00,\n      \"vat_recoverable\": true,\n      \"category\": \"office_rent\"\n    }\n  ],\n  \"vat_summary_by_rate\": {\n    \"vat_24_percent\": {\n      \"total_net\": -12000.00,\n      \"total_vat\": -2880.00,\n      \"recoverable_vat\": -2880.00\n    },\n    \"vat_13_percent\": {\n      \"total_net\": -100.00,\n      \"total_vat\": -13.00,\n      \"recoverable_vat\": -6.50\n    },\n    \"vat_6_percent\": {\n      \"total_net\": -100.00,\n      \"total_vat\": -6.00,\n      \"recoverable_vat\": -6.00\n    },\n    \"reverse_charge\": {\n      \"total_net\": -8000.00,\n      \"output_vat\": 1920.00,\n      \"input_vat\": -1920.00,\n      \"net_position\": 0\n    }\n  },\n  \"total_recoverable_vat\": -2892.50,\n  \"special_treatments\": [\n    \"Business meals 50% deductible per Greek law\",\n    \"EU reverse charge requires both output and input VAT reporting\",\n    \"Government payments have no VAT implications\"\n  ]\n}"
+      }
+    ]
+  },
+  {
+    "id": 3,
+    "prompt": "Handle Piraeus Bank CSV statement with Greek character encoding issues and irregular transaction formats. Clean data, standardize formats, and integrate with existing accounting system while maintaining audit trail.",
+    "expectations": [
+      "Detects and corrects Greek character encoding problems",
+      "Handles irregular CSV formats and missing data fields",
+      "Standardizes transaction descriptions and amounts",
+      "Preserves original data for audit trail requirements",
+      "Maps transactions to existing accounting system chart of accounts",
+      "Flags problematic transactions requiring manual review",
+      "Generates data quality report with correction statistics",
+      "Maintains complete processing log for compliance"
+    ],
+    "files": [
+      {
+        "name": "piraeus_problematic_statement.csv",
+        "content": "problematic_csv_data_with_encoding_issues"
+      },
+      {
+        "name": "data_cleaning_results.json",
+        "content": "{\n  \"original_file_info\": {\n    \"bank\": \"Piraeus Bank\",\n    \"file_name\": \"piraeus_statement_202602.csv\",\n    \"original_encoding\": \"Windows-1253\",\n    \"file_size_bytes\": 15847,\n    \"original_line_count\": 87\n  },\n  \"encoding_issues_detected\": [\n    {\n      \"line\": 12,\n      \"issue\": \"Garbled Greek characters in description\",\n      \"original\": \"ΠΛΔΡ€°ÌË ÀڀºÍ\",\n      \"corrected\": \"ΠΛΔΡΩΜΔ ΠΡΟΣ\",\n      \"confidence\": \"high\"\n    },\n    {\n      \"line\": 23,\n      \"issue\": \"Mixed encoding in amount field\",\n      \"original\": \"1.234€56\",\n      \"corrected\": \"1.234,56\",\n      \"confidence\": \"medium\"\n    },\n    {\n      \"line\": 45,\n      \"issue\": \"Incomplete transaction description\",\n      \"original\": \"SEPA Tr...\",\n      \"corrected\": \"SEPA Transfer - Incomplete description flagged\",\n      \"requires_review\": true\n    }\n  ],\n  \"data_standardization\": {\n    \"date_formats_corrected\": 23,\n    \"amount_formats_standardized\": 31,\n    \"descriptions_cleaned\": 18,\n    \"missing_fields_flagged\": 5\n  },\n  \"processed_transactions\": [\n    {\n      \"line_number\": 1,\n      \"original_date\": \"03/02/26\",\n      \"standardized_date\": \"2026-02-03\",\n      \"original_description\": \"ΚΑΤΩΘΕΣΔ ΜΕΤΟΔΤΩΝ\",\n      \"cleaned_description\": \"ΚΑΤΑΘΕΣΔ ΜΕΤΡΔΤΩΝ\",\n      \"original_amount\": \"1€234,50\",\n      \"standardized_amount\": 1234.50,\n      \"data_quality_score\": 85,\n      \"chart_account_mapped\": \"18.01.001 - Cash in Bank\"\n    },\n    {\n      \"line_number\": 2,\n      \"original_date\": \"05/02/2026\",\n      \"standardized_date\": \"2026-02-05\",\n      \"original_description\": \"ΑΥΕΟΜΕΤΔ ΠΛΔΡ€°ÌË\",\n      \"cleaned_description\": \"ΑΥΤΟΜΑΤΔ ΠΛΔΡΩΜΔ\",\n      \"original_amount\": \"-567,80\",\n      \"standardized_amount\": -567.80,\n      \"data_quality_score\": 75,\n      \"requires_review\": true,\n      \"review_reason\": \"Incomplete transaction details\"\n    }\n  ],\n  \"audit_trail\": {\n    \"total_corrections\": 47,\n    \"automatic_corrections\": 42,\n    \"manual_review_required\": 5,\n    \"data_quality_average\": 87.5,\n    \"processing_timestamp\": \"2026-02-19T10:30:00Z\",\n    \"processing_duration_seconds\": 23.4\n  },\n  \"accounting_integration\": {\n    \"chart_accounts_mapped\": 34,\n    \"unmapped_transactions\": 3,\n    \"vat_analysis_completed\": true,\n    \"reconciliation_ready\": true\n  }\n}"
+      }
+    ]
+  },
+  {
+    "id": 4,
+    "prompt": "Generate comprehensive monthly banking report for Greek company management including cash flow analysis, VAT recovery summary, client payment status, and key performance indicators suitable for board presentation.",
+    "expectations": [
+      "Consolidates data from all Greek bank accounts processed",
+      "Calculates key cash flow metrics and trends",
+      "Summarizes VAT recovery by category and rate",
+      "Analyzes client payment patterns and aging",
+      "Identifies key financial performance indicators",
+      "Creates professional management report in Greek",
+      "Includes actionable insights and recommendations",
+      "Provides executive summary suitable for board presentation"
+    ],
+    "files": [
+      {
+        "name": "monthly_banking_analysis.json",
+        "content": "{\n  \"report_period\": {\n    \"month\": \"February 2026\",\n    \"start_date\": \"2026-02-01\",\n    \"end_date\": \"2026-02-28\",\n    \"business_days\": 20\n  },\n  \"cash_position_summary\": {\n    \"opening_balance_total\": 66581.47,\n    \"closing_balance_total\": 69451.45,\n    \"net_change\": 2869.98,\n    \"average_daily_balance\": 68016.46,\n    \"peak_balance\": 72450.30,\n    \"lowest_balance\": 64230.15\n  },\n  \"account_details\": [\n    {\n      \"bank\": \"Alpha Bank\",\n      \"account_type\": \"Business Current\",\n      \"opening_balance\": 45230.67,\n      \"closing_balance\": 47890.45,\n      \"net_change\": 2659.78,\n      \"transaction_count\": 45,\n      \"largest_inflow\": 8500.00,\n      \"largest_outflow\": -4500.00\n    },\n    {\n      \"bank\": \"National Bank of Greece\",\n      \"account_type\": \"Business Savings\",\n      \"opening_balance\": 12450.30,\n      \"closing_balance\": 11890.15,\n      \"net_change\": -560.15,\n      \"transaction_count\": 32,\n      \"primary_use\": \"Government payments and reserves\"\n    },\n    {\n      \"bank\": \"Eurobank\",\n      \"account_type\": \"Euro Business\",\n      \"opening_balance\": 8900.50,\n      \"closing_balance\": 9670.85,\n      \"net_change\": 770.35,\n      \"transaction_count\": 28,\n      \"primary_use\": \"EU transactions and FX\"\n    }\n  ],\n  \"cash_flow_analysis\": {\n    \"operating_inflows\": {\n      \"client_payments\": 34500.00,\n      \"cash_sales\": 2300.00,\n      \"other_income\": 450.00,\n      \"total\": 37250.00\n    },\n    \"operating_outflows\": {\n      \"supplier_payments\": -18900.00,\n      \"payroll_expenses\": -8450.00,\n      \"operating_expenses\": -3200.00,\n      \"government_payments\": -2890.50,\n      \"total\": -33440.50\n    },\n    \"net_operating_cash_flow\": 3809.50,\n    \"financing_activities\": {\n      \"loan_payments\": -940.00,\n      \"interest_received\": 89.50,\n      \"net_financing\": -850.50\n    },\n    \"net_cash_flow\": 2959.00\n  },\n  \"vat_recovery_analysis\": {\n    \"total_input_vat_paid\": 4567.89,\n    \"recoverable_vat_24_percent\": 3890.45,\n    \"recoverable_vat_13_percent\": 234.50,\n    \"recoverable_vat_6_percent\": 67.80,\n    \"non_recoverable_vat\": 375.14,\n    \"recovery_percentage\": 91.8,\n    \"estimated_refund_timeline\": \"Next quarterly VAT return\"\n  },\n  \"client_payment_analysis\": {\n    \"total_payments_received\": 34500.00,\n    \"number_of_paying_clients\": 23,\n    \"average_payment_size\": 1500.00,\n    \"payment_timing\": {\n      \"early_payments\": 8,\n      \"on_time_payments\": 12,\n      \"late_payments\": 3,\n      \"average_days_to_payment\": 28.5\n    },\n    \"outstanding_receivables\": {\n      \"current\": 12400.00,\n      \"1_30_days\": 5600.00,\n      \"31_60_days\": 2300.00,\n      \"over_60_days\": 890.00,\n      \"total_outstanding\": 21190.00\n    }\n  },\n  \"key_performance_indicators\": {\n    \"days_cash_on_hand\": 62.4,\n    \"collection_period_days\": 28.5,\n    \"payment_period_days\": 35.2,\n    \"cash_conversion_cycle\": 41.8,\n    \"bank_charges_percentage\": 0.15,\n    \"transaction_processing_efficiency\": \"94.2%\"\n  },\n  \"recommendations\": [\n    \"Negotiate better payment terms with 3 slow-paying clients\",\n    \"Consider consolidating smaller bank accounts to reduce fees\",\n    \"Optimize VAT recovery by improving expense documentation\",\n    \"Implement automated payment reminders for overdue accounts\",\n    \"Review bank account structure for better cash management\"\n  ],\n  \"compliance_notes\": [\n    \"All bank reconciliations completed within 5 business days\",\n    \"VAT recovery calculations verified against invoices\",\n    \"Foreign exchange transactions properly documented\",\n    \"Government payment references maintained for audit trail\"\n  ]\n}"
+      }
+    ]
+  }
+]

@@ -1,0 +1,121 @@
+# Fontaine — single-use unlock stream contract
+# Streams SUP from a Reserve (Locker) to a recipient over a fixed period at a constant flow rate.
+# Created as a beacon proxy per-unlock by FluidLocker; destroyed after the unlock period ends.
+#
+# NOTE: The contracts use "FLUID" and "Locker" internally. In all public-facing communication
+# these have been renamed to "SUP" and "Reserve" respectively. Function, event, and error
+# names in this file match the on-chain Solidity identifiers.
+# NOTE: emits/errors mappings are traced from source code — verify against implementation.
+
+meta:
+  name: Fontaine
+  version: v1
+  source:
+    - https://raw.githubusercontent.com/superfluid-org/sup-token/refs/heads/dev/packages/contracts/src/Fontaine.sol
+    - https://raw.githubusercontent.com/superfluid-org/sup-token/refs/heads/dev/packages/contracts/src/interfaces/IFontaine.sol
+  implements: [IFontaine]
+  inherits: [Initializable]
+  # No fixed deployments — Fontaine instances are created per-unlock by FluidLocker as beacon proxies.
+  # Logic: 0x45FF512Cd98963C8fB5302E53227BC8b21448B3c (Base mainnet)
+  # Beacon: 0xA26FbA47Da24F7DF11b3E4CF60Dcf7D1691Ae47d (Base mainnet)
+
+# == Abbreviations ==
+# CFA — Constant Flow Agreement
+# SUP — Superfluid Token (contract name: FLUID)
+
+# == Glossary ==
+# FLUID / SUP        — the Superfluid Token; contracts say FLUID, UI says SUP
+# Locker / Reserve   — the user's lock/stake contract; contracts say Locker, UI says Reserve
+# Fontaine           — this contract; a single-use unlock stream
+# unlockPeriod       — duration of the unlock stream in seconds
+# unlockFlowRate     — SUP per second flowing from Fontaine to recipient
+
+# == Constants ==
+
+FLUID:
+  # Immutable reference to the SUP SuperToken (set in constructor, shared across all proxies).
+  mutability: view
+  outputs:
+    - address
+
+EARLY_END:
+  # Grace period before endDate during which terminateUnlock is blocked (1 day = 86400 seconds).
+  mutability: view
+  outputs:
+    - uint256
+
+# == State ==
+
+recipient:
+  # Address receiving the SUP unlock stream.
+  mutability: view
+  outputs:
+    - address
+
+endDate:
+  # Timestamp when the unlock stream is scheduled to finish.
+  mutability: view
+  outputs:
+    - uint128
+
+unlockFlowRate:
+  # SUP per second flowing from this Fontaine to the recipient.
+  mutability: view
+  outputs:
+    - uint96
+
+# == Lifecycle ==
+
+initialize:
+  # Beacon proxy initializer. Called once by FluidLocker when creating an unlock.
+  # Sets the recipient, calculates the end date, and opens a CFA stream of SUP.
+  notes:
+    - "Gotcha: Can only be called once (OpenZeppelin initializer modifier)."
+    - "Gotcha: Reverts if unlockRecipient is a Super App — streaming to Super Apps is forbidden."
+  mutability: nonpayable
+  inputs:
+    - unlockRecipient: address
+    - targetUnlockFlowRate: int96  # SUP wei per second
+    - unlockPeriod: uint128        # duration in seconds
+  emits:
+    - Initialized
+  errors:
+    - CANNOT_UNLOCK_TO_SUPERAPP
+    - CFA_INVALID_FLOW_RATE
+    - InvalidInitialization
+
+# == Unlock Management ==
+
+terminateUnlock:
+  # Stop the unlock stream and transfer any remaining SUP balance to the recipient.
+  # Any address can terminate once the timing condition is met.
+  notes:
+    - "Gotcha: Can only be called after (endDate - EARLY_END) has passed — reverts with TOO_EARLY_TO_TERMINATE_UNLOCK if block.timestamp < endDate - EARLY_END."
+    - "Gotcha: Callable by anyone — the contract has no msg.sender restriction on this function."
+  mutability: nonpayable
+  access: anyone
+  errors:
+    - TOO_EARLY_TO_TERMINATE_UNLOCK
+    - NO_ACTIVE_UNLOCK
+
+# == Events ==
+
+events:
+  Initialized:
+    # Emitted on proxy initialization (inherited from OpenZeppelin Initializable).
+    data:
+      - version: uint64
+
+# == Errors ==
+
+errors:
+  # Unlock validation
+  - CANNOT_UNLOCK_TO_SUPERAPP       # recipient is a Super App — streaming forbidden
+  - CFA_INVALID_FLOW_RATE           # flow rate is invalid (zero or negative)
+  - NO_ACTIVE_UNLOCK                # no active unlock stream to terminate
+  - TOO_EARLY_TO_TERMINATE_UNLOCK   # block.timestamp < endDate - EARLY_END
+  # Access control
+  - NOT_CONNECTED_LOCKER            # caller is not the FluidLocker (Reserve) that initialized this Fontaine
+  # Initializable (inherited from OpenZeppelin)
+  - InvalidInitialization
+  - NotInitializing

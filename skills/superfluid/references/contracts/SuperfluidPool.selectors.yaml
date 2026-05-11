@@ -1,0 +1,63 @@
+# SuperfluidPool selectors — computed from @sfpro/sdk ABI
+
+functions:
+  admin():                                                   0xf851a440
+  allowance(address,address):                                0xdd62ed3e
+  approve(address,uint256):                                  0x095ea7b3
+  balanceOf(address):                                        0x70a08231
+  castrate():                                                0x9903ad38
+  claimAll(address):                                         0x77329f35
+  claimAll():                                                0xd1058e59
+  decimals():                                                0x313ce567
+  decreaseAllowance(address,uint256):                        0xa457c2d7
+  decreaseMemberUnits(address,uint128):                      0x42b99bb6
+  distributionFromAnyAddress():                              0xcb8599f0
+  GDA():                                                     0xf0ca93a2
+  getClaimable(address,uint32):                              0x7d6c008d
+  getClaimableNow(address):                                  0x21dd5777
+  getDisconnectedBalance(uint32):                            0x6c0c582a
+  getMemberFlowRate(address):                                0x539e8c1c
+  getTotalAmountReceivedByMember(address):                   0xdf9ad931
+  getTotalConnectedFlowRate():                               0x785e734c
+  getTotalConnectedUnits():                                  0xb3b3f1cc
+  getTotalDisconnectedFlowRate():                            0xa94ff340
+  getTotalDisconnectedUnits():                               0xfdbd40f4
+  getTotalFlowRate():                                        0xd4f0d644
+  getTotalUnits():                                           0xa754a702
+  getUnits(address):                                         0x0fefbc09
+  getUnsettledValue(address,uint32):                         0x431b1ecf
+  increaseAllowance(address,uint256):                        0x39509351
+  increaseMemberUnits(address,uint128):                      0x96753fd9
+  initialize(address,address,bool,bool,string,string,uint8): 0x34d8f538
+  name():                                                    0x06fdde03
+  operatorConnectMember(address,bool,uint32):                0xd877ec87
+  operatorSetIndex((int128,(uint32,int128,int256))):         0x4a0d9101
+  poolOperatorGetIndex():                                    0xde7b54d9
+  proxiableUUID():                                           0x52d1902d
+  superToken():                                              0x2b4116f7
+  symbol():                                                  0x95d89b41
+  totalSupply():                                             0x18160ddd
+  transfer(address,uint256):                                 0xa9059cbb
+  transferabilityForUnitsOwner():                            0x7e80bd5e
+  transferFrom(address,address,uint256):                     0x23b872dd
+  updateMemberUnits(address,uint128):                        0x1b167777
+
+events:
+  Approval(address,address,uint256):                   0x8c5be1e5ebec7d5bd14f71427d1e84f3dd0314c0f7b2291e5b200ac8c7c3b925
+  DistributionClaimed(address,address,int256,int256):  0x9464bfc300bfd9af903ee21453d885a40d7f96864a3eecc0b8b0faf4ae685fa1
+  Initialized(uint8):                                  0x7f26b83ff96e1f2b6a682f133852f6798a09c465da95921460cefb3847402498
+  MemberUnitsUpdated(address,address,uint128,uint128): 0x58b452da1f241e47a4cf34c1a770df2202ae3743eb13aa99f14cc8c7b5c133ba
+  Transfer(address,address,uint256):                   0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef
+
+errors:
+  SafeCastOverflowedIntDowncast(uint8,int256):   0x327269a7
+  SafeCastOverflowedIntToUint(int256):           0xa8ce4432
+  SafeCastOverflowedUintDowncast(uint8,uint256): 0x6dfcc650
+  SafeCastOverflowedUintToInt(uint256):          0x24775e06
+  SUPERFLUID_POOL_INVALID_TIME():                0x83c35016
+  SUPERFLUID_POOL_NO_POOL_MEMBERS():             0xe10f405a
+  SUPERFLUID_POOL_NO_ZERO_ADDRESS():             0x54eb6ee6
+  SUPERFLUID_POOL_NOT_GDA():                     0xfcbe3f9e
+  SUPERFLUID_POOL_NOT_POOL_ADMIN_OR_GDA():       0x1c5fbdcb
+  SUPERFLUID_POOL_SELF_TRANSFER_NOT_ALLOWED():   0xceddc0be
+  SUPERFLUID_POOL_TRANSFER_UNITS_NOT_ALLOWED():  0x2285efba

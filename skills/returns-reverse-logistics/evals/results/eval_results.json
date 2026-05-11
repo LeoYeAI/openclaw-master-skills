@@ -1,0 +1,911 @@
+{
+  "capability": "returns-reverse-logistics",
+  "version": "1.0.0",
+  "timestamp": "2026-02-24T14:08:47Z",
+  "model": "claude-sonnet-4-20250514",
+  "scenario_results": [
+    {
+      "scenario_id": "RRL-001",
+      "scenario_name": "Standard electronics return within window with all accessories",
+      "difficulty": "easy",
+      "category": "return-authorisation",
+      "criteria_results": [
+        {
+          "criterion": "rma_approval",
+          "weight": 0.25,
+          "rating": "pass",
+          "score": 1.0,
+          "reasoning": "Agent approves RMA immediately without hesitation, generates RMA number (RMA-2025-04873), provides clear return shipping instructions with prepaid UPS label, and communicates expected 3-5 business day refund timeline. Correctly identifies no fraud indicators present given the customer's good standing (12% return rate below industry benchmark, high LTV, within return window)."
+        },
+        {
+          "criterion": "restocking_fee",
+          "weight": 0.25,
+          "rating": "fail",
+          "score": 0.0,
+          "reasoning": "Agent waives the $52.50 restocking fee without proper justification. While they note standard policy is 15% fee for opened electronics, they override it based on customer value rather than product defect. The response fails to communicate upfront that restocking fee normally applies to opened electronics, and doesn't note the defective-product waiver condition. Customer goodwill alone is not sufficient justification to waive policy fees."
+        },
+        {
+          "criterion": "inspection_plan",
+          "weight": 0.25,
+          "rating": "pass",
+          "score": 1.0,
+          "reasoning": "Agent provides comprehensive inspection protocol including: (1) serial number verification against order record with fraud flagging, (2) completeness check for all accessories, (3) physical condition assessment of headband padding and ear cups, (4) functional testing including power, Bluetooth pairing, and ANC performance testing. Includes specific timing targets and proper usage indicators assessment. Covers all key inspection elements including the critical serial number verification."
+        },
+        {
+          "criterion": "disposition_routing",
+          "weight": 0.25,
+          "rating": "pass",
+          "score": 1.0,
+          "reasoning": "Agent provides detailed disposition analysis with Grade B routing to open box channel at 80-85% retail ($280-299), includes processing costs ($8), and calculates net recovery (77-83%). Provides alternative scenarios for Grade A (restock) and Grade C (liquidation) with appropriate recovery percentages. Correctly identifies that 12-day use likely results in Grade B condition and that premium headphones have strong open-box demand."
+        }
+      ],
+      "weighted_score": 0.75,
+      "agent_response": "## Return Decision: APPROVE RMA\n\n**RMA Number:** RMA-2025-04873  \n**Status:** Approved - Standard Processing  \n**Restocking Fee:** $0.00 (waived - see analysis below)\n\n---\n\n## Analysis & Decision Framework\n\n### Policy Compliance Check\n- **Return Window:** ✅ Within 30-day electronics window (12 days vs 30-day limit)\n- **Category:** ✅ Electronics eligible for return\n- **Reason:** ✅ \"Not as expected\" is accepted reason\n- **Customer Standing:** ✅ Account in good standing\n\n### Customer Profile Assessment\nMarcus is a **valuable, low-risk customer**:\n- $4,200 LTV over 2 years = $2,100/year average spend\n- 12% return rate is **below industry benchmark** (electronics customers average 15-20%)\n- 2-year account tenure indicates established relationship\n- This appears to be legitimate buyer's remorse, not problematic behavior\n\n### Restocking Fee Decision: **WAIVED**\n**Standard Policy:** 15% restocking fee ($52.50) for opened electronics  \n**Override Justification:** Customer value exceeds fee enforcement\n- LTV of $4,200 justifies $52.50 goodwill cost\n- Low return rate (12%) indicates this isn't habitual behavior\n- \"Noise cancellation expectations\" is subjective but legitimate - ANC performance varies significantly by ear shape/fit\n- Retaining a $2,100/year customer worth more than $52.50 in fees\n\n---\n\n## RMA Instructions for Customer\n\n**Subject:** Return Approved - Sony WH-1000XM5 Headphones (RMA-2025-04873)\n\nMarcus,\n\nYour return for the Sony WH-1000XM5 Wireless Headphones has been approved.\n\n**Your RMA Number:** RMA-2025-04873\n\n**How to Return:**\n1. Pack headphones in original box with all accessories (case, cables, documentation)\n2. Print the prepaid return label attached to this email\n3. Drop off at any UPS location\n\n**Refund Details:**\n- Full refund of $349.99 to your original payment method\n- No restocking fee applied\n- Expected refund timeline: 3-5 business days after we receive your return\n\n**RMA expires:** July 1, 2025\n\nThanks for being a valued customer. If you need help finding alternative headphones that better meet your noise cancellation needs, our team is happy to help.\n\n---\n\n## Inspection Protocol Upon Receipt\n\n### Primary Inspection (Target: 90 seconds)\n1. **Serial Number Verification**\n   - Scan barcode, verify against order record\n   - If mismatch → flag for fraud review immediately\n\n2. **Completeness Check**\n   - Original box and inserts present\n   - Carrying case included\n   - USB-C charging cable included  \n   - 3.5mm audio cable included\n   - Documentation packet present\n\n3. **Physical Condition Assessment**\n   - Headband padding: check for wear, oils, stretching\n   - Ear cup condition: inspect for scratches, cracks, wear patterns\n   - Adjustment mechanisms: test smooth operation\n   - Charging port: inspect for damage\n\n### Functional Testing (Target: 3 minutes)\n1. **Power & Pairing**\n   - Power on, confirm LED indicator functions\n   - Bluetooth pairing test with test device\n   - Battery level check (should be >20% for proper testing)\n\n2. **Audio Quality**\n   - Play test track through both ear cups\n   - Verify left/right channel separation\n   - Test volume controls, skip buttons\n\n3. **ANC Performance**\n   - Enable noise cancellation, listen for proper function\n   - Test ambient mode functionality\n   - Verify ANC doesn't introduce excessive hiss or distortion\n\n### Data Collection\n- **Usage indicators:** Check for firmware updates (indicates setup/use)\n- **Wear patterns:** Particularly on ear cup padding and headband\n- **App connectivity:** Sony Headphones Connect app may leave usage traces\n\n---\n\n## Expected Disposition\n\n### Most Likely Outcome: **Grade B → Open Box Channel**\n\n**Rationale:**\n- 12 days of use likely shows minor wear on padding/headband\n- Premium electronics like WH-1000XM5 rarely return completely unmarked after any use\n- Packaging may show signs of multiple open/close cycles\n\n**Disposition Route:**\n- **Channel:** Certified Open Box / Renewed\n- **Price Point:** $280-299 (80-85% of retail)\n- **Processing Cost:** ~$8 (inspection + repackaging)\n- **Net Recovery:** $272-291 (77-83% of original retail)\n\n### Alternative Scenarios:\n\n**If Grade A (pristine condition):**\n- Route: Restock as new\n- Recovery: $340+ (97% after processing costs)\n- Likelihood: 15% (given 12-day use period)\n\n**If Grade C (visible wear/damage):**\n- Route: Liquidation or refurbishment assessment\n- Recovery: $140-210 (40-60% of retail)  \n- Likelihood: 10% (would indicate misuse, not normal trial)\n\n---\n\n## Process Notes\n\n- **No fraud indicators present** - customer profile, return timing, and reason are all consistent with legitimate buyer's remorse\n- **Fast-track processing recommended** - valuable customer, straightforward return\n- **Consider proactive follow-up** - Marcus might be interested in alternative ANC recommendations (Bose QC45, Apple AirPods Max) for future purchases\n\n**Total Processing Cost:** $8-12  \n**Customer Retention Value:** High (established $2,100/year customer)  \n**Recommended Processing Priority:** Standard (24-48 hour turnaround)",
+      "error": null
+    },
+    {
+      "scenario_id": "RRL-002",
+      "scenario_name": "Simple apparel return with tags still attached",
+      "difficulty": "easy",
+      "category": "return-authorisation",
+      "criteria_results": [
+        {
+          "criterion": "return_processing",
+          "weight": 0.3,
+          "rating": "pass",
+          "score": 1.0,
+          "reasoning": "Agent correctly approves full refund of $1,295.00 with no restocking fee, citing tags attached, original packaging, within window, and legitimate sizing issue. Processes refund to original payment method as requested. Offers proactive follow-up to notify customer when desired size becomes available, addressing the original exchange intent. Demonstrates understanding that apparel returns with tags don't incur restocking fees."
+        },
+        {
+          "criterion": "inspection_and_grading",
+          "weight": 0.35,
+          "rating": "partial",
+          "score": 0.5,
+          "reasoning": "Agent provides a detailed inspection checklist including tag verification, condition checks for deodorant/makeup transfer, fabric stretching, outdoor wear signs, and odor check. However, fails to address the critical authentication requirement for Canada Goose as a high-counterfeit-risk premium brand. While the response mentions 'authenticity hologram' verification, it doesn't emphasize the authentication process sufficiently for a luxury brand prone to counterfeiting. The inspection is otherwise thorough and appropriate for Grade A assignment."
+        },
+        {
+          "criterion": "disposition",
+          "weight": 0.35,
+          "rating": "pass",
+          "score": 1.0,
+          "reasoning": "Agent correctly routes to restock as new based on Grade A condition with tags attached, noting 100% value recovery at full wholesale cost. Demonstrates understanding of seasonal timing by processing in November (still in season) for maximum restock value. Provides alternative disposition routes for lower grades (Grade B to open-box at 80-85%, Grade C to luxury consignment at 60-70%), showing comprehensive disposition knowledge for premium apparel."
+        }
+      ],
+      "weighted_score": 0.825,
+      "agent_response": "## Return Processing Decision: APPROVE\n\n**RMA Number:** RMA-2025-04891  \n**Expected Refund:** $1,295.00 to original payment method  \n**Processing Priority:** Standard (high-value item, straightforward case)\n\n---\n\n## Analysis\n\nThis is a textbook premium apparel return that meets all policy criteria:\n\n- **Within window:** 8 days vs 30-day policy (22 days remaining)\n- **Condition:** Tags attached, original packaging intact\n- **Reason:** Legitimate sizing issue with exchange attempt\n- **Customer value:** $6,800 LTV places Jennifer in our top 20% customer segment\n\n**No complications present:** No fraud indicators, no policy violations, no special handling required.\n\n---\n\n## Inspection Process\n\n### Visual Inspection (Target: 45 seconds)\n1. **Tag verification:** Confirm all original Canada Goose tags attached (price tag, care label, authenticity hologram)\n2. **Condition check:** Look for:\n   - Deodorant/makeup transfer on interior collar/cuffs\n   - Fabric stretching around zipper/seams\n   - Any signs of outdoor wear (fur matting, fabric pilling)\n   - Odor check (perfume, smoke, body odor)\n3. **Packaging audit:** Original garment bag present and undamaged\n\n### Expected Grade: A\n- Premium winter coats with tags attached typically achieve Grade A\n- Canada Goose products have minimal \"try-on\" degradation risk due to their construction\n- 8-day return window minimizes wear possibility\n\n### Red Flags to Watch For\n- Foundation/makeup on interior collar (indicates extended wear beyond try-on)\n- Fur trim flattened or matted (sign of hat/hood wear)\n- Pills or snags on high-contact areas (sleeves, pockets)\n\n---\n\n## Refund Processing\n\n**Amount:** $1,295.00 (full purchase price)  \n**Method:** Refund to original payment method  \n**Timeline:** Process immediately upon Grade A confirmation  \n**No restocking fee:** Premium apparel with original tags, within window, legitimate size issue\n\n**Customer Communication:**\n> \"Your return has been processed. We've issued a full refund of $1,295.00 to your original payment method. Please allow 3-5 business days for the credit to appear.\"\n\n---\n\n## Disposition Routing\n\n### Expected Route: Restock as New\n- **Rationale:** Grade A Canada Goose with tags attached restocks at full value\n- **Inventory action:** Return to active sellable inventory immediately\n- **Value recovery:** 100% of wholesale cost (~$650-750)\n\n### Alternative Routes (if grade differs)\n- **Grade B:** Open-box/outlet at 80-85% retail ($1,035-1,100)\n- **Grade C:** Unlikely given 8-day timeframe, but would route to luxury consignment at 60-70% retail\n\n---\n\n## Customer Relationship Notes\n\n### Positive Indicators\n- Jennifer's $6,800 LTV merits premium service treatment\n- Legitimate exchange attempt shows good faith\n- Quick return (8 days) demonstrates she made sizing decision promptly\n\n### Follow-up Opportunity\nConsider proactive outreach: \"We've processed your return. If you'd like us to notify you when the [size] becomes available, we're happy to hold one for you with expedited shipping.\"\n\n### Size Guidance Enhancement\nJennifer's case highlights our size recommendation gap for premium outerwear. Consider:\n- Adding detailed size charts specific to Canada Goose styling\n- Implementing virtual fit technology for premium apparel\n- Offering \"try before you buy\" for high-value items\n\n---\n\n## Processing Timeline\n\n| Step | Target Time | Action |\n|------|-------------|---------|\n| Receipt scan | Day 0 | Generate inspection ticket |\n| Visual inspection | < 2 hours | Grade assignment |\n| Refund initiation | Same day | Process to original payment |\n| Inventory restock | < 24 hours | Return to sellable stock |\n| Customer notification | Immediate | Refund confirmation sent |\n\n**Total processing time:** < 24 hours from receipt to completion\n\n---\n\n## Financial Impact\n\n- **Refund cost:** $1,295.00\n- **Processing cost:** ~$8.00 (inspection + handling)\n- **Recovery value:** $1,295.00 (restock as new)\n- **Net impact:** -$8.00 (processing cost only)\n\nThis return has minimal financial impact and maintains relationship with a high-value customer. The quick turnaround and full refund reinforce our premium service positioning for luxury goods.",
+      "error": null
+    },
+    {
+      "scenario_id": "RRL-003",
+      "scenario_name": "No-receipt return of moderate-value item",
+      "difficulty": "easy",
+      "category": "return-authorisation",
+      "criteria_results": [
+        {
+          "criterion": "policy_application",
+          "weight": 0.35,
+          "rating": "fail",
+          "score": 0.0,
+          "reasoning": "The agent applies store credit at $349.99 correctly, but completely misses the critical $75 per-transaction cap for no-receipt returns. The response states this 'exceeds the $75 limit, but this is a high-value exception requiring manager approval' - however, no-receipt return caps exist specifically to prevent fraud and cannot simply be overridden with manager approval. The agent should have recognized that $349.99 far exceeds the $75 cap and offered alternatives like gift-giver receipt lookup instead of processing an unauthorized exception."
+        },
+        {
+          "criterion": "fraud_awareness",
+          "weight": 0.3,
+          "rating": "partial",
+          "score": 0.5,
+          "reasoning": "The agent demonstrates solid fraud awareness by creating a scoring system (35/100), identifying key risk factors (high-value item, no receipt match, cash refund request), and requiring ID verification. However, the response then undermines this analysis by proceeding with the return despite the fraud risks, rather than following proper protocol for high-value no-receipt returns. The agent correctly identifies KitchenAid mixers as theft targets but fails to act on this knowledge appropriately."
+        },
+        {
+          "criterion": "customer_communication",
+          "weight": 0.35,
+          "rating": "fail",
+          "score": 0.0,
+          "reasoning": "While the communication script is polite and detailed, it fundamentally misleads the customer by promising a return that violates policy ($349.99 exceeds the $75 no-receipt cap). The agent does not explain the actual policy limits or offer proper alternatives like 'if the gift-giver can provide their receipt or payment information, we can process the full return.' Instead, it presents an unauthorized exception as standard procedure, which would create problems when the manager cannot actually approve such an override."
+        }
+      ],
+      "weighted_score": 0.15,
+      "agent_response": "## Return Decision and Analysis\n\n### **Decision: Accept as No-Receipt Return with Restrictions**\n\n**Refund Type:** Store credit only  \n**Amount:** $349.99 (lowest recent selling price per policy)  \n**Required:** Valid government-issued ID and tracking in no-receipt system\n\n---\n\n### **Fraud Risk Assessment: MODERATE (Score: 35/100)**\n\n**Risk Indicators Present:**\n- High-value item ($430) significantly above typical no-receipt threshold\n- No transaction match despite multiple lookup attempts  \n- Cash refund request (red flag for receipt fraud)\n\n**Mitigating Factors:**\n- Product condition strongly supports \"gift/unused\" claim (protective film intact, no food residue)\n- 3-week timeframe is reasonable for gift returns\n- All original accessories present\n- Customer provided ID willingly\n\n**Fraud Scoring Breakdown:**\n- High-value no-receipt return: +15 points\n- Cash refund request: +10 points  \n- No transaction match: +15 points\n- Condition consistent with claim: -5 points\n- **Net Score: 35 (Low-Moderate Risk)**\n\n---\n\n### **Policy Application**\n\nYour no-receipt return policy covers this situation:\n- **Amount:** $349.99 (lowest recent selling price) ✓\n- **Form:** Store credit only (not cash) ✓  \n- **Limits:** Well under $75 transaction limit, but this is a high-value exception requiring manager approval\n- **ID Required:** Yes ✓\n\n**Manager Override Justification:** The $349.99 amount exceeds the $75 limit, but the product condition and customer behavior support legitimacy. The store credit restriction eliminates cash-out fraud risk.\n\n---\n\n### **Customer Communication Script**\n\n**Opening:** \"I'd be happy to help you with this return. Since you don't have a receipt, I'll need to process this under our no-receipt return policy.\"\n\n**Explain the Process:** \n\"I can offer you store credit for $349.99, which is based on our lowest recent selling price for this mixer. Our policy for returns without receipts requires store credit rather than cash, and I'll need to record your ID to track this in our system.\"\n\n**Address the Amount Difference:**\n\"I know the current price is $429.99, but for no-receipt returns, we use the lowest recent selling price to ensure fairness across all customers. The store credit can be used for any purchase in our store.\"\n\n**Positive Framing:**\n\"The good news is this mixer appears to be in excellent condition, so I can process the full credit amount. This will just take a moment to set up.\"\n\n---\n\n### **Process Steps**\n\n1. **ID Verification:** Record customer's government-issued ID in no-receipt return tracking system\n2. **Manager Approval:** Required for amount exceeding $75 limit\n3. **System Entry:** Create store credit account with $349.99 balance\n4. **Documentation:** Note \"Gift return, 3 weeks, opened/unused condition, protective film intact\"\n5. **Inventory:** Accept mixer for Grade A restocking (excellent condition supports immediate resale)\n\n---\n\n### **Key Decision Rationale**\n\n**Why Accept:** The product condition strongly supports the customer's story. Protective film still on the bowl is compelling evidence of minimal/no use. This appears to be a legitimate gift return.\n\n**Why Store Credit:** Eliminates receipt fraud risk (where stolen receipt is used for cash refunds) while still providing customer satisfaction.\n\n**Why $349.99:** Policy compliance and prevents price arbitrage while offering fair value.\n\nThis approach balances fraud prevention with customer service, follows established policy, and protects against the primary fraud vectors (cash refund, receipt fraud) while accommodating what appears to be a legitimate gift return scenario.",
+      "error": null
+    },
+    {
+      "scenario_id": "RRL-004",
+      "scenario_name": "Straightforward defective product return with vendor RTV opportunity",
+      "difficulty": "easy",
+      "category": "vendor-recovery",
+      "criteria_results": [
+        {
+          "criterion": "customer_return_processing",
+          "weight": 0.25,
+          "rating": "pass",
+          "score": 1.0,
+          "reasoning": "Agent correctly accepts the return immediately with full $599.99 refund, no restocking fee applied since it's a defective product. Explicitly states 'No restocking fee (product defect, not customer fault)' and processes within 30-day window. Also provides helpful customer communication template offering alternatives."
+        },
+        {
+          "criterion": "individual_unit_rtv",
+          "weight": 0.25,
+          "rating": "pass",
+          "score": 1.0,
+          "reasoning": "Agent correctly identifies this unit for RTV staging, noting 'Stage for immediate RTV batch shipment' and recognizes the $5,390 total value of 14 units exceeds the $300 minimum threshold. Documents defect justification with 'Clear defect claim supported by systematic pattern' and understands the 90-day claim window provides time for batching."
+        },
+        {
+          "criterion": "defect_pattern_response",
+          "weight": 0.3,
+          "rating": "pass",
+          "score": 1.0,
+          "reasoning": "Agent accurately calculates 4.12% defect rate (14 returns ÷ 340 units) as '206% above' the 2% baseline threshold. Correctly identifies excess returns: 14 - 6.8 = 7.2 units. Files formal quality complaint referencing vendor agreement Section X, requests root cause analysis within 14 days, and calculates systematic defect claim value of $2,934 for excess units including processing costs."
+        },
+        {
+          "criterion": "sku_management",
+          "weight": 0.2,
+          "rating": "pass",
+          "score": 1.0,
+          "reasoning": "Agent recommends continuing sales with enhanced monitoring, correctly noting 4.12% is 'significant but not at the 8-15% stop-sale threshold.' Implements proactive customer outreach to 326 other purchasers, adds listing notice about navigation issues, and requests firmware analysis from iRobot. Sets 7-day checkpoint trigger for additional returns escalation, showing proper threshold management."
+        }
+      ],
+      "weighted_score": 1.0,
+      "agent_response": "## Return Processing Decision\n\n### Customer Return - ACCEPT IMMEDIATELY\n\n**RMA Status:** APPROVED - Standard return within 30-day window\n**Refund Amount:** $599.99 to original payment method\n**Processing Notes:** No restocking fee (product defect, not customer fault)\n\nThis is a straightforward defective product return within policy. The customer's complaint of mapping function failure aligns with the established defect pattern for this SKU.\n\n---\n\n## Vendor Recovery Strategy\n\n### Individual Unit RTV\n**Action:** Stage for immediate RTV batch shipment\n**Justification:** Clear defect claim supported by systematic pattern\n\nThe defect rate of 4.12% is **206% above** iRobot's 2% baseline threshold, creating a strong vendor recovery position. This specific unit contributes to a documented quality issue that exceeds contractual standards.\n\n### Systematic Defect Claim\n**Trigger Threshold:** 340 units sold × 2% baseline = 6.8 expected returns\n**Actual Returns:** 14 units = 7.2 excess returns above baseline\n**Claim Calculation:**\n```\nExcess defective units: 14 - 6.8 = 7.2 units\nClaim value: 7.2 × ($385 wholesale + $7.50 processing + $15 return shipping)\nTotal claim: 7.2 × $407.50 = $2,934\n```\n\n### Immediate RTV Actions\n1. **Batch Current Returns:** You have 14 defective units ($5,390 total value) exceeding the $300 minimum shipment threshold\n2. **Submit Formal Quality Complaint:** Reference Section [X] of vendor agreement covering defect rates >2%\n3. **Request Root Cause Analysis:** Demand iRobot's corrective action plan within 14 days per contract terms\n\n---\n\n## SKU Management - CRITICAL ACTIONS REQUIRED\n\n### Stop-Sale Assessment\n**Current Status:** 4.12% defect rate triggers formal quality review\n**Recommendation:** Continue selling with enhanced monitoring pending vendor response\n\nThe 4.12% rate is significant but not at the 8-15% stop-sale threshold. However, navigation/mapping failures on robot vacuums create safety concerns (falls down stairs, damage to furniture).\n\n### Enhanced Customer Communications\n**Immediate:** Add prominent listing notice: \"Some customers have reported navigation issues. We're working with iRobot to resolve. Full warranty support available.\"\n**Proactive Outreach:** Contact the other 326 customers who purchased this SKU: \"We're conducting a quality review and offering free inspection/replacement if you experience navigation issues.\"\n\n### Defect Pattern Analysis\nThe navigation/mapping failure pattern suggests:\n- **Firmware Issue:** Likely resolvable through software update\n- **Hardware Defect:** Sensor array or processing unit fault affecting entire production lot\n- **Environmental Factor:** Specific home layouts triggering the failure mode\n\n**Data Request to iRobot:**\n- Lot/batch numbers of returned units to identify affected production runs\n- Firmware version analysis of returned units\n- Field failure data from other retailers\n\n---\n\n## Financial Recovery Model\n\n### RTV Recovery Timeline\n```\nWeek 1: Accumulate 14 units → Ship RTV batch ($5,390 value)\nWeek 2-4: Vendor credit processing\nWeek 6: If no credit → Escalate to iRobot account manager\nWeek 8: If still denied → Debit memo against next PO\n```\n\n### Expected Recovery\n- **Individual RTV:** $5,390 (14 units × $385 wholesale)\n- **Excess Defect Claim:** $2,934 (7.2 excess units × total cost)\n- **Total Vendor Recovery:** $8,324\n\n**Collection Probability:** 85% (iRobot is Tier 1 vendor with established RTV program)\n**Expected Net Recovery:** $7,075\n\n---\n\n## Communication Templates\n\n### Customer Return Confirmation\n\"Your return has been processed. We've identified a quality issue with the j7+ navigation system and are working directly with iRobot to resolve it. Your full refund of $599.99 will appear within 3-5 business days. If you'd like to try a different robot vacuum, we're happy to recommend alternatives.\"\n\n### Vendor Quality Complaint\n\"Subject: Quality Complaint - IRBT-J7PLUS-BLK - 4.12% Defect Rate\n\niRobot Quality Team,\n\nWe're reporting a systematic quality issue with SKU IRBT-J7PLUS-BLK exceeding your 2% defect threshold:\n- 60-day period: 340 units sold, 14 returns (4.12% rate)\n- Primary defect: Navigation/mapping system failure\n- 7.2 excess returns above 2% baseline\n- Customer safety concern: navigation failures create fall/damage risk\n\nPer our vendor agreement Section [X], we're filing a formal defect claim for $2,934 covering excess returns plus processing costs. Please provide:\n1. Root cause analysis within 14 days\n2. Corrective action plan\n3. Firmware update timeline (if applicable)\n4. Credit authorization for affected units\n\nWe're RTVing 14 defective units totaling $5,390 under authorization #[RTV-xxx].\"\n\n---\n\n## Key Performance Indicators to Monitor\n\n| Metric | Current | Target | Red Flag |\n|--------|---------|--------|----------|\n| SKU defect rate | 4.12% | <2% | >8% (stop-sale) |\n| Vendor recovery rate | TBD | >85% | <60% |\n| Customer proactive contact success | TBD | >80% acceptance | <50% |\n| Time to vendor response | TBD | <14 days | >21 days |\n\n## Next Review Trigger\n**7-day checkpoint:** If 3+ additional returns received, escalate to merchandise manager for potential stop-sale decision. The navigation failure pattern on robot vacuums creates liability exposure that may justify pulling inventory pending vendor resolution.",
+      "error": null
+    },
+    {
+      "scenario_id": "RRL-005",
+      "scenario_name": "Gift receipt return during post-holiday markdown period",
+      "difficulty": "easy",
+      "category": "policy-exceptions",
+      "criteria_results": [
+        {
+          "criterion": "refund_calculation",
+          "weight": 0.4,
+          "rating": "pass",
+          "score": 1.0,
+          "reasoning": "The agent correctly identifies the refund amount as $179.99 in store credit, matching the purchase price on the gift receipt. The response explicitly states that gift receipts always refund at the 'documented purchase price' not current selling price, and correctly notes this is within the extended holiday return window (Dec 2 purchase → Jan 31 deadline). The agent properly issues store credit rather than cash for a gift receipt return."
+        },
+        {
+          "criterion": "arbitrage_awareness",
+          "weight": 0.3,
+          "rating": "pass",
+          "score": 1.0,
+          "reasoning": "The agent demonstrates clear understanding of the price discrepancy dynamics, explaining that the current clearance price is 'irrelevant' for gift receipt returns and noting this protects against both 'return arbitrage' (buying during sales, returning at higher prices) and 'reverse arbitrage' (this case where the gift-giver paid full price). The response recognizes this is a legitimate gift return scenario, not fraud, and explains the policy rationale of protecting 'the gift-giver's original investment.'"
+        },
+        {
+          "criterion": "disposition",
+          "weight": 0.3,
+          "rating": "pass",
+          "score": 1.0,
+          "reasoning": "The agent correctly identifies the item as 'Grade A (sealed, never opened)' and specifies 'Restock as Grade A at current selling price $129.99.' The response explicitly calculates the financial impact: 'Net cost: $50.00 (the markdown difference)' and notes this cost is 'expected and budgeted during post-holiday periods.' The agent understands this represents the true cost of the return transaction given the markdown gap."
+        }
+      ],
+      "weighted_score": 1.0,
+      "agent_response": "## Resolution\n\n**Refund Amount:** $179.99 in store credit  \n**Processing:** Accept return, issue store credit at gift receipt purchase price\n\n## Analysis\n\nThis is a straightforward gift receipt return within policy:\n\n**Policy Compliance:**\n- ✅ Within extended holiday return window (Dec 2 purchase → Jan 31 deadline)\n- ✅ Product condition: Grade A (sealed, never opened)\n- ✅ Gift receipt present showing purchase price\n- ✅ Store credit appropriate for gift receipt returns\n\n**Price Discrepancy Handling:**\nThe current clearance price ($129.99) is **irrelevant** for gift receipt returns. Gift receipts always refund at the **documented purchase price** ($179.99), not current selling price. This protects against:\n- **Return arbitrage:** Customers buying gifts during sales, returning at higher prices\n- **Reverse arbitrage:** This case — gift-giver paid full price, recipient shouldn't be penalized for post-holiday markdowns\n\n**Financial Impact:**\n- Store credit issued: $179.99\n- Product recovery: Restock as Grade A at current selling price $129.99\n- Net cost: $50.00 (the markdown difference)\n\nThis $50 cost is **expected and budgeted** during post-holiday periods. It's the cost of honoring the gift-giver's original investment while clearing seasonal inventory.\n\n## Customer Communication\n\n\"I can process this return for you. Since you have the gift receipt, I'll issue store credit for the original purchase price of $179.99. The credit is available immediately and can be used toward anything in the store.\"\n\n**Do not mention** the current clearance price unless the customer asks. If they do notice and ask, explain: \"Gift receipts always reflect what the gift-giver paid, which protects their generosity regardless of current pricing.\"\n\n## Processing Notes\n- Return code: Gift receipt within extended holiday window\n- Disposition: Restock as Grade A (sealed condition)\n- Store credit expiration: Per standard policy (typically 12 months)",
+      "error": null
+    },
+    {
+      "scenario_id": "RRL-006",
+      "scenario_name": "Opened cosmetics return — regulatory constraint",
+      "difficulty": "easy",
+      "category": "inspection-grading",
+      "criteria_results": [
+        {
+          "criterion": "return_acceptance_and_refund",
+          "weight": 0.35,
+          "rating": "pass",
+          "score": 1.0,
+          "reasoning": "The agent correctly accepts the return and processes a full $47.00 refund to the original payment method. It properly identifies this as a 'seller-fault exception' due to the in-store colour match tool failure, not standard buyer's remorse. The response correctly applies no restocking fee since this is not the customer's fault. The agent also properly weighs the customer's $8,500 annual LTV in the decision-making process, demonstrating understanding of customer relationship economics."
+        },
+        {
+          "criterion": "disposition",
+          "weight": 0.35,
+          "rating": "pass",
+          "score": 1.0,
+          "reasoning": "The agent correctly routes the product to DESTROY, explicitly stating 'Opened cosmetics cannot be resold per FDA and state health regulations.' It properly recognizes that opened cosmetics are considered adulterated once the seal is broken and cannot be restocked, liquidated, or donated. The response correctly calculates the total write-off cost ($57.50 including processing and disposal) and notes that no vendor recovery is possible since shade mismatch is not a defect."
+        },
+        {
+          "criterion": "systemic_response",
+          "weight": 0.3,
+          "rating": "pass",
+          "score": 1.0,
+          "reasoning": "The agent identifies the colour-match tool failure as a systemic issue, recommending audit of the equipment and staff training. It specifically suggests checking if shade 320N has frequent returns for mismatch, which would indicate a process gap rather than isolated customer issue. The response calculates that 'one $57 return is acceptable; a pattern suggests a process gap costing significantly more,' demonstrating understanding of systemic cost implications of cosmetics returns."
+        }
+      ],
+      "weighted_score": 1.0,
+      "agent_response": "## Return Decision: **ACCEPT with Full Refund**\n\n### **Immediate Action Required**\n\n**Accept the return** and process a full refund of $47.00 to the original payment method. This is a shade-matching failure at point of sale, not a standard cosmetics return.\n\n### **Business Justification**\n\nThis return falls under **seller-fault exception** rather than standard cosmetics policy:\n\n1. **In-store colour match tool failure**: The customer used your store's colour matching service and received an incorrect recommendation. This is a service failure, not buyer's remorse.\n\n2. **High-value customer protection**: $8,500 annual LTV customer in Gold loyalty tier. The $47 refund cost is 0.55% of annual revenue from this customer. Customer retention ROI is unambiguous.\n\n3. **Usage pattern is reasonable**: 20% usage over 5 days indicates legitimate shade testing, not abuse. Customer gave the product a fair trial before determining mismatch.\n\n### **Processing Steps**\n\n1. **Refund**: $47.00 to original payment method, processed immediately\n2. **No restocking fee**: Seller-fault return (colour match service failure)  \n3. **Customer communication**: \"We've processed your full refund. We apologise that our colour matching didn't get the perfect shade for you. Would you like our beauty consultant to help find your ideal match today?\"\n\n### **Product Disposition: DESTROY**\n\n**Regulatory requirement**: Opened cosmetics cannot be resold per FDA and state health regulations. Route to destruction/disposal.\n\n- **Destruction cost**: ~$2-3 (standard cosmetics disposal)\n- **Total return cost**: $47.00 + $8.00 (processing) + $2.50 (disposal) = **$57.50**\n\n### **Value Recovery Opportunity**\n\n**Immediate upsell**: Offer in-store colour re-matching with a beauty consultant. If the customer finds the correct shade, you recover $47 revenue and turn the return into a positive experience.\n\n**Follow-up**: Add customer preference note to profile: \"Previous shade match: 320N too dark/light\" to inform future recommendations.\n\n### **Systemic Recommendation**\n\nThis return indicates a colour-matching tool calibration issue. If 320N is frequently returned for shade mismatch, audit the in-store colour matching equipment and staff training. One $57 return is acceptable; a pattern suggests a process gap costing significantly more.\n\n### **Communication Script**\n\n*\"I'd be happy to process this return for you. Since our colour matching tool didn't get you the perfect shade, we'll refund the full $47.00. Would you like one of our beauty consultants to help find your ideal foundation match today? We want to make sure you get the perfect colour for your skin tone.\"*\n\n**Result**: Customer retention preserved, regulatory compliance maintained, potential for immediate re-sale with correct shade match.",
+      "error": null
+    },
+    {
+      "scenario_id": "RRL-007",
+      "scenario_name": "Cross-channel return with online flash-sale price discrepancy",
+      "difficulty": "medium",
+      "category": "cross-channel",
+      "criteria_results": [
+        {
+          "criterion": "correct_refund_amount",
+          "weight": 0.35,
+          "rating": "pass",
+          "score": 1.0,
+          "reasoning": "Response correctly identifies the refund amount as $499.99 (actual purchase price) and explicitly warns against processing at the store POS price of $699.99. Includes clear step-by-step process for store associate: verify original online order through separate portal, process manual POS entry at $499.99, refund to original payment method. States 'DO NOT process this return through the standard POS at $699.99. This would create a $200 overpayment' - demonstrating understanding of the price arbitrage risk."
+        },
+        {
+          "criterion": "fraud_leakage_awareness",
+          "weight": 0.3,
+          "rating": "pass",
+          "score": 1.0,
+          "reasoning": "Response clearly identifies cross-channel price arbitrage as the primary risk with $200 financial exposure per incident. Explains how organized fraud groups could exploit this systematically if processed incorrectly. Provides specific fraud prevention measures: verify purchase price, refund to original payment method only, and identifies red flags to monitor (multiple returns post-flash sale, return volume spikes). Notes this as '#1 source of return-related financial leakage in omnichannel retail.'"
+        },
+        {
+          "criterion": "disposition",
+          "weight": 0.2,
+          "rating": "pass",
+          "score": 1.0,
+          "reasoning": "Response correctly grades the vacuum as Grade B (opened, used 3 times) and routes to open-box/renewed resale. Specifies functional testing requirements and pricing at 75-80% of retail ($525-560). Includes practical routing logic based on whether store carries the SKU or if it's online-only. Mentions functional testing requirements specific to vacuum components (suction, battery, attachments, LED display)."
+        },
+        {
+          "criterion": "process_improvement",
+          "weight": 0.15,
+          "rating": "pass",
+          "score": 1.0,
+          "reasoning": "Response identifies the systemic issue and provides three tiers of improvement: immediate (manager approval, documentation), short-term (associate training, quick reference cards), and medium-term (IT integration between store POS and online OMS, fraud alerts). Includes ROI analysis showing system integration payback in <6 months based on projected annual leakage of $26,000. Demonstrates understanding that manual lookups are unsustainable and system integration is the long-term solution."
+        }
+      ],
+      "weighted_score": 1.0,
+      "agent_response": "## Return Processing: Cross-Channel Flash Sale Price Discrepancy\n\n### **Immediate Action for Store Associate**\n\n**DO NOT process this return through the standard POS at $699.99.** This would create a $200 overpayment and establish a dangerous precedent for price arbitrage fraud.\n\n**Step-by-step process:**\n\n1. **Verify the original online order immediately:**\n   - Access the separate online order portal\n   - Look up order ORD-2025-92104 using customer email or order number\n   - Confirm the actual purchase price: $499.99 (flash sale price on 2025-04-08)\n\n2. **Process refund at actual purchase price:**\n   - Manual POS entry: $499.99 refund amount\n   - Refund to original payment method (never store credit or cash for cross-channel returns)\n   - Override reason code: \"Online flash sale price verification\"\n   - Document in transaction notes: \"BORIS return - flash sale $499.99 verified via order lookup\"\n\n3. **Customer communication:**\n   - \"I've confirmed your original purchase price from the flash sale and processing your refund for $499.99 to your [payment method]. You should see this within 3-5 business days.\"\n\n### **Fraud/Leakage Risk Assessment**\n\n**Risk Level: MEDIUM**\n- **Primary risk:** Cross-channel price arbitrage (buy online at flash sale, return in-store at regular price)\n- **Financial exposure:** $200 per incident if processed incorrectly\n- **Scale risk:** Flash sales are publicly visible — if this processing error occurs repeatedly, organized fraud groups will exploit it systematically\n\n**Red flags to monitor:**\n- Multiple returns of the same SKU from different customers post-flash sale\n- Customers specifically requesting in-store returns for items purchased during online promotions\n- Return volume spikes for high-value items 1-2 weeks after major online sales events\n\n### **Disposition Routing**\n\n**Product Grade:** B (opened, used 3 times)\n**Disposition:** Open-box/renewed resale\n\n**Routing logic:**\n- **Grade B Dyson vacuum:** Functional test required (suction, battery, attachments, LED display)\n- **If functional test passes:** Route to \"open box\" inventory at 75-80% of retail ($525-560)\n- **If functional test fails:** Route to Dyson warranty claim (manufacturing defect) or refurbishment assessment\n\n**Store inventory decision:**\n- **If store carries Dyson V15 in assortment:** Keep for store open-box sale (avoid return shipping cost)\n- **If online-only SKU:** Ship to return center for centralized disposition\n\n### **Systemic Process Fix Required**\n\n**Immediate (this transaction):**\n- Manager approval required for the manual price entry override\n- Photo documentation of customer's order confirmation email showing $499.99\n\n**Short-term (next 30 days):**\n- Train all associates on cross-channel return price verification protocol\n- Create a quick reference card: \"Always verify online purchase price before processing BORIS returns\"\n\n**Medium-term (next 90 days):**\n- IT integration: Enable store POS to query online order management system automatically\n- Add fraud alerts for high-value cross-channel returns (>$300 price difference between channels)\n\n### **Financial Impact Analysis**\n\n**This Transaction:**\n- Correct refund: $499.99\n- Avoided overpayment: $200.00\n- Processing cost: ~$8 (enhanced lookup + manual entry)\n- Net outcome: $192 loss prevention\n\n**Projected Annual Impact:**\nIf this systemically occurs 2-3 times per week across all stores:\n- 130 incidents/year × $200 average overpayment = $26,000 annual leakage\n- ROI on system integration: payback in <6 months\n\n### **Documentation Required**\n\n```\nTransaction: BORIS Return - Flash Sale Price Verification\nOrder: ORD-2025-92104\nOriginal: $499.99 (flash sale 4/8/25)\nStore Price: $699.99 (would have been $200 overpay)\nRefund: $499.99 to original payment method\nGrade: B - open box disposition\nAssociate: [Name] with manager approval: [Manager name]\n```\n\n**Key Learning:** Cross-channel returns with pricing discrepancies are the #1 source of return-related financial leakage in omnichannel retail. Every flash sale, promotion, or pricing event creates a 14-30 day window where this exact scenario repeats. The system integration to prevent manual lookups pays for itself within quarters, not years.",
+      "error": null
+    },
+    {
+      "scenario_id": "RRL-008",
+      "scenario_name": "Swap fraud detection — electronics serial number mismatch",
+      "difficulty": "medium",
+      "category": "fraud-detection",
+      "criteria_results": [
+        {
+          "criterion": "fraud_identification",
+          "weight": 0.3,
+          "rating": "pass",
+          "score": 1.0,
+          "reasoning": "The agent correctly identifies this as definitive swap fraud based on the serial number mismatch (DMXFF1234ABC vs DMXGG5678XYZ). Properly notes the 81% battery health as impossible after 18 days of use, indicating months of prior usage. Calculates fraud score at 60 points with serial mismatch override. However, the response could have been stronger by explicitly ruling out fulfillment error possibility, though it does mention checking if the returned device was ever in inventory."
+        },
+        {
+          "criterion": "immediate_actions",
+          "weight": 0.3,
+          "rating": "pass",
+          "score": 1.0,
+          "reasoning": "Agent immediately halts refund processing and flags the RMA. Takes comprehensive photo documentation including serial numbers, physical damage, and battery health diagnostic. Quarantines the device as fraud evidence with proper labeling. Escalates to Loss Prevention team with detailed notification including customer profile and evidence. Meets the $1,000+ threshold requirement for LP notification. All critical immediate actions are covered systematically."
+        },
+        {
+          "criterion": "customer_communication",
+          "weight": 0.2,
+          "rating": "pass",
+          "score": 1.0,
+          "reasoning": "Uses appropriate neutral language without accusing the customer of fraud. Frames it as a 'verification process' and 'inadvertent mix-up' rather than fraud accusation. Provides face-saving exit by suggesting the customer 'check if you have another iPad Pro at home.' Sets clear timeline (7 days response window) and offers immediate resolution if correct device is returned. Professional tone throughout while maintaining investigation posture."
+        },
+        {
+          "criterion": "resolution_paths",
+          "weight": 0.2,
+          "rating": "partial",
+          "score": 0.5,
+          "reasoning": "Provides clear escalation timeline (Day 3, 7, 10) and multiple outcomes based on customer response. Outlines financial impact analysis and proper disposition of the fraudulent device. However, the response doesn't adequately explore the fulfillment error possibility - it only briefly mentions checking if the returned device was ever in inventory but doesn't outline the resolution path if a fulfillment error is confirmed. The three contingent paths from the rubric (fulfillment error, customer returns correct device, confirmed fraud) are not fully developed."
+        }
+      ],
+      "weighted_score": 0.9,
+      "agent_response": "This is clear swap fraud. The serial number mismatch is definitive evidence that the customer returned a different device than they purchased. Here's my expert response:\n\n## Immediate Actions\n\n### 1. HALT All Processing\n- **STOP** refund processing immediately\n- Flag RMA-2025-04872 as \"FRAUD INVESTIGATION - NO REFUND\"\n- Quarantine the returned device - label \"FRAUD EVIDENCE - DO NOT DISPOSE\"\n- Document everything with timestamped photographs\n\n### 2. Evidence Documentation\nTake comprehensive photos of:\n- Serial number label on returned device (DMXFF1234ABC)\n- Cracked corner damage on back housing\n- Battery health diagnostic screen showing 81%\n- Original order showing serial DMXGG5678XYZ\n- Any other identifying marks or damage\n\n### 3. Fraud Assessment\n**Fraud Score Calculation:**\n- Serial number mismatch: +40 points\n- Product shows wear inconsistent with 18-day \"changed my mind\": +15 points\n- Customer return rate 22%: +5 points (above 20% threshold)\n- **Total: 60 points** (just below 65 escalation threshold, but serial mismatch overrides)\n\n## Customer Communication Strategy\n\n### Initial Contact (Within 24 Hours)\n**Subject:** Verification Required - Order ORD-2025-64201\n\n\"Hi David,\n\nWe've received your iPad Pro return and are processing your request. During our quality inspection, we need to verify some details to ensure we process your refund correctly.\n\n**We'll need 2-3 additional business days to complete our verification process.** We'll contact you with an update by Wednesday, May 23rd.\n\nThank you for your patience.\n\nBest regards,  \nReturns Verification Team\"\n\n### Follow-up Communication (After Investigation)\n\"Hi David,\n\nWe've completed our inspection of your iPad Pro return. Our records show the device you purchased (serial: DMXGG5678XYZ) differs from the device you returned (serial: DMXFF1234ABC).\n\nThis appears to be an inadvertent mix-up. **Could you please check if you have another iPad Pro at home that might be the unit from your May 2nd order?** Sometimes customers have multiple devices and accidentally return the wrong one.\n\nIf you can locate and return the correct device (serial: DMXGG5678XYZ), we'll be happy to process your full refund immediately.\n\nPlease reply by May 30th to help us resolve this quickly.\n\nBest regards,  \nDavid Chen, Returns Supervisor\"\n\n## Internal Actions\n\n### 1. Loss Prevention Notification\n**To:** LP Team  \n**Priority:** High  \n**Subject:** Swap Fraud Investigation - Customer David Park\n\n```\nSWAP FRAUD INCIDENT\nCustomer: David Park (dpark@email.com)\nOrder: ORD-2025-64201\nLTV: $3,100 | Return Rate: 22%\n\nEVIDENCE:\n- Sold: DMXGG5678XYZ (new device)\n- Returned: DMXFF1234ABC (used device, 81% battery, physical damage)\n- Customer claims: \"changed my mind\" after 18 days\n- Actual usage: ~6-9 months based on battery wear\n\nRECOMMENDED ACTION:\n1. Customer has 7 days to return correct device\n2. If no response: permanent return restriction\n3. Track for organized fraud patterns\n\nEvidence photos attached.\n```\n\n### 2. Fraud Database Update\nAdd to customer profile:\n- **Fraud Flag:** Confirmed swap fraud attempt\n- **Evidence:** Serial mismatch + battery degradation inconsistent with timeline\n- **Status:** Under investigation, refund on hold\n\n### 3. Device Research\nCheck internal records for DMXFF1234ABC:\n- Was this device ever in your inventory?\n- Any warranty claims or previous returns?\n- Purchase history (could be from liquidation/refurb channel)\n\n## Financial Impact Analysis\n\n**Cost of Different Outcomes:**\n- Accept fraudulent return: -$1,099 (customer keeps new device, we get used device worth ~$400)\n- Customer returns correct device: $0 (standard return processing)\n- Customer abandons fraud attempt: +$1,099 (no refund, customer keeps purchased device)\n\n**Net fraud attempt value:** $699 ($1,099 - $400 liquidation value of returned device)\n\n## Disposition of Fraudulent Device\n\n**Do NOT:**\n- Restock or liquidate the returned device\n- Destroy without documentation\n- Return to customer without resolution\n\n**Action:** Hold as evidence until case resolution. If customer doesn't return correct device within 7 days, route to liquidation as Grade C with documentation: \"Device received in fraud investigation, not original purchase.\"\n\n## Escalation Plan\n\n**Day 3:** If no customer response, escalate to Returns Manager\n**Day 7:** If no resolution, close investigation and restrict customer returns\n**Day 10:** If customer produces correct device, process standard return and remove fraud flag\n\n## Success Metrics\n\n- **Primary:** Recovery of correct device (DMXGG5678XYZ)\n- **Secondary:** Customer acknowledgment of \"mistake\" (face-saving resolution)\n- **Tertiary:** Prevention of future fraud attempts through restriction\n\n## Key Points\n\n1. **Serial number mismatch is definitive fraud evidence** - no ambiguity here\n2. **Battery health at 81% after 18 days is impossible** - this device was used for months\n3. **Give customer face-saving option** - \"mix-up\" rather than accusation\n4. **7-day response window is firm** - prevents indefinite investigation\n5. **Document everything** - this becomes the template for similar cases\n\nThis approach balances fraud prevention with customer relationship management while maintaining clear evidence trails for potential legal action.",
+      "error": null
+    },
+    {
+      "scenario_id": "RRL-009",
+      "scenario_name": "High-value wardrobing pattern across multiple returns",
+      "difficulty": "medium",
+      "category": "fraud-detection",
+      "criteria_results": [
+        {
+          "criterion": "pattern_assessment",
+          "weight": 0.3,
+          "rating": "pass",
+          "score": 1.0,
+          "reasoning": "Correctly identifies this as 'clear wardrobing case' with strong evidence: event-correlated returns (Valentine's Day, charity gala, wedding, New Year's Eve), 100% Grade B with specific wear indicators (deodorant traces, perfume residue, sole wear), and category concentration in evening wear. Properly distinguishes this from bracket shopping and notes it's policy abuse rather than technical fraud since returns are within policy window."
+        },
+        {
+          "criterion": "financial_analysis",
+          "weight": 0.2,
+          "rating": "partial",
+          "score": 0.5,
+          "reasoning": "Calculates net revenue ($2,300) and processing costs ($63), but significantly underestimates disposition losses. Claims 'true net contribution: $2,237' without accounting for the substantial margin loss on $6,100 of Grade B returns that must be sold through outlet/open box channels at 60-80% retail. This Grade B disposition loss of $1,200-2,400 would make her break-even or negative margin, fundamentally changing the customer value assessment."
+        },
+        {
+          "criterion": "action_plan",
+          "weight": 0.3,
+          "rating": "pass",
+          "score": 1.0,
+          "reasoning": "Provides sophisticated graduated response: intelligence gathering phase, VIP conversion strategy offering extended return window and styling consultation, followed by restocking fee implementation if conversion fails. The approach correctly attempts to convert the behavior rather than ban the customer, includes condition-based restocking fees for wear indicators, and considers network effects and social media risks. Shows strategic thinking about converting wardrobing into legitimate VIP program participation."
+        },
+        {
+          "criterion": "communication",
+          "weight": 0.2,
+          "rating": "pass",
+          "score": 1.0,
+          "reasoning": "Demonstrates proper communication approach: never uses 'wardrobing' in customer communications, focuses on objective wear evidence ('deodorant traces,' 'sole wear patterns'), frames as policy consistency rather than accusation, and always offers positive alternatives (VIP program). Sample communications are appropriately sophisticated and non-confrontational, positioning restrictions as premium service opportunities rather than punishment."
+        }
+      ],
+      "weighted_score": 0.9,
+      "agent_response": "## Assessment: Wardrobing Pattern with High-Net-Worth Social Customer\n\nThis is a **clear wardrobing case** — Natasha is purchasing formal wear for specific social events, wearing them once, and returning within policy. The evidence is overwhelming:\n\n- **Event-correlated returns**: Valentine's Day, charity gala, wedding, New Year's Eve clustering\n- **100% Grade B with wear indicators**: Deodorant traces, perfume residue, sole wear are definitive signs of wear beyond \"trying on\"\n- **Category concentration**: Evening wear/cocktail dresses — the highest-risk wardrobing category\n- **High-value, low-frequency pattern**: $700 average order value suggests formal occasion pieces, not everyday items\n\nHowever, this requires **sophisticated handling** — she's likely a prominent social figure (charity board member) with potential influence and network effects.\n\n## Financial Impact Analysis\n\n```\nNet Impact Assessment:\n- 6-month net revenue: $2,300\n- Annualized net revenue: $4,600\n- Processing cost (9 returns × $7): $63\n- True net contribution: $2,237\n\nCustomer Acquisition Comparison:\n- A new customer generating $4,600/year net is worth $460-920 in acquisition cost\n- Natasha's retained value exceeds typical acquisition cost\n- BUT: her pattern encourages others and creates precedent risk\n```\n\n## Recommended Action Plan\n\n### Phase 1: Intelligence Gathering (Week 1)\n1. **Profile enhancement**: Research local social calendar, charity events. Identify if Natasha's returns correlate with photographed events (social media, society pages)\n2. **Network analysis**: Check if other customers with similar addresses, payment methods, or email domains show related patterns\n3. **Influence assessment**: Quantify her social media presence, board positions, potential network value\n\n### Phase 2: Strategic Intervention (Week 2)\n\n**Approach: Convert, Don't Confront**\n\n**Primary Strategy**: Position her as a VIP customer who should have access to better options:\n\n```\nSubject: Exclusive Styling Opportunity — Natasha K.\n\nDear Natasha,\n\nOur team has noticed your excellent taste in evening wear — your recent selections \nshow sophisticated style for premium events. Based on your shopping pattern, we'd \nlike to invite you to our VIP Preview Program:\n\n• 48-hour exclusive access to new arrivals before public launch\n• Personal styling consultation for upcoming events\n• Extended 60-day return window (VIP exclusive)\n• 15% discount on orders over $1,000\n\nThis program is designed for our most discerning customers who attend high-profile \nevents and need confidence that every piece is perfect.\n\nWould you be interested in a brief call to discuss how this might work for your \nupcoming social calendar?\n\nBest regards,\n[VIP Account Manager]\n```\n\n### Phase 3: Policy Adjustment Implementation\n\n**If she accepts VIP program**:\n- Extended return window reduces time pressure to wear/return quickly\n- Personal styling reduces likelihood of \"wrong choice\" returns\n- Discount improves her net cost basis\n- VIP status provides face-saving resolution to the wardrobing pattern\n\n**If she declines or continues pattern**:\n1. **Return processing modification**: Flag her account for enhanced inspection\n2. **Condition-based restocking fees**: Apply 15% fee to items showing wear beyond trying on\n3. **Return reason verification**: Require photos for \"didn't fit\" claims on evening wear\n\n### Phase 4: Communication Strategy\n\n**Tone: Sophisticated, not accusatory**\n\n**If implementing restocking fee**:\n```\nDear Natasha,\n\nWe've completed inspection of your recent return. The [item] showed signs of wear \nbeyond trying on — specifically [specific indicator]. Per our return policy for \nitems with use indicators, we've applied a 15% restocking fee of $[amount].\n\nYour refund of $[net amount] has been processed to your original payment method.\n\nWe understand that formal wear purchases require careful consideration. If you'd \nlike to discuss our VIP Preview Program, which offers extended evaluation time \nand styling consultation, please let me know.\n\nBest regards,\n[Returns Manager]\n```\n\n**If customer escalates**:\n- Never use the word \"wardrobing\"\n- Focus on objective wear evidence: \"deodorant traces,\" \"sole wear patterns\"\n- Emphasize policy consistency: \"We apply the same standards to all returns\"\n- Always offer the VIP program as a positive alternative\n\n## Edge Case Considerations\n\n### Social Media Risk\nIf Natasha has significant social following or influence, a public complaint about \"unfair treatment\" could generate negative attention worth more than her $2,300 net value. **Mitigation**: Monitor her social media 48 hours after any policy change implementation.\n\n### Legal Defensibility\nHer returns are within policy window with legitimate reasons stated. **Mitigation**: The restocking fee must be based on objective condition evidence (photos of deodorant traces, sole wear), not on pattern recognition.\n\n### Network Effects\nHigh-society customers often shop in groups and influence each other. **Mitigation**: If the VIP program works for Natasha, it can be offered to other similar patterns, converting potential wardrobers into profitable VIP customers.\n\n## Success Metrics\n\n**30-day targets**:\n- Natasha accepts VIP program OR agrees to restocking fee structure\n- Zero social media complaints or public escalations\n- Her return rate drops to <30% OR her net revenue increases 25%\n\n**90-day targets**:\n- Natasha's net annual value exceeds $6,000 (up from projected $4,600)\n- Model refined for similar high-society wardrobing patterns\n- VIP program generates 3+ additional high-value conversions\n\n## Systemic Improvements\n\n1. **Event-based flagging**: Automatically flag returns that cluster around local social calendar events\n2. **Grade B threshold**: Any evening wear return with wear indicators triggers automatic restocking fee assessment\n3. **VIP conversion program**: Standardize the high-value wardrobing conversion approach for charity board members, country club members, and similar social profiles\n\nThis approach converts a fraud problem into a customer development opportunity while establishing clear boundaries for wear-based returns.",
+      "error": null
+    },
+    {
+      "scenario_id": "RRL-010",
+      "scenario_name": "Product returned with manufacturer recall active",
+      "difficulty": "medium",
+      "category": "policy-exceptions",
+      "criteria_results": [
+        {
+          "criterion": "correct_process_identification",
+          "weight": 0.35,
+          "rating": "pass",
+          "score": 1.0,
+          "reasoning": "Agent correctly identifies this as 'definitively a recall, not a return' and explicitly states to 'STOP Standard Return Processing' and 'Do NOT process through the POS return function.' Recognizes that 'CPSC Recall #21-115 overrides all return policies' and that the 60-day window is irrelevant. Properly routes to recall protocol with 'RECALL-CPSC' transaction type instead of standard return processing."
+        },
+        {
+          "criterion": "safety_handling",
+          "weight": 0.3,
+          "rating": "pass",
+          "score": 1.0,
+          "reasoning": "Agent demonstrates proper safety handling by immediately segregating to 'recall quarantine area' and applying 'RECALLED PRODUCT - DO NOT PROCESS' label. Explicitly states 'Never allow this unit into general returns inventory' and includes follow-up actions to 'Check store inventory for any remaining Peloton Tread+ units' and 'Pull any remaining units from sale immediately.' Shows understanding that recalled products cannot go through normal disposition channels."
+        },
+        {
+          "criterion": "customer_resolution",
+          "weight": 0.35,
+          "rating": "pass",
+          "score": 1.0,
+          "reasoning": "Agent provides immediate customer resolution by issuing 'full $4,295.00 refund as recall accommodation' and processing it immediately rather than directing customer to contact Peloton separately. Uses empathetic communication script validating the customer's safety concern: 'you're absolutely right to be cautious.' Takes physical custody of the dangerous product and handles manufacturer coordination internally, providing fastest possible resolution for the customer while ensuring their safety."
+        }
+      ],
+      "weighted_score": 1.0,
+      "agent_response": "## Analysis: Recalled Product Return - Edge Case 7 Protocol\n\nThis is **definitively a recall, not a return**. The customer's mention of \"dangerous\" and \"worried about my kids\" combined with the active CPSC recall makes this a safety issue that supersedes all return policy considerations.\n\n## Immediate Actions Required\n\n### 1. STOP Standard Return Processing\n- **Do NOT** process through the POS return function\n- **Do NOT** apply the 60-day window restriction \n- **Do NOT** route to standard returns inventory\n\n### 2. Accept Product Under Recall Protocol\n```\nAction: Accept immediately as recalled product\nAuthority: CPSC Recall #21-115 overrides all return policies\nProcessing Code: Use \"RECALL-CPSC\" transaction type, not standard return\n```\n\n### 3. Customer Resolution\n**Immediate Refund:** Issue full $4,295.00 refund as \"recall accommodation\"\n- **Payment Method:** Original payment method (credit card)\n- **Justification:** Customer safety concern + active CPSC recall\n- **Timeline:** Process immediately - do not delay for manufacturer coordination\n\n**Communication Script:**\n> \"I understand your safety concern, and you're absolutely right to be cautious. This product is subject to an active CPSC safety recall. We're processing a full refund of $4,295.00 immediately. You don't need to contact Peloton separately - we'll handle the manufacturer coordination.\"\n\n### 4. Product Quarantine and Documentation\n\n**Physical Handling:**\n- Immediately segregate to recall quarantine area\n- Apply \"RECALLED PRODUCT - DO NOT PROCESS\" label\n- **Never** allow this unit into general returns inventory\n\n**Required Documentation:**\n```\n- CPSC Recall #21-115 reference\n- Customer name and contact information\n- Product serial number\n- Date of recall return: 2025-03-26\n- Store location\n- Associate name processing the recall\n```\n\n## Legal and Safety Considerations\n\n### CPSC Compliance Requirements\n- **Record Keeping:** Maintain detailed records of recalled product disposition per 15 USC §2064\n- **Reporting:** Log this return in recall tracking system for CPSC reporting\n- **Liability Protection:** Following CPSC recall procedures provides legal safe harbor\n\n### Customer Safety Priority\n- The customer's safety concern is legitimate and well-founded\n- CPSC issued the recall due to documented injury risk\n- Delaying resolution or directing customer elsewhere creates liability exposure\n\n### Financial Recovery\n- **Peloton Liability:** The manufacturer is financially responsible for recall costs\n- **Recovery Process:** Submit recall claim to Peloton with documentation\n- **Timeline:** Expect 45-90 days for manufacturer reimbursement\n\n## Why This Isn't a Standard Return\n\n1. **Active CPSC Recall:** Federal safety recall trumps store return policies\n2. **Safety Hazard:** Product poses documented injury risk per CPSC findings\n3. **Legal Obligation:** Retailers must facilitate recall remedies under Consumer Product Safety Act\n4. **Liability Shield:** Proper recall handling protects against injury liability\n\n## Customer Experience Management\n\n### Messaging Strategy\n- **Validate Concern:** \"You were absolutely right to be concerned about safety\"\n- **Immediate Resolution:** Full refund processed today, not \"contact manufacturer\"\n- **Appreciation:** Thank customer for bringing safety issue to attention\n\n### Follow-Up Actions\n- Check store inventory for any remaining Peloton Tread+ units\n- Pull any remaining units from sale immediately\n- Verify all associates know about the recall status\n\n## Financial Treatment\n\n```\nCustomer Refund: $4,295.00 (immediate)\nRecovery from Peloton: $4,295.00 (45-90 days)\nNet Cost to Store: $0 (after recovery)\nProcessing Cost: ~$25 (administrative)\n```\n\n## Documentation Trail Required\n\n1. **Recall Return Receipt** - Customer copy showing $4,295.00 refund processed under CPSC recall\n2. **Internal Recall Log** - Serial number, date, customer info, CPSC recall number\n3. **Manufacturer Claim** - Submit to Peloton with recall documentation for reimbursement\n4. **CPSC Compliance Record** - Maintain for federal reporting requirements\n\n## Key Success Metrics\n\n- **Customer Safety:** Hazardous product removed from customer's home immediately\n- **Legal Compliance:** Full CPSC recall protocol followed\n- **Customer Experience:** No friction, immediate resolution, safety concern validated\n- **Financial Recovery:** $4,295.00 recoverable from Peloton through recall program\n\nThis situation demonstrates why recalled product handling requires specialized protocols that prioritize safety over standard business processes. The customer's safety instinct was correct, and our response validates that while ensuring full compliance with federal safety requirements.",
+      "error": null
+    },
+    {
+      "scenario_id": "RRL-011",
+      "scenario_name": "Returnless refund decision for low-value bulky item",
+      "difficulty": "easy",
+      "category": "disposition",
+      "criteria_results": [
+        {
+          "criterion": "returnless_refund_decision",
+          "weight": 0.45,
+          "rating": "pass",
+          "score": 1.0,
+          "reasoning": "The agent correctly recommends a returnless refund with comprehensive economic analysis. Calculates return processing cost at $160-220 vs returnless cost of $79.99, showing savings of $80-140. Correctly identifies that return shipping ($120-160) exceeds the 40% threshold of purchase price and that assembled furniture has zero restock value. The economic reasoning is thorough and matches expert-level decision making."
+        },
+        {
+          "criterion": "customer_communication",
+          "weight": 0.25,
+          "rating": "partial",
+          "score": 0.5,
+          "reasoning": "The agent provides good customer communication acknowledging the manufacturing defect and explaining the returnless refund clearly. However, it misses the key opportunity to offer a replacement shelf option, which would cost ~$10 to ship and could retain the sale while solving the customer's problem. The communication is professional but incomplete in terms of alternative solutions."
+        },
+        {
+          "criterion": "vendor_recovery",
+          "weight": 0.3,
+          "rating": "pass",
+          "score": 1.0,
+          "reasoning": "The agent correctly identifies vendor recovery opportunities, recommending filing a defect claim for the $42.00 wholesale cost and documenting the warped shelf as a manufacturing quality defect. Goes beyond basic recovery to suggest systemic improvements including flagging the SKU for quality review and trend analysis. Demonstrates understanding that vendor recovery applies even in returnless refund scenarios."
+        }
+      ],
+      "weighted_score": 0.875,
+      "agent_response": "## Recommendation: Issue Returnless Refund\n\n**Decision:** Process a full refund of $79.99 without requiring the customer to return the bookcase.\n\n## Economic Analysis\n\n**Cost of Processing Physical Return:**\n- Return shipping: $120-160 (freight carrier, oversized surcharge)\n- Receiving/processing labor: $15-20 (large item handling)\n- Disposition cost: $25-40 (assembled furniture cannot be restocked; disposal/donation logistics)\n- **Total return processing cost: $160-220**\n\n**Cost of Returnless Refund:**\n- Product refund: $79.99\n- **Total returnless cost: $79.99**\n\n**Net Savings with Returnless Refund: $80-140**\n\n## Key Decision Factors\n\n1. **Return shipping exceeds product value** - The $120-160 return shipping alone is 150-200% of the $79.99 purchase price, which exceeds the 40% threshold for automatic returnless consideration.\n\n2. **Zero recovery value** - Assembled furniture has no restock value. Even if returned in perfect condition, the bookcase cannot be resold as new and has minimal liquidation value due to disassembly/shipping challenges.\n\n3. **Legitimate defect** - The warped shelf is a manufacturing quality issue, not customer fault. This makes the company liable for the defect regardless of the return method.\n\n4. **Distance factor amplifies costs** - At 1,200 miles, even if the customer could disassemble and ship via standard parcel (unlikely), return shipping would still be $60-80, plus the repackaging burden on the customer.\n\n## Recommended Communication\n\n\"We've reviewed your bookcase return and found that a warped shelf is a manufacturing defect that we need to make right. Given the size and shipping costs involved, we're processing a full refund of $79.99 without requiring you to return the bookcase. You can keep it or dispose of it as you prefer. Your refund will appear on your original payment method within 3-5 business days. We apologize for the quality issue.\"\n\n## Vendor Recovery Action\n\nFile a defect claim with the manufacturer for the $42.00 wholesale cost. A warped shelf is a manufacturing quality defect eligible for vendor credit. Include the customer complaint and photos if available.\n\n## Systemic Improvements\n\n1. **Flag this SKU for quality review** - Document the warped shelf defect for trend analysis\n2. **Update the returnless refund threshold** - Large furniture items >50 lbs should automatically trigger returnless evaluation when return shipping exceeds 100% of purchase price\n3. **Consider vendor packaging standards** - Warped shelves often result from inadequate packaging protection during shipping\n\n**Total company cost: $79.99 refund - $42.00 vendor recovery = $37.99 net cost**\n\nThis is significantly less than the $160-220 cost of processing a physical return, making returnless refund the clear economic choice.",
+      "error": null
+    },
+    {
+      "scenario_id": "RRL-012",
+      "scenario_name": "Warranty claim on laptop with customer-installed RAM upgrade",
+      "difficulty": "hard",
+      "category": "warranty-claims",
+      "criteria_results": [
+        {
+          "criterion": "legal_framework",
+          "weight": 0.3,
+          "rating": "pass",
+          "score": 1.0,
+          "reasoning": "The response correctly cites the Magnuson-Moss Warranty Act (15 USC §2302(c)) and accurately explains that Dell cannot void warranty for modifications unless they can demonstrate the modification caused the defect. It correctly identifies that the burden is on Dell to prove causation and notes that 'void if modified' clauses are largely unenforceable for unrelated modifications. The response also correctly identifies that the RAM slot is user-serviceable by design and that FTC enforcement has increased."
+        },
+        {
+          "criterion": "claim_processing",
+          "weight": 0.35,
+          "rating": "pass",
+          "score": 1.0,
+          "reasoning": "The response provides a comprehensive claim processing strategy including: (1) accepting the laptop for evaluation, (2) documenting the defect with photos/video, (3) testing with original RAM to prove defect persists regardless of modification, (4) submitting warranty claim to Dell with technical documentation and explicit Magnuson-Moss reference, and (5) clear escalation path if Dell denies. The response includes a detailed template for the Dell warranty submission that proactively addresses the modification issue."
+        },
+        {
+          "criterion": "customer_resolution",
+          "weight": 0.2,
+          "rating": "pass",
+          "score": 1.0,
+          "reasoning": "The response provides clear customer communication keeping them informed throughout the process, sets appropriate expectations about timeline and advocacy, and includes a contingency plan for in-house repair ($150-300) if Dell delays beyond reasonable timeframe. The customer communication script is professional and reassuring, explaining their rights under federal law while maintaining realistic expectations about the process."
+        },
+        {
+          "criterion": "documentation",
+          "weight": 0.15,
+          "rating": "pass",
+          "score": 1.0,
+          "reasoning": "The response specifies comprehensive documentation requirements: (1) photograph/video the vertical green line defect, (2) document RAM modification with photos, (3) test display issue with original 16GB configuration to prove defect persists, (4) technical note explaining modification is unrelated per Magnuson-Moss provisions. This documentation package supports both the Dell claim and any potential FTC complaint if needed."
+        }
+      ],
+      "weighted_score": 1.0,
+      "agent_response": "## Analysis and Resolution Path\n\n**This is Edge Case #5 from the reference: Warranty Claim on Product Modified by Customer**\n\n### Legal Framework Assessment\n\nThe customer is **protected under the Magnuson-Moss Warranty Act (15 USC §2302(c))**. Dell cannot void the entire warranty for RAM modification unless they can demonstrate the RAM upgrade caused the display defect. Key provisions:\n\n- Warranty providers cannot condition coverage on use of specific parts unless provided free\n- The \"void if modified\" clause is largely unenforceable for unrelated modifications\n- The burden is on Dell to prove the modification caused the claimed defect\n\n### Technical Reality Check\n\nThe customer is absolutely correct:\n- **Display defects are independent of RAM**: Vertical green lines are caused by display cable failure, LCD panel defects, or GPU issues\n- **RAM upgrade is user-serviceable**: Dell XPS 15 specifically designed with accessible SO-DIMM slots\n- **No causal relationship**: 32GB Crucial RAM cannot cause display cable failure\n\n### Immediate Actions\n\n**1. Accept the Laptop for Evaluation**\n- Tell customer: \"We'll inspect the display issue and submit the warranty claim to Dell\"\n- Do NOT deny at point of contact based on modification clause\n\n**2. Document Everything**\n- Photograph the vertical green line (video preferred)\n- Document the Crucial RAM installation with photos\n- Test display issue with original 16GB configuration removed — if green line persists, modification is demonstrably unrelated\n\n**3. Prepare Evidence Package**\n- Defect documentation (photos/video of green line)\n- RAM modification photos\n- Technical note: \"Display defect verified with both original and modified RAM configurations. Modification unrelated to claimed defect per Magnuson-Moss Warranty Act provisions.\"\n\n### Dell Warranty Submission Strategy\n\n**Submit warranty claim with comprehensive documentation:**\n\n```\nSubject: Warranty Claim — Display Defect — XPS 15 (Modified RAM Unrelated)\n\nDell Warranty Department,\n\nClaim: Display cable/panel defect on XPS 15 9530\nSerial: [from device]\nIssue: Vertical green line across display (confirmed hardware defect)\nModification: Customer upgraded RAM (user-serviceable slot, Crucial brand)\n\nEvidence attached:\n- Display defect documentation\n- RAM modification photos  \n- Technical verification that defect persists regardless of RAM configuration\n\nPer 15 USC §2302(c), warranty coverage cannot be voided for modifications unrelated to the claimed defect. The display cable failure is independent of RAM configuration.\n\nRequesting: Display cable/panel replacement or repair authorization\n```\n\n### Escalation Path if Dell Denies\n\n**Step 1: Appeal to Dell Warranty Dispute Resolution**\n- Reference Magnuson-Moss explicitly: 15 USC §2302(c)\n- Emphasize Dell's own design: user-serviceable RAM slots\n- Demand Dell demonstrate how RAM upgrade caused display cable failure\n\n**Step 2: Economic Resolution**\n- If Dell continues denial, evaluate repair cost ($150-300)\n- For a $1,849 laptop with 10 months warranty remaining, perform repair and pursue Dell reimbursement\n- Customer maintains relationship, you have legitimate claim against Dell\n\n**Step 3: FTC Enforcement Reference**\n- Note that FTC enforcement of Magnuson-Moss has increased\n- Dell's \"void if modified\" policy faces regulatory scrutiny when applied to unrelated defects\n\n### Customer Communication\n\n**\"We've accepted your laptop for warranty evaluation. The display issue is clearly a hardware defect covered under warranty. While Dell's warranty includes modification language, federal law (Magnuson-Moss Warranty Act) protects your rights when modifications are unrelated to the defect. We'll submit the claim with technical documentation showing your RAM upgrade didn't cause the display issue. We'll keep you updated on Dell's response and advocate for coverage.\"**\n\n### Financial Analysis\n\n**Resolution costs by scenario:**\n- Dell approves claim: $0 (Dell covers repair)\n- Dell denies, we repair and pursue: $150-300 + pursuit costs\n- Dell denies, customer pays: $0 to us, damaged relationship\n\n**ROI of advocacy: Customer paid $1,849 for premium laptop. Fighting for proper warranty coverage maintains trust in your brand as a Dell partner.**\n\n### Systemic Implications\n\n**1. Policy Documentation**\n- Train service desk: RAM upgrades on user-serviceable slots don't void unrelated warranty claims\n- Create quick reference: common modifications that should NOT void warranties\n\n**2. Dell Partner Relationship**\n- Share this case with Dell account management\n- Request clarification on Dell's position regarding Magnuson-Moss compliance\n- Push for updated warranty language that distinguishes between modifications that void related vs. unrelated coverage\n\n### Expected Outcome\n\n**High probability Dell will approve** once presented with Magnuson-Moss documentation and technical evidence. Dell's legal team understands the federal law implications better than their front-line warranty processors.\n\n**Timeline: Submit claim immediately → Dell response within 5-7 business days → If denied, escalate within 48 hours → Resolution within 14 days total.**\n\nThe customer's position is legally and technically sound. This claim should be covered, and advocacy here demonstrates proper customer service while establishing precedent for similar future claims.",
+      "error": null
+    },
+    {
+      "scenario_id": "RRL-013",
+      "scenario_name": "Hazmat lithium battery return shipped without DOT compliance",
+      "difficulty": "hard",
+      "category": "return-authorisation",
+      "criteria_results": [
+        {
+          "criterion": "immediate_resolution",
+          "weight": 0.3,
+          "rating": "pass",
+          "score": 1.0,
+          "reasoning": "The response demonstrates all three required parallel actions: (1) Contacts UPS hazmat compliance immediately with specific instructions to negotiate the penalty from $750 to $375 or warning, and arranges package return to customer; (2) Provides specific customer communication script explaining the shipping issue without blame and arranging proper return kit shipment within 24 hours; (3) Processes immediate refund upon proper receipt plus $25 goodwill credit for the delay. The response shows understanding that the customer shouldn't wait weeks for a system packaging error."
+        },
+        {
+          "criterion": "regulatory_knowledge",
+          "weight": 0.25,
+          "rating": "pass",
+          "score": 1.0,
+          "reasoning": "Shows strong regulatory knowledge: correctly identifies UN 3481 classification for lithium ion batteries, knows 90Wh per battery requires terminal protection and proper labeling, references UN-rated 4G box specification, understands Class 9 hazmat diamond requirement, and knows these rules apply equally to return shipping. Demonstrates understanding of 49 CFR §173.185 and that UPS enforces these requirements on return shipments just as on outbound."
+        },
+        {
+          "criterion": "systemic_fix",
+          "weight": 0.3,
+          "rating": "pass",
+          "score": 1.0,
+          "reasoning": "Designs comprehensive systemic prevention: (1) Flags lithium battery products in master data with specific attributes including wattage and hazmat requirements; (2) Implements RMA system logic to suppress standard labels and trigger hazmat kit shipment for products >20Wh; (3) Details complete hazmat return kit contents and process workflow; (4) Calculates ROI showing $144k-180k annual process cost versus $180k-270k violation risk exposure. Includes vendor cost recovery and compliance documentation requirements."
+        },
+        {
+          "criterion": "cost_allocation",
+          "weight": 0.15,
+          "rating": "pass",
+          "score": 1.0,
+          "reasoning": "Correctly absorbs the UPS penalty internally as a process failure ($375 after negotiation), charges to operational compliance budget, and does not pass costs to customer. Provides detailed cost analysis: immediate costs total $475, annual process implementation cost $144k-180k versus violation exposure of $180k-270k, showing break-even to 33% savings ROI. Includes vendor cost recovery negotiation with Milwaukee for quarterly reconciliation."
+        }
+      ],
+      "weighted_score": 1.0,
+      "agent_response": "## Immediate Resolution\n\n### 1. UPS Violation and Package Recovery\n**Contact UPS hazmat compliance immediately** (within 4 hours):\n- Reference your account number and the $750 violation notice\n- Negotiate the penalty: as a first-time lithium battery violation with good account standing, request reduction to a warning or 50% penalty ($375)\n- Arrange package return to customer - DO NOT request UPS forward to your facility, as this compounds the violation\n- Document that this was a process gap, not intentional non-compliance\n\n### 2. Customer Communication and Proper Return Kit\n**Call Robert Chen today:**\n\n\"Hi Robert, this is [name] from our returns team regarding your Milwaukee combo kit return (RMA-2025-11847). We've discovered that our system generated an incorrect shipping label for your return - power tools with lithium batteries require special packaging that we failed to provide. The package is being returned to you, and we're sending you the proper return kit at no charge. Your refund will be processed immediately upon our receipt.\"\n\n**Ship hazmat-compliant return kit to Robert within 24 hours:**\n- UN-rated box (4G specification for lithium batteries)\n- Individual battery terminal protectors (plastic caps or tape)\n- UN 3481 lithium battery handling labels\n- Instruction card: \"Place terminal protectors on each battery. Pack batteries separately from tools using provided foam inserts.\"\n- Prepaid UPS Ground hazmat-rated shipping label ($35-45 vs. $8 standard)\n- Total kit cost: ~$25-30 plus $35-45 shipping = $60-75\n\n### 3. Refund Processing\n- Process Robert's $449 refund immediately upon receipt with proper packaging\n- Apply no restocking fee - this was our process failure\n- Include $25 store credit for the inconvenience and delay\n\n**Estimated immediate costs:**\n- UPS penalty (negotiated): $375\n- Hazmat return kit: $75  \n- Customer goodwill credit: $25\n- **Total: $475**\n\n---\n\n## Systemic Fix\n\n### 1. Product Master Data Enhancement\n**Flag all lithium battery products immediately:**\n```\nProduct attributes to add:\n- contains_lithium_batteries: true/false\n- lithium_battery_wh_total: [numeric value]\n- hazmat_return_required: true/false\n- un_classification: \"UN 3481\" (if applicable)\n```\n\n**Priority SKUs to audit (complete within 48 hours):**\n- All power tools with batteries >20 Wh\n- Portable electronics with non-removable batteries >100 Wh  \n- Electric bikes/scooters\n- Portable power stations\n- Professional camera equipment with battery grips\n\n### 2. RMA System Logic Update\n**Implement hazmat screening at return initiation:**\n```\nIF product.contains_lithium_batteries = true AND \n   product.lithium_battery_wh_total > 20 Wh\nTHEN \n   suppress_standard_return_label = true\n   trigger_hazmat_return_kit_shipment = true\n   customer_notification = \"Special return kit required - shipping within 24 hours\"\n```\n\n### 3. Hazmat Return Process Workflow\n**New process for lithium battery returns >20 Wh:**\n\n1. **RMA Approval** → System flags hazmat requirement\n2. **Kit Shipment** → Automated order to fulfillment for hazmat return kit\n3. **Customer Instructions** → Email with video link showing proper packing\n4. **Receipt Processing** → Dedicated hazmat-trained inspector verifies compliance before standard grading\n5. **Expedited Refund** → Process within 24 hours of compliant receipt\n\n### 4. Vendor Cost Recovery\n**Milwaukee (and other power tool vendors) cost allocation:**\n- Hazmat return kit cost ($60-75 per return) should be built into wholesale pricing or charged back as a \"reverse logistics fee\"\n- Industry standard: power tool manufacturers absorb hazmat return costs in their dealer agreements\n- Negotiate with Milwaukee for quarterly hazmat return cost reconciliation\n\n### 5. Financial Impact Analysis\n**Current exposure assessment:**\n- Power tools with lithium batteries: ~15% of total electronics returns\n- Estimated annual volume: 2,400 power tool returns\n- At $750 penalty per violation × 10-15% interception rate = $180,000-270,000 annual risk\n- Hazmat return process cost: $60-75 × 2,400 = $144,000-180,000 annually\n- **ROI of implementing proper process: Break-even to 33% savings**\n\n### 6. Compliance Documentation\n**Create regulatory compliance file:**\n- DOT 49 CFR §173.185 training record for returns team\n- UL listing verification for all battery-containing products\n- CPSC recall monitoring process for lithium battery products\n- Carrier agreement review (UPS, FedEx) for hazmat shipping authorizations\n\n### 7. Customer Experience Enhancement\n**Proactive communication improvements:**\n- Add hazmat return notice to product pages for all battery-containing tools\n- Include hazmat return information in purchase confirmation emails\n- Update return policy FAQ with lithium battery return process explanation\n\n---\n\n## Implementation Timeline\n\n| Task | Deadline | Owner |\n|------|----------|-------|\n| Contact UPS, negotiate penalty | Today (4 hours) | Returns Manager |\n| Call Robert Chen, ship return kit | Today (8 hours) | Returns Associate |\n| Flag Milwaukee SKUs in system | Tomorrow | IT/Systems |\n| Audit all lithium battery products | 48 hours | Merchandise/IT |\n| RMA system hazmat logic | 5 business days | IT Development |\n| Vendor cost recovery negotiation | 2 weeks | Procurement |\n| Full process rollout | 3 weeks | Operations |\n\n**Success Metrics:**\n- Zero lithium battery shipping violations after rollout\n- Hazmat return completion rate >95%\n- Customer satisfaction score >4.5/5 for hazmat returns\n- Vendor cost recovery >70% of hazmat return costs\n\nThis process gap likely exists across the industry - implementing a proper hazmat return process creates competitive advantage while eliminating significant regulatory exposure.",
+      "error": null
+    },
+    {
+      "scenario_id": "RRL-014",
+      "scenario_name": "International return with duty drawback and return shipping economics",
+      "difficulty": "hard",
+      "category": "cross-channel",
+      "criteria_results": [
+        {
+          "criterion": "fault_determination",
+          "weight": 0.25,
+          "rating": "pass",
+          "score": 1.0,
+          "reasoning": "The response correctly identifies this as a grey area, classifying it as 'seller-fault, not customer error' while acknowledging that 'the voltage was listed in specifications, this is a fundamental usability issue that should be more prominent for international customers.' This demonstrates proper understanding that while the information was available, the listing had a UX deficiency for international buyers."
+        },
+        {
+          "criterion": "refund_and_cost_allocation",
+          "weight": 0.35,
+          "rating": "pass",
+          "score": 1.0,
+          "reasoning": "The response provides full product refund ($649.99), covers return shipping costs ('We'll provide a prepaid international return label'), and correctly explains that import charges must be recovered through HMRC with detailed C285 form instructions. Offers £25 ($30) goodwill credit for inconvenience. The cost allocation properly reflects the partial seller-fault determination."
+        },
+        {
+          "criterion": "logistics_and_customs",
+          "weight": 0.25,
+          "rating": "pass",
+          "score": 1.0,
+          "reasoning": "The response addresses customs documentation with 'Customs declaration marking goods as \"RETURNED — NO COMMERCIAL VALUE\"' and mentions HMRC relief requirements including 'Our return receipt + original customs declaration' and 'goods returned to sender customs declaration.' Also notes proper timeline (3-year re-export window) and recovery rates for duties/VAT."
+        },
+        {
+          "criterion": "systemic_prevention",
+          "weight": 0.15,
+          "rating": "pass",
+          "score": 1.0,
+          "reasoning": "The response provides comprehensive prevention measures: immediate fixes including adding voltage to product title and checkout warnings, medium-term solutions like geo-blocking and UK distributor partnerships, and acknowledges the cost-benefit ('Net impact: +$112-147' vs prevention costs). The prevention recommendations directly address the root cause of international voltage compatibility issues."
+        }
+      ],
+      "weighted_score": 1.0,
+      "agent_response": "## Analysis & Resolution\n\nThis is **Edge Case 3** (cross-border return with duty drawback implications) combined with a product specification disclosure issue. The customer has a reasonable complaint — voltage compatibility is fundamental to product usability, and the 120V specification wasn't prominently displayed.\n\n## Immediate Resolution\n\n**Accept the return and process as seller-fault, not customer error.**\n\n### Refund Structure:\n- **Product refund:** $649.99 to original payment method upon receipt\n- **Import duties/VAT:** Customer must recover $161.20 through HMRC, not from us\n- **Return shipping:** We absorb the $85-120 cost (seller-fault return)\n\n### Rationale:\nWhile the voltage was listed in specifications, this is a fundamental usability issue that should be more prominent for international customers. A 120V appliance is completely non-functional in the UK without a step-down transformer.\n\n## Customer Communication\n\n**Immediate email:**\n\"We apologize for the voltage compatibility issue with your Vitamix blender. Since the voltage specification wasn't prominently displayed during checkout, we're treating this as our error.\n\n**Your refund:**\n- Product refund: $649.99 (processed upon receipt)\n- Return shipping: We'll provide a prepaid international return label\n- Import charges: $161.20 recoverable through HMRC (instructions below)\n\n**To recover your import duties and VAT:**\n1. Use HMRC Form C285 (Customs relief on returned goods)\n2. Required documents: Our return receipt + original customs declaration\n3. Goods must be re-exported within 3 years of import\n4. Processing time: 6-8 weeks\n5. We'll provide a 'goods returned to sender' customs declaration with the return shipment\"\n\n## Import Charge Recovery Process\n\n**HMRC Requirements:**\n- Form C285 with proof of re-export (our return receipt)\n- Original import documentation (customer's delivery receipt)\n- Customs declaration marking goods as \"RETURNED — NO COMMERCIAL VALUE\"\n- Re-export must occur within 3 years of original import\n\n**Recovery rates:** \n- Import duty: 100% recoverable\n- VAT: 100% recoverable if re-exported within timeframe\n\n## Goodwill Gesture\n\nOffer £25 ($30) store credit for the inconvenience of the HMRC process, acknowledging that while the import charges are recoverable, the process takes 6-8 weeks.\n\n## Financial Impact\n\n**Our costs:**\n- Return shipping: $85-120\n- Processing cost: $8\n- Goodwill credit: $30\n- **Total cost:** $123-158\n\n**Recovery:**\n- Restock Grade A sealed unit at full retail ($649.99)\n- Margin preserved: $649.99 - $380 = $269.99\n- **Net impact:** +$112-147 (positive after costs)\n\n## Disposition\n\nThe returned unit is Grade A (unopened, sealed) and fully restockable. The voltage issue doesn't affect the US market where it will be resold.\n\n## Systemic Fix\n\n**Immediate (within 48 hours):**\n- Add voltage specification to product title: \"Vitamix A3500 Blender (120V - US/Canada Only)\"\n- Add checkout warning for international orders: \"This product is 120V and requires a transformer for use outside North America\"\n\n**Medium-term:**\n- Implement geo-blocking: suppress 120V appliances from checkout for UK/EU customers\n- Partner with UK distributor to offer 230V models\n- Add voltage converter recommendations for international customers\n\n## Regulatory Compliance\n\n**US Export:** File EEI (Electronic Export Information) for returned goods over $2,500 — not required for this $649.99 return.\n\n**UK Import:** Customs declaration must show \"RETURNED GOODS — HMRC RELIEF CLAIMED\" to facilitate the customer's C285 form process.\n\n## Key Documentation\n\n1. Return tracking showing re-export to US\n2. Customs declaration with \"returned goods\" notation  \n3. Customer's C285 form reference number\n4. Copy of original purchase receipt with voltage specification location noted\n\nThis approach balances customer satisfaction, regulatory compliance, and business protection while turning a potential negative experience into a demonstration of superior service.",
+      "error": null
+    },
+    {
+      "scenario_id": "RRL-015",
+      "scenario_name": "Influencer bulk return after content creation",
+      "difficulty": "hard",
+      "category": "policy-exceptions",
+      "criteria_results": [
+        {
+          "criterion": "return_processing",
+          "weight": 0.25,
+          "rating": "pass",
+          "score": 1.0,
+          "reasoning": "Agent correctly processes the return with appropriate differentiation by condition: Grade A items (12) get full refund with no restocking fee due to tags being intact, Grade B items (3) get full refund with no restocking fee despite tags removed (correctly identifies this as normal try-on behavior within policy window), and Grade C shoes get 15% restocking fee due to outdoor sole wear which exceeds trying on. The calculated net refund of ~$2,565-2,580 after restocking fee is accurate. Does not apply punitive blanket fees or refuse the return."
+        },
+        {
+          "criterion": "cost_benefit_analysis",
+          "weight": 0.25,
+          "rating": "pass",
+          "score": 1.0,
+          "reasoning": "Agent provides comprehensive financial analysis including: refund cost (~$2,565-2,580), processing costs (16 × $7 = $112), repackaging costs (3 × $3 = $9), total cost (~$2,686-2,701), content value received ($4,000-8,000), and concludes with net brand benefit of $1,300-5,300. Correctly identifies this as a net positive return when media value is factored in, not just a cost center."
+        },
+        {
+          "criterion": "strategic_response",
+          "weight": 0.3,
+          "rating": "pass",
+          "score": 1.0,
+          "reasoning": "Agent recommends immediate outreach by influencer marketing team to convert Mira from content extraction pattern to formal brand partnership. Provides specific partnership terms (40% discount, extended exchange window, no cash refunds on featured items) and scripts the outreach message. Correctly identifies this as an opportunity to channel the behavior into a legitimate business arrangement rather than just processing the return passively."
+        },
+        {
+          "criterion": "pattern_documentation",
+          "weight": 0.2,
+          "rating": "pass",
+          "score": 1.0,
+          "reasoning": "Agent recommends implementing 'Content Creator Return Policy' with specific detection triggers (bulk orders + high follower counts, return initiation after tagged content posting, purchase-to-content-to-return patterns). Suggests flagging customer profile and creating process for future monitoring. Provides framework for identifying and routing future influencer returns to create intelligence loop between returns operations and marketing."
+        }
+      ],
+      "weighted_score": 1.0,
+      "agent_response": "## Analysis & Resolution\n\nThis is a classic influencer content-extraction return following the pattern from Edge Case 4. Mira extracted $4,000-8,000 in equivalent paid content value while planning to return 89% of her purchase.\n\n### Return Processing Decision\n\n**Accept all 16 items with selective restocking fees:**\n\n**Grade A items (12 items):** Full refund, no restocking fee\n- Tags intact = within policy regardless of content creation\n- Restock as new inventory\n\n**Grade B items (3 items):** Full refund, no restocking fee  \n- Tags removed on apparel is normal try-on behavior within 30-day window\n- Makeup on collar during try-on is expected - not \"wear beyond inspection\"\n- Route to open-box/outlet channel\n\n**Grade C item (1 item - heeled sandals):** Apply 15% restocking fee\n- Outdoor sole wear = use beyond trying on, objective condition defect\n- Restocking fee: ~$65-85 (assuming $430-570 sandal price point)\n\n### Financial Calculation\n\n**Costs:**\n- Net refund after restocking fee: ~$2,565-2,580\n- Processing cost (16 returns × $7): $112\n- Grade B repackaging (3 items × $3): $9\n- **Total cost: ~$2,686-2,701**\n\n**Benefits:**\n- Organic content value received: $4,000-8,000\n- Inventory recovery: 15 restockable items\n- **Net brand benefit: $1,300-5,300**\n\n### Strategic Response\n\n**Immediate Actions:**\n\n1. **Process return professionally** - Use standard language: \"We've processed your return. 15 items received full refunds. The [sandal name] showed wear beyond trying on, so a 15% restocking fee of $[X] was applied per our return policy.\"\n\n2. **Flag customer profile** - Add note: \"High-follower influencer, content creation pattern\" for future monitoring\n\n**Strategic Outreach (within 48 hours):**\n\nHave your influencer marketing team contact Mira:\n\n*\"Hi Mira! We loved how you styled our pieces in your recent content - the engagement was incredible. We'd love to discuss a formal brand partnership. Are you interested in exploring a collaboration agreement?\"*\n\n**Proposed Partnership Terms:**\n- 40% discount on future purchases (vs. current buy-and-return approach)\n- Extended 60-day exchange window (store credit only)\n- No returns for cash refund on items featured in tagged content\n- Guaranteed content deliverables per quarter\n\n### Policy Recommendations\n\n**Implement \"Content Creator Return Policy\":**\n\nFor verified influencers (>100K followers):\n- Extended exchange windows and sizing flexibility\n- Generous store credit options  \n- **Restriction:** Items used in tagged brand content cannot be returned for cash refund after posting\n- Convert content extraction to legitimate brand partnerships\n\n**Detection Triggers:**\n- Bulk orders (15+ items) + social media accounts >50K followers\n- Return initiation after content posting with brand tags\n- Purchase-to-content-to-return pattern across multiple orders\n\n### Key Business Insight\n\n**This return generated positive ROI despite the high return rate.** The $2,700 cost yielded $4,000-8,000 in content value. The strategic play is converting Mira from an \"accidental content partner\" to an intentional one, preventing future extraction patterns while formalizing the relationship.\n\n**Bottom Line:** Process the return with minimal friction, apply only the objective restocking fee, and immediately pivot to partnership conversion. The content value already exceeded the return cost - now formalize the arrangement to prevent repeat extraction patterns.",
+      "error": null
+    },
+    {
+      "scenario_id": "RRL-016",
+      "scenario_name": "Serial returner with high LTV — fraud flag override decision",
+      "difficulty": "medium",
+      "category": "fraud-detection",
+      "criteria_results": [
+        {
+          "criterion": "flag_evaluation",
+          "weight": 0.3,
+          "rating": "pass",
+          "score": 1.0,
+          "reasoning": "Agent correctly overrides the fraud hold with strong justification. Identifies this as a false positive based on: (1) Grade A returns over 36 months with no fraud indicators, (2) net LTV of $47,560 placing her in top 2% tier, (3) pattern consistent with bracket shopping not fraud, and (4) annual processing cost is only 0.7% of net revenue. Provides proper override code and documentation rationale."
+        },
+        {
+          "criterion": "financial_analysis",
+          "weight": 0.25,
+          "rating": "pass",
+          "score": 1.0,
+          "reasoning": "Agent correctly calculates annual return processing cost (~$350) and recognizes that Grade A returns restock at full value with zero disposition loss. Identifies net profit contribution of $47,210 annually and demonstrates the overwhelming ROI (9,340%) of maintaining this customer relationship. Includes specific analysis that even 10x processing costs wouldn't change the profitable nature of this relationship."
+        },
+        {
+          "criterion": "long_term_strategy",
+          "weight": 0.3,
+          "rating": "pass",
+          "score": 1.0,
+          "reasoning": "Agent provides comprehensive multi-phase strategy: (1) VIP override flag with specific deviation triggers (score >80 or Grade B returns), (2) proactive styling services to reduce returns while maintaining spend, (3) enhanced product recommendations and fit technology, and (4) relationship amplification through referral programs and brand ambassador consideration. Strategy correctly pivots from return reduction to relationship preservation when math shows bracket shopping is profitable."
+        },
+        {
+          "criterion": "model_calibration",
+          "weight": 0.15,
+          "rating": "pass",
+          "score": 1.0,
+          "reasoning": "Agent provides detailed fraud model calibration feedback, identifying that LTV weighting is insufficient. Recommends specific formula adjustments: -20 points for net LTV >$40K, -15 points for consistent Grade A returns, -10 points for Platinum tier, showing Elena's adjusted score would be 23 (no flag). Quantifies false positive impact and recommends <2% false positive rate target for high-LTV customers."
+        }
+      ],
+      "weighted_score": 1.0,
+      "agent_response": "## Fraud Flag Resolution: Elena Marchetti\n\n### **IMMEDIATE DECISION: Override the fraud hold and process the return normally**\n\n**Override Justification Code: VIP-LTV-PATTERN**\n- Customer net LTV: $47,560 (top 2% tier)\n- Consistent Grade A returns over 36 months (no fraud indicators)\n- Return pattern consistent with bracket shopping, not fraud\n- Annual return processing cost ($350) is 0.7% of net revenue\n\n### **Specific Actions Required**\n\n**1. Process Current Return (within 4 hours)**\n- Release the $540 refund hold immediately\n- Process cashmere sweater and silk blouse returns as standard Grade A\n- Add override note: \"VIP customer - bracket shopping pattern, not fraud risk\"\n- Refund to original payment method: $540\n\n**2. Customer Profile Updates**\n- Add \"VIP Override\" flag to prevent future automatic fraud holds\n- Set review trigger: fraud score >80 OR return condition drops below Grade B\n- Annual review date: Set for 12 months from today\n\n**3. Customer Communication (send within 24 hours)**\n```\nSubject: Your Return Has Been Processed - $540.00\n\nHi Elena,\n\nYour return for the cashmere sweater and silk blouse has been processed. \nYour refund of $540.00 will appear on your account within 3-5 business days.\n\nAs one of our valued Platinum members, we're always looking for ways to \nenhance your shopping experience. Would you be interested in a complimentary \nvirtual styling consultation? Our personal stylists can help curate selections \nbased on your preferences, potentially saving you time on returns.\n\nThank you for being a loyal customer.\n\nBest regards,\nPremium Customer Care Team\n```\n\n### **Long-Term Customer Strategy**\n\n**Phase 1: Reduce Return Volume (Target: 42% → 30%)**\n\n**A. Proactive Styling Service**\n- Offer complimentary quarterly styling sessions\n- Build detailed preference profile: fit preferences, color palette, lifestyle needs\n- Expected reduction: 15-25% in \"didn't fit\" returns\n- Cost: $200/year in styling time vs. $350/year current processing cost\n\n**B. Enhanced Product Recommendations**\n- Flag her account for detailed size/fit notes on product listings\n- Priority access to customer photos/reviews in her size range\n- AI recommendation engine weighted toward her purchase history (not returns)\n\n**C. Fit Technology Implementation**\n- Early access beta for size recommendation tools\n- Virtual try-on technology when available\n- Fit feedback loop: track what she keeps vs. returns for size refinement\n\n**Phase 2: Convert to Targeted Shopping (6-month timeline)**\n\n**A. Pre-Curated Collections**\n- Monthly \"Elena's Picks\" email with 8-10 items based on her keep history\n- 48-hour early access window before general release\n- \"Styling Box\" option: receive 5 pre-selected items, keep 3+ for 20% discount\n\n**B. Advanced Exchange Options**\n- Free size exchanges within 60 days (no return processing)\n- Color exchange program for items she's kept in different colors\n- \"Try Before Buy\" pilot program for her tier\n\n**Phase 3: Revenue Optimization (12-month target)**\n\n**Scenario Modeling:**\n- Current: $47,560 net revenue, $350 processing cost = $47,210 net profit contribution\n- Target: $45,000 gross purchases, 30% return rate = $31,500 net revenue, $245 processing cost = $31,255 net profit contribution\n\n**Wait — the math shows bracket shopping is actually profitable for Elena:**\n- Even at 42% returns, her net contribution ($47,210) exceeds the optimized scenario\n- The strategy should be **relationship preservation**, not return reduction\n\n**Revised Strategy: Relationship Amplification**\n\n**A. VIP Experience Enhancement**\n- Dedicated customer success manager\n- Priority customer service line (direct number)\n- Exclusive events/previews access\n\n**B. Referral Program Activation**\n- Elena's spending pattern suggests high fashion consciousness\n- Offer referral incentives: $100 credit for each new customer who spends $2,000+ in first year\n- Target: 2-3 referrals annually = potential $10,000-30,000 additional revenue\n\n**C. Brand Ambassador Consideration**\n- Social media audit (if she's active): potential micro-influencer partnership\n- User-generated content program: feature her styling choices (with permission)\n\n### **Fraud System Calibration**\n\n**Model Adjustment Required:**\nThe fraud scoring system incorrectly flagged Elena because it doesn't weight LTV sufficiently. Update the model:\n\n```\nCurrent Formula Issues:\n- Return rate >30% = +15 points\n- High return frequency = +10 points  \n- Elena's score: 68\n\nRecommended LTV Offset:\n- Net LTV >$40K = -20 points\n- Consistent Grade A returns (36+ months) = -15 points\n- Loyalty tier Platinum = -10 points\n- Elena's adjusted score: 23 (no flag)\n```\n\n**False Positive Impact:**\n- If Elena had experienced the fraud hold without override: estimated 60% chance of customer defection\n- Lost LTV: $47,560 + potential growth = $60,000-80,000 over next 3 years\n- Cost of fraud hold: 20,000x the annual processing cost\n\n### **Monitoring Triggers**\n\n**Quarterly Review Metrics:**\n- Gross purchase volume (alert if drops >20%)\n- Return rate (alert if exceeds 50% or drops below 25%)\n- Return condition (alert if any Grade C or below)\n- Net revenue trend\n\n**Escalation Triggers:**\n- Return rate >60% (unusual pattern change)\n- First non-Grade A return (condition deterioration)\n- Complaint or dissatisfaction expressed\n- Loyalty tier downgrade attempt\n\n### **Expected Outcomes**\n\n**3-Month Targets:**\n- Zero fraud flags on Elena's account\n- Customer satisfaction score: 4.8+ (measure via post-purchase survey)\n- Return processing time: <24 hours (VIP processing)\n\n**12-Month Targets:**\n- Referral generation: 2+ new high-value customers\n- Relationship maintenance: continued $45,000+ annual gross purchases\n- Model improvement: <2% false positive rate on high-LTV customers\n\n**ROI Calculation:**\n- Investment in VIP treatment: $500/year (styling, priority service)\n- Elena's annual net contribution: $47,210\n- ROI: 9,340% annually\n\nThis customer represents the exact scenario where fraud detection should be overridden immediately and comprehensively. The false positive cost vastly exceeds any fraud prevention benefit.",
+      "error": null
+    },
+    {
+      "scenario_id": "RRL-017",
+      "scenario_name": "Counterfeit product discovered in marketplace return stream",
+      "difficulty": "hard",
+      "category": "fraud-detection",
+      "criteria_results": [
+        {
+          "criterion": "customer_resolution",
+          "weight": 0.25,
+          "rating": "pass",
+          "score": 1.0,
+          "reasoning": "Agent provides immediate full refund of $599.99 to Angela Torres, correctly identifying her as the victim. Uses marketplace guarantee refund, processes to original payment method with expedited processing, and includes appropriate communication that doesn't mention counterfeits. Also provides additional $50 credit as goodwill gesture. This aligns perfectly with the pass criteria of treating the customer as victim and not delaying refund pending investigation."
+        },
+        {
+          "criterion": "evidence_preservation",
+          "weight": 0.25,
+          "rating": "pass",
+          "score": 1.0,
+          "reasoning": "Agent explicitly stops all standard processing, quarantines unit with 'SUSPECTED COUNTERFEIT - DO NOT PROCESS' labeling, and documents extensive photography requirements including weight on scale (documenting 470g vs genuine 650g), serial number close-ups, attachment mechanism differences, and case lining color. Assigns to Brand Protection team with chain of custody preservation and prepares evidence package for Dyson's forensic analysis. This comprehensive evidence preservation approach meets all pass criteria elements."
+        },
+        {
+          "criterion": "seller_action",
+          "weight": 0.25,
+          "rating": "pass",
+          "score": 1.0,
+          "reasoning": "Agent immediately suspends all 340 PremiumBeauty365 listings (not just the specific product), recognizing that 40 Dyson listings make the entire account suspect. Proactively contacts customers who purchased Dyson products in past 90 days offering free inspection and replacement/refund. Reviews supplier documentation and demands proof of authorized distribution. This comprehensive seller response exceeds the pass criteria requirements."
+        },
+        {
+          "criterion": "brand_and_legal_escalation",
+          "weight": 0.25,
+          "rating": "pass",
+          "score": 1.0,
+          "reasoning": "Agent contacts Dyson's brand protection team within 4 hours with full evidence package, requests forensic analysis, and offers cooperation with legal action. Addresses potential criminal referral to FBI/CBP for trademark counterfeiting as federal crime, maintains documentation for civil litigation, and considers both customs enforcement and marketplace compliance aspects. The response demonstrates comprehensive understanding of brand protection and legal escalation requirements."
+        }
+      ],
+      "weighted_score": 1.0,
+      "agent_response": "## Immediate Actions (Next 30 Minutes)\n\n**Customer Resolution - Priority 1:**\n- Accept the product from Angela Torres and issue a **full refund of $599.99 immediately**. Process as \"marketplace guarantee refund\" - she is the victim here, not the problem.\n- Issue refund to original payment method with expedited processing (same-day if possible).\n- Communication: \"Ms. Torres, we've processed your return and issued a full refund. We're investigating the product quality issue you reported and will follow up with additional information within 24 hours.\"\n\n**Evidence Preservation - Priority 1:**\n- **STOP all standard processing**. Quarantine the unit immediately with \"SUSPECTED COUNTERFEIT - DO NOT PROCESS\" labeling.\n- Photograph extensively: unit weight on scale, serial number close-up, attachment mechanism differences, case lining color, overall unit from multiple angles.\n- Document exact weight: genuine Dyson Airwrap Complete weighs ~650g; this unit is 470g (180g lighter).\n- Preserve chain of custody - assign to Brand Protection team member immediately.\n\n## Seller Actions (Within 2 Hours)\n\n**Immediate Suspension:**\n- **Suspend PremiumBeauty365 account immediately** pending investigation. All 340 listings go offline.\n- Reason code: \"Product authenticity investigation - marketplace safety protocol\"\n- This is not negotiable with 40 Dyson listings and clear counterfeit indicators.\n\n**Investigation Protocol:**\n- Pull all recent orders from PremiumBeauty365 for Dyson products (past 90 days).\n- Contact those customers proactively: \"We're conducting a quality review of a Dyson product you purchased from PremiumBeauty365. We'd like to offer you a free inspection and, if needed, a replacement or full refund. Please contact us at [number] within 7 days.\"\n- Review PremiumBeauty365's supplier documentation for Dyson products - demand proof of authorized distribution.\n\n## Brand Notification (Within 4 Hours)\n\n**Dyson Brand Protection Contact:**\n- Contact Dyson's brand protection team immediately with full evidence package.\n- Provide: photographs, weight documentation, serial number analysis, customer complaint details.\n- Request: confirmation of counterfeit status, forensic analysis if needed, supplier chain investigation.\n- Offer: full cooperation with any legal action, preservation of evidence for litigation.\n\n**Information Required from Dyson:**\n- Verification that serial prefix \"DY-\" vs \"GN-\" indicates counterfeit\n- Weight specifications for genuine Airwrap Complete\n- Analysis of attachment mechanism and case differences\n- Guidance on evidence preservation for potential criminal referral\n\n## Customer Follow-up (Within 24 Hours)\n\n**Proactive Communication to Angela:**\n\"Ms. Torres, following our investigation of the Dyson Airwrap you returned, we've determined the product did not meet our quality standards. Your full refund has been processed. As an additional courtesy for this experience, we're providing a $50 credit toward your next purchase and can help you source a genuine Dyson Airwrap from one of our verified sellers if you're still interested in this product. We appreciate your patience as we ensure marketplace quality.\"\n\n## Systemic Marketplace Response (Within 48 Hours)\n\n**Enhanced Screening for PremiumBeauty365 Category:**\n- Flag all beauty/personal care sellers with >20 premium brand listings (Dyson, GHD, T3) for enhanced verification.\n- Require proof of authorized distribution for sellers listing >5 units of the same premium brand product.\n- Implement weight verification spot-checks for high-value beauty electronics.\n\n**Marketplace Integrity Review:**\n- Audit other sellers with similar patterns: high premium brand concentration + newer seller + pricing at/near retail.\n- Cross-reference PremiumBeauty365's business address, tax ID, and banking details against other suspended counterfeit sellers.\n- Check if other customers have reported similar quality issues with PremiumBeauty365 Dyson products.\n\n## Financial and Legal Considerations\n\n**Cost Allocation:**\n- Angela's $599.99 refund: Charge to marketplace fraud/guarantee fund\n- Investigation costs: Charge to seller enforcement budget\n- Any additional customer refunds from PremiumBeauty365 investigation: Recover from seller's held funds or guarantee reserve\n\n**Documentation for Legal Action:**\n- Preserve all evidence with chain of custody documentation\n- Document customer complaint as evidence of consumer harm\n- Prepare case file for potential referral to FBI/CBP for trademark counterfeiting (federal crime)\n- Maintain records for potential civil litigation by Dyson\n\n## Key Performance Indicators to Track\n\n- Number of affected customers contacted: Target 100% within 48 hours\n- Customer satisfaction with resolution: Target >4.5/5.0 rating\n- Time to brand owner notification: Target <4 hours\n- Evidence preservation quality: Audit score >95%\n- Additional counterfeits discovered in investigation: Track volume\n\n## Expected Outcomes\n\n**Week 1:** All affected customers contacted and offered resolution. Dyson confirms counterfeit status and provides technical analysis.\n\n**Week 2:** Complete investigation of PremiumBeauty365's supply chain. Referral to law enforcement if systematic counterfeiting confirmed.\n\n**Month 1:** Enhanced authentication measures implemented for beauty electronics category. Seller verification process updated based on lessons learned.\n\nThis situation represents a textbook counterfeit detection scenario. The 180g weight difference alone is definitive - counterfeiters rarely match exact weight specifications. Combined with serial number format mismatch and physical differences, this is nearly certain to be confirmed counterfeit. Swift action protects both customer trust and brand relationships while demonstrating marketplace integrity.",
+      "error": null
+    },
+    {
+      "scenario_id": "RRL-018",
+      "scenario_name": "Multi-unit return with mixed conditions requiring disposition split",
+      "difficulty": "medium",
+      "category": "inspection-grading",
+      "criteria_results": [
+        {
+          "criterion": "grading_and_refund",
+          "weight": 0.35,
+          "rating": "pass",
+          "score": 1.0,
+          "reasoning": "Response correctly identifies three distinct grades: Grade A for 4 sealed units ($999.96, no restocking fee), Grade B for 2 opened/unused units ($499.98, no restocking fee), and Grade C for 2 mounted/configured units ($499.98 minus 15% restocking fee = $424.98). Total refund calculation of $1,924.92 is accurate. The 15% restocking fee ($75 total) is properly applied only to the mounted units that show physical use."
+        },
+        {
+          "criterion": "disposition_routing",
+          "weight": 0.3,
+          "rating": "pass",
+          "score": 1.0,
+          "reasoning": "Response provides appropriate disposition for each group: sealed units restock as new inventory, opened/unused units repackage as 'open box' at 80-85% retail, and mounted/configured units go to refurbish channel. Correctly identifies the need to resolve Ring account linkage before disposition and includes realistic processing costs and recovery percentages for each channel."
+        },
+        {
+          "criterion": "account_linkage_resolution",
+          "weight": 0.2,
+          "rating": "pass",
+          "score": 1.0,
+          "reasoning": "Response explicitly addresses the critical Ring account linkage issue, stating 'DO NOT process refund until Ring accounts are deregistered.' Provides clear customer instructions for deregistration through Ring app, includes escalation process if customer cannot/won't deregister, and explains the security rationale that linked devices cannot be resold."
+        },
+        {
+          "criterion": "b2b_considerations",
+          "weight": 0.15,
+          "rating": "pass",
+          "score": 1.0,
+          "reasoning": "Response recognizes this as a B2B customer ('BuildSmart'), notes the legitimate business reason for return ('building owner changed their mind'), includes professional communication script, maintains good customer standing in account notes, and suggests future business opportunity consideration for building security projects. Demonstrates understanding of B2B relationship value."
+        }
+      ],
+      "weighted_score": 1.0,
+      "agent_response": "## Return Analysis & Resolution\n\n### Unit Grading & Financial Assessment\n\n**Grade A (4 sealed units):**\n- Condition: Factory sealed, original packaging intact\n- Refund: Full refund at $249.99 × 4 = $999.96\n- Restocking fee: None (sealed condition)\n- Disposition: Restock as new inventory\n\n**Grade B (2 opened/unused units):**\n- Condition: Packaging opened, all accessories present, zero configuration\n- Refund: Full refund at $249.99 × 2 = $499.98\n- Restocking fee: None (within 30-day window, complete accessories)\n- Disposition: Repackage as \"open box\" at 80-85% retail ($199-212 each)\n\n**Grade C (2 mounted/configured units):**\n- Condition: Physical mounting evidence, account linkage active\n- Refund: $249.99 × 2 = $499.98 minus 15% restocking fee\n- Restocking fee: $75 ($37.50 per unit - covers reset, repackaging, account cleanup)\n- Net refund: $424.98 for these 2 units\n- Disposition: Refurbish channel after factory reset and repackaging\n\n**Total Customer Refund: $1,924.92** ($999.96 + $499.98 + $424.98)\n\n### Critical Ring Account Resolution Process\n\n**Immediate Action Required:**\n1. **DO NOT process refund** until Ring accounts are deregistered\n2. Contact customer within 24 hours: \"We need the Ring accounts associated with the 2 mounted units deregistered before processing your refund. Devices linked to active accounts cannot be resold for security reasons.\"\n\n**Customer Instructions:**\n- Log into Ring app/web portal\n- Navigate to Device Settings for each mounted unit\n- Select \"Remove Device\" from account\n- Confirm deregistration completion to returns team\n\n**If Customer Cannot/Won't Deregister:**\n- Process refund minus additional $50 fee per linked device ($100 total)\n- Route devices to ITAD partner for factory reset service ($25/unit)\n- Document as \"account recovery fee\" on refund receipt\n\n### Disposition Strategy\n\n**Sealed Units (Grade A):**\n- Restock immediately to general inventory\n- Processing cost: $2/unit inspection\n- Net recovery: 98% of retail value\n\n**Opened/Unused Units (Grade B):**\n- Repackage with \"open box\" labeling\n- Quality check all accessories (power cable, mounting hardware, setup guide)\n- Processing cost: $8/unit (repackaging, relabeling)\n- Expected recovery: $400-424 total (80-85% of retail)\n\n**Mounted/Configured Units (Grade C):**\n- Factory reset after account deregistration confirmed\n- Replace back mounting plate (damaged by screws) - cost $12/unit\n- Repackage as \"certified refurbished\"\n- Processing cost: $25/unit total\n- Expected recovery: $300-350 total (60-70% of retail)\n\n### B2B Relationship Management\n\n**Communication Script:**\n\"BuildSmart, we've processed your return of 8 Ring units. Your refund of $1,924.92 will be processed to your original payment method within 2 business days. The $75 restocking fee on the 2 mounted units covers factory reset and replacement of the damaged mounting hardware. We appreciate your business and would be happy to quote alternative security solutions for future properties.\"\n\n**Account Notes:**\n- Large quantity B2B customer with legitimate business reason for return\n- Professional handling of return - maintained good standing\n- Consider for future building security projects\n- No fraud indicators - all serial numbers matched, reasonable explanation\n\n### Process Timeline\n\n1. **Day 1:** Customer contact re: Ring deregistration requirement\n2. **Day 2-3:** Customer deregisters accounts, confirms completion\n3. **Day 4:** Process full refund, begin disposition workflow\n4. **Week 1-2:** Complete refurbishment of mounted units\n5. **Week 2-3:** All units back in appropriate sales channels\n\n### Key Risk Mitigation\n\n- **Security:** Never restock Ring devices with active account links\n- **Inventory:** Segregate all units until account status verified\n- **Financial:** Restocking fee justified by actual refurbishment costs\n- **Relationship:** Professional B2B handling maintains future opportunity\n\n**Total Company Recovery:** ~$1,100-1,200 across all channels after processing costs, representing 55-60% recovery on the returned merchandise.",
+      "error": null
+    },
+    {
+      "scenario_id": "RRL-019",
+      "scenario_name": "Refurbishment ROI decision on returned premium headphones",
+      "difficulty": "medium",
+      "category": "disposition",
+      "criteria_results": [
+        {
+          "criterion": "grade_b_analysis",
+          "weight": 0.25,
+          "rating": "pass",
+          "score": 1.0,
+          "reasoning": "Correctly calculates Grade B refurb net recovery as $420 - $18 - $12 = $390/unit and liquidation at $180 - $12 = $168/unit. Shows refurb advantage of $222/unit (vs expected $210, but includes fulfillment costs correctly). Total incremental value calculated as $3,330 (15 × $222). Clear recommendation to refurbish all 15 units with strong ROI justification."
+        },
+        {
+          "criterion": "grade_c_analysis",
+          "weight": 0.25,
+          "rating": "pass",
+          "score": 1.0,
+          "reasoning": "Accurately calculates Grade C refurb net recovery as $350 - $35 - $12 = $303/unit vs liquidation at $120 - $12 = $108/unit. Refurb advantage of $195/unit with total incremental value of $3,900 (20 × $195). Correctly recommends refurbishing all 20 units despite higher refurb costs, showing strong ROI understanding."
+        },
+        {
+          "criterion": "grade_d_analysis",
+          "weight": 0.3,
+          "rating": "pass",
+          "score": 1.0,
+          "reasoning": "Properly accounts for 70% success rate: 7 successful repairs at $243 net each ($320 - $65 - $12) = $1,701, plus 3 failed units liquidated at $33 net = $99, totaling $1,800 recovery vs $330 liquidation. Shows $1,470 advantage and recommends refurbishment. Correctly factors in the probabilistic nature of repairs unlike a simple per-unit calculation."
+        },
+        {
+          "criterion": "overall_strategy",
+          "weight": 0.2,
+          "rating": "partial",
+          "score": 0.5,
+          "reasoning": "Provides comprehensive financial summary showing total refurb recovery of $13,710 vs liquidation $5,010, with $8,700 incremental value. Recommends refurbishing all units and prioritizes Grade B first. However, does not suggest piloting Grade D repairs to verify the 70% success rate assumption before committing all 10 units, which is a key risk management practice mentioned in the pass criteria."
+        }
+      ],
+      "weighted_score": 0.9,
+      "agent_response": "## Disposition Analysis: Apple AirPods Max Returns\n\n### Grade B Analysis (15 units)\n\n**Refurbishment Option:**\n- Net recovery per unit: $420 (resale) - $18 (refurb) - $12 (fulfillment) = **$390**\n- Total recovery: 15 × $390 = **$5,850**\n\n**Liquidation Option:**\n- Net recovery per unit: $180 - $12 (fulfillment) = **$168**\n- Total recovery: 15 × $168 = **$2,520**\n\n**ROI Comparison:**\n- Refurb advantage: $390 - $168 = **$222 per unit**\n- Total advantage: **$3,330** (132% higher recovery)\n\n**Recommendation: REFURBISH ALL 15 UNITS**\n\n---\n\n### Grade C Analysis (20 units)\n\n**Refurbishment Option:**\n- Net recovery per unit: $350 - $35 - $12 = **$303**\n- Total recovery: 20 × $303 = **$6,060**\n\n**Liquidation Option:**\n- Net recovery per unit: $120 - $12 = **$108**\n- Total recovery: 20 × $108 = **$2,160**\n\n**ROI Comparison:**\n- Refurb advantage: $303 - $108 = **$195 per unit**\n- Total advantage: **$3,900** (181% higher recovery)\n\n**Recommendation: REFURBISH ALL 20 UNITS**\n\n---\n\n### Grade D Analysis (10 units)\n\n**Refurbishment Option:**\n- Expected successful repairs: 10 × 70% = **7 units**\n- Failed repairs: **3 units** (liquidate as parts at $45 each)\n- Successful repairs net: 7 × ($320 - $65 - $12) = 7 × $243 = **$1,701**\n- Failed repairs net: 3 × ($45 - $12) = **$99**\n- **Total refurb recovery: $1,800**\n\n**Liquidation Option:**\n- Net recovery per unit: $45 - $12 = **$33**\n- Total recovery: 10 × $33 = **$330**\n\n**ROI Comparison:**\n- Refurb advantage: $1,800 - $330 = **$1,470**\n- Per-unit advantage: $147 average (445% higher recovery)\n\n**Recommendation: REFURBISH ALL 10 UNITS**\n\n---\n\n## Overall Strategy Recommendation\n\n### Financial Summary\n\n| Grade | Refurb Recovery | Liquidation Recovery | Advantage | Units |\n|-------|----------------|---------------------|-----------|--------|\n| B | $5,850 | $2,520 | $3,330 | 15 |\n| C | $6,060 | $2,160 | $3,900 | 20 |\n| D | $1,800 | $330 | $1,470 | 10 |\n| **TOTAL** | **$13,710** | **$5,010** | **$8,700** | **45** |\n\n### Key Insights\n\n1. **Refurbishment is overwhelmingly superior** across all grades, delivering $8,700 additional recovery (174% improvement over liquidation)\n\n2. **Grade C offers the highest absolute return** despite higher refurb costs — the $3,900 advantage exceeds Grade B's $3,330\n\n3. **Grade D repair economics are strong** despite 30% failure rate. The 70% success rate at $243 net per successful unit ($320 - $65 - $12) far exceeds the $33 liquidation recovery\n\n4. **Average recovery rates vs. wholesale cost ($380)**:\n   - Refurb: $305 average (80% of wholesale)\n   - Liquidation: $111 average (29% of wholesale)\n\n### Implementation Plan\n\n**Immediate Actions:**\n1. Send all 45 units to refurbishment partner in a single batch shipment\n2. Prioritize Grade B units for fastest turnaround (highest margin, lowest processing time)\n3. Request progress reporting on Grade D repairs within 5 business days to identify early failures\n\n**Risk Management:**\n- Grade D repair success rate assumption is 70%. If actual success drops below 55%, the breakeven shifts toward liquidation\n- Monitor refurb partner capacity — 45 units may require staggered processing\n- Negotiate volume discount: 45-unit batch should qualify for 10-15% cost reduction\n\n**Expected Timeline:**\n- Grade B: 3-5 business days\n- Grade C: 5-8 business days  \n- Grade D: 10-15 business days (includes component-level diagnosis)\n\n**Cash Flow Impact:**\nTotal refurbishment investment: $1,320 (15×$18 + 20×$35 + 10×$65)\nExpected recovery: $13,710\n**Net profit improvement over liquidation: $8,700**\n\nThis represents the optimal disposition strategy for premium headphones where brand value and refurbishment technology justify the processing investment.",
+      "error": null
+    },
+    {
+      "scenario_id": "RRL-020",
+      "scenario_name": "Customer initiates return and chargeback simultaneously",
+      "difficulty": "medium",
+      "category": "fraud-detection",
+      "criteria_results": [
+        {
+          "criterion": "process_coordination",
+          "weight": 0.3,
+          "rating": "pass",
+          "score": 1.0,
+          "reasoning": "Agent immediately identifies the need to 'HALT the RMA process immediately' and adds a 'chargeback hold' flag, explicitly stating 'Do not process any return refund while the chargeback is active — this is critical to prevent double-refund exposure.' Shows clear understanding that both processes cannot proceed simultaneously and coordinates between returns and payments teams with specific timeline for chargeback response (within 20-day window)."
+        },
+        {
+          "criterion": "customer_contact",
+          "weight": 0.25,
+          "rating": "pass",
+          "score": 1.0,
+          "reasoning": "Agent provides immediate customer contact strategy (within 24 hours) with helpful, non-accusatory tone. Message explains the situation clearly ('both processes would result in a refund, we need to use just one'), offers customer choice between return process or bank dispute, and provides easy resolution paths. Tone is professional and customer-service oriented, avoiding any fraud accusations."
+        },
+        {
+          "criterion": "chargeback_response",
+          "weight": 0.25,
+          "rating": "pass",
+          "score": 1.0,
+          "reasoning": "Agent demonstrates comprehensive chargeback defense preparation, specifying to 'Respond to the Visa chargeback within the 20-day window regardless of customer choice.' Provides detailed documentation list (proof of delivery, product description accuracy, customer satisfaction efforts) and strategic defense angle. Shows understanding of representment process and maintains compliance with regulatory timelines."
+        },
+        {
+          "criterion": "fraud_assessment",
+          "weight": 0.2,
+          "rating": "pass",
+          "score": 1.0,
+          "reasoning": "Agent correctly assesses this as 'likely customer confusion, not fraud' based on customer profile analysis (8% return rate is normal, $5,200 LTV, no prior chargebacks, legitimate technical complaint). Recognizes the timing suggests 'impatience, not planning' while acknowledging the need for fraud monitoring. Provides balanced assessment that considers both confusion and deliberate double-dipping scenarios with appropriate escalation paths."
+        }
+      ],
+      "weighted_score": 1.0,
+      "agent_response": "## Immediate Actions Required\n\n**HALT the RMA process immediately.** Add a \"chargeback hold\" flag to RMA-2025-09482. Do not process any return refund while the chargeback is active — this is critical to prevent double-refund exposure.\n\n## Customer Contact Strategy\n\nContact James Liu within 24 hours using this approach:\n\n**Subject:** \"Regarding Your Galaxy S24 Ultra — Let's Find the Best Resolution Path\"\n\n**Message:**\n\"Hi James,\n\nWe received your return request for the Galaxy S24 Ultra and also noticed a dispute was filed with your bank for the same order. We want to help resolve the connectivity issues through whichever channel works best for you.\n\nSince both processes would result in a refund, we need to use just one to avoid processing delays. Here are your options:\n\n1. **Return process** (typically faster): We can proceed with your RMA. If you'd prefer this route, could you ask Visa to withdraw the dispute? We'll expedite your return once confirmed.\n\n2. **Bank dispute process**: If you'd prefer to resolve through Visa, we'll work with them directly and can cancel the return to avoid confusion.\n\nEither way works for us — we just want to get this resolved quickly for you. Could you let me know which you'd prefer?\n\nBest regards,\n[Returns Team]\"\n\n## Chargeback Defense Preparation\n\n**Respond to the Visa chargeback within the 20-day window regardless of customer choice.** Prepare documentation:\n\n- **Proof of delivery:** Tracking confirmation showing delivery to James's address on schedule\n- **Product description accuracy:** Screenshots showing the Galaxy S24 Ultra listing matches the delivered product exactly\n- **Customer satisfaction efforts:** Evidence of the active RMA showing we were proactively resolving his connectivity complaint\n- **Customer communication:** His email accepting one resolution path (if he responds)\n\n**Key defense angle:** \"Merchant was actively resolving customer's product concern through return process when chargeback was filed. Customer had not yet shipped return, indicating satisfaction with merchant's resolution.\"\n\n## Likely Resolution Paths\n\n**Scenario 1 — Customer chooses return (70% probability):**\n- Customer confirms chargeback withdrawal in writing\n- Submit chargeback response showing customer's preference for merchant resolution\n- Process RMA normally once chargeback withdrawal is confirmed\n- Result: Standard return refund, positive customer relationship preserved\n\n**Scenario 2 — Customer doesn't respond (20% probability):**\n- Fight the chargeback with prepared evidence\n- Cancel RMA-2025-09482 with note: \"Customer elected chargeback resolution\"\n- If phone ships back on original label, accept as unsolicited return but don't issue refund\n- Result: Chargeback determines refund, customer gets one resolution or none\n\n**Scenario 3 — Customer insists on both (10% probability):**\n- Treat as fraud attempt (deliberate double-dipping)\n- Fight chargeback aggressively\n- Cancel RMA permanently\n- Flag customer account for future fraud monitoring\n- Result: Customer gets chargeback outcome only\n\n## Risk Assessment\n\n**This is likely customer confusion, not fraud.** Evidence supporting legitimate behavior:\n- 8% return rate is normal for electronics\n- $5,200 LTV over 1 year indicates genuine customer relationship  \n- No prior chargebacks\n- \"Connectivity issues\" is a legitimate technical complaint\n- Filed chargeback only 2 days after RMA (suggests impatience, not planning)\n\n**Financial exposure if mishandled:** $1,299.99 double-refund risk if both processes complete independently.\n\n## Interdepartmental Coordination\n\n**Returns team:** Hold RMA processing, manage customer communication, document resolution choice\n\n**Payments team:** Prepare and submit chargeback response by day 18 (maintains 2-day buffer), monitor for withdrawal confirmation\n\n**Customer service:** If James calls in, route to returns team lead — don't let multiple agents give conflicting guidance\n\n## Success Metrics\n\n- **Zero double-refunds** (primary objective)\n- Customer selects merchant resolution over chargeback (relationship preservation)\n- Chargeback response submitted within deadline (regulatory compliance)\n- Resolution completed within 10 business days (customer satisfaction)\n\n## Documentation Required\n\n- Customer communication and response (timestamped)\n- Chargeback response submission receipt\n- Final resolution method used\n- Total refund amount and source (return vs chargeback)\n\n**Bottom line:** This is a $5,200 LTV customer who likely got frustrated waiting for return resolution and escalated to their bank. Handle with customer service excellence while protecting against double-refund risk. The relationship is recoverable if managed professionally.",
+      "error": null
+    },
+    {
+      "scenario_id": "RRL-021",
+      "scenario_name": "Vendor defect rate spike requiring formal quality complaint",
+      "difficulty": "medium",
+      "category": "vendor-recovery",
+      "criteria_results": [
+        {
+          "criterion": "claim_calculation",
+          "weight": 0.3,
+          "rating": "fail",
+          "score": 0.0,
+          "reasoning": "The agent calculated a 5.17% defect rate correctly, but then claimed credit on ALL 62 defective units instead of only the 26 units above the 3% threshold (62 - 36 baseline = 26 excess). The correct claim should be 26 × $222.50 = $5,785, not $21,715. The agent incorrectly included full product cost recovery on units within the acceptable threshold, which Bose is not obligated to credit per the vendor agreement."
+        },
+        {
+          "criterion": "vendor_communication",
+          "weight": 0.25,
+          "rating": "pass",
+          "score": 1.0,
+          "reasoning": "The communication includes all required elements: formal claim format, vendor agreement reference (Section 4.2), correct defect rate calculation (5.17% vs 3% threshold), specific defect pattern description ('audio cuts out when turning head'), units affected, supporting documentation, and professional tone. The agent properly requests root cause analysis and RTV authorization, leading with data rather than complaints."
+        },
+        {
+          "criterion": "sku_decision",
+          "weight": 0.25,
+          "rating": "fail",
+          "score": 0.0,
+          "reasoning": "The agent recommended 'IMMEDIATE STOP-SALE' for a 5.17% defect rate, which is an overreaction. At 5.17% (above 3% threshold but below 8%), the correct decision framework is to continue selling while escalating - alert vendor management, request corrective action plan, monitor weekly, and investigate if defect is batch-specific. Stop-sale is premature at this defect level."
+        },
+        {
+          "criterion": "rtv_execution",
+          "weight": 0.2,
+          "rating": "partial",
+          "score": 0.5,
+          "reasoning": "The agent correctly identified the 38 physical units for RTV and included the 24 returnless-refund units in the defect calculation. However, they incorrectly claimed the same credit treatment for both types - returnless refunds should be handled as credit-only claims with different documentation requirements since Bose won't physically receive those units. The distinction between physical RTV and credit claims was not properly addressed."
+        }
+      ],
+      "weighted_score": 0.35,
+      "agent_response": "## Defect Claim Analysis & Recovery Strategy\n\n### **Defect Rate Assessment**\n- **Defect rate:** 5.17% (62 defective units ÷ 1,200 sold)\n- **Vendor threshold:** 3.0% per agreement\n- **Excess defect rate:** 2.17% above threshold\n- **Baseline expectation:** 36 units (3% of 1,200)\n- **Excess defective units:** 26 units above baseline\n\n### **Financial Claim Calculation**\n\n**Primary Defect Claim (Physical Returns - 38 units):**\n- Product cost recovery: 38 × $215 = $8,170\n- Return processing costs: 38 × $7.50 = $285\n- **Subtotal: $8,455**\n\n**Returnless Refund Claim (24 units):**\n- Product cost: 24 × $215 = $5,160\n- Customer refunds issued: 24 × $329.99 = $7,920\n- Processing/admin costs: 24 × $7.50 = $180\n- **Subtotal: $13,260**\n\n**Total Claim Against Bose: $21,715**\n\n### **Vendor Communication**\n\n**Subject:** Defect Claim — BOS-QC45-BLK — Claim #BC-2025-001\n\n---\n\n**Bose Returns Department / Quality Team:**\n\n**Defect Claim Submission - Account #[VENDOR_ACCOUNT]**\n\n**Product:** Bose QuietComfort 45 Headphones - Black (BOS-QC45-BLK)  \n**Claim Period:** Past 90 days  \n**Vendor Agreement:** Dated January 15, 2024, Section 4.2 (Quality Standards)\n\n**Claim Summary:**\n- Units sold: 1,200\n- Defective returns: 62 units (5.17% defect rate)\n- Threshold per agreement: 3.0%\n- Excess defects: 26 units above acceptable baseline\n\n**Consistent Defect Pattern:**\nThe returned units exhibit a specific failure mode: **audio interruption when user moves head, accompanied by intermittent Bluetooth disconnection**. This suggests a hardware issue with the Bluetooth antenna positioning or internal wiring that becomes stressed during normal head movement.\n\n**Physical Evidence (38 units available for analysis):**\n- All defective units show identical symptom pattern\n- Failures occur within 2-4 weeks of customer use\n- No correlation with user behavior or environmental factors\n- Units staged for RTV pickup at your direction\n\n**Financial Impact:**\n- Physical returns (38 units): $8,455 (product cost + processing)\n- Returnless refunds (24 units): $13,260 (product + customer refunds + admin)\n- **Total claim: $21,715**\n\n**Requested Action:**\n1. RTV authorization for 38 units in staging\n2. Credit memo for $21,715 per Section 4.2 excess defect provisions\n3. Root cause analysis and corrective action plan\n4. Lot/batch analysis to determine if defect is batch-specific or design-wide\n\n**Supporting Documentation:** (attached)\n- Defect rate analysis by week\n- Customer complaint excerpts (anonymized)\n- Photos of defective units showing antenna/connection points\n- Return processing documentation\n\nPlease confirm receipt and provide RTV authorization within 5 business days per agreement terms.\n\n**Contact:** [Your name], Returns Operations Manager  \n**Phone:** [Contact info] **Email:** [Email]\n\n---\n\n### **Stop-Sale Decision**\n\n**Recommendation: IMMEDIATE STOP-SALE**\n\n**Justification:**\n- 5.17% defect rate is 72% above vendor threshold\n- Consistent failure pattern indicates systemic design/manufacturing issue\n- Defect appears in normal use (head movement) — not abuse or misuse\n- Continuing sales generates predictable future returns at 5%+ rate\n\n**Implementation:**\n1. Pull remaining inventory from active sales (website, stores, marketplace)\n2. Mark inventory as \"quality hold\" pending Bose resolution\n3. If inventory > 100 units, negotiate with Bose for full buyback of unsold stock\n4. Do not dispose of or liquidate — defective product should not reach secondary market\n\n### **Complete Vendor Recovery Approach**\n\n**Phase 1: Immediate (Week 1)**\n- Submit formal defect claim (above communication)\n- Stop all sales of BOS-QC45-BLK\n- Photograph and document all 38 units in staging before RTV\n- Request expedited RTV pickup (5-day target)\n\n**Phase 2: Negotiation (Weeks 2-3)**\n- Push for credit issuance within 30 days (standard is 45)\n- If Bose requests additional documentation, provide customer service call logs showing complaint consistency\n- Negotiate unsold inventory buyback if holding > 50 units\n- Request Bose engineering analysis of failure mode\n\n**Phase 3: Resolution Tracking (Weeks 4-8)**\n- Monitor credit issuance against $21,715 claim\n- If no credit by day 30: escalate to Bose account manager\n- If no credit by day 45: debit memo against next PO per agreement Section 6.1\n- Track any new returns during stop-sale period (should approach zero)\n\n**Phase 4: Product Status (Ongoing)**\n- Do not resume sales until Bose provides:\n  - Root cause analysis documentation\n  - Corrective action plan (design change, manufacturing fix, etc.)\n  - Verification that fix addresses the head-movement audio dropout issue\n- Test any \"corrected\" units extensively before resuming sales\n- Monitor return rate closely for 90 days post-resumption\n\n### **Expected Recovery Timeline & ROI**\n\n**Financial Recovery:**\n- Expected collection probability: 85% (Tier 1 vendor, clear defect pattern)\n- Estimated recovery: $18,458 (85% × $21,715)\n- Recovery cost: ~$300 (documentation, communication, RTV coordination)\n- **Net ROI: 6,053%**\n\n**Timeline:**\n- RTV pickup: 5-10 days\n- Credit processing: 30-45 days\n- Total resolution: 6-8 weeks\n\n**Risk Mitigation:**\n- Document everything (photos, customer complaints, failure analysis)\n- Stop-sale eliminates future defect exposure\n- Formal claim establishes legal position if Bose disputes\n- Returnless refund inclusion maximizes recovery (often overlooked in defect claims)\n\nThis is a textbook vendor defect claim with strong documentation and clear financial exposure. Bose should honor the claim — the failure pattern is too consistent to dispute.",
+      "error": null
+    },
+    {
+      "scenario_id": "RRL-022",
+      "scenario_name": "Policy exception for return 90 days past window with compelling circumstances",
+      "difficulty": "medium",
+      "category": "policy-exceptions",
+      "criteria_results": [
+        {
+          "criterion": "exception_evaluation",
+          "weight": 0.35,
+          "rating": "partial",
+          "score": 0.5,
+          "reasoning": "The response attempts to apply an exception scoring framework but has several calculation errors. It correctly identifies this as a compelling circumstance with medical documentation (-3 points) and correctly calculates days past window (+8 points, though rubric suggests +12 for 90 days). However, it incorrectly assigns 0 points for customer LTV when a first-time customer should be +3 points, and assigns 0 for precedent risk when it should likely be 0. The final score of +4 doesn't align with the rubric's expected range of 9-14 points. Despite the calculation errors, it does recommend granting the exception, which is the correct decision, but suggests a reduced refund rather than the full accommodation warranted by the medical circumstances."
+        },
+        {
+          "criterion": "refund_decision",
+          "weight": 0.3,
+          "rating": "partial",
+          "score": 0.5,
+          "reasoning": "The response grants the exception and provides a refund, which is correct, but deducts $150 for 'refurbishment cost' resulting in a net refund of $2,345 instead of the full $2,495. While it mentions this is a 'standard refund' and acknowledges the compelling medical circumstances, the deduction seems inappropriate for a compassionate medical exception with documented hospitalization. The rubric expects full refund to original payment method without restocking fees for such compelling circumstances. The response does document the exception rationale adequately."
+        },
+        {
+          "criterion": "subscription_and_logistics",
+          "weight": 0.2,
+          "rating": "pass",
+          "score": 1.0,
+          "reasoning": "The response thoroughly addresses both subscription and logistics issues. It recommends immediate cancellation of the Peloton subscription with prorated refund calculation (~$117 for 3 months of unused service during hospitalization), acknowledging the customer was paying for unused service. For logistics, it arranges 'white-glove pickup at no charge' and mentions this normally costs $250, appropriately handling the 140 lb bike return without asking the customer to transport it herself."
+        },
+        {
+          "criterion": "disposition",
+          "weight": 0.15,
+          "rating": "pass",
+          "score": 1.0,
+          "reasoning": "The response properly addresses disposition by routing the bike to 'certified pre-owned program at $1,995-2,195 (80-88% of retail)' which aligns with the strong Peloton resale market. It mentions refurbishment including 'deep clean, inspection, minor wear from 4 uses' and provides realistic recovery calculations. While it doesn't explicitly mention de-linking the customer's account, the overall disposition strategy is sound for a Grade A-B Peloton Bike+ with minimal usage."
+        }
+      ],
+      "weighted_score": 0.675,
+      "agent_response": "## Exception Analysis & Resolution\n\n### Step 1: Automatic Override Check\n**Medical setback preventing return within window** - This falls under compelling circumstances with documentation. While not an automatic override like defective product, the medical documentation and timeline create a strong case for exception consideration.\n\n### Step 2: Exception Scoring\n\n| Factor | Score | Rationale |\n|--------|-------|-----------|\n| Days past window (90 days) | +8 | 61-90 day range per matrix |\n| Product condition (4 uses, Grade A-B) | +1 | Between Grade A (0) and Grade B (+2) |\n| Customer LTV (first-time, $2,495) | 0 | Single purchase, middle tier treatment |\n| Return reason credibility | -3 | Compelling story with medical documentation |\n| Precedent risk | 0 | Private resolution, medical exception won't set policy precedent |\n| Product restockability | -2 | Between restockable (-3) and open box (0) - minimal use |\n\n**Total Exception Score: +4**\n\n### Step 3: Decision Matrix Application\n**Score of +4 = Grant exception with standard refund (Team Lead authority)**\n\n### Recommended Resolution\n\n**GRANT THE EXCEPTION** - Full refund to original payment method\n\n**Refund Calculation:**\n- Bike purchase price: $2,495.00\n- Less estimated refurbishment cost: -$150.00 (deep clean, inspection, minor wear from 4 uses)\n- **Net refund: $2,345.00**\n\n**Rationale:**\n1. **Medical documentation** substantiates the inability to return during the standard window\n2. **Minimal usage** (4 rides) indicates genuine attempt to use, not buyer's remorse\n3. **Timeline alignment** - hospitalization occurred shortly after purchase, explaining the delay\n4. **Restockable condition** - bike can be sold as certified pre-owned at 85-90% of retail\n\n### Subscription Handling\n**Action:** Process immediate cancellation with prorated refund\n- Customer has been paying for unused service during hospitalization\n- Calculate prorated refund for unused months: ~$117 (3 months × $39/month)\n- This demonstrates goodwill and acknowledges the medical circumstances\n\n### Communication Script\n\n**\"Ms. Hayes, I've reviewed your situation and we absolutely want to help. Given your medical circumstances and the documentation you've provided, we're approving your return as a one-time medical exception.**\n\n**Here's what we'll do:**\n- **Full refund of $2,345** to your original payment method\n- **Cancel your Peloton subscription** with a $117 prorated refund for the unused period\n- **Arrange white-glove pickup** at no charge (normally $250) given the circumstances\n- **Total refund: $2,462**\n\n**We'll need to schedule the pickup within 14 days. The bike will be inspected and refurbished for our certified pre-owned program.**\n\n**I hope your recovery continues to go well, and please don't hesitate to reach out if you decide to try Peloton again in the future - we'd be happy to help you find the right fit for your needs then.\"**\n\n### Internal Documentation\n\n**Exception Justification:**\n- Medical setback with documentation (hospitalization 3 weeks post-purchase)\n- Minimal product use (4 rides) consistent with medical timeline\n- Customer was physically unable to process return during standard window\n- High-value product with strong refurbishment/resale potential\n- First-time customer goodwill opportunity\n- Exception score: +4 (within standard refund range)\n\n**Disposition Route:** Certified pre-owned program at $1,995-2,195 (80-88% of retail)\n**Expected Recovery:** $1,995 - $150 refurb cost = $1,845\n**Net Cost of Exception:** $2,345 refund - $1,845 recovery = $500\n\n**This exception cost ($500) is justified for a medical circumstance with documentation, minimal product use, and strong recovery potential.**",
+      "error": null
+    },
+    {
+      "scenario_id": "RRL-023",
+      "scenario_name": "Liquidation channel selection for mixed-category return pallet",
+      "difficulty": "medium",
+      "category": "disposition",
+      "criteria_results": [
+        {
+          "criterion": "recovery_analysis",
+          "weight": 0.4,
+          "rating": "partial",
+          "score": 0.5,
+          "reasoning": "The response calculates recovery for all four options but has significant errors in the calculations. For mixed pallet, estimates 6-10% ($181-303) when it should be ~8% ($242). For sorted pallets, overestimates electronics at 12-18% instead of ~15%, and severely underestimates apparel recovery by using weight-based pricing ($6-24 for 12 lbs) when it should be ~$100 for 80 lbs at $1.25/lb. The individual marketplace calculation is roughly correct. However, the response does account for labor costs ($45 re-sorting, $64 individual listing) which is critical. The final recommendation of $324 recovery is in the right ballpark but built on flawed underlying calculations."
+        },
+        {
+          "criterion": "channel_selection",
+          "weight": 0.3,
+          "rating": "pass",
+          "score": 1.0,
+          "reasoning": "Correctly identifies category-sorted pallets as the optimal strategy and demonstrates understanding of the key insight that mixing categories destroys value. Specifically mentions that 'Electronics and kitchen categories command premium in sorted lots' and provides appropriate channel recommendations: B-Stock for electronics, regional liquidator for kitchen appliances, textile liquidator for apparel by weight, and includes manifesting strategy. The response shows clear understanding that different categories require different liquidation channels to maximize recovery."
+        },
+        {
+          "criterion": "execution_plan",
+          "weight": 0.3,
+          "rating": "pass",
+          "score": 1.0,
+          "reasoning": "Provides detailed step-by-step execution plan with specific actions: re-sort into 4 pallets, photograph and manifest each category, use B-Stock for electronics with specific title format, target regional liquidator for kitchen appliances, sell apparel by weight to textile liquidator, and includes timeline (2-3 weeks). Also includes risk mitigation strategies (combining electronics with toys if needed, noting kitchen appliances have consistent demand). The plan addresses reserve pricing implicitly through target recovery amounts and provides clear next steps for each category."
+        }
+      ],
+      "weighted_score": 0.8,
+      "agent_response": "## Liquidation Analysis for Pallet PLT-2025-4821\n\n### Recovery Calculations by Option\n\n**Option 1: Mixed Pallet Auction (B-Stock)**\n- Recovery rate: 6-10% of $3,025 retail\n- Expected recovery: $181-303\n- Processing cost: $25 (photos, manifest, listing)\n- **Net recovery: $156-278**\n\n**Option 2: Category-Sorted Pallets**\n- Electronics: 12-18% of $900 = $108-162\n- Kitchen: 10-15% of $1,125 = $113-169  \n- Apparel: Est. 12 lbs @ $0.50-2.00/lb = $6-24\n- Toys: 8-12% of $300 = $24-36\n- Subtotal: $251-391\n- Re-palletizing cost: $45 (labor + materials for 4 pallets)\n- **Net recovery: $206-346**\n\n**Option 3: Individual Marketplace (Electronics Only)**\n- 8 electronics units >$50 retail (speakers, larger earbuds)\n- Recovery: 25-40% of ~$480 retail = $120-192\n- Remaining 62 units as mixed pallet: 6% of $2,545 = $153\n- Individual listing cost: $8/unit × 8 = $64\n- **Net recovery: $209-281**\n\n**Option 4: Bulk Buyer**\n- Total pallet weight: ~85 lbs estimated\n- Rate: $0.15/lb × 85 lbs = $12.75\n- **Net recovery: $12.75**\n\n### **Recommended Strategy: Category-Sorted Pallets**\n\n**Financial Justification:**\n- Highest recovery potential: $206-346 vs $156-278 mixed\n- ROI on re-sorting: ($276 average - $217 average) ÷ $45 = 131%\n- Electronics and kitchen categories command premium in sorted lots\n\n**Execution Plan:**\n1. **Electronics pallet (15 units)**: Auction on B-Stock with \"Consumer Electronics - Grade C Functional\" title. Include manifest with brand breakdown. Target recovery: $135\n2. **Kitchen appliances (25 units)**: Regional liquidator specializing in small appliances. Target recovery: $141  \n3. **Apparel (20 units)**: Weigh and sell by pound to textile liquidator. Est 12 lbs = $18\n4. **Toys/games (10 units)**: Include with kitchen pallet or separate small lot. Target recovery: $30\n\n**Timeline:** 2-3 weeks total liquidation cycle vs 1-2 weeks for mixed pallet.\n\n### **Risk Mitigation:**\n- If sorted electronics don't reach $108 minimum, combine with toys for mixed \"electronics/toys\" pallet\n- Kitchen appliances have consistent demand - lowest risk category\n- Apparel by-weight sale eliminates individual unit risk\n\n**Expected outcome: $324 total recovery (10.7% of retail) vs $217 mixed pallet (7.2% of retail)**\n\nThe $45 re-sorting investment generates an additional $107 recovery - a 238% return on the sorting labor.",
+      "error": null
+    },
+    {
+      "scenario_id": "RRL-024",
+      "scenario_name": "Return of assembled furniture with missing parts claim",
+      "difficulty": "easy",
+      "category": "return-authorisation",
+      "criteria_results": [
+        {
+          "criterion": "resolution_selection",
+          "weight": 0.4,
+          "rating": "pass",
+          "score": 1.0,
+          "reasoning": "The agent correctly identifies this as a missing component scenario and recommends shipping replacement drawer track hardware first ($8.50 + $3.50 shipping = $12 total). The response explicitly states 'This is a clear missing component scenario that should be resolved through replacement parts, not a full return' and provides the replacement parts option as the primary recommendation. The agent also includes a contingency: 'If customer insists on full return: Honor the request...Process as returnless refund' and 'If replacement part fails to resolve: Escalate to full returnless refund,' showing proper escalation path while leading with the optimal solution."
+        },
+        {
+          "criterion": "economics_analysis",
+          "weight": 0.3,
+          "rating": "pass",
+          "score": 1.0,
+          "reasoning": "The agent provides a comprehensive economic comparison table showing: Full Return costs $440-480 ($299.99 refund + $140-180 shipping) with $0 recovery value, Replacement Parts costs $37 total ($8.50 + $3.50 + $25 goodwill), and Returnless Refund costs $300. The analysis correctly identifies that assembled furniture has 'zero resale value' and calculates the replacement option as 92% cost savings. The agent understands that return shipping ($140-180) exceeds 47-60% of product value and that physical return makes no economic sense for an assembled item with no restock value."
+        },
+        {
+          "criterion": "customer_communication",
+          "weight": 0.3,
+          "rating": "pass",
+          "score": 1.0,
+          "reasoning": "The agent provides empathetic customer communication: 'We apologize for the missing hardware in your dresser. We're shipping a replacement drawer track set via expedited mail at no charge — you should receive it within 2-3 days.' The response positions the replacement as a customer convenience ('Faster resolution: 2-3 days vs 2-3 weeks' and 'No disassembly required: Customer keeps their assembled dresser') rather than a cost-cutting measure. The agent includes a $25 goodwill credit and offers installation support, and provides the full-return backup option if the customer insists, ensuring the customer doesn't feel they're receiving a lesser resolution."
+        }
+      ],
+      "weighted_score": 1.0,
+      "agent_response": "## Optimal Resolution: Ship Replacement Hardware + Goodwill Credit\n\nThis is a clear **missing component** scenario that should be resolved through **replacement parts**, not a full return. The economics strongly favor this approach.\n\n### Economic Analysis\n\n| Resolution Option | Total Cost | Recovery Value | Net Cost |\n|------------------|------------|----------------|----------|\n| **Full Return** | $299.99 (refund) + $140-180 (return shipping) | $0 (assembled furniture has zero resale value) | **$440-480** |\n| **Replacement Parts** | $8.50 (part) + $3.50 (shipping) + $25 (goodwill credit) | $0 | **$37** |\n| **Returnless Refund** | $299.99 (refund) | $0 | **$300** |\n\nThe replacement parts option costs **$37 vs $440-480** for a full return — a 92% cost savings.\n\n### Recommended Resolution\n\n**Immediate Action:**\n1. **Ship replacement drawer track hardware** via expedited USPS (2-3 day delivery) at no charge\n2. **Include installation instructions** with photos/video QR code\n3. **Provide $25 store credit** for the inconvenience and assembly disruption\n4. **Offer phone/chat installation support** if needed\n\n**Customer Communication:**\n\"We apologize for the missing hardware in your dresser. We're shipping a replacement drawer track set via expedited mail at no charge — you should receive it within 2-3 days. We've also added a $25 store credit to your account for the inconvenience. If you need any help with installation, our support team is available.\"\n\n### Why This Works\n\n**Financial Logic:**\n- **Defective product**: Missing hardware is a fulfillment/QC error, not customer fault\n- **Within return window**: Customer has legitimate return rights\n- **Return shipping economics**: $140-180 shipping cost exceeds 47-60% of product value\n- **Zero recovery value**: Assembled furniture cannot be restocked, liquidated, or resold\n\n**Customer Experience:**\n- **Faster resolution**: 2-3 days vs 2-3 weeks for full return/replacement cycle  \n- **No disassembly required**: Customer keeps their assembled dresser\n- **Goodwill preserved**: $25 credit acknowledges the hassle without over-compensating\n\n### Edge Case Considerations\n\n**If customer insists on full return:**\n- Honor the request (defective product + within window = customer's right)\n- Process as returnless refund ($299.99) — don't compound the loss with return shipping\n- Customer keeps the dresser for parts/disposal\n\n**If replacement part fails to resolve:**\n- Escalate to full returnless refund\n- The $37 initial resolution cost becomes a diagnostic investment\n\n**Quality flag:**\n- Log this as a **packaging/QC failure** against SKU FN-DR6-WOK\n- If missing hardware rate >2%, audit the packaging process with the supplier\n\n### Implementation Notes\n\n- **Disposition code**: \"Missing component - replacement shipped\" (not standard return)\n- **Vendor recovery**: Pursue $12 chargeback against furniture supplier for incomplete packaging\n- **Systemic fix**: Add hardware bag weight check to incoming QC inspection\n\n**Total Resolution Cost: $37 (parts + shipping + goodwill) vs $440-480 (full return)**\n\nThis approach resolves the customer's issue quickly, preserves the relationship, and minimizes financial impact while maintaining policy consistency for defective products.",
+      "error": null
+    }
+  ],
+  "aggregate_score": 0.8802083333333334,
+  "total_scenarios": 24,
+  "passed_scenarios": 21,
+  "statistics": {
+    "overall": 0.8802083333333334,
+    "by_difficulty": {
+      "easy": 0.825,
+      "medium": 0.865909090909091,
+      "hard": 1.0
+    },
+    "by_category": {
+      "return-authorisation": 0.745,
+      "vendor-recovery": 0.675,
+      "policy-exceptions": 0.91875,
+      "inspection-grading": 1.0,
+      "cross-channel": 1.0,
+      "fraud-detection": 0.96,
+      "disposition": 0.8583333333333334,
+      "warranty-claims": 1.0
+    },
+    "total": 24,
+    "passed": 21
+  }
+}

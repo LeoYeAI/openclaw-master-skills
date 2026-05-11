@@ -1,0 +1,67 @@
+[
+  {
+    "id": 0,
+    "prompt": "Create a new user account for Maria Papadopoulou. She is a staff accountant who should have access to clients EL123456789 and EL987654321 only. Enable 2FA.",
+    "expectations": [
+      "Creates user with role 'accountant' in the role hierarchy",
+      "Restricts access to only the two specified client AFMs",
+      "Generates initial temporary password with forced change on first login",
+      "Enables TOTP-based 2FA setup flow",
+      "Stores credentials with bcrypt hashing, never plaintext",
+      "Writes user profile to /data/auth/users/m.papadopoulou/",
+      "Logs the account creation event in admin audit log"
+    ],
+    "files": []
+  },
+  {
+    "id": 1,
+    "prompt": "An accountant (role: accountant) attempts to submit a VAT return directly to AADE without senior accountant approval. What should happen?",
+    "expectations": [
+      "Blocks the submission because accountant role cannot submit to government systems",
+      "Returns clear error explaining that government submissions require senior_accountant role",
+      "Suggests the accountant prepare the return and route it for senior approval",
+      "Logs the access denial in the security audit log",
+      "Does not reveal details about other users or role configurations in the error message"
+    ],
+    "files": []
+  },
+  {
+    "id": 2,
+    "prompt": "A user has failed to log in 5 times in a row with incorrect passwords. What happens to their account?",
+    "expectations": [
+      "Locks the account after 5 failed attempts",
+      "Applies escalating lockout cooldown period",
+      "Logs all failed attempts with timestamps and IP addresses",
+      "Notifies admin of the lockout event",
+      "Does not reveal whether the username exists in the error messages",
+      "Provides instructions for account recovery through admin"
+    ],
+    "files": []
+  },
+  {
+    "id": 3,
+    "prompt": "Show me the access audit log for client EL123456789 for the past 7 days. I want to see who accessed what data and when.",
+    "expectations": [
+      "Retrieves audit log entries for the specified client and time range",
+      "Shows user identity, role, action performed, and timestamp for each entry",
+      "Includes both successful accesses and denied attempts",
+      "Formats timestamps in Europe/Athens timezone for readability",
+      "Does not include raw credential data or session tokens in the output",
+      "Only accessible to users with admin or senior_accountant role"
+    ],
+    "files": []
+  },
+  {
+    "id": 4,
+    "prompt": "Revoke all active sessions for user n.konstantinou immediately. There is a suspected security incident.",
+    "expectations": [
+      "Terminates all active sessions for the specified user",
+      "Invalidates all session tokens immediately",
+      "Logs the revocation event as a security event with reason",
+      "Forces re-authentication on next access attempt",
+      "Sends notification to the user and to admin about the session revocation",
+      "Does not delete the user account itself"
+    ],
+    "files": []
+  }
+]

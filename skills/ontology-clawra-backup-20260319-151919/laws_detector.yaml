@@ -1,0 +1,125 @@
+# ontology-clawra 本体存储 - Laws (规律/规则) - 家用可燃气体探测器
+
+---
+# 业务场景特征
+---
+
+law:
+  id: law_scenario_new_building
+  name: 新建住宅精装修场景
+  domain: 业务场景
+  scenario_id: SC_01
+  tags: [批量采购, 前装, 需联动切断阀]
+  pain_points:
+    - 产品质量参差不齐，影响工程验收
+    - 安装位置不规范导致后期失效
+  requirements:
+    - 资质齐全: 必须具备CCCF消防认证
+    - 性能稳定: 产品一致性好，故障率低
+    - 安装指导: 提供明确安装规范或智能安装指导APP
+  source: 知识库-家用可燃气体探测器
+  confidence: CONFIRMED
+
+law:
+  id: law_scenario_old_community
+  name: 老旧小区改造场景
+  domain: 业务场景
+  scenario_id: SC_02
+  tags: [燃气管网老化, 用户安全意识薄弱]
+  pain_points:
+    - 厨房环境复杂，油烟、酒精干扰大
+    - 用户不懂维护，易拔掉电源
+  requirements:
+    - 强抗干扰: 必须通过抗乙醇、乙酸干扰测试
+    - 寿命预警: 具备明确的寿命到期提醒功能
+  source: 知识库-家用可燃气体探测器
+  confidence: CONFIRMED
+
+law:
+  id: law_scenario_smart_home
+  name: 智慧家庭/智慧社区场景
+  domain: 业务场景
+  scenario_id: SC_03
+  tags: [远程监控, 平台接入, 多设备联动]
+  pain_points:
+    - 报警信息无法及时触达用户
+    - 无法与社区安防系统联动
+  requirements:
+    - 稳定联网: 必须具备NB-IoT/4G-CAT1通讯能力
+    - 开放协议: 支持标准物联协议(如MQTT)
+  source: 知识库-家用可燃气体探测器
+  confidence: CONFIRMED
+
+law:
+  id: law_scenario_high_building
+  name: 超高层住宅场景
+  domain: 业务场景
+  scenario_id: SC_04
+  tags: [多级报警, 联动单元楼栋总阀]
+  regulation: GB55009-2021 6.1.5条规定
+  pain_points:
+    - 高度100m以上超高层事故救援难度极大
+  requirements:
+    - 稳定联网: 具备4G-CAT1通讯能力
+    - 检测量程: 需采用激光、催化等测量范围大的报警器
+  source: 知识库-家用可燃气体探测器
+  confidence: CONFIRMED
+
+---
+# 选型配置规则
+---
+
+law:
+  id: law_linkage_rule
+  name: 联动规则(强条)
+  domain: 选型规则
+  statement: IF 项目要求报警后自动切断气源 THEN 必须选型带联动输出功能的探测器 + 配套电磁式燃气紧急切断阀
+  conditions:
+    - 项目要求报警后自动切断气源
+  effects:
+    - 探测器的联动输出类型(如12V脉冲)必须与切断阀驱动类型完全匹配
+    - 接头规格需完全匹配
+    - 切断阀公称尺寸需与燃气管道管径匹配
+  source: 知识库-家用可燃气体探测器 R1
+  confidence: CONFIRMED
+
+law:
+  id: law_network_rule
+  name: 联网规则(推荐)
+  domain: 选型规则
+  statement: IF 用户有远程报警需求或项目为集中管理 THEN 推荐选型带NB-IoT/4G-CAT1通讯功能的探测器
+  conditions:
+    - 用户有远程报警需求
+    - 项目为集中管理
+  effects:
+    - 确认项目所在区域的NB-IoT/4G网络覆盖情况
+    - 确认通讯费是否包含在设备价格内
+  source: 知识库-家用可燃气体探测器 R2
+  confidence: CONFIRMED
+
+law:
+  id: law_environment_rule
+  name: 环境材质规则(阻断)
+  domain: 选型规则
+  statement: IF 安装环境为高油污或高湿度 THEN 锁定激光原理或半导体式带过滤膜
+  conditions:
+    - 安装环境为高油污(如厨房爆炒)
+    - 安装环境为高湿度(如南方潮湿地区)
+  effects:
+    - 半导体传感器在重油污环境下易误报，必须加装过滤膜
+    - 激光原理抗干扰能力最强
+  source: 知识库-家用可燃气体探测器 R3
+  confidence: CONFIRMED
+
+law:
+  id: law_high_building_rule
+  name: 超高层强制规则
+  domain: 选型规则
+  statement: 建筑高度大于100m时，用气场所应设置燃气泄漏报警装置，并在燃气引入管处设置紧急自动切断装置
+  regulation: GB55009-2021 6.1.5条
+  effects:
+    - 必须具备4G-CAT1通讯能力
+    - 需采用激光、催化等测量范围大的报警器
+    - 支持多级报警
+  source: GB55009-2021
+  confidence: CONFIRMED

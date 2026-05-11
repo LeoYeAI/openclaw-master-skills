@@ -1,0 +1,972 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bold Signal — slide-creator</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html {
+      scroll-snap-type: y mandatory;
+      scroll-behavior: smooth;
+      height: 100%;
+    }
+    body {
+      height: 100%;
+      overflow-x: hidden;
+      background: #1a1a1a;
+      font-family: 'Space Grotesk', sans-serif;
+      color: #fff;
+    }
+    .slide {
+      width: 100vw;
+      height: 100vh;
+      height: 100dvh;
+      scroll-snap-align: start;
+      overflow: hidden;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      background: #1a1a1a;
+    }
+
+    /* Grid overlay */
+    .slide::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(255,87,34,0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,87,34,0.04) 1px, transparent 1px);
+      background-size: 60px 60px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* Progress bar */
+    #progress-bar {
+      position: fixed;
+      top: 0; left: 0;
+      height: 3px;
+      background: #FF5722;
+      width: 0%;
+      z-index: 1000;
+      transition: width 0.4s ease;
+    }
+
+    /* Nav dots */
+    #nav-dots {
+      position: fixed;
+      right: 24px;
+      top: 50%;
+      transform: translateY(-50%);
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      z-index: 1000;
+    }
+    .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: rgba(255,87,34,0.3);
+      cursor: pointer;
+      transition: all 0.3s ease;
+      border: 1px solid rgba(255,87,34,0.5);
+    }
+    .dot.active {
+      background: #FF5722;
+      transform: scale(1.4);
+    }
+
+    /* Ghost section number */
+    .slide-num {
+      position: absolute;
+      top: 20px;
+      left: 44px;
+      font-family: 'Archivo Black', sans-serif;
+      font-size: 120px;
+      line-height: 1;
+      color: #FF5722;
+      opacity: 0.12;
+      user-select: none;
+      z-index: 1;
+      pointer-events: none;
+    }
+
+    /* Breadcrumb top-right */
+    .breadcrumb {
+      position: absolute;
+      top: 36px;
+      right: 56px;
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.15em;
+      color: rgba(255,255,255,0.3);
+      text-transform: uppercase;
+      z-index: 10;
+    }
+
+    /* Reveal animations */
+    .reveal {
+      opacity: 0;
+      transform: translateY(28px);
+      transition: opacity 0.5s ease-out, transform 0.5s ease-out;
+    }
+    .slide.visible .reveal { opacity: 1; transform: translateY(0); }
+    .slide.visible .reveal:nth-child(1) { transition-delay: 0.05s; }
+    .slide.visible .reveal:nth-child(2) { transition-delay: 0.15s; }
+    .slide.visible .reveal:nth-child(3) { transition-delay: 0.25s; }
+    .slide.visible .reveal:nth-child(4) { transition-delay: 0.35s; }
+
+    /* ── SLIDE 1: Cover ── */
+    #slide-1 {
+      justify-content: flex-end;
+      padding: 64px 64px 80px;
+    }
+    #slide-1 .cover-content { position: relative; z-index: 2; }
+    #slide-1 .eyebrow {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.28em;
+      text-transform: uppercase;
+      color: #FF5722;
+      margin-bottom: 18px;
+    }
+    #slide-1 .main-title {
+      font-family: 'Archivo Black', sans-serif;
+      font-size: clamp(68px, 10vw, 124px);
+      line-height: 0.88;
+      color: #fff;
+      margin-bottom: 28px;
+    }
+    #slide-1 .subtitle {
+      font-size: 18px;
+      font-weight: 400;
+      color: rgba(255,255,255,0.5);
+      max-width: 520px;
+      line-height: 1.55;
+      margin-bottom: 48px;
+    }
+    .badges { display: flex; gap: 12px; flex-wrap: wrap; }
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 9px 20px;
+      background: #FF5722;
+      color: #fff;
+      font-family: 'Archivo Black', sans-serif;
+      font-size: 13px;
+      letter-spacing: 0.04em;
+    }
+    .badge.outline {
+      background: transparent;
+      border: 1.5px solid rgba(255,87,34,0.4);
+      color: rgba(255,255,255,0.55);
+    }
+    #slide-1 .big-num-bg {
+      position: absolute;
+      top: -10px; right: 40px;
+      font-family: 'Archivo Black', sans-serif;
+      font-size: 38vw;
+      line-height: 1;
+      color: rgba(255,87,34,0.04);
+      user-select: none;
+      pointer-events: none;
+    }
+    .corner-accent {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100px;
+      height: 3px;
+      background: #FF5722;
+    }
+
+    /* ── SLIDE 2: Problem ── */
+    #slide-2 {
+      padding: 0 64px 0 48px;
+      justify-content: center;
+    }
+    #slide-2 .section-label {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: #FF5722;
+      margin-bottom: 14px;
+      position: relative;
+      z-index: 2;
+    }
+    #slide-2 h2 {
+      font-family: 'Archivo Black', sans-serif;
+      font-size: clamp(32px, 4.5vw, 56px);
+      line-height: 1.05;
+      color: #fff;
+      max-width: 680px;
+      margin-bottom: 56px;
+      position: relative;
+      z-index: 2;
+    }
+    .pain-list {
+      display: flex;
+      flex-direction: column;
+      max-width: 740px;
+      position: relative;
+      z-index: 2;
+    }
+    .pain-item {
+      display: grid;
+      grid-template-columns: 52px 1fr;
+      gap: 0 20px;
+      padding: 28px 0;
+      border-top: 1px solid rgba(255,255,255,0.07);
+      align-items: start;
+    }
+    .pain-item:last-child { border-bottom: 1px solid rgba(255,255,255,0.07); }
+    .pain-num {
+      font-family: 'Archivo Black', sans-serif;
+      font-size: 13px;
+      color: #FF5722;
+      letter-spacing: 0.08em;
+      padding-top: 2px;
+    }
+    .pain-title {
+      font-family: 'Archivo Black', sans-serif;
+      font-size: 17px;
+      color: #fff;
+      margin-bottom: 6px;
+    }
+    .pain-body {
+      font-size: 14px;
+      color: rgba(255,255,255,0.4);
+      line-height: 1.6;
+    }
+
+    /* ── SLIDE 3: Show Don't Tell ── */
+    #slide-3 {
+      padding: 0 64px;
+      justify-content: center;
+    }
+    #slide-3 .hero-card {
+      background: #FF5722;
+      color: #fff;
+      padding: 52px 56px;
+      max-width: 820px;
+      position: relative;
+      z-index: 2;
+    }
+    #slide-3 .hero-card h2 {
+      font-family: 'Archivo Black', sans-serif;
+      font-size: clamp(28px, 3.5vw, 44px);
+      line-height: 1.05;
+      margin-bottom: 18px;
+      color: #fff;
+    }
+    #slide-3 .hero-card p {
+      font-size: 16px;
+      line-height: 1.65;
+      color: rgba(255,255,255,0.82);
+      margin-bottom: 40px;
+      max-width: 560px;
+    }
+    .steps-row { display: flex; gap: 0; }
+    .step-block {
+      flex: 1;
+      padding: 20px 18px 20px 0;
+      border-left: 2px solid rgba(255,255,255,0.22);
+      padding-left: 18px;
+    }
+    .step-num {
+      font-family: 'Archivo Black', sans-serif;
+      font-size: 10px;
+      letter-spacing: 0.22em;
+      color: rgba(255,255,255,0.55);
+      margin-bottom: 6px;
+      text-transform: uppercase;
+    }
+    .step-text {
+      font-size: 14px;
+      font-weight: 600;
+      color: #fff;
+      line-height: 1.35;
+    }
+
+    /* ── SLIDE 4: Presets ── */
+    #slide-4 {
+      padding: 52px 60px;
+      justify-content: flex-start;
+    }
+    #slide-4 .section-label {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: #FF5722;
+      margin-bottom: 12px;
+      position: relative; z-index: 2;
+    }
+    #slide-4 h2 {
+      font-family: 'Archivo Black', sans-serif;
+      font-size: clamp(22px, 2.8vw, 36px);
+      line-height: 1.1;
+      color: #fff;
+      max-width: 600px;
+      margin-bottom: 36px;
+      position: relative; z-index: 2;
+    }
+    .presets-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(165px, 1fr));
+      gap: 2px;
+      max-width: 960px;
+      position: relative; z-index: 2;
+    }
+    .preset-tile {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.06);
+      padding: 14px 18px;
+      transition: background 0.2s;
+    }
+    .preset-tile:hover { background: rgba(255,87,34,0.1); }
+    .preset-name {
+      font-family: 'Archivo Black', sans-serif;
+      font-size: 13px;
+      color: #fff;
+      margin-bottom: 3px;
+    }
+    .preset-vibe {
+      font-size: 10px;
+      color: #FF5722;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+    .preset-tile.highlight {
+      background: #FF5722;
+      border-color: #FF5722;
+    }
+    .preset-tile.highlight .preset-name { color: #fff; }
+    .preset-tile.highlight .preset-vibe { color: rgba(255,255,255,0.65); }
+
+    /* ── SLIDE 5: How It Works ── */
+    #slide-5 {
+      padding: 0 64px;
+      justify-content: center;
+    }
+    #slide-5 .section-label {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: #FF5722;
+      margin-bottom: 12px;
+      position: relative; z-index: 2;
+    }
+    #slide-5 h2 {
+      font-family: 'Archivo Black', sans-serif;
+      font-size: clamp(28px, 3.5vw, 46px);
+      line-height: 1.05;
+      margin-bottom: 52px;
+      color: #fff;
+      position: relative; z-index: 2;
+    }
+    .how-steps {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 2px;
+      max-width: 900px;
+      position: relative; z-index: 2;
+    }
+    .how-step {
+      background: rgba(255,255,255,0.03);
+      padding: 32px 28px;
+      border-top: 3px solid transparent;
+      transition: border-color 0.2s;
+    }
+    .how-step:hover { border-top-color: #FF5722; }
+    .how-step-num {
+      font-family: 'Archivo Black', sans-serif;
+      font-size: 48px;
+      color: #FF5722;
+      opacity: 0.35;
+      line-height: 1;
+      margin-bottom: 16px;
+    }
+    .how-step-title {
+      font-family: 'Archivo Black', sans-serif;
+      font-size: 17px;
+      color: #fff;
+      margin-bottom: 10px;
+    }
+    .how-step-body {
+      font-size: 13px;
+      color: rgba(255,255,255,0.4);
+      line-height: 1.6;
+    }
+
+    /* ── SLIDE 6: Features ── */
+    #slide-6 {
+      padding: 0 64px;
+      justify-content: center;
+    }
+    #slide-6 .section-label {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: #FF5722;
+      margin-bottom: 12px;
+      position: relative; z-index: 2;
+    }
+    #slide-6 h2 {
+      font-family: 'Archivo Black', sans-serif;
+      font-size: clamp(28px, 3.5vw, 46px);
+      line-height: 1.05;
+      margin-bottom: 44px;
+      color: #fff;
+      position: relative; z-index: 2;
+    }
+    .features-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2px;
+      max-width: 820px;
+      position: relative; z-index: 2;
+    }
+    .feature-card {
+      background: rgba(255,255,255,0.03);
+      padding: 28px 32px;
+      border-left: 3px solid #FF5722;
+    }
+    .feature-title {
+      font-family: 'Archivo Black', sans-serif;
+      font-size: 16px;
+      color: #FF5722;
+      margin-bottom: 8px;
+    }
+    .feature-body {
+      font-size: 13px;
+      color: rgba(255,255,255,0.45);
+      line-height: 1.65;
+    }
+
+    /* ── SLIDE 7: Install ── */
+    #slide-7 {
+      padding: 0 64px;
+      justify-content: center;
+    }
+    #slide-7 .section-label {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: #FF5722;
+      margin-bottom: 12px;
+      position: relative; z-index: 2;
+    }
+    #slide-7 h2 {
+      font-family: 'Archivo Black', sans-serif;
+      font-size: clamp(28px, 3.5vw, 46px);
+      line-height: 1.05;
+      margin-bottom: 44px;
+      color: #fff;
+      position: relative; z-index: 2;
+    }
+    .install-blocks {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      max-width: 780px;
+      position: relative; z-index: 2;
+    }
+    .install-block {
+      background: rgba(255,255,255,0.03);
+      padding: 28px 32px;
+    }
+    .install-platform {
+      font-family: 'Archivo Black', sans-serif;
+      font-size: 11px;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: #FF5722;
+      margin-bottom: 14px;
+    }
+    .code-line {
+      font-family: 'Space Grotesk', monospace;
+      font-size: 13px;
+      color: rgba(255,255,255,0.8);
+      background: rgba(0,0,0,0.4);
+      padding: 10px 16px;
+      margin-bottom: 8px;
+      border-left: 2px solid #FF5722;
+      word-break: break-all;
+    }
+    .code-line:last-child { margin-bottom: 0; }
+    .install-note {
+      font-size: 12px;
+      color: rgba(255,255,255,0.28);
+      margin-top: 10px;
+    }
+
+    /* ── SLIDE 8: CTA ── */
+    #slide-8 {
+      background: #FF5722;
+      justify-content: center;
+      align-items: flex-start;
+      padding: 0 64px;
+    }
+    #slide-8::after { display: none; }
+    #slide-8 .cta-label {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.28em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.55);
+      margin-bottom: 22px;
+      position: relative; z-index: 2;
+    }
+    #slide-8 h2 {
+      font-family: 'Archivo Black', sans-serif;
+      font-size: clamp(42px, 7vw, 92px);
+      line-height: 0.92;
+      color: #fff;
+      margin-bottom: 36px;
+      max-width: 700px;
+      position: relative; z-index: 2;
+    }
+    #slide-8 .cta-command {
+      display: inline-block;
+      font-family: 'Space Grotesk', monospace;
+      font-size: 28px;
+      font-weight: 700;
+      background: #fff;
+      color: #FF5722;
+      padding: 16px 36px;
+      letter-spacing: 0.04em;
+      margin-bottom: 24px;
+      position: relative; z-index: 2;
+    }
+    #slide-8 .cta-sub {
+      font-size: 15px;
+      color: rgba(255,255,255,0.6);
+      line-height: 1.6;
+      max-width: 480px;
+      position: relative; z-index: 2;
+    }
+    #slide-8 .breadcrumb { color: rgba(255,255,255,0.35); }
+    #slide-8 .slide-num { color: rgba(255,255,255,0.1); opacity: 1; }
+    #slide-8 .deco-text {
+      position: absolute;
+      right: -40px; bottom: -60px;
+      font-family: 'Archivo Black', sans-serif;
+      font-size: 36vw;
+      line-height: 1;
+      color: rgba(255,255,255,0.06);
+      user-select: none;
+      pointer-events: none;
+    }
+
+    /* Edit mode */
+    #edit-hotzone {
+      position: fixed;
+      top: 0; left: 0;
+      width: 80px; height: 80px;
+      z-index: 2000;
+      cursor: pointer;
+    }
+    #edit-toggle {
+      position: fixed;
+      top: 16px; left: 16px;
+      background: #FF5722;
+      color: #fff;
+      border: none;
+      padding: 6px 14px;
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      cursor: pointer;
+      z-index: 2001;
+      display: none;
+      text-transform: uppercase;
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+    #edit-hotzone:hover ~ #edit-toggle,
+    #edit-toggle:hover,
+    #edit-toggle.visible { opacity: 1; display: block; }
+    body.edit-mode [contenteditable] {
+      outline: 1px dashed rgba(255,87,34,0.5);
+      cursor: text;
+    }
+    body.edit-mode [contenteditable]:focus {
+      outline: 2px solid #FF5722;
+    }
+    #save-indicator {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #FF5722;
+      color: #fff;
+      padding: 8px 20px;
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 13px;
+      font-weight: 700;
+      z-index: 3000;
+      display: none;
+      letter-spacing: 0.1em;
+    }
+  </style>
+</head>
+<body>
+
+<div id="progress-bar"></div>
+<div id="nav-dots"></div>
+<div id="edit-hotzone"></div>
+<button id="edit-toggle">Edit</button>
+<div id="save-indicator">SAVED</div>
+
+<!-- SLIDE 1: Cover -->
+<section class="slide" id="slide-1">
+  <div class="corner-accent"></div>
+  <div class="big-num-bg">SC</div>
+  <div class="cover-content">
+    <div class="eyebrow reveal">Introducing</div>
+    <h1 class="main-title reveal" contenteditable="false">slide-creator</h1>
+    <p class="subtitle reveal" contenteditable="false">Zero-dependency HTML presentations for Claude Code &amp; OpenClaw</p>
+    <div class="badges reveal">
+      <span class="badge">19 Presets</span>
+      <span class="badge outline">0 Dependencies</span>
+      <span class="badge outline">∞ Slides</span>
+    </div>
+  </div>
+  <span class="breadcrumb">01 / 08</span>
+</section>
+
+<!-- SLIDE 2: Problem -->
+<section class="slide" id="slide-2">
+  <span class="slide-num">02</span>
+  <span class="breadcrumb">02 / 08</span>
+  <div class="section-label reveal">The Problem</div>
+  <h2 class="reveal" contenteditable="false">Presentations shouldn't require a build system</h2>
+  <div class="pain-list">
+    <div class="pain-item reveal">
+      <span class="pain-num">01</span>
+      <div>
+        <div class="pain-title" contenteditable="false">Complex toolchain</div>
+        <div class="pain-body" contenteditable="false">npm install. Webpack config. 300MB of node_modules just to move text around.</div>
+      </div>
+    </div>
+    <div class="pain-item reveal">
+      <span class="pain-num">02</span>
+      <div>
+        <div class="pain-title" contenteditable="false">Generic output</div>
+        <div class="pain-body" contenteditable="false">Every AI-generated deck looks identical. Inter font. Purple gradient. Zero personality.</div>
+      </div>
+    </div>
+    <div class="pain-item reveal">
+      <span class="pain-num">03</span>
+      <div>
+        <div class="pain-title" contenteditable="false">No ownership</div>
+        <div class="pain-body" contenteditable="false">Closed platforms. Export locks. Monthly fees for files you already made.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SLIDE 3: Show Don't Tell -->
+<section class="slide" id="slide-3">
+  <span class="slide-num">03</span>
+  <span class="breadcrumb">03 / 08</span>
+  <div class="hero-card reveal">
+    <h2 contenteditable="false">Style discovery that actually works</h2>
+    <p contenteditable="false">You can't describe design in words. slide-creator generates 3 visual previews — you react, not describe. The "wow moment" happens before a single line of content is written.</p>
+    <div class="steps-row">
+      <div class="step-block">
+        <div class="step-num">Step 01</div>
+        <div class="step-text" contenteditable="false">Ask mood</div>
+      </div>
+      <div class="step-block">
+        <div class="step-num">Step 02</div>
+        <div class="step-text" contenteditable="false">Generate 3 mini previews</div>
+      </div>
+      <div class="step-block">
+        <div class="step-num">Step 03</div>
+        <div class="step-text" contenteditable="false">Pick what feels right</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SLIDE 4: Presets -->
+<section class="slide" id="slide-4">
+  <span class="slide-num">04</span>
+  <span class="breadcrumb">04 / 08</span>
+  <div class="section-label reveal">Design Presets</div>
+  <h2 class="reveal" contenteditable="false">19 curated styles. No generic AI aesthetics.</h2>
+  <div class="presets-grid reveal">
+    <div class="preset-tile highlight"><div class="preset-name">Bold Signal</div><div class="preset-vibe">Impact</div></div>
+    <div class="preset-tile highlight"><div class="preset-name">Electric Studio</div><div class="preset-vibe">Professional</div></div>
+    <div class="preset-tile highlight"><div class="preset-name">Creative Voltage</div><div class="preset-vibe">Energetic</div></div>
+    <div class="preset-tile"><div class="preset-name">Dark Botanical</div><div class="preset-vibe">Elegant</div></div>
+    <div class="preset-tile"><div class="preset-name">Blue Sky</div><div class="preset-vibe">Airy</div></div>
+    <div class="preset-tile"><div class="preset-name">Notebook Tabs</div><div class="preset-vibe">Editorial</div></div>
+    <div class="preset-tile"><div class="preset-name">Pastel Geometry</div><div class="preset-vibe">Friendly</div></div>
+    <div class="preset-tile"><div class="preset-name">Split Pastel</div><div class="preset-vibe">Playful</div></div>
+    <div class="preset-tile"><div class="preset-name">Vintage Editorial</div><div class="preset-vibe">Witty</div></div>
+    <div class="preset-tile"><div class="preset-name">Neon Cyber</div><div class="preset-vibe">Futuristic</div></div>
+    <div class="preset-tile"><div class="preset-name">Terminal Green</div><div class="preset-vibe">Developer</div></div>
+    <div class="preset-tile"><div class="preset-name">Swiss Modern</div><div class="preset-vibe">Precise</div></div>
+    <div class="preset-tile"><div class="preset-name">Paper &amp; Ink</div><div class="preset-vibe">Literary</div></div>
+    <div class="preset-tile"><div class="preset-name">Aurora Mesh</div><div class="preset-vibe">Vivid</div></div>
+    <div class="preset-tile"><div class="preset-name">Enterprise Dark</div><div class="preset-vibe">Corporate</div></div>
+    <div class="preset-tile"><div class="preset-name">Glassmorphism</div><div class="preset-vibe">Modern</div></div>
+    <div class="preset-tile"><div class="preset-name">Neo-Brutalism</div><div class="preset-vibe">Bold</div></div>
+    <div class="preset-tile"><div class="preset-name">Japanese Zen</div><div class="preset-vibe">Minimal</div></div>
+    <div class="preset-tile"><div class="preset-name">Data Story</div><div class="preset-vibe">Analytical</div></div>
+  </div>
+</section>
+
+<!-- SLIDE 5: How It Works -->
+<section class="slide" id="slide-5">
+  <span class="slide-num">05</span>
+  <span class="breadcrumb">05 / 08</span>
+  <div class="section-label reveal">How It Works</div>
+  <h2 class="reveal" contenteditable="false">From idea to presentation in minutes</h2>
+  <div class="how-steps reveal">
+    <div class="how-step">
+      <div class="how-step-num">01</div>
+      <div class="how-step-title" contenteditable="false">/slide-creator</div>
+      <div class="how-step-body" contenteditable="false">Answer 4 questions: purpose, length, content, images. That's the whole intake.</div>
+    </div>
+    <div class="how-step">
+      <div class="how-step-num">02</div>
+      <div class="how-step-title" contenteditable="false">Pick your style</div>
+      <div class="how-step-body" contenteditable="false">React to 3 visual previews. No describing design in words. Just point at the one you want.</div>
+    </div>
+    <div class="how-step">
+      <div class="how-step-num">03</div>
+      <div class="how-step-title" contenteditable="false">Open and present</div>
+      <div class="how-step-body" contenteditable="false">Arrow keys · Space · Swipe · Click dots. Runs in any browser. Forever.</div>
+    </div>
+  </div>
+</section>
+
+<!-- SLIDE 6: Features -->
+<section class="slide" id="slide-6">
+  <span class="slide-num">06</span>
+  <span class="breadcrumb">06 / 08</span>
+  <div class="section-label reveal">Key Features</div>
+  <h2 class="reveal" contenteditable="false">Everything you need. Nothing you don't.</h2>
+  <div class="features-grid reveal">
+    <div class="feature-card">
+      <div class="feature-title" contenteditable="false">Viewport Fitting</div>
+      <div class="feature-body" contenteditable="false">Every slide fits exactly 100vh. No scrolling. Content that overflows gets split — not squished.</div>
+    </div>
+    <div class="feature-card">
+      <div class="feature-title" contenteditable="false">Inline Editing</div>
+      <div class="feature-body" contenteditable="false">Press E. Click any text. Edit directly. Ctrl+S saves back to the file. No code. No IDE.</div>
+    </div>
+    <div class="feature-card">
+      <div class="feature-title" contenteditable="false">PPTX Export</div>
+      <div class="feature-body" contenteditable="false">/slide-creator --export pptx via Playwright + your system Chrome. Pixel-perfect output.</div>
+    </div>
+    <div class="feature-card">
+      <div class="feature-title" contenteditable="false">Two-Stage Workflow</div>
+      <div class="feature-body" contenteditable="false">--plan creates PLANNING.md outline first. --generate produces HTML. Review before you render.</div>
+    </div>
+  </div>
+</section>
+
+<!-- SLIDE 7: Install -->
+<section class="slide" id="slide-7">
+  <span class="slide-num">07</span>
+  <span class="breadcrumb">07 / 08</span>
+  <div class="section-label reveal">Installation</div>
+  <h2 class="reveal" contenteditable="false">Up in 30 seconds</h2>
+  <div class="install-blocks reveal">
+    <div class="install-block">
+      <div class="install-platform">Claude Code</div>
+      <div class="code-line">git clone https://github.com/kaisersong/slide-creator ~/.claude/skills/slide-creator</div>
+      <div class="code-line">Restart Claude Code → /slide-creator</div>
+    </div>
+    <div class="install-block">
+      <div class="install-platform">OpenClaw</div>
+      <div class="code-line">clawhub install html-slide-creator</div>
+      <div class="install-note">Auto-installs all dependencies. No config required.</div>
+    </div>
+  </div>
+</section>
+
+<!-- SLIDE 8: CTA -->
+<section class="slide" id="slide-8">
+  <span class="slide-num">08</span>
+  <span class="breadcrumb">08 / 08</span>
+  <div class="deco-text">GO</div>
+  <div class="cta-label reveal">Get Started</div>
+  <h2 class="reveal" contenteditable="false">Your next presentation starts here</h2>
+  <div class="cta-command reveal" contenteditable="false">/slide-creator</div>
+  <p class="cta-sub reveal" contenteditable="false">Works with Claude Code and OpenClaw · Runs entirely in your browser</p>
+</section>
+
+<script>
+  const TOTAL = 8;
+  let cur = 0;
+
+  const slides = Array.from(document.querySelectorAll('.slide'));
+  const progressBar = document.getElementById('progress-bar');
+  const navDotsContainer = document.getElementById('nav-dots');
+
+  // Build nav dots
+  slides.forEach((_, i) => {
+    const dot = document.createElement('div');
+    dot.className = 'dot' + (i === 0 ? ' active' : '');
+    dot.addEventListener('click', () => goTo(i));
+    navDotsContainer.appendChild(dot);
+  });
+
+  function updateUI(index) {
+    cur = index;
+    progressBar.style.width = ((index + 1) / TOTAL * 100) + '%';
+    document.querySelectorAll('.dot').forEach((d, i) => {
+      d.classList.toggle('active', i === index);
+    });
+  }
+
+  function goTo(index) {
+    if (index < 0 || index >= TOTAL) return;
+    slides[index].scrollIntoView({ behavior: 'smooth' });
+  }
+
+  // IntersectionObserver — adds .visible, stagger .reveal children
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+        updateUI(slides.indexOf(entry.target));
+      }
+    });
+  }, { threshold: 0.5 });
+
+  slides.forEach(s => observer.observe(s));
+
+  // Keyboard navigation
+  document.addEventListener('keydown', (e) => {
+    if (document.body.classList.contains('edit-mode')) {
+      if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+        e.preventDefault();
+        saveFile();
+      }
+      if (e.key === 'e' || e.key === 'E') toggleEditMode();
+      return;
+    }
+    if (e.key === 'ArrowDown' || e.key === 'ArrowRight' || e.key === ' ') {
+      e.preventDefault();
+      goTo(cur + 1);
+    } else if (e.key === 'ArrowUp' || e.key === 'ArrowLeft') {
+      e.preventDefault();
+      goTo(cur - 1);
+    } else if (e.key === 'e' || e.key === 'E') {
+      toggleEditMode();
+    }
+  });
+
+  // Wheel — debounce-reset lock (NOT time throttle)
+  let wheelLocked = false, wheelTimer = null;
+  document.addEventListener('wheel', e => {
+    clearTimeout(wheelTimer);
+    if (!wheelLocked) {
+      wheelLocked = true;
+      e.deltaY > 0 ? goTo(cur + 1) : goTo(cur - 1);
+    }
+    wheelTimer = setTimeout(() => { wheelLocked = false; }, 180);
+  }, { passive: true });
+
+  // Touch swipe
+  let touchStartY = 0;
+  document.addEventListener('touchstart', (e) => { touchStartY = e.touches[0].clientY; }, { passive: true });
+  document.addEventListener('touchend', (e) => {
+    const dy = touchStartY - e.changedTouches[0].clientY;
+    if (Math.abs(dy) > 50) {
+      dy > 0 ? goTo(cur + 1) : goTo(cur - 1);
+    }
+  }, { passive: true });
+
+  // Edit mode — hotzone 80x80 top-left, button appears on hover (400ms grace)
+  let editMode = false;
+  let hotzoneTimer = null;
+  const editToggle = document.getElementById('edit-toggle');
+  const editHotzone = document.getElementById('edit-hotzone');
+
+  editHotzone.addEventListener('mouseenter', () => {
+    hotzoneTimer = setTimeout(() => {
+      editToggle.style.display = 'block';
+      editToggle.classList.add('visible');
+    }, 400);
+  });
+  editHotzone.addEventListener('mouseleave', () => {
+    clearTimeout(hotzoneTimer);
+    if (!editMode) {
+      editToggle.classList.remove('visible');
+      setTimeout(() => { if (!editMode) editToggle.style.display = 'none'; }, 300);
+    }
+  });
+
+  editToggle.addEventListener('click', toggleEditMode);
+
+  function toggleEditMode() {
+    editMode = !editMode;
+    document.body.classList.toggle('edit-mode', editMode);
+    editToggle.style.display = 'block';
+    editToggle.classList.add('visible');
+    editToggle.textContent = editMode ? 'Exit Edit' : 'Edit';
+    document.querySelectorAll('[contenteditable]').forEach(el => {
+      el.contentEditable = editMode ? 'true' : 'false';
+    });
+    if (!editMode) {
+      editToggle.classList.remove('visible');
+      setTimeout(() => { editToggle.style.display = 'none'; }, 300);
+    }
+  }
+
+  async function saveFile() {
+    const html = '<!DOCTYPE html>\n' + document.documentElement.outerHTML;
+    if (window.showSaveFilePicker) {
+      try {
+        const handle = await window.showSaveFilePicker({
+          suggestedName: 'bold-signal.html',
+          types: [{ description: 'HTML file', accept: { 'text/html': ['.html'] } }]
+        });
+        const writable = await handle.createWritable();
+        await writable.write(html);
+        await writable.close();
+        showSaveIndicator();
+      } catch(e) {
+        if (e.name !== 'AbortError') fallbackSave(html);
+      }
+    } else {
+      fallbackSave(html);
+    }
+  }
+
+  function fallbackSave(html) {
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(new Blob([html], { type: 'text/html' }));
+    a.download = 'bold-signal.html';
+    a.click();
+    showSaveIndicator();
+  }
+
+  function showSaveIndicator() {
+    const el = document.getElementById('save-indicator');
+    el.style.display = 'block';
+    setTimeout(() => { el.style.display = 'none'; }, 2000);
+  }
+</script>
+</body>
+</html>

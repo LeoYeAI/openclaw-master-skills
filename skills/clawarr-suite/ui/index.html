@@ -1,0 +1,700 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>ClawARR Suite — Setup</title>
+    <style>
+      :root {
+        color-scheme: dark;
+        --bg: #0d1117; --surface: #161b22; --border: #30363d;
+        --text: #e6edf3; --muted: #8b949e; --accent: #58a6ff;
+        --green: #3fb950; --red: #f85149; --yellow: #d29922; --orange: #db6d28;
+        font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+      }
+      * { box-sizing: border-box; }
+      body { margin: 0; padding: 24px; background: var(--bg); color: var(--text); max-width: 1080px; margin: 0 auto; }
+      h1 { margin: 0 0 4px; font-size: 1.6rem; }
+      h1 span { color: var(--accent); }
+      .subtitle { color: var(--muted); margin: 0 0 20px; font-size: 0.9rem; }
+      .card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 20px; margin: 16px 0; }
+      .card h2 { margin: 0 0 8px; font-size: 1.1rem; display: flex; align-items: center; gap: 8px; }
+      .card h2 .num { background: var(--accent); color: var(--bg); width: 24px; height: 24px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 0.75rem; font-weight: 700; }
+      .card p.desc { color: var(--muted); margin: 0 0 14px; font-size: 0.85rem; }
+      .row { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+      input, select, button { font: inherit; font-size: 0.9rem; padding: 8px 14px; border-radius: 8px; border: 1px solid var(--border); background: var(--bg); color: var(--text); }
+      input:focus, select:focus { outline: none; border-color: var(--accent); }
+      input[type=text] { min-width: 280px; }
+      input[type=text].host-input { min-width: 220px; }
+      button { cursor: pointer; background: var(--accent); color: var(--bg); border: none; font-weight: 600; transition: opacity 0.15s; }
+      button:hover { opacity: 0.85; }
+      button:disabled { opacity: 0.4; cursor: not-allowed; }
+      button.secondary { background: var(--border); color: var(--text); }
+      button.danger { background: var(--red); }
+      button.small { padding: 4px 10px; font-size: 0.8rem; }
+      table { width: 100%; border-collapse: collapse; margin-top: 12px; }
+      thead th { text-align: left; color: var(--muted); font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.04em; padding: 6px 10px; border-bottom: 1px solid var(--border); }
+      tbody td { padding: 10px; border-bottom: 1px solid var(--border); font-size: 0.9rem; }
+      tbody tr:last-child td { border-bottom: none; }
+      code { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; font-size: 0.85em; background: rgba(110,118,129,0.15); padding: 2px 6px; border-radius: 4px; }
+      .badge { display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: 0.75rem; font-weight: 600; }
+      .badge.ok { background: rgba(63,185,80,0.15); color: var(--green); }
+      .badge.fail { background: rgba(248,81,73,0.15); color: var(--red); }
+      .badge.warn { background: rgba(210,153,34,0.15); color: var(--yellow); }
+      .badge.saved { background: rgba(88,166,255,0.15); color: var(--accent); }
+      .badge.companion { background: rgba(219,109,40,0.15); color: var(--orange); }
+      .empty { color: var(--muted); font-style: italic; padding: 16px 0; text-align: center; }
+      .status-msg { margin-top: 10px; font-size: 0.85rem; color: var(--muted); }
+      .key-grid { display: grid; grid-template-columns: 1fr; gap: 6px; margin-top: 10px; }
+      .key-row { display: flex; align-items: center; gap: 10px; padding: 6px 10px; background: var(--bg); border-radius: 8px; font-size: 0.85rem; }
+      .key-row .app-name { min-width: 90px; font-weight: 600; }
+      .key-row .key-mask { color: var(--muted); flex: 1; font-family: monospace; }
+      .key-row button { padding: 2px 8px; font-size: 0.75rem; }
+      .timestamp { font-size: 0.75rem; color: var(--muted); }
+      textarea { width: 100%; min-height: 180px; font: inherit; font-family: monospace; font-size: 0.82rem; padding: 12px; border-radius: 8px; border: 1px solid var(--border); background: var(--bg); color: var(--text); resize: vertical; }
+      .header-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
+      .stats { display: flex; gap: 16px; }
+      .stat { text-align: center; }
+      .stat .val { font-size: 1.4rem; font-weight: 700; color: var(--accent); }
+      .stat .lbl { font-size: 0.7rem; color: var(--muted); text-transform: uppercase; }
+      .progress-bar { width: 100%; height: 4px; background: var(--border); border-radius: 2px; margin-top: 10px; overflow: hidden; display: none; }
+      .progress-bar.active { display: block; }
+      .progress-fill { height: 100%; background: var(--accent); border-radius: 2px; transition: width 0.3s ease; width: 0%; }
+      .scan-live { margin-top: 8px; font-size: 0.82rem; color: var(--muted); max-height: 60px; overflow-y: auto; }
+      .scan-live .found { color: var(--green); }
+      .host-grid { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 8px; }
+      .host-chip { font-size: 0.75rem; padding: 2px 8px; border-radius: 6px; background: rgba(88,166,255,0.1); color: var(--accent); border: 1px solid rgba(88,166,255,0.2); }
+      .host-chip.active { background: rgba(63,185,80,0.15); color: var(--green); border-color: rgba(63,185,80,0.3); }
+    </style>
+  </head>
+  <body>
+    <div class="header-row">
+      <div>
+        <h1>🎬 Claw<span>ARR</span> Suite</h1>
+        <p class="subtitle">Media stack setup & management console</p>
+      </div>
+      <div class="stats" id="headerStats"></div>
+    </div>
+
+    <!-- DISCOVER -->
+    <div class="card">
+      <h2><span class="num">1</span> Autodiscover Services</h2>
+      <p class="desc">Scans your local network for media services. Leave blank to auto-detect, or enter a specific IP/hostname.</p>
+      <div class="row">
+        <input type="text" id="hostInput" class="host-input" placeholder="(optional) IP or hostname" />
+        <button id="discoverBtn">🔍 Scan Network</button>
+        <button id="clearDiscoverBtn" class="secondary small">Clear</button>
+      </div>
+      <div class="progress-bar" id="progressBar"><div class="progress-fill" id="progressFill"></div></div>
+      <div id="scanLive" class="scan-live"></div>
+      <div id="discoverOut" class="status-msg"></div>
+      <div id="hostsFound" class="host-grid"></div>
+      <table id="discoverTable" style="display:none">
+        <thead><tr><th>Service</th><th>Host</th><th>URL</th><th>Status</th><th>Version</th><th>Type</th></tr></thead>
+        <tbody id="discoverTbody"></tbody>
+      </table>
+      <div id="discoverEmpty" class="empty" style="display:none">No services found yet. Click "Scan Network" to search your LAN.</div>
+    </div>
+
+    <!-- API KEYS -->
+    <div class="card">
+      <h2><span class="num">2</span> API Keys</h2>
+      <p class="desc">Store API keys for each service. Keys are saved in your browser (localStorage) and masked for safety.</p>
+      <div class="row">
+        <select id="appSel"></select>
+        <input id="apiKeyInput" type="text" placeholder="Paste API key" />
+        <button id="saveKeyBtn">💾 Save</button>
+      </div>
+      <div id="saveOut" class="status-msg"></div>
+      <div id="keyGrid" class="key-grid"></div>
+      <div id="keyEmpty" class="empty" style="display:none">No API keys stored yet.</div>
+    </div>
+
+    <!-- STATUS -->
+    <div class="card">
+      <h2><span class="num">3</span> Connection Test</h2>
+      <p class="desc">Test connectivity to all discovered services using stored API keys.</p>
+      <div class="row">
+        <button id="testBtn">⚡ Test All</button>
+        <button id="exportBtn" class="secondary">📋 Export Config</button>
+      </div>
+      <table id="testTable" style="display:none">
+        <thead><tr><th>Service</th><th>URL</th><th>Auth</th><th>Response</th><th>Details</th></tr></thead>
+        <tbody id="testTbody"></tbody>
+      </table>
+      <div id="testOut" class="status-msg"></div>
+    </div>
+
+    <!-- EXPORT -->
+    <div class="card" id="exportCard" style="display:none">
+      <h2><span class="num">⚙</span> Environment Config</h2>
+      <p class="desc">Copy this into your shell profile or <code>.env</code> file to use with ClawARR scripts.</p>
+      <textarea id="exportOut" readonly></textarea>
+    </div>
+
+    <script>
+    const STORAGE_KEY = 'clawarr';
+
+    // All known services with their default ports
+    const APPS = [
+      { id: 'sonarr',       name: 'Sonarr',       port: 8989,  type: 'arr',       icon: '📺' },
+      { id: 'radarr',       name: 'Radarr',       port: 7878,  type: 'arr',       icon: '🎬' },
+      { id: 'lidarr',       name: 'Lidarr',       port: 8686,  type: 'arr',       icon: '🎵' },
+      { id: 'readarr',      name: 'Readarr',      port: 8787,  type: 'arr',       icon: '📚' },
+      { id: 'prowlarr',     name: 'Prowlarr',     port: 9696,  type: 'arr',       icon: '🔎' },
+      { id: 'bazarr',       name: 'Bazarr',       port: 6767,  type: 'arr',       icon: '💬' },
+      { id: 'overseerr',    name: 'Overseerr',    port: 5055,  type: 'arr',       icon: '📋' },
+      { id: 'plex',         name: 'Plex',         port: 32400, type: 'media',     icon: '▶️' },
+      { id: 'tautulli',     name: 'Tautulli',     port: 8181,  type: 'media',     icon: '📊' },
+      { id: 'sabnzbd',      name: 'SABnzbd',      port: 38080, type: 'download',  icon: '⬇️' },
+      { id: 'nzbget',       name: 'NZBGet',       port: 6789,  type: 'download',  icon: '⬇️' },
+      { id: 'qbittorrent',  name: 'qBittorrent',  port: 8080,  type: 'download',  icon: '🌊' },
+      { id: 'transmission', name: 'Transmission', port: 9091,  type: 'download',  icon: '🌊' },
+      { id: 'deluge',       name: 'Deluge',       port: 8112,  type: 'download',  icon: '🌊' },
+      { id: 'maintainerr',  name: 'Maintainerr',  port: 6246,  type: 'companion', icon: '🧹' },
+      { id: 'notifiarr',    name: 'Notifiarr',    port: 5454,  type: 'companion', icon: '🔔' },
+      { id: 'flaresolverr', name: 'FlareSolverr', port: 8191,  type: 'companion', icon: '🛡️' },
+      { id: 'homarr',       name: 'Homarr',       port: 7575,  type: 'companion', icon: '🏠' },
+      { id: 'kometa',       name: 'Kometa',       port: null,  type: 'companion', icon: '🎨' },
+      { id: 'recyclarr',    name: 'Recyclarr',    port: null,  type: 'companion', icon: '♻️' },
+      { id: 'unpackerr',    name: 'Unpackerr',    port: null,  type: 'companion', icon: '📦' },
+    ];
+
+    // Ports worth scanning on each candidate host
+    const SCAN_PORTS = APPS.filter(a => a.port !== null).map(a => a.port);
+    const UNIQUE_PORTS = [...new Set(SCAN_PORTS)];
+
+    // Common NAS/server IPs to try (gateway patterns + common offsets)
+    const COMMON_OFFSETS = [1, 2, 3, 4, 5, 10, 20, 30, 31, 50, 100, 150, 200, 250, 253, 254];
+
+    // ─── Storage ────────────────────────────────
+    function load() { try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}'); } catch { return {}; } }
+    function save(data) { localStorage.setItem(STORAGE_KEY, JSON.stringify(data)); }
+    function getState() {
+      const d = load();
+      return {
+        hosts: d.hosts || [],               // hosts with services found
+        discovered: d.discovered || [],      // [{id, name, host, url, ok, version, type}]
+        keys: d.keys || {},
+        lastScan: d.lastScan || null,
+        subnet: d.subnet || null,
+      };
+    }
+    function setState(patch) { save({ ...load(), ...patch }); }
+
+    // ─── Subnet Detection ───────────────────────
+    // Try to detect local IP via WebRTC (works in most browsers)
+    async function detectLocalIP() {
+      return new Promise((resolve) => {
+        const timeout = setTimeout(() => resolve(null), 3000);
+        try {
+          const pc = new RTCPeerConnection({ iceServers: [] });
+          pc.createDataChannel('');
+          pc.createOffer().then(offer => pc.setLocalDescription(offer));
+          pc.onicecandidate = (e) => {
+            if (!e.candidate) return;
+            const match = e.candidate.candidate.match(/(\d+\.\d+\.\d+\.\d+)/);
+            if (match && !match[1].startsWith('0.') && match[1] !== '0.0.0.0') {
+              clearTimeout(timeout);
+              pc.close();
+              resolve(match[1]);
+            }
+          };
+          // Fallback timeout
+          setTimeout(() => { pc.close(); resolve(null); }, 2500);
+        } catch { clearTimeout(timeout); resolve(null); }
+      });
+    }
+
+    function getSubnet(ip) {
+      const parts = ip.split('.');
+      return parts.slice(0, 3).join('.');
+    }
+
+    function generateCandidateIPs(subnet, myIP) {
+      const ips = [];
+      // Common NAS/server offsets first (fast pass)
+      for (const off of COMMON_OFFSETS) {
+        const ip = `${subnet}.${off}`;
+        if (ip !== myIP) ips.push(ip);
+      }
+      // Then fill remaining .1-.254 not already included
+      for (let i = 1; i <= 254; i++) {
+        const ip = `${subnet}.${i}`;
+        if (ip !== myIP && !ips.includes(ip)) ips.push(ip);
+      }
+      return ips;
+    }
+
+    // ─── Port Probing ───────────────────────────
+    // Fast reachability check via image load trick (bypasses CORS)
+    function probePort(host, port, timeout = 1500) {
+      return new Promise((resolve) => {
+        const url = `http://${host}:${port}`;
+        const timer = setTimeout(() => { resolve({ host, port, alive: false }); }, timeout);
+
+        // Method 1: fetch with no-cors (fast fail for closed ports)
+        const controller = new AbortController();
+        const fetchTimer = setTimeout(() => controller.abort(), timeout);
+
+        fetch(`${url}/favicon.ico?_=${Date.now()}`, { signal: controller.signal, mode: 'no-cors' })
+          .then(() => {
+            clearTimeout(timer); clearTimeout(fetchTimer);
+            resolve({ host, port, alive: true });
+          })
+          .catch(() => {
+            clearTimeout(fetchTimer);
+            // Method 2: image trick (catches servers that block fetch but serve content)
+            const img = new Image();
+            img.onload = img.onerror = () => {
+              clearTimeout(timer);
+              resolve({ host, port, alive: true });
+            };
+            img.src = `${url}/favicon.ico?_=${Date.now()}`;
+          });
+      });
+    }
+
+    // Probe a specific host for all known service ports
+    async function probeHost(host, timeout = 2000) {
+      const results = [];
+      const promises = UNIQUE_PORTS.map(port => probePort(host, port, timeout));
+      const settled = await Promise.allSettled(promises);
+      for (const r of settled) {
+        if (r.status === 'fulfilled' && r.value.alive) {
+          results.push(r.value);
+        }
+      }
+      return results;
+    }
+
+    // Identify which service is on a given host:port
+    async function identifyService(host, port) {
+      const url = `http://${host}:${port}`;
+      const candidates = APPS.filter(a => a.port === port);
+      if (candidates.length === 0) return null;
+
+      // Try to fetch identifying endpoints
+      let version = '—';
+      let identified = candidates[0]; // default to first match
+
+      // Try initialize.json (Sonarr/Radarr/Lidarr/Readarr/Prowlarr)
+      try {
+        const controller = new AbortController();
+        setTimeout(() => controller.abort(), 3000);
+        const r = await fetch(`${url}/initialize.json`, { signal: controller.signal });
+        if (r.ok) {
+          const j = await r.json();
+          version = j.version || '—';
+          // instanceName or appName can help identify
+          if (j.instanceName) {
+            const name = j.instanceName.toLowerCase();
+            const match = candidates.find(c => name.includes(c.id));
+            if (match) identified = match;
+          }
+        }
+      } catch {}
+
+      // Try ping endpoint
+      try {
+        const controller = new AbortController();
+        setTimeout(() => controller.abort(), 3000);
+        const r = await fetch(`${url}/ping`, { signal: controller.signal });
+        if (r.ok) {
+          try { const t = await r.text(); if (t.includes('Pong')) version = version === '—' ? 'detected' : version; } catch {}
+        }
+      } catch {}
+
+      // Try Plex identity
+      if (port === 32400) {
+        try {
+          const controller = new AbortController();
+          setTimeout(() => controller.abort(), 3000);
+          const r = await fetch(`${url}/identity`, { signal: controller.signal });
+          if (r.ok) {
+            try { const j = await r.json(); version = j.MediaContainer?.version || '—'; } catch {}
+          }
+        } catch {}
+      }
+
+      // Try FlareSolverr
+      if (port === 8191) {
+        try {
+          const controller = new AbortController();
+          setTimeout(() => controller.abort(), 3000);
+          const r = await fetch(`${url}/health`, { signal: controller.signal });
+          if (r.ok) version = 'healthy';
+        } catch {}
+      }
+
+      return {
+        id: identified.id,
+        name: identified.name,
+        host,
+        url,
+        ok: true,
+        version,
+        type: identified.type,
+      };
+    }
+
+    // ─── UI Helpers ─────────────────────────────
+    const $id = id => document.getElementById(id);
+    const scanLog = (msg, cls) => {
+      const el = $id('scanLive');
+      const line = document.createElement('div');
+      if (cls) line.className = cls;
+      line.textContent = msg;
+      el.appendChild(line);
+      el.scrollTop = el.scrollHeight;
+    };
+    const setProgress = (pct) => {
+      $id('progressFill').style.width = `${Math.min(100, pct)}%`;
+    };
+
+    // ─── Main Scan ──────────────────────────────
+    document.getElementById('discoverBtn').onclick = async () => {
+      const userHost = $id('hostInput').value.trim();
+      const btn = $id('discoverBtn');
+      const bar = $id('progressBar');
+      const liveEl = $id('scanLive');
+      const hostsEl = $id('hostsFound');
+
+      btn.disabled = true;
+      btn.textContent = '⏳ Scanning...';
+      bar.classList.add('active');
+      liveEl.innerHTML = '';
+      hostsEl.innerHTML = '';
+      setProgress(0);
+
+      let hostsToScan = [];
+
+      if (userHost) {
+        // User gave a specific host — just scan that
+        scanLog(`Scanning ${userHost}...`);
+        hostsToScan = [userHost];
+      } else {
+        // Auto-detect subnet
+        scanLog('Detecting local network...');
+        const myIP = await detectLocalIP();
+
+        if (myIP) {
+          const subnet = getSubnet(myIP);
+          scanLog(`Local IP: ${myIP} — scanning ${subnet}.0/24`);
+          setState({ subnet });
+          hostsToScan = generateCandidateIPs(subnet, myIP);
+        } else {
+          // Fallback: try common subnets
+          scanLog('WebRTC detection failed — trying common subnets...');
+          const commonSubnets = ['192.168.1', '192.168.0', '192.168.4', '10.0.0', '10.0.1', '172.16.0'];
+          for (const sub of commonSubnets) {
+            hostsToScan.push(...COMMON_OFFSETS.map(o => `${sub}.${o}`));
+          }
+        }
+      }
+
+      // Phase 1: Fast host sweep — find which IPs have any open port
+      scanLog(`Phase 1: Sweeping ${hostsToScan.length} addresses for open ports...`);
+      const liveHosts = new Map(); // host → [ports]
+      const BATCH_SIZE = 30; // concurrent host probes
+
+      for (let i = 0; i < hostsToScan.length; i += BATCH_SIZE) {
+        const batch = hostsToScan.slice(i, i + BATCH_SIZE);
+        const batchPromises = batch.map(async (host) => {
+          const alive = await probeHost(host, 1500);
+          if (alive.length > 0) {
+            liveHosts.set(host, alive.map(a => a.port));
+            scanLog(`✓ ${host} — ${alive.length} port(s) responding`, 'found');
+            const chip = document.createElement('span');
+            chip.className = 'host-chip active';
+            chip.textContent = host;
+            hostsEl.appendChild(chip);
+          }
+        });
+        await Promise.all(batchPromises);
+        setProgress(Math.round(((i + batch.length) / hostsToScan.length) * 70));
+      }
+
+      if (liveHosts.size === 0) {
+        scanLog('No hosts with media services found on this network.');
+        $id('discoverOut').textContent = 'No media services detected. Try entering a specific IP.';
+        btn.disabled = false;
+        btn.textContent = '🔍 Scan Network';
+        bar.classList.remove('active');
+        return;
+      }
+
+      scanLog(`Phase 1 done: ${liveHosts.size} host(s) with open ports.`);
+      setProgress(70);
+
+      // Phase 2: Identify services on live hosts
+      scanLog('Phase 2: Identifying services...');
+      const allServices = [];
+      let identCount = 0;
+      const totalIdent = Array.from(liveHosts.values()).reduce((sum, ports) => sum + ports.length, 0);
+
+      for (const [host, ports] of liveHosts) {
+        for (const port of ports) {
+          const svc = await identifyService(host, port);
+          if (svc) {
+            allServices.push(svc);
+            scanLog(`  → ${svc.name} on ${host}:${port} ${svc.version !== '—' ? `(v${svc.version})` : ''}`, 'found');
+          }
+          identCount++;
+          setProgress(70 + Math.round((identCount / totalIdent) * 30));
+        }
+      }
+
+      setProgress(100);
+      scanLog(`Scan complete: ${allServices.length} service(s) found on ${liveHosts.size} host(s).`);
+
+      // Save results
+      setState({
+        hosts: Array.from(liveHosts.keys()),
+        discovered: allServices,
+        lastScan: Date.now(),
+        subnet: getState().subnet,
+      });
+
+      const s = getState();
+      renderDiscovery(s);
+      populateAppSelect(s);
+      updateStats(s);
+
+      btn.disabled = false;
+      btn.textContent = '🔍 Scan Network';
+      setTimeout(() => bar.classList.remove('active'), 1000);
+    };
+
+    // ─── Rendering ──────────────────────────────
+    function renderDiscovery(s) {
+      const tbody = $id('discoverTbody');
+      const table = $id('discoverTable');
+      const empty = $id('discoverEmpty');
+      const out = $id('discoverOut');
+
+      tbody.innerHTML = '';
+      if (!s.discovered || s.discovered.length === 0) {
+        table.style.display = 'none';
+        empty.style.display = '';
+        return;
+      }
+      empty.style.display = 'none';
+      table.style.display = '';
+
+      const sorted = [...s.discovered].sort((a, b) => {
+        if (a.ok !== b.ok) return a.ok ? -1 : 1;
+        return a.name.localeCompare(b.name);
+      });
+
+      for (const r of sorted) {
+        const app = APPS.find(a => a.id === r.id);
+        const icon = app ? app.icon : '❓';
+        const typeBadge = r.type === 'companion'
+          ? '<span class="badge companion">companion</span>'
+          : r.type === 'download'
+          ? '<span class="badge warn">download</span>'
+          : '';
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${icon} <strong>${r.name}</strong></td>
+          <td><code>${r.host || '—'}</code></td>
+          <td><code>${r.url}</code></td>
+          <td><span class="badge ${r.ok ? 'ok' : 'fail'}">${r.ok ? '● Online' : '● Offline'}</span></td>
+          <td>${r.version || '—'}</td>
+          <td>${typeBadge}</td>
+        `;
+        tbody.appendChild(tr);
+      }
+
+      const hosts = [...new Set(sorted.map(r => r.host))].filter(Boolean);
+      if (s.lastScan) {
+        out.innerHTML = `Last scan: <span class="timestamp">${new Date(s.lastScan).toLocaleString()}</span> · ${sorted.filter(r => r.ok).length} services on ${hosts.length} host(s)`;
+      }
+    }
+
+    function populateAppSelect(s) {
+      const sel = $id('appSel');
+      sel.innerHTML = '';
+      const discovered = new Set((s.discovered || []).filter(d => d.ok).map(d => d.id));
+      for (const app of APPS) {
+        if (app.port === null && !discovered.has(app.id)) continue;
+        const opt = document.createElement('option');
+        opt.value = app.id;
+        opt.textContent = `${app.icon} ${app.name}`;
+        if (discovered.has(app.id)) opt.textContent += ' ✓';
+        sel.appendChild(opt);
+      }
+    }
+
+    function updateStats(s) {
+      const el = $id('headerStats');
+      const online = (s.discovered || []).filter(d => d.ok).length;
+      const keys = Object.keys(s.keys || {}).length;
+      const hosts = (s.hosts || []).length;
+      el.innerHTML = `
+        <div class="stat"><div class="val">${hosts}</div><div class="lbl">Hosts</div></div>
+        <div class="stat"><div class="val">${online}</div><div class="lbl">Services</div></div>
+        <div class="stat"><div class="val">${keys}</div><div class="lbl">Keys</div></div>
+      `;
+    }
+
+    function maskKey(key) {
+      if (!key) return '—';
+      if (key.length <= 8) return '••••••••';
+      return key.slice(0, 4) + '••••' + key.slice(-4);
+    }
+
+    function renderKeys(s) {
+      const grid = $id('keyGrid');
+      const empty = $id('keyEmpty');
+      grid.innerHTML = '';
+      const entries = Object.entries(s.keys || {});
+      if (entries.length === 0) { empty.style.display = ''; return; }
+      empty.style.display = 'none';
+      for (const [appId, info] of entries) {
+        const app = APPS.find(a => a.id === appId);
+        const name = app ? `${app.icon} ${app.name}` : appId;
+        const row = document.createElement('div');
+        row.className = 'key-row';
+        row.innerHTML = `
+          <span class="app-name">${name}</span>
+          <span class="key-mask">${maskKey(info.key)}</span>
+          <span class="timestamp">${info.ts ? new Date(info.ts).toLocaleDateString() : ''}</span>
+          <button class="small danger" onclick="removeKey('${appId}')">✕</button>
+        `;
+        grid.appendChild(row);
+      }
+    }
+
+    window.removeKey = function(appId) {
+      const s = getState();
+      delete s.keys[appId];
+      setState({ keys: s.keys });
+      renderKeys(getState());
+      updateStats(getState());
+    };
+
+    // ─── Clear ──────────────────────────────────
+    $id('clearDiscoverBtn').onclick = () => {
+      setState({ discovered: [], lastScan: null, hosts: [], subnet: null });
+      $id('scanLive').innerHTML = '';
+      $id('hostsFound').innerHTML = '';
+      const s = getState();
+      renderDiscovery(s);
+      populateAppSelect(s);
+      updateStats(s);
+      $id('discoverOut').textContent = 'Discovery results cleared.';
+    };
+
+    // ─── Save Key ───────────────────────────────
+    $id('saveKeyBtn').onclick = () => {
+      const appId = $id('appSel').value;
+      const key = $id('apiKeyInput').value.trim();
+      if (!key) { $id('saveOut').textContent = '⚠️ Paste an API key first.'; return; }
+      const s = getState();
+      s.keys[appId] = { key, ts: Date.now() };
+      setState({ keys: s.keys });
+      $id('apiKeyInput').value = '';
+      const app = APPS.find(a => a.id === appId);
+      $id('saveOut').innerHTML = `✅ <strong>${app ? app.name : appId}</strong> key saved.`;
+      renderKeys(getState());
+      updateStats(getState());
+    };
+
+    // ─── Test All ───────────────────────────────
+    $id('testBtn').onclick = async () => {
+      const s = getState();
+      const tbody = $id('testTbody');
+      const table = $id('testTable');
+      tbody.innerHTML = '';
+      table.style.display = '';
+      $id('testOut').textContent = 'Testing...';
+      const discovered = (s.discovered || []).filter(d => d.ok);
+      if (discovered.length === 0) {
+        $id('testOut').textContent = '⚠️ No online services found. Run discovery first.';
+        table.style.display = 'none';
+        return;
+      }
+      for (const svc of discovered) {
+        const keyInfo = (s.keys || {})[svc.id];
+        const hasKey = !!(keyInfo && keyInfo.key);
+        let authStatus = hasKey ? '🔑 Stored' : '⚠️ Missing';
+        let response = '—';
+        let details = '';
+        if (hasKey && svc.url !== '—') {
+          try {
+            const app = APPS.find(a => a.id === svc.id);
+            let testUrl;
+            if (app && app.type === 'arr') testUrl = `${svc.url}/api/v3/system/status?apikey=${keyInfo.key}`;
+            else if (svc.id === 'plex') testUrl = `${svc.url}/identity?X-Plex-Token=${keyInfo.key}`;
+            else if (svc.id === 'tautulli') testUrl = `${svc.url}/api/v2?apikey=${keyInfo.key}&cmd=server_info`;
+            else if (svc.id === 'sabnzbd') testUrl = `${svc.url}/api?mode=version&apikey=${keyInfo.key}&output=json`;
+            else testUrl = `${svc.url}/api/v1/status`;
+            const controller = new AbortController();
+            const timer = setTimeout(() => controller.abort(), 5000);
+            const r = await fetch(testUrl, { signal: controller.signal });
+            clearTimeout(timer);
+            response = `${r.status} ${r.statusText}`;
+            if (r.ok) {
+              try { const j = await r.json(); details = j.version || j.response?.data?.version || j.appName || '✅ OK'; } catch { details = '✅ OK'; }
+              authStatus = '<span class="badge ok">✅ Authenticated</span>';
+            } else {
+              authStatus = '<span class="badge fail">❌ Auth failed</span>';
+            }
+          } catch (e) {
+            response = 'CORS/Network';
+            details = 'Browser blocks cross-origin — use CLI scripts for full test.';
+          }
+        }
+        const tr = document.createElement('tr');
+        const app = APPS.find(a => a.id === svc.id);
+        tr.innerHTML = `
+          <td>${app ? app.icon : ''} ${svc.name}</td>
+          <td><code>${svc.url}</code></td>
+          <td>${authStatus}</td>
+          <td>${response}</td>
+          <td style="font-size:0.82rem;color:var(--muted)">${details}</td>
+        `;
+        tbody.appendChild(tr);
+      }
+      $id('testOut').textContent = `Tested ${discovered.length} services.`;
+    };
+
+    // ─── Export Config ──────────────────────────
+    $id('exportBtn').onclick = () => {
+      const s = getState();
+      const card = $id('exportCard');
+      const out = $id('exportOut');
+      card.style.display = '';
+      let lines = ['# ClawARR Suite — Environment Config', `# Generated ${new Date().toISOString()}`, ''];
+      const hosts = s.hosts || [];
+      if (hosts.length === 1) lines.push(`export CLAWARR_HOST=${hosts[0]}`);
+      else if (hosts.length > 1) lines.push(`# Multiple hosts detected: ${hosts.join(', ')}`, `export CLAWARR_HOST=${hosts[0]}`);
+      lines.push('');
+      for (const app of APPS) {
+        const keyInfo = (s.keys || {})[app.id];
+        const disc = (s.discovered || []).find(d => d.id === app.id && d.ok);
+        if (keyInfo || disc) {
+          const envName = app.id.toUpperCase();
+          if (disc) lines.push(`export ${envName}_URL=${disc.url}`);
+          if (keyInfo) lines.push(`export ${envName}_KEY=${keyInfo.key}`);
+        }
+      }
+      out.value = lines.join('\n');
+      out.select();
+    };
+
+    // ─── Boot ───────────────────────────────────
+    function init() {
+      const s = getState();
+      if (s.hosts && s.hosts.length > 0) $id('hostInput').value = s.hosts[0];
+      populateAppSelect(s);
+      renderDiscovery(s);
+      renderKeys(s);
+      updateStats(s);
+    }
+    init();
+    </script>
+  </body>
+</html>

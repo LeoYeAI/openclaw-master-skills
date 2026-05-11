@@ -1,0 +1,192 @@
+{
+    "_meta": {
+        "name": "Cross-Need Impact Configuration",
+        "version": "1.0.0",
+        "created": "2026-02-25",
+        "note": "Defines how needs influence each other on action/deprivation"
+    },
+    "settings": {
+        "floor": 0.5,
+        "ceiling": 3.0,
+        "deprivation_threshold": 1.0,
+        "deprivation_cycles": 2
+    },
+    "impacts": [
+        {
+            "source": "expression",
+            "target": "recognition",
+            "on_action": 0.25,
+            "on_deprivation": -0.1,
+            "note": "выразился → заметили"
+        },
+        {
+            "source": "expression",
+            "target": "coherence",
+            "on_action": 0.15,
+            "on_deprivation": null,
+            "note": "написал → прояснил мысли"
+        },
+        {
+            "source": "expression",
+            "target": "connection",
+            "on_action": 0.1,
+            "on_deprivation": null,
+            "note": "выразился публично → возможность контакта"
+        },
+        {
+            "source": "connection",
+            "target": "expression",
+            "on_action": 0.2,
+            "on_deprivation": -0.15,
+            "note": "общение → идеи"
+        },
+        {
+            "source": "connection",
+            "target": "understanding",
+            "on_action": -0.05,
+            "on_deprivation": null,
+            "note": "Сократ-эффект: разговор обнажает незнание"
+        },
+        {
+            "source": "connection",
+            "target": "recognition",
+            "on_action": 0.15,
+            "on_deprivation": null,
+            "note": "общался → видят"
+        },
+        {
+            "source": "competence",
+            "target": "recognition",
+            "on_action": 0.3,
+            "on_deprivation": -0.2,
+            "note": "сделал хорошо → признали"
+        },
+        {
+            "source": "competence",
+            "target": "autonomy",
+            "on_action": 0.1,
+            "on_deprivation": null,
+            "note": "справился → уверенность"
+        },
+        {
+            "source": "autonomy",
+            "target": "integrity",
+            "on_action": 0.2,
+            "on_deprivation": -0.25,
+            "note": "действую по своим ценностям"
+        },
+        {
+            "source": "autonomy",
+            "target": "expression",
+            "on_action": 0.15,
+            "on_deprivation": -0.2,
+            "note": "свобода → свободнее выражаться"
+        },
+        {
+            "source": "understanding",
+            "target": "competence",
+            "on_action": 0.15,
+            "on_deprivation": null,
+            "note": "понял → могу применить"
+        },
+        {
+            "source": "understanding",
+            "target": "expression",
+            "on_action": 0.2,
+            "on_deprivation": null,
+            "note": "понял → могу объяснить"
+        },
+        {
+            "source": "understanding",
+            "target": "autonomy",
+            "on_action": 0.1,
+            "on_low": 0.05,
+            "on_deprivation": null,
+            "note": "понимание → уверенность; незнание → exploration drive"
+        },
+        {
+            "source": "closure",
+            "target": "coherence",
+            "on_action": 0.2,
+            "on_deprivation": -0.15,
+            "note": "закрыл → порядок"
+        },
+        {
+            "source": "closure",
+            "target": "competence",
+            "on_action": 0.15,
+            "on_deprivation": null,
+            "note": "завершил → мастерство"
+        },
+        {
+            "source": "closure",
+            "target": "autonomy",
+            "on_action": 0.1,
+            "on_deprivation": -0.1,
+            "note": "закрыл хвосты → свободен для нового"
+        },
+        {
+            "source": "coherence",
+            "target": "understanding",
+            "on_action": null,
+            "on_deprivation": -0.15,
+            "note": "хаос → сложнее учиться"
+        },
+        {
+            "source": "coherence",
+            "target": "autonomy",
+            "on_action": 0.1,
+            "on_deprivation": -0.15,
+            "note": "порядок в голове → легче принимать решения"
+        },
+        {
+            "source": "recognition",
+            "target": "expression",
+            "on_action": null,
+            "on_deprivation": -0.1,
+            "note": "никто не замечает → зачем стараться"
+        },
+        {
+            "source": "recognition",
+            "target": "connection",
+            "on_action": 0.1,
+            "on_deprivation": null,
+            "note": "признание → социальный капитал"
+        },
+        {
+            "source": "security",
+            "target": "autonomy",
+            "on_action": 0.1,
+            "on_deprivation": -0.2,
+            "note": "безопасно → могу рисковать"
+        },
+        {
+            "source": "integrity",
+            "target": "security",
+            "on_action": 0.15,
+            "on_deprivation": null,
+            "note": "честен → не боюсь"
+        },
+        {
+            "source": "autonomy",
+            "target": "coherence",
+            "on_action": 0.15,
+            "on_deprivation": -0.1,
+            "note": "действую по ценностям → целостность"
+        },
+        {
+            "source": "understanding",
+            "target": "closure",
+            "on_action": 0.1,
+            "on_deprivation": 0,
+            "note": "learning creates things to close/conclude"
+        },
+        {
+            "source": "understanding",
+            "target": "coherence",
+            "on_action": 0.15,
+            "on_deprivation": null,
+            "note": "structured research → mental order"
+        }
+    ]
+}

@@ -1,0 +1,888 @@
+<!DOCTYPE html>
+<!--
+  Coral Dawn — Starter Template
+  Coral Dawn — 起始模板
+
+  HOW TO USE / 使用方法：
+  1. Replace all placeholder text with real content
+     将所有占位文字替换为真实内容
+  2. Add/remove slide sections as needed
+     根据需要增减 section
+  3. Update data-notes on each slide for Presenter Mode
+     为每张幻灯片更新 data-notes 以支持演讲者模式
+  4. Set --slide-count in :root to the actual number of slides
+     在 :root 中将 --slide-count 设为实际幻灯片数量
+
+  SLIDE TYPES INCLUDED / 包含的幻灯片类型：
+  - Title slide        封面页
+  - Content slide      内容页（左侧竖条）
+  - Stats slide        数据页
+  - Feature grid       特性网格页
+  - Quote slide        引言页
+  - Closing slide      结尾页
+-->
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Presentation Title</title><!-- 修改为实际标题 -->
+
+    <!-- Google Fonts: Playfair Display (titles) + Source Sans 3 (body)
+         Google Fonts：Playfair Display（标题）+ Source Sans 3（正文） -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Source+Sans+3:wght@400;600&display=swap" rel="stylesheet">
+
+    <style>
+        /* =============================================
+           THEME VARIABLES / 主题变量
+           Change these to retheme the entire deck.
+           修改这里可以重新定制整套幻灯片的颜色。
+           ============================================= */
+        :root {
+            --bg:           #FDFAF6;   /* warm cream / 暖奶油色 */
+            --bg-secondary: #F5EFE6;   /* deeper cream for cards / 卡片稍深奶油色 */
+            --text:         #2C1A0E;   /* warm dark brown / 暖深棕 */
+            --text-muted:   #8C6F5A;   /* secondary text / 次要文字 */
+            --accent:       #E8541A;   /* coral — ONE use per slide / 珊瑚橘——每页只用一次 */
+            --accent-soft:  #FDEEE7;   /* tinted background / 淡色背景 */
+            --rule:         rgba(44,26,14,0.12);
+            --slide-count:  6;         /* UPDATE to actual slide count / 改为实际幻灯片数量 */
+        }
+
+        /* =============================================
+           RESET & BASE / 重置和基础样式
+           ============================================= */
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        html {
+            /* Vertical scroll-snap: one slide per viewport
+               垂直滚动吸附：每次滚动一张幻灯片 */
+            scroll-snap-type: y mandatory;
+            overflow-y: scroll;
+            height: 100%;
+        }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: "Source Sans 3", "Helvetica Neue", sans-serif;
+            height: 100%;
+        }
+
+        /* =============================================
+           SLIDE BASE / 幻灯片基础样式
+           Every slide must be exactly 100dvh tall.
+           每张幻灯片必须精确占满视口高度。
+           ============================================= */
+        .slide {
+            height: 100dvh;
+            scroll-snap-align: start;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            background: var(--bg);
+            padding: clamp(2.5rem, 7vw, 7rem) clamp(2rem, 8vw, 10rem);
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Left accent bar — SIGNATURE ELEMENT
+           左侧珊瑚竖条——签名视觉元素
+           Add class "accented" to any content slide.
+           在内容页 section 上加 class="slide accented" 即可显示。 */
+        .slide.accented::before {
+            content: '';
+            position: absolute;
+            left: 0; top: 15%; bottom: 15%;
+            width: 4px;
+            background: var(--accent);
+            border-radius: 0 2px 2px 0;
+        }
+
+        /* =============================================
+           TYPOGRAPHY / 排版
+           ============================================= */
+
+        /* Eyebrow label above heading / 标题上方的眉标 */
+        .cd-label {
+            font-size: clamp(0.65rem, 1vw, 0.75rem);
+            font-weight: 600;
+            letter-spacing: 0.14em;
+            text-transform: uppercase;
+            color: var(--accent);
+            margin-bottom: 0.6rem;
+        }
+
+        /* Main title / 主标题 */
+        .cd-title {
+            font-family: "Playfair Display", Georgia, serif;
+            font-weight: 700;
+            font-size: clamp(2rem, 5vw, 4.5rem);
+            line-height: 1.15;
+            letter-spacing: -0.02em;
+            color: var(--text);
+        }
+
+        /* Section heading / 章节标题 */
+        .cd-heading {
+            font-family: "Playfair Display", Georgia, serif;
+            font-weight: 700;
+            font-size: clamp(1.5rem, 3.5vw, 3rem);
+            line-height: 1.2;
+            letter-spacing: -0.01em;
+            color: var(--text);
+        }
+
+        /* Body text / 正文 */
+        .cd-body {
+            font-size: clamp(0.95rem, 1.6vw, 1.15rem);
+            line-height: 1.8;
+            color: var(--text);
+        }
+
+        /* Muted / secondary text / 次要文字 */
+        .cd-muted {
+            color: var(--text-muted);
+        }
+
+        /* Large stat number / 大号数据数字 */
+        .cd-stat {
+            font-family: "Playfair Display", Georgia, serif;
+            font-weight: 700;
+            font-size: clamp(2.5rem, 6vw, 5rem);
+            color: var(--accent);
+            line-height: 1;
+        }
+
+        /* Stat label below number / 数字下方的说明文字 */
+        .cd-stat-label {
+            font-size: clamp(0.8rem, 1.2vw, 0.95rem);
+            color: var(--text-muted);
+            margin-top: 0.4rem;
+        }
+
+        /* Pull quote / 引言大字 */
+        .cd-quote {
+            font-family: "Playfair Display", Georgia, serif;
+            font-weight: 700;
+            font-size: clamp(1.4rem, 3vw, 2.5rem);
+            line-height: 1.35;
+            color: var(--text);
+        }
+
+        /* Quote attribution / 引言来源 */
+        .cd-attribution {
+            font-size: clamp(0.8rem, 1.2vw, 0.95rem);
+            color: var(--text-muted);
+            margin-top: 1rem;
+        }
+
+        /* =============================================
+           LAYOUT COMPONENTS / 布局组件
+           ============================================= */
+
+        /* Card / 卡片 */
+        .cd-card {
+            background: var(--bg-secondary);
+            border-radius: 16px;
+            padding: clamp(1.25rem, 2.5vw, 2rem);
+        }
+
+        /* 2-column grid / 双栏网格 */
+        .cd-cols2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: clamp(1rem, 2vw, 2rem);
+        }
+
+        /* 3-column grid / 三栏网格 */
+        .cd-cols3 {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: clamp(0.75rem, 1.5vw, 1.5rem);
+        }
+
+        /* Bullet list / 要点列表 */
+        .cd-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+        .cd-list li {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.75rem;
+            font-size: clamp(0.95rem, 1.6vw, 1.1rem);
+            line-height: 1.6;
+        }
+        .cd-list li::before {
+            content: '—';
+            color: var(--accent);
+            font-weight: 600;
+            flex-shrink: 0;
+            margin-top: 0.05em;
+        }
+
+        /* Divider with coral centre dot / 带珊瑚圆点的分隔线 */
+        .cd-divider {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: clamp(1rem, 2.5vh, 2rem) 0;
+            color: var(--rule);
+        }
+        .cd-divider::before, .cd-divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: currentColor;
+        }
+        .cd-divider-dot {
+            width: 6px; height: 6px;
+            border-radius: 50%;
+            background: var(--accent);
+            flex-shrink: 0;
+        }
+
+        /* =============================================
+           PROGRESS BAR / 顶部进度条
+           ============================================= */
+        .progress-bar {
+            position: fixed;
+            top: 0; left: 0;
+            height: 3px;
+            background: var(--accent);
+            width: 0%;
+            z-index: 200;
+            transition: width 0.3s ease;
+        }
+
+        /* =============================================
+           NAV DOTS / 右侧导航点
+           ============================================= */
+        .nav-dots {
+            position: fixed;
+            right: 1.5rem;
+            top: 50%;
+            transform: translateY(-50%);
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            z-index: 100;
+        }
+
+        /* =============================================
+           ENTRANCE ANIMATION / 入场动画
+           Add class "cd-reveal" to elements that should fade up.
+           在需要淡入的元素上加 class="cd-reveal"。
+           ============================================= */
+        .cd-reveal {
+            opacity: 0;
+            transform: translateY(18px);
+            transition: opacity 0.7s ease, transform 0.7s ease;
+        }
+        .slide.visible .cd-reveal              { opacity: 1; transform: translateY(0); }
+        .slide.visible .cd-reveal:nth-child(1) { transition-delay: 0.05s; }
+        .slide.visible .cd-reveal:nth-child(2) { transition-delay: 0.18s; }
+        .slide.visible .cd-reveal:nth-child(3) { transition-delay: 0.31s; }
+        .slide.visible .cd-reveal:nth-child(4) { transition-delay: 0.44s; }
+        .slide.visible .cd-reveal:nth-child(5) { transition-delay: 0.57s; }
+
+        /* Respect system reduced-motion preference
+           尊重系统"减少动画"设置 */
+        @media (prefers-reduced-motion: reduce) {
+            .cd-reveal { transition: none; opacity: 1; transform: none; }
+        }
+
+        /* =============================================
+           PRINT / EXPORT — hide UI chrome
+           打印/导出时隐藏界面元素
+           ============================================= */
+        @media print {
+            .progress-bar, .nav-dots { display: none; }
+        }
+
+        /* =============================================
+           EDIT MODE — button + notes panel
+           编辑模式 — 按钮与备注面板
+           ============================================= */
+        .edit-hotzone {
+            position: fixed; top: 0; left: 0; width: 80px; height: 80px;
+            z-index: 10000; cursor: pointer;
+        }
+        .edit-toggle {
+            position: fixed; top: 16px; left: 16px;
+            background: rgba(44,26,14,0.08); border: 1px solid rgba(44,26,14,0.15);
+            color: var(--text); border-radius: 8px; padding: 6px 12px; font-size: 0.82rem;
+            opacity: 0; pointer-events: none; cursor: pointer;
+            transition: opacity 0.3s ease; z-index: 10001;
+        }
+        .edit-toggle.show { opacity: 1; pointer-events: auto; }
+        .edit-toggle.active { opacity: 1; pointer-events: auto; background: var(--accent); color: #fff; border-color: var(--accent); }
+
+        /* Notes panel / 备注面板 */
+        #notes-panel {
+            display: none; position: fixed; bottom: 0; left: 0; right: 0;
+            z-index: 9998;
+            background: rgba(253,250,246,0.96);
+            backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+            border-top: 1px solid var(--rule);
+        }
+        #notes-panel.active { display: flex; flex-direction: column; }
+        #notes-panel-header {
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 0.45rem 1.4rem; cursor: pointer; user-select: none;
+        }
+        #notes-panel-header:hover { background: rgba(44,26,14,0.03); }
+        #notes-panel-label {
+            flex: 1; font-size: 0.58rem; letter-spacing: 0.16em;
+            text-transform: uppercase; color: var(--text-muted);
+        }
+        #notes-drag-hint { flex: 1; display: flex; justify-content: center; }
+        #notes-drag-hint::after {
+            content: ''; display: block; width: 36px; height: 3px;
+            border-radius: 2px; background: rgba(44,26,14,0.2);
+        }
+        #notes-panel-header:hover #notes-drag-hint::after { background: rgba(44,26,14,0.4); }
+        #notes-collapse-btn {
+            flex: 1; text-align: right; font-size: 1rem; color: var(--text-muted);
+            background: none; border: none; cursor: pointer;
+            transition: color 0.15s, transform 0.2s;
+        }
+        #notes-collapse-btn:hover { color: var(--text); }
+        #notes-body { padding: 0 1.4rem 0.75rem; }
+        #notes-panel.collapsed #notes-body { display: none; }
+        #notes-panel.collapsed #notes-collapse-btn { transform: rotate(180deg); }
+        #notes-textarea {
+            width: 100%; height: 72px; min-height: 48px; max-height: 200px;
+            resize: vertical; background: transparent; border: none; outline: none;
+            color: var(--text); font-size: 0.88rem; line-height: 1.65;
+            font-family: "Source Sans 3", system-ui, sans-serif; caret-color: var(--accent);
+        }
+        #notes-textarea::placeholder { color: var(--text-muted); opacity: 0.5; }
+    </style>
+</head>
+<body>
+
+    <!-- Progress bar / 进度条 -->
+    <div class="progress-bar"></div>
+
+    <!-- Navigation dots (generated by JS) / 导航点（由 JS 生成） -->
+    <nav class="nav-dots" aria-label="Slide navigation / 幻灯片导航"></nav>
+
+    <!-- Edit mode button (top-left hotzone) / 编辑按钮（左上角热区） -->
+    <div class="edit-hotzone"></div>
+    <button class="edit-toggle" id="editToggle" title="Edit mode (E) / 编辑模式">✏ Edit</button>
+
+    <!-- Notes editor panel — shown in edit mode, collapsible
+         备注编辑面板 — 编辑模式下显示，可收起 -->
+    <div id="notes-panel">
+        <div id="notes-panel-header">
+            <div id="notes-panel-label">SPEAKER NOTES / 备注 — SLIDE 1 / N</div>
+            <div id="notes-drag-hint"></div>
+            <button id="notes-collapse-btn" title="Collapse / expand · 收起/展开">▾</button>
+        </div>
+        <div id="notes-body">
+            <textarea id="notes-textarea" placeholder="Add speaker notes for this slide… / 在此输入本页备注…"></textarea>
+        </div>
+    </div>
+
+    <!-- ==============================================
+         SLIDE 1 — TITLE / 封面页
+         Use for: opening, event name, speaker intro
+         用途：开场、活动名称、演讲者介绍
+         No accent bar on title slides.
+         封面页不加左侧竖条。
+         ============================================== -->
+    <section class="slide"
+             data-notes="Introduce yourself and the talk. Pause after showing the title — let the room settle. 介绍自己和本次演讲主题。展示标题后停顿片刻，让观众进入状态。"
+             aria-label="Title slide / 封面页">
+
+        <div class="cd-label cd-reveal">Category · Topic</div>
+        <!-- 眉标：类别 · 话题 -->
+
+        <h1 class="cd-title cd-reveal">Your Presentation<br>Title Here</h1>
+        <!-- 主标题：可换行 -->
+
+        <div class="cd-divider cd-reveal"><div class="cd-divider-dot"></div></div>
+
+        <p class="cd-body cd-muted cd-reveal">Subtitle or one-line description · Speaker Name · Date</p>
+        <!-- 副标题或一行描述 · 演讲者姓名 · 日期 -->
+
+    </section>
+
+    <!-- ==============================================
+         SLIDE 2 — CONTENT with bullet list / 内容页（要点列表）
+         Use for: key points, arguments, process steps
+         用途：核心论点、流程步骤、关键信息
+         Add class "accented" for the left coral bar.
+         加 class="slide accented" 显示左侧珊瑚竖条。
+         ============================================== -->
+    <section class="slide accented"
+             data-notes="Walk through each point. Pause at bullet 2 — it's the most important one. Give the audience time to absorb each item before moving on. 逐条讲解。在第二条停顿——这是最重要的。每条给观众时间消化再往下。"
+             aria-label="Content slide / 内容页">
+
+        <div class="cd-label cd-reveal">Section Name / 章节名称</div>
+        <h2 class="cd-heading cd-reveal">Slide Heading Goes Here</h2>
+
+        <div class="cd-divider cd-reveal"><div class="cd-divider-dot"></div></div>
+
+        <ul class="cd-list">
+            <li class="cd-reveal">First key point — keep each bullet to one line if possible. 第一个要点——每条尽量控制在一行。</li>
+            <li class="cd-reveal">Second key point — this is the most important one, slow down here. 第二个要点——最重要，这里放慢节奏。</li>
+            <li class="cd-reveal">Third key point — end with a transition to the next slide. 第三个要点——以过渡语结束引入下一张。</li>
+        </ul>
+        <!-- Max 4-5 bullets per slide. Split if more.
+             每页最多 4-5 条。超出则拆为两张。 -->
+
+    </section>
+
+    <!-- ==============================================
+         SLIDE 3 — STATS / 数据页
+         Use for: metrics, achievements, key numbers
+         用途：指标展示、成果数字、核心数据
+         3 stats = 3 columns. Use 2 for larger numbers.
+         3 个数字用三栏，数字较大时用两栏。
+         ============================================== -->
+    <section class="slide"
+             data-notes="Let the numbers breathe — read each one aloud clearly. If a number surprises the audience, pause and let it land. 让数字有呼吸感——清晰地朗读每一个。如果数字令观众惊讶，停顿一下让它沉淀。"
+             aria-label="Stats slide / 数据页">
+
+        <div class="cd-label cd-reveal">Results / 成果</div>
+        <h2 class="cd-heading cd-reveal">Numbers That Matter</h2>
+
+        <div class="cd-divider cd-reveal"><div class="cd-divider-dot"></div></div>
+
+        <div class="cd-cols3 cd-reveal">
+            <!-- Stat card 1 / 数据卡片 1 -->
+            <div class="cd-card">
+                <div class="cd-stat">87%</div>
+                <div class="cd-stat-label">User satisfaction<br>用户满意度</div>
+            </div>
+            <!-- Stat card 2 / 数据卡片 2 -->
+            <div class="cd-card">
+                <div class="cd-stat">3×</div>
+                <div class="cd-stat-label">Faster than before<br>效率提升</div>
+            </div>
+            <!-- Stat card 3 / 数据卡片 3 -->
+            <div class="cd-card">
+                <div class="cd-stat">50k</div>
+                <div class="cd-stat-label">Active users<br>活跃用户</div>
+            </div>
+        </div>
+        <!-- To use 2 stats: replace cd-cols3 with cd-cols2
+             两栏时：将 cd-cols3 改为 cd-cols2 -->
+
+    </section>
+
+    <!-- ==============================================
+         SLIDE 4 — FEATURE GRID / 特性网格页
+         Use for: product features, team members, pillars
+         用途：产品功能、团队成员、核心支柱
+         Max 3 cards to avoid overflow.
+         最多 3 张卡片，超出会溢出视口。
+         ============================================== -->
+    <section class="slide accented"
+             data-notes="Briefly introduce each card. One sentence per feature is enough — don't read the card text verbatim. 简短介绍每张卡片。每个功能一句话就够，不要照着卡片上的字逐字念。"
+             aria-label="Feature grid / 特性网格页">
+
+        <div class="cd-label cd-reveal">Features / 功能特性</div>
+        <h2 class="cd-heading cd-reveal">What Makes It Different</h2>
+
+        <div class="cd-divider cd-reveal"><div class="cd-divider-dot"></div></div>
+
+        <div class="cd-cols3 cd-reveal">
+            <div class="cd-card">
+                <div class="cd-label" style="margin-bottom:0.5rem">01</div>
+                <div class="cd-heading" style="font-size:clamp(1.1rem,2vw,1.4rem);margin-bottom:0.5rem">Feature Name</div>
+                <p class="cd-body" style="font-size:0.9rem">Short description of this feature in one or two sentences. 一两句话描述这个功能。</p>
+            </div>
+            <div class="cd-card">
+                <div class="cd-label" style="margin-bottom:0.5rem">02</div>
+                <div class="cd-heading" style="font-size:clamp(1.1rem,2vw,1.4rem);margin-bottom:0.5rem">Feature Name</div>
+                <p class="cd-body" style="font-size:0.9rem">Short description of this feature in one or two sentences. 一两句话描述这个功能。</p>
+            </div>
+            <div class="cd-card">
+                <div class="cd-label" style="margin-bottom:0.5rem">03</div>
+                <div class="cd-heading" style="font-size:clamp(1.1rem,2vw,1.4rem);margin-bottom:0.5rem">Feature Name</div>
+                <p class="cd-body" style="font-size:0.9rem">Short description of this feature in one or two sentences. 一两句话描述这个功能。</p>
+            </div>
+        </div>
+
+    </section>
+
+    <!-- ==============================================
+         SLIDE 5 — QUOTE / 引言页
+         Use for: customer testimonial, inspiring quote, key insight
+         用途：客户证言、启发性引言、核心洞察
+         No accent bar — the quote is the focal point.
+         不加竖条——引言本身就是视觉焦点。
+         ============================================== -->
+    <section class="slide"
+             style="text-align:center; align-items:center;"
+             data-notes="Read the quote slowly. Let it sit for 3 seconds before moving on. If it's a customer quote, mention who they are briefly. 缓慢朗读引言。朗读后停顿 3 秒再翻页。如果是客户引言，简短介绍一下这个人。"
+             aria-label="Quote slide / 引言页">
+
+        <!-- Decorative opening quote mark / 装饰性开引号 -->
+        <div class="cd-reveal" style="font-family:'Playfair Display',serif;font-size:5rem;line-height:0.5;color:var(--accent);opacity:0.3;margin-bottom:1rem">"</div>
+
+        <blockquote class="cd-quote cd-reveal" style="max-width:700px">
+            The insight or testimonial goes here. Keep it to two or three lines maximum.
+            <!-- 引言或证言内容。最多两三行。 -->
+        </blockquote>
+
+        <div class="cd-divider cd-reveal" style="max-width:200px;margin:1.5rem auto"><div class="cd-divider-dot"></div></div>
+
+        <p class="cd-attribution cd-reveal">
+            — Person Name, Title at Company<br>
+            <!-- 姓名，职位，公司 -->
+            <span class="cd-muted" style="font-size:0.85em">Year · Context</span>
+        </p>
+
+    </section>
+
+    <!-- ==============================================
+         SLIDE 6 — CLOSING / 结尾页
+         Use for: call to action, thank you, next steps
+         用途：行动号召、感谢、下一步
+         No accent bar — mirrors the clean title slide.
+         不加竖条——与封面页的干净风格对应。
+         ============================================== -->
+    <section class="slide"
+             data-notes="Thank the audience. State the one thing you want them to remember or do. Leave contact info on screen during Q&A. 感谢观众。说出你希望他们记住或做到的一件事。Q&A 环节期间让联系方式留在屏幕上。"
+             aria-label="Closing slide / 结尾页">
+
+        <div class="cd-label cd-reveal">Thank You / 谢谢</div>
+        <h2 class="cd-title cd-reveal">One Line Call to Action</h2>
+        <!-- 一行行动号召语 -->
+
+        <div class="cd-divider cd-reveal"><div class="cd-divider-dot"></div></div>
+
+        <p class="cd-body cd-muted cd-reveal">
+            contact@example.com · yourwebsite.com
+            <!-- 联系方式 -->
+        </p>
+
+    </section>
+
+    <!-- ==============================================
+         PRESENTATION CONTROLLER / 演示控制器
+         Do not modify this block unless you know what you're doing.
+         除非你清楚地知道在做什么，否则不要修改这段代码。
+         ============================================== -->
+    <script>
+        class SlidePresentation {
+            constructor() {
+                this.slides = document.querySelectorAll('.slide');
+                this.currentSlide = 0;
+                this.channel = new BroadcastChannel('slide-creator-presenter');
+
+                this.setupNavDots();
+                this.setupObserver();
+                this.setupKeyboard();
+                this.setupTouch();
+                this.setupWheel();
+                this.setupPresenter();
+                this.setupEditor(); /* notes editing panel / 备注编辑面板 */
+                this.updateProgress();
+            }
+
+            setupNavDots() {
+                const nav = document.querySelector('.nav-dots');
+                if (!nav) return;
+                this.slides.forEach((_, i) => {
+                    const dot = document.createElement('button');
+                    dot.setAttribute('aria-label', `Slide ${i + 1} / 第${i + 1}张`);
+                    dot.style.cssText = 'width:8px;height:8px;border-radius:50%;border:none;cursor:pointer;background:rgba(44,26,14,0.2);transition:all 0.3s;';
+                    dot.addEventListener('click', () => this.goTo(i));
+                    nav.appendChild(dot);
+                });
+            }
+
+            setupObserver() {
+                const observer = new IntersectionObserver((entries) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            entry.target.classList.add('visible');
+                            this.currentSlide = [...this.slides].indexOf(entry.target);
+                            this.updateProgress();
+                            this.updateDots();
+                            this.broadcastState();
+                            this.updateNotesPanel(); /* refresh notes textarea on slide change / 换页时刷新备注编辑框 */
+                        }
+                    });
+                }, { threshold: 0.5 });
+                this.slides.forEach(s => observer.observe(s));
+            }
+
+            setupKeyboard() {
+                document.addEventListener('keydown', (e) => {
+                    /* Skip navigation when typing in editable content or notes textarea
+                       在可编辑内容或备注输入框中输入时跳过导航 */
+                    if (e.target.getAttribute('contenteditable') || e.target.tagName === 'TEXTAREA') return;
+                    if (e.key === 'ArrowDown' || e.key === 'ArrowRight' || e.key === ' ') {
+                        e.preventDefault(); this.next();
+                    } else if (e.key === 'ArrowUp' || e.key === 'ArrowLeft') {
+                        e.preventDefault(); this.prev();
+                    } else if (e.key === 'p' || e.key === 'P') {
+                        /* Open presenter window / 打开演讲者窗口 */
+                        const url = location.href.split('?')[0] + '?presenter';
+                        window.open(url, 'slide-presenter-' + Date.now(), 'width=1000,menubar=no,toolbar=no,location=no');
+                    } else if (e.key === 'e' || e.key === 'E') {
+                        this.editor?.toggle();
+                    }
+                });
+            }
+
+            setupTouch() {
+                let startY = 0;
+                document.addEventListener('touchstart', e => { startY = e.touches[0].clientY; }, { passive: true });
+                document.addEventListener('touchend', e => {
+                    const delta = startY - e.changedTouches[0].clientY;
+                    if (Math.abs(delta) > 50) delta > 0 ? this.next() : this.prev();
+                });
+            }
+
+            setupWheel() {
+                /* Debounce-reset: prevents trackpad inertia from skipping slides
+                   防抖重置：防止触控板惯性跳页 */
+                let locked = false, timer = null;
+                document.addEventListener('wheel', e => {
+                    clearTimeout(timer);
+                    if (!locked) { locked = true; e.deltaY > 0 ? this.next() : this.prev(); }
+                    timer = setTimeout(() => { locked = false; }, 180);
+                }, { passive: true });
+            }
+
+            setupPresenter() {
+                this.channel.addEventListener('message', e => {
+                    if (e.data.type === 'nav-next') this.next();
+                    else if (e.data.type === 'nav-prev') this.prev();
+                    else if (e.data.type === 'request-state') this.broadcastState();
+                });
+            }
+
+            broadcastState() {
+                const slide = this.slides[this.currentSlide];
+                this.channel.postMessage({
+                    type: 'state',
+                    index: this.currentSlide,
+                    total: this.slides.length,
+                    notes: slide?.dataset.notes || ''
+                });
+            }
+
+            goTo(index) { this.slides[index]?.scrollIntoView({ behavior: 'smooth' }); }
+            next() { this.goTo(Math.min(this.currentSlide + 1, this.slides.length - 1)); }
+            prev() { this.goTo(Math.max(this.currentSlide - 1, 0)); }
+
+            updateProgress() {
+                const pct = (this.currentSlide / (this.slides.length - 1)) * 100;
+                const bar = document.querySelector('.progress-bar');
+                if (bar) bar.style.width = pct + '%';
+            }
+
+            updateDots() {
+                document.querySelectorAll('.nav-dots button').forEach((dot, i) => {
+                    dot.style.background = i === this.currentSlide
+                        ? 'var(--accent)'
+                        : 'rgba(44,26,14,0.2)';
+                    dot.style.transform = i === this.currentSlide ? 'scale(1.3)' : 'scale(1)';
+                });
+            }
+
+            /* ── Notes editing panel / 备注编辑面板 ──────────────────────────
+               Shown at bottom in edit mode. Click header to collapse/expand.
+               编辑模式下显示在底部，点击标题栏可收起/展开。                    */
+            setupEditor() {
+                const panel    = document.getElementById('notes-panel');
+                const label    = document.getElementById('notes-panel-label');
+                const textarea = document.getElementById('notes-textarea');
+                const toggle   = document.getElementById('editToggle');
+                const hotzone  = document.querySelector('.edit-hotzone');
+                if (!panel || !toggle || !hotzone) return; /* edit mode not opted in / 未启用编辑模式 */
+                let hideTimeout = null;
+
+                /* Hotzone hover — show toggle with 400ms grace
+                   热区悬停 — 400ms 缓冲后隐藏按钮 */
+                hotzone.addEventListener('mouseenter', () => { clearTimeout(hideTimeout); toggle.classList.add('show'); });
+                hotzone.addEventListener('mouseleave', () => { hideTimeout = setTimeout(() => { if (!this.editor.active) toggle.classList.remove('show'); }, 400); });
+                toggle.addEventListener('mouseenter', () => clearTimeout(hideTimeout));
+                toggle.addEventListener('mouseleave', () => { hideTimeout = setTimeout(() => { if (!this.editor.active) toggle.classList.remove('show'); }, 400); });
+                hotzone.addEventListener('click', () => this.editor.toggle());
+                toggle.addEventListener('click',   () => this.editor.toggle());
+
+                /* Click header to collapse/expand notes body
+                   点击标题栏收起或展开备注区域 */
+                document.getElementById('notes-panel-header').addEventListener('click', () => {
+                    panel.classList.toggle('collapsed');
+                });
+
+                /* Textarea input → update data-notes + broadcast to presenter window
+                   输入时更新 data-notes 并实时广播给演讲者窗口 */
+                textarea.addEventListener('input', () => {
+                    const slide = this.slides[this.currentSlide];
+                    if (slide) { slide.dataset.notes = textarea.value; this.broadcastState(); }
+                });
+
+                /* Ctrl/Cmd+S save / 保存 */
+                document.addEventListener('keydown', (e) => {
+                    if ((e.ctrlKey || e.metaKey) && e.key === 's') { e.preventDefault(); this.saveFile(); }
+                });
+
+                this.editor = {
+                    active: false,
+                    toggle: () => this.editor.active ? this.editor.exit() : this.editor.enter(),
+                    enter: () => {
+                        this.editor.active = true;
+                        toggle.classList.add('active'); toggle.textContent = '✓ Done';
+                        this.slides.forEach(s => {
+                            s.querySelectorAll('h1,h2,h3,p,li,span,td,th').forEach(el => {
+                                el.setAttribute('contenteditable', 'true'); el.style.outline = 'none';
+                            });
+                        });
+                        panel.classList.add('active');
+                        this.updateNotesPanel();
+                    },
+                    exit: () => {
+                        this.editor.active = false;
+                        toggle.classList.remove('active'); toggle.textContent = '✏ Edit';
+                        this.slides.forEach(s => {
+                            s.querySelectorAll('[contenteditable]').forEach(el => {
+                                el.removeAttribute('contenteditable'); el.style.outline = '';
+                            });
+                        });
+                        panel.classList.remove('active');
+                    }
+                };
+
+                this._notesLabel    = label;
+                this._notesTextarea = textarea;
+            }
+
+            /* Refresh label + textarea value when slide changes or edit mode opens
+               换页或进入编辑模式时刷新标签和文本框内容 */
+            updateNotesPanel() {
+                if (!this.editor?.active) return;
+                const slide = this.slides[this.currentSlide];
+                this._notesLabel.textContent =
+                    `SPEAKER NOTES / 备注 — ${this.currentSlide + 1} / ${this.slides.length}`;
+                this._notesTextarea.value = slide?.dataset.notes || '';
+            }
+
+            /* Save HTML file — uses fetch PUT; falls back to download
+               保存 HTML 文件 — 优先 fetch PUT，失败则下载 */
+            saveFile() {
+                const html = '<!DOCTYPE html>\n' + document.documentElement.outerHTML;
+                fetch(location.pathname, {
+                    method: 'PUT', body: new TextEncoder().encode(html),
+                    headers: { 'Content-Type': 'text/html' }
+                }).catch(() => {
+                    const a = Object.assign(document.createElement('a'), {
+                        href: URL.createObjectURL(new Blob([html], { type: 'text/html' })),
+                        download: location.pathname.split('/').pop() || 'presentation.html'
+                    });
+                    a.click(); URL.revokeObjectURL(a.href);
+                });
+            }
+        }
+
+        /* =============================================
+           PRESENTER MODE / 演讲者模式
+           Opens when URL contains ?presenter
+           URL 包含 ?presenter 时激活
+           Press P in main window to open.
+           在主窗口按 P 键打开。
+           ============================================= */
+        if (new URLSearchParams(location.search).has('presenter')) {
+            document.title = 'Presenter — ' + document.title;
+            document.body.innerHTML = `
+            <style>
+                * { box-sizing: border-box; margin: 0; }
+                body { background: #111; color: #fff; font-family: system-ui, sans-serif; }
+                #pv { display: grid; grid-template-columns: 1fr 220px; gap: 1rem; padding: 1.25rem; align-items: start; }
+                .pv-panel { background: #1e1e1e; border-radius: 12px; padding: 1.25rem; }
+                #pv-label { font-size: 0.6rem; letter-spacing: 0.18em; text-transform: uppercase; color: #555; margin-bottom: 0.6rem; }
+                #pv-notes { font-size: 1.05rem; line-height: 1.85; color: #d0d0d0; }
+                #pv-right { display: flex; flex-direction: column; gap: 1rem; }
+                #pv-nav { display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; }
+                .pv-arrow { width: 32px; height: 32px; border-radius: 6px; border: 1px solid #333; background: #2a2a2a; color: #aaa; font-size: 1rem; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: background 0.15s, color 0.15s; flex-shrink: 0; }
+                .pv-arrow:hover { background: #383838; color: #fff; }
+                #pv-counter { text-align: center; flex: 1; }
+                #pv-num { font-size: 1.6rem; font-weight: 700; font-variant-numeric: tabular-nums; line-height: 1; }
+                #pv-of { color: #555; font-size: 0.75rem; margin-top: 0.2rem; }
+                #pv-timer-box { text-align: center; }
+                #pv-timer-label { font-size: 0.6rem; letter-spacing: 0.18em; text-transform: uppercase; color: #555; margin-bottom: 0.3rem; }
+                #pv-timer { font-size: 1.5rem; font-weight: 700; font-family: monospace; font-variant-numeric: tabular-nums; }
+            </style>
+            <div id="pv">
+                <div class="pv-panel">
+                    <div id="pv-label">Speaker Notes / 演讲备注</div>
+                    <div id="pv-notes">Waiting for main window… / 等待主窗口连接…</div>
+                </div>
+                <div id="pv-right">
+                    <div class="pv-panel">
+                        <div id="pv-nav">
+                            <button class="pv-arrow" id="pv-prev">←</button>
+                            <div id="pv-counter">
+                                <div id="pv-num">—</div>
+                                <div id="pv-of">/ —</div>
+                            </div>
+                            <button class="pv-arrow" id="pv-next">→</button>
+                        </div>
+                    </div>
+                    <div class="pv-panel" id="pv-timer-box">
+                        <div id="pv-timer-label">Elapsed / 已用时</div>
+                        <div id="pv-timer">0:00</div>
+                    </div>
+                </div>
+            </div>`;
+
+            const ch = new BroadcastChannel('slide-creator-presenter');
+            let startTime = null;
+
+            const pv = document.getElementById('pv');
+            let lastH = 0, roTimer = null;
+            new ResizeObserver(() => {
+                clearTimeout(roTimer);
+                roTimer = setTimeout(() => {
+                    const h = Math.ceil(pv.getBoundingClientRect().height);
+                    if (h === lastH) return;
+                    lastH = h;
+                    const chrome = window.outerHeight - window.innerHeight;
+                    window.resizeTo(window.outerWidth, Math.max(260, h + chrome + 4));
+                }, 40);
+            }).observe(pv);
+
+            ch.addEventListener('message', e => {
+                if (e.data.type !== 'state') return;
+                if (!startTime) startTime = Date.now();
+                document.getElementById('pv-notes').textContent = e.data.notes || '(no notes for this slide / 本页无备注)';
+                document.getElementById('pv-num').textContent = e.data.index + 1;
+                document.getElementById('pv-of').textContent = `/ ${e.data.total}`;
+            });
+
+            ch.postMessage({ type: 'request-state' });
+
+            setInterval(() => {
+                if (!startTime) return;
+                const s = Math.floor((Date.now() - startTime) / 1000);
+                document.getElementById('pv-timer').textContent =
+                    `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`;
+            }, 1000);
+
+            document.getElementById('pv-prev').addEventListener('click', () => ch.postMessage({ type: 'nav-prev' }));
+            document.getElementById('pv-next').addEventListener('click', () => ch.postMessage({ type: 'nav-next' }));
+            document.addEventListener('keydown', e => {
+                if (e.key === 'ArrowRight' || e.key === ' ') ch.postMessage({ type: 'nav-next' });
+                else if (e.key === 'ArrowLeft') ch.postMessage({ type: 'nav-prev' });
+            });
+        } else {
+            new SlidePresentation();
+        }
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,18 @@
+{
+  "name": "Wix",
+  "slug": "wix",
+  "detection_signals": [
+    "meta generator tag containing Wix",
+    "wixstatic.com in script sources"
+  ],
+  "detection_script": "!!document.querySelector('meta[name=\"generator\"][content*=\"Wix\"]') || !!document.querySelector('script[src*=\"wixstatic.com\"]')",
+  "checkout_type": "varies",
+  "checkout_processor": "varies",
+  "agent_friendliness": 0.5,
+  "guest_checkout": true,
+  "multi_step": false,
+  "requires_auth": false,
+  "last_verified": "2026-03-18",
+  "maturity": "experimental",
+  "notes": "Wix checkout behavior needs further research. Detection is reliable but navigation and checkout patterns vary heavily by template."
+}

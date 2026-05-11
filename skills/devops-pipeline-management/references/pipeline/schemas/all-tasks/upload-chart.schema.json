@@ -1,0 +1,64 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "upload-chart.schema.json",
+  "title": "UploadChart Task",
+  "description": "Helm Chart上传任务配置",
+  "type": "object",
+  "required": ["taskCategory", "jobType", "name"],
+  "properties": {
+    "taskCategory": {
+      "type": "string",
+      "const": "Normal"
+    },
+    "jobType": {
+      "type": "string",
+      "const": "UploadChart"
+    },
+    "name": {
+      "type": "string",
+      "maxLength": 100,
+      "description": "任务名称"
+    },
+    "workPath": {
+      "type": "string",
+      "description": "工作目录"
+    },
+    "sourceId": {
+      "type": "string",
+      "description": "代码源ID"
+    },
+    "chartPath": {
+      "type": "string",
+      "description": "Chart路径"
+    },
+    "chartName": {
+      "type": "string",
+      "description": "Chart名称"
+    },
+    "chartVersion": {
+      "type": "string",
+      "default": "${BUILD_NUMBER}",
+      "description": "Chart版本"
+    },
+    "repoUrl": {
+      "type": "string",
+      "description": "Helm仓库地址"
+    },
+    "repoUsername": {
+      "type": "string",
+      "description": "仓库用户名"
+    },
+    "repoPassword": {
+      "type": "string",
+      "description": "仓库密码（凭证ID）"
+    },
+    "idInTemplate": {
+      "type": "string"
+    },
+    "dependencies": {
+      "type": "array",
+      "items": { "type": "string" },
+      "default": []
+    }
+  }
+}

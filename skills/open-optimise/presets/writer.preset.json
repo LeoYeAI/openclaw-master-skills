@@ -1,0 +1,17 @@
+{
+  "name": "writer",
+  "description": "Writing-focused. Sonnet for quality prose, DeepSeek for research and outlines.",
+  "author": "cost-optimizer",
+  "version": "5.0.0",
+  "created": "2026-03-15T00:00:00Z",
+  "config": {
+    "model": {
+      "primary": "anthropic/claude-sonnet-4-6",
+      "fallbacks": ["deepseek/deepseek-v3.2", "anthropic/claude-haiku-4-5"]
+    },
+    "heartbeat": { "every": "55m", "model": "deepseek/deepseek-v3.2", "target": "last" },
+    "compaction": { "memoryFlush": { "enabled": true, "softThresholdTokens": 5000 } },
+    "maxConcurrent": 2,
+    "subagentsMaxConcurrent": 2
+  }
+}

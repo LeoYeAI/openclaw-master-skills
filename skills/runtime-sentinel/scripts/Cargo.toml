@@ -1,0 +1,98 @@
+[package]
+name = "sentinel"
+version = "0.1.0"
+edition = "2021"
+description = "Runtime security guardian for OpenClaw agents"
+license = "Apache-2.0"
+repository = "https://github.com/spaceman420urdog-afk/runtime-sentinel"
+rust-version = "1.77"
+
+[[bin]]
+name = "sentinel"
+path = "src/main.rs"
+
+[dependencies]
+# CLI
+clap = { version = "4", features = ["derive", "env"] }
+
+# Async runtime
+tokio = { version = "1", features = ["full"] }
+
+# Ethereum / Base / x402
+alloy = { version = "0.3", features = [
+    "signers",
+    "signer-local",
+    "signer-mnemonic",
+    "provider-http",
+    "rpc-types",
+    "network",
+    "sol-types",
+    "primitives",
+] }
+
+# HTTP client
+reqwest = { version = "0.12", features = ["json", "rustls-tls"], default-features = false }
+
+# Serialization
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+
+# Filesystem watching
+notify = { version = "6", features = ["serde"] }
+
+# Hashing
+sha2 = "0.10"
+hex = "0.4"
+
+# Pattern matching
+regex = "1"
+once_cell = "1"
+base64 = "0.22"
+
+# Logging
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter", "json"] }
+
+# Secure memory
+zeroize = { version = "1", features = ["derive"] }
+
+# Wallet keystore (AES-128-CTR + scrypt, eth-keystore v3 format)
+eth-keystore = "0.5"
+
+# BIP-39 mnemonic generation and validation
+bip39 = "2"
+
+# Randomness (nonce generation, keystore salt, machine secret)
+rand = "0.8"
+
+# Machine-secret passphrase derivation
+argon2 = "0.5"
+
+# Mnemonic encryption at rest
+aes-gcm = "0.10"
+
+# Entropy analysis for credential detection
+entropy = "0.4"
+
+# Error handling
+anyhow = "1"
+thiserror = "1"
+libc = "0.2"
+
+# Time
+chrono = { version = "0.4", features = ["serde"] }
+dirs = "5"
+
+[dev-dependencies]
+tempfile = "3"
+tokio-test = "0.4"
+
+[features]
+default = []
+integration = []   # enables integration tests requiring a funded testnet wallet
+
+[profile.release]
+strip = true
+lto = true
+codegen-units = 1
+panic = "abort"

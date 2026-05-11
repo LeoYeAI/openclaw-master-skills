@@ -1,0 +1,8 @@
+{
+  "$comment": "Basic Clerk JWT Template - Role-Based Access Control",
+  "$description": "This template includes minimal user information for role-based authentication. Copy this JSON (without comments) into Clerk Dashboard > Sessions > Customize session token > Create template.",
+
+  "user_id": "{{user.id}}",
+  "email": "{{user.primary_email_address}}",
+  "role": "{{user.public_metadata.role || 'user'}}"
+}

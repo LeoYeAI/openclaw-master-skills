@@ -1,0 +1,67 @@
+# FluidEPProgramManager selectors — computed from @sfpro/sdk ABI
+
+functions:
+  batchUpdateUnits(uint256[],uint256[],uint256,bytes):        0x633b1afe
+  batchUpdateUserUnits(address,uint256[],uint256[],uint256,bytes): 0xf9f2fcbe
+  buildBatchOperations(address,bytes,address):                0xd052b023
+  calculateAllowances(uint256,uint256,uint32):                0x495531d6
+  cancelProgram(uint256):                                     0x89a2d0f6
+  createProgram(uint256,address,address,address,string,string): 0x39a81938
+  EARLY_PROGRAM_END():                                        0xf6d3d806
+  emergencyWithdraw(address):                                 0x6ff1c9bc
+  fluidLockerFactory():                                       0x238185ea
+  fluidTreasury():                                            0x7011d568
+  getNextValidNonce(uint256,address):                         0x7b650b51
+  getProgramDetails(uint256):                                 0x9b46c801
+  getProgramPool(uint256):                                    0x7e5448fd
+  initialize(address,address):                                0x485cc955
+  manualPoolUpdate(uint256,uint256[],address[]):              0x1fdd7a7d
+  manualPoolUpdate(uint256,uint256,address):                  0x4bfb17b7
+  owner():                                                    0x8da5cb5b
+  paramsGivePermission(uint256,uint256,uint32):               0x1c952613
+  postCheck(address,bytes,address):                           0x9989bef3
+  programs(uint256):                                          0x92db2816
+  renounceOwnership():                                        0x715018a6
+  setLockerFactory(address):                                  0x93b3aeb6
+  setSubsidyRate(uint96):                                     0x3fc26f34
+  setTreasury(address):                                       0xf0f44260
+  startFunding(uint256,uint256,uint32):                       0xe8f13881
+  stopFunding(uint256):                                       0xbee2ecc0
+  subsidyFundingRate():                                       0xe161983d
+  TAX_DISTRIBUTION_POOL():                                    0x99e570b8
+  transferOwnership(address):                                 0xf2fde38b
+  updateProgramSigner(uint256,address):                       0x74d58c78
+  updateUnits(uint256,uint256,uint256,bytes):                 0x220279b1
+  updateUserUnits(address,uint256,uint256,uint256,bytes):     0xc334e1ba
+  upgradeTo(address,bytes):                                   0x6fbc15e9
+
+events:
+  Initialized(uint64):                                     0xc7f505b2f371ae2175ee4913f4499e1f2633a7b5936321eed1cdaeb6115181d2
+  OwnershipTransferred(address,address):                   0x8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e0
+  ProgramCancelled(uint256,uint256):                       0x19f9cba638a1c131ca28ff5e163d61d64b1be0796a345aeb8c0f6716ba67955a
+  ProgramCreated(uint256,address,address,address,address): 0x31d13f15987915561c2390f6f960650d84b700b7e57ba6b66a44698a2de587fc
+  ProgramFunded(uint256,uint256,uint256,uint256,uint256):  0x45ab11ad12c569dd83eec204772e5246ec85707e20a0308fa4d083bbca313cd7
+  ProgramSignerUpdated(uint256,address):                   0x00d1f454e17b1b172d37e295e3a176b6b52a506d4031644091e70c047be2e6ad
+  ProgramStopped(uint256,uint256,uint256):                 0xa330b646c4d8646770f0c33e5ad9d6244ffe14923ac62529b653d12b9c80215c
+  Upgraded(address):                                       0xbc7cd75a20ee27fd9adebab32041f755214dbc6bffa90cc0225b39da2e5c2d3b
+  UserUnitsUpdated(address,uint256,uint256):               0x7ba6f2998d2c8717d06acab39a992d826d38d54a40563b75eb711a141c9f0cb6
+
+errors:
+  AddressEmptyCode(address):                   0x9996b315
+  CFA_INVALID_FLOW_RATE():                     0x91acad16
+  ERC1967InvalidImplementation(address):       0x4c9c8ce3
+  ERC1967NonPayable():                         0xb398979f
+  FailedInnerCall():                           0x1425ea42
+  INVALID_PARAMETER():                         0x4c4f685a
+  INVALID_SIGNATURE(string):                   0x30f01ccf
+  InvalidInitialization():                     0xf92ee8a9
+  LOCKER_NOT_FOUND():                          0x2d2cd50c
+  NOT_PROGRAM_ADMIN():                         0x4c7f89d7
+  NotInitializing():                           0xd7e6bcf8
+  OwnableInvalidOwner(address):                0x1e4fbdf7
+  OwnableUnauthorizedAccount(address):         0x118cdaa7
+  POOL_HAS_NO_UNITS():                         0x93005752
+  PROGRAM_ALREADY_CREATED():                   0x3a33ee23
+  PROGRAM_NOT_FOUND():                         0xe199f4fa
+  SafeCastOverflowedIntDowncast(uint8,int256): 0x327269a7
+  TOO_EARLY_TO_END_PROGRAM():                  0xc582137f

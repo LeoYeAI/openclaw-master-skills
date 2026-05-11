@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: #0f0f0f;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding: 40px;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  }
+  .card {
+    width: 680px;
+    background: linear-gradient(135deg, #0d1117 0%, #161b22 100%);
+    border-radius: 20px;
+    padding: 56px 52px;
+    border: 1px solid rgba(255,255,255,0.06);
+    box-shadow: 0 24px 80px rgba(0,0,0,0.6);
+    position: relative;
+    overflow: hidden;
+  }
+  .card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, #f85149 0%, #f0883e 50%, #f85149 100%);
+  }
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(248,81,73,0.1);
+    border: 1px solid rgba(248,81,73,0.25);
+    color: #f85149;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+    padding: 6px 14px;
+    border-radius: 6px;
+    margin-bottom: 24px;
+  }
+  .title {
+    color: #f0f6fc;
+    font-size: 32px;
+    font-weight: 800;
+    line-height: 1.2;
+    margin-bottom: 10px;
+    letter-spacing: -0.5px;
+  }
+  .subtitle {
+    color: #8b949e;
+    font-size: 16px;
+    font-weight: 400;
+    margin-bottom: 36px;
+    line-height: 1.5;
+  }
+  .features {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    margin-bottom: 36px;
+  }
+  .feature {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+  }
+  .feature-icon {
+    width: 40px;
+    height: 40px;
+    min-width: 40px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    margin-top: 1px;
+  }
+  .icon-red { background: rgba(248,81,73,0.12); }
+  .icon-orange { background: rgba(240,136,62,0.12); }
+  .icon-green { background: rgba(63,185,80,0.12); }
+  .icon-blue { background: rgba(121,192,255,0.12); }
+  .feature-text h3 {
+    color: #e6edf3;
+    font-size: 15px;
+    font-weight: 600;
+    margin-bottom: 3px;
+  }
+  .feature-text p {
+    color: #7d8590;
+    font-size: 13.5px;
+    font-weight: 400;
+    line-height: 1.45;
+  }
+  .footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-top: 28px;
+    border-top: 1px solid rgba(255,255,255,0.06);
+  }
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .brand-icon {
+    width: 28px;
+    height: 28px;
+    background: linear-gradient(135deg, #f0883e, #f85149);
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    font-weight: 800;
+    color: white;
+  }
+  .brand-name {
+    color: #e6edf3;
+    font-size: 16px;
+    font-weight: 700;
+    letter-spacing: -0.3px;
+  }
+  .version {
+    color: #484f58;
+    font-size: 13px;
+    font-weight: 500;
+  }
+  .commands {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  .cmd-tag {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.08);
+    color: #7d8590;
+    font-family: 'SF Mono', 'Fira Code', Menlo, monospace;
+    font-size: 11.5px;
+    padding: 4px 10px;
+    border-radius: 5px;
+  }
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="badge">
+    <span>&#9632;</span>
+    Safety Release
+  </div>
+
+  <div class="title">Safety hardening for<br>AI-controlled printers</div>
+  <div class="subtitle">When AI agents control physical machines, the emergency stop needs to be more than a software flag.</div>
+
+  <div class="features">
+    <div class="feature">
+      <div class="feature-icon icon-red">&#128721;</div>
+      <div class="feature-text">
+        <h3>Persistent E-stop latch</h3>
+        <p>Survives software restarts. The printer stays stopped until a human says otherwise.</p>
+      </div>
+    </div>
+
+    <div class="feature">
+      <div class="feature-icon icon-orange">&#9995;</div>
+      <div class="feature-text">
+        <h3>Explicit acknowledge-to-clear</h3>
+        <p>No silent resume. A human must inspect, acknowledge, and clear before operations resume.</p>
+      </div>
+    </div>
+
+    <div class="feature">
+      <div class="feature-icon icon-blue">&#128683;</div>
+      <div class="feature-text">
+        <h3>Hard safety gates while latched</h3>
+        <p>Start, resume, dispatch, and hazardous G-code are all blocked. No exceptions, no workarounds.</p>
+      </div>
+    </div>
+
+    <div class="feature">
+      <div class="feature-icon icon-green">&#128268;</div>
+      <div class="feature-text">
+        <h3>External trip input</h3>
+        <p>Bridge physical E-stop buttons or PLC signals directly into the safety system.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer">
+    <div class="brand">
+      <div class="brand-icon">K</div>
+      <span class="brand-name">Kiln</span>
+    </div>
+    <div class="commands">
+      <span class="cmd-tag">emergency-stop</span>
+      <span class="cmd-tag">emergency-status</span>
+      <span class="cmd-tag">emergency-clear</span>
+    </div>
+  </div>
+</div>
+</body>
+</html>

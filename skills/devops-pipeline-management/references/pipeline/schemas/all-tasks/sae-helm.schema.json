@@ -1,0 +1,64 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "sae-helm.schema.json",
+  "title": "SaeHelm Task",
+  "description": "SAE Helm应用更新任务配置",
+  "type": "object",
+  "required": ["taskCategory", "jobType", "name"],
+  "properties": {
+    "taskCategory": {
+      "type": "string",
+      "const": "Deploy"
+    },
+    "jobType": {
+      "type": "string",
+      "const": "SaeHelm"
+    },
+    "name": {
+      "type": "string",
+      "maxLength": 100,
+      "description": "任务名称"
+    },
+    "workPath": {
+      "type": "string",
+      "description": "工作目录"
+    },
+    "sourceId": {
+      "type": "string",
+      "description": "代码源ID"
+    },
+    "releaseName": {
+      "type": "string",
+      "description": "Helm Release名称"
+    },
+    "namespace": {
+      "type": "string",
+      "description": "命名空间"
+    },
+    "chartPath": {
+      "type": "string",
+      "description": "Chart路径"
+    },
+    "valuesYaml": {
+      "type": "string",
+      "description": "values.yaml内容"
+    },
+    "imageRepo": {
+      "type": "string",
+      "description": "镜像仓库地址"
+    },
+    "imageTag": {
+      "type": "string",
+      "default": "${BUILD_NUMBER}",
+      "description": "镜像标签"
+    },
+    "idInTemplate": {
+      "type": "string"
+    },
+    "dependencies": {
+      "type": "array",
+      "items": { "type": "string" },
+      "default": []
+    }
+  }
+}

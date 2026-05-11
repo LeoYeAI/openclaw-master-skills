@@ -1,0 +1,31 @@
+# 深度集成测试 — 验证 Gateway Bridge 会话共享
+# 多次 LLM 调用在同一 session 中, Agent 能记住前几步的内容
+name: deep-integration-test
+description: 验证 OpenClaw Gateway Bridge 深度绑定 (session 共享上下文)
+
+steps:
+  - id: intro
+    name: "记住一个秘密数字"
+    type: llm
+    prompt: "请记住这个数字: 42。只需回复'好的,我记住了42'即可,不要说其他的。"
+
+  - id: recall
+    name: "回忆秘密数字"
+    type: llm
+    prompt: "请问我刚才让你记住的数字是多少? 只需要回复那个数字即可。"
+
+  - id: verify
+    name: "验证会话上下文"
+    type: log
+    message: "第一次LLM回复: {{intro.text}} | 第二次LLM回复: {{recall.text}}"
+    level: INFO
+
+  - id: agent_with_context
+    name: "Agent也共享session"
+    type: agent
+    message: "你是在一个工作流引擎中运行的。请简要总结我们刚才的对话内容。"
+
+  - id: summary
+    name: "深度集成验证完成"
+    type: log
+    message: "✅ 深度集成测试完成。Session共享验证: Agent总结 = {{agent_with_context.text}}"

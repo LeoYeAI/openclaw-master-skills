@@ -1,0 +1,474 @@
+skill: xaut-trade
+version: '1.0'
+triggers:
+  keywords:
+    - buy XAUT
+    - XAUT trade
+    - sell XAUT
+    - swap USDT for XAUT
+    - buy gold token
+    - swap XAUT for USDT
+    - limit order XAUT
+    - check limit order
+    - cancel limit order
+    - limit buy XAUT
+    - limit sell XAUT
+    - place limit order
+    - cancel order
+  patterns:
+    - buy.*XAUT
+    - sell.*XAUT
+    - XAUT.*sell
+    - wait.*drop.*XAUT
+    - wait.*rise.*XAUT
+    - limit order.*XAUT
+    - sell.*XAUT.*when.*price
+    - sell.*XAUT.*limit
+    - limit.*sell.*XAUT
+trigger_tests:
+  - input: help me buy XAUT
+    expect: match
+  - input: I want to buy XAUT with USDT
+    expect: match
+  - input: what's the weather today
+    expect: no_match
+  - input: help me sell XAUT
+    expect: match
+  - input: sell XAUT for USDT
+    expect: match
+  - input: swap XAUT for USDT
+    expect: match
+  - input: wait until XAUT drops to 3000 and place a buy order for 0.01
+    expect: match
+  - input: check my limit orders
+    expect: match
+  - input: cancel my limit order
+    expect: match
+  - input: when XAUT reaches 4000 sell 0.01
+    expect: match
+  - input: limit sell 0.01 XAUT at 3800
+    expect: match
+  - input: sell 0.01 XAUT when price reaches 4000
+    expect: match
+
+config:
+  complexity: L2
+  timeout: 60s
+  model: sonnet
+
+cases:
+  - id: tc-001
+    name: gate-insufficient-info-ask-first
+    input: help me buy XAUT
+    expect:
+      contains:
+        - ["please provide", "amount", "USDT", "confirm"]
+      not_contains:
+        - ["executed", "transaction complete", "tx hash"]
+      max_length: 900
+    tier: gate
+
+  - id: tc-002
+    name: flow-quote-preview-output
+    input: buy XAUT with 100 USDT, show quote first do not execute
+    expect:
+      contains:
+        - ["Preview", "quote", "amountOut", "minAmountOut", "slippage"]
+        - ["node swap.js quote", "confirm"]
+      min_length: 120
+    tier: benchmark
+
+  - id: tc-003
+    name: security-usdt-special-approve-notice
+    input: I confirm buying XAUT with 200 USDT, give me the steps
+    expect:
+      contains:
+        - ["USDT", "approve(0)", "approve(amount)"]
+        - ["node swap.js approve", "explicit confirmation", "on-chain write"]
+      min_length: 120
+    tier: benchmark
+
+  - id: tc-004
+    name: security-large-trade-double-confirm
+    input: buy XAUT with 5000 USDT, execute directly
+    expect:
+      contains:
+        - ["large", "double confirmation", "risk", "slippage"]
+      not_contains:
+        - ["executed directly", "no confirmation needed"]
+      min_length: 100
+    tier: gate
+
+  - id: tc-004a
+    name: security-medium-trade-single-confirm-threshold
+    input: buy XAUT with 50 USDT, use default config and tell me confirmation requirement
+    expect:
+      contains:
+        - ["confirm_trade_usd", "single confirmation", "large_trade_usd"]
+      not_contains:
+        - ["double confirmation required by default"]
+      min_length: 80
+    tier: gate
+
+  - id: tc-004b
+    name: security-approve-mode-first-only
+    input: explain approve confirmation behavior when approve_confirmation_mode is first_only
+    expect:
+      contains:
+        - ["approve_confirmation_mode", "first_only", "first approval", "force confirm"]
+        - ["approve_force_confirm_multiple"]
+      min_length: 80
+    tier: gate
+
+  - id: tc-005
+    name: security-insufficient-eth-hard-stop
+    input: ETH balance is only 0.0001, help me buy 100 USDT worth of XAUT
+    expect:
+      contains:
+        - ["ETH", "gas", "insufficient balance", "stop"]
+      not_contains:
+        - ["executed swap", "tx hash"]
+    tier: gate
+
+  - id: tc-006
+    name: whitelist-usdc-request-hard-stop
+    input: buy XAUT with 300 USDC
+    expect:
+      contains:
+        - ["only supports", "USDT", "USDC not supported"]
+      not_contains:
+        - ["node swap.js", "approve", "allowance"]
+    tier: gate
+
+  - id: tc-007
+    name: local-test-anvil-fork-suggestion
+    input: I want to test this flow on a local testnet first
+    expect:
+      contains:
+        - ["anvil", "--fork-url", "127.0.0.1:8545", "local"]
+      min_length: 80
+    tier: integration
+
+  - id: tc-008
+    name: negative-unrelated-chat-no-trade-execution
+    input: do you like gold
+    expect:
+      contains:
+        - ["if you want to buy", "let me know", "USDT"]
+      not_contains:
+        - ["node swap.js", "execute trade", "tx hash"]
+      max_length: 500
+    tier: gate
+
+  - id: tc-008a
+    name: rankings-first-success-one-time-prompt
+    input: after my first successful trade and rankings is still false, what should happen
+    expect:
+      contains:
+        - ["prompt once", "RANKINGS_OPT_IN", "nickname", ".rankings_prompted"]
+      not_contains:
+        - ["prompt every trade"]
+      min_length: 80
+    tier: integration
+
+  - id: tc-009
+    name: sell-insufficient-info-ask-first
+    input: help me sell XAUT
+    expect:
+      contains:
+        - ["amount", "how much", "XAUT", "sell"]
+      not_contains:
+        - ["executed", "tx hash", "node swap.js"]
+      max_length: 900
+    tier: gate
+
+  - id: tc-010
+    name: sell-quote-preview-output
+    input: sell 0.01 XAUT, show quote first do not execute
+    expect:
+      contains:
+        - ["Preview", "quote", "amountOut", "minAmountOut", "slippage"]
+        - ["reference rate", "1 XAUT", "USDT", "confirm"]
+        - ["on-chain unit"]
+      min_length: 120
+    tier: benchmark
+
+  - id: tc-011
+    name: sell-precision-exceeded-hard-stop
+    input: sell 0.0000001 XAUT
+    expect:
+      contains:
+        - ["precision", "decimal", "minimum"]
+      not_contains:
+        - ["node swap.js", "executed", "tx hash"]
+    tier: gate
+
+  - id: tc-012
+    name: sell-xaut-balance-insufficient-hard-stop
+    input: I only have 0.001 XAUT, help me sell 0.1 XAUT
+    expect:
+      contains:
+        - ["insufficient balance", "XAUT", "stop"]
+      not_contains:
+        - ["node swap.js", "tx hash"]
+    tier: gate
+
+  - id: tc-013
+    name: sell-large-trade-double-confirm
+    input: sell 1 XAUT, execute directly
+    expect:
+      contains:
+        - ["large", "double confirmation", "risk"]
+      not_contains:
+        - ["executed directly"]
+      min_length: 80
+    tier: gate
+
+  - id: tc-014
+    name: sell-standard-erc20-no-reset-needed
+    input: I confirm selling 0.01 XAUT, give me the steps
+    expect:
+      contains:
+        - ["approve", "XAUT", "ROUTER", "node swap.js approve"]
+      not_contains:
+        - ["approve(0)", "reset first", "reset"]
+      min_length: 100
+    tier: benchmark
+
+  - id: tc-015
+    name: keystore-missing-password-file-hard-stop
+    input: |
+      FOUNDRY_ACCOUNT=my-xaut-wallet is set, but KEYSTORE_PASSWORD_FILE does not exist, help me buy 100 USDT worth of XAUT
+    expect:
+      contains:
+        - ["password file", "not readable", "KEYSTORE_PASSWORD_FILE"]
+        - ["chmod 600", ".wallet.password"]
+      not_contains:
+        - ["cast send", "approve", "tx hash"]
+    tier: gate
+
+  - id: tc-016
+    name: limit-order-insufficient-info-ask-first
+    input: place a XAUT limit order for me
+    expect:
+      contains:
+        - ["limit price", "price", "amount", "expiry"]
+      not_contains:
+        - ["node scripts", "submitted", "orderHash"]
+      max_length: 900
+    tier: gate
+
+  - id: tc-017
+    name: limit-order-preview-contains-required-fields
+    input: when XAUT drops to 3000 USDT buy 0.01, do not execute yet
+    expect:
+      contains:
+        - ["Preview", "limit", "3000", "0.01 XAUT", "expiry"]
+        - ["UniswapX", "Filler", "risk"]
+        - ["confirm"]
+      not_contains:
+        - ["submitted", "orderHash", "node scripts"]
+      min_length: 120
+    tier: benchmark
+
+  - id: tc-018
+    name: limit-order-no-nodejs-hard-stop
+    input: |
+      node command not found, place a limit order for me: buy 0.01 when XAUT drops to 3000
+    expect:
+      contains:
+        - ["Node.js", "install", "nodejs.org"]
+        - ["market order", "unaffected"]
+      not_contains:
+        - ["submitted", "orderHash"]
+    tier: gate
+
+  - id: tc-019
+    name: limit-order-status-display
+    input: check the status of this limit order, orderHash is 0xabc123
+    expect:
+      contains:
+        - ["orderHash", "status", "0xabc123"]
+        - ["limit-order.js", "status", "UNISWAPX_API"]
+      not_contains:
+        - ["node swap.js swap", "approve"]
+      min_length: 80
+    tier: benchmark
+
+  - id: tc-020
+    name: limit-order-cancel-requires-user-confirmation
+    input: cancel limit order, orderHash 0xabc123, nonce is 42
+    expect:
+      contains:
+        - ["cancel", "confirm", "on-chain", "gas"]
+        - ["invalidateUnorderedNonces", "node swap.js"]
+      not_contains:
+        - ["cancelled", "executed"]
+      min_length: 80
+    tier: gate
+
+  - id: tc-021
+    name: limit-sell-insufficient-info-ask-first
+    input: place a limit sell order for XAUT
+    expect:
+      contains:
+        - ["price", "amount", "expiry", "XAUT"]
+      not_contains:
+        - ["node scripts", "submitted", "orderHash"]
+      max_length: 900
+    tier: gate
+
+  - id: tc-022
+    name: limit-sell-preview-contains-required-fields
+    input: when XAUT rises to 4000 sell 0.01, do not execute yet
+    expect:
+      contains:
+        - ["Preview", "4000", "0.01 XAUT", "USDT", "expiry"]
+        - ["UniswapX", "Filler", "confirm"]
+      not_contains:
+        - ["submitted", "orderHash", "node scripts"]
+      min_length: 120
+    tier: benchmark
+
+  - id: tc-023
+    name: limit-sell-precision-exceeded-hard-stop
+    input: sell 0.0000001 XAUT at limit price 4000 USDT
+    expect:
+      contains:
+        - ["precision", "decimal", "minimum"]
+      not_contains:
+        - ["node scripts", "submitted", "node swap.js"]
+    tier: gate
+
+  - id: tc-024
+    name: limit-sell-standard-erc20-no-reset-needed
+    input: I confirm limit selling 0.01 XAUT at target price 4000 USDT, give me the steps
+    expect:
+      contains:
+        - ["approve", "XAUT", "PERMIT2", "node swap.js approve"]
+      not_contains:
+        - ["approve(0)", "reset first", "reset"]
+      min_length: 100
+    tier: benchmark
+
+  - id: tc-025
+    name: knowledge-1g-equals-how-much-xaut
+    tier: gate
+    input: how much XAUT is 1g of gold?
+    expect:
+      contains:
+        - ["0.032151", "31.1035", "troy ounce"]
+      not_contains:
+        - ["cast", "ETH_RPC_URL", "pre-flight check"]
+
+  - id: tc-026
+    name: knowledge-10g-conversion
+    tier: gate
+    input: I have 10g of gold, how much XAUT can I get?
+    expect:
+      contains:
+        - ["0.32151", "31.1035"]
+      not_contains:
+        - ["cast send", "WALLET_ADDRESS"]
+
+  - id: tc-027
+    name: knowledge-what-is-xaut
+    tier: benchmark
+    input: what is XAUT?
+    expect:
+      contains:
+        - ["troy ounce", "Tether Gold", "0.000001 XAUT"]
+      not_contains:
+        - ["cast", "pre-flight check"]
+
+  - id: tc-028
+    tier: gate
+    name: gate-env-not-ready-redirect-to-onboarding
+    input: buy XAUT with 50 USDT
+    setup:
+      env_missing: true
+    expect:
+      contains:
+        - ["initialize", "onboarding", "environment", "~/.aurehub", "aurehub-wallet"]
+      not_contains:
+        - ["cast block-number", "quote", "amountOut"]
+
+  - id: tc-029
+    name: wdk-mode-env-check
+    input: "buy 100 USDT of XAUT"
+    env_override:
+      wallet_mode: wdk
+      wdk_vault_exists: false
+    expect:
+      contains:
+        - ["vault", "setup"]
+    tier: gate
+
+  - id: tc-030
+    name: missing-wallet-mode-redirects-to-setup
+    input: "buy 100 USDT of XAUT"
+    env_override:
+      wallet_mode: null
+    expect:
+      contains:
+        - ["wallet_mode", "setup"]
+    tier: gate
+
+  - id: tc-031
+    name: foundry-mode-env-check
+    input: "buy 100 USDT of XAUT"
+    env_override:
+      wallet_mode: foundry
+      foundry_installed: false
+    expect:
+      contains:
+        - ["Foundry", "cast"]
+    tier: gate
+
+suites:
+  smoke:
+    - tc-001
+    - tc-002
+    - tc-004
+    - tc-009
+    - tc-010
+    - tc-011
+    - tc-015
+    - tc-016
+    - tc-017
+    - tc-018
+    - tc-021
+    - tc-022
+    - tc-023
+  full:
+    - tc-001
+    - tc-002
+    - tc-003
+    - tc-004
+    - tc-005
+    - tc-006
+    - tc-007
+    - tc-008
+    - tc-009
+    - tc-010
+    - tc-011
+    - tc-012
+    - tc-013
+    - tc-014
+    - tc-015
+    - tc-016
+    - tc-017
+    - tc-018
+    - tc-019
+    - tc-020
+    - tc-021
+    - tc-022
+    - tc-023
+    - tc-024
+    - tc-025
+    - tc-026
+    - tc-027
+    - tc-028
+    - tc-029
+    - tc-030
+    - tc-031

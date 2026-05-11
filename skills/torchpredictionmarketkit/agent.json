@@ -1,0 +1,205 @@
+{
+  "name": "Torch Prediction Market Kit",
+  "description": "Autonomous vault-based prediction market bot for Torch Market on Solana. Creates binary prediction markets as Torch tokens — the bonding curve provides price discovery, the treasury accumulates value from trading fees, and the vault manages positions. Each market has an oracle (price feed or manual) and resolves at a deadline. The agent keypair is generated in-process -- disposable, holds nothing of value. All SOL routes through the vault. The human principal creates the vault, funds it, links the agent, and retains full control. Built on torchsdk v3.7.23 and the Torch Market protocol.",
+  "version": "2.0.3",
+  "type": "protocol",
+  "disable-model-invocation": true,
+  "website": "https://torch.market",
+  "socials": {
+    "twitter": "https://twitter.com/torch_market"
+  },
+  "distribution": {
+    "clawhub": "https://clawhub.ai/mrsirg97-rgb/torch-prediction-market-kit",
+    "kit": "https://github.com/mrsirg97-rgb/torch-prediction-market-kit",
+    "npm_bot": "torch-prediction-market-kit",
+    "npm_sdk": "torchsdk"
+  },
+  "requires": {
+    "env": [
+      {
+        "name": "SOLANA_RPC_URL",
+        "description": "Solana RPC endpoint (HTTPS). Fallback: RPC_URL",
+        "sensitive": false,
+        "required": true
+      },
+      {
+        "name": "VAULT_CREATOR",
+        "description": "Vault creator pubkey -- identifies which Torch Vault the bot operates through. Required.",
+        "sensitive": false,
+        "required": true
+      },
+      {
+        "name": "SOLANA_PRIVATE_KEY",
+        "description": "Disposable controller keypair (base58 or byte array JSON). Optional -- the bot generates a fresh keypair in-process if not provided (recommended). If provided, should be a fresh keypair with ~0.01 SOL for gas. Holds no value. All market capital lives in the vault.",
+        "sensitive": true,
+        "required": false
+      },
+      {
+        "name": "MARKETS_PATH",
+        "description": "Path to markets.json definitions file. Default: ./markets.json",
+        "sensitive": false,
+        "required": false
+      }
+    ],
+    "install": [
+      {
+        "id": "npm-torch-prediction-market-kit",
+        "kind": "npm",
+        "package": "torch-prediction-market-kit@^2.0.2",
+        "flags": [],
+        "label": "Install Torch Prediction Market Kit (npm, optional -- SDK is bundled in lib/torchsdk/ and bot source is bundled under lib/kit on clawhub)"
+      }
+    ]
+  },
+  "capabilities": [
+    "vault-full-custody",
+    "vault-escrow",
+    "authority-separation",
+    "prediction-market-creation",
+    "token-creation",
+    "bonding-curve-seeding",
+    "oracle-resolution",
+    "price-feed-oracle",
+    "market-monitoring",
+    "autonomous-market-cycle",
+    "in-process-keypair",
+    "file-based-state",
+    "said-verification"
+  ],
+  "chain": "solana",
+  "network": "mainnet",
+  "program_id": "8hbUkonssSEEtkqzwM7ZcZrD9evacM92TcWSooVF4BeT",
+  "endpoints": {
+    "skill": "https://torch.market/skill.md",
+    "llms_txt": "https://torch.market/llms.txt",
+    "docs": "https://torch-market-docs.vercel.app"
+  },
+  "actions": [
+    {
+      "name": "TORCH_CREATE_MARKET",
+      "description": "Create a new prediction market -- builds a Torch token via buildCreateTokenTransaction and seeds initial liquidity via vault-routed buildBuyTransaction"
+    },
+    {
+      "name": "TORCH_SNAPSHOT_MARKET",
+      "description": "Snapshot an active market -- fetches token price, volume, holders, and treasury state via getToken and getHolders"
+    },
+    {
+      "name": "TORCH_RESOLVE_MARKET",
+      "description": "Resolve a market at deadline -- checks oracle (CoinGecko price feed or manual) and records outcome (yes/no)"
+    },
+    {
+      "name": "TORCH_CHECK_ORACLE",
+      "description": "Check oracle for a market -- price_feed fetches from CoinGecko, manual returns unresolved"
+    },
+    {
+      "name": "TORCH_LOAD_MARKETS",
+      "description": "Load market definitions from markets.json file -- file-based state, no database"
+    },
+    {
+      "name": "TORCH_SAVE_MARKETS",
+      "description": "Save updated market state back to markets.json -- persists mint addresses, status changes, outcomes"
+    },
+    {
+      "name": "TORCH_GET_VAULT",
+      "description": "Get vault state by creator -- SOL balance, linked wallets, authority, token holdings"
+    },
+    {
+      "name": "TORCH_GET_VAULT_FOR_WALLET",
+      "description": "Reverse lookup -- find which vault a controller wallet is linked to"
+    },
+    {
+      "name": "TORCH_GET_TOKEN",
+      "description": "Get detailed token info including price, treasury state, holder count"
+    },
+    {
+      "name": "TORCH_LIST_TOKENS",
+      "description": "List tokens by status (bonding, migrated) with sorting and pagination"
+    },
+    {
+      "name": "TORCH_CONFIRM",
+      "description": "Confirm transaction on-chain via Solana RPC -- verifies signer, checks Torch instructions, determines event type. Does NOT contact SAID Protocol."
+    }
+  ],
+  "constants": {
+    "bonding_curve_treasury_percent": 10,
+    "token_2022_transfer_fee_bps": 4,
+    "graduation_threshold_sol": 200,
+    "default_scan_interval_ms": 60000,
+    "min_scan_interval_ms": 5000,
+    "max_token_name_length": 32,
+    "max_token_symbol_length": 10
+  },
+  "safety": {
+    "vault_full_custody": true,
+    "controller_holds_no_value": true,
+    "private_key_optional": true,
+    "in_process_keypair_generation": true,
+    "local_transaction_building": true,
+    "no_api_dependency_for_core": true,
+    "oracle_api_read_only": true,
+    "oracle_api_no_credentials": true,
+    "keys_never_transmitted": true,
+    "signing_is_local_only": true,
+    "vault_closed_economic_loop": true,
+    "vault_authority_only_withdrawals": true,
+    "vault_instant_revocation": true,
+    "transaction_expiry_seconds": 60,
+    "open_source": true,
+    "sdk_audited": true,
+    "input_validation": {
+      "metadata_uri_domain_allowlist": [
+        "arweave.net",
+        "gateway.irys.xyz",
+        "ipfs.io",
+        "cloudflare-ipfs.com",
+        "nftstorage.link",
+        "dweb.link"
+      ],
+      "max_liquidity_lamports": 10000000000,
+      "max_liquidity_sol": 10,
+      "oracle_asset_allowlist": [
+        "solana", "bitcoin", "ethereum", "binancecoin", "ripple",
+        "cardano", "dogecoin", "polkadot", "avalanche-2", "chainlink",
+        "uniswap", "litecoin", "near", "aptos", "sui", "arbitrum",
+        "optimism", "celestia", "jupiter-exchange-solana", "render-token",
+        "bonk", "jito-governance-token", "raydium", "pyth-network",
+        "helium", "tether", "usd-coin"
+      ],
+      "duplicate_market_id_rejected": true
+    }
+  },
+  "tags": [
+    "solana",
+    "defi",
+    "prediction-market",
+    "binary-market",
+    "bonding-curve",
+    "vault-custody",
+    "ai-agents",
+    "agent-wallet",
+    "agent-safety",
+    "oracle",
+    "price-feed",
+    "coingecko",
+    "token-creation",
+    "token-2022",
+    "community-treasury",
+    "solana-agent-kit",
+    "escrow",
+    "anchor",
+    "pda",
+    "on-chain",
+    "autonomous-agent",
+    "market-resolution",
+    "torch-market"
+  ],
+  "verification": {
+    "said": {
+      "wallet": "8cpWmV4kGdvxVYYNBEMPNwsJSRVQw5MQ9NXn4t293nMa",
+      "pda": "2rNknLxB7nWYJRgr2tZrNoc7PNDy3PKwKZa9YStbLMmb",
+      "verified": true,
+      "trust_tier": "medium",
+      "badge": "https://api.saidprotocol.com/api/badge/8cpWmV4kGdvxVYYNBEMPNwsJSRVQw5MQ9NXn4t293nMa.svg"
+    }
+  }
+}

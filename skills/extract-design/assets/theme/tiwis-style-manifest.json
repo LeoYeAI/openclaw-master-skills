@@ -1,0 +1,162 @@
+{
+  "meta": {
+    "title": "Tiwis Style System",
+    "source": "https://www.tiwis.fr/en/notre-approche",
+    "captureTime": "2026-03-19",
+    "viewport": "1280x720",
+    "darkModeExists": false,
+    "reducedMotionExists": "inferred",
+    "canvasWebGLHeavy": false,
+    "shadowDOM": false,
+    "extractionMode": "live-render"
+  },
+  "style_character": {
+    "summary": "Tiwis is a strategy/design thinking/agility consulting firm with an ultra-minimal, stark dark aesthetic. Pure black (#000) background with white text and a vivid orange (#fa4838) accent. The distinctive Blizar dot-pattern SVG texture is used throughout as a subtle signature background motif. Large display typography with AlmarenaNeueDisplay.",
+    "mood": "Minimal, stark, premium consulting, confident",
+    "density": "low",
+    "contrast": "maximum",
+    "motionIntensity": "low",
+    "componentComplexity": "low",
+    "atmosphereCharacter": "Ultra-minimal consulting studio - like a luxury fashion brand meets strategy firm",
+    "recurringMotifs": [
+      "Blizar dot-pattern texture as signature background",
+      "Vivid orange (#fa4838) accent on stark black",
+      "Large display typography with tight negative letter-spacing",
+      "White-on-black maximum contrast"
+    ]
+  },
+  "primitives": {
+    "fonts": {
+      "sans": "Aratigo, Arial, sans-serif",
+      "display": "AlmarenaNeueDisplay, Arial, sans-serif",
+      "weights": [300, 400, 500],
+      "sizeScale": ["14px body", "88.88px hero display"],
+      "lineHeightNormal": "1.5",
+      "lineHeightDisplay": "84.439px"
+    },
+    "spacing": {
+      "base": "4px"
+    },
+    "radius": {
+      "default": "0px"
+    },
+    "shadow": {
+      "default": "none"
+    },
+    "motion": {
+      "durationFast": "0.1s",
+      "easing": "ease"
+    }
+  },
+  "semantic": {
+    "colors": {
+      "primary": {
+        "background": "rgb(0, 0, 0)",
+        "foreground": "rgb(255, 255, 255)",
+        "orange": "#fa4838",
+        "blue": "rgb(0, 0, 238)"
+      }
+    },
+    "surfaces": {
+      "background": {
+        "black": "rgb(0, 0, 0)",
+        "white": "rgb(255, 255, 255)"
+      }
+    }
+  },
+  "background": {
+    "page": {
+      "default": "rgb(0, 0, 0)"
+    },
+    "sections": [],
+    "layers": [],
+    "gradients": [],
+    "patterns": [
+      {
+        "name": "blizar-dot",
+        "type": "SVG data URI",
+        "value": "url(\"https://cdn.prod.website-files.com/68f77e49c7ca6bd68b326c3d/6900c3d30f2eca17950257bd_Blizar%201.png\")",
+        "usage": "signature background texture throughout site"
+      }
+    ],
+    "images": [],
+    "overlays": []
+  },
+  "motifs": [
+    {
+      "name": "blizar-dot-pattern",
+      "description": "Signature dot-pattern SVG texture used as repeating background",
+      "type": "texture"
+    },
+    {
+      "name": "orange-flash",
+      "description": "Vivid orange (#fa4838) used sparingly as accent",
+      "color": "#fa4838"
+    },
+    {
+      "name": "maximum-contrast",
+      "description": "Pure black background with pure white text for maximum impact",
+      "type": "color relationship"
+    },
+    {
+      "name": "tight-tracking-display",
+      "description": "Large display type with significant negative letter-spacing",
+      "type": "typography"
+    }
+  ],
+  "themes": {
+    "default": {
+      "background": "#000000",
+      "foreground": "#ffffff",
+      "accent": "#fa4838"
+    }
+  },
+  "motion": {
+    "duration": {
+      "fast": "0.1s"
+    },
+    "easing": "ease",
+    "hoverEffects": ["subtle opacity/transform"],
+    "reducedMotion": "should reduce motion",
+    "keyframes": [
+      {
+        "name": "spin",
+        "description": "360 degree rotation for loading spinners",
+        "from": "transform: rotate(0deg)",
+        "to": "transform: rotate(360deg)"
+      }
+    ]
+  },
+  "components": [
+    {
+      "name": "nav-link",
+      "states": {
+        "default": "white text",
+        "hover": "orange accent"
+      }
+    },
+    {
+      "name": "link",
+      "states": {
+        "default": "white or blue (rgb(0,0,238))",
+        "hover": "orange"
+      }
+    },
+    {
+      "name": "heading-display",
+      "appearance": "AlmarenaNeueDisplay, 88.88px, weight 500, letter-spacing -3.56px"
+    }
+  ],
+  "responsive_rules": [],
+  "accessibility_notes": [
+    "Maximum contrast white on black",
+    "Orange accent provides additional emphasis",
+    "Minimal UI reduces cognitive load"
+  ],
+  "limitations": [
+    "No dark mode - single theme",
+    "Limited component variety captured",
+    "Blizar pattern is an external image resource",
+    "No interactive components (buttons) observed on this page"
+  ]
+}

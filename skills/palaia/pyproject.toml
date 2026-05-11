@@ -1,0 +1,62 @@
+[build-system]
+requires = ["setuptools>=68.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "palaia"
+version = "2.0.13"
+description = "Local, cloud-free memory for OpenClaw agents."
+readme = "README.md"
+license = {text = "MIT"}
+requires-python = ">=3.9"
+authors = [
+    {name = "byte5 GmbH", email = "hello@byte5.de"},
+]
+keywords = ["memory", "agent", "ai", "local", "openclaw"]
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Software Development :: Libraries",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+]
+
+[project.urls]
+Homepage = "https://palaia.ai"
+Repository = "https://github.com/iret77/palaia"
+Issues = "https://github.com/iret77/palaia/issues"
+Documentation = "https://github.com/iret77/palaia/tree/main/docs"
+
+[project.scripts]
+palaia = "palaia.cli:main"
+
+[project.optional-dependencies]
+dev = ["pytest>=7.0", "ruff>=0.3.0"]
+ollama = ["ollama>=0.4.0"]
+fastembed = ["fastembed>=0.3.0"]
+sentence-transformers = ["sentence-transformers>=3.0.0"]
+embeddings = ["ollama>=0.4.0", "fastembed>=0.3.0", "sentence-transformers>=3.0.0"]
+pdf = ["pdfplumber>=0.7"]
+
+[tool.setuptools.packages.find]
+include = ["palaia*"]
+
+[tool.setuptools.package-data]
+palaia = ["SKILL.md"]
+
+[tool.ruff]
+target-version = "py39"
+line-length = 120
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I"]
+ignore = ["E501"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

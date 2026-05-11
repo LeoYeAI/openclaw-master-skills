@@ -1,0 +1,44 @@
+# Content Claw - Recipe Schema v0.3.2
+# This file documents the recipe YAML format. All recipes must follow this structure.
+
+# --- Required fields ---
+# name: string - Human-readable recipe name
+# slug: string - URL-safe identifier (lowercase, hyphens)
+# version: string - Schema version (e.g. "0.3.2")
+# status: string - "wip" | "needs-review" | "ready"
+# priority: string - "p0" | "p1" | "p2" | "p3"
+# platforms: list[string] - Target platforms: "linkedin", "reddit", "x", "email"
+# private: bool - Whether this recipe is brand-specific (not shareable)
+
+# --- Source requirements ---
+# source_prerequisites:
+#   min_sources: int - Minimum number of source URLs required
+#   source_types: list[string] - Accepted types: "research-paper", "podcast", "blog",
+#                                "case-study", "github-repo", "event-news", "social-post"
+
+# --- Brand graph requirements ---
+# brand_graph:
+#   required: bool - Whether a brand graph must be loaded
+#   required_layers: list[string] - Which layers must exist:
+#                                   "identity", "audience", "strategy", "visual", "feedback"
+
+# --- Content blocks ---
+# blocks: list
+#   - name: string - Block identifier
+#     format: string - "text" | "image" | "video" | "audio"
+#     sub_format: string - e.g. "insight-post", "infographic", "thread", "poster",
+#                          "roundup-post", "case-study-post", "diagram", "ugc-script"
+#     agent: string - Agent prompt file to use (from agents/ directory)
+#     depends_on: list[string] | null - Block names this depends on (for ordering)
+#     rules: list[string] - Generation rules for this block
+#     examples: list[string] - Reference URLs or example content
+
+# --- Prerequisites ---
+# prerequisites: list
+#   - name: string - Step identifier
+#     action: string - What to do: "extract-text", "summarize", "generate-title",
+#                      "extract-key-points", "research-context"
+#     description: string - Human-readable description
+
+# --- Owner ---
+# owner: string | null - Who maintains this recipe

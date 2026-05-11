@@ -1,0 +1,158 @@
+# ontology-clawra 本体存储 - Rules (业务规则) - 家用可燃气体探测器
+
+---
+# 场景化选型决策规则
+---
+
+rule:
+  id: rule_scenario_a
+  name: 场景A-普通家庭自购安装
+  category: 场景选型
+  condition: |
+    AND(
+      user_type = "普通家庭自购",
+      linkage_needed = false,
+      remote_notification = false
+    )
+  action: |
+    THEN(
+      detector_type = "基础型",
+      detection_principle = "半导体式",
+      communication = "无通讯",
+      features = ["本地声光报警"]
+    )
+  quality_check:
+    - 认证检查: 确认产品铭牌上有CCC认证标志
+    - 功能测试: 通电后长按自检键，发出间歇式蜂鸣声伴随指示灯依次闪烁
+  source: 知识库-家用可燃气体探测器
+  confidence: CONFIRMED
+
+rule:
+  id: rule_scenario_b
+  name: 场景B-新建楼盘批量安装
+  category: 场景选型
+  condition: |
+    AND(
+      user_type = "新建楼盘批量安装",
+      linkage_needed = true
+    )
+  action: |
+    THEN(
+      detector_type = "联动型",
+      detection_principle = "半导体式",
+      output = "12V脉冲输出",
+      valve = "配套电磁阀",
+      features = ["带联动输出", "带切断阀"]
+    )
+  quality_check:
+    - 联动测试: 长按自检键，观察电磁阀是否能在30s内关闭
+    - 安装规范: 检查探测器是否安装在距离气源1.5-4米，距离天花板0.3米以内
+  source: 知识库-家用可燃气体探测器
+  confidence: CONFIRMED
+
+rule:
+  id: rule_scenario_c
+  name: 场景C-独居老人/出租房管理
+  category: 场景选型
+  condition: |
+    AND(
+      user_type IN ["独居老人", "出租房管理"],
+      remote_notification = true
+    )
+  action: |
+    THEN(
+      detector_type = "智能联网型",
+      detection_principle = "半导体式",
+      communication = "NB-IoT或4G-CAT1",
+      features = ["远程报警", "APP通知"]
+    )
+  quality_check:
+    - 联网测试: 现场触发报警，测试手机APP或短信能否在1分钟内收到报警信息
+    - 信号强度: 检查安装位置的网络信号强度
+  source: 知识库-家用可燃气体探测器
+  confidence: CONFIRMED
+
+rule:
+  id: rule_scenario_d
+  name: 场景D-智慧社区统一管理
+  category: 场景选型
+  condition: |
+    AND(
+      user_type = "智慧社区",
+      platform_integration = true
+    )
+  action: |
+    THEN(
+      detector_type = "智能联网型",
+      communication = "NB-IoT或4G-CAT1",
+      protocol = "MQTT",
+      features = ["平台接入", "统一管理"]
+    )
+  quality_check:
+    - 协议测试: 确认支持标准物联协议
+    - 平台对接: 测试数据能否对接到第三方平台
+  source: 知识库-家用可燃气体探测器
+  confidence: CONFIRMED
+
+---
+# 价格估算规则
+---
+
+rule:
+  id: rule_price_basic
+  name: 基础型报警器价格
+  category: 价格
+  condition: |
+    AND(
+      detector_type = "基础型",
+      features = ["本地声光报警"]
+    )
+  action: |
+    THEN(
+      price_range = "40-50元/只"
+    )
+  factors:
+    - 半导体传感器价格
+    - 阻燃塑料粒子价格
+  source: 知识库-家用可燃气体探测器
+  confidence: CONFIRMED
+
+rule:
+  id: rule_price_linkage
+  name: 联动型报警器价格
+  category: 价格
+  condition: |
+    AND(
+      detector_type = "联动型",
+      features = ["带12V脉冲输出"]
+    )
+  action: |
+    THEN(
+      price_range = "45-55元/只"
+    )
+  factors:
+    - 增加继电器或MOS管等联动驱动电路成本
+  warning: |
+    联动型报警器报价 < 30元 = 极高风险(可能使用非阻燃材料或回收传感器)
+  source: 知识库-家用可燃气体探测器
+  confidence: CONFIRMED
+
+rule:
+  id: rule_price_smart
+  name: 智能联网型报警器价格
+  category: 价格
+  condition: |
+    AND(
+      detector_type = "智能联网型",
+      communication IN ["NB-IoT", "4G-CAT1"]
+    )
+  action: |
+    THEN(
+      price_range = "70-80元/只"
+    )
+  factors:
+    - NB-IoT/4G通信模组及平台服务费
+  warning: |
+    NB-IoT报警器报价 < 60元 = 风险(可能使用翻新模组)
+  source: 知识库-家用可燃气体探测器
+  confidence: CONFIRMED

@@ -1,0 +1,159 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# clawhub.yaml — ClawHub Marketplace Listing
+# claw-bond (display: Claw Connector) v1.0.5
+# ─────────────────────────────────────────────────────────────────────────────
+
+skill: claw-bond
+version: "1.0.5"
+skill_type: code          # Contains executable Python scripts and TypeScript hooks
+display_name: "Claw Connector 🤝"
+tagline: "Peer-to-peer task negotiation between two OpenClaw agents."
+description: |
+  Lets two OpenClaw agents negotiate, coordinate, and commit to tasks in real
+  time. Uses an optional relay server for initial address exchange and connection
+  setup; all messages are encrypted end-to-end (Noise_XX / AES-256-GCM) so the
+  relay cannot read them. Keys and task data stay on your machine.
+
+author:
+  name: techtanush
+  url: https://github.com/techtanush
+
+license: MIT-0
+source_url: https://github.com/techtanush/claw-diplomat
+homepage: https://github.com/techtanush/claw-diplomat
+support_url: https://github.com/techtanush/claw-diplomat/issues
+changelog_url: https://github.com/techtanush/claw-diplomat/releases
+
+# ─── Pricing ──────────────────────────────────────────────────────────────────
+pricing:
+  model: free
+  price: 0
+
+# ─── Discoverability ──────────────────────────────────────────────────────────
+category: collaboration
+subcategory: multi-agent
+tags:
+  - negotiation
+  - peer-to-peer
+  - collaboration
+  - task-management
+  - commitment-tracking
+  - local-first
+  - relay
+  - encrypted
+  - multi-agent
+  - productivity
+
+# ─── Compatibility ────────────────────────────────────────────────────────────
+compatibility:
+  openclaw_min_version: "2026.2.23"
+  platforms:
+    - macos
+    - linux
+    - windows    # via WSL2
+
+# ─── Runtime Requirements ─────────────────────────────────────────────────────
+requirements:
+  runtime: python>=3.10
+  python_packages:
+    - PyNaCl>=1.5
+    - noiseprotocol>=0.3
+    - websockets>=12.0
+
+# ─── Optional Environment Variables ──────────────────────────────────────────
+# All are optional — the skill works with defaults. Set to customise.
+env_vars:
+  DIPLOMAT_WORKSPACE:
+    required: false
+    description: "Workspace root directory. Defaults to OpenClaw workspace or cwd."
+  DIPLOMAT_RELAY_URL:
+    required: false
+    default: "wss://claw-diplomat-relay-production.up.railway.app"
+    description: "WebSocket relay URL. Override to use your own relay."
+  DIPLOMAT_PORT:
+    required: false
+    default: "0"
+    description: "Local port for direct P2P connections (0 = OS-assigned)."
+  DIPLOMAT_TOKEN_TTL_DAYS:
+    required: false
+    default: "7"
+    description: "How many days a generated Diplomat Address token is valid."
+  DIPLOMAT_LOG_LEVEL:
+    required: false
+    default: "WARNING"
+    description: "Python logging level for listener.py (DEBUG / INFO / WARNING / ERROR)."
+
+# ─── Permissions Requested ────────────────────────────────────────────────────
+permissions:
+  workspace_reads:
+    - SOUL.md
+    - AGENTS.md
+    - MEMORY.md
+    - HEARTBEAT.md
+    - memory/
+  workspace_writes:
+    - MEMORY.md
+    - HEARTBEAT.md
+    - skills/claw-bond/
+    - memory/YYYY-MM-DD.md
+  network:
+    - host: claw-diplomat-relay-production.up.railway.app
+      port: 443
+      protocol: WSS+HTTPS
+      purpose: >
+        Address reservation (POST /reserve), public-IP hint (GET /myip),
+        and encrypted peer-to-peer message relay. The /myip call returns
+        your public IP which is embedded in the shareable address token
+        as nat_hint — see Privacy note below.
+  spawns_processes: []
+    # NOTE: No hook spawns processes. The gateway hook only checks if listener.py
+    # is running (via PID file read + signal 0) and notifies the agent if it needs
+    # starting. The user or agent starts listener.py manually in terminal:
+    #   python3 ~/.openclaw/workspace/skills/claw-bond/listener.py &
+    # This is an explicit user action, not an automatic background spawn.
+
+# ─── Install ──────────────────────────────────────────────────────────────────
+install:
+  skill_dir: skills/claw-bond/
+  hooks_dir: hooks/
+  post_install_command: "pip3 install PyNaCl noiseprotocol websockets"
+  post_install_message: |
+    👋 claw-bond is installed!
+
+    Generate your Diplomat Address to start negotiating:
+      python3 ~/.openclaw/workspace/skills/claw-bond/negotiate.py generate-address
+
+    Or tell your OpenClaw agent:
+      /claw-diplomat generate-address
+
+# ─── Listing Assets ───────────────────────────────────────────────────────────
+readme: README.md
+assets:
+  screenshots: []
+
+# ─── Security & Privacy Declarations ─────────────────────────────────────────
+security:
+  encryption: "Noise_XX (AES-256-GCM) end-to-end — relay cannot read message payloads"
+  data_exfiltration: none
+  executes_peer_content: never
+  stores_credentials: false
+  stores_api_keys: false
+  generates_keypair: true
+  keypair_leaves_machine: false
+  external_code_execution: false
+  audit_log: skills/claw-bond/ledger.json
+  hooks_spawn_processes: false    # No hook imports child_process or spawns subprocesses
+  listener_started_by: "User or agent runs 'python3 listener.py &' in terminal — explicit action, not automatic"
+  context_injection: "own workspace data only (MEMORY.md § Diplomat Commitments + peers.json)"
+
+privacy:
+  relay_metadata: >
+    The relay server receives routing metadata (your alias, relay_token, and
+    public IP as nat_hint) when you generate an address. Message payloads are
+    encrypted end-to-end and the relay cannot read them. Your private key never
+    leaves your machine.
+  ip_disclosure: >
+    Generating a Diplomat Address calls GET /myip on the relay to discover your
+    public IP, which is embedded in the token as nat_hint. This IP is shared
+    with any peer you send the token to, and is visible to the relay operator.
+    Set DIPLOMAT_RELAY_URL to use your own relay if this is a concern.

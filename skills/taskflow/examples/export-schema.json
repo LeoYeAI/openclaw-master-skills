@@ -1,0 +1,118 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://clawhub.dev/schemas/taskflow/export-projects-overview/v1",
+  "title": "TaskFlow Export — Projects Overview",
+  "description": "Output schema for scripts/export-projects-overview.mjs (taskflow-009). Emitted to stdout as a single JSON object.",
+  "type": "object",
+  "required": ["exported_at", "projects", "recent_transitions"],
+  "additionalProperties": false,
+  "properties": {
+
+    "exported_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "ISO 8601 timestamp when the export was generated (UTC)."
+    },
+
+    "projects": {
+      "type": "array",
+      "description": "All projects in the TaskFlow DB, ordered by slug.",
+      "items": {
+        "type": "object",
+        "required": ["id", "name", "description", "status", "task_counts", "progress_pct"],
+        "additionalProperties": false,
+        "properties": {
+
+          "id": {
+            "type": "string",
+            "description": "Project slug — primary key in the `projects` table.",
+            "examples": ["dashboard", "trading", "smart-home"]
+          },
+
+          "name": {
+            "type": "string",
+            "description": "Human-readable project name.",
+            "examples": ["Dashboard", "Trading System"]
+          },
+
+          "description": {
+            "type": "string",
+            "description": "One-liner description (may be empty string)."
+          },
+
+          "status": {
+            "type": "string",
+            "enum": ["active", "paused", "done"],
+            "description": "Project lifecycle status."
+          },
+
+          "task_counts": {
+            "type": "object",
+            "description": "Count of tasks in each status bucket for this project.",
+            "required": ["in_progress", "pending_validation", "backlog", "blocked", "done"],
+            "additionalProperties": false,
+            "properties": {
+              "in_progress":        { "type": "integer", "minimum": 0 },
+              "pending_validation": { "type": "integer", "minimum": 0 },
+              "backlog":            { "type": "integer", "minimum": 0 },
+              "blocked":            { "type": "integer", "minimum": 0 },
+              "done":               { "type": "integer", "minimum": 0 }
+            }
+          },
+
+          "progress_pct": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 100,
+            "description": "Completion percentage: done / total * 100, rounded to 2 decimal places. 0 when there are no tasks."
+          }
+
+        }
+      }
+    },
+
+    "recent_transitions": {
+      "type": "array",
+      "description": "Last 20 task status transitions across all projects, ordered oldest-first within the window. Sourced from task_transitions_v2.",
+      "maxItems": 20,
+      "items": {
+        "type": "object",
+        "required": ["task_id", "to_status", "at"],
+        "additionalProperties": false,
+        "properties": {
+
+          "task_id": {
+            "type": "string",
+            "description": "Task identifier in <slug>-NNN format.",
+            "examples": ["dashboard-025", "trading-003"]
+          },
+
+          "from_status": {
+            "type": ["string", "null"],
+            "enum": ["backlog", "in_progress", "pending_validation", "blocked", "done", null],
+            "description": "Previous status. Null for task creation events."
+          },
+
+          "to_status": {
+            "type": "string",
+            "enum": ["backlog", "in_progress", "pending_validation", "blocked", "done"],
+            "description": "Status the task transitioned into."
+          },
+
+          "reason": {
+            "type": ["string", "null"],
+            "description": "Optional free-text reason recorded at transition time."
+          },
+
+          "at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "ISO 8601 timestamp of the transition (UTC)."
+          }
+
+        }
+      }
+    }
+
+  }
+}

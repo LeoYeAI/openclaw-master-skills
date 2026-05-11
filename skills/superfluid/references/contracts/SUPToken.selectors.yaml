@@ -1,0 +1,55 @@
+# SUPToken selectors — computed from @sfpro/sdk ABI
+
+functions:
+  allowance(address,address):                                 0xdd62ed3e
+  approve(address,uint256):                                   0x095ea7b3
+  balanceOf(address):                                         0x70a08231
+  checkpoints(address,uint32):                                0xf1127ed8
+  clock():                                                    0x91ddadf4
+  CLOCK_MODE():                                               0x4bf5d7e9
+  decimals():                                                 0x313ce567
+  delegate(address):                                          0x5c19a95c
+  delegateBySig(address,uint256,uint256,uint8,bytes32,bytes32): 0xc3cda520
+  delegates(address):                                         0x587cde1e
+  DOMAIN_SEPARATOR():                                         0x3644e515
+  eip712Domain():                                             0x84b0196e
+  getPastTotalSupply(uint256):                                0x8e539e8c
+  getPastVotes(address,uint256):                              0x3a46b1a8
+  getVotes(address):                                          0x9ab24eb0
+  name():                                                     0x06fdde03
+  nonces(address):                                            0x7ecebe00
+  numCheckpoints(address):                                    0x6fcfff45
+  permit(address,address,uint256,uint256,uint8,bytes32,bytes32): 0xd505accf
+  symbol():                                                   0x95d89b41
+  totalSupply():                                              0x18160ddd
+  transfer(address,uint256):                                  0xa9059cbb
+  transferFrom(address,address,uint256):                      0x23b872dd
+
+events:
+  Approval(address,address,uint256):             0x8c5be1e5ebec7d5bd14f71427d1e84f3dd0314c0f7b2291e5b200ac8c7c3b925
+  DelegateChanged(address,address,address):      0x3134e8a2e6d97e929a7e54011ea5485d7d196dd5f0ba4d4ef95803e8e3fc257f
+  DelegateVotesChanged(address,uint256,uint256): 0xdec2bacdd2f05b59de34da9b523dff8be42e5e38e818c82fdb0bae774387a724
+  EIP712DomainChanged():                         0x0a6387c9ea3628b88a633bb4f3b151770f70085117a15f9bf3787cda53f13d31
+  Transfer(address,address,uint256):             0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef
+
+errors:
+  CheckpointUnorderedInsertion():                      0x2520601d
+  ECDSAInvalidSignature():                             0xf645eedf
+  ECDSAInvalidSignatureLength(uint256):                0xfce698f7
+  ECDSAInvalidSignatureS(bytes32):                     0xd78bce0c
+  ERC20ExceededSafeSupply(uint256,uint256):            0x1cb15d26
+  ERC20InsufficientAllowance(address,uint256,uint256): 0xfb8f41b2
+  ERC20InsufficientBalance(address,uint256,uint256):   0xe450d38c
+  ERC20InvalidApprover(address):                       0xe602df05
+  ERC20InvalidReceiver(address):                       0xec442f05
+  ERC20InvalidSender(address):                         0x96c6fd1e
+  ERC20InvalidSpender(address):                        0x94280d62
+  ERC2612ExpiredSignature(uint256):                    0x62791302
+  ERC2612InvalidSigner(address,address):               0x4b800e46
+  ERC5805FutureLookup(uint256,uint48):                 0xecd3f81e
+  ERC6372InconsistentClock():                          0x6ff07140
+  InvalidAccountNonce(address,uint256):                0x752d88c0
+  InvalidShortString():                                0xb3512b0c
+  SafeCastOverflowedUintDowncast(uint8,uint256):       0x6dfcc650
+  StringTooLong(string):                               0x305a27a9
+  VotesExpiredSignature(uint256):                      0x4683af0e

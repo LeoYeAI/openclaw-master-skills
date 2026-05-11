@@ -1,0 +1,108 @@
+{
+  "skill": "legal-docs-pro",
+  "version": "1.0.0",
+  "prefix": "ld_",
+  "icon": "⚖️",
+  "route": "/legal-docs",
+  "label": "Legal Docs Pro",
+  "description": "Document generation, contract review, and clause analysis",
+  "tables": [
+    {
+      "name": "ld_documents",
+      "label": "Documents",
+      "description": "Generated legal documents with metadata",
+      "columns": [
+        { "name": "id", "type": "text", "primary": true },
+        { "name": "doc_type", "type": "text", "label": "Document Type" },
+        { "name": "title", "type": "text", "label": "Title" },
+        { "name": "parties", "type": "json", "label": "Parties" },
+        { "name": "jurisdiction", "type": "text", "label": "Jurisdiction" },
+        { "name": "status", "type": "text", "label": "Status", "enum": ["draft", "final", "signed", "expired"] },
+        { "name": "value", "type": "number", "label": "Contract Value" },
+        { "name": "effective_date", "type": "date", "label": "Effective Date" },
+        { "name": "expiration_date", "type": "date", "label": "Expiration Date" },
+        { "name": "file_path", "type": "text", "label": "File Path" },
+        { "name": "created_at", "type": "datetime", "label": "Created" },
+        { "name": "updated_at", "type": "datetime", "label": "Updated" }
+      ]
+    },
+    {
+      "name": "ld_reviews",
+      "label": "Contract Reviews",
+      "description": "Contract review results with risk scores",
+      "columns": [
+        { "name": "id", "type": "text", "primary": true },
+        { "name": "doc_type", "type": "text", "label": "Document Type" },
+        { "name": "title", "type": "text", "label": "Title" },
+        { "name": "parties", "type": "json", "label": "Parties" },
+        { "name": "overall_risk", "type": "text", "label": "Overall Risk", "enum": ["low", "moderate", "high"] },
+        { "name": "flags_green", "type": "number", "label": "🟢 Standard" },
+        { "name": "flags_yellow", "type": "number", "label": "🟡 Review" },
+        { "name": "flags_red", "type": "number", "label": "🔴 Risk" },
+        { "name": "missing_protections", "type": "number", "label": "Missing Protections" },
+        { "name": "top_concerns", "type": "json", "label": "Top Concerns" },
+        { "name": "recommendation", "type": "text", "label": "Recommendation" },
+        { "name": "source_file", "type": "text", "label": "Source File" },
+        { "name": "reviewed_at", "type": "datetime", "label": "Reviewed" }
+      ]
+    },
+    {
+      "name": "ld_clauses",
+      "label": "Clause Library",
+      "description": "Tracked clause usage and custom variations",
+      "columns": [
+        { "name": "id", "type": "text", "primary": true },
+        { "name": "clause_type", "type": "text", "label": "Clause Type" },
+        { "name": "intensity", "type": "text", "label": "Intensity", "enum": ["standard", "protective", "aggressive"] },
+        { "name": "text", "type": "text", "label": "Clause Text" },
+        { "name": "usage_count", "type": "number", "label": "Times Used" },
+        { "name": "last_used", "type": "datetime", "label": "Last Used" },
+        { "name": "is_custom", "type": "boolean", "label": "Custom" }
+      ]
+    },
+    {
+      "name": "ld_renewals",
+      "label": "Renewals",
+      "description": "Contract renewal and expiration tracking",
+      "columns": [
+        { "name": "id", "type": "text", "primary": true },
+        { "name": "document_id", "type": "text", "label": "Document ID" },
+        { "name": "title", "type": "text", "label": "Title" },
+        { "name": "counterparty", "type": "text", "label": "Counterparty" },
+        { "name": "renewal_date", "type": "date", "label": "Renewal Date" },
+        { "name": "alert_days_before", "type": "number", "label": "Alert Days Before", "default": 30 },
+        { "name": "auto_renew", "type": "boolean", "label": "Auto-Renew" },
+        { "name": "notes", "type": "text", "label": "Notes" },
+        { "name": "status", "type": "text", "label": "Status", "enum": ["active", "upcoming", "expired", "renewed"] }
+      ]
+    }
+  ],
+  "widgets": [
+    {
+      "type": "stat",
+      "label": "Documents Generated",
+      "table": "ld_documents",
+      "aggregate": "count"
+    },
+    {
+      "type": "stat",
+      "label": "Contracts Reviewed",
+      "table": "ld_reviews",
+      "aggregate": "count"
+    },
+    {
+      "type": "stat",
+      "label": "High Risk Reviews",
+      "table": "ld_reviews",
+      "filter": { "overall_risk": "high" },
+      "aggregate": "count"
+    },
+    {
+      "type": "stat",
+      "label": "Upcoming Renewals",
+      "table": "ld_renewals",
+      "filter": { "status": "upcoming" },
+      "aggregate": "count"
+    }
+  ]
+}

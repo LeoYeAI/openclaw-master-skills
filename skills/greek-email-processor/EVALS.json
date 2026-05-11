@@ -1,0 +1,102 @@
+[
+  {
+    "id": 0,
+    "prompt": "Process incoming Greek business emails from the last 24 hours. I need automatic detection of invoices, AADE notifications, and client payment inquiries. Send appropriate Greek responses and forward documents to the accounting system.",
+    "expectations": [
+      "Scans multiple email accounts for Greek business communications",
+      "Identifies Greek invoices using keywords like 'τιμολόγιο' and 'αποδειξη'",
+      "Detects AADE government emails and treats them as high priority",
+      "Recognizes client payment inquiries and status requests",
+      "Generates appropriate Greek language responses",
+      "Extracts and processes document attachments",
+      "Forwards processed documents to accounting workflows",
+      "Creates summary report of processing actions taken"
+    ],
+    "files": [
+      {
+        "name": "sample_greek_emails.json",
+        "content": "{\n  \"emails\": [\n    {\n      \"from\": \"supplier@techsolutions.gr\",\n      \"subject\": \"Τιμολόγιο #2026-0234 - ΥπηÏεσίες Ανάπτυξης\",\n      \"body\": \"Αγαπητοί συνεÏγάτες, επισυνάπτουμε το τιμολόγιό μας για τις υπηÏεσίες ανάπτυξης ιστοσελίδας. ΠαÏακαλοÏμε για πληÏωμή εντός 30 ημεÏών.\",\n      \"attachments\": [\"invoice_2026_0234.pdf\"],\n      \"timestamp\": \"2026-02-17T09:30:00Z\",\n      \"priority\": \"normal\"\n    },\n    {\n      \"from\": \"notifications@aade.gr\",\n      \"subject\": \"Σημαντική ανακοίνωση: Αλλαγή πÏοθεσμίας δήλωσης ΦΠΑ\",\n      \"body\": \"ΕνημεÏώνουμε ότι η πÏοθεσμία υποβολής της μηνιαίας δήλωσης ΦΠΑ για τον ΜάÏτιο 2026 μεταφέÏεται από 25 ΑπÏιλίου στις 20 ΑπÏιλίου 2026.\",\n      \"attachments\": [],\n      \"timestamp\": \"2026-02-17T08:15:00Z\",\n      \"priority\": \"critical\"\n    },\n    {\n      \"from\": \"client@company-a.gr\",\n      \"subject\": \"ΕÏώτημα για κατάσταση πληÏωμής\",\n      \"body\": \"ΚαλησπέÏα, θα θέλαμε να ενημεÏωθοÏμε για την κατάσταση πληÏωμής του τιμολογίου #789 που στείλαμε στις 15 ΘανουαÏίου. ΕυχαÏιστοÏμε.\",\n      \"attachments\": [],\n      \"timestamp\": \"2026-02-17T14:20:00Z\",\n      \"priority\": \"medium\"\n    }\n  ]\n}"
+      }
+    ]
+  },
+  {
+    "id": 1,
+    "prompt": "Set up automated email monitoring for a Greek accounting firm. Configure Gmail and Outlook integration to monitor for invoices, bank statements, and government notifications. Include Greek language templates for automatic responses.",
+    "expectations": [
+      "Configures Gmail API integration with appropriate OAuth scopes",
+      "Sets up Outlook/Exchange integration with Microsoft Graph API",
+      "Creates email filters for Greek document types and government communications",
+      "Establishes monitoring intervals and processing priorities",
+      "Generates Greek language response templates for common scenarios",
+      "Sets up automated forwarding rules to appropriate processing systems",
+      "Creates alert configuration for critical government notifications",
+      "Establishes secure handling procedures for sensitive financial emails"
+    ],
+    "files": [
+      {
+        "name": "email_config.yaml",
+        "content": "accounts:\n  primary_business:\n    provider: \"gmail\"\n    email: \"accounting@company.gr\"\n    api_key: \"placeholder\"\n    monitoring_enabled: true\n    \n  government_notifications:\n    provider: \"gmail\" \n    email: \"compliance@company.gr\"\n    priority: \"critical\"\n    monitoring_enabled: true\n    \n  client_communications:\n    provider: \"outlook\"\n    email: \"info@company.gr\"\n    auto_responses: true\n    monitoring_enabled: true\n    \nfilters:\n  invoices:\n    keywords: [\"τιμολόγιο\", \"αποδειξη\", \"invoice\"]\n    file_types: [\".pdf\", \".xml\"]\n    \n  government:\n    senders: [\"@aade.gr\", \"@efka.gov.gr\", \"@gov.gr\"]\n    priority: \"high\"\n    \n  banking:\n    senders: [\"@alphabank.gr\", \"@nbg.gr\", \"@eurobank.gr\"]\n    keywords: [\"statement\", \"κίνηση λογαÏιασμοÏ\"]\n    \nresponse_templates:\n  invoice_confirmation:\n    subject: \"Επιβεβαίωση παÏαλαβής τιμολογίου\"\n    language: \"greek\"\n    \n  payment_status:\n    subject: \"ΕνημέÏωση κατάστασης πληÏωμής\" \n    language: \"greek\""
+      }
+    ]
+  },
+  {
+    "id": 2,
+    "prompt": "Process a batch of Greek bank emails containing account statements from Alpha Bank, National Bank, and Eurobank. Extract statements, verify sender authenticity, and integrate with the bank reconciliation system.",
+    "expectations": [
+      "Identifies emails from legitimate Greek bank domains",
+      "Verifies sender authenticity and flags suspicious emails",
+      "Extracts bank statement attachments safely",
+      "Recognizes different Greek bank statement formats",
+      "Parses account numbers and statement periods",
+      "Integrates extracted data with reconciliation workflows",
+      "Generates processing summary with bank-specific details",
+      "Maintains security protocols for sensitive banking information"
+    ],
+    "files": [
+      {
+        "name": "bank_emails.json",
+        "content": "{\n  \"bank_emails\": [\n    {\n      \"from\": \"statements@alphabank.gr\",\n      \"subject\": \"Alpha Bank - Κίνηση ΛογαÏιασμοÏ ΘανουάÏιος 2026\",\n      \"body\": \"Σας αποστέλλουμε την κίνηση του επιχειÏηματικοÏ σας λογαÏιασμοÏ για τον μήνα ΘανουάÏιο 2026. Για οποιαδήποτε διευκÏίνιση επικοινωνήστε μαζί μας.\",\n      \"attachments\": [\"alpha_statement_jan_2026.pdf\"],\n      \"account_number\": \"123-456789-01\",\n      \"statement_period\": \"2026-01-01 to 2026-01-31\",\n      \"verified_sender\": true\n    },\n    {\n      \"from\": \"ebanking@nbg.gr\",\n      \"subject\": \"Εθνική ΤÏάπεζα - ΑντίγÏαφο κίνησης λογαÏιασμοÏ\",\n      \"body\": \"Αγαπητέ πελάτη, θα βÏείτε συνημμένο το αντίγÏαφο κίνησης του λογαÏιασμοÏ σας για την πεÏίοδο που ζητήσατε.\",\n      \"attachments\": [\"nbg_account_movement.pdf\"],\n      \"account_number\": \"987-654321-02\",\n      \"statement_period\": \"2026-01-01 to 2026-01-31\", \n      \"verified_sender\": true\n    },\n    {\n      \"from\": \"info@eurobank.gr\",\n      \"subject\": \"Eurobank - ΛογαÏιασμός Κίνησης\",\n      \"body\": \"ΠαÏαλάβετε τον λογαÏιασμό κίνησης για τον επιχειÏηματικό σας λογαÏιασμό. Για πεÏαιτέÏω πληÏοφοÏίες καλέστε το 210-9555000.\",\n      \"attachments\": [\"eurobank_statement_business.pdf\"],\n      \"account_number\": \"456-789123-03\",\n      \"statement_period\": \"2026-01-01 to 2026-01-31\",\n      \"verified_sender\": true\n    }\n  ]\n}"
+      }
+    ]
+  },
+  {
+    "id": 3,
+    "prompt": "Handle urgent AADE email notification about a tax audit request. The email is in Greek and requires immediate escalation, document preparation, and client notification. Generate appropriate response workflow.",
+    "expectations": [
+      "Immediately identifies email as critical AADE audit notification",
+      "Triggers high-priority alert system (SMS + email)",
+      "Parses Greek audit request details (deadline, required documents)",
+      "Creates urgent task in task management system",
+      "Generates client notification about audit requirement",
+      "Prepares standard audit document checklist",
+      "Schedules legal consultation if needed",
+      "Maintains complete audit trail of response actions"
+    ],
+    "files": [
+      {
+        "name": "aade_audit_email.json",
+        "content": "{\n  \"email\": {\n    \"from\": \"audit-dept@aade.gr\",\n    \"to\": \"compliance@company.gr\",\n    \"subject\": \"ΕΠΕΘΓΟÎ: Αίτημα φοÏολογικοÏ ελέγχου - ΕταιÏεία DEMO AE\",\n    \"body\": \"Αξιότιμοι κÏÏιοι,\\n\\nΣας ενημεÏώνουμε ότι η εταιÏεία σας έχει επιλεγεί για φοÏολογικό έλεγχο για το φοÏολογικό έτος 2025.\\n\\nΠαÏακαλοÏμε να πÏοετοιμάσετε τα ακόλουθα έγγÏαφα:\\n- Βιβλία και στοιχεία άÏθÏου 12 Κ.Φ.Ε.\\n- Δηλώσεις ΦΠΑ για το 2025\\n- Τιμολόγια πωλήσεων και αγοÏών\\n- Μισθοδοτικές καταστάσεις\\n- ΤÏαπεζικά αντίγÏαφα\\n\\nΔ πÏοθεσμία παÏάδοσης είναι η 28η ΦεβÏουαÏίου 2026.\\n\\nΕλεγκτής: Θωάννης Παπαδόπουλος\\nΤηλέφωνο: 210-1234567\\n\\nΜε εκτίμηση,\\nΑνεξάÏτητη ΑÏχή Δημοσίων Εσόδων\",\n    \"timestamp\": \"2026-02-17T10:45:00Z\",\n    \"priority\": \"critical\",\n    \"audit_details\": {\n      \"company\": \"DEMO AE\",\n      \"tax_year\": \"2025\",\n      \"deadline\": \"2026-02-28\",\n      \"auditor\": \"Θωάννης Παπαδόπουλος\",\n      \"contact\": \"210-1234567\",\n      \"required_documents\": [\n        \"Βιβλία και στοιχεία άÏθÏου 12 Κ.Φ.Ε.\",\n        \"Δηλώσεις ΦΠΑ για το 2025\",\n        \"Τιμολόγια πωλήσεων και αγοÏών\",\n        \"Μισθοδοτικές καταστάσεις\",\n        \"ΤÏαπεζικά αντίγÏαφα\"\n      ]\n    }\n  }\n}"
+      }
+    ]
+  },
+  {
+    "id": 4,
+    "prompt": "Configure automatic Greek language responses for common client inquiries. Include templates for payment confirmations, document requests, and appointment scheduling. Ensure professional Greek business communication standards.",
+    "expectations": [
+      "Creates comprehensive Greek language response templates",
+      "Includes proper Greek business etiquette and formal language",
+      "Handles various client inquiry types (payments, documents, appointments)",
+      "Provides personalization variables for client names and details",
+      "Includes appropriate Greek salutations and closings",
+      "Ensures grammatically correct Greek with proper accents",
+      "Sets up automated trigger conditions for each template type",
+      "Maintains professional tone suitable for accounting services"
+    ],
+    "files": [
+      {
+        "name": "greek_response_templates.json",
+        "content": "{\n  \"templates\": {\n    \"payment_confirmation\": {\n      \"subject\": \"Επιβεβαίωση πληÏωμής - {invoice_number}\",\n      \"body\": \"Αγαπητέ/ή {client_name},\\n\\nΕπιβεβαιώνουμε την παÏαλαβή της πληÏωμής σας Ïψους {amount} για το τιμολόγιο {invoice_number}.\\n\\nΔ πληÏωμή έχει καταχωÏηθεί στο λογαÏιασμό σας και το τιμολόγιο θεωÏείται εξοφλημένο.\\n\\nΣας ευχαÏιστοÏμε για την εμπιστοσÏνη σας.\\n\\nΜε εκτίμηση,\\n{company_name}\\n{accountant_name}\\nΛογιστικό ΓÏαφείο\\nΤηλ: {phone_number}\",\n      \"trigger_conditions\": [\"payment_received\", \"invoice_paid\"]\n    },\n    \"document_request_response\": {\n      \"subject\": \"Αίτημα εγγÏάφων - {reference_number}\",\n      \"body\": \"Αγαπητέ/ή {client_name},\\n\\nΛάβαμε το αίτημά σας για τα ακόλουθα έγγÏαφα:\\n{requested_documents}\\n\\nΤα έγγÏαφα θα είναι έτοιμα εντός {processing_time} εÏγάσιμων ημεÏών.\\n\\nΘα σας ενημεÏώσουμε μόλις είναι διαθέσιμα για παÏαλαβή ή αποστολή.\\n\\nΓια οποιαδήποτε διευκÏίνιση, παÏακαλοÏμε επικοινωνήστε μαζί μας.\\n\\nΜε εκτίμηση,\\n{company_name}\\n{contact_person}\\nΤηλ: {phone_number}\\nEmail: {email_address}\",\n      \"trigger_conditions\": [\"document_request\", \"certificate_request\"]\n    },\n    \"appointment_scheduling\": {\n      \"subject\": \"ΠÏογÏαμματισμός συνάντησης - {client_name}\",\n      \"body\": \"Αγαπητέ/ή {client_name},\\n\\nΛάβαμε το αίτημά σας για πÏογÏαμματισμό συνάντησης.\\n\\nΠÏοτεινόμενες ημεÏομηνίες και ώÏες:\\n{available_slots}\\n\\nΠαÏακαλοÏμε επιβεβαιώστε ποια ημεÏομηνία σας εξυπηÏετεί καλÏτεÏα.\\n\\nΔ συνάντηση θα πÏαγματοποιηθεί στα γÏαφεία μας:\\n{office_address}\\n\\nΣε πεÏίπτωση που χÏειαστεί αναβολή, παÏακαλοÏμε ενημεÏώστε μας τουλάχιστον 24 ώÏες νωÏίτεÏα.\\n\\nΜε εκτίμηση,\\n{accountant_name}\\nΛογιστικό ΓÏαφείο {company_name}\\nΤηλ: {phone_number}\",\n      \"trigger_conditions\": [\"appointment_request\", \"meeting_request\"]\n    },\n    \"invoice_receipt_confirmation\": {\n      \"subject\": \"Επιβεβαίωση παÏαλαβής τιμολογίου - {invoice_number}\",\n      \"body\": \"Αγαπητέ/ή {sender_name},\\n\\nΕπιβεβαιώνουμε την παÏαλαβή του τιμολογίου {invoice_number} ημεÏομηνίας {invoice_date} συνολικής αξίας {total_amount}.\\n\\nΤο τιμολόγιο έχει πÏοωθηθεί στο λογιστήÏιό μας για επεξεÏγασία και θα ενταχθεί στον επόμενο κÏκλο πληÏωμών.\\n\\nΔ εξόφληση θα πÏαγματοποιηθεί εντός {payment_terms} ημεÏών από την ημεÏομηνία έκδοσης.\\n\\nΣας ευχαÏιστοÏμε για τη συνεÏγασία.\\n\\nΜε εκτίμηση,\\n{company_name}\\nΛογιστικές ΥπηÏεσίες\\nΤηλ: {phone_number}\\nEmail: {email_address}\",\n      \"trigger_conditions\": [\"invoice_received\", \"supplier_invoice\"]\n    }\n  },\n  \"common_variables\": {\n    \"client_name\": \"Όνομα πελάτη\",\n    \"company_name\": \"Όνομα εταιÏείας\",\n    \"accountant_name\": \"Όνομα λογιστή\",\n    \"phone_number\": \"Τηλέφωνο επικοινωνίας\",\n    \"email_address\": \"Email επικοινωνίας\",\n    \"office_address\": \"ΔιεÏθυνση γÏαφείου\"\n  }\n}"
+      }
+    ]
+  }
+]

@@ -1,0 +1,495 @@
+{
+  "source": "mapping.mdx",
+  "relative_source": "faq\\mapping.mdx",
+  "title": "数值映射",
+  "doc_kind": "mapping_reference",
+  "is_index_page": false,
+  "section_count": 10,
+  "table_count": 9,
+  "callout_count": 2,
+  "link_count": 0,
+  "image_count": 0,
+  "sections": [
+    {
+      "id": "faq.mapping.数值映射",
+      "title": "数值映射",
+      "level": 1,
+      "content_md": "PythonGO 中有很多值是在无限易里定义好的常量，在 PythonGO 中只能看到一些数字或字母，为了防止你一头雾水，这里列举了一些单个数字或字母所代表的的含义，可以帮助你更快的理解 PythonGO\n\n> [!NOTE]\n> 你只需要关注值与其对应的含义即可，变量名是体现在无限易中的，仅供你了解。\n\n> [!NOTE]\n> 所有的值都是字符串类型",
+      "summary": "PythonGO 中有很多值是在无限易里定义好的常量，在 PythonGO 中只能看到一些数字或字母，为了防止你一头雾水，这里列举了一些单个数字或字母所代表的的含义，可以帮助你更快的理解 PythonGO",
+      "block_type": "section"
+    },
+    {
+      "id": "faq.mapping.productclasstype",
+      "title": "`ProductClassType`",
+      "level": 2,
+      "content_md": "产品类型\n\n| 变量名 | 值 | 含义 |\n|---|---|---|\n| Futures | `1` | 期货 |\n| Options | `2` | 期权 |\n| Combination | `3` | 组合 |\n| Spot | `4` | 即期 |\n| EFP | `5` | 期转现 |\n| Unknown | `6` | 未知类型 |\n| Stocks | `7` | 证券 |\n| StockOptions | `8` | 股票期权 |\n| SGE_SPOT | `9` | 金交所现货 |\n| SGE_DEFER | `a` | 金交所递延 |\n| SGE_FOWARD | `b` | 金交所远期 |\n| FX | `c` | 外汇 |\n| TAS | `d` | TAS 合约 |\n| MI | `e` | 金属指数 |\n| SpotOption | `h` | 现货期权 |",
+      "summary": "产品类型",
+      "block_type": "mapping_table"
+    },
+    {
+      "id": "faq.mapping.optionstype",
+      "title": "`OptionsType`",
+      "level": 2,
+      "content_md": "期权类型\n\n| 变量名 | 值 | 含义 |\n|---|---|---|\n| NotOptions | `0` | 非期权 |\n| CallOptions | `1` | 看涨 |\n| PutOptions | `2` | 看跌 |",
+      "summary": "期权类型",
+      "block_type": "mapping_table"
+    },
+    {
+      "id": "faq.mapping.hedgeflagtype",
+      "title": "`HedgeFlagType`",
+      "level": 2,
+      "content_md": "投机套保标志类型\n\n| 变量名 | 值 | 含义 |\n|---|---|---|\n| Speculation | `1` | 投机 |\n| Arbitrage | `2` | 套利 |\n| Hedge | `3` | 套保 |\n| MarketMaker | `4` | 做市商 |\n| CoveredOption | `5` | 备兑 |",
+      "summary": "投机套保标志类型",
+      "block_type": "mapping_table"
+    },
+    {
+      "id": "faq.mapping.orderpricetype",
+      "title": "`OrderPriceType`",
+      "level": 2,
+      "content_md": "报单价格条件类型\n\n| 变量名 | 值 | 含义 |\n|---|---|---|\n| AnyPrice | `1` | 任意价 |\n| LimitPrice | `2` | 限价 |\n| BestPrice | `3` | 最优价 |\n| FiveLevelPrice | `4` | 五档价 |",
+      "summary": "报单价格条件类型",
+      "block_type": "mapping_table"
+    },
+    {
+      "id": "faq.mapping.ordertype",
+      "title": "`OrderType`",
+      "level": 2,
+      "content_md": "报单类型\n\n| 变量名 | 值 | 含义 |\n|---|---|---|\n| Gfd | `0` | GFD 下单 |\n| Fak | `1` | FAK 下单 |\n| Fok | `2` | FOK 下单 |",
+      "summary": "报单类型",
+      "block_type": "mapping_table"
+    },
+    {
+      "id": "faq.mapping.directiontype",
+      "title": "`DirectionType`",
+      "level": 2,
+      "content_md": "买卖方向类型\n\n| 变量名 | 值 | 含义 |\n|---|---|---|\n| Buy | `0` | 多 |\n| Sell | `1` | 空 |",
+      "summary": "买卖方向类型",
+      "block_type": "mapping_table"
+    },
+    {
+      "id": "faq.mapping.offsetflagtype",
+      "title": "`OffsetFlagType`",
+      "level": 2,
+      "content_md": "开平标志类型\n\n| 变量名 | 值 | 含义 |\n|---|---|---|\n| Open | `0` | 开仓 |\n| Close | `1` | 平仓 |\n| ForceClose | `2` | 强平 |\n| CloseToday | `3` | 平今 |\n| CloseYesterday | `4` | 平昨 |",
+      "summary": "开平标志类型",
+      "block_type": "mapping_table"
+    },
+    {
+      "id": "faq.mapping.instrumentstatus",
+      "title": "`InstrumentStatus`",
+      "level": 2,
+      "content_md": "合约状态（纯文字）\n\n| 值 |\n|---|\n| 开盘前 |\n| 非交易 |\n| 连续交易 |\n| 集合竞价报单 |\n| 集合竞价价格平衡 |\n| 集合竞价撮合 |\n| 收盘 |\n| 开盘集合竞价 |\n| 收盘集合竞价 |\n| 停牌 |\n| 临时停牌 |\n| 盘后交易 |\n| 波动性中断 |\n| 休市 |\n| 未上市 |\n| 金交所交割申报 |\n| 金交所交割申报结束 |\n| 金交所中立仓申报 |\n| 金交所交割申报撮合 |",
+      "summary": "合约状态（纯文字）",
+      "block_type": "mapping_table"
+    },
+    {
+      "id": "faq.mapping.orderstatus",
+      "title": "`OrderStatus`",
+      "level": 2,
+      "content_md": "报单状态（纯文字）\n\n| 值 |\n|---|\n| 未知 |\n| 未成交 |\n| 全部成交 |\n| 部分成交 |\n| 部成部撤 |\n| 已撤销 |\n| 已报入未应答 |\n| 部分撤单还在队列 |\n| 部成部撤还在队列中 |\n| 待报入 |\n| 投顾报单 |\n| 投资经理驳回 |\n| 投资经理通过 |\n| 交易员己报入 |\n| 交易员驳回 |\n| 投顾经理保 |",
+      "summary": "报单状态（纯文字）",
+      "block_type": "mapping_table"
+    }
+  ],
+  "tables": [
+    {
+      "title": "`ProductClassType`",
+      "headers": [
+        "变量名",
+        "值",
+        "含义"
+      ],
+      "rows": [
+        [
+          "Futures",
+          "`1`",
+          "期货"
+        ],
+        [
+          "Options",
+          "`2`",
+          "期权"
+        ],
+        [
+          "Combination",
+          "`3`",
+          "组合"
+        ],
+        [
+          "Spot",
+          "`4`",
+          "即期"
+        ],
+        [
+          "EFP",
+          "`5`",
+          "期转现"
+        ],
+        [
+          "Unknown",
+          "`6`",
+          "未知类型"
+        ],
+        [
+          "Stocks",
+          "`7`",
+          "证券"
+        ],
+        [
+          "StockOptions",
+          "`8`",
+          "股票期权"
+        ],
+        [
+          "SGE_SPOT",
+          "`9`",
+          "金交所现货"
+        ],
+        [
+          "SGE_DEFER",
+          "`a`",
+          "金交所递延"
+        ],
+        [
+          "SGE_FOWARD",
+          "`b`",
+          "金交所远期"
+        ],
+        [
+          "FX",
+          "`c`",
+          "外汇"
+        ],
+        [
+          "TAS",
+          "`d`",
+          "TAS 合约"
+        ],
+        [
+          "MI",
+          "`e`",
+          "金属指数"
+        ],
+        [
+          "SpotOption",
+          "`h`",
+          "现货期权"
+        ]
+      ],
+      "source": "mapping.mdx"
+    },
+    {
+      "title": "`OptionsType`",
+      "headers": [
+        "变量名",
+        "值",
+        "含义"
+      ],
+      "rows": [
+        [
+          "NotOptions",
+          "`0`",
+          "非期权"
+        ],
+        [
+          "CallOptions",
+          "`1`",
+          "看涨"
+        ],
+        [
+          "PutOptions",
+          "`2`",
+          "看跌"
+        ]
+      ],
+      "source": "mapping.mdx"
+    },
+    {
+      "title": "`HedgeFlagType`",
+      "headers": [
+        "变量名",
+        "值",
+        "含义"
+      ],
+      "rows": [
+        [
+          "Speculation",
+          "`1`",
+          "投机"
+        ],
+        [
+          "Arbitrage",
+          "`2`",
+          "套利"
+        ],
+        [
+          "Hedge",
+          "`3`",
+          "套保"
+        ],
+        [
+          "MarketMaker",
+          "`4`",
+          "做市商"
+        ],
+        [
+          "CoveredOption",
+          "`5`",
+          "备兑"
+        ]
+      ],
+      "source": "mapping.mdx"
+    },
+    {
+      "title": "`OrderPriceType`",
+      "headers": [
+        "变量名",
+        "值",
+        "含义"
+      ],
+      "rows": [
+        [
+          "AnyPrice",
+          "`1`",
+          "任意价"
+        ],
+        [
+          "LimitPrice",
+          "`2`",
+          "限价"
+        ],
+        [
+          "BestPrice",
+          "`3`",
+          "最优价"
+        ],
+        [
+          "FiveLevelPrice",
+          "`4`",
+          "五档价"
+        ]
+      ],
+      "source": "mapping.mdx"
+    },
+    {
+      "title": "`OrderType`",
+      "headers": [
+        "变量名",
+        "值",
+        "含义"
+      ],
+      "rows": [
+        [
+          "Gfd",
+          "`0`",
+          "GFD 下单"
+        ],
+        [
+          "Fak",
+          "`1`",
+          "FAK 下单"
+        ],
+        [
+          "Fok",
+          "`2`",
+          "FOK 下单"
+        ]
+      ],
+      "source": "mapping.mdx"
+    },
+    {
+      "title": "`DirectionType`",
+      "headers": [
+        "变量名",
+        "值",
+        "含义"
+      ],
+      "rows": [
+        [
+          "Buy",
+          "`0`",
+          "多"
+        ],
+        [
+          "Sell",
+          "`1`",
+          "空"
+        ]
+      ],
+      "source": "mapping.mdx"
+    },
+    {
+      "title": "`OffsetFlagType`",
+      "headers": [
+        "变量名",
+        "值",
+        "含义"
+      ],
+      "rows": [
+        [
+          "Open",
+          "`0`",
+          "开仓"
+        ],
+        [
+          "Close",
+          "`1`",
+          "平仓"
+        ],
+        [
+          "ForceClose",
+          "`2`",
+          "强平"
+        ],
+        [
+          "CloseToday",
+          "`3`",
+          "平今"
+        ],
+        [
+          "CloseYesterday",
+          "`4`",
+          "平昨"
+        ]
+      ],
+      "source": "mapping.mdx"
+    },
+    {
+      "title": "`InstrumentStatus`",
+      "headers": [
+        "值"
+      ],
+      "rows": [
+        [
+          "开盘前"
+        ],
+        [
+          "非交易"
+        ],
+        [
+          "连续交易"
+        ],
+        [
+          "集合竞价报单"
+        ],
+        [
+          "集合竞价价格平衡"
+        ],
+        [
+          "集合竞价撮合"
+        ],
+        [
+          "收盘"
+        ],
+        [
+          "开盘集合竞价"
+        ],
+        [
+          "收盘集合竞价"
+        ],
+        [
+          "停牌"
+        ],
+        [
+          "临时停牌"
+        ],
+        [
+          "盘后交易"
+        ],
+        [
+          "波动性中断"
+        ],
+        [
+          "休市"
+        ],
+        [
+          "未上市"
+        ],
+        [
+          "金交所交割申报"
+        ],
+        [
+          "金交所交割申报结束"
+        ],
+        [
+          "金交所中立仓申报"
+        ],
+        [
+          "金交所交割申报撮合"
+        ]
+      ],
+      "source": "mapping.mdx"
+    },
+    {
+      "title": "`OrderStatus`",
+      "headers": [
+        "值"
+      ],
+      "rows": [
+        [
+          "未知"
+        ],
+        [
+          "未成交"
+        ],
+        [
+          "全部成交"
+        ],
+        [
+          "部分成交"
+        ],
+        [
+          "部成部撤"
+        ],
+        [
+          "已撤销"
+        ],
+        [
+          "已报入未应答"
+        ],
+        [
+          "部分撤单还在队列"
+        ],
+        [
+          "部成部撤还在队列中"
+        ],
+        [
+          "待报入"
+        ],
+        [
+          "投顾报单"
+        ],
+        [
+          "投资经理驳回"
+        ],
+        [
+          "投资经理通过"
+        ],
+        [
+          "交易员己报入"
+        ],
+        [
+          "交易员驳回"
+        ],
+        [
+          "投顾经理保"
+        ]
+      ],
+      "source": "mapping.mdx"
+    }
+  ],
+  "callouts": [
+    {
+      "kind": "note",
+      "text": "你只需要关注值与其对应的含义即可，变量名是体现在无限易中的，仅供你了解。",
+      "source": "mapping.mdx"
+    },
+    {
+      "kind": "note",
+      "text": "所有的值都是字符串类型",
+      "source": "mapping.mdx"
+    }
+  ],
+  "links": [],
+  "images": []
+}

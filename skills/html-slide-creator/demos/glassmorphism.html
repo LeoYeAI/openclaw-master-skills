@@ -1,0 +1,885 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>slide-creator · Glassmorphism</title>
+<!-- Speaker note: backdrop-filter degrades to flat color in PPTX export. The blurred orbs are essential for the glass effect to work — without a colorful background behind each card, backdrop-filter: blur() has nothing to blur. -->
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --text-dark: #1a1a2e;
+  --text-light: rgba(255,255,255,0.92);
+  --text-muted-dark: rgba(26,26,46,0.65);
+  --text-muted-light: rgba(255,255,255,0.60);
+}
+
+html {
+  scroll-snap-type: y mandatory;
+  scroll-behavior: smooth;
+  height: 100%;
+}
+
+body {
+  height: 100%;
+  overflow-x: hidden;
+  font-family: system-ui, -apple-system, "PingFang SC", "Helvetica Neue", sans-serif;
+}
+
+.slide {
+  width: 100vw;
+  height: 100vh;
+  height: 100dvh;
+  scroll-snap-align: start;
+  overflow: hidden;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ---- Slide backgrounds ---- */
+.slide-0 { background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%); }
+.slide-1 { background: linear-gradient(135deg, #f8cdda 0%, #a6c1ee 50%, #1d6fa4 100%); }
+.slide-2 { background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%); }
+.slide-3 { background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%); }
+.slide-4 { background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%); }
+.slide-5 { background: linear-gradient(135deg, #f8cdda 0%, #a6c1ee 50%, #1d6fa4 100%); }
+.slide-6 { background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%); }
+.slide-7 { background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%); }
+
+/* Blurred orbs — placed behind glass cards; required for backdrop-filter */
+.orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(60px);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.orb1 { width: 40vw; height: 40vw; background: rgba(102,126,234,0.5); top: -10%; left: -5%; }
+.orb2 { width: 30vw; height: 30vw; background: rgba(240,147,251,0.4); bottom: -5%; right: -5%; }
+.orb3 { width: 35vw; height: 35vw; background: rgba(168,237,234,0.5); top: 50%; left: 60%; transform: translate(-50%,-50%); }
+.orb4 { width: 25vw; height: 25vw; background: rgba(254,214,227,0.6); top: 10%; right: 10%; }
+
+/* ---- Glass card ---- */
+.glass-card {
+  background: rgba(255,255,255,0.15);
+  backdrop-filter: blur(20px) saturate(1.5);
+  -webkit-backdrop-filter: blur(20px) saturate(1.5);
+  border: 1px solid rgba(255,255,255,0.30);
+  border-radius: 16px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.10);
+}
+
+.glass-item {
+  background: rgba(255,255,255,0.08);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255,255,255,0.20);
+  border-radius: 12px;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.06);
+}
+
+/* ---- Content wrapper ---- */
+.content {
+  width: 100%;
+  max-width: 800px;
+  padding: clamp(24px, 5vw, 60px);
+  position: relative;
+  z-index: 1;
+}
+
+/* ---- Typography — dark slides ---- */
+.text-dark h1 {
+  font-size: clamp(34px, 5.5vw, 66px);
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  line-height: 1.06;
+  color: var(--text-light);
+}
+
+.text-dark h2 {
+  font-size: clamp(24px, 4vw, 50px);
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+  color: var(--text-light);
+}
+
+.text-dark h3 {
+  font-size: clamp(14px, 1.6vw, 18px);
+  font-weight: 600;
+  color: var(--text-light);
+  margin-bottom: 5px;
+}
+
+.text-dark p {
+  font-size: clamp(13px, 1.5vw, 17px);
+  color: var(--text-muted-light);
+  line-height: 1.65;
+}
+
+/* ---- Typography — light slides ---- */
+.text-light-theme h1 {
+  font-size: clamp(34px, 5.5vw, 66px);
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  line-height: 1.06;
+  color: var(--text-dark);
+}
+
+.text-light-theme h2 {
+  font-size: clamp(24px, 4vw, 50px);
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+  color: var(--text-dark);
+}
+
+.text-light-theme h3 {
+  font-size: clamp(14px, 1.6vw, 18px);
+  font-weight: 600;
+  color: var(--text-dark);
+  margin-bottom: 5px;
+}
+
+.text-light-theme p {
+  font-size: clamp(13px, 1.5vw, 17px);
+  color: var(--text-muted-dark);
+  line-height: 1.65;
+}
+
+/* ---- Pill / badge ---- */
+.pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(255,255,255,0.20);
+  border: 1px solid rgba(255,255,255,0.35);
+  border-radius: 100px;
+  padding: 5px 14px;
+  font-size: clamp(11px, 1.1vw, 13px);
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+.pill-dark { color: var(--text-light); }
+.pill-light { color: var(--text-dark); background: rgba(255,255,255,0.40); }
+
+/* ---- Stat row ---- */
+.stats {
+  display: flex;
+  gap: clamp(0px, 2vw, 24px);
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.stat-card {
+  padding: clamp(14px, 2vw, 22px) clamp(18px, 2.5vw, 28px);
+  text-align: center;
+  flex: 1;
+  min-width: 100px;
+}
+
+.stat-value {
+  font-size: clamp(32px, 5vw, 56px);
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  line-height: 1;
+  color: var(--text-light);
+  display: block;
+}
+
+.stat-label {
+  font-size: clamp(10px, 1.1vw, 12px);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-muted-light);
+  display: block;
+  margin-top: 4px;
+}
+
+/* ---- Grid layouts ---- */
+.grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: clamp(10px, 1.5vw, 16px);
+  margin-top: clamp(16px, 2.5vw, 26px);
+}
+
+.grid-3 {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: clamp(8px, 1.3vw, 14px);
+  margin-top: clamp(16px, 2.5vw, 26px);
+}
+
+/* ---- Icon circle (SF Symbols-style) ---- */
+.icon-circle {
+  width: clamp(32px, 4vw, 44px);
+  height: clamp(32px, 4vw, 44px);
+  border-radius: 50%;
+  border: 1.5px solid rgba(255,255,255,0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: clamp(14px, 1.8vw, 20px);
+  background: rgba(255,255,255,0.10);
+  margin-bottom: clamp(8px, 1.2vw, 12px);
+}
+
+.icon-circle-dark {
+  border-color: rgba(26,26,46,0.25);
+  background: rgba(26,26,46,0.06);
+}
+
+/* ---- Problem items ---- */
+.problem-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  padding: clamp(12px, 1.8vw, 18px);
+}
+
+/* ---- Steps list ---- */
+.step-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: clamp(12px, 1.8vw, 16px);
+}
+
+.step-num {
+  width: 26px;
+  height: 26px;
+  min-width: 26px;
+  border-radius: 50%;
+  border: 1.5px solid rgba(255,255,255,0.40);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-light);
+  background: rgba(255,255,255,0.10);
+}
+
+.step-num-dark {
+  border-color: rgba(26,26,46,0.30);
+  color: var(--text-dark);
+  background: rgba(26,26,46,0.07);
+}
+
+/* ---- Tags ---- */
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  margin-top: clamp(14px, 2vw, 22px);
+}
+
+.tag {
+  padding: 5px 12px;
+  border-radius: 8px;
+  font-size: clamp(11px, 1.2vw, 13px);
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+.tag-dark {
+  background: rgba(255,255,255,0.12);
+  border: 1px solid rgba(255,255,255,0.22);
+  color: var(--text-light);
+}
+
+.tag-light {
+  background: rgba(255,255,255,0.35);
+  border: 1px solid rgba(255,255,255,0.50);
+  color: var(--text-dark);
+}
+
+.tag-highlight {
+  background: rgba(102,126,234,0.25);
+  border: 1px solid rgba(102,126,234,0.50);
+  color: #fff;
+}
+
+/* ---- Install ---- */
+.install-block {
+  margin-top: clamp(14px, 2vw, 22px);
+  display: flex;
+  flex-direction: column;
+  gap: clamp(8px, 1.2vw, 12px);
+}
+
+.install-item {
+  padding: clamp(12px, 1.8vw, 18px);
+}
+
+.install-label {
+  font-size: clamp(10px, 1.1vw, 12px);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: 5px;
+}
+
+.install-cmd {
+  font-family: 'SF Mono', 'Fira Code', monospace;
+  font-size: clamp(11px, 1.2vw, 14px);
+  word-break: break-all;
+  line-height: 1.5;
+}
+
+/* ---- CTA ---- */
+.cta-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: clamp(12px, 1.8vw, 18px) clamp(22px, 3vw, 32px);
+  border-radius: 14px;
+  font-size: clamp(15px, 1.8vw, 20px);
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  cursor: default;
+  margin-top: clamp(22px, 3.5vw, 36px);
+}
+
+/* ---- Nav dots ---- */
+#nav-dots {
+  position: fixed;
+  right: clamp(14px, 2vw, 22px);
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  z-index: 100;
+}
+
+.dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.35);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border: none;
+  padding: 0;
+}
+
+.dot.active {
+  background: rgba(255,255,255,0.90);
+  transform: scale(1.5);
+}
+
+/* Progress bar */
+#progress {
+  position: fixed;
+  top: 0; left: 0;
+  height: 2px;
+  background: rgba(255,255,255,0.70);
+  transition: width 0.4s ease;
+  z-index: 100;
+}
+
+/* Slide number */
+#slide-num {
+  position: fixed;
+  bottom: clamp(12px, 2vw, 18px);
+  right: clamp(14px, 2vw, 22px);
+  font-size: 11px;
+  font-weight: 600;
+  color: rgba(255,255,255,0.45);
+  letter-spacing: 0.08em;
+  z-index: 100;
+}
+
+/* Edit mode */
+#hotzone {
+  position: fixed;
+  top: 0; left: 0;
+  width: 80px; height: 80px;
+  z-index: 200;
+  cursor: default;
+}
+
+body.edit-mode [contenteditable] {
+  outline: 1px dashed rgba(255,255,255,0.5);
+  border-radius: 4px;
+  min-width: 20px;
+}
+body.edit-mode #edit-badge { display: flex; }
+
+#edit-badge {
+  display: none;
+  position: fixed;
+  top: 12px; left: 12px;
+  align-items: center;
+  gap: 6px;
+  background: rgba(255,255,255,0.20);
+  border: 1px solid rgba(255,255,255,0.35);
+  border-radius: 8px;
+  padding: 5px 12px;
+  font-size: 11px;
+  font-weight: 600;
+  color: white;
+  z-index: 200;
+  letter-spacing: 0.04em;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+/* ---- Reveal animation — float entrance ---- */
+.reveal {
+  opacity: 0;
+  transform: translateY(16px);
+  transition: opacity 0.6s cubic-bezier(0.34,1.2,0.64,1), transform 0.6s cubic-bezier(0.34,1.2,0.64,1);
+}
+
+.reveal.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Separator */
+.sep {
+  height: 1px;
+  background: rgba(255,255,255,0.20);
+  margin: clamp(12px, 1.8vw, 18px) 0;
+}
+
+.sep-dark {
+  background: rgba(26,26,46,0.15);
+}
+</style>
+</head>
+<body>
+
+<div id="progress"></div>
+<div id="nav-dots"></div>
+<div id="slide-num">1 / 8</div>
+<div id="edit-badge">EDIT · Ctrl+S</div>
+<div id="hotzone"></div>
+
+<!-- SLIDE 1: Cover -->
+<section class="slide slide-0 text-dark" id="s0">
+  <div class="orb orb1"></div>
+  <div class="orb orb2"></div>
+  <div class="content" style="text-align:center;">
+    <div class="reveal">
+      <span class="pill pill-dark">Claude Code · OpenClaw · Open Source</span>
+    </div>
+    <div class="reveal" style="transition-delay:0.1s; margin-top:clamp(16px,2.5vw,28px);">
+      <h1>slide-creator</h1>
+    </div>
+    <div class="reveal" style="transition-delay:0.15s; margin:clamp(8px,1.5vw,14px) auto 0; max-width:520px;">
+      <p style="font-size:clamp(15px,2vw,22px); color:rgba(255,255,255,0.80);">Presentations that feel like products.</p>
+    </div>
+    <div class="reveal" style="transition-delay:0.2s; margin-top:clamp(20px,3.5vw,40px);">
+      <div class="glass-card stats" style="display:inline-flex;">
+        <div class="stat-card">
+          <span class="stat-value">19</span>
+          <span class="stat-label">Presets</span>
+        </div>
+        <div style="width:1px; background:rgba(255,255,255,0.15); align-self:stretch; margin:16px 0;"></div>
+        <div class="stat-card">
+          <span class="stat-value">0</span>
+          <span class="stat-label">Dependencies</span>
+        </div>
+        <div style="width:1px; background:rgba(255,255,255,0.15); align-self:stretch; margin:16px 0;"></div>
+        <div class="stat-card">
+          <span class="stat-value">∞</span>
+          <span class="stat-label">Slides</span>
+        </div>
+      </div>
+    </div>
+    <div class="reveal" style="transition-delay:0.3s; margin-top:clamp(14px,2vw,22px);">
+      <p style="font-size:clamp(12px,1.3vw,14px); color:rgba(255,255,255,0.35); letter-spacing:0.06em; text-transform:uppercase;">Zero-dependency HTML presentations</p>
+    </div>
+  </div>
+</section>
+
+<!-- SLIDE 2: Problem — light theme -->
+<section class="slide slide-1 text-light-theme" id="s1">
+  <div class="orb" style="width:35vw;height:35vw;background:rgba(248,205,218,0.6);top:-5%;right:10%;filter:blur(60px);"></div>
+  <div class="orb" style="width:28vw;height:28vw;background:rgba(166,193,238,0.5);bottom:0%;left:0%;filter:blur(60px);"></div>
+  <div class="content">
+    <div class="reveal">
+      <span class="pill pill-light">The Problem</span>
+    </div>
+    <div class="reveal" style="transition-delay:0.1s; margin-top:clamp(12px,2vw,20px);">
+      <h2>"Presentations shouldn't<br>require a build system"</h2>
+    </div>
+    <div class="sep sep-dark reveal" style="transition-delay:0.15s;"></div>
+    <div class="glass-card reveal" style="transition-delay:0.2s; padding:0; overflow:hidden;">
+      <div class="problem-item" style="border-bottom:1px solid rgba(26,26,46,0.10);">
+        <div class="icon-circle icon-circle-dark">⚙️</div>
+        <div>
+          <h3>Complex Toolchain</h3>
+          <p>npm, Webpack, config files. Hours of setup before writing slide one.</p>
+        </div>
+      </div>
+      <div class="problem-item" style="border-bottom:1px solid rgba(26,26,46,0.10);">
+        <div class="icon-circle icon-circle-dark">📋</div>
+        <div>
+          <h3>Generic Output</h3>
+          <p>Boilerplate templates. Every deck looks like every other deck.</p>
+        </div>
+      </div>
+      <div class="problem-item">
+        <div class="icon-circle icon-circle-dark">🔒</div>
+        <div>
+          <h3>No Ownership</h3>
+          <p>Your slides live in someone else's cloud. Export is an afterthought.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SLIDE 3: Show Don't Tell — mint/light -->
+<section class="slide slide-2 text-light-theme" id="s2">
+  <div class="orb" style="width:40vw;height:40vw;background:rgba(168,237,234,0.6);top:-15%;left:-5%;filter:blur(60px);"></div>
+  <div class="orb" style="width:30vw;height:30vw;background:rgba(254,214,227,0.6);bottom:-5%;right:5%;filter:blur(60px);"></div>
+  <div class="content">
+    <div class="reveal">
+      <span class="pill pill-light">Workflow</span>
+    </div>
+    <div class="reveal" style="transition-delay:0.1s; margin-top:clamp(12px,2vw,20px);">
+      <h2>Style discovery that<br>actually works</h2>
+    </div>
+    <div class="sep sep-dark reveal" style="transition-delay:0.15s;"></div>
+    <div class="reveal" style="transition-delay:0.18s;">
+      <p>Describe your mood. Get three visual previews. Pick what feels right before a single slide is written.</p>
+    </div>
+    <div class="grid-3 reveal" style="transition-delay:0.25s;">
+      <div class="glass-item" style="padding:clamp(14px,2vw,20px); background:rgba(255,255,255,0.40);">
+        <div class="icon-circle icon-circle-dark">🎨</div>
+        <h3 style="font-size:clamp(13px,1.4vw,15px); color:var(--text-dark);">Ask Mood</h3>
+        <p style="font-size:clamp(11px,1.2vw,13px);">Natural language. "Bold and minimal." "Warm and creative."</p>
+      </div>
+      <div class="glass-item" style="padding:clamp(14px,2vw,20px); background:rgba(255,255,255,0.40);">
+        <div class="icon-circle icon-circle-dark">👁</div>
+        <h3 style="font-size:clamp(13px,1.4vw,15px); color:var(--text-dark);">3 Previews</h3>
+        <p style="font-size:clamp(11px,1.2vw,13px);">Three matched styles, side by side, before full generation.</p>
+      </div>
+      <div class="glass-item" style="padding:clamp(14px,2vw,20px); background:rgba(255,255,255,0.40);">
+        <div class="icon-circle icon-circle-dark">✓</div>
+        <h3 style="font-size:clamp(13px,1.4vw,15px); color:var(--text-dark);">Pick &amp; Build</h3>
+        <p style="font-size:clamp(11px,1.2vw,13px);">Your chosen style. A complete HTML file. Zero dependencies.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SLIDE 4: 19 Presets — dark purple -->
+<section class="slide slide-3 text-dark" id="s3">
+  <div class="orb orb1"></div>
+  <div class="orb orb2"></div>
+  <div class="content">
+    <div class="reveal">
+      <span class="pill pill-dark">19 Presets</span>
+    </div>
+    <div class="reveal" style="transition-delay:0.1s; margin-top:clamp(12px,2vw,20px);">
+      <h2>Every visual system,<br>already crafted</h2>
+    </div>
+    <div class="sep reveal" style="transition-delay:0.15s;"></div>
+    <div class="reveal" style="transition-delay:0.18s;">
+      <p style="color:rgba(255,255,255,0.70);">From bold pitches to calm reports. Each preset is a complete visual language.</p>
+    </div>
+    <div class="tags reveal" style="transition-delay:0.25s;">
+      <span class="tag tag-dark">Bold Signal</span>
+      <span class="tag tag-dark">Electric Studio</span>
+      <span class="tag tag-dark">Creative Voltage</span>
+      <span class="tag tag-dark">Dark Botanical</span>
+      <span class="tag tag-dark">Blue Sky</span>
+      <span class="tag tag-dark">Notebook Tabs</span>
+      <span class="tag tag-dark">Pastel Geometry</span>
+      <span class="tag tag-dark">Split Pastel</span>
+      <span class="tag tag-dark">Vintage Editorial</span>
+      <span class="tag tag-dark">Neon Cyber</span>
+      <span class="tag tag-dark">Terminal Green</span>
+      <span class="tag tag-dark">Swiss Modern</span>
+      <span class="tag tag-dark">Paper &amp; Ink</span>
+      <span class="tag tag-dark">Aurora Mesh</span>
+      <span class="tag tag-dark">Enterprise Dark</span>
+      <span class="tag tag-highlight">Glassmorphism ✦</span>
+      <span class="tag tag-dark">Neo-Brutalism</span>
+      <span class="tag tag-dark">Japanese Zen</span>
+      <span class="tag tag-dark">Data Story</span>
+    </div>
+  </div>
+</section>
+
+<!-- SLIDE 5: How It Works — mint -->
+<section class="slide slide-4 text-light-theme" id="s4">
+  <div class="orb" style="width:38vw;height:38vw;background:rgba(168,237,234,0.55);top:-10%;left:-5%;filter:blur(60px);"></div>
+  <div class="orb" style="width:28vw;height:28vw;background:rgba(254,214,227,0.55);bottom:0%;right:0%;filter:blur(60px);"></div>
+  <div class="content">
+    <div class="reveal">
+      <span class="pill pill-light">How It Works</span>
+    </div>
+    <div class="reveal" style="transition-delay:0.1s; margin-top:clamp(12px,2vw,20px);">
+      <h2>Three steps to your<br>presentation</h2>
+    </div>
+    <div class="sep sep-dark reveal" style="transition-delay:0.15s;"></div>
+    <div class="glass-card reveal" style="transition-delay:0.2s; padding:0; overflow:hidden;">
+      <div class="step-item" style="border-bottom:1px solid rgba(26,26,46,0.09);">
+        <div class="step-num step-num-dark">1</div>
+        <div>
+          <h3>Run /slide-creator</h3>
+          <p style="font-size:clamp(12px,1.3vw,15px);">In Claude Code or OpenClaw. State your topic and content goals.</p>
+        </div>
+      </div>
+      <div class="step-item" style="border-bottom:1px solid rgba(26,26,46,0.09);">
+        <div class="step-num step-num-dark">2</div>
+        <div>
+          <h3>Pick from 3 Visual Previews</h3>
+          <p style="font-size:clamp(12px,1.3vw,15px);">Compare style options before committing. Choose by feel, not guesswork.</p>
+        </div>
+      </div>
+      <div class="step-item">
+        <div class="step-num step-num-dark">3</div>
+        <div>
+          <h3>Open HTML</h3>
+          <p style="font-size:clamp(12px,1.3vw,15px);">Self-contained file. No server. No install. Share as a file or host anywhere.</p>
+        </div>
+      </div>
+    </div>
+    <div class="glass-item reveal" style="transition-delay:0.3s; margin-top:clamp(12px,1.8vw,16px); padding:clamp(10px,1.5vw,14px); background:rgba(255,255,255,0.40);">
+      <p style="font-size:clamp(12px,1.3vw,15px); color:var(--text-muted-dark);"><strong style="color:var(--text-dark);">Two-stage workflow:</strong> Use <code style="background:rgba(26,26,46,0.08); padding:1px 5px; border-radius:4px; font-size:0.9em;">--plan</code> to outline first, then <code style="background:rgba(26,26,46,0.08); padding:1px 5px; border-radius:4px; font-size:0.9em;">--generate</code> to produce the full deck.</p>
+    </div>
+  </div>
+</section>
+
+<!-- SLIDE 6: Features — blue/pink -->
+<section class="slide slide-5 text-dark" id="s5">
+  <div class="orb" style="width:36vw;height:36vw;background:rgba(166,193,238,0.5);top:-5%;left:0%;filter:blur(60px);"></div>
+  <div class="orb" style="width:30vw;height:30vw;background:rgba(248,205,218,0.5);bottom:0%;right:0%;filter:blur(60px);"></div>
+  <div class="orb" style="width:22vw;height:22vw;background:rgba(29,111,164,0.4);bottom:20%;left:60%;filter:blur(50px);"></div>
+  <div class="content">
+    <div class="reveal">
+      <span class="pill pill-dark">Features</span>
+    </div>
+    <div class="reveal" style="transition-delay:0.1s; margin-top:clamp(12px,2vw,20px);">
+      <h2>Everything you need.<br>Nothing you don't.</h2>
+    </div>
+    <div class="sep reveal" style="transition-delay:0.15s;"></div>
+    <div class="grid-2 reveal" style="transition-delay:0.2s;">
+      <div class="glass-item" style="padding:clamp(14px,2vw,20px);">
+        <div class="icon-circle">📐</div>
+        <h3>Viewport Fitting</h3>
+        <p style="font-size:clamp(12px,1.3vw,14px);">100dvh slides. Pixel-perfect on any screen or projector.</p>
+      </div>
+      <div class="glass-item" style="padding:clamp(14px,2vw,20px);">
+        <div class="icon-circle">✏️</div>
+        <h3>Inline Editing</h3>
+        <p style="font-size:clamp(12px,1.3vw,14px);">E key activates. Ctrl+S saves to disk via File System Access API.</p>
+      </div>
+      <div class="glass-item" style="padding:clamp(14px,2vw,20px);">
+        <div class="icon-circle">📊</div>
+        <h3>PPTX Export</h3>
+        <p style="font-size:clamp(12px,1.3vw,14px);">Export for stakeholders who need PowerPoint. Note: backdrop-filter is flattened in PPTX.</p>
+      </div>
+      <div class="glass-item" style="padding:clamp(14px,2vw,20px);">
+        <div class="icon-circle">⚡</div>
+        <h3>Two-Stage Workflow</h3>
+        <p style="font-size:clamp(12px,1.3vw,14px);">--plan to outline, --generate to produce. Ship faster, iterate smarter.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SLIDE 7: Install — mint -->
+<section class="slide slide-6 text-light-theme" id="s6">
+  <div class="orb" style="width:40vw;height:40vw;background:rgba(168,237,234,0.5);top:-10%;left:-5%;filter:blur(60px);"></div>
+  <div class="orb" style="width:28vw;height:28vw;background:rgba(254,214,227,0.6);bottom:-5%;right:-5%;filter:blur(60px);"></div>
+  <div class="content">
+    <div class="reveal">
+      <span class="pill pill-light">Install</span>
+    </div>
+    <div class="reveal" style="transition-delay:0.1s; margin-top:clamp(12px,2vw,20px);">
+      <h2>Up and running<br>in 60 seconds</h2>
+    </div>
+    <div class="sep sep-dark reveal" style="transition-delay:0.15s;"></div>
+    <div class="install-block reveal" style="transition-delay:0.2s;">
+      <div class="glass-card install-item">
+        <div class="install-label" style="color:var(--text-muted-dark);">Claude Code</div>
+        <div class="install-cmd" style="color:var(--text-dark);">git clone https://github.com/kaisersong/slide-creator ~/.claude/skills/slide-creator</div>
+      </div>
+      <div class="glass-card install-item">
+        <div class="install-label" style="color:var(--text-muted-dark);">OpenClaw</div>
+        <div class="install-cmd" style="color:var(--text-dark);">clawhub install html-slide-creator</div>
+      </div>
+    </div>
+    <div class="glass-item reveal" style="transition-delay:0.3s; margin-top:clamp(12px,1.8vw,18px); padding:clamp(12px,1.8vw,16px); display:flex; align-items:center; gap:12px; background:rgba(255,255,255,0.40);">
+      <div class="icon-circle icon-circle-dark" style="min-width:clamp(32px,4vw,44px); margin-bottom:0;">💡</div>
+      <p style="font-size:clamp(12px,1.3vw,15px);">No npm. No build step. No config. Clone and it works.</p>
+    </div>
+  </div>
+</section>
+
+<!-- SLIDE 8: Get Started — purple/CTA -->
+<section class="slide slide-7 text-dark" id="s7">
+  <div class="orb orb1"></div>
+  <div class="orb orb2"></div>
+  <div class="orb orb4"></div>
+  <div class="content" style="text-align:center;">
+    <div class="reveal">
+      <span class="pill pill-dark">Get Started</span>
+    </div>
+    <div class="reveal" style="transition-delay:0.1s; margin-top:clamp(14px,2vw,22px);">
+      <h1>/slide-creator</h1>
+    </div>
+    <div class="reveal" style="transition-delay:0.15s; margin:clamp(10px,1.5vw,16px) auto 0; max-width:480px;">
+      <p style="font-size:clamp(15px,2vw,21px); color:rgba(255,255,255,0.75);">Works with Claude Code and OpenClaw.<br>Runs entirely in your browser.</p>
+    </div>
+    <div class="reveal" style="transition-delay:0.2s;">
+      <div class="glass-card cta-btn" style="color:white; margin:clamp(22px,3.5vw,36px) auto 0; display:inline-flex;">
+        <span>Start with /slide-creator</span>
+        <span style="opacity:0.55;">→</span>
+      </div>
+    </div>
+    <div class="reveal" style="transition-delay:0.3s; margin-top:clamp(14px,2.5vw,28px);">
+      <div class="glass-card stats" style="display:inline-flex;">
+        <div class="stat-card" style="padding:clamp(10px,1.5vw,16px) clamp(14px,2vw,22px);">
+          <span class="stat-value" style="font-size:clamp(22px,3.5vw,36px);">19</span>
+          <span class="stat-label">Presets</span>
+        </div>
+        <div style="width:1px; background:rgba(255,255,255,0.15); margin:10px 0;"></div>
+        <div class="stat-card" style="padding:clamp(10px,1.5vw,16px) clamp(14px,2vw,22px);">
+          <span class="stat-value" style="font-size:clamp(22px,3.5vw,36px);">0</span>
+          <span class="stat-label">Dependencies</span>
+        </div>
+        <div style="width:1px; background:rgba(255,255,255,0.15); margin:10px 0;"></div>
+        <div class="stat-card" style="padding:clamp(10px,1.5vw,16px) clamp(14px,2vw,22px);">
+          <span class="stat-value" style="font-size:clamp(22px,3.5vw,36px);">∞</span>
+          <span class="stat-label">Slides</span>
+        </div>
+      </div>
+    </div>
+    <div class="reveal" style="transition-delay:0.4s; margin-top:clamp(14px,2vw,22px);">
+      <p style="font-size:clamp(11px,1.2vw,13px); color:rgba(255,255,255,0.28); letter-spacing:0.06em; text-transform:uppercase;">Glassmorphism · slide-creator</p>
+    </div>
+  </div>
+</section>
+
+<script>
+const slides = document.querySelectorAll('.slide');
+const total = slides.length;
+let cur = 0;
+
+// Nav dots
+const dotsEl = document.getElementById('nav-dots');
+const dots = [];
+for (let i = 0; i < total; i++) {
+  const d = document.createElement('button');
+  d.className = 'dot';
+  d.setAttribute('aria-label', `Slide ${i+1}`);
+  d.addEventListener('click', () => goTo(i));
+  dotsEl.appendChild(d);
+  dots.push(d);
+}
+
+function goTo(n) {
+  n = Math.max(0, Math.min(total - 1, n));
+  cur = n;
+  slides[cur].scrollIntoView({ behavior: 'smooth' });
+  updateUI();
+}
+
+function updateUI() {
+  dots.forEach((d, i) => d.classList.toggle('active', i === cur));
+  document.getElementById('progress').style.width = ((cur + 1) / total * 100) + '%';
+  document.getElementById('slide-num').textContent = `${cur + 1} / ${total}`;
+}
+
+// IntersectionObserver for reveal with stagger
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      const el = entry.target;
+      const revealEls = el.querySelectorAll('.reveal');
+      revealEls.forEach((r, i) => {
+        const delay = Math.min(i, 4) * 100;
+        setTimeout(() => r.classList.add('visible'), delay);
+      });
+      const idx = Array.from(slides).indexOf(el);
+      if (idx !== -1) { cur = idx; updateUI(); }
+    }
+  });
+}, { threshold: 0.5 });
+
+slides.forEach(s => observer.observe(s));
+
+// Keyboard
+document.addEventListener('keydown', e => {
+  if (editMode && e.key !== 'Escape') {
+    if ((e.ctrlKey || e.metaKey) && e.key === 's') { e.preventDefault(); saveFile(); }
+    return;
+  }
+  if (e.key === 'ArrowDown' || e.key === 'ArrowRight' || e.key === ' ') { e.preventDefault(); goTo(cur + 1); }
+  if (e.key === 'ArrowUp'   || e.key === 'ArrowLeft')  { e.preventDefault(); goTo(cur - 1); }
+  if (e.key === 'e' || e.key === 'E') toggleEdit();
+  if (e.key === 'Escape' && editMode) toggleEdit();
+  if ((e.ctrlKey || e.metaKey) && e.key === 's') { e.preventDefault(); saveFile(); }
+});
+
+// Wheel — debounce-reset
+let wheelLocked = false, wheelTimer = null;
+document.addEventListener('wheel', e => {
+  clearTimeout(wheelTimer);
+  if (!wheelLocked) { wheelLocked = true; e.deltaY > 0 ? goTo(cur + 1) : goTo(cur - 1); }
+  wheelTimer = setTimeout(() => { wheelLocked = false; }, 180);
+}, { passive: true });
+
+// Touch swipe
+let touchY = 0;
+document.addEventListener('touchstart', e => { touchY = e.touches[0].clientY; }, { passive: true });
+document.addEventListener('touchend', e => {
+  const dy = touchY - e.changedTouches[0].clientY;
+  if (Math.abs(dy) > 40) dy > 0 ? goTo(cur + 1) : goTo(cur - 1);
+}, { passive: true });
+
+// Edit mode
+let editMode = false;
+let fileHandle = null;
+
+function toggleEdit() {
+  editMode = !editMode;
+  document.body.classList.toggle('edit-mode', editMode);
+  const editable = document.querySelectorAll('h1,h2,h3,p,.tag,.stat-value,.stat-label,.pill,.install-cmd');
+  editable.forEach(el => el.setAttribute('contenteditable', editMode ? 'true' : 'false'));
+}
+
+async function saveFile() {
+  const html = '<!DOCTYPE html>\n' + document.documentElement.outerHTML;
+  if (window.showSaveFilePicker) {
+    try {
+      if (!fileHandle) {
+        fileHandle = await window.showSaveFilePicker({ suggestedName: 'glassmorphism.html', types: [{ description: 'HTML', accept: {'text/html': ['.html']} }] });
+      }
+      const writable = await fileHandle.createWritable();
+      await writable.write(html); await writable.close();
+      return;
+    } catch(_) {}
+  }
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([html], { type: 'text/html' }));
+  a.download = 'glassmorphism.html'; a.click();
+}
+
+document.getElementById('hotzone').addEventListener('click', toggleEdit);
+updateUI();
+</script>
+</body>
+</html>

@@ -1,0 +1,187 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Alchemy Prices Curated API",
+    "version": "1.0.0",
+    "description": "Curated read-only Alchemy Prices API surface for UXC."
+  },
+  "servers": [
+    {
+      "url": "https://api.g.alchemy.com"
+    }
+  ],
+  "paths": {
+    "/tokens/by-symbol": {
+      "get": {
+        "operationId": "getPricesBySymbol",
+        "summary": "Get token prices by symbol",
+        "parameters": [
+          {
+            "name": "symbols",
+            "in": "query",
+            "required": true,
+            "description": "A single token symbol. The live API supports repeated symbols query parameters, but this curated schema keeps v1 to one symbol per call so it remains directly executable through UXC.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "currency",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "USD"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Prices by symbol response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/tokens/by-address": {
+      "post": {
+        "operationId": "getPricesByAddress",
+        "summary": "Get token prices by contract address",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "addresses"
+                ],
+                "properties": {
+                  "addresses": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "network": {
+                          "type": "string"
+                        },
+                        "address": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "network",
+                        "address"
+                      ],
+                      "additionalProperties": true
+                    }
+                  },
+                  "currency": {
+                    "type": "string"
+                  }
+                },
+                "additionalProperties": true
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Prices by address response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/tokens/historical": {
+      "post": {
+        "operationId": "getHistoricalPrices",
+        "summary": "Get historical token prices",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "symbol": {
+                    "type": "string"
+                  },
+                  "address": {
+                    "type": "string"
+                  },
+                  "network": {
+                    "type": "string"
+                  },
+                  "startTime": {
+                    "type": "string"
+                  },
+                  "endTime": {
+                    "type": "string"
+                  },
+                  "interval": {
+                    "type": "string"
+                  },
+                  "currency": {
+                    "type": "string"
+                  }
+                },
+                "additionalProperties": true
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Historical prices response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "symbol": {
+                      "type": "string"
+                    },
+                    "currency": {
+                      "type": "string"
+                    },
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "value": {
+                            "type": "string"
+                          },
+                          "timestamp": {
+                            "type": "string"
+                          }
+                        },
+                        "additionalProperties": true
+                      }
+                    }
+                  },
+                  "additionalProperties": true
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

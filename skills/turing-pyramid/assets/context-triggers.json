@@ -1,0 +1,51 @@
+{
+  "snapshot_file": "last-scan-snapshot.json",
+  "default_cooldown_hours": 6,
+  "triggers": [
+    {
+      "id": "new-research-files",
+      "description": "New files appeared in research/",
+      "detector": {
+        "type": "file_count_delta",
+        "path": "research/"
+      },
+      "threshold": 1,
+      "boost": {
+        "needs": ["understanding", "expression"],
+        "amount": 0.05,
+        "label": "[CONTEXT:new-research]"
+      },
+      "cooldown_hours": 6
+    },
+    {
+      "id": "intentions-changed",
+      "description": "INTENTIONS.md was modified since last scan",
+      "detector": {
+        "type": "file_modified",
+        "path": "INTENTIONS.md"
+      },
+      "threshold": 1,
+      "boost": {
+        "needs": ["closure", "autonomy"],
+        "amount": 0.04,
+        "label": "[CONTEXT:intentions-changed]"
+      },
+      "cooldown_hours": 4
+    },
+    {
+      "id": "new-memory-entries",
+      "description": "New files in memory/",
+      "detector": {
+        "type": "file_count_delta",
+        "path": "memory/"
+      },
+      "threshold": 2,
+      "boost": {
+        "needs": ["coherence", "closure"],
+        "amount": 0.03,
+        "label": "[CONTEXT:new-memories]"
+      },
+      "cooldown_hours": 12
+    }
+  ]
+}

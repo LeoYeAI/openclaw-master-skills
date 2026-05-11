@@ -1,0 +1,54 @@
+{
+  "name": "code-security-audit",
+  "version": "2.1.0",
+  "description": "Comprehensive code security audit toolkit combining OWASP Top 10 vulnerability scanning, dependency analysis, secret detection, SSL/TLS verification, AI Agent security checks, and automated security scoring.",
+  "author": "LobsterAI Security Team",
+  "license": "MIT",
+  "keywords": [
+    "security",
+    "audit",
+    "owasp",
+    "vulnerability",
+    "secrets",
+    "ssl",
+    "injection",
+    "xss",
+    "csrf",
+    "authentication",
+    "ai-agent",
+    "prompt-injection",
+    "crypto-wallet",
+    "blockchain",
+    "numeric-security"
+  ],
+  "categories": ["security", "audit", "code-quality", "ai-security"],
+  "metadata": {
+    "requires_bins": ["git", "grep", "find"],
+    "optional_bins": ["npm", "pip-audit", "govulncheck", "cargo-audit", "openssl", "curl"],
+    "os": ["linux", "darwin"],
+    "score_range": "0-100",
+    "languages": ["javascript", "typescript", "python", "go", "rust", "java", "php", "ruby", "solidity"],
+    "features": {
+      "owasp_top_10": true,
+      "dependency_scan": true,
+      "secret_detection": true,
+      "ssl_verification": true,
+      "security_scoring": true,
+      "auto_fix": true,
+      "ai_agent_security": true
+    },
+    "changelog": {
+      "2.1.0": "Added AI Agent security checks (inspired by Lobstar Wilde incident Feb 2026): numeric risks, prompt injection, crypto wallet security, human-in-the-loop detection",
+      "2.0.0": "Merged security-auditor + security-audit-toolkit, added security scoring, multi-language support"
+    }
+  },
+  "scripts": {
+    "audit": "bash scripts/security-audit.sh --full",
+    "quick": "bash scripts/security-audit.sh --quick",
+    "owasp": "bash scripts/security-audit.sh --owasp",
+    "deps": "bash scripts/security-audit.sh --deps",
+    "secrets": "bash scripts/security-audit.sh --secrets",
+    "ai": "bash scripts/security-audit.sh --ai",
+    "ssl": "bash scripts/security-audit.sh --ssl"
+  }
+}

@@ -1,0 +1,172 @@
+{
+  "meta": {
+    "title": "Planetoño Style System",
+    "source": "https://www.planetono.space/",
+    "captureTime": "2026-03-19",
+    "viewport": "1280x720",
+    "darkModeExists": false,
+    "reducedMotionExists": "inferred",
+    "canvasWebGLHeavy": false,
+    "shadowDOM": false,
+    "extractionMode": "live-render"
+  },
+  "style_character": {
+    "summary": "Planetoño is a vibrant creative studio/sound design website with an unmistakable bold red (#eb3322) as the dominant background color. The design features playful, colorful accents (yellow, blue, green, purple), rounded button corners (12px), and distinctive Futura Passata display font for headings. The overall mood is energetic, playful, and warm.",
+    "mood": "Playful, energetic, creative studio, warm",
+    "density": "spacious",
+    "contrast": "high",
+    "motionIntensity": "moderate",
+    "componentComplexity": "low",
+    "atmosphereCharacter": "Bold, colorful, playful - like a creative sound studio poster",
+    "recurringMotifs": [
+      "Bold red background dominance",
+      "Vibrant multicolor accents (yellow, blue, green, purple)",
+      "Rounded buttons with 12px radius",
+      "Large display typography",
+      "Futura Passata display font"
+    ]
+  },
+  "primitives": {
+    "fonts": {
+      "sans": "Poppins",
+      "display": "Futura Passata",
+      "weights": [400, 500, 600, 700],
+      "sizeScale": ["15px body", "33px button text", "54.5px h2"],
+      "lineHeightNormal": "1.5"
+    },
+    "spacing": {
+      "base": "4px"
+    },
+    "radius": {
+      "default": "12px",
+      "button": "12px"
+    },
+    "shadow": {
+      "default": "none"
+    },
+    "motion": {
+      "durationFast": "0.1s",
+      "easing": "ease"
+    }
+  },
+  "semantic": {
+    "colors": {
+      "primary": {
+        "background": "rgb(235, 51, 34)",
+        "foreground": "rgb(0, 0, 0)",
+        "primary": "#ffc737",
+        "red": "#eb3322",
+        "blue": "#7721c7",
+        "lightBlue": "#2097cf",
+        "yellow": "#ffc737",
+        "green": "#8df947",
+        "light": "#f7f2e5"
+      }
+    },
+    "surfaces": {
+      "background": {
+        "red": "rgb(235, 51, 34)",
+        "light": "#f7f2e5"
+      }
+    }
+  },
+  "background": {
+    "page": {
+      "default": "rgb(235, 51, 34)"
+    },
+    "sections": [],
+    "layers": [],
+    "gradients": [],
+    "patterns": [],
+    "images": [],
+    "overlays": []
+  },
+  "motifs": [
+    {
+      "name": "bold-red-field",
+      "description": "Vibrant red dominates the page background",
+      "color": "#eb3322"
+    },
+    {
+      "name": "multicolor-palette",
+      "description": "Vibrant multicolor accents - yellow, blue, green, purple",
+      "colors": ["#ffc737", "#7721c7", "#2097cf", "#8df947"]
+    },
+    {
+      "name": "rounded-soft",
+      "description": "12px border-radius for buttons and interactive elements",
+      "type": "shape"
+    },
+    {
+      "name": "large-display",
+      "description": "Large display typography with Futura Passata font",
+      "type": "typography"
+    }
+  ],
+  "themes": {
+    "default": {
+      "background": "#eb3322",
+      "foreground": "#000000",
+      "primary": "#ffc737",
+      "light": "#f7f2e5"
+    }
+  },
+  "motion": {
+    "duration": {
+      "fast": "0.1s"
+    },
+    "easing": "ease",
+    "hoverEffects": ["transform scale/shift"],
+    "reducedMotion": "should reduce transform animations",
+    "keyframes": [
+      {
+        "name": "jelly-af638566",
+        "description": "Jelly/elastic bounce effect for buttons - playful overshoot then settle",
+        "keyframes": "0% { scaleX: 1 }, 25% { scaleX: 1.15 }, 50% { scaleX: 0.98 }, 75% { scaleX: 1.01 }, 100% { scaleX: 1 }"
+      },
+      {
+        "name": "swiper-preloader-spin",
+        "description": "360 degree rotation for loading spinner",
+        "from": "transform: rotate(0deg)",
+        "to": "transform: rotate(1turn)"
+      }
+    ]
+  },
+  "components": [
+    {
+      "name": "button",
+      "states": {
+        "default": {
+          "bg": "transparent",
+          "color": "black",
+          "border": "0px",
+          "radius": "12px",
+          "height": "52px",
+          "fontSize": "33px",
+          "fontFamily": "Futura Passata"
+        },
+        "hover": "transform effect",
+        "focus": "outline"
+      }
+    },
+    {
+      "name": "nav-link",
+      "states": {
+        "default": "black text on red",
+        "hover": "subtle transform"
+      }
+    }
+  ],
+  "responsive_rules": [],
+  "accessibility_notes": [
+    "High contrast black text on red background",
+    "Large touch targets (52px button height)",
+    "No dark mode - single theme"
+  ],
+  "limitations": [
+    "No dark mode exists",
+    "CSS variables limited - some colors hardcoded",
+    "Could not extract h1 values (likely image/canvas-based)",
+    "No background images captured - site may use JS-heavy visuals"
+  ]
+}

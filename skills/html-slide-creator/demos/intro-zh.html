@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>slide-creator · 零依赖 HTML 演示文稿生成器</title>
+<style>
+
+:root { --slide-count: 10; }
+
+:root {
+  --bg-from:        #f0f9ff;
+  --bg-to:          #e0f2fe;
+  --card-bg:        rgba(255,255,255,0.70);
+  --card-border:    rgba(255,255,255,0.90);
+  --text-primary:   #0f172a;
+  --text-secondary: #334155;
+  --text-muted:     #64748b;
+  --accent-blue:    #2563eb;
+  --accent-sky:     #0ea5e9;
+  --accent-indigo:  #4f46e5;
+  --gradient-text:  linear-gradient(135deg,#1e3a8a 0%,#3b82f6 100%);
+  --grid-color:     rgba(14,165,233,0.06);
+  --orb1-color: rgba(96,165,250,0.35);
+  --orb2-color: rgba(99,102,241,0.25);
+  --orb3-color: rgba(14,165,233,0.30);
+}
+
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html,body{width:100%;height:100%;overflow:hidden;
+  font-family:'PingFang SC','Noto Sans SC','Microsoft YaHei',system-ui,sans-serif;
+  background:linear-gradient(160deg,var(--bg-from),var(--bg-to));}
+
+body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");}
+
+body::after{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
+  background-image:linear-gradient(var(--grid-color) 1px,transparent 1px),linear-gradient(90deg,var(--grid-color) 1px,transparent 1px);
+  background-size:40px 40px;
+  -webkit-mask-image:radial-gradient(ellipse 70% 70% at 50% 50%,black 40%,transparent 100%);
+  mask-image:radial-gradient(ellipse 70% 70% at 50% 50%,black 40%,transparent 100%);}
+
+.orb{position:fixed;border-radius:50%;pointer-events:none;z-index:0;filter:blur(80px);
+  transition:top 1.2s cubic-bezier(0.22,1,0.36,1),left 1.2s cubic-bezier(0.22,1,0.36,1),
+             width 1.2s cubic-bezier(0.22,1,0.36,1),height 1.2s cubic-bezier(0.22,1,0.36,1);}
+#orb1{background:var(--orb1-color);}
+#orb2{background:var(--orb2-color);}
+#orb3{background:var(--orb3-color);}
+
+#stage{position:fixed;inset:0;overflow:hidden;z-index:1;}
+#track{display:flex;width:calc(100vw * var(--slide-count));height:100%;
+  transition:transform 0.7s cubic-bezier(0.22,1,0.36,1);will-change:transform;}
+.slide{width:100vw;flex-shrink:0;height:100vh;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:clamp(28px,4vw,56px) clamp(32px,5vw,80px);
+  position:relative;overflow:hidden;}
+
+.g{background:var(--card-bg);border:1px solid var(--card-border);border-radius:20px;
+  backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);
+  box-shadow:0 8px 32px rgba(14,165,233,0.10),0 1px 0 rgba(255,255,255,0.8) inset;}
+
+.gt{background:var(--gradient-text);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+
+.cloud{position:absolute;border-radius:50%;pointer-events:none;filter:blur(60px);
+  animation:cloud-drift 8s ease-in-out infinite;}
+@keyframes cloud-drift{0%,100%{transform:translateY(0) scale(1);}50%{transform:translateY(-20px) scale(1.05);}}
+
+#nav-dots{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);
+  display:flex;gap:8px;align-items:center;z-index:10;}
+.dot{height:6px;border-radius:999px;cursor:pointer;border:none;
+  background:rgba(147,197,253,0.5);transition:background 0.4s,width 0.4s;width:6px;}
+.dot.active{background:#2563eb;width:28px;}
+
+#slide-counter{position:fixed;top:24px;left:36px;z-index:10;
+  font-size:12px;font-weight:700;letter-spacing:0.1em;color:var(--text-muted);
+  font-family:'SF Mono','Fira Code',monospace;}
+
+h1{font-size:clamp(2.4rem,6vw,5rem);font-weight:800;line-height:1.1;}
+h2{font-size:clamp(1.7rem,3.8vw,2.8rem);font-weight:700;line-height:1.2;}
+h3{font-size:clamp(1.0rem,2.0vw,1.5rem);font-weight:700;}
+h4{font-size:clamp(0.9rem,1.6vw,1.2rem);font-weight:600;}
+p,li{font-size:clamp(0.84rem,1.4vw,1.05rem);line-height:1.7;color:var(--text-secondary);}
+
+.cols2{display:grid;grid-template-columns:1fr 1fr;gap:16px;width:100%;}
+.cols3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;width:100%;}
+.cols4{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;width:100%;}
+.divider{width:56px;height:3px;border-radius:2px;background:linear-gradient(90deg,#2563eb,#0ea5e9);margin:8px 0 14px;}
+
+.slide.chapter{background:linear-gradient(135deg,rgba(219,234,254,0.7),rgba(224,242,254,0.9));text-align:center;}
+.chapter-num{font-size:clamp(5rem,14vw,11rem);font-weight:900;line-height:1;
+  background:linear-gradient(135deg,rgba(37,99,235,0.15),rgba(14,165,233,0.28));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:-16px;}
+
+.pill{display:inline-flex;align-items:center;padding:4px 14px;border-radius:999px;
+  font-size:12px;font-weight:600;letter-spacing:0.05em;
+  background:rgba(37,99,235,0.10);color:var(--accent-blue);border:1px solid rgba(37,99,235,0.20);}
+.stat{font-size:clamp(2.8rem,7vw,5rem);font-weight:900;line-height:1;
+  background:var(--gradient-text);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+ul.bl{list-style:none;padding:0;display:flex;flex-direction:column;gap:8px;}
+ul.bl li{display:flex;align-items:flex-start;gap:8px;color:var(--text-secondary);}
+ul.bl li::before{content:'▸';color:var(--accent-sky);flex-shrink:0;margin-top:2px;}
+.step{width:34px;height:34px;border-radius:50%;flex-shrink:0;
+  background:linear-gradient(135deg,#2563eb,#0ea5e9);
+  display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:0.88rem;}
+.info{background:rgba(37,99,235,0.07);border:1px solid rgba(37,99,235,0.20);
+  border-left:4px solid var(--accent-blue);border-radius:12px;
+  padding:12px 16px;font-size:0.84rem;color:var(--text-secondary);line-height:1.6;}
+
+.code{background:rgba(15,23,42,0.06);border:1px solid rgba(15,23,42,0.08);
+  border-radius:12px;padding:14px 18px;
+  font-family:'SF Mono','Fira Code',monospace;font-size:0.88rem;color:#1e3a8a;line-height:1.7;}
+.code .cmd{color:#0369a1;font-weight:700;}
+.code .cmt{color:#94a3b8;}
+
+.preset{border-radius:14px;padding:14px 16px;display:flex;flex-direction:column;gap:4px;border:1px solid rgba(255,255,255,0.7);}
+.preset .name{font-size:0.82rem;font-weight:700;}
+.preset .vibe{font-size:0.72rem;opacity:0.75;}
+
+@keyframes fadeUp{from{opacity:0;transform:translateY(22px);}to{opacity:1;transform:translateY(0);}}
+.slide.active > *{animation:fadeUp 0.5s cubic-bezier(0.22,1,0.36,1) both;}
+.slide.active > *:nth-child(2){animation-delay:.06s;}
+.slide.active > *:nth-child(3){animation-delay:.12s;}
+.slide.active > *:nth-child(4){animation-delay:.18s;}
+.slide.active > *:nth-child(5){animation-delay:.24s;}
+.slide.active > *:nth-child(6){animation-delay:.30s;}
+
+@media(prefers-reduced-motion:reduce){#track,.orb,.cloud{transition:none!important;animation:none!important;}}
+</style>
+</head>
+<body>
+
+<div class="orb" id="orb1"></div>
+<div class="orb" id="orb2"></div>
+<div class="orb" id="orb3"></div>
+<div id="slide-counter">01 / 10</div>
+<div id="nav-dots"></div>
+
+<div id="stage"><div id="track">
+
+<!-- ═══ 1 · 封面 ═══ -->
+<section class="slide cover">
+  <div class="cloud" style="width:520px;height:520px;background:rgba(147,197,253,0.38);top:-200px;left:-100px;animation-duration:9s;"></div>
+  <div class="cloud" style="width:380px;height:380px;background:rgba(196,233,251,0.42);bottom:-140px;right:-80px;animation-duration:12s;animation-delay:-4s;"></div>
+  <div class="cloud" style="width:260px;height:260px;background:rgba(165,214,255,0.30);top:22%;right:9%;animation-duration:10s;animation-delay:-2s;"></div>
+  <div style="text-align:center;position:relative;z-index:1;max-width:800px;">
+    <span class="pill" style="margin-bottom:22px;display:inline-block;font-size:13px;">Claude Code &amp; OpenClaw Skill · v1.4</span>
+    <h1 class="gt" style="font-size:clamp(3rem,8vw,6.5rem);letter-spacing:-0.02em;">slide-creator</h1>
+    <p style="font-size:clamp(1rem,2.2vw,1.4rem);color:var(--text-secondary);margin:16px 0 36px;font-weight:400;">
+      零依赖 HTML 演示文稿，直接在浏览器运行。<br>
+      无需 npm · 无需构建工具 · 无需下载 Chromium
+    </p>
+    <div style="display:flex;gap:20px;justify-content:center;flex-wrap:wrap;">
+      <div class="g" style="padding:16px 28px;text-align:center;">
+        <div class="stat" style="font-size:2.8rem;">13</div>
+        <div style="font-size:0.8rem;color:var(--text-muted);margin-top:2px;">种设计风格</div>
+      </div>
+      <div class="g" style="padding:16px 28px;text-align:center;">
+        <div class="stat" style="font-size:2.8rem;">0</div>
+        <div style="font-size:0.8rem;color:var(--text-muted);margin-top:2px;">外部依赖</div>
+      </div>
+      <div class="g" style="padding:16px 28px;text-align:center;">
+        <div class="stat" style="font-size:2.8rem;">1</div>
+        <div style="font-size:0.8rem;color:var(--text-muted);margin-top:2px;">行命令安装</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ 2 · 四大核心理念 ═══ -->
+<section class="slide">
+  <div style="max-width:880px;width:100%;">
+    <span class="pill" style="margin-bottom:12px;display:inline-block;">设计哲学</span>
+    <h2 class="gt">四大核心理念</h2>
+    <div class="divider"></div>
+    <div class="cols2">
+      <div class="g" style="padding:22px 24px;">
+        <div style="font-size:1.8rem;margin-bottom:8px;">📦</div>
+        <h3 style="margin-bottom:6px;">零依赖</h3>
+        <p>单文件内联 CSS/JS，用任何浏览器打开，分享一个文件，永久可用。</p>
+      </div>
+      <div class="g" style="padding:22px 24px;">
+        <div style="font-size:1.8rem;margin-bottom:8px;">👁️</div>
+        <h3 style="margin-bottom:6px;">看图选风格</h3>
+        <p>人无法用语言描述设计偏好——先生成 3 个视觉预览，让你直接反应，而非猜想。</p>
+      </div>
+      <div class="g" style="padding:22px 24px;">
+        <div style="font-size:1.8rem;margin-bottom:8px;">✦</div>
+        <h3 style="margin-bottom:6px;">有个性的设计</h3>
+        <p>拒绝 Inter 字体、紫色渐变、千篇一律的 Hero 布局。每个演示文稿都应独特。</p>
+      </div>
+      <div class="g" style="padding:22px 24px;">
+        <div style="font-size:1.8rem;margin-bottom:8px;">📐</div>
+        <h3 style="margin-bottom:6px;">视口精确填充</h3>
+        <p>每张幻灯片恰好填满 100vh，绝不出现幻灯片内滚动条。内容溢出就分页，不压缩。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ 3 · 三种使用方式 ═══ -->
+<section class="slide">
+  <div style="max-width:820px;width:100%;">
+    <span class="pill" style="margin-bottom:12px;display:inline-block;">使用方式</span>
+    <h2 class="gt">三种创建方式，按需选择</h2>
+    <div class="divider"></div>
+    <div style="display:flex;flex-direction:column;gap:12px;">
+      <div class="g" style="padding:18px 22px;display:flex;align-items:flex-start;gap:16px;">
+        <div class="step">A</div>
+        <div>
+          <h4 style="margin-bottom:4px;">交互式 — 先看风格再生成</h4>
+          <div class="code" style="margin-top:8px;">
+            <span class="cmd">/slide-creator</span>  <span class="cmt"># 回答 4 个问题 → 看 3 个预览 → 生成完整幻灯片</span>
+          </div>
+        </div>
+      </div>
+      <div class="g" style="padding:18px 22px;display:flex;align-items:flex-start;gap:16px;">
+        <div class="step" style="background:linear-gradient(135deg,#4f46e5,#7c3aed);">B</div>
+        <div>
+          <h4 style="margin-bottom:4px;">两阶段 — 先规划，再生成（复杂内容推荐）</h4>
+          <div class="code" style="margin-top:8px;">
+            <span class="cmd">/slide-creator --plan</span> 我的 AI 创业公司融资路演<br>
+            <span class="cmt"># 审阅 PLANNING.md 大纲后</span><br>
+            <span class="cmd">/slide-creator --generate</span>
+          </div>
+        </div>
+      </div>
+      <div class="g" style="padding:18px 22px;display:flex;align-items:flex-start;gap:16px;">
+        <div class="step" style="background:linear-gradient(135deg,#0ea5e9,#06b6d4);">C</div>
+        <div>
+          <h4 style="margin-bottom:4px;">PPT 转换 — 放入 .pptx 文件，自动识别转换</h4>
+          <div class="code" style="margin-top:8px;">
+            <span class="cmd">/slide-creator</span>  <span class="cmt"># 自动检测当前目录的 .pptx 文件</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ 4 · 风格探索 ═══ -->
+<section class="slide">
+  <div style="max-width:860px;width:100%;">
+    <span class="pill" style="margin-bottom:12px;display:inline-block;">风格探索</span>
+    <h2 class="gt">「惊喜时刻」——看图而非描述</h2>
+    <div class="divider"></div>
+    <div class="cols3" style="margin-bottom:16px;">
+      <div class="g" style="padding:20px;text-align:center;border-top:3px solid #f59e0b;">
+        <div style="font-size:2rem;margin-bottom:8px;">❓</div>
+        <h4 style="margin-bottom:6px;">第一步：问你的感受</h4>
+        <p style="font-size:0.82rem;">想要震撼自信？充满活力？沉静专注？还是有个性？</p>
+      </div>
+      <div class="g" style="padding:20px;text-align:center;border-top:3px solid var(--accent-blue);">
+        <div style="font-size:2rem;margin-bottom:8px;">🎨</div>
+        <h4 style="margin-bottom:6px;">第二步：3 个视觉预览</h4>
+        <p style="font-size:0.82rem;">真实的字体、配色和动画效果，不是描述，是实物。</p>
+      </div>
+      <div class="g" style="padding:20px;text-align:center;border-top:3px solid var(--accent-indigo);">
+        <div style="font-size:2rem;margin-bottom:8px;">✅</div>
+        <h4 style="margin-bottom:6px;">第三步：选一个，立刻生成</h4>
+        <p style="font-size:0.82rem;">选 A/B/C 或混合元素，完整幻灯片即刻生成。</p>
+      </div>
+    </div>
+    <div class="info">
+      已经知道想要什么风格？直接指定跳过探索：<br>
+      <code style="font-family:monospace;background:rgba(37,99,235,0.08);padding:2px 6px;border-radius:4px;">/slide-creator --generate 用 Blue Sky 风格做我的季度汇报</code>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ 5 · 13 种风格 ═══ -->
+<section class="slide">
+  <div style="max-width:960px;width:100%;">
+    <span class="pill" style="margin-bottom:12px;display:inline-block;">设计预设</span>
+    <h2 class="gt">13 种精心设计的风格，拒绝 AI 审美</h2>
+    <div class="divider"></div>
+    <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:8px;">
+      <div class="preset" style="background:linear-gradient(135deg,#0f172a,#1e3a5f);color:#fff;">
+        <div class="name">Bold Signal</div><div class="vibe">路演 · 主题演讲</div>
+      </div>
+      <div class="preset" style="background:linear-gradient(135deg,#0f2027,#203a43,#2c5364);color:#00ffcc;">
+        <div class="name" style="color:#fff;">Electric Studio</div><div class="vibe" style="color:rgba(255,255,255,0.6);">商务演示</div>
+      </div>
+      <div class="preset" style="background:linear-gradient(135deg,#1a1a2e,#16213e);color:#ff6b35;">
+        <div class="name">Creative Voltage</div><div class="vibe">创意提案</div>
+      </div>
+      <div class="preset" style="background:linear-gradient(135deg,#0d1f0f,#1a3320);color:#4ade80;">
+        <div class="name">Dark Botanical</div><div class="vibe">高端品牌</div>
+      </div>
+      <div class="preset g" style="background:linear-gradient(135deg,rgba(240,249,255,0.9),rgba(224,242,254,0.9));color:#1e3a8a;border:2px solid #2563eb;">
+        <div class="name">Blue Sky ✨</div><div class="vibe" style="color:#0ea5e9;">产品 · 科技路演</div>
+      </div>
+      <div class="preset" style="background:#fffef0;color:#1a1a1a;border:1px solid #e5e0d0;">
+        <div class="name">Notebook Tabs</div><div class="vibe">报告 · 评审</div>
+      </div>
+      <div class="preset" style="background:linear-gradient(135deg,#fce4ec,#f8bbd0);color:#880e4f;">
+        <div class="name">Pastel Geometry</div><div class="vibe">产品介绍</div>
+      </div>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(6,1fr);gap:8px;margin-top:8px;">
+      <div class="preset" style="background:linear-gradient(135deg,#e8f5e9,#f3e5f5);color:#4a148c;">
+        <div class="name">Split Pastel</div><div class="vibe">创意机构</div>
+      </div>
+      <div class="preset" style="background:#fdf6e3;color:#5c4813;border:1px solid #d4c5a9;">
+        <div class="name">Vintage Editorial</div><div class="vibe">个人品牌</div>
+      </div>
+      <div class="preset" style="background:#0a0f1c;color:#00ffcc;">
+        <div class="name">Neon Cyber</div><div class="vibe">科技创业</div>
+      </div>
+      <div class="preset" style="background:#0d1117;color:#00ff41;">
+        <div class="name">Terminal Green</div><div class="vibe">开发工具</div>
+      </div>
+      <div class="preset" style="background:#f8f8f8;color:#111;border:1px solid #ddd;">
+        <div class="name">Swiss Modern</div><div class="vibe">企业 · 数据</div>
+      </div>
+      <div class="preset" style="background:#f5f0e8;color:#3d2b1f;border:1px solid #d4c5a9;">
+        <div class="name">Paper &amp; Ink</div><div class="vibe">叙事演讲</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ 6 · Blue Sky 深度解析 ═══ -->
+<section class="slide">
+  <div style="max-width:880px;width:100%;">
+    <span class="pill" style="margin-bottom:12px;display:inline-block;">特色风格</span>
+    <h2 class="gt">Blue Sky — 你正在看的就是它</h2>
+    <div class="divider"></div>
+    <div class="cols2" style="align-items:start;">
+      <div style="display:flex;flex-direction:column;gap:10px;">
+        <div class="g" style="padding:14px 18px;border-left:3px solid var(--accent-sky);">
+          <h4 style="color:var(--accent-sky);margin-bottom:4px;">天空渐变背景</h4>
+          <p style="font-size:0.82rem;"><code style="font-family:monospace;">#f0f9ff → #e0f2fe</code>，叠加 SVG 噪点纹理</p>
+        </div>
+        <div class="g" style="padding:14px 18px;border-left:3px solid var(--accent-blue);">
+          <h4 style="color:var(--accent-blue);margin-bottom:4px;">玻璃拟态卡片</h4>
+          <p style="font-size:0.82rem;">rgba(255,255,255,0.7) · backdrop-filter: blur(24px)</p>
+        </div>
+        <div class="g" style="padding:14px 18px;border-left:3px solid var(--accent-indigo);">
+          <h4 style="color:var(--accent-indigo);margin-bottom:4px;">3 个动态环境光球</h4>
+          <p style="font-size:0.82rem;">每页重新定位 · 80px 模糊 · 弹簧缓动过渡</p>
+        </div>
+        <div class="g" style="padding:14px 18px;border-left:3px solid #0284c7;">
+          <h4 style="color:#0284c7;margin-bottom:4px;">弹簧物理横向切换</h4>
+          <p style="font-size:0.82rem;">Horizontal track · cubic-bezier(0.22, 1, 0.36, 1)</p>
+        </div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:10px;">
+        <div class="g" style="padding:14px 18px;border-left:3px solid var(--accent-sky);">
+          <h4 style="color:var(--accent-sky);margin-bottom:4px;">40px 科技网格底层</h4>
+          <p style="font-size:0.82rem;">6% 透明度 · 径向遮罩向边缘渐隐</p>
+        </div>
+        <div class="g" style="padding:14px 18px;border-left:3px solid var(--accent-blue);">
+          <h4 style="color:var(--accent-blue);margin-bottom:4px;">封面云朵特效</h4>
+          <p style="font-size:0.82rem;">仅封面页 · CSS blur 圆形簇 · 漂浮动画</p>
+        </div>
+        <div class="g" style="padding:14px 18px;border-left:3px solid var(--accent-indigo);">
+          <h4 style="color:var(--accent-indigo);margin-bottom:4px;">渐变标题文字</h4>
+          <p style="font-size:0.82rem;"><code style="font-family:monospace;">#1e3a8a → #3b82f6</code>，深海军蓝到亮蓝</p>
+        </div>
+        <div class="g" style="padding:14px 18px;border-left:3px solid #0284c7;">
+          <h4 style="color:#0284c7;margin-bottom:4px;">胶囊分页指示点</h4>
+          <p style="font-size:0.82rem;">当前页展开为胶囊形，其余为圆点</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ 7 · 视口规则 ═══ -->
+<section class="slide">
+  <div style="max-width:820px;width:100%;">
+    <span class="pill" style="margin-bottom:12px;display:inline-block;">内容规范</span>
+    <h2 class="gt">视口填充 — 不可妥协的底线</h2>
+    <div class="divider"></div>
+    <div class="g" style="padding:0;overflow:hidden;margin-bottom:14px;">
+      <table style="width:100%;border-collapse:collapse;font-size:0.86rem;">
+        <thead>
+          <tr style="background:rgba(37,99,235,0.10);">
+            <th style="padding:10px 16px;text-align:left;color:var(--accent-blue);font-weight:700;">幻灯片类型</th>
+            <th style="padding:10px 16px;text-align:left;color:var(--accent-blue);font-weight:700;">内容上限</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td style="padding:9px 16px;border-bottom:1px solid rgba(14,165,233,0.10);">标题页</td><td style="padding:9px 16px;border-bottom:1px solid rgba(14,165,233,0.10);">1 个标题 + 1 个副标题</td></tr>
+          <tr><td style="padding:9px 16px;border-bottom:1px solid rgba(14,165,233,0.10);">内容页</td><td style="padding:9px 16px;border-bottom:1px solid rgba(14,165,233,0.10);">1 个标题 + 4–6 条要点</td></tr>
+          <tr><td style="padding:9px 16px;border-bottom:1px solid rgba(14,165,233,0.10);">功能网格</td><td style="padding:9px 16px;border-bottom:1px solid rgba(14,165,233,0.10);">1 个标题 + 最多 6 个卡片（2×3 或 3×2）</td></tr>
+          <tr><td style="padding:9px 16px;border-bottom:1px solid rgba(14,165,233,0.10);">代码页</td><td style="padding:9px 16px;border-bottom:1px solid rgba(14,165,233,0.10);">1 个标题 + 8–10 行代码</td></tr>
+          <tr><td style="padding:9px 16px;">引用页</td><td style="padding:9px 16px;">1 段引用（最多 3 行）+ 来源</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="info">
+      拿不准就<strong>分页</strong>。幻灯片出现滚动条等同于破损。内容溢出时拆分到下一页，而不是压缩字号硬塞。
+    </div>
+  </div>
+</section>
+
+<!-- ═══ 8 · PPTX 导出 ═══ -->
+<section class="slide">
+  <div style="max-width:800px;width:100%;">
+    <span class="pill" style="margin-bottom:12px;display:inline-block;">导出</span>
+    <h2 class="gt">PPTX 导出 — 用你已有的 Chrome</h2>
+    <div class="divider"></div>
+    <div style="display:flex;flex-direction:column;gap:12px;margin-bottom:14px;">
+      <div class="g" style="padding:18px 22px;display:flex;align-items:center;gap:16px;">
+        <div class="step">1</div>
+        <div>
+          <h4 style="margin-bottom:2px;">运行导出命令</h4>
+          <div class="code" style="margin-top:6px;"><span class="cmd">/slide-creator --export pptx</span></div>
+        </div>
+      </div>
+      <div class="g" style="padding:18px 22px;display:flex;align-items:center;gap:16px;">
+        <div class="step" style="background:linear-gradient(135deg,#4f46e5,#7c3aed);">2</div>
+        <div>
+          <h4 style="margin-bottom:2px;">Playwright 调用系统已安装的 Chrome</h4>
+          <p style="font-size:0.84rem;">Chrome / Edge / Brave 均可 · 无需下载 300MB Chromium · 无需 Node.js</p>
+        </div>
+      </div>
+      <div class="g" style="padding:18px 22px;display:flex;align-items:center;gap:16px;">
+        <div class="step" style="background:linear-gradient(135deg,#0ea5e9,#06b6d4);">3</div>
+        <div>
+          <h4 style="margin-bottom:2px;">像素级还原 PPTX</h4>
+          <p style="font-size:0.84rem;">逐张截图 · 组装为原生 .pptx · 可直接在 PowerPoint 中打开</p>
+        </div>
+      </div>
+    </div>
+    <div class="info">
+      <strong>前置依赖：</strong><code style="font-family:monospace;">pip install playwright python-pptx</code>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ 9 · 安装 ═══ -->
+<section class="slide">
+  <div style="max-width:780px;width:100%;">
+    <span class="pill" style="margin-bottom:12px;display:inline-block;">安装</span>
+    <h2 class="gt">一行命令，重启即用</h2>
+    <div class="divider"></div>
+    <div style="display:flex;flex-direction:column;gap:14px;">
+      <div class="g" style="padding:20px 24px;">
+        <h4 style="color:var(--accent-blue);margin-bottom:10px;">Claude Code</h4>
+        <div class="code">git clone https://github.com/kaisersong/slide-creator <span style="color:#0369a1;">~/.claude/skills/slide-creator</span></div>
+        <p style="font-size:0.82rem;margin-top:8px;color:var(--text-muted);">重启 Claude Code · 使用 <code style="font-family:monospace;">/slide-creator</code> 调用</p>
+      </div>
+      <div class="g" style="padding:20px 24px;">
+        <h4 style="color:var(--accent-indigo);margin-bottom:10px;">OpenClaw · 通过 ClawHub 安装（推荐）</h4>
+        <div class="code">clawhub install <span style="color:#0369a1;">html-slide-creator</span></div>
+        <p style="font-size:0.82rem;margin-top:8px;color:var(--text-muted);">自动安装全部依赖 · clawhub.ai/skills/html-slide-creator</p>
+      </div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;">
+        <span class="pill">Python 3</span>
+        <span class="pill" style="background:rgba(79,70,229,0.1);color:var(--accent-indigo);border-color:rgba(79,70,229,0.2);">Pillow（图片处理）</span>
+        <span class="pill" style="background:rgba(14,165,233,0.1);color:var(--accent-sky);border-color:rgba(14,165,233,0.2);">python-pptx（PPT 导入导出）</span>
+        <span class="pill" style="background:rgba(2,132,199,0.1);color:#0284c7;border-color:rgba(2,132,199,0.2);">playwright（PPTX 导出）</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ 10 · 结语 ═══ -->
+<section class="slide cover">
+  <div class="cloud" style="width:460px;height:460px;background:rgba(147,197,253,0.32);top:-160px;right:-90px;animation-duration:10s;"></div>
+  <div class="cloud" style="width:320px;height:320px;background:rgba(196,233,251,0.38);bottom:-100px;left:-60px;animation-duration:13s;animation-delay:-5s;"></div>
+  <div style="text-align:center;max-width:720px;position:relative;z-index:1;">
+    <span class="pill" style="margin-bottom:20px;display:inline-block;">开始创作</span>
+    <h2 class="gt" style="font-size:clamp(2rem,5vw,3.8rem);margin-bottom:20px;">
+      你的下一个演示文稿<br>从一行命令开始
+    </h2>
+    <div class="g" style="padding:24px 36px;margin-bottom:24px;">
+      <div class="code" style="font-size:0.95rem;text-align:left;">
+        <span class="cmd">/slide-creator</span> <span class="cmt">--plan  我的季度汇报</span><br>
+        <span class="cmt"># 审阅 PLANNING.md 大纲，满意后继续</span><br>
+        <span class="cmd">/slide-creator</span> <span class="cmt">--generate</span><br>
+        <span class="cmt"># → presentation.html 自动在浏览器中打开</span>
+      </div>
+    </div>
+    <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">
+      <span class="pill" style="font-size:0.85rem;padding:6px 16px;">13 种风格</span>
+      <span class="pill" style="font-size:0.85rem;padding:6px 16px;background:rgba(79,70,229,0.1);color:var(--accent-indigo);border-color:rgba(79,70,229,0.2);">交互式风格探索</span>
+      <span class="pill" style="font-size:0.85rem;padding:6px 16px;background:rgba(14,165,233,0.1);color:var(--accent-sky);border-color:rgba(14,165,233,0.2);">PPTX 导出</span>
+      <span class="pill" style="font-size:0.85rem;padding:6px 16px;background:rgba(2,132,199,0.1);color:#0284c7;border-color:rgba(2,132,199,0.2);">零外部依赖</span>
+    </div>
+    <p style="margin-top:20px;font-size:0.78rem;color:var(--text-muted);">
+      github.com/kaisersong/slide-creator · clawhub.ai/skills/html-slide-creator
+    </p>
+  </div>
+</section>
+
+</div></div>
+
+<script>
+const orbPositions = [
+  /* 1 封面     */ [-18,-22,520,  82,-12,420,  52, 62,360],
+  /* 2 理念     */ [ 65, 10,440, -15, 55,380,  40, 78,300],
+  /* 3 使用方式 */ [-20, 40,480,  78,-18,400,  55, 68,290],
+  /* 4 风格探索 */ [ 70,  5,460, -12, 60,390,  42, 80,310],
+  /* 5 13风格   */ [-10, 20,500,  72,  8,420,  50, 65,280],
+  /* 6 Blue Sky */ [ 68, 12,450, -18, 58,400,  38, 75,320],
+  /* 7 视口规则 */ [-22, 45,470,  76,-20,410,  54, 70,295],
+  /* 8 PPTX导出 */ [ 72,  8,440, -14, 62,380,  44, 78,305],
+  /* 9 安装     */ [-14, 30,490,  74, 10,400,  52, 66,285],
+  /* 10 结语    */ [-18,-22,510,  80,-12,420,  48, 60,350],
+];
+
+(function(){
+  const TOTAL=document.querySelectorAll('#track .slide').length;
+  const track=document.getElementById('track');
+  const dotsEl=document.getElementById('nav-dots');
+  const ctrEl=document.getElementById('slide-counter');
+  const o1=document.getElementById('orb1'),o2=document.getElementById('orb2'),o3=document.getElementById('orb3');
+  let cur=0;
+  document.documentElement.style.setProperty('--slide-count',TOTAL);
+
+  for(let i=0;i<TOTAL;i++){
+    const d=document.createElement('button');
+    d.className='dot'+(i===0?' active':'');
+    d.setAttribute('aria-label','第'+(i+1)+'页');
+    d.addEventListener('click',()=>go(i));
+    dotsEl.appendChild(d);
+  }
+
+  function setOrbs(i){
+    const p=orbPositions[i]||orbPositions[0];
+    const s=(el,l,t,sz)=>{el.style.left=l+'%';el.style.top=t+'%';el.style.width=el.style.height=sz+'px';};
+    s(o1,p[0],p[1],p[2]);s(o2,p[3],p[4],p[5]);s(o3,p[6],p[7],p[8]);
+  }
+
+  function go(n){
+    if(n<0||n>=TOTAL)return;
+    document.querySelectorAll('#track .slide')[cur].classList.remove('active');
+    cur=n;
+    document.querySelectorAll('#track .slide')[cur].classList.add('active');
+    track.style.transform=`translateX(-${cur*100}vw)`;
+    document.querySelectorAll('.dot').forEach((d,i)=>d.classList.toggle('active',i===cur));
+    ctrEl.textContent=String(cur+1).padStart(2,'0')+' / '+String(TOTAL).padStart(2,'0');
+    setOrbs(cur);
+  }
+
+  go(0);
+
+  document.addEventListener('keydown',e=>{
+    if(e.key==='ArrowRight'||e.key===' '||e.key==='ArrowDown'){e.preventDefault();go(cur+1);}
+    if(e.key==='ArrowLeft'||e.key==='ArrowUp'){e.preventDefault();go(cur-1);}
+    if(e.key==='Home')go(0);
+    if(e.key==='End')go(TOTAL-1);
+  });
+
+  let wheelLocked = false, wheelTimer = null;
+  document.addEventListener('wheel', e => {
+    clearTimeout(wheelTimer);
+    if (!wheelLocked) { wheelLocked = true; e.deltaY > 0 ? go(cur+1) : go(cur-1); }
+    wheelTimer = setTimeout(() => { wheelLocked = false; }, 180);
+  }, { passive: true });
+
+  let tx=0;
+  document.addEventListener('touchstart',e=>{tx=e.touches[0].clientX;},{passive:true});
+  document.addEventListener('touchend',e=>{
+    const dx=e.changedTouches[0].clientX-tx;
+    if(Math.abs(dx)>50)dx<0?go(cur+1):go(cur-1);
+  });
+})();
+</script>
+</body>
+</html>

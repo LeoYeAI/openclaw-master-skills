@@ -1,0 +1,24 @@
+# pythongo.backtesting.models
+
+## `Config`
+
+回测配置
+
+参数：
+
+| 参数名 | 类型 | 描述 | 默认值 |
+|---|---|---|---|
+| `access_key` | `str` | Access Key | 必填 |
+| `access_secret` | `str` | 实例化策略 | 必填 |
+| `fee_rate` | `float` | 手续费率 | 0.0023 |
+| `fee_extra` | `float` | 额外手续费 | 0 |
+| `margin_rate` | `float` | 保证金率 | 0.13 |
+| `show_progress` | `bool` | 是否展示进度条 | False |
+| `save_order_details` | `bool` | 是否保存报单明细 | False |
+| `cache_dir` | `str` | 数据缓存文件夹 | %APPDATA%\PythonGO |
+
+> [!WARNING]
+> 在 `v2026.0209` 之前的版本中，当设置 `show_progress` 为 `True` 时候，会极大增加程序运行时间，但可以看到实时回测进度。`v2026.0209` 及之后的版本展示进度条不影响运行速度。
+
+> [!INFO]
+> 报单明细保存在回测入口文件同级目录。

@@ -1,0 +1,110 @@
+{
+  "category": "电竞椅",
+  "category_type": "durable_goods",
+  "evaluation_dimensions": [
+    {
+      "name": "坐感舒适度",
+      "weight": 0.30,
+      "description": "久坐体验，包括坐垫软硬、腰部支撑、头枕舒适度、坐姿引导",
+      "key_parameters": ["坐垫填充材料", "腰靠调节范围", "头枕高度调节", "坐深调节", "座椅宽度"],
+      "data_sources": ["用户长期使用反馈", "人体工学评测", "久坐体验报告"]
+    },
+    {
+      "name": "透气散热",
+      "weight": 0.20,
+      "description": "网布材质透气性、夏天久坐闷热程度、出汗体验",
+      "key_parameters": ["网布材质类型", "网布克重/密度", "坐垫透气设计", "靠背透气面积"],
+      "data_sources": ["夏季使用反馈", "材质测评", "长期使用体验"]
+    },
+    {
+      "name": "做工与耐久性",
+      "weight": 0.20,
+      "description": "用料质量、组装精度、长期使用后的耐久表现（气压棒、轮子、扶手、网布松弛）",
+      "key_parameters": ["气压棒等级", "底盘材质", "滚轮类型", "扶手材质", "网布耐久性", "质保年限"],
+      "data_sources": ["1年以上使用报告", "拆解评测", "售后反馈"]
+    },
+    {
+      "name": "功能调节",
+      "weight": 0.15,
+      "description": "可调节维度（扶手、靠背角度、坐深、腰靠高度等），调节便利性",
+      "key_parameters": ["扶手调节维度(1D/2D/3D/4D)", "靠背后仰角度", "腰靠调节方式", "坐深可调", "座椅升降范围"],
+      "data_sources": ["评测对比", "用户反馈"]
+    },
+    {
+      "name": "性价比",
+      "weight": 0.15,
+      "description": "相对于同价位竞品的配置水平、用料水平、品牌溢价合理性",
+      "key_parameters": ["价格", "同价位竞品配置对比", "促销价格", "赠品/配件"],
+      "data_sources": ["价格对比", "促销信息", "用户性价比评价"]
+    }
+  ],
+  "pain_point_keywords": {
+    "safety": ["气压棒爆炸", "底盘断裂", "倾倒", "甲醛超标", "气味刺鼻"],
+    "quality": ["网布松弛", "坐垫塌陷", "扶手断裂", "螺丝松动", "气压棒下沉", "轮子碎裂", "掉漆", "开裂", "异响", "生锈"],
+    "experience": ["久坐腰疼", "坐着闷热", "硌屁股", "头枕不舒服", "扶手太硬", "坐垫太窄", "腰靠顶腰", "坐深不够"],
+    "trust": ["虚假宣传", "刷单", "水军", "好评返现", "广告软文", "实物与图片不符", "虚标参数"]
+  },
+  "safety_risk_types": {
+    "critical": ["气压棒爆炸", "底盘断裂致伤"],
+    "high": ["甲醛超标", "有害气体释放", "倾倒风险"],
+    "medium": ["气压棒下沉", "滚轮碎裂"],
+    "low": ["螺丝松动", "异响"]
+  },
+  "platform_relevance": {
+    "v2ex": 0.85,
+    "chiphell": 0.90,
+    "nga": 0.80,
+    "smzdm": 0.75,
+    "zhihu": 0.60,
+    "tieba": 0.70,
+    "xiaohongshu": 0.35,
+    "douban": 0.40,
+    "bilibili": 0.70
+  },
+  "category_positive_signals": [
+    {"pattern_description": "提到具体使用时长", "regex_hint": "用了[半一二三四五六七八九十\\d]+[年个月天]", "score": 15, "label": "长期用户"},
+    {"pattern_description": "身高体重匹配讨论", "regex_hint": "(身高|体重|\\d{3}cm|\\d{2,3}斤|\\d{2,3}kg)", "score": 10, "label": "体型适配反馈"},
+    {"pattern_description": "多椅对比体验", "regex_hint": "(之前|以前|换过|对比|从.*换)", "score": 12, "label": "多品对比"},
+    {"pattern_description": "拆解或细节展示", "regex_hint": "(拆[解开]|内部|用料|气压棒[等级型号]|底盘)", "score": 12, "label": "拆解评测"},
+    {"pattern_description": "久坐后腰部反馈", "regex_hint": "(腰[不没]?[酸疼痛]|腰部支撑|护腰)", "score": 10, "label": "腰部体验反馈"}
+  ],
+  "has_variant_issue": true,
+  "variant_types": ["网布款vs皮质款", "标准版vs高配版", "不同尺码(S/M/L)"],
+  "variant_search_keywords": ["网布", "透气", "mesh"],
+  "non_commercial_indicators": [
+    "用了一年后来更新",
+    "当初买的时候没做功课",
+    "自费购买",
+    "不是广告",
+    "第N把椅子了",
+    "坐了半年回来补评"
+  ],
+  "commercial_bias_sources": [
+    "品牌官方旗舰店好评",
+    "什么值得买爆料含返利链接",
+    "带有优惠券/返利链接的推荐",
+    "品牌赞助的UP主评测",
+    "带有#广告 #推广标签的内容"
+  ],
+  "ecommerce_search_strategy": {
+    "enabled": true,
+    "primary_platforms": ["京东", "淘宝"],
+    "search_templates": {
+      "review_aggregation": ["[商品] 京东评论 追评 真实", "[商品] 淘宝评价 追评 差评"],
+      "negative_reviews": ["[商品] 京东差评 一星 退货", "[商品] 淘宝差评 避坑 后悔"],
+      "long_term_reviews": ["[商品] 追评 半年 一年 使用感受", "[商品] 京东追评 长期使用"]
+    },
+    "high_value_indicators": ["追评", "用了几个月后", "补充评价", "再来更新"],
+    "low_value_indicators": ["默认好评", "好评返现", "此用户未填写评价"]
+  },
+  "comment_section_strategy": {
+    "enabled": true,
+    "primary_platforms": ["小红书", "知乎"],
+    "search_templates": {
+      "debunk_feedback": ["[商品] 小红书 评论区 真实", "[商品] 种草 拔草 后悔"],
+      "experience_sharing": ["[商品] 买了 翻车 评论", "[商品] 知乎 评论区 实际体验"]
+    },
+    "high_value_indicators": ["我也买了", "同款翻车", "用了之后发现", "评论区才是真相"],
+    "low_value_indicators": ["求链接", "已入手", "好种草"]
+  }
+}

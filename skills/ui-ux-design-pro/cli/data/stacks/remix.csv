@@ -1,0 +1,48 @@
+No,Category,Guideline,Description,Do,"Don't",Code Good,Code Bad,Severity,Docs URL
+1,Remix,routing,file-based nested routing,Routes map directly to UI hierarchy with automatic nesting.,Use file/folder structure to define routes.,"Don't manually configure routes.","app/routes/dashboard.tsx
+app/routes/dashboard/users/$id.tsx","<Router config with manual paths>",High,https://remix.run/docs/en/main/guides/routing
+2,Remix,routing,parent layouts persist,Parent routes stay mounted during child navigation preserving state.,Leverage nested routing for shared layouts.,"Don't remount entire app on navigation.","<Outlet /> in parent route","Full page remount on nav",High,https://remix.run/docs/en/main/guides/routing
+3,Remix,data loading with loaders,server-side data loading,Load data at route level in loader functions before render.,Use loader() for data fetching.,"Don't use useEffect/useState for data.","export const loader = async () => {
+const data = useLoaderData();","useEffect(() => { fetchData() }, [])",Critical,https://remix.run/docs/en/main/guides/data-loaders
+4,Remix,data loading with loaders,colocate data with routes,Each route owns its data via loader creating strong cohesion.,Keep data loading logic next to route component.,"Don't scatter data logic across components.","// routes/posts.$id.tsx
+export const loader = async ({ params }) => {
+};","Global data fetching utils",High,https://remix.run/docs/en/main/guides/data-loaders
+5,Remix,form handling,server-side actions,Handle mutations with action functions that auto-revalidate.,Use standard HTML forms with actions.,"Don't use client-side state mutations.","<Form method="post">
+</Form>","useState + fetch('/api')",Critical,https://remix.run/docs/en/main/guides/data-writes
+6,Remix,form handling,progressive form enhancement,Forms work without JavaScript then enhance.,Design forms to submit via HTML POST first.,"Don't rely on JS for form submission.","<Form method="post" action="/actions">
+</Form>","<form onSubmit={handleSubmit}>",High,https://remix.run/docs/en/main/guides/progressive-enhancement
+7,Remix,error boundaries,route-specific error boundaries,Each route defines its own error boundary.,Export errorElement per route.,"Don't use global error pages only.","export function ErrorBoundary() {
+}","Single global ErrorBoundary",High,https://remix.run/docs/en/main/guides/errors
+8,Remix,error boundaries,nested error isolation,Child route errors don't break parent layouts.,Use nested error boundaries for granular control.,"Don't let child errors crash parent UI.","Route-level ErrorBoundary","App-wide error crash",Medium,https://remix.run/docs/en/main/guides/errors
+9,Remix,meta/links,route-level head management,Control document head per route with functions.,Use meta() and links() exports.,"Don't use document.title in useEffect.","export const meta = () => {
+};","useEffect(() => { document.title = 'Posts' }, [])",Medium,https://remix.run/docs/en/main/guides/seo
+10,Remix,meta/links,automatic resource prefetching,Links() prefetches CSS/JS for child routes.,Declare shared resources in parent links().,"Don't manually prefetch resources.","export const links = () => {
+};","Manual link prefetching",Medium,https://remix.run/docs/en/main/guides/seo
+11,Remix,streaming,server-side streaming,Stream HTML while loading data for instant paint.,Use defer() for non-critical data.,"Don't block render for all data.","<Suspense fallback={<div>Loading...</div>}>
+</Suspense>","await allDataInLoader()",High,https://remix.run/docs/en/main/guides/streaming
+12,Remix,streaming,pending states with optimism,Show pending UI during mutations.,Use useNavigation for pending feedback.,"Don't show spinners blocking entire UI.","const navigation = useNavigation();
+{navigation.state === 'submitting' && <Spinner />}","Full page loading spinner",Medium,https://remix.run/docs/en/main/hooks/use-navigation
+13,Remix,progressive enhancement,baseline HTML-first,App works without JavaScript.,Build server-rendered HTML forms first.,"Don't gate features behind JS.","Standard <form method="post">","JS-only interactions",Critical,https://remix.run/docs/en/main/guides/progressive-enhancement
+14,Remix,routing,explicit data ownership,Routes own their data loaders/actions.,Colocate data logic with route files.,"Don't use global state for route data.","Route file contains loader/action","Redux/Context for route data",High,https://remix.run/docs/en/main/file-conventions/routes
+15,Remix,data loading with loaders,revalidation on mutation,Actions automatically revalidate loaders.,Rely on framework's revalidation.,"Don't manually refetch after mutations.","Action completes -> loaders rerun","useSWR/mutate after submit",Medium,https://remix.run/docs/en/main/guides/data-writes
+16,Remix,form handling,handle concurrent mutations,Multiple forms share action with shouldRevalidate.,Use form context for multi-form actions.,"Don't create separate endpoints per form.","Single action handles multiple forms","Separate actions per form",Medium,https://remix.run/docs/en/main/guides/multi-form-actions
+17,Remix,error boundaries,catch async errors in loaders,L loader errors trigger ErrorBoundary.,Handle loader errors explicitly.,"Don't swallow loader errors.","export const loader = async () => {
+};","Silent loader failures",High,https://remix.run/docs/en/main/guides/errors
+18,Remix,meta/links,SEO-optimized SSR,Meta tags render server-side for crawlers.,Export meta() for dynamic titles.,"Don't use client-only meta management.","export const meta = ({ data }) => {
+};","useEffect title updates",Medium,https://remix.run/docs/en/main/guides/seo
+19,Remix,streaming,network-aware UI,Use useNavigation for connection states.,Show appropriate feedback per state.,"Don't assume instant responses.","if (navigation.state === 'loading') {
+}","Always optimistic UI",Medium,https://remix.run/docs/en/main/hooks/use-navigation
+20,Remix,routing,modular file structure,Mirror UI hierarchy in filesystem.,Organize routes by feature/business domain.,"Don't flatten all routes in one folder.","app/routes/
+    users.$id.tsx","app/routes/dashboard-users-id.tsx",Medium,https://remix.run/docs/en/main/file-conventions/routes
+21,Remix,data loading with loaders,HTTP caching headers,Cache loader responses appropriately.,Set Cache-Control in loaders.,"Don't ignore caching opportunities.","export const loader = async () => {
+};","No cache headers",Medium,https://remix.run/docs/en/main/guides/caching
+22,Remix,form handling,no race conditions,Actions prevent concurrent submission issues.,Use single action pattern.,"Don't manage optimistic updates manually.","Form submission -> action -> revalidate","Complex optimistic state",High,https://remix.run/docs/en/main/guides/data-writes
+23,Remix,error boundaries,graceful degradation,Error boundaries maintain app stability.,Define fallback UI per route.,"Don't crash entire app on one error.","export function ErrorBoundary({ error }) {
+}","Uncaught errors crash app",High,https://remix.run/docs/en/main/guides/errors
+24,Remix,streaming,use Suspense boundaries,Stream critical content first.,Wrap slow loaders in Suspense.,"Don't render blocking fallbacks.","<Suspense fallback={<Skeleton />}>
+</Suspense>","await slowData",Medium,https://remix.run/docs/en/main/guides/streaming
+25,Remix,progressive enhancement,real user flows,Model around HTTP request/response cycles.,Use standard web patterns first.,"Don't abstract away web fundamentals.","<form method="POST"><button>Save</button></form>","Custom event bus",High,https://remix.run/docs/en/main/guides/progressive-enhancement
+  const timeout = setTimeout(() => {}, 1000);
+  return () => clearTimeout(timeout);
+  return heavyCalc(count(), user());
+  <div>{index()} {item()}</div>

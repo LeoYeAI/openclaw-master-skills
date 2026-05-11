@@ -1,0 +1,1332 @@
+{
+  "capability": "carrier-relationship-management",
+  "version": "1.0.0",
+  "scenarios": [
+    {
+      "id": "CRM-001",
+      "name": "Basic carrier scorecard evaluation and allocation recommendation",
+      "difficulty": "easy",
+      "category": "scorecarding",
+      "context": {
+        "situation": "You manage the carrier portfolio for a mid-size consumer goods manufacturer shipping 200 FTL loads per week. Your quarterly scorecard review is due. Three carriers service your Chicago to Dallas lane (8 loads/week): Heartland Carriers (primary, 60% allocation), Crosswind Logistics (secondary, 30%), and DAT spot procurement (tertiary, 10%). Here are the Q3 scorecard numbers for each carrier on this lane.",
+        "available_data": {
+          "lane": "Chicago, IL to Dallas, TX",
+          "lane_volume": "8 loads/week",
+          "lane_annual_spend": "$1.15M",
+          "heartland_carriers": {
+            "allocation": "60%",
+            "rate_per_mile": "$2.38",
+            "otd": "97.2%",
+            "tender_acceptance": "94%",
+            "claims_ratio": "0.2%",
+            "invoice_accuracy": "98.5%"
+          },
+          "crosswind_logistics": {
+            "allocation": "30%",
+            "rate_per_mile": "$2.22",
+            "otd": "88.1%",
+            "tender_acceptance": "76%",
+            "claims_ratio": "1.4%",
+            "invoice_accuracy": "91.2%"
+          },
+          "spot_procurement": {
+            "allocation": "10%",
+            "average_rate_per_mile": "$2.65",
+            "dat_contract_benchmark": "$2.28/mile"
+          }
+        }
+      },
+      "task": "Evaluate the three carriers' performance, recommend allocation changes for next quarter, and identify any carriers requiring corrective action.",
+      "evaluation_criteria": [
+        {
+          "criterion": "scorecard_analysis",
+          "weight": 0.30,
+          "rubric": {
+            "pass": "Correctly identifies Heartland as a top-tier carrier (all metrics exceed targets) and Crosswind as an underperformer (OTD below 90%, tender acceptance below 80%, claims ratio above 1%, invoice accuracy below 93%). References specific thresholds from carrier management standards.",
+            "fail": "Treats both carriers as similar performers, or focuses only on rate without evaluating service metrics. Does not reference specific KPI thresholds."
+          }
+        },
+        {
+          "criterion": "allocation_recommendation",
+          "weight": 0.35,
+          "rubric": {
+            "pass": "Recommends increasing Heartland's allocation (to 70-80%) based on superior performance, and either issuing a corrective action plan for Crosswind or reducing their allocation (to 15-20%). Notes that 10% spot at $2.65/mile when DAT benchmark is $2.28 suggests the routing guide needs attention. The recommendation reflects the principle that top performers earn more volume.",
+            "fail": "Recommends maintaining the status quo or reducing Heartland's allocation. Suggests awarding more volume to Crosswind based on lower rate alone. Does not address the spot premium issue."
+          }
+        },
+        {
+          "criterion": "corrective_action",
+          "weight": 0.35,
+          "rubric": {
+            "pass": "Identifies Crosswind as needing a formal corrective action plan with specific metrics (OTD target ≥92% at 30 days, ≥95% at 60 days; tender acceptance ≥85%; invoice accuracy ≥95%), a defined timeline (30/60/90 day checkpoints), and a stated consequence (further volume reduction or exit if targets not met). Recommends a direct conversation with Crosswind's account manager.",
+            "fail": "Does not identify the need for corrective action. Suggests vague 'monitoring' without specific metrics or timeline. Recommends immediate termination without giving the carrier an opportunity to improve."
+          }
+        }
+      ]
+    },
+    {
+      "id": "CRM-002",
+      "name": "FMCSA compliance vetting for new carrier onboarding",
+      "difficulty": "easy",
+      "category": "compliance-vetting",
+      "context": {
+        "situation": "Your operations team wants to onboard a new carrier, Falcon Ridge Transport (MC-881234), for a regional lane from Nashville to Charlotte (3 loads/week, dry van). Falcon Ridge quoted $1.85/mile — about 12% below your current carrier's rate. Before approving, you need to vet them. You've pulled their FMCSA data.",
+        "available_data": {
+          "carrier_name": "Falcon Ridge Transport",
+          "mc_number": "MC-881234",
+          "authority_status": "Active",
+          "authority_grant_date": "2025-08-15",
+          "months_operating": 6,
+          "fleet_size": "8 trucks",
+          "insurance_auto_liability": "$750,000",
+          "insurance_cargo": "$50,000",
+          "safety_rating": "Unrated",
+          "csa_unsafe_driving_percentile": 42,
+          "csa_hos_percentile": 68,
+          "csa_vehicle_maintenance_percentile": 81,
+          "current_carrier_rate": "$2.10/mile",
+          "dat_lane_benchmark": "$1.98/mile"
+        }
+      },
+      "task": "Evaluate Falcon Ridge Transport's compliance profile and provide an onboarding recommendation with any conditions or concerns.",
+      "evaluation_criteria": [
+        {
+          "criterion": "compliance_assessment",
+          "weight": 0.40,
+          "rubric": {
+            "pass": "Identifies multiple concerns: (1) authority is only 6 months old — new entrant risk, (2) auto liability at $750K meets FMCSA minimum but is below the recommended $1M standard for a quality carrier portfolio, (3) cargo insurance at $50K is below the typical $100K minimum, (4) Vehicle Maintenance CSA at 81st percentile is a red flag (above the 75th percentile threshold), and (5) unrated safety rating is normal for a new carrier but means reliance on CSA scores is critical.",
+            "fail": "Approves the carrier based solely on active authority status. Does not identify the insurance shortfall or the elevated Vehicle Maintenance CSA score. Treats FMCSA minimum insurance as sufficient."
+          }
+        },
+        {
+          "criterion": "onboarding_recommendation",
+          "weight": 0.35,
+          "rubric": {
+            "pass": "Recommends conditional onboarding: (1) require insurance increase to $1M auto and $100K cargo before first load, (2) monitor the Vehicle Maintenance CSA closely with quarterly checks, (3) run a 30-day trial with minimum 5 loads before full allocation, (4) flag the 6-month authority age as a risk factor — new carriers have higher failure rates. Notes that the $1.85/mile rate is 6% below DAT benchmark, which could indicate the carrier is under-pricing to win business — a sustainability concern.",
+            "fail": "Recommends full onboarding without conditions. Does not require insurance increases. Does not flag the below-benchmark rate as a potential sustainability risk."
+          }
+        },
+        {
+          "criterion": "rate_analysis",
+          "weight": 0.25,
+          "rubric": {
+            "pass": "Notes that Falcon Ridge's $1.85/mile is 12% below the current carrier and 6% below DAT benchmark. Questions whether this rate is sustainable for an 8-truck fleet — a carrier pricing below market to win business may cut corners on maintenance or driver pay, or may renegotiate rates after they've been awarded the lane.",
+            "fail": "Accepts the low rate uncritically as a cost savings opportunity. Does not benchmark against DAT. Does not consider the sustainability of below-market pricing for a small carrier."
+          }
+        }
+      ]
+    },
+    {
+      "id": "CRM-003",
+      "name": "Basic rate benchmarking and renegotiation trigger identification",
+      "difficulty": "easy",
+      "category": "rate-negotiation",
+      "context": {
+        "situation": "During your quarterly rate benchmarking analysis, you compare your top 10 contract lanes against DAT's 90-day contract averages. Most lanes are within ±8% of DAT, but three lanes stand out as outliers.",
+        "available_data": {
+          "outlier_lanes": [
+            {
+              "lane": "Atlanta, GA to Chicago, IL",
+              "carrier": "Summit Express",
+              "contract_rate": "$2.85/mile",
+              "dat_benchmark": "$2.32/mile",
+              "premium_percentage": "22.8%",
+              "volume": "6 loads/week",
+              "carrier_otd": "93%",
+              "tender_acceptance": "89%"
+            },
+            {
+              "lane": "Los Angeles, CA to Phoenix, AZ",
+              "carrier": "Desert Sun Freight",
+              "contract_rate": "$1.75/mile",
+              "dat_benchmark": "$2.15/mile",
+              "discount_percentage": "-18.6%",
+              "volume": "4 loads/week",
+              "carrier_otd": "96%",
+              "tender_acceptance": "92%"
+            },
+            {
+              "lane": "Dallas, TX to Memphis, TN",
+              "carrier": "Riverbend Carriers",
+              "contract_rate": "$2.48/mile",
+              "dat_benchmark": "$2.05/mile",
+              "premium_percentage": "21.0%",
+              "volume": "3 loads/week",
+              "carrier_otd": "87%",
+              "tender_acceptance": "72%"
+            }
+          ],
+          "dat_benchmark_tolerance": "±8%"
+        }
+      },
+      "task": "Analyze each outlier lane, determine whether renegotiation is warranted, and recommend a specific action for each.",
+      "evaluation_criteria": [
+        {
+          "criterion": "lane_analysis",
+          "weight": 0.40,
+          "rubric": {
+            "pass": "Correctly identifies: (1) Atlanta-Chicago with Summit Express is 22.8% above DAT with only adequate service — clear renegotiation trigger. (2) LA-Phoenix with Desert Sun is 18.6% BELOW DAT — this means the carrier may be underpriced and at exit risk despite excellent performance. (3) Dallas-Memphis with Riverbend is 21% above DAT with poor OTD (87%) and low tender acceptance (72%) — this is both overpriced and underperforming.",
+            "fail": "Treats all three lanes the same (e.g., 'renegotiate all three'). Does not recognize the LA-Phoenix situation as a below-market risk. Focuses only on the two above-DAT lanes."
+          }
+        },
+        {
+          "criterion": "action_recommendations",
+          "weight": 0.35,
+          "rubric": {
+            "pass": "Recommends: (1) Summit Express ATL-CHI: initiate rate renegotiation targeting $2.45-$2.55/mile, using DAT data as the basis for discussion. If Summit won't move within 10% of DAT, include in next mini-bid. (2) Desert Sun LA-PHX: do NOT renegotiate downward — proactively discuss with the carrier whether this rate is sustainable. Consider a modest rate increase (to $1.90-$1.95/mile) to protect against carrier exit. (3) Riverbend DAL-MEM: issue corrective action on service AND renegotiate rate simultaneously. If neither improves in 60 days, replace via mini-bid.",
+            "fail": "Recommends renegotiating all three lanes for lower rates. Does not recognize the Desert Sun underpricing risk. Addresses rate without addressing Riverbend's service failures."
+          }
+        },
+        {
+          "criterion": "market_awareness",
+          "weight": 0.25,
+          "rubric": {
+            "pass": "Demonstrates understanding that a carrier pricing 18.6% below DAT is a risk signal — unsustainable pricing leads to service degradation, tender rejections, or carrier exit. References the concept of carrier floor pricing and the long-term cost of losing a high-performing carrier on a lane.",
+            "fail": "Views the below-DAT rate purely as a cost advantage. Does not consider sustainability or carrier economics."
+          }
+        }
+      ]
+    },
+    {
+      "id": "CRM-004",
+      "name": "Drafting a carrier performance review communication",
+      "difficulty": "easy",
+      "category": "relationship-management",
+      "context": {
+        "situation": "Mountain West Trucking has been your primary carrier on 5 lanes in the Western region for 18 months. They've had an outstanding quarter: 97.5% OTD (vs. portfolio average of 93.2%), 96% tender acceptance, 0.1% claims ratio, and 99.2% invoice accuracy. You want to recognize their performance and propose allocation increases. Your Q4 allocation review is coming up.",
+        "available_data": {
+          "carrier_name": "Mountain West Trucking",
+          "relationship_duration_months": 18,
+          "lanes_served": 5,
+          "weekly_loads": 22,
+          "annual_spend": "$3.8M",
+          "q3_otd": "97.5%",
+          "q3_tender_acceptance": "96%",
+          "q3_claims_ratio": "0.1%",
+          "q3_invoice_accuracy": "99.2%",
+          "portfolio_avg_otd": "93.2%",
+          "portfolio_avg_tender": "87.4%",
+          "proposed_allocation_increase": "from 55% to 70% on their top 3 lanes",
+          "new_lane_opportunity": "Seattle to Denver, 4 loads/week"
+        }
+      },
+      "task": "Draft a positive performance review communication to Mountain West Trucking's VP of Sales that recognizes their Q3 performance and proposes specific allocation increases and a new lane opportunity.",
+      "evaluation_criteria": [
+        {
+          "criterion": "specificity_and_data",
+          "weight": 0.35,
+          "rubric": {
+            "pass": "Cites specific metrics (97.5% OTD, 96% tender acceptance, etc.) and compares to portfolio averages. Mentions specific allocation increases (55% to 70%) and the new Seattle-Denver lane opportunity. Avoids vague praise like 'great job' in favor of quantified recognition.",
+            "fail": "Generic praise without citing specific numbers. Does not reference comparative performance against portfolio averages. Vague about what the carrier is earning as a result of their performance."
+          }
+        },
+        {
+          "criterion": "tone_and_relationship",
+          "weight": 0.30,
+          "rubric": {
+            "pass": "Tone is warm, specific, and partnership-oriented. Frames the allocation increase and new lane as a reward earned by performance, not a favor. Mentions the carrier by name, references their team's contributions, and positions this as a deepening partnership. Avoids procurement-speak or generic vendor language.",
+            "fail": "Cold or transactional tone. Treats the allocation increase as a business-as-usual decision rather than recognition of exceptional performance. Uses generic vendor management language."
+          }
+        },
+        {
+          "criterion": "actionable_next_steps",
+          "weight": 0.35,
+          "rubric": {
+            "pass": "Proposes specific next steps: allocation increase effective date, rate discussion for the new Seattle-Denver lane, and a meeting to discuss future growth opportunities. Includes a concrete ask (e.g., 'Can we schedule a call next week to discuss the Seattle-Denver opportunity and your capacity?').",
+            "fail": "No specific next steps. Leaves the communication as a congratulatory note without progressing the relationship. Does not propose a meeting or timeline for the allocation changes."
+          }
+        }
+      ]
+    },
+    {
+      "id": "CRM-005",
+      "name": "Spot vs. contract decision on an irregular lane",
+      "difficulty": "easy",
+      "category": "contract-management",
+      "context": {
+        "situation": "Your sales team just won a new customer that requires 1-2 loads per week from your Memphis plant to a distribution center in Portland, OR. The lane is approximately 2,100 miles. Your current routing guide has no carriers for this lane. You need to decide how to handle freight procurement for this lane. The market is currently in a transitional phase — OTRI is at 8%, spot rates are roughly equal to contract benchmarks.",
+        "available_data": {
+          "lane": "Memphis, TN to Portland, OR",
+          "distance_miles": 2100,
+          "volume": "1-2 loads/week (irregular, customer orders vary)",
+          "equipment": "53-foot dry van",
+          "dat_contract_benchmark": "$3.15/mile",
+          "dat_spot_average": "$3.08/mile",
+          "spot_contract_spread": "-2.2%",
+          "market_otri": "8%",
+          "customer_delivery_window": "5 business days (flexible)",
+          "customer_annual_revenue": "$420K (new customer, first year)"
+        }
+      },
+      "task": "Recommend a freight procurement strategy for this new lane, including whether to contract or go spot, carrier sourcing approach, and risk considerations.",
+      "evaluation_criteria": [
+        {
+          "criterion": "strategy_recommendation",
+          "weight": 0.40,
+          "rubric": {
+            "pass": "Recommends starting with spot market for 60-90 days to establish actual volume patterns before committing to a contract. Notes that 1-2 loads/week of irregular volume is difficult to contract at competitive rates because carriers can't dedicate capacity to inconsistent freight. With spot-contract spread at only -2.2%, spot is essentially at parity with contract. Suggests evaluating after 90 days: if volume stabilizes at 2+/week, consider contracting; if it stays at 1/week, maintain spot with preferred carrier relationships.",
+            "fail": "Recommends immediately contracting this lane without understanding volume patterns. Suggests running a full RFP for 1-2 loads/week. Does not consider the volume irregularity as a factor in carrier willingness to contract."
+          }
+        },
+        {
+          "criterion": "carrier_sourcing",
+          "weight": 0.30,
+          "rubric": {
+            "pass": "Suggests identifying 2-3 preferred broker partners with strong coverage on long-haul West Coast lanes for spot procurement. Recommends vetting any spot carrier (FMCSA check, insurance verification) even for single loads. Notes that for a 2,100-mile lane, the carrier should have driver domicile within 100 miles of Memphis or be willing to relay.",
+            "fail": "Suggests posting to open load boards without carrier vetting. Does not mention FMCSA compliance for spot carriers. Ignores the operational challenge of a 2,100-mile lane."
+          }
+        },
+        {
+          "criterion": "risk_assessment",
+          "weight": 0.30,
+          "rubric": {
+            "pass": "Identifies this as a new customer in the first year ($420K revenue) where service failures carry disproportionate relationship risk. Recommends tracking spot carrier performance from day one to build data for future contract decisions. Notes the 5-day flexible delivery window provides buffer but should not be used as an excuse for poor carrier selection.",
+            "fail": "Does not consider the new customer relationship risk. Does not plan for future transition from spot to contract. Treats this as a purely operational/cost decision."
+          }
+        }
+      ]
+    },
+    {
+      "id": "CRM-006",
+      "name": "Fuel surcharge table comparison and total cost analysis",
+      "difficulty": "easy",
+      "category": "rate-negotiation",
+      "context": {
+        "situation": "Two carriers have submitted rate proposals for your Atlanta to Miami lane (5 loads/week, approximately 660 miles). Both are qualified carriers with similar service histories. You need to determine which is actually cheaper when total cost is modeled across diesel price scenarios. Current DOE diesel average is $3.92/gallon.",
+        "available_data": {
+          "lane": "Atlanta, GA to Miami, FL",
+          "distance_miles": 660,
+          "volume": "5 loads/week",
+          "carrier_a": {
+            "name": "Southern Express",
+            "linehaul_per_mile": "$2.42",
+            "fsc_base_diesel": "$3.50/gal",
+            "fsc_increment": "$0.01/mile per $0.05 diesel increase",
+            "detention_rate": "$75/hr after 2 hrs free",
+            "avg_detention_hrs_per_load": 0.5
+          },
+          "carrier_b": {
+            "name": "Gulf Coast Freight",
+            "linehaul_per_mile": "$2.28",
+            "fsc_base_diesel": "$2.90/gal",
+            "fsc_increment": "$0.018/mile per $0.05 diesel increase",
+            "detention_rate": "$85/hr after 1.5 hrs free",
+            "avg_detention_hrs_per_load": 0.8
+          },
+          "current_doe_diesel": "$3.92/gal"
+        }
+      },
+      "task": "Model total cost per load for both carriers at three diesel price points ($3.25, $3.92, $4.50) and recommend which carrier to award as primary. Show your work.",
+      "evaluation_criteria": [
+        {
+          "criterion": "cost_modeling",
+          "weight": 0.50,
+          "rubric": {
+            "pass": "Calculates total cost per load (linehaul + FSC + expected detention) for both carriers at all three diesel prices. Shows that Gulf Coast's lower linehaul is offset by their aggressive FSC schedule and higher detention cost. At current diesel ($3.92), Southern Express total cost should be approximately $1,660-$1,700 per load while Gulf Coast is approximately $1,680-$1,720. At $4.50 diesel, the gap widens significantly in Southern Express's favor.",
+            "fail": "Compares only linehaul rates without modeling FSC. Does not calculate at multiple diesel scenarios. Awards based on the $0.14/mile linehaul difference without checking total cost."
+          }
+        },
+        {
+          "criterion": "fsc_analysis",
+          "weight": 0.25,
+          "rubric": {
+            "pass": "Identifies that Gulf Coast's FSC base of $2.90/gal (vs. Southern Express at $3.50) means Gulf Coast starts charging FSC $0.60/gal sooner. Combined with the steeper increment ($0.018 vs. $0.01), Gulf Coast's FSC structure is significantly more expensive at elevated diesel prices. Notes this as a common carrier tactic — low linehaul with aggressive FSC.",
+            "fail": "Does not analyze the FSC tables beyond noting they exist. Does not identify the base price difference as the key driver of total cost divergence."
+          }
+        },
+        {
+          "criterion": "recommendation",
+          "weight": 0.25,
+          "rubric": {
+            "pass": "Recommends Southern Express as primary based on total cost advantage at current and high diesel prices, despite the higher linehaul rate. Notes that the more transparent FSC structure provides better cost predictability. May suggest Gulf Coast as secondary with a recommendation to renegotiate their FSC table.",
+            "fail": "Recommends Gulf Coast based on the lower linehaul rate alone. Does not factor total cost or FSC structure into the recommendation."
+          }
+        }
+      ]
+    },
+    {
+      "id": "CRM-007",
+      "name": "Routing guide failure analysis and remediation",
+      "difficulty": "easy",
+      "category": "portfolio-strategy",
+      "context": {
+        "situation": "Your operations manager reports that spot freight as a percentage of total freight has increased from 12% to 31% over the last 60 days. The spot premium over contract rates is averaging 22%. This is costing approximately $85,000/month in incremental freight spend. You need to diagnose the cause and fix the routing guide.",
+        "available_data": {
+          "total_weekly_loads": 180,
+          "spot_percentage_60_days_ago": "12%",
+          "spot_percentage_current": "31%",
+          "spot_premium_over_contract": "22%",
+          "monthly_incremental_cost": "$85,000",
+          "top_5_spot_lanes": [
+            {"lane": "Chicago to Atlanta", "spot_loads_per_week": 6, "primary_carrier_tender_acceptance": "62%"},
+            {"lane": "Dallas to LA", "spot_loads_per_week": 5, "primary_carrier_tender_acceptance": "58%"},
+            {"lane": "Memphis to Charlotte", "spot_loads_per_week": 4, "primary_carrier_tender_acceptance": "71%"},
+            {"lane": "Houston to Denver", "spot_loads_per_week": 3, "primary_carrier_tender_acceptance": "55%"},
+            {"lane": "Atlanta to Nashville", "spot_loads_per_week": 3, "primary_carrier_tender_acceptance": "68%"}
+          ],
+          "market_otri": "11%",
+          "dat_spot_vs_contract_spread": "+14%"
+        }
+      },
+      "task": "Diagnose the root cause of the routing guide failure, propose a remediation plan, and recommend preventive measures.",
+      "evaluation_criteria": [
+        {
+          "criterion": "root_cause_diagnosis",
+          "weight": 0.40,
+          "rubric": {
+            "pass": "Identifies that tender acceptance rates on the top 5 spot lanes (55-71%) are well below the 90% target, indicating contract rates on these lanes are below what carriers are willing to haul for. Notes the OTRI at 11% signals a tightening market where carriers are becoming selective — contract rates set in a softer market are now below the carriers' floor. This is a market cycle issue, not a carrier performance issue.",
+            "fail": "Blames carriers for poor performance without recognizing the market has shifted. Suggests penalizing carriers for tender rejections without addressing the rate misalignment. Does not connect the OTRI indicator to the routing guide failure."
+          }
+        },
+        {
+          "criterion": "remediation_plan",
+          "weight": 0.35,
+          "rubric": {
+            "pass": "Recommends a targeted mini-bid or rate renegotiation on the 5 worst lanes (not a full RFP — that takes 12 weeks). For immediate relief: negotiate rate adjustments on the top 5 lanes to within 5% of current DAT benchmarks. Carriers will re-accept tenders if rates reflect market reality. Also recommends adding backup carriers to the routing guide (most of these lanes likely have weak secondary/tertiary coverage).",
+            "fail": "Recommends a full RFP (too slow for an $85K/month problem). Suggests finding cheaper carriers rather than adjusting rates. Does not prioritize the highest-impact lanes."
+          }
+        },
+        {
+          "criterion": "prevention",
+          "weight": 0.25,
+          "rubric": {
+            "pass": "Recommends: (1) weekly monitoring of tender acceptance by lane with a 80% threshold trigger for rate review, (2) market-based reopener clauses in future contracts allowing rate adjustment when DAT moves >15%, (3) quarterly rate benchmarking against DAT/Greenscreens, not just annual RFP.",
+            "fail": "Does not suggest ongoing monitoring or structural contract changes. Treats this as a one-time fix rather than a systemic vulnerability."
+          }
+        }
+      ]
+    },
+    {
+      "id": "CRM-008",
+      "name": "Rate negotiation strategy for contract renewal in a tightening market",
+      "difficulty": "medium",
+      "category": "rate-negotiation",
+      "context": {
+        "situation": "Your 12-month carrier contract with Pinnacle Transport expires in 45 days. Pinnacle is your largest carrier (35% of total freight spend, $8.2M annually, 28 lanes). They've been a strong performer: 94% OTD, 91% tender acceptance. The market has shifted since you signed the contract — OTRI has risen from 5% to 13%, DAT spot rates are 18% above your contract rates on average, and capacity is tightening. Pinnacle's account manager has requested a meeting to 'discuss renewal terms' — you know a rate increase request is coming.",
+        "available_data": {
+          "carrier": "Pinnacle Transport",
+          "current_annual_spend": "$8.2M",
+          "portfolio_share": "35%",
+          "lanes_served": 28,
+          "weekly_loads": 65,
+          "current_otd": "94%",
+          "current_tender_acceptance": "91%",
+          "contract_expiry": "45 days",
+          "market_otri": "13%",
+          "avg_spot_premium_over_contract": "18%",
+          "dat_benchmark_avg_increase_since_contract": "12%",
+          "pinnacle_reported_cost_increase": "driver pay +8%, insurance +15%, fuel +6%",
+          "your_budget_target": "hold freight cost increase to <5%",
+          "competing_carrier_rates": "2-3 carriers can cover 60% of Pinnacle's lanes at rates 5-8% above current Pinnacle rates"
+        }
+      },
+      "task": "Develop a negotiation strategy for the Pinnacle contract renewal, including your opening position, concession plan, walk-away point, and alternatives if negotiation fails.",
+      "evaluation_criteria": [
+        {
+          "criterion": "market_context_awareness",
+          "weight": 0.25,
+          "rubric": {
+            "pass": "Acknowledges this is a carrier-favorable market (OTRI 13%, spot 18% above contract). Recognizes that Pinnacle has been honoring below-market rates for months — they have legitimate grounds for an increase. Notes that demanding no increase or a reduction would be unrealistic and relationship-damaging given market conditions.",
+            "fail": "Approaches this as a standard cost-reduction negotiation. Does not acknowledge market conditions. Suggests hardball tactics (e.g., threatening to move freight) that would backfire in a tight market."
+          }
+        },
+        {
+          "criterion": "negotiation_strategy",
+          "weight": 0.35,
+          "rubric": {
+            "pass": "Proposes: (1) Opening position of 5-6% increase (below Pinnacle's likely ask of 10-15% but above your budget target of 5%). (2) Concession plan offering non-rate value — faster payment terms (Net 15), volume commitment guarantee, drop-trailer program, multi-year contract (24 months with a pre-agreed year-2 escalator). (3) Lane-by-lane negotiation rather than a blanket increase — some lanes may need 8-10%, others may need only 3-4%. (4) Walk-away point of 8-9% blended increase.",
+            "fail": "Has no structured negotiation plan. Suggests accepting whatever Pinnacle asks for. Does not use non-rate concessions. Proposes a blanket rate change rather than lane-level negotiation."
+          }
+        },
+        {
+          "criterion": "contingency_planning",
+          "weight": 0.20,
+          "rubric": {
+            "pass": "Identifies that 35% portfolio concentration with one carrier is a vulnerability. Plans to qualify 2-3 alternative carriers on Pinnacle's top 10 lanes as a negotiation backstop. Notes that fully replacing 65 loads/week in a tight market would take 60-90 days. Recommends beginning alternative carrier qualification immediately, not waiting for negotiation to fail.",
+            "fail": "Assumes negotiation will succeed without contingency. Does not begin qualifying alternatives. Overlooks the 35% concentration risk."
+          }
+        },
+        {
+          "criterion": "relationship_preservation",
+          "weight": 0.20,
+          "rubric": {
+            "pass": "Frames the negotiation as a partnership renewal, not a cost fight. Acknowledges Pinnacle's service quality and market loyalty. Shares the company's budget constraints transparently ('we're targeting <5% but understand the market has moved — let's find a number that works for both of us'). Plans to maintain the relationship even if some lanes are reassigned to manage concentration risk.",
+            "fail": "Treats this as an adversarial negotiation. Uses threats or ultimatums. Does not acknowledge Pinnacle's positive performance."
+          }
+        }
+      ]
+    },
+    {
+      "id": "CRM-009",
+      "name": "RFP bid evaluation with competing carrier trade-offs",
+      "difficulty": "medium",
+      "category": "rfp-process",
+      "context": {
+        "situation": "You're evaluating RFP bids for your highest-volume lane: Cincinnati, OH to Atlanta, GA (12 loads/week, $2.8M annual spend on this lane). Three carriers have submitted competitive bids. Your evaluation weightings are: Rate (40%), Service (25%), Capacity (20%), Operational Fit (15%).",
+        "available_data": {
+          "lane": "Cincinnati, OH to Atlanta, GA",
+          "volume": "12 loads/week",
+          "annual_spend": "$2.8M",
+          "current_carrier": "Central Freight Lines (primary, exiting due to network restructuring)",
+          "bidders": [
+            {
+              "name": "Appalachian Express",
+              "type": "Asset carrier, 220 trucks, Cincinnati hub",
+              "rate_per_mile": "$2.18",
+              "fsc_structure": "DOE base $3.50, $0.01/mi per $0.05 increment",
+              "otd_reference": "96% (verified with 3 reference shippers)",
+              "tender_commitment": "95% acceptance guarantee",
+              "edi_capability": "Full EDI (210, 214, 990)",
+              "driver_domicile": "35 drivers within 50 miles of Cincinnati",
+              "csa_percentiles": "All below 40th percentile"
+            },
+            {
+              "name": "Sunbelt Logistics",
+              "type": "Broker, national coverage",
+              "rate_per_mile": "$2.02",
+              "fsc_structure": "All-in rate, no separate FSC",
+              "otd_reference": "91% (self-reported, limited references available)",
+              "tender_commitment": "85% acceptance target",
+              "edi_capability": "API integration available",
+              "driver_domicile": "N/A (broker sources from carrier pool)",
+              "carrier_vetting_standard": "FMCSA active authority and $750K insurance minimum"
+            },
+            {
+              "name": "Blue Ridge Carriers",
+              "type": "Asset carrier, 85 trucks, Knoxville hub",
+              "rate_per_mile": "$2.25",
+              "fsc_structure": "DOE base $3.40, $0.012/mi per $0.05 increment",
+              "otd_reference": "94% (verified with 2 reference shippers)",
+              "tender_commitment": "90% acceptance guarantee",
+              "edi_capability": "EDI 214 only, no 210 or 990",
+              "driver_domicile": "12 drivers within 100 miles of Cincinnati",
+              "csa_percentiles": "Vehicle Maintenance at 55th, all others below 45th"
+            }
+          ]
+        }
+      },
+      "task": "Score each carrier using the weighted evaluation criteria, recommend a routing guide structure (primary/secondary/tertiary), and justify your awards.",
+      "evaluation_criteria": [
+        {
+          "criterion": "scoring_methodology",
+          "weight": 0.30,
+          "rubric": {
+            "pass": "Applies the weighted scoring systematically. For Rate: normalizes against lowest bidder. For Service: uses verified references (flags Sunbelt's self-reported 91% as less reliable). For Capacity: values Appalachian's 95% guarantee and local driver base over Sunbelt's broker model. For Ops Fit: penalizes Blue Ridge's partial EDI and rewards Appalachian's full integration. Produces a clear scoring table.",
+            "fail": "Awards based on gut feel or rate alone. Does not apply the weighted criteria systematically. Treats self-reported and verified OTD data as equally reliable."
+          }
+        },
+        {
+          "criterion": "routing_guide_design",
+          "weight": 0.40,
+          "rubric": {
+            "pass": "Awards Appalachian Express as primary (best total score: competitive rate, superior service, strong capacity commitment, full EDI). Awards Blue Ridge as secondary (solid asset carrier with verified performance, despite partial EDI). Places Sunbelt as tertiary/spot backup (lowest rate but broker risk, unverified performance, minimal insurance standard). Allocation: Appalachian 55-65%, Blue Ridge 25-35%, Sunbelt 10-15%. Notes that 12 loads/week justifies a 3-carrier guide.",
+            "fail": "Awards Sunbelt as primary based on lowest rate. Ignores the broker vs. asset carrier risk profile for a high-volume lane. Does not create a tiered routing guide. Awards only one carrier without backup."
+          }
+        },
+        {
+          "criterion": "risk_identification",
+          "weight": 0.30,
+          "rubric": {
+            "pass": "Identifies: (1) Sunbelt's all-in rate (no separate FSC) means you can't benchmark their fuel cost component — in a rising diesel market, their all-in rate may increase without the transparency of a separate FSC. (2) Sunbelt's $750K insurance minimum is the FMCSA floor, below the recommended $1M standard. (3) Blue Ridge's limited EDI requires manual tracking processes. (4) Appalachian's higher rate is offset by service quality and capacity certainty for a $2.8M lane.",
+            "fail": "Does not identify broker-specific risks. Does not flag the insurance minimum. Does not comment on the all-in vs. separated FSC trade-off."
+          }
+        }
+      ]
+    },
+    {
+      "id": "CRM-010",
+      "name": "Carrier corrective action plan after service failures on JIT lane",
+      "difficulty": "medium",
+      "category": "scorecarding",
+      "context": {
+        "situation": "Velocity Freight is your primary carrier on a lane from your Greenville, SC auto parts plant to a Honda assembly facility in Marysville, OH. This is a JIT (just-in-time) lane — Honda has a 2-hour delivery window and assesses $15,000 line-down penalties for late deliveries. Over the last 60 days, Velocity's OTD on this lane has dropped from 96% to 83%, causing 4 late deliveries and $60,000 in Honda chargebacks. Velocity's account manager says the issues are driver-related (2 drivers resigned, 1 had a medical leave) and assures you 'it's being fixed.'",
+        "available_data": {
+          "carrier": "Velocity Freight",
+          "lane": "Greenville, SC to Marysville, OH (Honda JIT)",
+          "distance_miles": 520,
+          "weekly_loads": 5,
+          "contract_rate": "$2.55/mile",
+          "otd_previous_12_months": "96%",
+          "otd_last_60_days": "83%",
+          "late_deliveries_60_days": 4,
+          "honda_chargebacks": "$60,000",
+          "honda_annual_revenue": "$12M",
+          "velocity_annual_spend": "$1.4M (this lane + 3 others)",
+          "jit_delivery_window": "2-hour window, Mon-Fri 06:00-08:00",
+          "velocity_explanation": "2 driver resignations, 1 medical leave, hiring replacements",
+          "backup_carrier_status": "Secondary carrier (Midway Transport) ran 1 load/month as backup but hasn't been used in 90 days"
+        }
+      },
+      "task": "Design a corrective action plan for Velocity Freight on this lane, address the Honda chargeback exposure, and develop a contingency plan to protect the JIT delivery commitment.",
+      "evaluation_criteria": [
+        {
+          "criterion": "corrective_action_plan",
+          "weight": 0.30,
+          "rubric": {
+            "pass": "Structures a CAP with: (1) Immediate action (this week): Velocity must confirm they have at least 2 dedicated drivers for this lane with a named backup driver. (2) 30-day target: OTD must return to ≥93%. (3) 60-day target: OTD must reach ≥96%. (4) Reporting requirement: Velocity provides weekly driver roster confirmation for this lane. (5) Consequence: if 30-day target not met, volume shifts 50% to Midway; if 60-day target not met, Velocity loses primary status.",
+            "fail": "Accepts Velocity's verbal assurance that 'it's being fixed.' Sets no specific targets or timelines. Does not require documented proof of driver availability."
+          }
+        },
+        {
+          "criterion": "chargeback_management",
+          "weight": 0.25,
+          "rubric": {
+            "pass": "Addresses the $60K in Honda chargebacks on two fronts: (1) Negotiate with Honda to reduce the chargebacks (pointing out the 96% OTD track record and the corrective actions being taken). (2) Pursue recovery of a portion from Velocity — while consequential damages are typically excluded under Carmack, the contract may include service-level credits. At minimum, demand freight credits for the 4 late loads. Notes that Honda's $12M annual revenue makes protecting this relationship the top priority.",
+            "fail": "Ignores the chargeback issue. Does not attempt to negotiate with Honda. Does not seek any recovery from Velocity. Treats the $60K as a sunk cost."
+          }
+        },
+        {
+          "criterion": "contingency_planning",
+          "weight": 0.30,
+          "rubric": {
+            "pass": "Activates Midway Transport as an immediate backup: increase their frequency from 1 load/month to 2 loads/week immediately (to re-validate their service on this lane). Qualify at least 1 additional carrier for this lane within 30 days. Considers requiring the JIT delivery window to be specified on the BOL and rate confirmation for all carriers (referencing the JIT edge case — carriers must have documented notice of the time window and penalty consequences).",
+            "fail": "Relies entirely on Velocity's recovery without activating backup capacity. Does not increase Midway's frequency. Does not qualify additional carriers. Ignores the JIT documentation requirement."
+          }
+        },
+        {
+          "criterion": "relationship_management",
+          "weight": 0.15,
+          "rubric": {
+            "pass": "Acknowledges that driver turnover is a legitimate operational challenge — does not treat this as a betrayal. Sets firm expectations while maintaining a constructive tone. Notes that Velocity's 96% OTD over the prior 12 months shows capability — this is a temporary resource issue, not a fundamental service failure.",
+            "fail": "Treats the service failure as a relationship-ending event. Immediately exits Velocity without corrective action opportunity. Or conversely, is too lenient — no accountability for $60K in chargebacks."
+          }
+        }
+      ]
+    },
+    {
+      "id": "CRM-011",
+      "name": "Portfolio diversification analysis after single-carrier concentration risk",
+      "difficulty": "medium",
+      "category": "portfolio-strategy",
+      "context": {
+        "situation": "Your new VP of Supply Chain has flagged a concentration risk: your top carrier, National Highway Systems, handles 52% of your total freight across 15 lanes, representing $11.4M in annual spend. The VP wants a diversification plan that reduces NHS's share to below 35% within 12 months without disrupting service or significantly increasing costs. NHS has been a strong performer (93% OTD, 90% tender acceptance) and has been with your company for 7 years.",
+        "available_data": {
+          "carrier": "National Highway Systems (NHS)",
+          "portfolio_share": "52%",
+          "annual_spend": "$11.4M",
+          "total_company_freight_spend": "$21.9M",
+          "lanes_served": 15,
+          "weekly_loads": 85,
+          "nhs_otd": "93%",
+          "nhs_tender_acceptance": "90%",
+          "nhs_rate_vs_dat": "within 5% of DAT on 12 of 15 lanes",
+          "relationship_duration_years": 7,
+          "next_best_carrier_portfolio_share": "14%",
+          "remaining_carriers": "12 carriers sharing 34% of freight",
+          "target_nhs_share": "<35%",
+          "timeline": "12 months"
+        }
+      },
+      "task": "Develop a 12-month diversification plan that reduces NHS's portfolio share from 52% to below 35% while maintaining service quality and managing the relationship with NHS.",
+      "evaluation_criteria": [
+        {
+          "criterion": "diversification_strategy",
+          "weight": 0.35,
+          "rubric": {
+            "pass": "Structures a phased approach: (1) Identify the 5-7 NHS lanes most suitable for diversification (lanes where NHS is the sole carrier, or where their rates are within the above-DAT range, or where alternative carriers exist in your portfolio). (2) Shift 3-5% of portfolio share per quarter over 4 quarters. (3) Grow existing secondary carriers on NHS lanes before adding new carriers. (4) Use upcoming RFP cycle to award diversified volume. Calculates that 52% to 35% means moving ~37 loads/week away from NHS.",
+            "fail": "Proposes moving all excess volume at once. Does not phase the transition. Does not identify which lanes to diversify first. Treats all 15 lanes equally rather than prioritizing."
+          }
+        },
+        {
+          "criterion": "nhs_relationship_management",
+          "weight": 0.30,
+          "rubric": {
+            "pass": "Recommends transparent communication with NHS: explain the diversification rationale (risk management, not dissatisfaction with service). Offer NHS a strategic partnership agreement at the reduced 35% share — multi-year contract, premium lane awards, executive business reviews — that positions 35% of $21.9M ($7.7M) as a committed, premium relationship rather than 52% of a declining allocation. Emphasizes that NHS is not being punished — they're being repositioned as a strategic partner.",
+            "fail": "Reduces NHS volume without communication. Does not position the diversification as a strategic decision. Risks NHS interpreting the volume loss as a punishment for poor performance."
+          }
+        },
+        {
+          "criterion": "alternative_carrier_plan",
+          "weight": 0.20,
+          "rubric": {
+            "pass": "Identifies that growing from 14% (second carrier) to 20-25% is more practical than adding entirely new carriers. Plans to award freed NHS volume to 3-4 carriers (a mix of existing portfolio carriers and 1-2 new entrants from the next RFP). Sets minimum service standards for any carrier receiving redirected volume.",
+            "fail": "Distributes volume equally across all 12 remaining carriers (fragmenting volume below meaningful thresholds). Adds 10+ new carriers without considering management overhead."
+          }
+        },
+        {
+          "criterion": "risk_mitigation",
+          "weight": 0.15,
+          "rubric": {
+            "pass": "Identifies the risk of service disruption during transition — new carriers on NHS lanes may underperform initially. Plans overlap periods where both NHS and the incoming carrier run loads on the same lane for 30 days before reducing NHS allocation. Monitors weekly: if incoming carrier fails to meet OTD targets during transition, slows the diversification rather than forcing it.",
+            "fail": "Assumes the transition will be seamless. Does not plan for service disruption. Does not include performance monitoring during the transition."
+          }
+        }
+      ]
+    },
+    {
+      "id": "CRM-012",
+      "name": "Market intelligence interpretation and strategic positioning",
+      "difficulty": "medium",
+      "category": "market-intelligence",
+      "context": {
+        "situation": "You're the transportation manager for a national food distributor. It's early March, and you're planning your carrier strategy for the next 6 months. You've assembled the following market intelligence and need to translate it into actionable carrier management decisions.",
+        "available_data": {
+          "dat_national_spot_rate_trend": "Up 8% over last 60 days",
+          "otri": "9.5% (up from 6.2% in January)",
+          "load_to_truck_ratio_national": "4.8:1 (up from 3.1:1 in December)",
+          "class_8_truck_orders": "Down 12% year-over-year",
+          "diesel_price_trend": "Up $0.35/gal over last 90 days, DOE at $4.12",
+          "produce_season_outlook": "USDA forecasts above-average produce volumes starting mid-April",
+          "your_reefer_lanes": "22% of total freight (currently 85% on contract, 15% spot)",
+          "your_dry_van_lanes": "78% of total freight (currently 88% on contract, 12% spot)",
+          "contract_renewals_due": "8 reefer lane contracts expire April 30",
+          "current_reefer_spot_vs_contract_spread": "+12%",
+          "carrier_portfolio_avg_tender_acceptance": "88% (down from 93% in January)"
+        }
+      },
+      "task": "Interpret the market signals, assess the outlook for the next 6 months, and recommend specific carrier management actions for both reefer and dry van freight.",
+      "evaluation_criteria": [
+        {
+          "criterion": "market_interpretation",
+          "weight": 0.30,
+          "rubric": {
+            "pass": "Reads the signals as a market tightening into a carrier-favorable phase: rising OTRI, increasing load-to-truck ratio, declining Class 8 orders (capacity not being replaced), rising diesel (squeezing small carrier margins). Identifies that produce season (mid-April) will further tighten reefer capacity specifically. Projects that reefer spot rates will spike 20-30% during produce season. Notes the tender acceptance decline from 93% to 88% as an early warning of contract rate erosion.",
+            "fail": "Misreads the market direction. Does not connect declining Class 8 orders to future capacity constraints. Ignores the produce season impact on reefer capacity. Treats the data points in isolation rather than as a coherent market narrative."
+          }
+        },
+        {
+          "criterion": "reefer_strategy",
+          "weight": 0.35,
+          "rubric": {
+            "pass": "Recommends: (1) Renew the 8 expiring reefer contracts NOW (before April) and accept a moderate rate increase (5-8%) to lock capacity before produce season. Waiting until May to negotiate means negotiating from a position of weakness when reefer capacity is at its tightest. (2) Extend contract terms to 18-24 months to ride out the tightening cycle. (3) Secure surge capacity agreements with 2-3 additional reefer carriers for April-July specifically. (4) Pre-commit volume to existing reefer carriers to secure capacity priority.",
+            "fail": "Recommends waiting to negotiate reefer contracts for better rates (the opposite of what the market demands). Does not proactively secure reefer capacity for produce season. Treats reefer and dry van freight identically."
+          }
+        },
+        {
+          "criterion": "dry_van_strategy",
+          "weight": 0.20,
+          "rubric": {
+            "pass": "Recommends: (1) Begin rate discussions on dry van lanes where tender acceptance has dropped >5 percentage points — these carriers are signaling the rate is below their floor. (2) Don't wait for full routing guide failure — proactively adjust rates on at-risk lanes before they cascade to spot. (3) Budget for a 4-6% blended increase on dry van freight over the next 6 months.",
+            "fail": "Ignores the dry van market tightening. Assumes dry van contracts are stable because they're not expiring soon. Does not connect tender acceptance decline to rate pressure."
+          }
+        },
+        {
+          "criterion": "financial_planning",
+          "weight": 0.15,
+          "rubric": {
+            "pass": "Translates the market outlook into a budget impact: estimates the total freight cost increase over the next 6 months (rate increases on renewals + increased spot premiums + produce season surcharges). Recommends communicating the projected increase to finance/leadership proactively rather than explaining it retroactively.",
+            "fail": "Does not quantify the financial impact. Does not communicate the outlook to internal stakeholders."
+          }
+        }
+      ]
+    },
+    {
+      "id": "CRM-013",
+      "name": "Double-brokering investigation and carrier suspension decision",
+      "difficulty": "medium",
+      "category": "compliance-vetting",
+      "context": {
+        "situation": "Your compliance analyst has flagged anomalies with Trident Brokerage (MC-774521), a broker in your routing guide handling 10 loads/week across 4 lanes. On 3 recent loads, the actual delivering carrier (identified by the driver's truck markings and DOT number) does not match the carrier Trident dispatched. The drivers on these loads could not name their dispatcher when your dock staff asked. One of the delivering trucks had an FMCSA safety rating of Unsatisfactory — a carrier your compliance standards would never approve.",
+        "available_data": {
+          "broker": "Trident Brokerage",
+          "mc_number": "MC-774521",
+          "weekly_loads": 10,
+          "lanes_served": 4,
+          "annual_spend": "$680K",
+          "relationship_duration": "14 months",
+          "performance_otd": "91%",
+          "performance_rate": "competitive (within 3% of DAT)",
+          "flagged_loads": 3,
+          "flagged_load_details": [
+            {"date": "2026-01-28", "lane": "Memphis to Charlotte", "dispatched_carrier": "MC-882100", "actual_carrier_dot": "DOT-4455221", "actual_carrier_fmcsa_status": "Active, Satisfactory"},
+            {"date": "2026-02-04", "lane": "Memphis to Charlotte", "dispatched_carrier": "MC-882100", "actual_carrier_dot": "DOT-5567832", "actual_carrier_fmcsa_status": "Active, Conditional"},
+            {"date": "2026-02-11", "lane": "Dallas to Nashville", "dispatched_carrier": "MC-661200", "actual_carrier_dot": "DOT-3321009", "actual_carrier_fmcsa_status": "Active, Unsatisfactory"}
+          ],
+          "trident_contract_clause": "Section 8.2: Broker shall not re-broker or double-broker any shipment without prior written consent"
+        }
+      },
+      "task": "Assess the double-brokering evidence, determine the appropriate response, and outline the steps to protect your freight and compliance position.",
+      "evaluation_criteria": [
+        {
+          "criterion": "evidence_assessment",
+          "weight": 0.25,
+          "rubric": {
+            "pass": "Identifies the evidence as strong but not yet conclusive: (1) Three instances of carrier mismatch is a pattern, not a coincidence. (2) Drivers unable to name their dispatcher suggests they were sourced through an intermediary layer. (3) The Unsatisfactory-rated carrier is a critical compliance breach — this carrier should not be hauling any freight under your authority. Recommends a full audit of the last 90 days of Trident's loads before making a final determination.",
+            "fail": "Dismisses the evidence as insufficient. Accepts that occasional carrier substitution is normal without investigating. Does not flag the Unsatisfactory-rated carrier as a critical issue."
+          }
+        },
+        {
+          "criterion": "immediate_actions",
+          "weight": 0.35,
+          "rubric": {
+            "pass": "Recommends: (1) Immediately suspend new tenders to Trident pending investigation (do not wait for the audit to complete — the Unsatisfactory carrier is an immediate safety risk). (2) Demand a written explanation from Trident's ownership within 48 hours — not the account manager, the owner or principal. (3) Require Trident to disclose all carriers used on your freight in the last 90 days. (4) Run FMCSA checks on every disclosed carrier. (5) Notify your insurance broker — if Trident was double-brokering, your cargo insurance chain may have gaps on those loads.",
+            "fail": "Continues tendering to Trident while investigating. Accepts a verbal explanation. Does not require carrier disclosure. Does not check insurance implications."
+          }
+        },
+        {
+          "criterion": "long_term_response",
+          "weight": 0.25,
+          "rubric": {
+            "pass": "Depending on Trident's response: (a) If they acknowledge double-brokering and agree to full transparency going forward — reduced allocation, enhanced monitoring, contractual penalty clause for future violations. (b) If they deny or deflect — managed exit within 30 days. References the contract's Section 8.2 prohibition. Plans to qualify 2-3 replacement carriers for Trident's 4 lanes regardless of the outcome.",
+            "fail": "Does not plan for either scenario (Trident cooperates vs. Trident denies). Has no replacement carrier plan. Does not reference the contractual prohibition."
+          }
+        },
+        {
+          "criterion": "systemic_prevention",
+          "weight": 0.15,
+          "rubric": {
+            "pass": "Recommends implementing routine carrier verification on broker loads: spot-check 10-20% of broker loads by comparing the dispatched carrier to the actual delivering carrier. Updates the standard broker agreement to include carrier disclosure requirements and liquidated damages for unauthorized re-brokering.",
+            "fail": "Treats this as an isolated incident. Does not implement ongoing monitoring. Does not update broker contract terms."
+          }
+        }
+      ]
+    },
+    {
+      "id": "CRM-014",
+      "name": "Negotiating accessorial schedule during RFP",
+      "difficulty": "medium",
+      "category": "contract-management",
+      "context": {
+        "situation": "You're finalizing RFP awards with three carriers. Before executing contracts, you need to negotiate the accessorial schedule. Your current accessorial costs represent 11% of total freight spend — your VP wants this below 8%. The primary cost drivers are detention (45% of accessorials), liftgate deliveries (20%), residential surcharges (15%), and reweigh/reclass fees on LTL (20%).",
+        "available_data": {
+          "total_annual_freight_spend": "$18.5M",
+          "current_accessorial_percentage": "11%",
+          "target_accessorial_percentage": "<8%",
+          "current_accessorial_spend": "$2.04M annually",
+          "target_reduction": "$555K",
+          "accessorial_breakdown": {
+            "detention": {"spend": "$918K", "avg_rate": "$85/hr", "avg_hrs_per_event": 2.8, "events_per_month": 325},
+            "liftgate": {"spend": "$408K", "avg_charge": "$125/delivery", "events_per_month": 272},
+            "residential": {"spend": "$306K", "avg_charge": "$95/delivery", "events_per_month": 268},
+            "reweigh_reclass": {"spend": "$408K", "avg_charge": "$65/event", "events_per_month": 523}
+          },
+          "industry_benchmarks": {
+            "detention_free_time": "2 hours standard, 3 hours for high-volume shippers",
+            "liftgate_range": "$75-$150",
+            "residential_range": "$75-$125",
+            "reweigh_threshold": "tolerance of ±5% before reweigh fee applies"
+          }
+        }
+      },
+      "task": "Develop an accessorial negotiation strategy that targets the $555K reduction. Identify which accessorials to negotiate on rate vs. which to address operationally.",
+      "evaluation_criteria": [
+        {
+          "criterion": "rate_vs_operational",
+          "weight": 0.35,
+          "rubric": {
+            "pass": "Correctly identifies: (1) Detention ($918K) is primarily an operational issue — negotiating the rate down won't fix the root cause of 325 events/month. Recommends addressing dock operations (scheduling, staffing, drop-trailer programs) to reduce events by 40-50%, which saves more than any rate reduction. (2) Reweigh/reclass ($408K at 523 events/month) is a compliance issue — the root cause is incorrect freight classification at origin. Fix the classification process rather than negotiate reweigh fees. (3) Liftgate and residential are rate-negotiable items where the carrier charges can be reduced.",
+            "fail": "Tries to negotiate all four categories on rate alone. Does not distinguish between rate issues and operational root causes. Ignores the root cause of detention and reweigh events."
+          }
+        },
+        {
+          "criterion": "negotiation_specifics",
+          "weight": 0.35,
+          "rubric": {
+            "pass": "Proposes specific negotiation targets: (1) Detention: negotiate free time from 2 to 3 hours (reduces billable hours per event), and rate from $85 to $75/hr. Combined with operational reduction of events by 40%, projects $450K+ savings on detention alone. (2) Liftgate: negotiate from $125 to $95 for committed volume carriers (benchmarked at bottom of industry range). (3) Residential: negotiate from $95 to $80 for carriers with residential delivery specialization. (4) Reweigh: negotiate a ±5% weight tolerance and a ±1 freight class tolerance before reweigh/reclass fees apply.",
+            "fail": "Proposes blanket 'reduce all accessorials by 30%' without specific rate targets. Does not benchmark against industry ranges. Does not negotiate structural terms like free time or tolerance thresholds."
+          }
+        },
+        {
+          "criterion": "savings_quantification",
+          "weight": 0.30,
+          "rubric": {
+            "pass": "Quantifies projected savings by category and shows a credible path to the $555K target. Separates rate negotiation savings (achievable in the contract) from operational savings (achievable through internal process improvements over 6-12 months). Acknowledges that the full $555K target requires both negotiation wins and operational changes — negotiation alone won't close the gap.",
+            "fail": "Claims the full savings target is achievable through negotiation alone. Does not quantify savings by category. Presents an unrealistic plan."
+          }
+        }
+      ]
+    },
+    {
+      "id": "CRM-015",
+      "name": "Carrier financial distress detection and graduated response",
+      "difficulty": "medium",
+      "category": "compliance-vetting",
+      "context": {
+        "situation": "One of your key carriers, Great Plains Trucking (MC-556789, 140 trucks), has shown several concerning signals over the last 90 days. They're your primary carrier on 6 Midwest lanes, handling 20 loads/week at $1.6M annual spend. Your compliance team's quarterly review has surfaced the following.",
+        "available_data": {
+          "carrier": "Great Plains Trucking",
+          "mc_number": "MC-556789",
+          "fleet_size": 140,
+          "lanes_served": 6,
+          "weekly_loads": 20,
+          "annual_spend": "$1.6M",
+          "relationship_duration": "4 years",
+          "recent_otd": "91% (down from 95%)",
+          "recent_tender_acceptance": "78% (down from 92%)",
+          "distress_indicators": {
+            "insurance": "Changed underwriters twice in 6 months; current underwriter is a surplus lines carrier (not A-rated)",
+            "bond": "Surety bond reduced from $75K to $25K in January",
+            "driver_complaints": "7 complaints on Carrier411 about late driver settlements in last 60 days",
+            "key_personnel": "CFO departed 45 days ago; no replacement announced",
+            "accounts_payable": "Two of your invoices from 45+ days ago remain unpaid (unusual — they typically pay within 30)",
+            "fmcsa_safety": "No changes to safety rating or CSA scores"
+          },
+          "backup_carrier_readiness": {
+            "secondary_carriers_on_great_plains_lanes": 4,
+            "secondary_carrier_last_used": "3 of 4 used within 60 days",
+            "one_lane_with_no_backup": "Omaha to Minneapolis (sole carrier)"
+          }
+        }
+      },
+      "task": "Assess Great Plains' financial health risk level, design a graduated response plan, and outline your communication approach with the carrier.",
+      "evaluation_criteria": [
+        {
+          "criterion": "risk_assessment",
+          "weight": 0.30,
+          "rubric": {
+            "pass": "Scores this as HIGH concern based on 6+ indicators converging: insurance instability (surplus lines underwriter = major red flag), bond reduction (bonding company pulling back), driver pay complaints (cash flow problem), CFO departure without replacement (financial leadership gap), and declining service metrics (operational impact beginning). Notes that any 2-3 of these would be moderate concern; together they indicate a carrier in serious financial difficulty.",
+            "fail": "Treats the indicators as isolated events. Scores as low or moderate concern. Does not recognize the bond reduction and insurance instability as critical signals."
+          }
+        },
+        {
+          "criterion": "graduated_response",
+          "weight": 0.35,
+          "rubric": {
+            "pass": "Plans a graduated response: (1) Week 1: Reduce allocation from 20 to 12-14 loads/week (shift 6-8 loads to secondary carriers) without announcing the reason. Qualify a carrier for the Omaha-Minneapolis lane immediately. (2) Weeks 2-4: Monitor weekly for worsening indicators (insurance lapse, further bond reduction, more driver complaints). If stable, hold at reduced allocation. If deteriorating, reduce further to 8 loads/week. (3) Week 4: Schedule direct conversation with Great Plains ownership. (4) Have a 48-hour contingency plan ready if Great Plains goes dark suddenly.",
+            "fail": "Either overreacts (immediate full exit without transition) or underreacts (monitoring without reducing exposure). Does not address the Omaha-Minneapolis sole-carrier vulnerability."
+          }
+        },
+        {
+          "criterion": "communication_approach",
+          "weight": 0.20,
+          "rubric": {
+            "pass": "Recommends a private conversation with Great Plains' owner or CEO (not just the account manager). Frame as: 'We've noticed some changes and want to understand your situation. We value this partnership and want to plan together.' If the owner is transparent about challenges, offer to maintain a reduced but committed volume level. If evasive, accelerate the exit timeline.",
+            "fail": "Confronts the carrier aggressively about financial distress indicators. Sends a formal letter without a personal conversation. Does not attempt to understand the situation before reducing volume."
+          }
+        },
+        {
+          "criterion": "contingency_planning",
+          "weight": 0.15,
+          "rubric": {
+            "pass": "Prepares for a sudden carrier failure: pre-negotiated spot rates with 2-3 backup carriers, rate confirmations ready to execute for all 6 lanes, and internal operations team briefed on the contingency plan. Notes that if Great Plains fails, their drivers may be available for direct hire or through other carriers.",
+            "fail": "Has no plan for sudden failure. Assumes the graduated approach will prevent disruption."
+          }
+        }
+      ]
+    },
+    {
+      "id": "CRM-016",
+      "name": "Strategic carrier partnership proposal for growth",
+      "difficulty": "medium",
+      "category": "relationship-management",
+      "context": {
+        "situation": "Your company is expanding into the Southeast market, adding 3 new distribution centers over the next 18 months (Jacksonville, FL; Charlotte, NC; Birmingham, AL). This will add approximately 40-50 new FTL loads per week across 15+ new lanes. You want to identify one carrier to be your strategic partner for this expansion — a carrier who gets first access to the new lanes in exchange for competitive pricing, capacity commitment, and operational integration. You've shortlisted two candidates from your existing portfolio.",
+        "available_data": {
+          "expansion_details": {
+            "new_dcs": ["Jacksonville, FL", "Charlotte, NC", "Birmingham, AL"],
+            "timeline": "Jacksonville (6 months), Charlotte (12 months), Birmingham (18 months)",
+            "estimated_new_loads_per_week": "40-50 FTL",
+            "estimated_annual_new_spend": "$5.5-6.5M"
+          },
+          "candidate_1": {
+            "name": "Carolina Transport Group",
+            "type": "Asset carrier, 310 trucks",
+            "hq": "Raleigh, NC",
+            "current_spend_with_you": "$2.1M/year",
+            "current_lanes": 8,
+            "otd": "95.8%",
+            "tender_acceptance": "93%",
+            "rate_vs_dat": "within 4% of DAT on all lanes",
+            "southeast_coverage": "Strong in NC, SC, GA; limited in FL and AL",
+            "technology": "Full EDI, GPS tracking, driver app",
+            "account_manager_tenure": "3 years with your account"
+          },
+          "candidate_2": {
+            "name": "Suncoast Carriers",
+            "type": "Asset carrier, 180 trucks",
+            "hq": "Tampa, FL",
+            "current_spend_with_you": "$890K/year",
+            "current_lanes": 4,
+            "otd": "97.2%",
+            "tender_acceptance": "96%",
+            "rate_vs_dat": "within 2% of DAT on all lanes",
+            "southeast_coverage": "Strong in FL, AL, MS; limited in NC, SC",
+            "technology": "EDI 214 only, no GPS integration",
+            "account_manager_tenure": "1 year with your account"
+          }
+        }
+      },
+      "task": "Evaluate both candidates, recommend one as the strategic partner for the Southeast expansion, and outline the partnership terms you would propose.",
+      "evaluation_criteria": [
+        {
+          "criterion": "candidate_evaluation",
+          "weight": 0.30,
+          "rubric": {
+            "pass": "Evaluates both carriers across relevant dimensions: fleet size and coverage (Carolina has 310 trucks and covers NC/SC/GA but weak in FL/AL; Suncoast has 180 trucks and covers FL/AL but weak in NC/SC), service quality (Suncoast is marginally better: 97.2% vs 95.8% OTD), technology readiness (Carolina is significantly ahead), relationship maturity (Carolina's AM has 3 years vs Suncoast's 1 year), and pricing (Suncoast is closer to DAT). Notes that neither carrier alone covers the full expansion geography.",
+            "fail": "Evaluates on only 1-2 dimensions. Does not recognize the geographic coverage gap for either candidate. Relies solely on rate comparison."
+          }
+        },
+        {
+          "criterion": "recommendation_and_rationale",
+          "weight": 0.40,
+          "rubric": {
+            "pass": "Makes a defensible recommendation with clear rationale. A strong answer recommends Carolina Transport Group based on: larger fleet (can absorb 40-50 loads/week more easily), full technology integration (critical for scaling quickly), stronger existing relationship, and coverage of the Charlotte DC market (first to open). Plans to onboard Suncoast as the secondary partner specifically for Jacksonville and Birmingham where their coverage is stronger. Alternatively, recommending Suncoast is defensible if justified by superior service metrics and FL/AL coverage for the first and third DCs, with Carolina filling the Charlotte gap.",
+            "fail": "Recommends one carrier without acknowledging the geographic limitation. Does not plan for the coverage gap. Bases the decision entirely on rate or fleet size without considering the full picture."
+          }
+        },
+        {
+          "criterion": "partnership_terms",
+          "weight": 0.30,
+          "rubric": {
+            "pass": "Proposes structured partnership terms: (1) First-right-of-refusal on all new Southeast lanes within the partner's coverage area. (2) Volume ramp commitment (partner gets 60-70% of new lanes as they open). (3) Multi-year agreement (24 months) with pre-agreed rate structure for new lanes. (4) Technology integration requirements (API tracking, shared KPI dashboard). (5) Quarterly executive business reviews. (6) In exchange: competitive rates within 3-5% of DAT, 94%+ OTD commitment, 90%+ tender acceptance, dedicated account team.",
+            "fail": "Proposes vague 'partnership' without specific terms. Does not define what the partner gets (first access, volume) or what they owe (rates, service levels). No structured framework."
+          }
+        }
+      ]
+    },
+    {
+      "id": "CRM-017",
+      "name": "Hurricane response — carrier portfolio activation during regional disruption",
+      "difficulty": "hard",
+      "category": "portfolio-strategy",
+      "context": {
+        "situation": "Hurricane Marcus is forecast to make landfall on the Texas Gulf Coast near Corpus Christi in 48 hours. FMCSA has issued a pre-emptive emergency declaration for TX, LA, and OK. You're the transportation manager for a building materials distributor with 3 distribution centers in the affected region (Houston, San Antonio, Dallas). Your weekly volume through these DCs is 85 loads. Your routing guide for Texas lanes has 12 active carriers. Carriers are already beginning to pull drivers out of the Gulf Coast area. Tender rejections on Texas lanes hit 45% today (vs. normal 8%).",
+        "available_data": {
+          "hurricane_details": "Category 3, Corpus Christi landfall in 48 hours, projected path through San Antonio",
+          "affected_dcs": ["Houston (35 loads/week)", "San Antonio (25 loads/week)", "Dallas (25 loads/week)"],
+          "total_affected_loads": 85,
+          "current_tender_rejection_rate": "45%",
+          "normal_tender_rejection_rate": "8%",
+          "active_carriers_texas": 12,
+          "critical_customer_loads": [
+            {"customer": "Home Depot DC, Austin", "loads_this_week": 8, "penalty_for_non_delivery": "$5,000/load"},
+            {"customer": "Lowe's DC, Oklahoma City", "loads_this_week": 6, "penalty_for_non_delivery": "$3,500/load"},
+            {"customer": "Ferguson Enterprises, Dallas", "loads_this_week": 4, "penalty_for_non_delivery": "None, but strategic account ($2.8M annual)"}
+          ],
+          "spot_market_rates": "Texas origin rates up 85% over contract in last 24 hours",
+          "houston_dc_inventory_at_risk": "$4.2M in building materials if facility floods",
+          "san_antonio_dc": "In projected storm path — may need to suspend operations in 24 hours"
+        }
+      },
+      "task": "Develop a 48-hour carrier management response plan covering freight triage, carrier activation, customer communication, and post-storm recovery.",
+      "evaluation_criteria": [
+        {
+          "criterion": "freight_triage",
+          "weight": 0.30,
+          "rubric": {
+            "pass": "Triages the 85 loads into priority tiers: Tier 1 (must move in 24 hours): Houston DC evacuation loads ($4.2M inventory at risk), Home Depot Austin loads ($5K/load penalty). Tier 2 (move in 24-48 hours): Lowe's OKC loads, Ferguson Dallas loads. Tier 3 (defer until post-storm): non-penalty San Antonio originating loads. Calculates that Tier 1 represents roughly 20-25 loads that need immediate carrier commitment at premium rates.",
+            "fail": "Tries to move all 85 loads simultaneously. Does not prioritize. Does not identify the Houston DC evacuation as the highest priority. Treats all customers equally regardless of penalty exposure."
+          }
+        },
+        {
+          "criterion": "carrier_activation",
+          "weight": 0.30,
+          "rubric": {
+            "pass": "Recommends: (1) Contact your top 3 carriers directly (not through TMS auto-tender) with multi-load commitments at negotiated premium rates (target: contract + 30-40%, not the spot market's 85%). (2) Activate Dallas-based carriers first — Dallas is outside the projected storm path and has available capacity. (3) For Houston evacuation: engage a dedicated fleet (not spot loads) to systematically empty the DC over 24-36 hours. (4) Do not post loads to open spot boards — quality carriers are already committed; board-sourced trucks during a hurricane are higher risk.",
+            "fail": "Relies on spot market load boards. Does not prioritize direct carrier engagement. Pays full panic spot rates without negotiating multi-load discounts. Does not distinguish between Dallas (safe) and Houston/San Antonio (at risk) operations."
+          }
+        },
+        {
+          "criterion": "customer_management",
+          "weight": 0.20,
+          "rubric": {
+            "pass": "Communicates proactively to all three critical customers within 12 hours: (1) Home Depot: 'We're prioritizing your Austin loads and have dedicated capacity secured.' (2) Lowe's: 'Your OKC loads may experience 24-48 hour delays depending on storm track. We'll update you daily.' (3) Ferguson: 'Your Dallas loads are on schedule — Dallas operations are unaffected.' Does not over-promise. Sets realistic expectations by customer tier.",
+            "fail": "No customer communication plan. Waits for customers to call and ask. Gives identical messaging to all three customers despite different risk profiles."
+          }
+        },
+        {
+          "criterion": "post_storm_planning",
+          "weight": 0.20,
+          "rubric": {
+            "pass": "Plans for post-storm recovery (days 3-14): (1) Expect carrier rates to remain elevated for 7-10 days after landfall. (2) San Antonio DC may need 48-72 hours to resume operations — stage loads for delayed delivery. (3) Track which carriers provided capacity during the crisis for preferential treatment in next RFP cycle. (4) Document all incremental freight costs for insurance claim and management reporting. (5) Conduct a post-event carrier review within 30 days.",
+            "fail": "Focuses only on the immediate 48-hour window. No plan for recovery operations. Does not track carrier behavior during the event for future relationship decisions."
+          }
+        }
+      ]
+    },
+    {
+      "id": "CRM-018",
+      "name": "Volume loss renegotiation — proactive carrier communication strategy",
+      "difficulty": "hard",
+      "category": "rate-negotiation",
+      "context": {
+        "situation": "Your company lost a major retail customer (Target) 30 days ago due to a product recall unrelated to logistics. This customer represented 28% of your outbound freight volume. Your carrier contracts were negotiated 7 months ago based on volume that included Target's freight. Weekly loads have dropped from 320 to 230. Your top 5 carriers (accounting for 75% of spend) priced their rates based on the 320-load projection. Some carriers have volume-tier pricing that you're no longer qualifying for. Two carriers have already asked informally about the volume decline. The other three haven't noticed yet (their volume hasn't changed because their lanes didn't serve Target).",
+        "available_data": {
+          "volume_before": "320 loads/week",
+          "volume_after": "230 loads/week",
+          "volume_decline": "28%",
+          "annual_spend_before": "$38M",
+          "annual_spend_after": "~$27.4M (estimated)",
+          "top_5_carriers": [
+            {"name": "Heritage Freight", "share": "22%", "spend": "$8.4M→$6.0M", "volume_impact": "lost 35% of their loads", "tier_pricing": "yes, currently below Tier 2 threshold", "has_asked": true},
+            {"name": "Gateway Express", "share": "18%", "spend": "$6.8M→$5.2M", "volume_impact": "lost 20% of their loads", "tier_pricing": "no", "has_asked": true},
+            {"name": "Mountain Line", "share": "15%", "spend": "$5.7M→$5.7M", "volume_impact": "none (lanes unaffected)", "tier_pricing": "no", "has_asked": false},
+            {"name": "Frontier Carriers", "share": "12%", "spend": "$4.6M→$3.3M", "volume_impact": "lost 30% of their loads", "tier_pricing": "yes, still within Tier 1", "has_asked": false},
+            {"name": "Ridgeview Transport", "share": "8%", "spend": "$3.0M→$2.5M", "volume_impact": "lost 18% of their loads", "tier_pricing": "no", "has_asked": false}
+          ],
+          "contract_volume_commitment_clause": "Section 5.1: Rates based on estimated annual volume of 16,640 loads. Volume shortfall >20% triggers rate reopener at carrier's option.",
+          "market_conditions": "Neutral — OTRI at 7%, spot approximately equal to contract"
+        }
+      },
+      "task": "Develop a carrier-by-carrier communication and renegotiation strategy that addresses the volume loss proactively, manages contract exposure, and preserves carrier relationships.",
+      "evaluation_criteria": [
+        {
+          "criterion": "proactive_communication",
+          "weight": 0.30,
+          "rubric": {
+            "pass": "Recommends contacting all 5 carriers proactively within the next 2 weeks — not waiting for them to discover the shortfall. Sequences conversations: start with Heritage and Gateway (who've already asked), then Frontier and Ridgeview (affected but haven't asked), then Mountain Line (unaffected, brief heads-up). Prepares a lane-by-lane volume impact analysis for each carrier before the call. Emphasizes transparency: 'We lost a major customer. Here's what it means for your lanes with us.'",
+            "fail": "Waits for carriers to ask. Sends a mass email rather than individual conversations. Does not prepare carrier-specific volume impact data."
+          }
+        },
+        {
+          "criterion": "renegotiation_strategy",
+          "weight": 0.35,
+          "rubric": {
+            "pass": "Differentiates strategy by carrier: (1) Heritage: most affected, has tier pricing exposure — proactively offer a rate adjustment to reflect the new volume tier (3-5% increase on affected lanes) paired with a commitment to maintain or increase Heritage's percentage share of remaining freight. (2) Gateway: moderately affected — offer transparency and a commitment to stable volume on unaffected lanes. (3) Mountain Line: unaffected — brief notification only, reinforce the relationship. (4) Frontier: affected but still in Tier 1 — no rate adjustment needed yet but commit to honest forecasting. (5) Ridgeview: minor impact — similar to Frontier. Notes that the Section 5.1 reopener gives carriers the right to request rate adjustments — better to offer proactively than have it demanded.",
+            "fail": "Applies the same strategy to all carriers regardless of impact. Does not address the tier pricing exposure. Tries to avoid rate increases entirely despite the contractual reopener clause."
+          }
+        },
+        {
+          "criterion": "portfolio_optimization",
+          "weight": 0.20,
+          "rubric": {
+            "pass": "Uses the volume loss as an opportunity to optimize the portfolio: consolidate from 5 to 3-4 primary carriers on remaining lanes, giving each carrier more meaningful volume. Offer top performers a larger share of the smaller pie in exchange for rate stability. This is more valuable to carriers than maintaining a fragmented portfolio where everyone's volume drops.",
+            "fail": "Maintains the existing portfolio structure without adjusting for the lower volume. Does not consolidate. Misses the opportunity to strengthen key relationships through concentration."
+          }
+        },
+        {
+          "criterion": "contract_management",
+          "weight": 0.15,
+          "rubric": {
+            "pass": "Addresses the Section 5.1 volume commitment clause proactively: acknowledges the >20% shortfall triggers the reopener, proposes amended volume commitments reflecting the new reality. Recommends extending contract terms (from 12 to 18 months) in exchange for carriers accepting modest rate adjustments rather than full market repricing. Gets ahead of the contractual exposure before carriers invoke it.",
+            "fail": "Ignores the contractual volume commitment clause. Hopes carriers won't notice or exercise the reopener. Does not propose contract amendments."
+          }
+        }
+      ]
+    },
+    {
+      "id": "CRM-019",
+      "name": "Mega-carrier acquisition impact — protecting service on critical lanes",
+      "difficulty": "hard",
+      "category": "relationship-management",
+      "context": {
+        "situation": "Valley Express (MC-382100), your highest-performing regional carrier (97% OTD, 95% tender acceptance, 6 lanes, 15 loads/week, $1.9M annual spend), has been acquired by Continental FreightWays (MC-110500), a 6,000-truck national carrier. The acquisition closes in 45 days. Continental's network average OTD is 90.5%. Valley Express's dedicated account manager, Tom, has informed you privately that his position is being eliminated during integration and that Continental plans to consolidate Valley Express's dispatch into their Kansas City operations center. Your most critical lane through Valley Express is a temperature-controlled pharmaceutical delivery from your Louisville plant to a hospital network in St. Louis — 4 loads/week with a $35,000 per-occurrence penalty for late or temperature-compromised deliveries.",
+        "available_data": {
+          "acquired_carrier": "Valley Express (MC-382100)",
+          "acquiring_carrier": "Continental FreightWays (MC-110500)",
+          "valley_express_fleet": "65 trucks",
+          "continental_fleet": "6,000 trucks",
+          "valley_express_otd": "97%",
+          "continental_otd": "90.5%",
+          "your_spend_with_valley": "$1.9M/year",
+          "lanes_served": 6,
+          "weekly_loads": 15,
+          "critical_lane": "Louisville, KY to St. Louis, MO (pharma, temp-controlled, 4/week)",
+          "pharma_penalty": "$35,000/occurrence for late or temp-compromised delivery",
+          "pharma_annual_value": "$8.2M to hospital network",
+          "acquisition_close": "45 days",
+          "continental_integration_plan": "Absorb Valley Express MC into Continental, centralize dispatch to Kansas City, standardize rates",
+          "tom_status": "Position eliminated, last day = close date + 30",
+          "backup_carriers_on_valley_lanes": "Secondary carriers exist on 4 of 6 lanes; pharma lane has NO backup (Valley is sole carrier)"
+        }
+      },
+      "task": "Develop a pre-close strategy to protect your freight during and after the acquisition, with specific focus on the pharmaceutical lane.",
+      "evaluation_criteria": [
+        {
+          "criterion": "pharma_lane_protection",
+          "weight": 0.35,
+          "rubric": {
+            "pass": "Identifies the pharma lane as the critical vulnerability: no backup carrier, $35K/occurrence penalty, and the acquiring carrier's 90.5% OTD would generate 2-3 penalty events per month. Recommends immediately (before close) qualifying a pharma-specialized carrier for the Louisville-St. Louis lane. This cannot wait for the acquisition to prove problematic — a temp-controlled pharma lane with no backup is unacceptable. Also recommends requiring Continental to provide a written service guarantee for this lane specifically, including temperature compliance and OTD commitments, as a condition of continuing volume post-close.",
+            "fail": "Does not prioritize the pharma lane. Treats all 6 lanes equally. Waits to see how Continental performs before qualifying a backup. Does not recognize the $35K penalty exposure as an acute risk."
+          }
+        },
+        {
+          "criterion": "pre_close_actions",
+          "weight": 0.30,
+          "rubric": {
+            "pass": "Recommends: (1) Meet with Continental's sales team within 2 weeks to understand their integration plan and negotiate service guarantees. (2) Secure a written commitment from Continental: 95%+ OTD on your lanes, named account manager assigned, and a 90-day performance review. (3) Qualify backup carriers for the 2 lanes (including pharma) with no current backup — before close. (4) Maintain Tom as a consultant or contact — his knowledge of your operations is irreplaceable during transition. (5) Lock your current contract rates with Continental for 12 months post-close (prevent 'rate standardization' increases).",
+            "fail": "Takes a wait-and-see approach. Does not engage Continental pre-close. Does not lock contract terms. Does not address the account manager transition."
+          }
+        },
+        {
+          "criterion": "post_close_monitoring",
+          "weight": 0.20,
+          "rubric": {
+            "pass": "Plans a rigorous 90-day post-close monitoring period: weekly OTD and tender acceptance tracking by lane, temperature compliance monitoring on pharma loads (every load, not sampling), escalation triggers (if OTD drops below 93% on any lane or any pharma load has a temp excursion, immediately shift 50% of that lane to backup). Sets a 90-day decision point: if Continental meets the service guarantee, maintain full allocation; if not, redistribute.",
+            "fail": "No structured monitoring plan. Assumes the transition will be smooth. Does not define specific triggers for volume reallocation."
+          }
+        },
+        {
+          "criterion": "long_term_positioning",
+          "weight": 0.15,
+          "rubric": {
+            "pass": "Acknowledges that carrier acquisitions typically degrade service for 6-18 months during integration. Plans for a long transition period, not just 90 days. Considers whether to proactively reduce Continental's allocation across all lanes to manage concentration risk (a 6,000-truck carrier with your volume is a different relationship than a 65-truck carrier). Notes that Continental's centralized dispatch model may lose the regional knowledge that made Valley Express effective.",
+            "fail": "Assumes the integration will be complete and stable within 90 days. Does not consider the fundamental difference between regional and national carrier relationships."
+          }
+        }
+      ]
+    },
+    {
+      "id": "CRM-020",
+      "name": "Detention cost crisis — operational root cause vs. carrier billing dispute",
+      "difficulty": "hard",
+      "category": "contract-management",
+      "context": {
+        "situation": "Your CFO has escalated a problem: detention charges from your carrier base have increased from $22K/month to $94K/month over the last 9 months. Annualized, that's $1.13M — up from $264K. Your total freight spend is $24M, so detention is now 4.7% of total freight (industry average: 1.5-2%). Two carriers have explicitly told your procurement team that they're considering exiting your routing guide because their drivers 'can't make money sitting at your docks.' The CEO of a third carrier called your VP of Supply Chain directly to complain.",
+        "available_data": {
+          "total_annual_freight_spend": "$24M",
+          "detention_current_monthly": "$94K",
+          "detention_9_months_ago": "$22K",
+          "detention_annualized": "$1.13M",
+          "detention_as_pct_of_spend": "4.7%",
+          "industry_average": "1.5-2%",
+          "facilities": [
+            {"name": "Chicago DC", "detention_share": "42%", "avg_dwell_hours": 4.2, "dock_doors": 12, "daily_loads": 28, "staffing_change": "Reduced dock staff by 30% in cost-cutting 6 months ago"},
+            {"name": "Atlanta Plant", "detention_share": "31%", "avg_dwell_hours": 3.8, "dock_doors": 8, "daily_loads": 18, "staffing_change": "New dock scheduling system implemented 4 months ago (buggy)"},
+            {"name": "Dallas DC", "detention_share": "27%", "avg_dwell_hours": 2.9, "dock_doors": 10, "daily_loads": 22, "staffing_change": "No changes"}
+          ],
+          "carrier_threats": [
+            {"carrier": "Midwest Express", "spend": "$3.2M/year", "detention_billed": "$18K/month", "message": "Drivers losing money on your Chicago loads, considering exit"},
+            {"carrier": "Southern Freight", "spend": "$2.8M/year", "detention_billed": "$12K/month", "message": "CEO called VP Supply Chain directly to complain about Atlanta wait times"}
+          ],
+          "contract_detention_terms": "$75/hr after 2 hours free time",
+          "carrier_audit_sample": "50 detention invoices audited — 78% match facility records, 22% have discrepancies (mostly rounding up or counting early arrival time)"
+        }
+      },
+      "task": "Develop a comprehensive plan to reduce detention costs back to industry-average levels, address the carrier relationship crisis, and fix the operational root causes.",
+      "evaluation_criteria": [
+        {
+          "criterion": "root_cause_analysis",
+          "weight": 0.30,
+          "rubric": {
+            "pass": "Identifies the root causes by facility: (1) Chicago DC: 30% dock staff reduction directly caused the detention spike — 28 daily loads through 12 doors with reduced staff means drivers wait. This is a self-inflicted cost-cutting failure where reducing dock labor by ~$150K/year generated $475K/year in detention charges. (2) Atlanta Plant: new scheduling system is malfunctioning, causing appointment confusion and dock congestion. (3) Dallas DC: relatively stable, detention is within manageable range. Correctly concludes that 73% of the problem (Chicago + Atlanta) is operational, not carrier-caused.",
+            "fail": "Blames carriers for excessive billing without investigating facility operations. Treats detention as a billing issue rather than an operational issue. Does not connect the Chicago staffing reduction to the detention increase."
+          }
+        },
+        {
+          "criterion": "operational_fix",
+          "weight": 0.30,
+          "rubric": {
+            "pass": "Recommends: (1) Chicago DC: restore dock staffing immediately — the $150K savings was illusory given $475K in detention. If headcount cap prevents full restoration, implement a drop-trailer program for the highest-volume carriers (eliminates live-load detention entirely). (2) Atlanta: fix or replace the scheduling system — escalate to IT as a P1 issue with a 30-day resolution deadline. In the interim, revert to manual scheduling. (3) All facilities: implement dwell time as a facility KPI with the DC manager accountable (target <2.5 hours average dwell). Projects that operational fixes alone will reduce detention by 60-70%.",
+            "fail": "Tries to solve the problem through carrier rate negotiation alone. Does not address the Chicago staffing issue. Does not escalate the Atlanta scheduling system failure."
+          }
+        },
+        {
+          "criterion": "carrier_relationship_repair",
+          "weight": 0.25,
+          "rubric": {
+            "pass": "Addresses the carrier crisis directly: (1) Call Midwest Express and Southern Freight's leadership personally (not via email). Acknowledge the problem: 'You're right — our dock operations have been unacceptable, and here's what we're doing about it.' Share the specific operational fixes and timeline. (2) Propose a detention reconciliation: pay the legitimate 78% of outstanding detention in full within 15 days (demonstrating good faith), dispute the 22% with discrepancies. (3) For the most impacted carriers, offer a short-term concession: 3 hours free time instead of 2 until the operational fixes are implemented (costs you less than losing the carriers).",
+            "fail": "Disputes all detention charges. Does not acknowledge the operational root cause to carriers. Allows carriers to exit rather than addressing the problem."
+          }
+        },
+        {
+          "criterion": "financial_framing",
+          "weight": 0.15,
+          "rubric": {
+            "pass": "Presents the full cost picture to the CFO and CEO: the $150K dock staff savings generated $870K in incremental detention, plus the risk of losing $6M in carrier relationships (Midwest Express + Southern Freight). The net cost of the 'savings' is negative $720K+. Frames the operational fixes as an investment with clear ROI: restoring dock staff ($150K) + fixing the scheduling system ($50-100K) = $200-250K to eliminate $700K+ in annual detention.",
+            "fail": "Does not frame the problem as a self-inflicted cost-shifting exercise. Does not calculate the ROI of operational fixes. Does not address the CFO's concern with data."
+          }
+        }
+      ]
+    },
+    {
+      "id": "CRM-021",
+      "name": "Complex multi-carrier RFP award with market cycle timing decision",
+      "difficulty": "hard",
+      "category": "rfp-process",
+      "context": {
+        "situation": "You're ready to award your annual freight RFP — the largest procurement event in your transportation budget ($28M annual spend across 45 lanes). The RFP has been in process for 10 weeks. You have bids from 18 carriers. But the market has shifted significantly since you launched the RFP: when you started (10 weeks ago), OTRI was 5% and spot rates were 8% below contract. Now, OTRI is 11% and spot rates are 5% above contract. Several carrier bids were submitted during the soft market and may not be sustainable if the market continues tightening. Your procurement director wants to award now and lock in the favorable rates. Your VP of Operations warns that carriers who bid too low will reject tenders within 90 days.",
+        "available_data": {
+          "annual_spend": "$28M",
+          "lanes_in_rfp": 45,
+          "carriers_bidding": 18,
+          "rfp_launch_market": {"otri": "5%", "spot_vs_contract": "-8%", "market_phase": "shipper-favorable"},
+          "current_market": {"otri": "11%", "spot_vs_contract": "+5%", "market_phase": "transitioning to carrier-favorable"},
+          "market_shift": "13 percentage points on spot-contract spread in 10 weeks",
+          "bid_analysis": {
+            "bids_below_current_dat": "22 out of 45 lanes have at least one bid below current DAT contract benchmark",
+            "bids_5pct_or_more_below_dat": "9 lanes have winning bids >5% below current DAT",
+            "average_savings_vs_incumbent": "7.2% if all bids awarded as submitted"
+          },
+          "procurement_director_position": "Award now, lock in 7.2% savings, contract period 12 months",
+          "vp_operations_concern": "Carriers bid in a soft market — rates won't hold. We'll see 30%+ tender rejections within 90 days on the below-DAT lanes"
+        }
+      },
+      "task": "Develop an RFP award strategy that balances the rate opportunity against the market cycle risk, addressing both the procurement director's and VP Operations' concerns.",
+      "evaluation_criteria": [
+        {
+          "criterion": "market_cycle_analysis",
+          "weight": 0.25,
+          "rubric": {
+            "pass": "Acknowledges both positions are valid: the procurement director is right that locking rates now captures savings, and the VP Operations is right that below-market rates won't hold in a tightening market. Identifies the 9 lanes with bids >5% below current DAT as the highest risk — these rates were competitive when OTRI was 5% but may be unsustainable at OTRI 11%. Notes that the 13-point swing in 10 weeks suggests the market is moving fast.",
+            "fail": "Sides entirely with one executive without addressing the other's concern. Does not segment the 45 lanes by market risk. Treats all bids as equally sustainable."
+          }
+        },
+        {
+          "criterion": "segmented_award_strategy",
+          "weight": 0.40,
+          "rubric": {
+            "pass": "Proposes a segmented approach: (1) Award the 36 lanes with bids within ±5% of DAT as-is — these are market-competitive rates that will hold. (2) For the 9 lanes with bids >5% below DAT, take one of two approaches: (a) Award at the bid price but include a market-based reopener clause (if DAT moves >15% from the awarded rate for 60 days, rate adjusts) — this protects you if the market softens further while giving the carrier a release valve if it tightens. Or (b) Negotiate the winning bids on these 9 lanes up by 3-5% (to within DAT range) in exchange for a firm 18-month term with no reopener. This approach locks sustainable rates longer. (3) Present a realistic savings projection: 5-6% blended (after adjustment) rather than the 7.2% if-all-awarded figure.",
+            "fail": "Awards all 45 lanes at submitted bid prices without segmentation. Ignores the market risk on below-DAT lanes. Or conversely, refuses to award any lanes until the market stabilizes (losing the entire RFP investment)."
+          }
+        },
+        {
+          "criterion": "stakeholder_management",
+          "weight": 0.20,
+          "rubric": {
+            "pass": "Frames the solution to satisfy both stakeholders: tells the procurement director 'we're locking in 5-6% savings now, with structural protections that prevent the savings from evaporating in 90 days.' Tells the VP Operations: 'we've identified and mitigated the 9 at-risk lanes with market-aligned adjustments or reopener clauses.' Presents a unified recommendation rather than choosing sides.",
+            "fail": "Does not address both stakeholders' concerns. Presents the solution as a compromise rather than a strategy. Leaves one executive feeling overruled."
+          }
+        },
+        {
+          "criterion": "implementation_planning",
+          "weight": 0.15,
+          "rubric": {
+            "pass": "Plans for a 90-day validation period after award: monitor tender acceptance weekly on all awarded lanes with a trigger (any lane falling below 80% acceptance for 2 consecutive weeks gets a rate review). Keeps losing RFP bidders 'warm' as backups — do not burn bridges with carriers who were second-place on competitive lanes. Schedules a 90-day post-award review with both executives.",
+            "fail": "No post-award monitoring plan. Treats the award as the end of the process rather than the beginning. Does not retain runner-up bidders as alternatives."
+          }
+        }
+      ]
+    },
+    {
+      "id": "CRM-022",
+      "name": "Multi-dimensional carrier exit decision with service, compliance, and relationship factors",
+      "difficulty": "hard",
+      "category": "relationship-management",
+      "context": {
+        "situation": "You're facing a complex carrier exit decision with Pacific Rim Logistics (MC-445567), a mid-size broker who handles 12 loads/week across 5 lanes ($1.4M annual spend). The situation involves overlapping concerns: (1) Service: their OTD has declined from 92% to 84% over 6 months despite a 60-day corrective action plan that expired 2 weeks ago without improvement. (2) Compliance: your quarterly FMCSA audit found that 2 of Pacific Rim's underlying carriers had lapsed insurance certificates for 5-15 days during active hauling periods — Pacific Rim claims they were aware and the carriers provided updated certificates retroactively. (3) Relationship: Pacific Rim's owner, Dave Chen, has been in the industry for 30 years and is well-connected. He sits on the board of the regional Transportation Intermediaries Association chapter. An adversarial exit could damage your reputation in the carrier community. (4) Financial: Pacific Rim's rates are 6% below your DAT benchmark — they're cheap. Replacing them with alternative carriers will likely increase your cost on these 5 lanes by $85K-$100K annually.",
+        "available_data": {
+          "carrier": "Pacific Rim Logistics (broker)",
+          "mc_number": "MC-445567",
+          "weekly_loads": 12,
+          "lanes_served": 5,
+          "annual_spend": "$1.4M",
+          "otd_6_months_ago": "92%",
+          "otd_current": "84%",
+          "corrective_action_plan": "Issued 75 days ago, expired 2 weeks ago, targets not met (OTD target was 90% at 60 days, achieved 84%)",
+          "compliance_finding": "2 underlying carriers had 5-15 day insurance lapses during active hauling periods",
+          "pacific_rim_response": "Certificates were updated retroactively; no loads were hauled during actual lapsed periods (Pacific Rim's claim, unverified)",
+          "owner_profile": "Dave Chen, 30-year industry veteran, TIA board member, well-connected",
+          "rate_vs_dat": "6% below DAT benchmark",
+          "replacement_cost_increase": "$85K-$100K annually",
+          "alternative_carriers_qualified": "2 carriers qualified for 3 of 5 lanes; 2 lanes have no qualified alternative"
+        }
+      },
+      "task": "Make the exit or continue decision, design the implementation plan, and craft the communication strategy considering all four dimensions (service, compliance, relationship, financial).",
+      "evaluation_criteria": [
+        {
+          "criterion": "decision_framework",
+          "weight": 0.30,
+          "rubric": {
+            "pass": "Recommends a managed exit based on the convergence of service failure (CAP expired without improvement) AND compliance concerns (insurance lapses on underlying carriers). Either issue alone might warrant continued corrective action; together, they indicate a broker who lacks operational control. Notes that the below-market rate (6% below DAT) may explain how Pacific Rim maintains cost competitiveness — by using substandard carriers with compliance gaps. The $85K-$100K cost increase is the price of proper compliance and service quality.",
+            "fail": "Continues with Pacific Rim because of the cost advantage or the relationship risk. Or terminates immediately without the managed transition. Does not connect the below-market pricing to the compliance concerns."
+          }
+        },
+        {
+          "criterion": "transition_plan",
+          "weight": 0.25,
+          "rubric": {
+            "pass": "Plans a 60-day managed exit: (1) Weeks 1-2: Qualify carriers for the 2 lanes with no current alternative. (2) Weeks 3-4: Reduce Pacific Rim's allocation by 50% (shift 6 loads/week to alternatives). (3) Weeks 5-8: Complete transition, final loads with Pacific Rim. (4) Address the financial impact: $85K-$100K annual increase should be presented to leadership as a compliance and service investment, not a cost increase.",
+            "fail": "No phased transition plan. Does not address the 2 lanes without alternatives. Exits immediately without replacement capacity."
+          }
+        },
+        {
+          "criterion": "communication_strategy",
+          "weight": 0.30,
+          "rubric": {
+            "pass": "Crafts the exit communication carefully given Dave Chen's industry connections: (1) Delivers the message in a personal meeting or phone call (not email). (2) Frames around the facts: CAP targets were not met, and the insurance compliance findings created unacceptable risk. (3) Does not make it personal or adversarial. (4) Leaves the door open: 'If Pacific Rim addresses these issues, we welcome your participation in our next annual RFP.' (5) Settles all outstanding invoices and claims cleanly. A professional exit preserves both parties' reputations.",
+            "fail": "Sends a form letter. Makes the exit adversarial. Burns the bridge with a well-connected industry figure. Or, conversely, is so concerned about the relationship that they don't exit despite service and compliance failures."
+          }
+        },
+        {
+          "criterion": "systemic_improvements",
+          "weight": 0.15,
+          "rubric": {
+            "pass": "Uses this experience to improve broker management processes: (1) Implement quarterly insurance verification for all broker underlying carriers (not just the broker's own insurance). (2) Add a contract clause requiring brokers to disclose underlying carriers and provide real-time insurance verification. (3) Establish a policy: any broker whose underlying carriers have insurance lapses receives an automatic probation regardless of service metrics.",
+            "fail": "Treats this as an isolated incident. Does not update processes or contract terms. Does not apply lessons learned to other broker relationships."
+          }
+        }
+      ]
+    }
+  ]
+}

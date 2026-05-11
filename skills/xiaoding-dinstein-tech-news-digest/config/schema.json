@@ -1,0 +1,175 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Tech Digest Configuration Schema",
+  "version": "2.5.0",
+  "definitions": {
+    "source": {
+      "type": "object",
+      "required": ["id", "type", "name", "enabled", "priority", "topics"],
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the source"
+        },
+        "type": {
+          "type": "string",
+          "enum": ["rss", "twitter", "web", "github", "reddit"],
+          "description": "Source type"
+        },
+        "name": {
+          "type": "string",
+          "description": "Human-readable source name"
+        },
+        "enabled": {
+          "type": "boolean",
+          "description": "Whether this source is active"
+        },
+        "priority": {
+          "type": "boolean", 
+          "description": "High-priority sources are fetched first and scored higher"
+        },
+        "topics": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Topic IDs this source contributes to"
+        },
+        "note": {
+          "type": "string",
+          "description": "Optional description or note"
+        },
+        "url": {
+          "type": "string",
+          "format": "uri",
+          "description": "RSS feed URL (required for type=rss)"
+        },
+        "handle": {
+          "type": "string",
+          "description": "Twitter handle without @ (required for type=twitter)"
+        },
+        "repo": {
+          "type": "string",
+          "pattern": "^[a-zA-Z0-9._-]+/[a-zA-Z0-9._-]+$",
+          "description": "GitHub repository in owner/repo format (required for type=github)"
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": { "type": { "const": "rss" } }
+          },
+          "then": {
+            "required": ["url"]
+          }
+        },
+        {
+          "if": {
+            "properties": { "type": { "const": "twitter" } }
+          },
+          "then": {
+            "required": ["handle"]
+          }
+        },
+        {
+          "if": {
+            "properties": { "type": { "const": "github" } }
+          },
+          "then": {
+            "required": ["repo"]
+          }
+        }
+      ]
+    },
+    "topic": {
+      "type": "object",
+      "required": ["id", "emoji", "label", "description", "search", "display"],
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique topic identifier"
+        },
+        "emoji": {
+          "type": "string",
+          "description": "Topic emoji for display"
+        },
+        "label": {
+          "type": "string",
+          "description": "Topic display name"
+        },
+        "description": {
+          "type": "string",
+          "description": "Topic description"
+        },
+        "search": {
+          "type": "object",
+          "required": ["queries"],
+          "properties": {
+            "queries": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "description": "Search queries for web search"
+            },
+            "must_include": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "description": "Keywords that must be present"
+            },
+            "exclude": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "description": "Keywords to exclude"
+            }
+          }
+        },
+        "display": {
+          "type": "object",
+          "required": ["max_items"],
+          "properties": {
+            "max_items": {
+              "type": "integer",
+              "minimum": 1,
+              "description": "Maximum items to show for this topic"
+            },
+            "style": {
+              "type": "string",
+              "enum": ["compact", "detailed"],
+              "description": "Display style"
+            }
+          }
+        }
+      }
+    }
+  },
+  "type": "object",
+  "properties": {
+    "sources": {
+      "type": "object",
+      "properties": {
+        "sources": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/source"
+          }
+        }
+      }
+    },
+    "topics": {
+      "type": "object",
+      "properties": {
+        "topics": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/topic"
+          }
+        }
+      }
+    }
+  }
+}

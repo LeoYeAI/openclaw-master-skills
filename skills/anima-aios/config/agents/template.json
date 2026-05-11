@@ -1,0 +1,28 @@
+{
+  "_comment": "Agent 覆盖配置模板 - 只写与全局配置的差异",
+  "_version": "6.2.2",
+  "_description": "复制此文件为 {agent_name}.json，只修改需要覆盖的配置项",
+  
+  "llm": {
+    "_comment": "示例：使用特定 LLM 模型",
+    "provider": "bailian",
+    "models": {
+      "quality_assess": "qwen-max",
+      "dedup_analyze": "qwen-max",
+      "palace_classify": "qwen-plus"
+    }
+  },
+  
+  "weights": {
+    "_comment": "示例：调整五维权重（总和应为 1.0）",
+    "creation": 0.30,
+    "understanding": 0.15
+  },
+  
+  "pyramid": {
+    "_comment": "示例：启用自动提炼",
+    "auto_distill": true
+  },
+  
+  "team_mode": false
+}

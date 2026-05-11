@@ -1,0 +1,23 @@
+[project]
+name = "content-claw"
+version = "0.0.1"
+description = "Content generation engine for OpenClaw"
+requires-python = ">=3.11"
+license = "MIT-0"
+dependencies = [
+    "httpx>=0.27",
+    "pymupdf>=1.24",
+    "readabilipy>=0.2",
+    "playwright>=1.49",
+    "fal-client>=0.5",
+    "exa-py>=1.0",
+]
+
+[dependency-groups]
+dev = [
+    "pytest>=8.0",
+    "pyyaml>=6.0",
+]
+
+[project.scripts]
+extract = "scripts.extractors.extract:main"

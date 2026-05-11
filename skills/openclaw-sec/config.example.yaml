@@ -1,0 +1,80 @@
+# OpenClaw Security Suite Configuration
+# Copy this file to config.yaml and customize as needed
+
+openclaw_security:
+  # Global settings
+  enabled: true
+  sensitivity: medium  # paranoid, strict, medium, permissive
+  owner_ids: []
+
+  # Module-specific configuration
+  modules:
+    prompt_injection:
+      enabled: true
+      sensitivity: strict
+      languages: [en, ko, ja, zh]
+
+    command_validator:
+      enabled: true
+      sensitivity: strict
+      allow_dangerous_commands: false
+
+    url_validator:
+      enabled: true
+      block_private_ips: true
+      block_cloud_metadata: true
+
+    path_validator:
+      enabled: true
+      sensitivity: medium
+
+    secret_detector:
+      enabled: true
+      sensitivity: strict
+
+    content_scanner:
+      enabled: true
+      sensitivity: medium
+
+  # Action mapping - determines what happens for each severity level
+  actions:
+    SAFE: allow
+    LOW: log
+    MEDIUM: warn
+    HIGH: block
+    CRITICAL: block_notify
+
+  # Rate limiting configuration
+  rate_limit:
+    enabled: true
+    max_requests_per_minute: 30
+    lockout_threshold: 5
+
+  # Notification settings
+  notifications:
+    enabled: false
+    channels:
+      webhook:
+        enabled: false
+        url: ""
+      slack:
+        enabled: false
+        webhook_url: ""
+      discord:
+        enabled: false
+        webhook_url: ""
+    severity_threshold: HIGH
+
+  # Logging configuration
+  logging:
+    enabled: true
+    level: info  # debug, info, warn, error
+    file: ~/.openclaw/logs/security-events.log
+    rotation: daily  # daily, weekly, monthly
+    retention_days: 90
+
+  # Database configuration
+  database:
+    path: .openclaw-sec.db
+    analytics_enabled: true
+    retention_days: 365

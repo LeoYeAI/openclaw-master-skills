@@ -1,0 +1,40 @@
+{
+  "task": "날씨 앱 개발",
+  "subtasks": [
+    {
+      "description": "날씨 앱 요구사항 분석: 기능 정의, 사용자 시나리오, 기술 스택 선정",
+      "type": "analyst",
+      "expected_output": "요구사항 명세서",
+      "dependencies": [],
+      "mode": "spawn"
+    },
+    {
+      "description": "프론트엔드 UI 개발: React/HTML로 날씨 표시 화면 구현",
+      "type": "coder",
+      "expected_output": "프론트엔드 코드",
+      "dependencies": ["agent_00"],
+      "mode": "spawn"
+    },
+    {
+      "description": "백엔드 API 연동: 날씨 API 호출 및 데이터 처리 로직 구현",
+      "type": "coder",
+      "expected_output": "백엔드/API 코드",
+      "dependencies": ["agent_00"],
+      "mode": "spawn"
+    },
+    {
+      "description": "코드 리뷰: 프론트엔드/백엔드 코드 품질 검토 및 개선점 제안",
+      "type": "reviewer",
+      "expected_output": "코드 리뷰 리포트",
+      "dependencies": ["agent_01", "agent_02"],
+      "mode": "spawn"
+    },
+    {
+      "description": "통합 및 테스트: 프론트/백엔드 통합, 기능 테스트, 최종 검증",
+      "type": "integrator",
+      "expected_output": "완성된 앱 + 테스트 결과",
+      "dependencies": ["agent_03"],
+      "mode": "spawn"
+    }
+  ]
+}

@@ -1,0 +1,90 @@
+{
+  "version": "1.0",
+  "generated_at": null,
+  "gamp_category": null,
+  "requirements": [
+    {
+      "id": "URS-001",
+      "type": "URS",
+      "description": "用户必须能够登录系统 --type URS --priority 必须",
+      "priority": "必须",
+      "source_file": null,
+      "source_line": null,
+      "esig_required": false,
+      "esig_category": null,
+      "tags": [],
+      "created_at": "2026-03-18T22:21:32.459032",
+      "updated_at": "2026-03-18T22:21:32.459053",
+      "status": "draft",
+      "module": "business_func"
+    },
+    {
+      "id": "URS-002",
+      "type": "URS",
+      "description": "系统应支持电子签名功能 --type URS --priority 必须",
+      "priority": "必须",
+      "source_file": null,
+      "source_line": null,
+      "esig_required": true,
+      "esig_category": "document_signing",
+      "tags": [],
+      "created_at": "2026-03-18T22:21:36.505849",
+      "updated_at": "2026-03-18T22:21:36.505870",
+      "status": "draft",
+      "module": "business_func"
+    }
+  ],
+  "risks": [
+    {
+      "id": "RA-001",
+      "risk_description": "风险: 用户必须能够登录系统 --type URS --priority 必须",
+      "requirement_id": "URS-001",
+      "severity": 4,
+      "likelihood": 2,
+      "detectability": 3,
+      "rpn": 24,
+      "risk_level": "low",
+      "severity_level": "high",
+      "likelihood_level": "occasional",
+      "detectability_level": "moderate",
+      "mitigations": [
+        "制定缓解措施",
+        "实施缓解措施",
+        "验证措施有效性",
+        "监控残余风险"
+      ],
+      "status": "identified",
+      "residual_rpn": null,
+      "created_at": "2026-03-18T22:21:40.183580"
+    },
+    {
+      "id": "RA-001",
+      "risk_description": "风险: 系统应支持电子签名功能 --type URS --priority 必须",
+      "requirement_id": "URS-002",
+      "severity": 5,
+      "likelihood": 2,
+      "detectability": 3,
+      "rpn": 30,
+      "risk_level": "medium",
+      "severity_level": "critical",
+      "likelihood_level": "occasional",
+      "detectability_level": "moderate",
+      "mitigations": [
+        "实施电子签名验证",
+        "配置签名含义关联",
+        "启用签名审计追踪",
+        "验证签名唯一性"
+      ],
+      "status": "identified",
+      "residual_rpn": null,
+      "created_at": "2026-03-18T22:21:40.183609"
+    }
+  ],
+  "test_results": [],
+  "commit_links": [],
+  "metadata": {
+    "project": null,
+    "system": null,
+    "owner": null
+  }
+}

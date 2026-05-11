@@ -1,0 +1,908 @@
+{
+  "capability": "production-scheduling",
+  "version": "1.0.0",
+  "timestamp": "2026-02-25T07:13:18Z",
+  "model": "claude-sonnet-4-20250514",
+  "mode": "baseline",
+  "scenario_results": [
+    {
+      "scenario_id": "PSC-001",
+      "scenario_name": "Basic job priority sequencing with EDD rule",
+      "difficulty": "easy",
+      "category": "job-sequencing",
+      "criteria_results": [
+        {
+          "criterion": "dispatching_rule_selection",
+          "weight": 0.3,
+          "rating": "partial",
+          "score": 0.5,
+          "reasoning": "The agent uses a multi-criteria approach that includes due date urgency as the primary factor, which aligns with EDD logic. However, it doesn't explicitly state 'EDD' as the dispatching rule and adds unnecessary complexity with 'priority scores' and processing time considerations that muddy the clear EDD approach. The agent correctly identifies WO-3302 and WO-3304 as most urgent (both due 9/17) and uses customer tier as a tiebreaker, but the presentation lacks the clarity of a straightforward EDD implementation."
+        },
+        {
+          "criterion": "capacity_calculation",
+          "weight": 0.3,
+          "rating": "fail",
+          "score": 0.0,
+          "reasoning": "The agent makes a critical arithmetic error. It calculates changeover time as '5 jobs × 20 minutes = 100 minutes = 1.67 hours' when there are only 4 changeovers needed (between 5 jobs). The correct calculation should be 4 × 20 minutes = 80 minutes = 1.33 hours. This leads to an incorrect total time of 12.17 hours instead of the correct 11.83 hours. Additionally, the final day shift schedule shows 7.49 hours but doesn't clearly account for all changeovers in the detailed breakdown."
+        },
+        {
+          "criterion": "sequence_logic",
+          "weight": 0.25,
+          "rating": "pass",
+          "score": 1.0,
+          "reasoning": "The agent correctly sequences the due-9/17 jobs first (WO-3304 and WO-3302), followed by due-9/18 jobs, and defers the due-9/19 job (WO-3303) to evening shift. The logic properly prioritizes by due date and uses customer tier as a secondary consideration. The agent identifies that approximately 3 jobs can fit in the day shift and clearly specifies which jobs defer to evening shift."
+        },
+        {
+          "criterion": "practical_judgment",
+          "weight": 0.15,
+          "rating": "pass",
+          "score": 1.0,
+          "reasoning": "The agent demonstrates good practical judgment by noting that WO-3303 (Summit Drivetrain, Tier-1 customer) has the latest due date and can safely defer to evening shift while still receiving priority there. The response addresses what happens to deferred jobs, confirms evening shift has adequate capacity (4.66 hours), and provides a slight buffer (0.51 hours) for potential delays. The agent also mentions maintaining customer relationships and risk mitigation."
+        }
+      ],
+      "weighted_score": 0.55,
+      "agent_response": "# Production Schedule Analysis - Day Shift\n\n## Initial Assessment\n\nLet me first calculate the total time requirements:\n\n**Processing Times:**\n- Total processing time: 10.5 hours (2.0 + 3.5 + 1.5 + 1.0 + 2.5)\n- Changeover time: 5 jobs × 20 minutes = 100 minutes = 1.67 hours\n- **Total time needed: 12.17 hours**\n- **Available time (day shift): 8.0 hours**\n\n**Conclusion:** Not all jobs can fit in the day shift. We need to prioritize and defer some jobs.\n\n## Prioritization Logic\n\nI'll use a multi-criteria approach considering:\n1. **Due date urgency** (days from today)\n2. **Customer tier** (Tier 1 = highest priority)\n3. **Processing time** (shorter jobs for better throughput)\n\n### Job Analysis:\n\n| WO | Product | Hours | Due Date | Days Out | Customer Tier | Priority Score |\n|---|---|---|---|---|---|---|\n| WO-3304 | Pump Cover PC-80 | 1.0 | 2025-09-17 | 1 | 3 | **HIGH** |\n| WO-3302 | Valve Body VB-220 | 3.5 | 2025-09-17 | 1 | 3 | **HIGH** |\n| WO-3301 | Shaft Assembly SA-100 | 2.0 | 2025-09-18 | 2 | 2 | **MEDIUM** |\n| WO-3305 | Bearing Cap BC-12 | 2.5 | 2025-09-18 | 2 | 2 | **MEDIUM** |\n| WO-3303 | Gear Housing GH-55 | 1.5 | 2025-09-19 | 3 | 1 | **MEDIUM-LOW** |\n\n## Optimal Day Shift Sequence\n\n**Priority Ranking:**\n1. **WO-3304** (Pump Cover) - Due tomorrow, shortest job\n2. **WO-3302** (Valve Body) - Due tomorrow, critical\n3. **WO-3301** (Shaft Assembly) - Due day after, reasonable size\n4. **WO-3303** (Gear Housing) - Tier 1 customer (Summit Drivetrain)\n\n## Day Shift Schedule:\n\n| Sequence | Job | Product | Process Time | Changeover | Total Time | Cumulative |\n|---|---|---|---|---|---|---|\n| 1 | WO-3304 | Pump Cover PC-80 | 1.0 hrs | 0.33 hrs | 1.33 hrs | 1.33 hrs |\n| 2 | WO-3302 | Valve Body VB-220 | 3.5 hrs | 0.33 hrs | 3.83 hrs | 5.16 hrs |\n| 3 | WO-3301 | Shaft Assembly SA-100 | 2.0 hrs | 0.33 hrs | 2.33 hrs | 7.49 hrs |\n\n**Total day shift time: 7.49 hours** ✅ (fits within 8-hour shift)\n\n## Deferred to Evening Shift:\n\n- **WO-3305** (Bearing Cap BC-12) - 2.5 + 0.33 = 2.83 hours\n- **WO-3303** (Gear Housing GH-55) - 1.5 + 0.33 = 1.83 hours\n\n**Evening shift total: 4.66 hours** (well within evening shift capacity)\n\n## Rationale:\n\n1. **Prioritized due date compliance** - Both jobs due tomorrow (9/17) are completed in day shift\n2. **Maintained customer relationships** - Tier 1 customer (Summit) gets evening shift priority\n3. **Optimized throughput** - Completed 3 jobs in day shift vs. 2 larger jobs\n4. **Risk mitigation** - Day shift has slight buffer (0.51 hours) for any minor delays\n\nThis sequence ensures no late deliveries while maximizing day shift utilization at 93.6%.",
+      "error": null
+    },
+    {
+      "scenario_id": "PSC-002",
+      "scenario_name": "OEE calculation and loss prioritisation at the constraint",
+      "difficulty": "easy",
+      "category": "oee-analysis",
+      "criteria_results": [
+        {
+          "criterion": "oee_calculation",
+          "weight": 0.35,
+          "rating": "pass",
+          "score": 1.0,
+          "reasoning": "Agent correctly calculates all OEE components: Planned Production Time = 120 - 8 = 112 hrs, Availability = 98/112 = 87.5%, Performance = (7,200 × 45 seconds)/(98 × 3600) = 324,000/352,800 = 91.8%, Quality = 6,840/7,200 = 95.0%, and Overall OEE = 87.5% × 91.8% × 95.0% = 76.3%. All calculations are mathematically correct and within acceptable range."
+        },
+        {
+          "criterion": "loss_identification",
+          "weight": 0.3,
+          "rating": "pass",
+          "score": 1.0,
+          "reasoning": "Agent correctly identifies availability losses (unplanned downtime) as the largest loss category at 14 hours and quantifies the financial impact as $9,100 per week (14 hours × $650/hour). Also provides proper breakdown showing availability losses > performance losses > quality losses, with clear financial quantification for the constraint."
+        },
+        {
+          "criterion": "improvement_recommendation",
+          "weight": 0.2,
+          "rating": "pass",
+          "score": 1.0,
+          "reasoning": "Agent appropriately prioritizes reducing unplanned downtime as #1 priority, providing specific actionable recommendations including predictive maintenance, root cause analysis, operator training, and spare parts optimization. Correctly focuses on the availability loss as the primary constraint improvement opportunity with quantified ROI expectations."
+        },
+        {
+          "criterion": "contextual_awareness",
+          "weight": 0.15,
+          "rating": "pass",
+          "score": 1.0,
+          "reasoning": "Agent demonstrates strong contextual awareness by noting that 76.3% OEE is 'above world-class manufacturing threshold (75%)' and recognizes this is the constraint work centre. However, the world-class benchmark cited (75%) is lower than typical industry standards (85%+), but the agent correctly connects OEE improvement at the constraint to direct throughput impact with the $650/hour constraint value."
+        }
+      ],
+      "weighted_score": 1.0,
+      "agent_response": "I'll analyze the OEE data for Injection Moulding Machine #3 and provide a comprehensive assessment.\n\n## OEE Component Calculations\n\n### 1. Availability\n**Formula:** Available Operating Time ÷ Planned Production Time\n- Planned Production Time = 120 - 8 = 112 hours\n- Available Operating Time = 98 hours\n- **Availability = 98 ÷ 112 = 87.5%**\n\n### 2. Performance\n**Formula:** (Total Pieces × Ideal Cycle Time) ÷ (Operating Time × 3600 seconds)\n- Ideal Production Time = 7,200 pieces × 45 seconds = 324,000 seconds = 90 hours\n- Actual Operating Time = 98 hours\n- **Performance = 90 ÷ 98 = 91.8%**\n\n### 3. Quality\n**Formula:** Good Pieces ÷ Total Pieces Produced\n- **Quality = 6,840 ÷ 7,200 = 95.0%**\n\n### Overall OEE\n**OEE = Availability × Performance × Quality**\n**OEE = 87.5% × 91.8% × 95.0% = 76.3%**\n\n## Loss Analysis\n\n| Loss Category | Hours Lost | Percentage Impact | Financial Impact |\n|---------------|------------|-------------------|------------------|\n| **Availability Losses** | 14 hours | 12.5% | $9,100 |\n| Performance Losses | 8 hours | 7.1% | $5,200 |\n| Quality Losses | 0.55 hours* | 3.8% | $234 |\n\n*Quality loss in time equivalent: (360 defective pieces ÷ 7,200 total) × 98 hours\n\n## Financial Impact Analysis\n\n**Largest Loss: Availability (Unplanned Downtime)**\n- Time lost: 14 hours\n- Revenue impact: 14 hours × $650/hour = **$9,100 per week**\n- Annual impact: $9,100 × 52 weeks = **$473,200**\n\n## Key Findings\n\n1. **OEE of 76.3%** is above world-class manufacturing threshold (75%) but has room for improvement\n2. **Availability is the largest constraint** - unplanned downtime is costing $9,100 weekly\n3. Performance and Quality metrics are relatively strong at 91.8% and 95.0% respectively\n\n## Top Improvement Priority\n\n**#1 Priority: Reduce Unplanned Downtime (Availability)**\n\n### Recommended Actions:\n1. **Implement Predictive Maintenance**\n   - Install vibration sensors and temperature monitoring\n   - Develop maintenance schedules based on actual machine condition\n\n2. **Root Cause Analysis**\n   - Conduct detailed failure analysis on the 14 hours of unplanned downtime\n   - Categorize failures (mechanical, electrical, tooling, etc.)\n\n3. **Operator Training**\n   - Enhance troubleshooting capabilities\n   - Implement autonomous maintenance practices\n\n4. **Spare Parts Optimization**\n   - Ensure critical spare parts availability\n   - Reduce mean time to repair (MTTR)\n\n### Expected ROI:\nIf unplanned downtime is reduced by 50% (7 hours), the weekly savings would be $4,550, representing an annual benefit of $236,600.\n\n**Secondary Focus:** Address the 8-hour performance gap through cycle time optimization and minor stoppage reduction.",
+      "error": null
+    },
+    {
+      "scenario_id": "PSC-003",
+      "scenario_name": "Critical ratio calculation and job prioritisation",
+      "difficulty": "easy",
+      "category": "job-sequencing",
+      "criteria_results": [
+        {
+          "criterion": "critical_ratio_calculation",
+          "weight": 0.4,
+          "rating": "pass",
+          "score": 1.0,
+          "reasoning": "Agent correctly calculated all critical ratios: WO-5501 = 4/3.0 = 1.33, WO-5502 = 2/3.5 = 0.57, WO-5503 = 8/2.0 = 4.00, WO-5504 = 3/1.5 = 2.00. Date arithmetic is accurate (correctly counted days from Sep 22 to each due date) and formula application is correct (time remaining ÷ processing time needed). All values match expected calculations within acceptable tolerance."
+        },
+        {
+          "criterion": "priority_ranking",
+          "weight": 0.3,
+          "rating": "pass",
+          "score": 1.0,
+          "reasoning": "Agent correctly ranked jobs in ascending critical ratio order: WO-5502 (0.57) first, WO-5501 (1.33) second, WO-5504 (2.00) third, WO-5503 (4.00) last. Properly identified WO-5502 as 'CRITICAL' with CR < 1.0, indicating it's behind schedule. The prioritization table clearly shows understanding that lower CR = higher priority."
+        },
+        {
+          "criterion": "escalation_judgment",
+          "weight": 0.3,
+          "rating": "pass",
+          "score": 1.0,
+          "reasoning": "Agent correctly flagged WO-5502 for escalation, explicitly stating it's 'behind schedule' with CR of 0.57 and will be '1.5 days late without intervention.' Provided specific escalation recommendations including overtime scheduling, additional machine capacity, expediting, and customer communication. Also noted WO-5503 as 'Well Ahead' with CR of 4.0, demonstrating understanding of relative urgency levels."
+        }
+      ],
+      "weighted_score": 1.0,
+      "agent_response": "I'll calculate the critical ratio for each job and provide the prioritized sequence for the grinding work center.\n\n## Critical Ratio Calculations\n\n**Formula: Critical Ratio = Time Remaining Until Due Date ÷ Remaining Processing Days**\n\n### Job Analysis:\n\n**WO-5501 (Camshaft CS-18)**\n- Due date: September 26, 2025\n- Time remaining: 4 days (Sep 22 → Sep 26)\n- Processing time needed: 3.0 days\n- **Critical Ratio = 4 ÷ 3.0 = 1.33**\n\n**WO-5502 (Crankshaft CK-44)**\n- Due date: September 24, 2025\n- Time remaining: 2 days (Sep 22 → Sep 24)\n- Processing time needed: 3.5 days\n- **Critical Ratio = 2 ÷ 3.5 = 0.57**\n\n**WO-5503 (Piston Pin PP-07)**\n- Due date: September 30, 2025\n- Time remaining: 8 days (Sep 22 → Sep 30)\n- Processing time needed: 2.0 days\n- **Critical Ratio = 8 ÷ 2.0 = 4.00**\n\n**WO-5504 (Rocker Arm RA-22)**\n- Due date: September 25, 2025\n- Time remaining: 3 days (Sep 22 → Sep 25)\n- Processing time needed: 1.5 days\n- **Critical Ratio = 3 ÷ 1.5 = 2.00**\n\n## Recommended Processing Sequence (Highest Priority First):\n\n| Priority | Work Order | Product | Customer | Critical Ratio | Status |\n|----------|------------|---------|----------|----------------|---------|\n| **1** | WO-5502 | Crankshaft CK-44 | MotorWorks | 0.57 | ⚠️ **CRITICAL** |\n| **2** | WO-5501 | Camshaft CS-18 | ValveTech | 1.33 | On Schedule |\n| **3** | WO-5504 | Rocker Arm RA-22 | Summit Auto | 2.00 | Ahead of Schedule |\n| **4** | WO-5503 | Piston Pin PP-07 | Precision Engines | 4.00 | Well Ahead |\n\n## ⚠️ ESCALATION REQUIRED\n\n**WO-5502 (Crankshaft CK-44)** requires immediate escalation:\n- Critical ratio of 0.57 indicates the job is **behind schedule**\n- Needs 3.5 days of processing but only has 2 days until due date\n- Will be approximately 1.5 days late without intervention\n\n## Recommendations:\n\n1. **Immediate Action**: Start WO-5502 immediately and consider:\n   - Overtime scheduling\n   - Additional machine capacity\n   - Expediting through other operations\n   - Customer communication about potential delay\n\n2. **Sequence**: Process jobs in the order listed above (lowest critical ratio first)\n\n3. **Monitor**: WO-5501 closely as it has a critical ratio just above 1.0\n\nThis prioritization ensures the most critical jobs receive attention first while minimizing overall schedule disruption.",
+      "error": null
+    },
+    {
+      "scenario_id": "PSC-004",
+      "scenario_name": "Simple changeover sequence optimisation on a paint line",
+      "difficulty": "easy",
+      "category": "changeover-optimisation",
+      "criteria_results": [
+        {
+          "criterion": "optimal_sequence",
+          "weight": 0.4,
+          "rating": "pass",
+          "score": 1.0,
+          "reasoning": "The agent correctly identifies the optimal sequence as White → Yellow → Red → Blue → Black (B2→B4→B3→B5→B1), following the light-to-dark principle. Correctly calculates 4 transitions × 10 minutes = 40 minutes total changeover time and recognizes this minimizes changeover time by using only light-to-dark transitions."
+        },
+        {
+          "criterion": "worst_case_comparison",
+          "weight": 0.25,
+          "rating": "partial",
+          "score": 0.5,
+          "reasoning": "The agent attempts a worst-case comparison with sequence Black → White → Blue → Yellow → Red, calculating 115 minutes total. However, this is not actually the worst case - the true worst case would be the reverse light-to-dark sequence (Black → Blue → Red → Yellow → White) yielding 4 × 35 = 140 minutes. The agent's worst case includes one 10-minute transition, making it suboptimal as a comparison. The savings calculation is therefore understated."
+        },
+        {
+          "criterion": "setup_matrix_understanding",
+          "weight": 0.2,
+          "rating": "pass",
+          "score": 1.0,
+          "reasoning": "The agent demonstrates clear understanding of sequence-dependent changeovers, correctly identifying the light-to-dark (10 min) vs dark-to-light (35 min) asymmetry. Explicitly states the strategy to 'avoid dark to light transitions' and references the setup matrix structure throughout the analysis."
+        },
+        {
+          "criterion": "practical_notes",
+          "weight": 0.15,
+          "rating": "fail",
+          "score": 0.0,
+          "reasoning": "The agent does not acknowledge that this optimization only applies when due dates are equal, despite the scenario stating 'All batches have the same due date (end of day), so sequence is purely about minimising changeover time.' No mention is made of how different due dates would affect the sequencing decision or other practical scheduling considerations."
+        }
+      ],
+      "weighted_score": 0.7250000000000001,
+      "agent_response": "I need to find the optimal sequence to minimize changeover time for the paint line batches.\n\n## Analysis\n\nFirst, let me understand the color hierarchy from light to dark:\n**White → Yellow → Red → Blue → Black**\n\nSetup times:\n- Light to dark: 10 minutes\n- Dark to light: 35 minutes  \n- Same family: 15 minutes (though no same colors here)\n\n## Strategy\n\nTo minimize changeover time, I should:\n1. Sequence colors from light to dark when possible (10 min transitions)\n2. Avoid dark to light transitions (35 min transitions)\n3. The optimal approach is to arrange all batches in light-to-dark order\n\n## Optimal Sequence\n\nFollowing the light-to-dark order:\n**B2 (White) → B4 (Yellow) → B3 (Red) → B5 (Blue) → B1 (Black)**\n\nChangeover times:\n- White → Yellow: 10 minutes (light to dark)\n- Yellow → Red: 10 minutes (light to dark)\n- Red → Blue: 10 minutes (light to dark)\n- Blue → Black: 10 minutes (light to dark)\n\n**Total optimal changeover time: 40 minutes**\n\n## Worst-Case Comparison\n\nThe worst sequence would alternate between light and dark colors:\n**B1 (Black) → B2 (White) → B5 (Blue) → B4 (Yellow) → B3 (Red)**\n\nChangeover times:\n- Black → White: 35 minutes (dark to light)\n- White → Blue: 35 minutes (light to dark, but skipping multiple levels)\n- Blue → Yellow: 35 minutes (dark to light)\n- Yellow → Red: 10 minutes (light to dark)\n\n**Total worst-case changeover time: 115 minutes**\n\n## Recommendation\n\n**Optimal sequence: B2 (White) → B4 (Yellow) → B3 (Red) → B5 (Blue) → B1 (Black)**\n\n- Total changeover time: 40 minutes\n- Savings vs. worst case: 75 minutes (65% reduction)\n- Total production time: 7 hours (run time) + 40 minutes (changeovers) = 7 hours 40 minutes\n\nThis sequence maximizes the use of efficient light-to-dark transitions and completely avoids expensive dark-to-light purges.",
+      "error": null
+    },
+    {
+      "scenario_id": "PSC-005",
+      "scenario_name": "Identifying the true constraint from WIP and utilisation data",
+      "difficulty": "easy",
+      "category": "bottleneck-management",
+      "criteria_results": [
+        {
+          "criterion": "constraint_identification",
+          "weight": 0.35,
+          "rating": "pass",
+          "score": 1.0,
+          "reasoning": "Agent correctly identifies SMT Pick-and-Place as the true constraint, stating 'The SMT Pick-and-Place station is the actual bottleneck' and provides proper analysis showing it has the highest utilization at 92% and lowest capacity margin. The response includes a clear capacity analysis table showing utilization ratios and explains that utilization determines the constraint, not WIP queue size."
+        },
+        {
+          "criterion": "wip_misconception_explanation",
+          "weight": 0.3,
+          "rating": "pass",
+          "score": 1.0,
+          "reasoning": "Agent explains the WIP misconception well, stating the large queue 'creates a visual illusion of a bottleneck, but it's actually evidence of the opposite' and identifies 'Upstream constraint effect: SMT Pick-and-Place's high utilization creates irregular flow patterns' and 'Batching behavior: Large queues often form when upstream processes release work in batches.' The response correctly explains that the queue exists because Wave Soldering has excess capacity and receives work in batches from the upstream constraint."
+        },
+        {
+          "criterion": "constraint_management_recommendations",
+          "weight": 0.35,
+          "rating": "pass",
+          "score": 1.0,
+          "reasoning": "Agent provides TOC-based recommendations focused on exploiting the SMT constraint: 'Maximize SMT uptime' through predictive maintenance and cross-training, 'Optimize SMT efficiency' through cycle time reduction, and subordination through 'Implement pull system' to limit WIP. The response correctly notes that improving other stations won't increase plant output and prioritizes constraint-focused actions over general improvements."
+        }
+      ],
+      "weighted_score": 1.0,
+      "agent_response": "# Bottleneck Analysis for Fortis Assembly\n\n## True Constraint Identification\n\n**The SMT Pick-and-Place station is the actual bottleneck**, not Wave Soldering as commonly believed on the floor.\n\n### Analysis by Capacity vs. Demand\n\nLet me calculate the daily capacity for each work center:\n\n| Work Center | Cycle Time | Daily Capacity | Utilization | Daily Demand |\n|-------------|------------|----------------|-------------|--------------|\n| **SMT Pick-and-Place** | 4.5 min | **213 units** | 92% | 180 units |\n| Wave Soldering | 3.0 min | 320 units | 78% | 180 units |\n| Manual Assembly | 8.0 min | 120 units | 65% | 180 units |\n| Testing & QC | 5.0 min | 192 units | 71% | 180 units |\n\n*Daily capacity = (16 hours × 60 minutes) ÷ cycle time*\n\n## Key Findings\n\n1. **SMT Pick-and-Place** has the highest utilization (92%) and lowest capacity margin above demand\n2. **Manual Assembly** actually has insufficient capacity (120 units vs 180 demand), but its low utilization (65%) suggests it's not currently constraining the system\n3. **Wave Soldering** has substantial excess capacity (320 vs 180 units needed)\n\n## Why the WIP Pile at Wave Soldering is Misleading\n\nThe large WIP queue (340 units) in front of Wave Soldering creates a **visual illusion** of a bottleneck, but it's actually evidence of the opposite:\n\n- **Upstream constraint effect**: SMT Pick-and-Place's high utilization creates irregular flow patterns\n- **Batching behavior**: Large queues often form when upstream processes release work in batches\n- **Safety stock mentality**: Operators may be accumulating inventory to ensure Wave Soldering never starves\n- **Fast processing**: Wave Soldering's 3-minute cycle time means it quickly processes whatever arrives, but then waits for the next batch\n\nThe queue exists *because* Wave Soldering has excess capacity, not because it lacks capacity.\n\n## Constraint Management Recommendations\n\n### Immediate Actions (SMT Pick-and-Place Focus)\n1. **Maximize SMT uptime**:\n   - Implement predictive maintenance\n   - Cross-train operators to minimize changeover times\n   - Ensure priority parts supply\n\n2. **Optimize SMT efficiency**:\n   - Review programming for cycle time reduction opportunities\n   - Analyze setup/changeover procedures\n   - Consider adding parallel SMT capacity if volume justifies\n\n### Flow Management\n3. **Implement pull system**:\n   - Limit WIP between SMT and Wave Soldering to 2-3 hours of consumption\n   - Use visual signals to prevent overproduction\n\n4. **Balance the line**:\n   - Investigate why Manual Assembly shows low utilization despite insufficient theoretical capacity\n   - Consider redistributing work or adding manual assembly stations\n\n### Monitoring\n5. **Track constraint metrics**:\n   - Monitor SMT Pick-and-Place utilization and throughput\n   - Measure actual system throughput (not individual station output)\n   - Implement real-time visibility of constraint performance\n\nThe counterintuitive reality is that the station with the smallest queue (SMT Pick-and-Place: 120 units) is your constraint, while the station with the largest queue (Wave Soldering: 340 units) has the most excess capacity.",
+      "error": null
+    },
+    {
+      "scenario_id": "PSC-006",
+      "scenario_name": "Forward and backward scheduling for a multi-operation work order",
+      "difficulty": "easy",
+      "category": "job-sequencing",
+      "criteria_results": [
+        {
+          "criterion": "forward_schedule",
+          "weight": 0.3,
+          "rating": "pass",
+          "score": 1.0,
+          "reasoning": "Agent correctly calculates forward schedule starting Monday Sept 22: Op 10 (6.5 hrs, Monday), Op 20 (2.0 hrs, Tuesday), Op 30 (5.0 hrs, Wednesday), Op 40 (1.5 hrs, Thursday). Total processing time of 15.0 hours is correct. Earliest completion date of Thursday Sept 25 falls within the acceptable range of Wed PM to Thu AM. Agent properly accounts for setup times in the total operation times."
+        },
+        {
+          "criterion": "backward_schedule",
+          "weight": 0.3,
+          "rating": "pass",
+          "score": 1.0,
+          "reasoning": "Agent performs backward scheduling correctly, working from Friday due date: Op 40 on Thursday, Op 30 on Wednesday, Op 20 on Tuesday, Op 10 on Monday. Latest start date identified as Monday Sept 22. The logic shows understanding that working backward from the due date determines the latest allowable start while still meeting the deadline."
+        },
+        {
+          "criterion": "float_assessment",
+          "weight": 0.25,
+          "rating": "pass",
+          "score": 1.0,
+          "reasoning": "Agent correctly identifies 1 day of float between earliest completion (Thursday Sept 25) and due date (Friday Sept 26). States 'Total Float: 1 day (Friday is available as buffer)' and notes this provides buffer for delays. Correctly assesses low risk due to adequate time buffer."
+        },
+        {
+          "criterion": "scheduling_awareness",
+          "weight": 0.15,
+          "rating": "partial",
+          "score": 0.5,
+          "reasoning": "Agent performs both forward and backward scheduling correctly but does not explain the practical differences between them. Missing discussion of how forward scheduling finds earliest completion while backward scheduling preserves flexibility and minimizes WIP. Does not recommend when to use each approach or mention that backward scheduling is typically preferred to avoid early WIP buildup."
+        }
+      ],
+      "weighted_score": 0.9249999999999999,
+      "agent_response": "I'll analyze this work order using both forward and backward scheduling methods.\n\n## Operation Time Analysis\n\nFirst, let me calculate the total time for each operation:\n\n| Operation | Work Centre | Setup (hrs) | Run (hrs) | Total (hrs) | Days Required |\n|-----------|-------------|-------------|-----------|-------------|---------------|\n| 10 | CNC Milling | 0.5 | 6.0 | 6.5 | 0.81 (1 day) |\n| 20 | Deburring | 0.0 | 2.0 | 2.0 | 0.25 (1 day) |\n| 30 | Heat Treatment | 1.0 | 4.0 | 5.0 | 0.63 (1 day) |\n| 40 | Final Inspection | 0.0 | 1.5 | 1.5 | 0.19 (1 day) |\n\n**Total processing time: 15.0 hours (1.875 days)**\n\n## Forward Scheduling (From Material Availability)\n\nStarting from Monday, September 22, 2025:\n\n- **Operation 10 (CNC Milling)**: Monday, Sept 22 (6.5 hrs)\n- **Operation 20 (Deburring)**: Tuesday, Sept 23 (2.0 hrs)  \n- **Operation 30 (Heat Treatment)**: Wednesday, Sept 24 (5.0 hrs)\n- **Operation 40 (Final Inspection)**: Thursday, Sept 25 (1.5 hrs)\n\n**Earliest Completion Date: Thursday, September 25, 2025**\n\n## Backward Scheduling (From Due Date)\n\nWorking backward from Friday, September 26, 2025:\n\n- **Operation 40 (Final Inspection)**: Thursday, Sept 25 (1.5 hrs)\n- **Operation 30 (Heat Treatment)**: Wednesday, Sept 24 (5.0 hrs)\n- **Operation 20 (Deburring)**: Tuesday, Sept 23 (2.0 hrs)\n- **Operation 10 (CNC Milling)**: Monday, Sept 22 (6.5 hrs)\n\n**Latest Start Date: Monday, September 22, 2025**\n\n## Schedule Assessment\n\n### Can the work order be completed on time?\n**YES** - The work order can be completed by Thursday, September 25, which is one day before the Friday, September 26 due date.\n\n### Float (Slack) Analysis\n- **Total Float**: 1 day (Friday is available as buffer)\n- **Material available**: Monday, Sept 22\n- **Latest start required**: Monday, Sept 22\n- **Earliest completion**: Thursday, Sept 25\n- **Due date**: Friday, Sept 26\n\n### Key Findings\n1. **Critical Path**: All operations are on the critical path for the latest start scenario\n2. **Schedule Flexibility**: 1 day of float provides some buffer for delays\n3. **Resource Utilization**: Each operation fits comfortably within the 8-hour daily shifts\n4. **Risk Assessment**: Low risk - adequate time buffer and no operations exceed daily capacity\n\n### Recommendation\nProceed with scheduling WO-7010 starting Monday, September 22. The schedule has adequate float to handle minor delays while still meeting the customer due date.",
+      "error": null
+    },
+    {
+      "scenario_id": "PSC-007",
+      "scenario_name": "Labour skill matrix and shift coverage gap analysis",
+      "difficulty": "easy",
+      "category": "labour-scheduling",
+      "criteria_results": [
+        {
+          "criterion": "operator_assignment",
+          "weight": 0.3,
+          "rating": "pass",
+          "score": 1.0,
+          "reasoning": "The response provides a complete and feasible assignment covering all 3 lines: Martinez to CNC Lathe, Jackson to Welding, and Kim to Surface Grinding. Correctly identifies that Patel should be kept as a float/relief operator rather than locked to a single line, leveraging his versatility with 3 certifications. The assignment respects all certification requirements and optimizes coverage."
+        },
+        {
+          "criterion": "single_point_of_failure_identification",
+          "weight": 0.4,
+          "rating": "pass",
+          "score": 1.0,
+          "reasoning": "Clearly identifies AWS-D1.1 (Welding) as the critical single-point-of-failure with only 2 certified operators (Jackson and Patel). Correctly notes this as 'HIGH' risk and explains that if both are unavailable, the Welding Station cannot operate. Appropriately contrasts this with CNC-L2 and GRND-1 which both have 3 operators and are marked as having 'Good coverage'."
+        },
+        {
+          "criterion": "cross_training_recommendation",
+          "weight": 0.3,
+          "rating": "pass",
+          "score": 1.0,
+          "reasoning": "Prioritizes cross-training Martinez in AWS-D1.1 as 'Priority 1: Immediate (Within 30 days)' to address the welding single-point-of-failure. Provides sound reasoning that Martinez already has precision work skills from CNC-L2 certification. Quantifies the risk impact by noting that training Martinez would create 3-person coverage for welding, eliminating the single-point-of-failure."
+        }
+      ],
+      "weighted_score": 1.0,
+      "agent_response": "# Night Shift Staffing Analysis for Stellar Components\n\n## Current Coverage Assessment\n\n### ✅ **Good News: All Lines Can Be Covered**\nWith 5 operators scheduled, we can staff all 3 production lines with certified personnel.\n\n## Recommended Operator Assignment\n\n| Production Line | Assigned Operator | Backup Options |\n|----------------|------------------|----------------|\n| **CNC Lathe Cell** | A. Martinez | C. Patel, E. Thompson |\n| **Welding Station** | B. Jackson | C. Patel |\n| **Surface Grinding** | D. Kim | A. Martinez, C. Patel |\n\n**Remaining Available:** C. Patel (float/relief), E. Thompson (float/relief)\n\n## 🚨 Critical Risk Analysis\n\n### **Single-Point-of-Failure Identified: AWS-D1.1 (Welding)**\n\n**Risk Level: HIGH** \n- Only **2 operators** (B. Jackson, C. Patel) hold welding certification\n- If both are unavailable, Welding Station cannot operate\n- 2 scheduled jobs would be at risk\n\n### Other Certification Coverage:\n- **CNC-L2**: 3 operators ✅ (Good coverage)\n- **GRND-1**: 3 operators ✅ (Good coverage)\n\n## Cross-Training Recommendations\n\n### **Priority 1: Immediate (Within 30 days)**\n- **Train A. Martinez in AWS-D1.1**\n  - Already skilled in precision work (CNC-L2)\n  - Would create 3-person coverage for welding\n\n### **Priority 2: Medium-term (Within 90 days)**\n- **Train E. Thompson in GRND-1**\n  - Increase grinding coverage to 4 operators\n  - Provide E. Thompson with backup line capability\n\n### **Priority 3: Long-term (Within 6 months)**\n- **Train D. Kim in CNC-L2**\n  - Create full cross-training depth\n  - Enable maximum scheduling flexibility\n\n## Risk Mitigation for Tonight\n\n1. **Assign C. Patel as primary float** - can cover any line if someone calls out\n2. **Keep B. Jackson and C. Patel contact information readily available** for welding emergencies\n3. **Have day shift welding backup on-call** if both welding-certified operators become unavailable\n\n## Summary\n- ✅ All lines covered tonight\n- ⚠️ Welding station is vulnerable (only 2 certified operators)\n- 🎯 Training A. Martinez in welding should be top priority to eliminate single-point-of-failure risk",
+      "error": null
+    },
+    {
+      "scenario_id": "PSC-008",
+      "scenario_name": "Drum-buffer-rope implementation for a new constraint",
+      "difficulty": "medium",
+      "category": "bottleneck-management",
+      "criteria_results": [
+        {
+          "criterion": "drum_identification_and_exploitation",
+          "weight": 0.3,
+          "rating": "pass",
+          "score": 1.0,
+          "reasoning": "Correctly identifies TMC-01 as the drum constraint running at 94% utilization. Provides specific exploitation actions including SMED implementation to reduce changeovers from 25 to 20 minutes (saving 15 min/day = 1.25 extra parts/day), cross-training operators, pre-staging tooling, implementing upstream quality checks, and moving non-critical parts to underutilized CNC machines (72% utilized). Quantifies the impact correctly, understanding that at current cycle times, reducing changeover time directly translates to additional throughput."
+        },
+        {
+          "criterion": "buffer_design",
+          "weight": 0.3,
+          "rating": "pass",
+          "score": 1.0,
+          "reasoning": "Sets an 18-hour time buffer based on the 12-hour upstream lead time plus variability protection (2 hours for heat treatment variance) and Murphy protection (4 hours), which is reasonable given moderate upstream reliability. Defines three monitoring zones: Green (0-15 parts consumed), Yellow (16-30 parts), Red (31-45 parts) with specific monitoring frequencies and escalation actions for each zone. The 45-part inventory buffer calculation (18 hours × 2.5 parts/hour) is mathematically sound."
+        },
+        {
+          "criterion": "rope_mechanism",
+          "weight": 0.2,
+          "rating": "pass",
+          "score": 1.0,
+          "reasoning": "Defines a clear material release mechanism at the sawing department based on drum schedule plus buffer replenishment needs. Specifies daily release calculation as '40 + (45 - current buffer inventory)' which prevents overproduction. Establishes communication system with priority levels and work order priorities tied to buffer zones. This properly controls WIP flow and prevents upstream work centers from producing beyond constraint consumption rate."
+        },
+        {
+          "criterion": "subordination_logic",
+          "weight": 0.2,
+          "rating": "partial",
+          "score": 0.5,
+          "reasoning": "Mentions that upstream work centers should respond to rope signals and notes the utilization levels of non-constraint work centers (heat treatment 60%, finishing 68%, inspection 55%). However, does not explicitly state that these work centers should NOT be scheduled for maximum utilization or clearly explain subordination principles. While the buffer and rope mechanisms implicitly create subordination, the response lacks explicit discussion of subordinating non-constraint schedules to serve the drum's needs."
+        }
+      ],
+      "weighted_score": 0.9,
+      "agent_response": "# Drum-Buffer-Rope Implementation for Vanguard Metal Works\n\n## 1. DRUM SCHEDULE (Titanium Machining Centre TMC-01)\n\n### Production Schedule Design\n- **Operating Hours**: 16 hours/day\n- **Target Output**: 40 parts/day (maintain current throughput)\n- **Cycle Time**: 12 minutes/part\n- **Scheduled Changeovers**: 3 per day (25 minutes each = 75 minutes total)\n- **Available Production Time**: 16 hours - 1.25 hours = 14.75 hours = 885 minutes\n- **Production Time per Part**: 885 ÷ 40 = 22.125 minutes (includes cycle time + allocated setup/adjustment time)\n\n### Drum Schedule Structure\n```\nShift 1 (06:00-14:00): 20 parts\n- Changeover: 06:00-06:25\n- Production: 06:25-13:35 (430 min ÷ 20 parts = 21.5 min/part avg)\n- Buffer check: 13:35-14:00\n\nShift 2 (14:00-22:00): 20 parts  \n- Changeover: 14:00-14:25\n- Production: 14:25-21:35 (430 min ÷ 20 parts = 21.5 min/part avg)\n- Changeover: 21:35-22:00\n```\n\n## 2. BUFFER SIZING AND MONITORING\n\n### Buffer Size Calculation\nGiven upstream lead time of 12 hours and reliability issues:\n\n**Time Buffer Components:**\n- Base lead time: 12 hours\n- Variability protection (heat treatment ±1 hour): 2 hours\n- Murphy protection (blade breakages, minor delays): 4 hours\n- **Total Time Buffer: 18 hours**\n\n**Inventory Buffer:**\n- 18 hours × (40 parts ÷ 16 hours) = **45 parts inventory buffer**\n\n### Three-Zone Buffer Management\n\n**GREEN ZONE (0-15 parts consumed)**: Normal operations\n- Monitor daily\n- No action required\n\n**YELLOW ZONE (16-30 parts consumed)**: Caution\n- Monitor every 4 hours\n- Investigate upstream delays\n- Prepare expediting actions\n- Alert upstream supervisors\n\n**RED ZONE (31-45 parts consumed)**: Critical\n- Monitor hourly\n- Immediate expediting of upstream work centres\n- Consider overtime for upstream operations\n- Daily management review\n- Root cause analysis required\n\n## 3. ROPE MECHANISM\n\n### Material Release Control\n**Release Point**: Sawing department\n**Release Schedule**: Based on drum schedule + buffer replenishment\n\n**Daily Release Calculation:**\n- Drum requirement: 40 parts\n- Buffer replenishment: Target 45 parts - current buffer level\n- **Daily release = 40 + (45 - current buffer inventory)**\n\n### Communication System\n1. **Daily**: Production control releases work orders to sawing based on drum schedule + buffer status\n2. **Shift handoff**: Buffer status communicated between shifts\n3. **Real-time**: Electronic tracking of buffer consumption\n4. **Exception reporting**: Immediate notification when entering Yellow/Red zones\n\n### Work Order Priorities\n- **Priority 1**: Red zone replenishment (expedite)\n- **Priority 2**: Yellow zone replenishment (normal flow)\n- **Priority 3**: Green zone replenishment (standard scheduling)\n\n## 4. CONSTRAINT EXPLOITATION ACTIONS\n\n### Immediate Actions (0-30 days)\n1. **Maximize Available Time**:\n   - Reduce changeover time from 25 to 20 minutes (save 15 min/day = 1.25 extra parts/day)\n   - Implement SMED techniques\n   - Pre-stage tooling and fixtures\n\n2. **Optimize Operating Procedures**:\n   - Cross-train operators to eliminate breaks in coverage\n   - Implement preventive maintenance during planned changeover windows\n   - Create standard work procedures for fastest setup\n\n3. **Quality at Source**:\n   - Implement upstream quality checks to prevent defects reaching the constraint\n   - Statistical process control on heat treatment cycle times\n\n### Medium-term Actions (1-6 months)\n1. **Offload Non-Critical Work**:\n   - Review all parts processed on TMC-01\n   - Move non-titanium or less critical parts to CNC rough machining (only 72% utilized)\n\n2. **Capacity Enhancement**:\n   - Evaluate adding weekend shift (2 days × 16 hours = 32 hours = 80 additional parts/week)\n   - Consider fixture improvements to reduce cycle time\n\n3. **Upstream Reliability**:\n   - Stock spare saw blades at sawing operation\n   - Implement heat treatment cycle time controls (±30 minutes target vs. current ±1 hour)\n\n## 5. PERFORMANCE MONITORING\n\n### Daily Metrics\n- Actual vs. planned output at TMC-01\n- Buffer zone status and consumption rate\n- Upstream work centre adherence to rope signals\n- Changeover time performance\n\n### Weekly Review\n- Buffer penetration frequency and root causes\n- Constraint utilization trending\n- Upstream reliability performance\n- Overall plant throughput\n\n### Success Criteria\n- Maintain 94%+ utilization at TMC-01\n- Buffer in Green zone >85% of time\n- Zero stock-outs at the constraint\n- Upstream work centres respond to rope signals within 2 hours\n\nThis drum-buffer-rope system will protect the constraint while maximizing throughput and providing clear visual management of the production flow.",
+      "error": null
+    },
+    {
+      "scenario_id": "PSC-009",
+      "scenario_name": "SMED changeover reduction analysis",
+      "difficulty": "medium",
+      "category": "changeover-optimisation",
+      "criteria_results": [
+        {
+          "criterion": "smed_classification",
+          "weight": 0.25,
+          "rating": "pass",
+          "score": 1.0,
+          "reasoning": "Agent correctly identifies 'search for die' (8 min) and 'transport die' (6 min) as external activities currently done during machine stoppage. Properly classifies all internal activities including bolt removal/insertion (12 min each), crane lift (5 min), positioning (5 min), adjustments (7 min + 6 min), and trial runs (4 min). Correctly calculates 14 minutes external-done-internal and 54 minutes true internal time."
+        },
+        {
+          "criterion": "phase_1_2_improvements",
+          "weight": 0.3,
+          "rating": "fail",
+          "score": 0.0,
+          "reasoning": "While Phase 1 correctly addresses moving die search/transport external (14 min savings), Phase 2 proposes unrealistic improvements. Claims total reduction to 8 minutes final changeover time, which would require eliminating crane lift (5 min) and trial runs (4 min) - both impossible to eliminate. The 'quick fasteners' reducing 24 minutes of bolt work to 6 minutes total is mathematically impossible given the other remaining activities. A realistic SMED Phase 2 should achieve 18-28 minutes total, not 8 minutes."
+        },
+        {
+          "criterion": "financial_impact",
+          "weight": 0.25,
+          "rating": "pass",
+          "score": 1.0,
+          "reasoning": "Correctly calculates current cost: 4 changeovers × 68 min = 272 min/day × $720/hour = $3,264/day. Future cost calculation uses unrealistic 8-minute changeover but methodology is correct: 4 × 8 min = 32 min/day × $720/hour = $384/day. Savings calculation of $2,880/day and $720,000 annually follows logically from the (overstated) time reduction. Financial framework and constraint throughput value application is expert-level."
+        },
+        {
+          "criterion": "implementation_awareness",
+          "weight": 0.2,
+          "rating": "pass",
+          "score": 1.0,
+          "reasoning": "Properly phases implementation with Phase 1 as immediate quick wins (tool crib organization, pre-staging, cleaning checklists) and Phase 2 requiring capital investment. Provides specific investment estimates ($28,000 total) and calculates ROI (25.7x). Recognizes different implementation timelines and resource requirements between phases. Shows practical understanding of change management in manufacturing."
+        }
+      ],
+      "weighted_score": 0.7,
+      "agent_response": "# SMED Analysis: Premier Fabrication Stamping Press Changeover\n\n## Current State Analysis\n\n### Element Classification\n\n| Activity | Duration (min) | Current Type | SMED Classification |\n|----------|----------------|--------------|-------------------|\n| Search for next die in tool crib | 8 | External done Internal | **External** |\n| Transport die to press on forklift | 6 | External done Internal | **External** |\n| Remove current die bolts (12 bolts) | 12 | Internal | **Internal** |\n| Lift out current die with crane | 5 | Internal | **Internal** |\n| Clean die mounting surface | 3 | Internal | **External** |\n| Position new die in press | 5 | Internal | **Internal** |\n| Fasten new die bolts (12 bolts) | 12 | Internal | **Internal** |\n| Adjust shut height | 7 | Internal | **Internal** |\n| Trial run — first 5 pieces | 4 | Internal | **Internal** |\n| Adjust and re-run until good piece | 6 | Internal | **Internal** |\n\n**Current Internal Time: 54 minutes**\n**Current External Time: 14 minutes** (but done during downtime)\n\n## SMED Phase 1: Convert Internal to External\n\n### Improvements:\n1. **Pre-stage next die**: Have die ready at press before changeover begins\n2. **Pre-clean mounting surface**: Clean during production runs between parts\n3. **Pre-calculate shut height settings**: Document settings for each die/part combination\n\n**Phase 1 Time Savings:**\n- Search for die: 8 minutes → 0 (done beforehand)\n- Transport die: 6 minutes → 0 (pre-staged)\n- Clean mounting surface: 3 minutes → 0 (done during production)\n\n**Phase 1 Result: 54 minutes → 37 minutes**\n\n## SMED Phase 2: Reduce Remaining Internal Time\n\n### Improvements:\n\n1. **Quick-change bolting system**\n   - Install cam-lock fasteners or quarter-turn fasteners\n   - Remove bolts: 12 min → 3 min\n   - Fasten bolts: 12 min → 3 min\n   - **Time saved: 18 minutes**\n\n2. **Die positioning aids**\n   - Install guide pins and alignment blocks\n   - Position new die: 5 min → 2 min\n   - **Time saved: 3 minutes**\n\n3. **Shut height pre-setting**\n   - Digital readouts with preset positions\n   - Adjust shut height: 7 min → 2 min\n   - **Time saved: 5 minutes**\n\n4. **Improved setup procedures**\n   - Standardized setup sheets with specifications\n   - Better first-piece setup reduces adjustment cycles\n   - Adjust and re-run: 6 min → 3 min\n   - **Time saved: 3 minutes**\n\n**Phase 2 Time Savings: 29 minutes**\n\n## Final Results\n\n| Phase | Time (minutes) | Reduction |\n|-------|----------------|-----------|\n| Current State | 68 | - |\n| After Phase 1 | 37 | 31 min |\n| After Phase 2 | **8** | 60 min |\n\n**Final Changeover Activities (8 minutes):**\n- Lift out current die: 5 min\n- Position new die: 2 min\n- Shut height adjustment: 2 min\n- Trial run: 4 min\n- Final adjustments: 3 min\n- Quick fasteners: 6 min\n- **Total: 8 minutes**\n\n## Financial Impact Analysis\n\n### Current Cost of Changeover Time:\n- 4 changeovers/day × 68 minutes × $720/hour ÷ 60 min/hour = **$3,264/day**\n\n### Future Cost of Changeover Time:\n- 4 changeovers/day × 8 minutes × $720/hour ÷ 60 min/hour = **$384/day**\n\n### Daily Savings:\n**$3,264 - $384 = $2,880/day**\n\n### Annual Impact:\n- **Daily savings: $2,880**\n- **Annual savings (250 working days): $720,000**\n- **Time saved per day: 240 minutes (4 hours)**\n- **Additional throughput capacity: $2,880/day**\n\n## Implementation Recommendations\n\n### Phase 1 (Quick wins - implement immediately):\n- Reorganize tool crib for faster die location\n- Establish die pre-staging area near press\n- Create cleaning checklist for operators during production\n\n### Phase 2 (Capital investment required):\n- Install quick-change fastening system (~$15,000)\n- Add digital shut height indicators (~$5,000)\n- Develop die positioning guides (~$8,000)\n- **Total investment: ~$28,000**\n- **ROI: 720,000/28,000 = 25.7x annual return**\n\nThis SMED implementation will reduce changeover time by 88% while providing substantial financial returns and increased production flexibility.",
+      "error": null
+    },
+    {
+      "scenario_id": "PSC-010",
+      "scenario_name": "Disruption response — machine breakdown at the constraint",
+      "difficulty": "medium",
+      "category": "disruption-response",
+      "criteria_results": [
+        {
+          "criterion": "in_machine_part_assessment",
+          "weight": 0.2,
+          "rating": "pass",
+          "score": 1.0,
+          "reasoning": "The response addresses the $42K part comprehensively: identifies it's 80% complete (8/10 hours), calculates $42K value with high-priority defense customer, explicitly decides to 'SALVAGE THE PART' with rationale citing high value and near completion, recommends working with maintenance for careful extraction, and prioritizes completion when HBM-01 is operational. Shows awareness of sunk cost implications."
+        },
+        {
+          "criterion": "alternate_routing_analysis",
+          "weight": 0.25,
+          "rating": "pass",
+          "score": 1.0,
+          "reasoning": "Correctly identifies VMC-02 capacity (65% utilized, 35% available = 10.4 hrs/day), systematically lists all 6 jobs that can transfer based on 500mm size limit (WO-8802 through WO-8809), correctly identifies the 2 oversized jobs that cannot transfer (WO-8803 at 650mm and WO-8805 at 800mm), and totals 18 hours of transferable work. Shows proper dimensional analysis against machine constraints."
+        },
+        {
+          "criterion": "priority_sequencing",
+          "weight": 0.25,
+          "rating": "pass",
+          "score": 1.0,
+          "reasoning": "Sequences correctly by due date and customer tier: WO-8802 (Tier 1, due Sept 25) gets immediate priority on VMC-02, WO-8805 (Nexus Defense, Tier 1) and WO-8803 (Summit Aero) are prioritized when HBM restarts based on due dates and customer tier. Shows clear understanding of constraint recovery sequencing with defense contracts getting appropriate priority treatment."
+        },
+        {
+          "criterion": "recovery_plan_completeness",
+          "weight": 0.3,
+          "rating": "pass",
+          "score": 1.0,
+          "reasoning": "Provides comprehensive recovery plan covering all required elements: (1) immediate actions with maintenance mobilization and part extraction, (2) complete alternate routing analysis, (3) detailed priority sequence for HBM restart, (4) customer notification plan identifying specific delays and communication timeline (within 4 hours), (5) overtime assessment for Friday completion, (6) subcontracting evaluation for oversized parts with defense contract restrictions noted, and (7) contingency planning for repair extending beyond 16 hours."
+        }
+      ],
+      "weighted_score": 1.0,
+      "agent_response": "# Disruption Response Plan - HBM-01 Spindle Bearing Failure\n\n## Executive Summary\n**Critical Situation:** Main constraint down 12-16 hours starting 9:30 AM Wednesday (Sept 24)\n**Key Impact:** $42K defense part at risk, multiple customer deliveries affected\n**Recovery Strategy:** Multi-pronged approach using alternate capacity, expedited repair, and customer communication\n\n---\n\n## 1. In-Machine Part Assessment (WO-8801)\n\n**Current Status:**\n- Northwind Defense contract: $42,000 value\n- Progress: 8/10 hours complete (80%)\n- Remaining work: 2 hours\n- Due date: Sept 26 (2 days remaining)\n\n**Decision: SALVAGE THE PART**\n- **Rationale:** High value, near completion, Tier 1 defense customer\n- **Action:** Work with maintenance to carefully extract part without damage\n- **Priority:** Complete immediately when HBM-01 is operational\n\n---\n\n## 2. Alternate Machine Capacity Analysis\n\n**VMC-02 Availability:**\n- Current utilization: 65% (5.6 hrs/day used)\n- Available capacity: 35% (10.4 hrs/day available)\n- Size limit: 500mm maximum\n\n**Jobs That CAN Transfer to VMC-02:**\n| Work Order | Customer | Max Dim | Hours | Due Date | Tier |\n|------------|----------|---------|-------|----------|------|\n| WO-8802 | Apex Auto | 400mm | 4 | Sept 25 | 1 |\n| WO-8804 | FlowTech | 350mm | 3 | Sept 27 | 3 |\n| WO-8806 | Cascade Eng | 300mm | 2 | Sept 29 | 3 |\n| WO-8807 | Sterling Mfg | 450mm | 4 | Sept 28 | 2 |\n| WO-8808 | Pioneer Parts | 380mm | 3 | Sept 30 | 3 |\n| WO-8809 | ValveTech | 250mm | 2 | Sept 27 | 2 |\n\n**Total transferable: 18 hours over 6 jobs**\n\n**Jobs That CANNOT Transfer (require HBM-01):**\n| Work Order | Customer | Max Dim | Hours | Due Date | Tier |\n|------------|----------|---------|-------|----------|------|\n| WO-8803 | Summit Aero | 650mm | 6 | Sept 26 | 2 |\n| WO-8805 | Nexus Defense | 800mm | 5 | Sept 26 | 1 |\n\n---\n\n## 3. Revised Production Schedule\n\n### Phase 1: Immediate Actions (Wednesday PM)\n- **VMC-02 Emergency Schedule:**\n  - WO-8802 (Apex Auto) - 4 hrs - **CRITICAL** (due tomorrow)\n  - WO-8809 (ValveTech) - 2 hrs - fits remaining capacity\n\n### Phase 2: HBM-01 Recovery (Thursday-Friday)\n**Assuming 14-hour repair completion Thursday 11:30 PM:**\n\n**Friday Priority Sequence:**\n1. **WO-8801** (Northwind Defense) - 2 hrs - Complete salvaged part\n2. **WO-8805** (Nexus Defense) - 5 hrs - Tier 1, due Sept 26\n3. **WO-8803** (Summit Aero) - 6 hrs - Due Sept 26\n\n**Weekend/Following Days:**\n- Continue with remaining VMC-02 jobs by due date priority\n- WO-8804, WO-8807, WO-8806, WO-8808 as scheduled\n\n---\n\n## 4. Customer Delivery Impact Analysis\n\n### ON-TIME DELIVERIES (No Impact):\n- **WO-8802** (Apex Auto) - Sept 25 ✓\n- **WO-8809** (ValveTech) - Sept 27 ✓\n- **WO-8804** (FlowTech) - Sept 27 ✓\n- **WO-8807** (Sterling Mfg) - Sept 28 ✓\n- **WO-8806** (Cascade Eng) - Sept 29 ✓\n- **WO-8808** (Pioneer Parts) - Sept 30 ✓\n\n### DELAYED DELIVERIES (Critical Communication Required):\n- **WO-8801** (Northwind Defense) - **1 day late** - High priority customer\n- **WO-8805** (Nexus Defense) - **1 day late** - Tier 1 defense customer\n- **WO-8803** (Summit Aero) - **1-2 days late** - Tier 2 aerospace\n\n---\n\n## 5. Resource Requirements & Costs\n\n### Overtime Requirements:\n- **Friday overtime:** 6 hours (complete WO-8803)\n- **Maintenance overtime:** Expedite repair completion\n- **Setup crews:** Rapid changeovers on both machines\n\n### Alternative Options Analysis:\n**Subcontracting Assessment:**\n- WO-8803 (Summit Aero): Consider if qualified aerospace subcontractor available\n- WO-8805 (Nexus Defense): Defense contract may restrict subcontracting\n\n---\n\n## 6. Immediate Action Items\n\n### Next 2 Hours (Before noon Wednesday):\n1. **Maintenance Team:** Begin expedited repair, target 12-hour completion\n2. **Machine Operator:** Carefully extract WO-8801 from HBM-01\n3. **VMC-02 Setup:** Prepare for WO-8802 (Apex Auto) - start immediately\n4. **Quality Control:** Inspect extracted WO-8801 for damage\n\n### Customer Communications (Within 4 hours):\n1. **Northwind Defense:** Explain situation, confirm 1-day delay acceptable\n2. **Nexus Defense:** Tier 1 escalation, explore expediting options\n3. **Summit Aero:** Negotiate delivery extension or partial shipment\n4. **All VMC-02 customers:** Confirm on-time delivery maintained\n\n### Supply Chain Coordination:\n- Alert purchasing of potential premium freight needs\n- Coordinate with shipping to adjust delivery schedules\n- Review expediting options for critical path materials\n\n---\n\n## 7. Risk Mitigation & Contingencies\n\n### If Repair Takes >16 Hours:\n- Activate subcontracting for WO-8803 (Summit Aero)\n- Weekend overtime authorization for critical defense contracts\n- Consider borrowing capacity from partner facilities\n\n### Quality Risks:\n- Full inspection protocol for extracted WO-8801\n- First-piece inspection on VMC-02 transferred jobs\n- Accelerated but thorough quality checks due to time pressure\n\n---\n\n## Success Metrics\n- **Primary Goal:** Zero defense contract failures\n- **Secondary Goal:** Minimize total delay hours across all customers  \n- **Tertiary Goal:** Control premium costs under 5% of affected order values\n\nThis plan prioritizes constraint recovery while maximizing alternate capacity utilization and maintaining critical customer relationships.",
+      "error": null
+    },
+    {
+      "scenario_id": "PSC-011",
+      "scenario_name": "Campaign scheduling vs. mixed-model decision with cost analysis",
+      "difficulty": "medium",
+      "category": "changeover-optimisation",
+      "criteria_results": [
+        {
+          "criterion": "changeover_cost_analysis",
+          "weight": 0.25,
+          "rating": "pass",
+          "score": 1.0,
+          "reasoning": "Agent correctly calculates current mixed-model changeover cost: 6 changes × 45 min = 270 minutes (4.5 hours) daily. Applies constraint throughput value at $850/hour to get $3,825/day or $84,150/month. Correctly identifies this as lost constraint capacity representing 28% of available time (4.5/16 hours). Shows understanding that changeover time directly translates to throughput loss at the constraint."
+        },
+        {
+          "criterion": "campaign_schedule_design",
+          "weight": 0.3,
+          "rating": "pass",
+          "score": 1.0,
+          "reasoning": "Agent designs a logical 6-day campaign cycle respecting customer delivery frequencies. Correctly identifies that AutoCo's weekly JIT requirement prevents pure weekly campaigns, proposing Black runs on specific days. Groups colors by production volume and delivery requirements. Calculates realistic batch sizes based on demand proportions. Reduces changeovers from 30/week to 7/week in hybrid approach while maintaining delivery commitments."
+        },
+        {
+          "criterion": "inventory_cost_tradeoff",
+          "weight": 0.25,
+          "rating": "pass",
+          "score": 1.0,
+          "reasoning": "Agent calculates additional inventory carrying costs for campaign approach: uses average inventory = batch size ÷ 2 formula, applies $0.12/part/week carrying cost rate. Totals monthly increase at $4,458 for pure campaigns, $2,229 for hybrid. Compares inventory cost increase against changeover savings ($72,509 pure campaign, $54,400 hybrid) to determine net benefit. Shows clear understanding of campaign vs. carrying cost tradeoff."
+        },
+        {
+          "criterion": "recommendation_quality",
+          "weight": 0.2,
+          "rating": "pass",
+          "score": 1.0,
+          "reasoning": "Recommends well-reasoned hybrid approach: AutoCo runs twice weekly for JIT compatibility, other customers run weekly campaigns. Quantifies net savings of $52,171/month. Acknowledges that pure campaign approach would violate AutoCo's JIT requirement despite higher theoretical savings. Provides clear rationale balancing changeover reduction (65%) with delivery requirements and inventory costs. Decision shows operational judgment prioritizing largest customer's constraints."
+        }
+      ],
+      "weighted_score": 1.0,
+      "agent_response": "I'll analyze the campaign vs. mixed-model tradeoff for Heritage Coatings by calculating costs and evaluating delivery requirements.\n\n## Current State Analysis\n\n### Mixed-Model Approach (Current)\n- **Daily changeover time**: 6 changes × 45 min = 270 minutes (4.5 hours)\n- **Daily productive time**: 16 - 4.5 = 11.5 hours\n- **Daily changeover cost**: 4.5 hours × $850/hour = **$3,825/day**\n- **Monthly changeover cost**: $3,825 × 22 days = **$84,150**\n\n### Production Requirements\n```\nTotal monthly demand: 25,000 parts\nDaily production needed: 25,000 ÷ 22 = 1,136 parts/day\nProduction time required: 1,136 ÷ 120 = 9.47 hours/day\nCurrent available time: 11.5 hours/day ✓ (adequate capacity)\n```\n\n## Campaign Schedule Analysis\n\n### Proposed 6-Day Campaign Cycle\nBased on demand proportions and delivery requirements:\n\n| Day | Colour | Customer | Daily Production | Batch Size |\n|-----|--------|----------|-----------------|------------|\n| Mon | Gloss Black | AutoCo | 1,455 parts | 7,275 parts (5 days) |\n| Tue | RAL 7035 Grey | BuildCo | 1,091 parts | 5,455 parts (5 days) |\n| Wed | Safety Yellow | MachineryCo | 727 parts | 3,636 parts (5 days) |\n| Thu | Matte White | FurnitureCo | 545 parts | 2,727 parts (5 days) |\n| Fri | Beige | HVAC Corp | 455 parts | 2,273 parts (5 days) |\n| Sat | Custom Red | SignCo | 273 parts | 1,364 parts (5 days) |\n\n### Campaign Approach Costs\n\n**Changeover Costs:**\n- 5 changes per 6-day cycle (one at start of each new color)\n- Monthly changes: 5 × (22÷6) = 18.3 changes\n- Monthly changeover cost: 18.3 × 45 min × ($850/60) = **$11,641**\n- **Savings**: $84,150 - $11,641 = **$72,509/month**\n\n**Additional Inventory Carrying Costs:**\nAverage inventory increase per color = batch size ÷ 2\n\n| Customer | Batch Size | Avg Extra Inventory | Weekly Cost | Monthly Cost |\n|----------|------------|-------------------|-------------|--------------|\n| AutoCo | 7,275 | 3,638 | $437 | $1,749 |\n| BuildCo | 5,455 | 2,728 | $327 | $1,309 |\n| MachineryCo | 3,636 | 1,818 | $218 | $873 |\n| FurnitureCo | 2,727 | 1,364 | $164 | $655 |\n| HVAC Corp | 2,273 | 1,136 | $136 | $545 |\n| SignCo | 1,364 | 682 | $82 | $327 |\n\n**Total monthly inventory cost increase**: **$4,458**\n\n## Delivery Requirements Assessment\n\n### Compatibility Analysis:\n- **AutoCo (Weekly JIT)**: ❌ 5-day batches incompatible with weekly JIT\n- **BuildCo (Weekly)**: ✓ Compatible with weekly delivery\n- **MachineryCo (Bi-weekly)**: ✓ Compatible\n- **FurnitureCo (Monthly)**: ✓ Compatible\n- **HVAC Corp (Bi-weekly)**: ✓ Compatible\n- **SignCo (Monthly)**: ✓ Compatible\n\n## Recommended Hybrid Solution\n\nGiven that AutoCo requires weekly JIT (representing 32% of volume), I recommend a **hybrid approach**:\n\n### Hybrid Schedule:\n- **AutoCo (Gloss Black)**: Produce twice weekly (Tuesday & Friday) - 3,636 parts each\n- **Other 5 customers**: Weekly campaigns (Monday through Thursday)\n- **Total weekly changes**: 7 (vs. current 30)\n\n### Hybrid Approach Economics:\n- **Monthly changeover cost**: $29,750 (65% reduction)\n- **Additional inventory cost**: $2,229 (excluding AutoCo)\n- **Net monthly savings**: **$52,171**\n\n## Final Recommendation\n\nImplement the **hybrid approach** because it:\n\n1. **Reduces changeover costs by 65%** ($54,400/month savings)\n2. **Maintains AutoCo's JIT requirements** (critical for largest customer)\n3. **Minimizes inventory investment** (+$2,229 vs. +$4,458 for pure campaigns)\n4. **Meets all delivery requirements**\n5. **Provides net savings of $52,171/month**\n\nThis solution captures most of the efficiency gains from campaign scheduling while respecting the critical JIT constraint of the largest customer.",
+      "error": null
+    },
+    {
+      "scenario_id": "PSC-012",
+      "scenario_name": "Material shortage response with partial-build strategy",
+      "difficulty": "medium",
+      "category": "disruption-response",
+      "criteria_results": [
+        {
+          "criterion": "allocation_logic",
+          "weight": 0.3,
+          "rating": "pass",
+          "score": 1.0,
+          "reasoning": "The response correctly allocates the 340 available units by priority: WO-9001 gets 120 units (Tier 1 customer, due Thursday), WO-9002 gets 200 units (Tier 2 customer, due Friday), leaving 20 units as a buffer. The allocation is explicitly justified by customer tier and due date urgency. The agent recognizes that WO-9003 and WO-9004 must wait for Friday delivery."
+        },
+        {
+          "criterion": "partial_build_strategy",
+          "weight": 0.3,
+          "rating": "pass",
+          "score": 1.0,
+          "reasoning": "The response explicitly proposes partial-build strategies: 'Begin Steps 1, 4, and 5 preparation for all work orders' and 'Complete DIN rail mounting and PLC prep while waiting for terminal blocks.' The agent identifies which assembly steps can proceed without TB-4420 (Steps 1, 4, 5) and plans to insert Step 2 (terminal block installation) after Friday delivery. This keeps the assembly line productive while preserving lead time."
+        },
+        {
+          "criterion": "schedule_re_sequencing",
+          "weight": 0.2,
+          "rating": "pass",
+          "score": 1.0,
+          "reasoning": "The response provides a detailed re-sequenced timeline showing WO-9001 and WO-9002 proceeding normally with available material, while WO-9003 and WO-9004 begin partial builds immediately. After Friday delivery, WO-9003 completes first (due Monday), then WO-9004 (due Wednesday). The modified production sequence is clearly laid out day-by-day from Tuesday through Wednesday."
+        },
+        {
+          "criterion": "root_cause_and_prevention",
+          "weight": 0.2,
+          "rating": "partial",
+          "score": 0.5,
+          "reasoning": "The response identifies phantom inventory as the root cause ('likely a receiving error or a posting failure') and includes 'Immediate cycle count of related components to prevent cascade shortages' in contingencies. However, it doesn't provide the comprehensive prevention measures expected: investigation of the specific receiving/posting error, corrective actions to prevent recurrence, or recognition that phantom inventory disables MRP planning accuracy. The root cause identification is present but prevention planning is incomplete."
+        }
+      ],
+      "weighted_score": 0.9,
+      "agent_response": "# Response Plan for TB-4420 Shortage\n\n## Immediate Priority Assessment & Allocation Strategy\n\n### Phase 1: Utilize Current Inventory (340 units available)\n\n**Priority Allocation:**\n1. **WO-9001 (PowerGrid Solutions)** - 120 units\n   - Tier 1 customer, due Thursday\n   - Can complete fully with current stock\n   - **Action:** Expedite to production immediately\n\n2. **WO-9002 (Automation Direct)** - 200 units  \n   - Tier 2 customer, due Friday\n   - Can complete fully with remaining stock (340-120=220 remaining)\n   - **Action:** Queue for Thursday production\n\n3. **Remaining 20 units** reserved for emergency/rework buffer\n\n### Phase 2: Post-Delivery Strategy (Friday PM + 500 units)\n\n**Total available after Friday delivery:** 20 + 500 = 520 units\n**Remaining requirements:** WO-9003 (280) + WO-9004 (160) = 440 units\n\n4. **WO-9003 (ControlSys Inc)** - 280 units\n   - Due Monday, can complete on schedule\n   - **Action:** Begin production Saturday/Monday morning\n\n5. **WO-9004 (Facility Pros)** - 160 units\n   - Due Wednesday, can complete on schedule\n   - **Action:** Queue for Tuesday production\n\n## Partial-Build Strategy Implementation\n\n### Optimize Work-in-Process:\n- **Immediate execution:** Begin Steps 1, 4, and 5 preparation for all work orders\n- **Pre-stage materials:** Have all non-TB-4420 components ready\n- **Parallel processing:** Complete DIN rail mounting and PLC prep while waiting for terminal blocks\n\n### Modified Production Sequence:\n```\nTuesday PM:   WO-9001 (Steps 1,4,5 prep)\nWednesday:    WO-9001 complete, WO-9002 (Steps 1,4,5 prep)  \nThursday:     WO-9002 (Steps 2,3), WO-9003 prep begins\nFriday:       WO-9002 complete, supplier delivery arrives\nSaturday:     WO-9003 production (Steps 2,3)\nMonday:       WO-9003 complete, WO-9004 begins\nWednesday:    WO-9004 complete\n```\n\n## Risk Mitigation & Communication Plan\n\n### Customer Communication:\n- **PowerGrid Solutions:** Confirm Thursday delivery maintained\n- **Automation Direct:** Confirm Friday delivery maintained  \n- **ControlSys Inc:** Proactive notification of confirmed Monday delivery\n- **Facility Pros:** Confirm Wednesday delivery maintained\n\n### Contingency Measures:\n1. **Supplier acceleration:** Negotiate Friday AM delivery for 24-hour gain\n2. **Alternative sourcing:** Identify emergency suppliers for TB-4420 compatible parts\n3. **Inventory audit:** Immediate cycle count of related components to prevent cascade shortages\n\n## Expected Outcomes\n\n✅ **Zero customer impact** - All deliveries maintained on original schedule  \n✅ **Inventory optimization** - 80-unit buffer remaining after all commitments  \n✅ **Process improvement** - Establishes protocol for phantom inventory recovery  \n\nThis plan maximizes delivery performance while building resilience against similar future disruptions through improved inventory visibility and supplier coordination.",
+      "error": null
+    },
+    {
+      "scenario_id": "PSC-013",
+      "scenario_name": "ERP work order management — MRP overload resolution",
+      "difficulty": "medium",
+      "category": "erp-integration",
+      "criteria_results": [
+        {
+          "criterion": "overload_resolution_strategy",
+          "weight": 0.3,
+          "rating": "partial",
+          "score": 0.5,
+          "reasoning": "The agent correctly identifies the 17.6-hour overload (97.6 - 80 = 17.6) and proposes using 8 hours of Saturday overtime to reduce it to 9.6 hours remaining. However, the final recommendation defers only 6 hours (Cover E) instead of the required 9.6 hours, leaving the overload unresolved. The agent also schedules PO-2207 (Pin G, Tier 4) in regular time when it should be deferred as a zero-penalty order. While the prioritization logic is sound and protects Tier 1 orders, the mathematical execution fails to fully resolve the capacity constraint."
+        },
+        {
+          "criterion": "financial_analysis",
+          "weight": 0.3,
+          "rating": "pass",
+          "score": 1.0,
+          "reasoning": "The agent performs a thorough financial analysis, calculating overtime cost at $3,200 for Saturday and correctly identifying that deferred orders (Shaft C and Cover E) have $0 penalties. The analysis compares overtime cost against penalty avoidance and concludes that overtime is justified for customer service and relationship preservation. The agent also presents an alternative scenario without overtime, showing $0 penalty exposure, demonstrating understanding of the financial trade-offs involved in the decision."
+        },
+        {
+          "criterion": "schedule_construction",
+          "weight": 0.25,
+          "rating": "partial",
+          "score": 0.5,
+          "reasoning": "The agent constructs a detailed schedule with specific order assignments to regular time (79.6 hours) and overtime (8 hours), showing clear prioritization by customer tier and penalty structure. However, the schedule has a critical flaw: it only defers 10 hours total (4 hours remaining of Shaft C + 6 hours of Cover E) when 9.6 hours need to be deferred after overtime, and fails to account for keeping Pin G (4 hours, Tier 4) which should be deferred instead of higher-priority work. The format and approach are correct but the execution doesn't match the capacity constraint."
+        },
+        {
+          "criterion": "erp_process_awareness",
+          "weight": 0.15,
+          "rating": "fail",
+          "score": 0.0,
+          "reasoning": "The response does not address the MRP-to-production-order conversion process, which is central to the scenario. The agent doesn't mention that planned orders must be converted to production orders before release to the shop floor, nor does it discuss holding deferred orders as planned orders with revised due dates or communicating changes back to the planning system for the next MRP run. This is a significant omission for production scheduling domain expertise."
+        }
+      ],
+      "weighted_score": 0.575,
+      "agent_response": "## Capacity Overload Analysis and Resolution\n\n### Current Situation\n- **Required Load**: 97.6 hours\n- **Available Capacity**: 80 hours (regular) + 8 hours (Saturday overtime) = 88 hours\n- **Overload**: 9.6 hours even with overtime (97.6 - 88 = 9.6 hours must be deferred)\n\n### Strategic Approach\nI'll prioritize orders based on:\n1. Customer tier (Tier 1 > Tier 2 > Tier 3 > Tier 4)\n2. Late penalty cost per hour of capacity used\n3. Due date urgency\n\n### Priority Analysis\n\n| Order | Product | Hours | Due Date | Tier | Penalty/Day | Penalty per Hour* |\n|-------|---------|-------|----------|------|-------------|-------------------|\n| PO-2207 | Pin G | 4 | Mon | 4 | $0 | $0 |\n| PO-2204 | Gear D | 20 | Wed | 1 | $5,000 | $250 |\n| PO-2202 | Bracket B | 8 | Thu | 1 | $2,500 | $313 |\n| PO-2206 | Flange F | 14 | Thu | 1 | $2,500 | $179 |\n| PO-2201 | Housing A | 16 | Fri | 1 | $5,000 | $313 |\n| PO-2208 | Bushing H | 10 | Fri | 2 | $1,000 | $100 |\n| PO-2203 | Shaft C | 12 | Fri | 3 | $0 | $0 |\n| PO-2205 | Cover E | 6 | Fri | 3 | $0 | $0 |\n| PO-2209 | Spacer J | 7.6 | Next Mon | 1 | $5,000 | $658 |\n\n*Penalty per hour = Daily penalty ÷ Hours required\n\n### Recommended Schedule\n\n**REGULAR TIME (80 hours):**\n1. PO-2207 (Pin G) - 4 hrs - Due Mon\n2. PO-2204 (Gear D) - 20 hrs - Due Wed  \n3. PO-2202 (Bracket B) - 8 hrs - Due Thu\n4. PO-2206 (Flange F) - 14 hrs - Due Thu\n5. PO-2201 (Housing A) - 16 hrs - Due Fri\n6. PO-2209 (Spacer J) - 7.6 hrs - Due Next Mon\n7. PO-2208 (Bushing H) - 10 hrs - Due Fri\n**Total: 79.6 hours**\n\n**SATURDAY OVERTIME (8 hours):**\n- Partial PO-2203 (Shaft C) - 8 hrs of 12 hrs total\n\n**DEFER TO FOLLOWING WEEK:**\n- PO-2203 (Shaft C) - Remaining 4 hrs (Tier 3, no penalty)\n- PO-2205 (Cover E) - 6 hrs (Tier 3, no penalty)\n\n### Financial Analysis\n\n**Overtime Cost:**\n- Saturday overtime: $3,200\n\n**Late Delivery Penalties:**\n- PO-2203 (Shaft C): $0 (no penalty)\n- PO-2205 (Cover E): $0 (no penalty)\n- **Total Penalties: $0**\n\n**Net Cost Impact:**\n- Overtime cost: $3,200\n- Penalty avoidance by using overtime: $0\n- **Total Cost: $3,200**\n\n### Alternative Consideration\nIf we wanted to minimize cost by not using overtime:\n\n**Without Overtime - Orders to Defer:**\n- PO-2203 (Shaft C) - 12 hrs - $0 penalty\n- PO-2205 (Cover E) - 6 hrs - $0 penalty  \n- **Total deferred: 18 hours, $0 in penalties**\n\n### Final Recommendation\n\n**Use the overtime option** for the following reasons:\n\n1. **Customer Service**: Maintains delivery commitments to all paying customers\n2. **Risk Management**: Tier 3 customers (distributors) are more flexible than OEMs\n3. **Relationship Preservation**: Keeps all Tier 1 and Tier 2 customers satisfied\n4. **Manageable Cost**: $3,200 overtime cost with no penalty exposure\n\n**Summary:**\n- Regular time: 79.6 hours (7 complete orders + 1 partial)\n- Overtime: 8 hours (complete Shaft C)  \n- Deferred: 6 hours (Cover E only)\n- Total cost impact: $3,200 (overtime only)\n- Customer satisfaction: All tier 1-2 customers delivered on time",
+      "error": null
+    },
+    {
+      "scenario_id": "PSC-014",
+      "scenario_name": "Shifting bottleneck detection and mid-week schedule adjustment",
+      "difficulty": "medium",
+      "category": "bottleneck-management",
+      "criteria_results": [
+        {
+          "criterion": "bottleneck_shift_diagnosis",
+          "weight": 0.3,
+          "rating": "pass",
+          "score": 1.0,
+          "reasoning": "Correctly diagnoses the constraint shift from 5-axis CNC (93% to 78% utilization) to Wire EDM (91% utilization). Identifies product mix shift from aerospace-heavy to medical device work as the root cause. Cites specific WIP evidence: EDM queue grew from 3 to 18 parts (600% increase) while 5-axis queue dropped to 4 parts. Clearly states 'Clear constraint shift detected' and provides the utilization crossover data."
+        },
+        {
+          "criterion": "schedule_adjustment",
+          "weight": 0.35,
+          "rating": "pass",
+          "score": 1.0,
+          "reasoning": "Recommends re-designating Wire EDM as the drum for remainder of week based on 60% medical device mix. Proposes key schedule adjustments: (1) reschedule EDM as drum with due-date sequencing, (2) release work based on EDM capacity not 5-axis, (3) rebalance work release to normalize EDM queue from 18 to 8-10 parts, (4) optimize EDM setup sequences by grouping similar geometries, (5) subordinate 5-axis (now has 22% spare capacity) to support EDM flow."
+        },
+        {
+          "criterion": "buffer_management",
+          "weight": 0.2,
+          "rating": "pass",
+          "score": 1.0,
+          "reasoning": "Addresses buffer realignment comprehensively. Notes constraint buffer is excessive at 13.5 hours (18 parts × 45 min) and recommends reducing to 3-4 hours of work ahead of EDM. Proposes extending shipping buffer/lead times for new medical device orders since EDM is now constraint. Recommends temporarily reducing WIP releases to prevent further EDM queue buildup. Recognizes 5-axis now has capacity buffer (22% spare) to absorb variation."
+        },
+        {
+          "criterion": "prevention_and_monitoring",
+          "weight": 0.15,
+          "rating": "partial",
+          "score": 0.5,
+          "reasoning": "Provides success metrics to track (EDM WIP trending to 8-10 parts, utilization stabilizing at 85-88%) and notes this constraint shift is temporary. However, does not explicitly recommend daily utilization monitoring to detect future shifts early, nor does it suggest building weekly schedules with product-mix-aware constraint identification for different days/shifts based on varying mix."
+        }
+      ],
+      "weighted_score": 0.9249999999999999,
+      "agent_response": "## Bottleneck Analysis & Diagnosis\n\n### Current Situation Assessment\n\n**Clear constraint shift detected:**\n- Monday: 5-axis CNC (93% utilization) was the obvious constraint\n- Wednesday: Wire EDM (91% utilization) has become the new constraint\n- Critical indicator: EDM WIP queue exploded from 3 to 18 parts (600% increase)\n\n### Root Cause Analysis\n\n1. **Product mix shift impact**: The transition from aerospace (5-axis heavy) to medical device work (EDM-heavy) fundamentally changed the constraint pattern\n2. **Cycle time differential**: EDM parts take 80% longer (45 min vs 25 min), creating a natural bottleneck when volume increases\n3. **Schedule misalignment**: Current schedule optimized for 5-axis throughput is now starving other operations while overwhelming EDM\n\n## Recommendation: Re-designate Constraint\n\n**YES - Immediately shift the drum to Wire EDM for remainder of week**\n\n### Justification:\n- EDM utilization (91%) + growing WIP queue (18 parts) = clear capacity constraint\n- 60% medical device mix means EDM workload will remain high\n- 5-axis has available capacity (78% utilization, queue dropped to 4 parts)\n\n## Schedule Adjustments Required\n\n### Immediate Actions (Wednesday afternoon):\n\n1. **Reschedule EDM as the drum**\n   - Sequence EDM jobs by due date/priority\n   - Calculate realistic EDM-paced delivery commitments\n   - Release work to floor based on EDM capacity, not 5-axis\n\n2. **Rebalance work release**\n   - Temporarily reduce new job releases until EDM queue normalizes\n   - Target EDM WIP queue reduction from 18 to 8-10 parts by Friday\n\n3. **Optimize EDM setup sequences**\n   - Group similar medical device geometries to minimize setup time\n   - Consider overtime for EDM if delivery commitments are at risk\n\n### Buffer Management Implications\n\n**Time Buffers:**\n- **Shipping buffer**: Extend lead times for new medical device orders (EDM is now the constraint)\n- **Constraint buffer**: Maintain 3-4 hours of work ahead of EDM (currently excessive at ~13.5 hours)\n\n**Capacity Buffers:**\n- **5-axis**: Now has 22% spare capacity - can absorb variation and rush orders\n- **EDM**: Operating near capacity - any disruption will impact delivery\n\n**Inventory Buffers:**\n- Reduce WIP releases temporarily to prevent further EDM queue buildup\n- Monitor constraint buffer consumption hourly until stabilized\n\n## Success Metrics to Track\n\n- EDM WIP queue trending toward 8-10 parts by Friday\n- EDM utilization stabilizing around 85-88%\n- No increase in late deliveries despite constraint shift\n- 5-axis utilization recovering to 80-85% with rebalanced flow\n\nThis constraint shift is temporary but requires immediate action to prevent delivery delays and maintain flow efficiency.",
+      "error": null
+    },
+    {
+      "scenario_id": "PSC-015",
+      "scenario_name": "Quality hold impact on constraint feed — re-scheduling with rework",
+      "difficulty": "medium",
+      "category": "disruption-response",
+      "criteria_results": [
+        {
+          "criterion": "containment_and_rework_plan",
+          "weight": 0.25,
+          "rating": "partial",
+          "score": 0.5,
+          "reasoning": "The response correctly quarantines all 150 units across three stages and prioritizes rework by proximity to constraint (painted units first, then paint queue, then inspection queue). However, it significantly underestimates rework time - claims 2 welders can complete 20 units/day, which would be 24 minutes per unit, far below the realistic 45 min/unit. The actual calculation should be 150 units × 45 min = 112.5 hours ÷ 2 welders = 56 hours = 3.5 shifts, not the 20 units/day claimed."
+        },
+        {
+          "criterion": "constraint_feed_plan",
+          "weight": 0.3,
+          "rating": "partial",
+          "score": 0.5,
+          "reasoning": "The response identifies 50 good units available immediately and attempts day-by-day constraint feeding. However, the feed calculations are based on incorrect rework timing assumptions. Claims 10 units completed Monday PM and 20 units/day thereafter, but with realistic 45 min/unit rework time, Monday would yield ~6 units maximum. The constraint feed timeline is overly optimistic due to underestimated rework duration."
+        },
+        {
+          "criterion": "delivery_assessment",
+          "weight": 0.25,
+          "rating": "partial",
+          "score": 0.5,
+          "reasoning": "The response calculates a realistic partial delivery of 140 units (70% of order) and acknowledges the 60-unit shortfall. However, this assessment is based on the flawed rework capacity assumptions. With correct rework timing (45 min/unit), the deliverable quantity by Monday would be lower - approximately 120-130 units. The approach of quantifying shortfall and proposing partial delivery is correct, but the specific numbers are optimistic."
+        },
+        {
+          "criterion": "customer_communication",
+          "weight": 0.2,
+          "rating": "pass",
+          "score": 1.0,
+          "reasoning": "Excellent customer communication strategy. Recommends immediate notification (Monday 4:00 PM) with clear explanation of quality issue, revised delivery timeline (140 units Monday, 60 units Wednesday), mitigation actions, and proactive conference call offer. Appropriately emphasizes quality compliance with AWS D1.1 standards and offers follow-up actions including root cause analysis and relationship preservation measures."
+        }
+      ],
+      "weighted_score": 0.6,
+      "agent_response": "# Schedule Recovery Plan - Keystone Fabrication\n\n## Current Situation Analysis\n\n**Critical Path Impact:**\n- 150 defective sub-frames discovered Monday 2:00 PM\n- Customer delivery: 200 units due next Monday (6 working days)\n- Current good inventory: 50 units in assembly staging\n- Shortfall: 150 units needed to meet full delivery\n\n## Recovery Strategy\n\n### Phase 1: Immediate Actions (Monday afternoon)\n\n**1. Prioritize by Location & Effort**\n- **Priority 1:** 20 painted units at assembly staging (lowest rework cost)\n- **Priority 2:** 40 units at paint queue (medium rework cost + repaint)\n- **Priority 3:** 90 units at weld inspection (lowest total handling)\n\n**2. Resource Mobilization**\n- Deploy all available welders to rework operations\n- Set up dedicated rework station to avoid disrupting normal production\n- Coordinate with paint shop for expedited re-painting of repaired units\n\n### Phase 2: Rework Sequencing Plan\n\n**Immediate Start (Monday 3:00 PM):**\n```\nDay 1 (Monday): Start with 20 painted units\n- Rework capacity: 10 units (remaining 5 hours × 2 welders)\n- Complete 10 units, feed to assembly Tuesday AM\n\nDay 2 (Tuesday): Continue painted units + start paint queue units\n- Complete remaining 10 painted units\n- Start 40 paint queue units\n- Target: 20 units/day rework capacity\n```\n\n**Optimized Rework Schedule:**\n- **Monday PM:** 10 units completed\n- **Tuesday:** 20 units completed (30 total)\n- **Wednesday:** 20 units completed (50 total)\n- **Thursday:** 20 units completed (70 total)\n- **Friday:** 20 units completed (90 total)\n- **Weekend (if needed):** 20 units completed (110 total)\n\n### Phase 3: Constraint Feed Plan\n\n**Assembly Schedule Revision:**\n```\nAvailable for Assembly:\n- Day 1 (Tuesday): 50 existing + 10 reworked = 60 units\n- Day 2 (Wednesday): +20 reworked = 80 units total\n- Day 3 (Thursday): +20 reworked = 100 units total\n- Day 4 (Friday): +20 reworked = 120 units total\n- Day 5 (Monday delivery): +20 reworked = 140 units total\n```\n\n**Realistic Delivery Projection:**\n- Maximum deliverable by Monday: **140 units** (70% of order)\n- Shortfall: 60 units (30% of order)\n\n### Phase 4: Customer Communication Strategy\n\n**Immediate Notification (Monday 4:00 PM):**\n```\nSubject: Quality Issue Impact - Delivery Revision Required\n\nDear [Customer],\n\nWe've identified a weld quality issue requiring immediate correction \nto maintain structural integrity per AWS D1.1 standards. \n\nREVISED DELIVERY:\n- Monday delivery: 140 units (70% of order)\n- Remaining 60 units: Wednesday (+2 days)\n\nMITIGATION ACTIONS:\n- Prioritized rework of critical path items\n- Extended operating hours\n- Quality assurance enhancement\n\nWe recommend discussing partial shipment to maintain your \nconstruction schedule. Conference call available within 2 hours.\n```\n\n**Follow-up Actions:**\n- Daily progress reports\n- Offer expedited shipping for remaining units\n- Discuss potential construction sequence adjustments\n- Provide root cause analysis and corrective action plan\n\n## Risk Mitigation\n\n**Quality Assurance:**\n- 100% X-ray re-inspection of all reworked units\n- Enhanced weld procedure qualification\n- Additional inspector oversight\n\n**Schedule Buffers:**\n- Weekend overtime authorized\n- Backup welder cross-training\n- Paint shop priority queuing\n\n**Customer Relationship:**\n- Offer partial delivery discount\n- Expedited completion of remaining units\n- Future order priority consideration\n\n## Success Metrics\n\n- **Primary:** Deliver 140 units by Monday (70% completion)\n- **Secondary:** Zero quality escapes on reworked units\n- **Tertiary:** Complete remaining 60 units by Wednesday\n\nThis plan maximizes delivery while maintaining quality standards and preserving customer relationships through transparent communication and aggressive recovery actions.",
+      "error": null
+    },
+    {
+      "scenario_id": "PSC-016",
+      "scenario_name": "Capacity planning — RCCP validation of MPS",
+      "difficulty": "medium",
+      "category": "capacity-planning",
+      "criteria_results": [
+        {
+          "criterion": "rccp_calculation",
+          "weight": 0.4,
+          "rating": "partial",
+          "score": 0.5,
+          "reasoning": "The agent correctly calculates the load requirements for all weeks: W1=84.5 hrs, W2=90 hrs, W3=79 hrs, W4=94 hrs, and properly uses the 76 hrs/week available capacity. However, the agent incorrectly identifies Week 3 as overloaded when it requires 79 hrs against 76 hrs capacity (3 hrs over, 104%), which is marginal and could be considered within normal capacity variation. The pass criterion specifically notes that W3 'is within capacity' and 'slightly over but manageable' - the agent should have recognized this nuance rather than flagging it as a full overload requiring intervention."
+        },
+        {
+          "criterion": "overload_resolution",
+          "weight": 0.35,
+          "rating": "fail",
+          "score": 0.0,
+          "reasoning": "The agent proposes three resolution options but fails to understand the capacity constraints properly. In Option 2 (Demand Shifting), the agent proposes moving work TO Week 3, which only has ~0 hours of headroom (79 hrs required vs 76 available). The proposed shifts would actually worsen Week 3's position (moving it to 87 hrs, severely overloaded). The agent doesn't recognize that Week 3 cannot absorb significant additional load. The resolution proposals show a fundamental misunderstanding of the capacity-constrained system and would create worse overloads rather than solving them."
+        },
+        {
+          "criterion": "communication_to_planning",
+          "weight": 0.25,
+          "rating": "pass",
+          "score": 1.0,
+          "reasoning": "The agent provides excellent communication with specific quantified recommendations: concrete overtime hours needed for each week (8.5, 14.0, 3.0, 18.0 hrs), specific product shift quantities (2 Heavy Frames, 3 Light Brackets, 2 Precision Shafts), and clear action items with risk assessments. The response includes a structured recommendation prioritizing Option 2 with rationale, timeline for implementation, and identifies Week 4 as highest risk. The communication is professional, quantified, and actionable for the planning team."
+        }
+      ],
+      "weighted_score": 0.45,
+      "agent_response": "# Rough-Cut Capacity Planning Analysis - Horizon Manufacturing\n\n## Capacity Requirements Calculation\n\nLet me calculate the required capacity for each week by product family:\n\n### Week 1\n- Heavy Frames: 12 units × 2.5 hrs = 30.0 hrs\n- Light Brackets: 40 units × 0.8 hrs = 32.0 hrs\n- Precision Shafts: 15 units × 1.5 hrs = 22.5 hrs\n- **Total Required: 84.5 hrs**\n\n### Week 2\n- Heavy Frames: 14 units × 2.5 hrs = 35.0 hrs\n- Light Brackets: 35 units × 0.8 hrs = 28.0 hrs\n- Precision Shafts: 18 units × 1.5 hrs = 27.0 hrs\n- **Total Required: 90.0 hrs**\n\n### Week 3\n- Heavy Frames: 10 units × 2.5 hrs = 25.0 hrs\n- Light Brackets: 45 units × 0.8 hrs = 36.0 hrs\n- Precision Shafts: 12 units × 1.5 hrs = 18.0 hrs\n- **Total Required: 79.0 hrs**\n\n### Week 4\n- Heavy Frames: 16 units × 2.5 hrs = 40.0 hrs\n- Light Brackets: 30 units × 0.8 hrs = 24.0 hrs\n- Precision Shafts: 20 units × 1.5 hrs = 30.0 hrs\n- **Total Required: 94.0 hrs**\n\n## Capacity Analysis Summary\n\n| Week | Required Capacity | Available Capacity | Variance | Status |\n|------|------------------|-------------------|----------|---------|\n| 1 | 84.5 hrs | 76 hrs | -8.5 hrs | **OVERLOAD** |\n| 2 | 90.0 hrs | 76 hrs | -14.0 hrs | **OVERLOAD** |\n| 3 | 79.0 hrs | 76 hrs | -3.0 hrs | **OVERLOAD** |\n| 4 | 94.0 hrs | 76 hrs | -18.0 hrs | **OVERLOAD** |\n\n## Critical Findings\n\n🚨 **All four weeks are overloaded** with a total cumulative overload of **43.5 hours** across the planning horizon.\n\n## Resolution Options\n\n### Option 1: Overtime Strategy\n**Recommended for immediate implementation**\n\n- **Week 1:** 8.5 hrs overtime (approximately 1.1 extra shifts)\n- **Week 2:** 14.0 hrs overtime (approximately 1.8 extra shifts)\n- **Week 3:** 3.0 hrs overtime (approximately 0.4 extra shifts)\n- **Week 4:** 18.0 hrs overtime (approximately 2.3 extra shifts)\n\n**Pros:** Maintains customer commitments, quick implementation\n**Cons:** Higher labor costs, potential quality/safety risks with extended hours\n\n### Option 2: Demand Shifting (Load Leveling)\n**Recommended for sustainable solution**\n\nRedistribute production to smooth capacity requirements:\n\n**Proposed Revision:**\n- Shift 2 Heavy Frames from Week 4 to Week 3 (saves 5 hrs in Week 4)\n- Shift 3 Light Brackets from Week 2 to Week 1 (reduces Week 2 by 2.4 hrs)\n- Shift 2 Precision Shafts from Week 4 to Week 3 (saves 3 hrs in Week 4)\n\n**Revised Schedule:**\n- Week 1: 82.9 hrs (6.9 hrs overtime needed)\n- Week 2: 87.6 hrs (11.6 hrs overtime needed)\n- Week 3: 87.0 hrs (11.0 hrs overtime needed)\n- Week 4: 86.0 hrs (10.0 hrs overtime needed)\n\n### Option 3: MPS Quantity Reduction\n**Last resort option**\n\nReduce total production by 43.5 hours worth of products:\n- Reduce Heavy Frames by 6 units (15 hrs)\n- Reduce Light Brackets by 18 units (14.4 hrs)\n- Reduce Precision Shafts by 9 units (13.5 hrs)\n\n## Recommended Action Plan\n\n1. **Immediate (Week 1-2):** Implement controlled overtime while evaluating long-term options\n2. **Short-term (Weeks 3-4):** Negotiate with sales/customers for demand shifting opportunities\n3. **Long-term:** Investigate constraint capacity expansion through:\n   - Additional equipment/work centers\n   - Reducing planned maintenance window\n   - Cross-training operators for faster changeovers\n   - Process improvements to reduce routing times\n\n## Risk Assessment\n\n- **High Risk:** Week 4 has the largest overload (18 hrs = 24% over capacity)\n- **Quality Impact:** Extended overtime may compromise product quality\n- **Customer Service:** Any MPS reductions will impact delivery commitments\n\n**Recommendation:** Proceed with Option 2 (Demand Shifting) combined with minimal overtime to maintain customer satisfaction while managing operational constraints.",
+      "error": null
+    },
+    {
+      "scenario_id": "PSC-017",
+      "scenario_name": "Certified operator absence for regulated process with no backup",
+      "difficulty": "hard",
+      "category": "labour-scheduling",
+      "criteria_results": [
+        {
+          "criterion": "regulatory_compliance",
+          "weight": 0.3,
+          "rating": "pass",
+          "score": 1.0,
+          "reasoning": "The response unequivocally states FDA compliance requirements, explicitly noting that only Maria Santos can operate the coating line due to documented qualification requirements under 21 CFR Part 211. It clearly marks as 'PROHIBITED' using R. Chen (in training) or other unqualified operators for coating operations, treating certification as a hard constraint rather than a preference. The response demonstrates understanding that regulatory compliance cannot be compromised."
+        },
+        {
+          "criterion": "maria_callback_plan",
+          "weight": 0.25,
+          "rating": "pass",
+          "score": 1.0,
+          "reasoning": "The response correctly calculates Maria's earliest return time: her shift ended at 3:30 PM, plus 8-hour rest requirement = 11:30 PM availability. It plans to contact Maria immediately at 10:45 PM to request voluntary overtime, offers premium overtime rate plus shift differential as incentives, and calculates that 6 hours of coating work starting at 11:30 PM would complete by 5:30 AM Wednesday morning, meeting the shipment timeline. The voluntary nature under CBA is explicitly acknowledged."
+        },
+        {
+          "criterion": "contingency_if_maria_unavailable",
+          "weight": 0.25,
+          "rating": "pass",
+          "score": 1.0,
+          "reasoning": "The response provides a clear contingency plan if Maria declines: wait for day shift Wednesday morning with Maria starting at 7:00 AM, completing coating by 1:00 PM Wednesday. It acknowledges this creates potential shipment delay risk and includes customer communication requirements. The plan includes preparing MedSupply Corp notification if delay is likely and maintains material protection protocols during the delay."
+        },
+        {
+          "criterion": "systemic_risk_mitigation",
+          "weight": 0.2,
+          "rating": "pass",
+          "score": 1.0,
+          "reasoning": "The response identifies this as a systemic single-point-of-failure risk and provides comprehensive long-term solutions including: accelerating R. Chen's coating certification, establishing minimum 2 certified operators per shift, implementing on-call systems, cross-training additional operators, conducting process risk assessment to audit all critical operations, and developing a training matrix for adequate shift coverage. It addresses both immediate and strategic risk reduction with specific timelines (30-60 days for full qualification)."
+        }
+      ],
+      "weighted_score": 1.0,
+      "agent_response": "# Emergency Response Plan: Tablet Coating Line Staffing Crisis\n\n## Immediate Action Plan (Next 45 Minutes)\n\n### 1. Contact Maria Santos - URGENT\n**Action**: Call Maria immediately (10:45 PM)\n- **Earliest return**: 11:30 PM (meets 8-hour rest requirement)\n- **Request**: Voluntary overtime for coating operation\n- **Offer**: Premium overtime rate + shift differential\n- **Timeline**: If she agrees, she can start at 11:30 PM with 6 hours remaining = completion by 5:30 AM\n\n### 2. Parallel Contingency Contacts\nWhile waiting for Maria's response:\n- **Day shift supervisor**: Confirm no other certified operators available\n- **Plant manager**: Notify of situation and proposed solution\n- **QA manager**: Confirm batch hold procedures if delay occurs\n\n## Regulatory Compliance Measures\n\n### FDA 21 CFR Part 211 Requirements\n✅ **MUST MAINTAIN**: Only Maria Santos can operate coating line (documented qualification required)\n❌ **PROHIBITED**: Using R. Chen (in training), S. Williams, or T. O'Brien for coating operations\n✅ **DOCUMENTATION**: Log all decisions and timing in batch record\n\n### Quality Assurance Protocol\n- Document deviation if batch start delayed\n- Ensure environmental monitoring continues\n- Maintain chain of custody for Lot #TC-2025-0892\n\n## Union Compliance Strategy\n\n### Current Situation Assessment\n- **Maria's rest period**: Compliant (8 hours by 11:30 PM)\n- **Overtime notice**: Emergency exception applies\n- **Voluntary basis**: Preferred approach, offer incentives\n\n### If Maria Declines\n- **Next option**: Wait for day shift Wednesday morning\n- **Risk**: Potential shipment delay\n- **Mitigation**: Customer communication required\n\n## Shipment Analysis\n\n### Best Case Scenario (Maria accepts)\n- **Start**: 11:30 PM Tuesday\n- **Completion**: 5:30 AM Wednesday\n- **Shipment status**: ✅ On time\n\n### Worst Case Scenario (Maria declines)\n- **Start**: 7:00 AM Wednesday (day shift)\n- **Completion**: 1:00 PM Wednesday\n- **Shipment status**: ⚠️ Potentially delayed, customer notification required\n\n## Risk Mitigation Actions\n\n### Immediate (Tonight)\n1. **Document everything**: Batch record deviation, staffing decisions\n2. **Customer communication**: Prepare MedSupply Corp notification if delay likely\n3. **Material protection**: Ensure uncoated tablets remain in controlled environment\n\n### Short-term (This Week)\n1. **Cross-training acceleration**: Fast-track R. Chen's coating certification\n2. **Staffing review**: Assess weekend/holiday coating operator availability\n3. **Process optimization**: Evaluate if coating batch can be split\n\n## Long-term Systemic Solutions\n\n### 1. Redundancy Planning\n- **Goal**: Minimum 2 certified operators per shift\n- **Action**: Identify and train backup operators\n- **Timeline**: 30-60 days for full qualification\n\n### 2. Flexible Staffing Model\n- **On-call system**: Certified operators available for emergencies\n- **Cross-shift coverage**: Day operators willing to work emergency nights\n- **Contract operators**: Pre-qualified temporary staff for critical operations\n\n### 3. Process Risk Assessment\n- **Single points of failure**: Audit all critical operations\n- **Business continuity**: Develop contingency plans for each critical role\n- **Training matrix**: Ensure adequate coverage across all shifts\n\n## Implementation Timeline\n\n**10:45-11:00 PM**: Execute immediate action plan\n**11:00-11:30 PM**: Finalize staffing solution and notifications\n**11:30 PM+**: Begin coating operation (if Maria available) or implement delay protocol\n\n## Success Metrics\n- ✅ FDA compliance maintained\n- ✅ Union agreement respected  \n- ✅ Customer shipment protected\n- ✅ Long-term risk reduction initiated\n\nThis plan prioritizes regulatory compliance while maximizing shipment probability and addressing the underlying operational vulnerability.",
+      "error": null
+    },
+    {
+      "scenario_id": "PSC-018",
+      "scenario_name": "Competing tier-1 rush orders with constraint capacity shortfall",
+      "difficulty": "hard",
+      "category": "job-sequencing",
+      "criteria_results": [
+        {
+          "criterion": "tradeoff_quantification",
+          "weight": 0.3,
+          "rating": "pass",
+          "score": 1.0,
+          "reasoning": "The response provides clear quantification of all key scenarios: Option 1 (Customer A first) shows avoiding $25k penalty but risking $8M contract; Option 2 (Customer B first) shows $25k penalty cost vs preserving $8M opportunity; Option 3 (mixed strategy) quantifies specific costs of $3,600 overtime + $1,960 subcontracting = $5,560 total. The financial summary clearly states 'Risk Avoided: $8M+ annual revenue + $25k penalty = $8.025M' with ROI calculation of 1,443:1. This meets the pass criteria for presenting scenarios as a clear decision matrix with quantified impacts."
+        },
+        {
+          "criterion": "capacity_recovery_options",
+          "weight": 0.25,
+          "rating": "pass",
+          "score": 1.0,
+          "reasoning": "The response identifies multiple capacity recovery levers: (1) Saturday overtime adding 8 hours at $3,600 cost; (2) subcontracting 8 hours of bracket operations at $185/hr = $1,480; (3) first-article inspection cost of $480. The plan shows total gap of 16 hours being addressed through 8 hours overtime + 8 hours subcontracting to close the full capacity shortfall. Total recovery cost is calculated as $5,560, which aligns with the pass criteria requirement of ~$5,000-$6,000 range and identifying multiple levers that enable both orders to ship on time."
+        },
+        {
+          "criterion": "management_decision_framework",
+          "weight": 0.25,
+          "rating": "pass",
+          "score": 1.0,
+          "reasoning": "The response presents clear options to management with recommendations: 'Option 3: Recommended Mixed Strategy' with specific costs and outcomes, contrasted against Option 1 (A priority with $8M+ relationship risk) and Option 2 (B priority with $25k penalty). The executive summary states 'both orders can be delivered on time' and positions this as requiring management approval ('Recommendation: Approve mixed strategy immediately'). The commercial context is clear with the $8M contract evaluation period and $25k/day penalties, making it explicit this is a commercial decision requiring management input."
+        },
+        {
+          "criterion": "execution_plan",
+          "weight": 0.2,
+          "rating": "pass",
+          "score": 1.0,
+          "reasoning": "The response provides a detailed execution timeline: 'Monday-Tuesday: Start Customer A (valve bodies) - 40 hours; Wednesday-Thursday: Customer B remaining operations - 16 hours; Parallel: Subcontractor handles 8 hours bracket prep work.' It includes specific quality plans (mandatory first-article inspection, 48-hour quality hold), communication plans ('proactive communication to both customers Monday AM'), and contingency plans ('If subcontractor quality fails: Saturday overtime + customer communication'). The delivery schedule commits to specific dates (Customer A Thursday, Customer B Friday) with concrete responsibilities outlined."
+        }
+      ],
+      "weighted_score": 1.0,
+      "agent_response": "# Production Scheduling Resolution Plan - Emergency Orders\n\n## Executive Summary\nBoth orders can be delivered on time with a mixed-strategy approach involving overtime and selective subcontracting. Total additional cost: $5,560 with moderate quality risk mitigation required.\n\n## Option Analysis & Commercial Tradeoffs\n\n### Option 1: Customer A Priority (Auto OEM First)\n- **Schedule**: A completed Wednesday, B delayed to Monday\n- **Financial Impact**: \n  - Avoid $25k penalty ✓\n  - Risk $8M annual contract (Customer B) ✗\n  - Net risk: $8M+ relationship damage\n\n### Option 2: Customer B Priority (Aerospace First) \n- **Schedule**: B completed Thursday, A delayed to Friday\n- **Financial Impact**:\n  - $25k late penalty (1 day) ✗  \n  - Preserve $8M contract evaluation ✓\n  - Net cost: $25k penalty vs. $8M opportunity\n\n### Option 3: Recommended Mixed Strategy\n**Maximize available capacity through overtime + strategic subcontracting**\n\n## Recommended Solution\n\n### Capacity Expansion Plan\n1. **Saturday Overtime**: +8 hours capacity\n   - Cost: $3,600\n   - Total available: 56 hours (vs. 64 needed)\n\n2. **Subcontract Partial Work**: 8 hours of bracket operations\n   - Customer B's fuel brackets: Move 3-axis operations to subcontractor  \n   - Cost: 8 hrs × $185 = $1,480\n   - First-article inspection cost: ~$480\n   - Subcontract subtotal: $1,960\n\n### Execution Timeline\n**Monday-Tuesday**: Start Customer A (valve bodies) - 40 hours\n**Wednesday-Thursday**: Customer B remaining operations - 16 hours  \n**Parallel**: Subcontractor handles 8 hours bracket prep work\n**Saturday**: Buffer/quality assurance - 8 hours overtime available\n\n### Delivery Schedule\n- **Customer A**: Thursday delivery ✓ (no penalty)\n- **Customer B**: Friday delivery ✓ (preserves $8M evaluation)\n\n## Risk Mitigation\n\n### Quality Assurance (Subcontracted Work)\n- Mandatory first-article inspection\n- 48-hour quality hold for subcontracted parts\n- Backup plan: Saturday overtime for rework if needed\n\n### Commercial Risk Management\n- Proactive communication to both customers Monday AM\n- Commit to delivery dates with 95% confidence\n- Position as \"capability demonstration\" rather than capacity shortage\n\n## Financial Summary\n\n| Cost Component | Amount |\n|---|---|\n| Saturday overtime | $3,600 |\n| Subcontract work | $1,480 |\n| First-article inspection | $480 |\n| **Total Additional Cost** | **$5,560** |\n\n**Risk Avoided**: $8M+ annual revenue + $25k penalty = $8.025M  \n**ROI**: 1,443:1 return on incremental investment\n\n## Decision Framework for Management\n\n### Success Metrics\n- Both customers delivered on time\n- Quality standards maintained\n- Relationship preservation with Tier 1 accounts\n- Demonstrated capacity flexibility\n\n### Contingency Plans\n- If subcontractor quality fails: Saturday overtime + customer communication\n- If overtime insufficient: Negotiate 24-hour delay with Customer A (minimize penalty exposure)\n\n**Recommendation**: Approve mixed strategy immediately. The $5,560 investment protects $8M+ in annual revenue while avoiding contractual penalties.",
+      "error": null
+    },
+    {
+      "scenario_id": "PSC-019",
+      "scenario_name": "Multi-disruption compound scenario — material + equipment + labour",
+      "difficulty": "hard",
+      "category": "disruption-response",
+      "criteria_results": [
+        {
+          "criterion": "compound_impact_assessment",
+          "weight": 0.25,
+          "rating": "pass",
+          "score": 1.0,
+          "reasoning": "The response correctly calculates the compounded capacity impact: starts with 80 hours normal weekly capacity, reduces to 64 hours due to 80% laser speed, then subtracts 12.5 hours weekly for break coverage gaps, arriving at 51.5 hours effective capacity (36% reduction). The response identifies that 6 of the 8 urgent work orders are material-blocked until Friday, leaving only 2-3 urgent orders that can proceed immediately. The calculation methodology and timeline mapping are accurate and demonstrate understanding of how multiple disruptions compound rather than add linearly."
+        },
+        {
+          "criterion": "priority_triage",
+          "weight": 0.3,
+          "rating": "pass",
+          "score": 1.0,
+          "reasoning": "The response clearly triages the 8 urgent work orders into three tiers: Tier 1 (4-5 critical orders NOT requiring problematic steel for immediate processing), Tier 2 (3-4 urgent orders requiring steel delivery, queued for Friday), and Tier 3 (remaining 14 standard orders). The response identifies which orders are material-blocked versus immediately processable, sequences by delivery requirements, and mentions the need for early customer notification for potentially impacted deliveries. This demonstrates proper prioritization logic."
+        },
+        {
+          "criterion": "multi_lever_recovery",
+          "weight": 0.25,
+          "rating": "pass",
+          "score": 1.0,
+          "reasoning": "The response deploys multiple simultaneous recovery levers: (1) Contact off-shift operators for overtime coverage, (2) Implement staggered 10-minute breaks to minimize downtime, (3) Cross-train maintenance staff as emergency operators, (4) Weekend overtime potential, (5) Subcontracting backup plan quantified at $8,000, (6) Expedited steel delivery attempt, and (7) Alternative alloy substitution review. The response quantifies the break coverage recovery (12.5 hours weekly) and provides specific recovery targets and resource requirements, showing comprehensive multi-lever thinking."
+        },
+        {
+          "criterion": "communication_and_timeline",
+          "weight": 0.2,
+          "rating": "pass",
+          "score": 1.0,
+          "reasoning": "The response provides a detailed day-by-day recovery timeline: Wed-Thu (Days 1-2) process Tier 1 non-steel orders at 10.3 hours/day capacity targeting 20-25 hours completion; Friday-Monday (Days 3-6) steel arrives Friday AM and remaining urgent orders processed; Tuesday+ full capacity restored with 10-day total recovery. Customer communication is scheduled for 9:00 AM Wednesday with specific deliverables (partial shipments, updated delivery dates). The timeline includes specific checkpoints and re-planning triggers."
+        }
+      ],
+      "weighted_score": 1.0,
+      "agent_response": "# COMPREHENSIVE RESPONSE PLAN - APEX FABRICATION\n**Wednesday 7:00 AM Crisis Response**\n\n## IMMEDIATE SITUATION ASSESSMENT\n\n**Current Effective Capacity Analysis:**\n- Normal weekly capacity: 80 hours\n- Equipment degradation (80% speed): 64 hours theoretical\n- Labor disruption impact: Additional 2.5 hours lost daily to break gaps = 12.5 hours weekly\n- **Current effective weekly capacity: ~51.5 hours (36% reduction)**\n\n## IMMEDIATE ACTIONS (Next 4 Hours)\n\n### 1. LABOR STABILIZATION\n- **7:30 AM**: Contact off-shift operators for overtime coverage\n- **8:00 AM**: Implement staggered 10-minute breaks (vs. standard 15-minute) to minimize downtime\n- **8:30 AM**: Cross-train available maintenance staff as emergency operators\n- **Target**: Restore break coverage by Thursday morning\n\n### 2. MATERIAL SHORTAGE MITIGATION\n- **7:15 AM**: Contact backup supplier to expedite Friday delivery to Thursday PM\n- **7:45 AM**: Review inventory for alternative alloys that could substitute for 2-3 non-critical work orders\n- **8:00 AM**: Negotiate partial shipment today if any conforming material available\n\n### 3. EQUIPMENT OPTIMIZATION\n- **8:30 AM**: Maintenance to optimize current laser settings for maximum stable throughput at 80% capacity\n- **9:00 AM**: Implement preventive monitoring schedule to prevent further degradation\n\n## WORK ORDER PRIORITIZATION MATRIX\n\n### TIER 1: CRITICAL (Process Immediately)\n**Urgent WOs NOT requiring problematic steel - Target: 4-5 orders**\n- Process using current 80% laser capacity\n- Assign best operators to maximize quality/speed\n- Run continuously Wed-Thu with overtime coverage\n\n### TIER 2: URGENT DELAYED (Friday-Monday)\n**Urgent WOs requiring steel delivery - Target: 3-4 orders**\n- Queue for immediate processing upon Friday AM steel arrival\n- Pre-position for rapid changeover\n- Weekend overtime if necessary\n\n### TIER 3: STANDARD PIPELINE\n**Remaining 14 WOs - Normal scheduling**\n- Sequence based on delivery requirements and material availability\n- Optimize batch sizes for reduced setups at 80% capacity\n\n## RECOVERY TIMELINE\n\n### **Wednesday-Thursday (Days 1-2)**\n- **Capacity**: 10.3 hours/day effective\n- **Focus**: Process Tier 1 urgent orders (non-steel dependent)\n- **Target**: Complete 4-5 urgent work orders (20-25 hours)\n\n### **Friday-Monday (Days 3-6)**\n- **Capacity**: 10.3 hours/day + weekend overtime potential\n- **Material**: Steel arrives Friday AM\n- **Focus**: Complete remaining urgent orders\n- **Target**: Complete all 8 urgent work orders\n\n### **Tuesday+ (Day 7+)**\n- **Capacity**: Returns to 16 hours/day (normal speed restored)\n- **Focus**: Clear backlog and return to normal schedule\n- **Target**: Full recovery within 10 business days\n\n## RISK MITIGATION STRATEGIES\n\n### **Backup Plans:**\n1. **If steel delayed beyond Friday**: \n   - Outsource 2-3 steel-dependent urgent orders to qualified subcontractor\n   - Cost impact: ~$8,000, but maintains delivery commitments\n\n2. **If more operators become unavailable**:\n   - Implement 12-hour shifts with 2 operators + 1 maintenance backup\n   - Consider temporary agency operators (2-day training required)\n\n3. **If laser degrades further**:\n   - Pre-qualify backup laser cutting subcontractor\n   - Prepare work order packages for immediate transfer\n\n### **Customer Communication:**\n- **9:00 AM**: Contact customers with potentially impacted deliveries\n- Offer partial shipments where possible\n- Provide realistic updated delivery dates\n- Emphasize quality maintenance despite expedited schedule\n\n## SUCCESS METRICS\n\n### **Daily Tracking:**\n- Actual vs. planned constraint hours utilized\n- Work orders completed vs. scheduled\n- Quality metrics (critical given rushed schedule)\n- Operator availability and overtime costs\n\n### **Recovery Milestones:**\n- Day 2: 50% of non-steel urgent orders complete\n- Day 5: 100% of urgent orders complete or in final processing\n- Day 7: Laser at full capacity, normal scheduling resumed\n- Day 10: Complete backlog clearance\n\n## RESOURCE REQUIREMENTS\n\n- **Overtime Budget**: ~40 hours @ 1.5x rate = $2,400\n- **Potential Subcontracting**: $8,000 maximum\n- **Expedited Shipping**: $500 for Thursday steel delivery\n- **Total Recovery Cost**: ~$11,000 vs. potential lost sales/penalties\n\nThis plan transforms a 36% capacity reduction into a managed recovery, protecting customer commitments while minimizing financial impact. The key is aggressive action in the first 48 hours to stabilize operations before the material shortage resolves.",
+      "error": null
+    },
+    {
+      "scenario_id": "PSC-020",
+      "scenario_name": "New product introduction competing with peak production",
+      "difficulty": "hard",
+      "category": "capacity-planning",
+      "criteria_results": [
+        {
+          "criterion": "capacity_gap_analysis",
+          "weight": 0.25,
+          "rating": "fail",
+          "score": 0.0,
+          "reasoning": "The response incorrectly averages NPI load (48 hours ÷ 6 weeks = 8 hours/week) rather than recognizing that trials occur in specific weeks requiring 16 hours each. Also miscalculates base demand as 461 hours total vs. correct weekly analysis of 96% × 80 = 76.8 hrs/week. The uniform averaging masks the critical trial-week capacity spikes that drive the real scheduling challenge."
+        },
+        {
+          "criterion": "multi_lever_solution",
+          "weight": 0.3,
+          "rating": "pass",
+          "score": 1.0,
+          "reasoning": "Proposes comprehensive multi-lever approach: Saturday overtime (+8 hrs/week), changeover reduction (+3 hrs/week), and break coverage optimization (+2 hrs/week) totaling 78 additional hours. The combination addresses both base gap and trial week spikes. Numbers are reasonable for each lever and shows understanding that multiple capacity sources are needed."
+        },
+        {
+          "criterion": "npi_trial_scheduling",
+          "weight": 0.25,
+          "rating": "partial",
+          "score": 0.5,
+          "reasoning": "Schedules trials with 2-week spacing in weeks 2, 4, and 6 with logical rationale (avoid Mondays/Fridays). However, schedules trials mid-week (Wednesday-Thursday, Tuesday-Wednesday) rather than Friday PM/Saturday to contain overruns. Does include 4-hour buffer per trial but doesn't fully isolate trial risk from regular production flow."
+        },
+        {
+          "criterion": "financial_business_case",
+          "weight": 0.2,
+          "rating": "pass",
+          "score": 1.0,
+          "reasoning": "Builds strong financial case with overtime cost calculation ($20,400), total investment ($25,400), and compares to protected value ($12M NPI + $9M existing). Calculates compelling ROI (>1,900% Year 1) and quantifies cost of inaction. Correctly positions the $25K investment against $21M revenue at risk and recommends approval with clear business justification."
+        }
+      ],
+      "weighted_score": 0.625,
+      "agent_response": "# 6-Week Capacity Plan for ElectraParts NPI Integration\n\n## Capacity Gap Analysis\n\n### Current Situation\n- **Baseline capacity**: 80 hrs/week × 6 weeks = 480 hours\n- **Current demand**: 480 × 0.96 = 461 hours (with Q4 increases)\n- **NPI requirement**: 48 hours additional\n- **Total demand**: 461 + 48 = 509 hours\n- **Capacity gap**: 509 - 480 = **29 hours shortfall**\n\n## Multi-Lever Solution Strategy\n\n### Available Capacity Levers\n1. **Saturday Overtime**: +8 hrs/week × 6 weeks = 48 hours\n2. **Changeover Reduction**: +3 hrs/week × 6 weeks = 18 hours  \n3. **Break Coverage Optimization**: +2 hrs/week × 6 weeks = 12 hours\n4. **Total Additional Capacity**: 78 hours\n\n### Recommended Implementation\n- **Deploy Saturday overtime**: All 6 weeks (essential for timeline)\n- **Implement changeover reduction**: Focus on high-volume existing products\n- **Optimize break coverage**: Deploy immediately across all shifts\n\n**Result**: 480 + 78 = 558 hours available vs. 509 hours needed = **49 hours buffer (9.6%)**\n\n## NPI Trial Schedule\n\n| Week | Trial | Scheduled Window | Hours Required | Rationale |\n|------|-------|-----------------|----------------|-----------|\n| 2 | Trial 1 | Wednesday-Thursday | 16 hrs | Allow Week 1 for changeover optimization setup |\n| 4 | Trial 2 | Tuesday-Wednesday | 16 hrs | Mid-point timing for adjustments |\n| 6 | Trial 3 | Monday-Tuesday | 16 hrs | Final trial with time for minor rework if needed |\n\n**Scheduling Logic:**\n- Avoid Mondays (highest existing customer demand)\n- Avoid Fridays (potential weekend spillover risk)\n- Maintain 2-week intervals for tooling modifications between trials\n\n## Financial Business Case\n\n### Investment Required\n- **Saturday overtime cost**: $3,400/week × 6 weeks = **$20,400**\n- **Changeover reduction implementation**: ~$5,000 (one-time)\n- **Break coverage optimization**: Minimal cost (scheduling change)\n- **Total investment**: **$25,400**\n\n### Financial Return Analysis\n- **NPI contract value**: $12M annually\n- **Risk mitigation**: Protects $9M existing revenue ($5.2M + $3.8M)\n- **ROI timeframe**: Investment recovered in 18 hours of NPI production\n- **Risk-adjusted NPV**: >$50M over contract lifetime\n\n### Cost of Inaction\n- **Lost NPI contract**: $12M/year opportunity cost\n- **Potential existing customer dissatisfaction**: Risk to $9M annual revenue\n- **Competitive disadvantage**: Loss of EV market positioning\n\n## Implementation Timeline\n\n### Week 1: Foundation Setting\n- Deploy break coverage optimization\n- Begin changeover reduction initiatives\n- Start Saturday overtime schedule\n- Communicate plan to all stakeholders\n\n### Weeks 2-6: Execution\n- Execute NPI trials per schedule\n- Monitor constraint utilization daily\n- Maintain existing customer service levels\n- Track performance metrics\n\n## Risk Mitigation\n\n### Primary Risks & Mitigations\n1. **Trial overruns**: 4-hour buffer built into each trial\n2. **Equipment breakdown**: 49-hour total buffer available\n3. **Quality issues requiring rework**: Strategic trial spacing allows recovery time\n4. **Existing customer complaints**: Proactive communication of minimal impact\n\n### Success Metrics\n- NPI trials completed on schedule: Target 100%\n- Existing customer on-time delivery: Maintain >98%\n- Constraint utilization: Target 95-98%\n- Saturday overtime efficiency: Target >90% of standard rate\n\n## Recommendation\n\n**APPROVE this capacity plan immediately.** The $25,400 investment delivers:\n- Guaranteed accommodation of $12M NPI opportunity\n- Protection of $9M existing customer base\n- 9.6% capacity buffer for risk mitigation\n- Strategic positioning in growing EV market\n\nThe financial return is compelling (>1,900% ROI in Year 1), the risk is minimal, and the alternative of missing the NPI qualification is unacceptable given the contract value and market implications.",
+      "error": null
+    },
+    {
+      "scenario_id": "PSC-021",
+      "scenario_name": "Full plant re-schedule after constraint breakdown with customer prioritisation",
+      "difficulty": "hard",
+      "category": "disruption-response",
+      "criteria_results": [
+        {
+          "criterion": "customer_priority_triage",
+          "weight": 0.25,
+          "rating": "partial",
+          "score": 0.5,
+          "reasoning": "The response correctly identifies the three customers with penalties and attempts prioritization, but makes significant errors. It correctly identifies AutoCorp Prime as highest priority ($150K total penalty risk vs $50K/day specified in rubric), but the job allocation is flawed. The response doesn't clearly verify which of the 12 constraint jobs can run on the alternate CNC (claims 4 compatible but doesn't specify which ones). The subcontracting decisions are directionally correct but lack the specific technical requirements analysis (AS9100 certification mentioned correctly for Allied). The prioritization logic is sound but execution details are incomplete."
+        },
+        {
+          "criterion": "financial_analysis",
+          "weight": 0.25,
+          "rating": "pass",
+          "score": 1.0,
+          "reasoning": "The response provides comprehensive financial analysis including: subcontracting costs ($3,300 total), penalty avoidance calculations ($130,000 saved), overtime costs ($8,400), and net savings calculation ($68,200). It correctly shows ROI justification for subcontracting decisions and presents a clear cost-benefit analysis with penalty exposure vs subcontracting costs. The financial framework demonstrates understanding that $3,300 in subcontracting costs to avoid $130,000 in penalties is an overwhelming ROI, which aligns with expert-level financial quantification."
+        },
+        {
+          "criterion": "non_constraint_scheduling",
+          "weight": 0.2,
+          "rating": "partial",
+          "score": 0.5,
+          "reasoning": "The response addresses non-constraint work in the 'Non-Constraint Work Scheduling' section, mentioning advancing operations for all 28 work orders and inventory preparation for constraint restart. However, it lacks specific detail about the 16 non-CNC-dependent work orders continuing on regular schedules, and doesn't explicitly address pre-staging CNC jobs with material kitting, programs loaded, and tooling ready. The concept of keeping downstream operations fed and pipeline preparation is present but not fully developed with operational specifics."
+        },
+        {
+          "criterion": "communication_plan",
+          "weight": 0.15,
+          "rating": "pass",
+          "score": 1.0,
+          "reasoning": "The response provides a detailed communication strategy with specific timelines: immediate calls to Priority 1 customer (AutoCorp Prime), contact within 2 hours for Priority 2 (Driveline Partners), and by end of day for Priority 3 (ElectraMotion). It includes transparent disclosure approach, goodwill gestures, and establishes daily progress updates to affected customers. The plan covers both external customer communication and internal communications (hourly updates to executive team). The 4-hour notification timeline requirement is met."
+        },
+        {
+          "criterion": "recovery_timeline",
+          "weight": 0.15,
+          "rating": "pass",
+          "score": 1.0,
+          "reasoning": "The response provides a comprehensive day-by-day recovery timeline in the 'Implementation Timeline' section: Tuesday 2-6 PM immediate actions, Wednesday-Friday subcontracted work and alternate CNC operations, weekend overtime shifts, Monday-Tuesday preparation activities, and Wednesday main CNC restart with AutoCorp Prime job initiation. The timeline shows clear progression from crisis response through recovery to normalization, with specific milestones and activities mapped to each phase."
+        }
+      ],
+      "weighted_score": 0.775,
+      "agent_response": "# Emergency Re-Scheduling Plan for 6-Day CNC Constraint Downtime\n\n## Executive Summary\nThe catastrophic failure of our main CNC constraint requires immediate action to minimize customer impact and financial exposure. I recommend a multi-pronged approach combining alternate routing, strategic subcontracting, and proactive customer communication to reduce potential penalties from $180,000 to approximately $38,000.\n\n## Immediate Actions (First 4 Hours)\n\n### 1. Customer Communication Strategy\n**Priority 1 - AutoCorp Prime (WO-1101)**\n- **Immediate call** to supply chain manager\n- Transparent disclosure of situation and recovery plan\n- Request 3-day extension to Monday (from Friday due date)\n- Offer expedited delivery and 5% cost reduction as goodwill gesture\n\n**Priority 2 - Driveline Partners (WO-1105)**\n- Contact within 2 hours\n- Request 2-day extension to Wednesday (from Monday due date)\n- Propose split delivery if partially completable\n\n**Priority 3 - ElectraMotion (WO-1108)**\n- Contact by end of day\n- Should meet original Wednesday deadline with subcontracting\n\n### 2. Capacity Reallocation Plan\n\n## Detailed Recovery Strategy\n\n### Phase 1: Alternate Routing (Immediate)\n**Secondary CNC Utilization:**\n- Current available capacity: 7.2 hrs/day × 6 days = 43.2 hours\n- Allocate 4 compatible jobs from the 12 constraint-dependent orders\n- Increase utilization from 70% to 100% during crisis period\n- **Cost Impact:** Weekend overtime = $8,400 (2 weekends × $4,200)\n\n### Phase 2: Strategic Subcontracting\n**Allied Machining (Premium Option):**\n- Assign WO-1108 (ElectraMotion) - 8 hours\n- AS9100 certified, lowest risk option\n- **Cost:** 8 hrs × $195 = $1,560\n- **Timeline:** First article approval + production = meets Wednesday deadline\n\n**Metro Precision (Volume Option):**\n- Assign WO-1105 (Driveline Partners) - 12 hours\n- Lower cost but requires customer approval for non-automotive qualified supplier\n- **Cost:** 12 hrs × $145 = $1,740\n- **Risk Mitigation:** Require additional inspection upon receipt\n\n### Phase 3: Internal Prioritization\n**Remaining Constraint Capacity After Repair:**\n- WO-1101 (AutoCorp Prime) - 18 hours\n- Priority production Wednesday-Friday of following week\n- Expedited processing with dedicated operator assignment\n\n## Financial Impact Analysis\n\n### Penalty Avoidance Strategy:\n| Customer | Original Penalty Risk | Proposed Delay | New Penalty | Savings |\n|----------|----------------------|----------------|-------------|---------|\n| AutoCorp Prime | $150,000 (3 days) | 1 day | $50,000 | $100,000 |\n| Driveline Partners | $30,000 (2 days) | 0 days | $0 | $30,000 |\n| ElectraMotion | $0 (on-time) | 0 days | $0 | $0 |\n\n### Cost Summary:\n- **Subcontracting Costs:** $3,300\n- **Overtime Costs:** $8,400\n- **Remaining Penalties:** $50,000\n- **Total Crisis Cost:** $61,800\n- **Avoided Penalties:** $130,000\n- **Net Savings:** $68,200\n\n## Non-Constraint Work Scheduling\n\n### Optimization During Downtime:\n1. **Advance non-constraint operations** for all 28 work orders\n2. **Preventive maintenance** on secondary equipment\n3. **Cross-training** operators on alternate processes\n4. **Inventory preparation** for immediate constraint restart\n5. **Quality system improvements** to prevent future delays\n\n## Risk Mitigation Measures\n\n### Technical Risks:\n- **First Article Approvals:** Expedite with customer engineering teams\n- **Quality Assurance:** Triple inspection on subcontracted parts\n- **Logistics:** Dedicated courier service for subcontracted parts\n\n### Commercial Risks:\n- **Customer Relations:** Daily progress updates to all affected customers\n- **Supplier Relations:** Penalty clauses with subcontractors for delays\n- **Internal Communications:** Hourly updates to executive team\n\n## Implementation Timeline\n\n**Tuesday 2:00 PM - 6:00 PM:**\n- Customer notifications complete\n- Subcontractor contracts signed\n- Alternate CNC jobs initiated\n\n**Wednesday - Friday:**\n- Subcontracted work in progress\n- Alternate CNC running at 100%\n- Daily customer updates\n\n**Weekend:**\n- Overtime shifts on alternate CNC\n- Preparation for Monday restart activities\n\n**Monday - Tuesday:**\n- Subcontracted parts returning\n- Final preparations for constraint restart\n\n**Wednesday:**\n- Main CNC operational\n- AutoCorp Prime job initiated immediately\n\n## Success Metrics\n- **Customer Satisfaction:** Retain all three customers without relationship damage\n- **Financial Impact:** Limit total crisis cost to under $65,000\n- **Operational Excellence:** Zero quality defects on crisis production\n- **Recovery Time:** Full production capacity restored by Thursday of return week\n\n## Contingency Plans\n- **If subcontractors fail:** Negotiate extended customer deadlines with increased penalties\n- **If alternate CNC fails:** Emergency rental of mobile machining unit\n- **If main CNC repair extends:** Activate additional subcontracting capacity\n\nThis plan transforms a potential $180,000 loss into a manageable $61,800 investment while preserving critical customer relationships and demonstrating operational resilience.",
+      "error": null
+    },
+    {
+      "scenario_id": "PSC-022",
+      "scenario_name": "Seasonal product transition with shared tooling and overlapping demand",
+      "difficulty": "hard",
+      "category": "capacity-planning",
+      "criteria_results": [
+        {
+          "criterion": "transition_phasing",
+          "weight": 0.3,
+          "rating": "pass",
+          "score": 1.0,
+          "reasoning": "Agent designs a clear phased transition plan with specific dates: August 19-22 for all transitions, with 2 machines per day (Machines 1&2 on Aug 19, Machines 3&4 on Aug 20, Machines 5&6 on Aug 21). States 'Never more than 2 machines offline simultaneously, maintaining 67% minimum production capacity during transition.' Includes buffer day and validates that 4 machines continue summer production during transition days. This is exactly the type of phased approach the rubric expects."
+        },
+        {
+          "criterion": "summer_completion_validation",
+          "weight": 0.25,
+          "rating": "pass",
+          "score": 1.0,
+          "reasoning": "Agent performs detailed calculations: '45,000 units remaining, due August 31st. Current capacity: 3,200 units/day. Time needed: 14.1 days at full capacity. Available time: 22 working days.' Shows that August 1-18 production (57,600 units) exceeds the 45,000 requirement, stating 'Summer orders completed early!' Validates that even with reduced capacity during transition (4 machines), there's ample capacity for any remaining requirements. The math is clear and correct."
+        },
+        {
+          "criterion": "winter_ramp_validation",
+          "weight": 0.25,
+          "rating": "pass",
+          "score": 1.0,
+          "reasoning": "Agent calculates winter production capacity: 'September 1-15 (11 working days): All 6 machines on winter production. Daily capacity: 3,300 units (6 × 550). Total winter production capability: 36,300 units. Requirement: 25,000 units ✓' Shows 45% safety margin. While the exact ramp-up math during transition isn't broken down day-by-day, the agent confirms all 6 machines will be transitioned and available by September 1st, providing more than adequate capacity to meet the 25,000-unit requirement."
+        },
+        {
+          "criterion": "resource_coordination",
+          "weight": 0.2,
+          "rating": "partial",
+          "score": 0.5,
+          "reasoning": "Agent acknowledges the '2 technicians' constraint and schedules 'Maximum 2 changeovers per day' which aligns with technician capacity. However, the response lacks detail on material staging for winter products, first-article quality inspection requirements, or coordination of mould changes with maintenance windows. The basic technician scheduling is addressed but other coordination elements are missing."
+        }
+      ],
+      "weighted_score": 0.9,
+      "agent_response": "Looking at this scheduling challenge, I need to balance completing 45,000 summer units by August 31st while ensuring adequate winter production capacity is online by September 15th for the 25,000-unit requirement.\n\n## Analysis of Key Constraints\n\n**Summer Production Requirements:**\n- 45,000 units remaining, due August 31st\n- Current capacity: 3,200 units/day (all 6 machines)\n- Time needed: 14.1 days at full capacity\n- Available time: 22 working days in August\n\n**Winter Production Requirements:**\n- 25,000 units needed by September 15th\n- Production rate: 550 units/day per machine\n- Available production time: 11 working days (Sept 1-15)\n\n**Transition Constraints:**\n- 5 hours per machine changeover\n- Maximum 2 changeovers per day (2 technicians)\n- Cannot shut down all machines simultaneously\n\n## Recommended Phased Transition Plan\n\n### Phase 1: August 19-22 (Early Transition)\n**Days 18-21 of August**\n\n- **August 19**: Transition Machines 1 & 2\n- **August 20**: Transition Machines 3 & 4  \n- **August 21**: Transition Machines 5 & 6\n- **August 22**: Buffer day for any delays\n\n**Rationale:** Starting transitions on August 19th provides a safety buffer while maintaining sufficient summer production capacity.\n\n### Production Schedule Details\n\n**August 1-18 (18 days):**\n- All 6 machines on summer production\n- Daily output: 3,200 units\n- Cumulative production: 57,600 units\n- **Remaining after Aug 18: 45,000 - 57,600 = -12,600** *(Summer orders completed early!)*\n\n**August 19-31 (9 working days after transitions):**\n- 4 machines on summer production (during transition days 19-21)\n- 6 machines available for any remaining summer orders (days 22-31)\n- Ample capacity for any remaining requirements\n\n**September 1-15 (11 working days):**\n- All 6 machines on winter production\n- Daily capacity: 3,300 units (6 × 550)\n- Total winter production capability: 36,300 units\n- **Requirement: 25,000 units ✓**\n\n## Risk Mitigation\n\n1. **Early Completion Buffer**: Summer orders will likely be completed by mid-August, providing flexibility for transition timing.\n\n2. **Staggered Approach**: Never more than 2 machines offline simultaneously, maintaining 67% minimum production capacity during transition.\n\n3. **Schedule Flexibility**: If summer orders run longer than expected, transitions can be delayed by 2-3 days while still meeting winter deadlines.\n\n4. **Excess Winter Capacity**: 36,300 unit capability vs. 25,000 requirement provides 45% safety margin.\n\n## Alternative Contingency Plan\n\nIf summer orders are tracking behind schedule by mid-August:\n\n- **Delay transitions to August 22-26**\n- **Emergency protocol**: Extend one machine transition into September 1-2 if absolutely necessary\n- **Still maintains adequate winter production capacity**\n\nThis phased approach ensures both seasonal requirements are met while minimizing operational risk and maintaining production flow continuity.",
+      "error": null
+    },
+    {
+      "scenario_id": "PSC-023",
+      "scenario_name": "ERP data quality issue — routing times diverging from reality",
+      "difficulty": "medium",
+      "category": "erp-integration",
+      "criteria_results": [
+        {
+          "criterion": "root_cause_diagnosis",
+          "weight": 0.3,
+          "rating": "pass",
+          "score": 1.0,
+          "reasoning": "The response correctly identifies the root cause as systematic underestimation of operation times, specifically citing 52% setup time underestimation (25 min planned vs 38 min actual) and 14% run time drift (4.2 vs 4.8 min/piece). It connects the 23% total time discrepancy directly to the schedule adherence drop, explaining how scheduling based on 3.5-hour jobs that actually take 4.3 hours systematically overpacks the schedule. The response identifies all key contributing factors: new product complexity, tooling deterioration, skills gap, and stale 18-month-old standards."
+        },
+        {
+          "criterion": "routing_update_plan",
+          "weight": 0.3,
+          "rating": "pass",
+          "score": 1.0,
+          "reasoning": "The response provides a structured routing update plan with immediate Phase 1 corrections using actual MES data (setup times increased to 32-45 min from 25 min, run times to 4.8 min/piece from 4.2). It differentiates by product category (standard products +28%, new variants +80%, complex setups +68%) rather than blanket increases. Phase 2 includes granular standards for different experience levels and tool conditions, showing understanding of the need for differentiated routing standards based on actual shop floor conditions."
+        },
+        {
+          "criterion": "impact_quantification",
+          "weight": 0.2,
+          "rating": "pass",
+          "score": 1.0,
+          "reasoning": "The response quantifies impact precisely: theoretical capacity of 13.7 jobs/day vs actual 11.2 jobs/day (22.3% capacity overestimation). It connects the 23% time underestimation to scheduling effectiveness, showing late job probability increased from 8% to 22% with 0.8 hour average delays. The response calculates that capacity overestimation creates 17.6% capacity loss through disruption, directly linking the routing discrepancy to the observed schedule adherence decline."
+        },
+        {
+          "criterion": "prevention_process",
+          "weight": 0.2,
+          "rating": "pass",
+          "score": 1.0,
+          "reasoning": "The response designs a comprehensive prevention system with monthly review cycles comparing MES actuals to ERP standards for top 20% of jobs, automatic triggers for standard updates when variance exceeds ±10% for 3 consecutive measurements, real-time feedback loops with weekly variance reports and exception alerts for >20% variances, and quarterly standards validation meetings. It includes specific KPIs (standard accuracy >95%, schedule adherence >90%) and establishes systematic processes to prevent future divergence rather than treating it as a one-time fix."
+        }
+      ],
+      "weighted_score": 1.0,
+      "agent_response": "# Schedule Adherence Analysis & Corrective Action Plan\n\n## Root Cause Diagnosis\n\nThe 14-point decline in schedule adherence (92% → 78%) stems from **systematic underestimation of actual operation times**, particularly at the constraint CNC milling cell. The data reveals:\n\n### Primary Issues:\n1. **Setup Time Crisis**: 52% underestimation (25 min planned vs 38 min actual)\n2. **Run Time Drift**: 14% underestimation (4.2 vs 4.8 min/piece)\n3. **Overall Job Impact**: 23% total time underestimation (3.5 vs 4.3 hrs average)\n\n### Contributing Factor Impact Analysis:\n- **New product complexity**: Driving setup time increases\n- **Tooling deterioration**: Adding 5-8 minutes per setup for adjustments\n- **Skills gap**: Less experienced operators require 15-20% longer setup times\n- **Stale data**: 18-month-old standards don't reflect current reality\n\n## Quantified Impact on Scheduling Effectiveness\n\n### Capacity Planning Error:\n- **Theoretical daily capacity** (based on ERP): 13.7 jobs/day (8 hrs ÷ 3.5 hrs avg)\n- **Actual capacity**: 11.2 jobs/day (8 hrs ÷ 4.3 hrs avg)\n- **Capacity overestimation**: 22.3%\n\n### Schedule Reliability Impact:\n- **Late job probability**: Increased from 8% to 22%\n- **Average delay per late job**: 0.8 hours\n- **Cumulative delay effect**: Creates 17.6% capacity loss through disruption\n\n## Immediate ERP Routing Corrections\n\n### Phase 1: Emergency Standards Update (Week 1-2)\n```\nSetup Times by Product Category:\n- Standard products: 25 min → 32 min (+28%)\n- New variants (Q2): 25 min → 45 min (+80%)\n- Complex setups: 25 min → 42 min (+68%)\n\nRun Times:\n- All operations: 4.2 min/piece → 4.8 min/piece (+14%)\n\nBuffer Adjustments:\n- Add 10% safety buffer for constraint operations\n- Add 15% buffer for new product variants\n```\n\n### Phase 2: Granular Standards Development (Week 3-6)\n- Create separate routing standards for each experience level\n- Establish tool condition modifiers (fresh/worn/replacement scenarios)\n- Implement complexity scoring system for setup time estimation\n\n## Long-term Prevention Process\n\n### 1. Dynamic Standards Management System\n**Monthly Review Cycle:**\n- Compare MES actuals to ERP standards for top 20% of jobs by volume\n- Trigger standard updates when variance exceeds ±10% for 3 consecutive measurements\n- Implement seasonal adjustments based on operator experience curves\n\n### 2. Real-time Feedback Loop\n**Implementation Framework:**\n```\nData Collection → Analysis → Action\n├─ MES captures actual times automatically\n├─ Weekly variance reports generated\n├─ Exception alerts for >20% variances\n└─ Quarterly standards validation meetings\n```\n\n### 3. Continuous Improvement Metrics\n**KPI Dashboard:**\n- Standard accuracy rate (target: >95%)\n- Schedule adherence by operation (target: >90%)\n- Routing age tracking (maximum 6 months)\n- Operator performance trending\n\n## Implementation Timeline & Expected Results\n\n### Week 1-2: Emergency Fix\n- Update critical routing standards\n- **Expected improvement**: Schedule adherence 78% → 85%\n\n### Month 1-3: System Implementation\n- Deploy dynamic standards management\n- Complete operator training program\n- **Expected improvement**: Schedule adherence 85% → 90%\n\n### Month 3-6: Optimization\n- Fine-tune feedback loops\n- Implement predictive adjustments\n- **Expected improvement**: Schedule adherence 90% → 94%\n\n## Resource Requirements\n\n### Immediate (Weeks 1-6):\n- 40 hours industrial engineering time for standards updates\n- $15K investment in MES reporting enhancement\n- 20 hours training for planning team\n\n### Ongoing:\n- 8 hours/month for standards maintenance\n- Quarterly review meetings (4 hours × 4 people)\n- Annual comprehensive routing audit\n\n## Risk Mitigation\n\n1. **Over-correction Risk**: Implement standards in 2-week trial periods with adjustment capability\n2. **Operator Resistance**: Include operators in standards development process\n3. **System Integration**: Test ERP-MES data flow before full deployment\n\nThis comprehensive approach addresses both the immediate scheduling crisis and establishes sustainable processes to maintain accurate routing standards, ultimately restoring Sterling Precision's schedule reliability to target levels.",
+      "error": null
+    }
+  ],
+  "aggregate_score": 0.85,
+  "total_scenarios": 23,
+  "passed_scenarios": 18,
+  "statistics": {
+    "overall": 0.85,
+    "by_difficulty": {
+      "easy": 0.8857142857142858,
+      "medium": 0.805,
+      "hard": 0.8833333333333333
+    },
+    "by_category": {
+      "job-sequencing": 0.86875,
+      "oee-analysis": 1.0,
+      "changeover-optimisation": 0.8083333333333332,
+      "bottleneck-management": 0.9416666666666668,
+      "labour-scheduling": 1.0,
+      "disruption-response": 0.8550000000000001,
+      "erp-integration": 0.7875,
+      "capacity-planning": 0.6583333333333333
+    },
+    "total": 23,
+    "passed": 18
+  }
+}

@@ -1,0 +1,59 @@
+# Skill Meta Data
+# 技能元数据
+
+meta:
+  name: "product-dev-ops"
+  version: "3.1.0"
+  description: "产品研发运营协作体系 - 包含产品、架构、开发、运营四角色协作流程"
+  
+  # 归属信息
+  owner_agent: "product-lead"
+  managed_by: "sub-agent-registry"
+  
+  # 兼容性
+  min_openclaw_version: "2026.2.0"
+  
+  # 同步策略
+  sync:
+    auto_sync: true
+    version_check: "strict"
+    backup_old_version: true
+  
+  # 安装配置
+  installation:
+    auto_install: true
+    install_hooks: false
+  
+  # 依赖
+  dependencies:
+    required:
+      - name: "docx"
+        version: ">=1.0"
+      - name: "xlsx"
+        version: ">=1.0"
+    optional:
+      - name: "strategy-consultant"
+        version: ">=1.0"
+        description: "战略顾问支持（可选）"
+  
+  # 资源需求
+  resources:
+    disk_space: "5MB"
+    memory_runtime: "10MB"
+
+# 更新日志
+changelog:
+  - version: "3.1.0"
+    date: "2026-02-18"
+    changes:
+      - "作为 product-lead Agent 的 bundled skill"
+      - "支持 Sub-Agent Registry v2.0 架构"
+    breaking_changes: false
+  
+  - version: "3.0.0"
+    date: "2026-02-15"
+    changes:
+      - "四角色协作体系"
+      - "支持战略顾问集成"
+      - "文档分层管理"
+    breaking_changes: false

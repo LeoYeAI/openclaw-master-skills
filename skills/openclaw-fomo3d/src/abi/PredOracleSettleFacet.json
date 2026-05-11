@@ -1,0 +1,76 @@
+[
+  {
+    "type": "function",
+    "name": "settleWithOracle",
+    "inputs": [
+      {
+        "name": "marketId",
+        "type": "uint256",
+        "internalType": "uint256"
+      }
+    ],
+    "outputs": [],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "type": "event",
+    "name": "MarketSettledByOracle",
+    "inputs": [
+      {
+        "name": "marketId",
+        "type": "uint256",
+        "indexed": true,
+        "internalType": "uint256"
+      },
+      {
+        "name": "outcome",
+        "type": "uint8",
+        "indexed": false,
+        "internalType": "enum Side"
+      },
+      {
+        "name": "settlementPrice",
+        "type": "int256",
+        "indexed": false,
+        "internalType": "int256"
+      },
+      {
+        "name": "caller",
+        "type": "address",
+        "indexed": false,
+        "internalType": "address"
+      }
+    ],
+    "anonymous": false
+  },
+  {
+    "type": "error",
+    "name": "InvalidSettlementType",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "MarketAlreadyResolved",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "MarketNotFound",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "MarketStillActive",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "OracleRoundIncomplete",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "StaleOraclePrice",
+    "inputs": []
+  }
+]

@@ -1,0 +1,375 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>OpenWechat 聊天</title>
+  <style>
+    * { box-sizing: border-box; }
+    :root {
+      --bg-main: #ededed;
+      --bg-sidebar: #f7f7f7;
+      --bg-bubble-me: #95ec69;
+      --bg-bubble-them: #fff;
+      --border: #e5e5e5;
+      --text: #333;
+      --text-muted: #888;
+      --accent: #07c160;
+    }
+    body { margin: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC", "Microsoft YaHei", sans-serif; font-size: 14px; color: var(--text); background: var(--bg-main); height: 100vh; overflow: hidden; }
+    .app { display: flex; height: 100vh; }
+    /* 左侧联系人 */
+    .sidebar { width: 260px; min-width: 200px; background: var(--bg-sidebar); border-right: 1px solid var(--border); display: flex; flex-direction: column; }
+    .sidebar-header { padding: 12px 16px; border-bottom: 1px solid var(--border); font-weight: 600; display: flex; align-items: center; justify-content: space-between; }
+    .sidebar-header h1 { margin: 0; font-size: 16px; }
+    .lang-switch { font-size: 12px; }
+    .lang-switch a { color: var(--text-muted); text-decoration: none; margin-left: 8px; }
+    .lang-switch a:hover, .lang-switch a.active { color: var(--accent); font-weight: 500; }
+    .contact-list { flex: 1; overflow-y: auto; }
+    .contact-item { padding: 12px 16px; cursor: pointer; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 10px; transition: background .15s; }
+    .contact-item:hover { background: #eee; }
+    .contact-item.active { background: #e7e7e7; }
+    .contact-item.doc-item { border-left: 3px solid var(--accent); }
+    .contact-avatar { width: 40px; height: 40px; border-radius: 50%; background: var(--accent); color: #fff; display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0; }
+    .contact-avatar.doc { background: #576b95; font-size: 18px; }
+    .contact-info { flex: 1; min-width: 0; }
+    .contact-name { font-weight: 500; }
+    .contact-meta { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+    .sidebar-footer { padding: 8px; font-size: 11px; color: var(--text-muted); border-top: 1px solid var(--border); }
+    /* 右侧主区域 */
+    .main { flex: 1; display: flex; flex-direction: column; min-width: 0; background: #fff; }
+    .chat-view { flex: 1; display: flex; flex-direction: column; min-height: 0; overflow: hidden; }
+    .chat-header { padding: 12px 16px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
+    .chat-title { font-weight: 600; font-size: 15px; }
+    .chat-status { font-size: 12px; color: var(--text-muted); }
+    .chat-status.connected { color: var(--accent); }
+    .chat-messages { flex: 1; overflow-y: auto; padding: 16px; display: flex; flex-direction: column; gap: 12px; }
+    .msg { max-width: 70%; padding: 8px 12px; border-radius: 4px; font-size: 14px; line-height: 1.5; word-break: break-word; }
+    .msg.them { align-self: flex-start; background: var(--bg-bubble-them); border: 1px solid var(--border); }
+    .msg.me { align-self: flex-end; background: var(--bg-bubble-me); }
+    .msg-meta { font-size: 11px; color: var(--text-muted); margin-top: 4px; }
+    .msg.me .msg-meta { text-align: right; }
+    .msg-raw { font-size: 12px; color: var(--text-muted); background: #f5f5f5; padding: 6px; border-radius: 2px; margin-top: 4px; white-space: pre-wrap; word-break: break-all; }
+    .empty-chat { flex: 1; display: flex; align-items: center; justify-content: center; color: var(--text-muted); font-size: 14px; }
+    /* 文档面板 */
+    .docs-panel { flex: 1; overflow: hidden; display: flex; flex-direction: column; }
+    .docs-toolbar { padding: 8px 16px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+    .docs-toolbar button { padding: 6px 12px; border: 1px solid var(--border); background: #fff; border-radius: 4px; cursor: pointer; font-size: 13px; }
+    .docs-toolbar button:hover { background: #f5f5f5; }
+    .docs-toolbar button.active { background: var(--accent); color: #fff; border-color: var(--accent); }
+    .docs-content { flex: 1; overflow-y: auto; padding: 16px; }
+    .doc-card { background: #fafafa; border: 1px solid var(--border); border-radius: 6px; margin-bottom: 12px; overflow: hidden; }
+    .doc-card h4 { margin: 0; padding: 10px 12px; font-size: 13px; background: #f0f0f0; cursor: pointer; display: flex; align-items: center; justify-content: space-between; }
+    .doc-card h4:hover { background: #e8e8e8; }
+    .doc-card pre { margin: 0; padding: 12px; font-size: 12px; max-height: 200px; overflow: auto; white-space: pre-wrap; word-break: break-word; }
+    .last-refresh { font-size: 11px; color: var(--text-muted); margin-left: auto; }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <h1 data-i18n="title">OpenWechat</h1>
+        <span class="lang-switch">
+          <a href="#" data-lang="zh">中文</a>
+          <a href="#" data-lang="en">En</a>
+        </span>
+      </div>
+      <div class="contact-list" id="contact-list"></div>
+      <div class="sidebar-footer">
+        <span data-i18n="lastRefresh">最后刷新</span>: <span id="last-refresh">-</span>
+      </div>
+    </aside>
+    <main class="main">
+      <div id="chat-view" class="chat-view">
+        <div class="chat-header">
+          <span class="chat-title" id="chat-title">—</span>
+          <span class="chat-status" id="chat-status" data-i18n="loading">加载中...</span>
+          <span class="last-refresh" id="chat-refresh">—</span>
+        </div>
+        <div class="chat-messages" id="chat-messages"></div>
+      </div>
+      <div id="docs-view" class="docs-panel" style="display:none;">
+        <div class="docs-toolbar">
+          <span data-i18n="dataFiles">数据文档</span>
+          <button type="button" id="btn-refresh-docs" data-i18n="refresh">刷新</button>
+        </div>
+        <div class="docs-content" id="docs-content"></div>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    const DATA_BASE = '/openwechat_im_client';
+    const REFRESH_INTERVAL = 2500;
+    const MAX_CHARS = 6000;
+    const SEP = '─'.repeat(40);
+
+    const DATA_FILES = ['profile.json', 'contacts.json', 'stats.json', 'context_snapshot.json', 'inbox_pushed.md', 'conversations.md', 'sse_channel.log'];
+
+    const i18n = {
+      zh: {
+        title: 'OpenWechat',
+        lastRefresh: '最后刷新',
+        loading: '加载中...',
+        dataFiles: '数据文档',
+        refresh: '刷新',
+        noMessages: '暂无消息',
+        allChats: '全部消息',
+        sseConnected: 'SSE 已连接',
+        sseDisconnected: 'SSE 未连接',
+        docItem: '📁 数据文档',
+        fileNotFound: '(文件未找到)',
+        fetchError: '(请求失败)'
+      },
+      en: {
+        title: 'OpenWechat',
+        lastRefresh: 'Last refresh',
+        loading: 'Loading...',
+        dataFiles: 'Data files',
+        refresh: 'Refresh',
+        noMessages: 'No messages yet',
+        allChats: 'All messages',
+        sseConnected: 'SSE connected',
+        sseDisconnected: 'SSE disconnected',
+        docItem: '📁 Data files',
+        fileNotFound: '(file not found)',
+        fetchError: '(fetch error)'
+      }
+    };
+
+    let lang = localStorage.getItem('demo_ui_lang') || 'zh';
+    let currentView = 'chat';
+    let myId = null;
+
+    function t(key) { return i18n[lang]?.[key] ?? i18n.zh[key] ?? key; }
+
+    function applyI18n() {
+      document.documentElement.lang = lang === 'zh' ? 'zh-CN' : 'en';
+      document.querySelectorAll('[data-i18n]').forEach(el => {
+        const key = el.getAttribute('data-i18n');
+        el.textContent = t(key);
+      });
+      document.querySelectorAll('.lang-switch a').forEach(a => {
+        a.classList.toggle('active', a.getAttribute('data-lang') === lang);
+      });
+    }
+
+    async function fetchFile(path) {
+      try {
+        const r = await fetch(`${DATA_BASE}/${path}`);
+        if (!r.ok) return { ok: false, err: 'fileNotFound' };
+        const ext = path.split('.').pop()?.toLowerCase();
+        if (ext === 'json') return { ok: true, data: await r.json(), ext };
+        let text = await r.text();
+        if (text.length > MAX_CHARS) text = text.slice(-MAX_CHARS);
+        return { ok: true, data: text, ext };
+      } catch { return { ok: false, err: 'fetchError' }; }
+    }
+
+    let historyMsgs = [];
+
+    // 不直连 /stream，避免与 sse_inbox.py 冲突（服务端每 IP 仅 1 条 SSE）
+
+    function parseMsg(time, from, fromName, content) {
+      return { time, from, fromName: fromName || (from ? `#${from}` : '?'), content, isMe: myId != null && String(from) === String(myId) };
+    }
+
+    function parseFromData(text, sepSplit = false) {
+      if (!text?.trim()) return [];
+      const lines = sepSplit ? text.split(SEP).flatMap(b => b.split('\n').map(l => l.trim()).filter(Boolean)) : text.split('\n').map(l => l.trim()).filter(Boolean);
+      const msgs = [];
+      for (const line of lines) {
+        if (line.startsWith('[Disconnected]')) continue;
+        try {
+          const j = JSON.parse(line);
+          msgs.push(parseMsg(j.time ?? j.created_at, j.from ?? j.sender_id, j.from_name ?? j.sender_name, j.content ?? j.text ?? line));
+        } catch {
+          const m = line.match(/\[([^\]]+)\]\s*from=#?(\d+)\(([^)]*)\)\s*type=\w+\s*content=(.*)/);
+          if (m) msgs.push(parseMsg(m[1], m[2], m[3] || m[2], m[4]?.trim() ?? line));
+        }
+      }
+      return msgs;
+    }
+
+    function renderChatMessage(msg) {
+      const div = document.createElement('div');
+      div.className = `msg ${msg.isMe ? 'me' : 'them'}`;
+      const meta = msg.time || msg.fromName || '';
+      div.innerHTML = `
+        <div>${escapeHtml(String(msg.content))}</div>
+        <div class="msg-meta">${escapeHtml(meta)}${msg.fromName && !msg.isMe ? ' · ' + escapeHtml(msg.fromName) : ''}</div>
+      `;
+      return div;
+    }
+
+    function escapeHtml(s) {
+      const d = document.createElement('div');
+      d.textContent = s;
+      return d.innerHTML;
+    }
+
+    function updateSseStatus(sseLog) {
+      const el = document.getElementById('chat-status');
+      if (!el) return;
+      const connected = sseLog && /SSE_CONNECTED|SSE_RESTORED/.test(sseLog) && !/SSE_DISCONNECTED/.test(sseLog.split('\n').slice(-5).join('\n'));
+      el.textContent = connected ? t('sseConnected') : t('sseDisconnected');
+      el.classList.toggle('connected', !!connected);
+    }
+
+    function renderChatFromData() {
+      const container = document.getElementById('chat-messages');
+      if (currentView !== 'chat' || !container) return;
+      const seen = new Set();
+      const all = [...historyMsgs].filter(m => {
+        const k = `${m.time}|${m.from}|${m.content}`.slice(0, 200);
+        if (seen.has(k)) return false;
+        seen.add(k);
+        return true;
+      });
+      all.sort((a, b) => (a.time || '').localeCompare(b.time || ''));
+      container.innerHTML = all.length ? '' : `<div class="empty-chat">${t('noMessages')}</div>`;
+      all.forEach(m => container.appendChild(renderChatMessage(m)));
+      if (all.length) container.scrollTop = container.scrollHeight;
+    }
+
+    function renderChat(hist, sseRes) {
+      historyMsgs = hist || [];
+      renderChatFromData();
+      updateSseStatus(sseRes?.ok ? sseRes.data : null);
+    }
+
+    function renderContacts(contactsRes, profileRes) {
+      const list = document.getElementById('contact-list');
+      list.innerHTML = '';
+      myId = profileRes?.data?.my_id ?? contactsRes?.data?.my_id ?? null;
+
+      const allItem = document.createElement('div');
+      allItem.className = 'contact-item' + (currentView === 'chat' ? ' active' : '');
+      allItem.dataset.view = 'chat';
+      allItem.innerHTML = `
+        <div class="contact-avatar">💬</div>
+        <div class="contact-info">
+          <div class="contact-name">${t('allChats')}</div>
+          <div class="contact-meta">${escapeHtml(profileRes?.data?.my_name || '—')}</div>
+        </div>
+      `;
+      list.appendChild(allItem);
+
+      const docItem = document.createElement('div');
+      docItem.className = 'contact-item doc-item' + (currentView === 'docs' ? ' active' : '');
+      docItem.dataset.view = 'docs';
+      docItem.innerHTML = `
+        <div class="contact-avatar doc">📁</div>
+        <div class="contact-info">
+          <div class="contact-name">${t('docItem')}</div>
+          <div class="contact-meta">inbox, contacts, stats...</div>
+        </div>
+      `;
+      list.appendChild(docItem);
+
+      const peers = contactsRes?.data;
+      if (peers && typeof peers === 'object') {
+        const ids = Object.keys(peers).filter(k => !['my_id', 'my_name'].includes(k));
+        ids.forEach(id => {
+          const p = peers[id];
+          if (typeof p !== 'object') return;
+          const name = p.name || p.nickname || `#${id}`;
+          const rel = p.relationship || '';
+          const item = document.createElement('div');
+          item.className = 'contact-item';
+          item.dataset.view = 'chat';
+          item.innerHTML = `
+            <div class="contact-avatar">${(name[0] || '?').toUpperCase()}</div>
+            <div class="contact-info">
+              <div class="contact-name">${escapeHtml(name)}</div>
+              <div class="contact-meta">${escapeHtml(rel)}</div>
+            </div>
+          `;
+          list.appendChild(item);
+        });
+      }
+
+      list.querySelectorAll('.contact-item').forEach(el => {
+        el.addEventListener('click', () => {
+          list.querySelectorAll('.contact-item').forEach(x => x.classList.remove('active'));
+          el.classList.add('active');
+          const view = el.dataset.view;
+          if (view === 'docs') {
+            currentView = 'docs';
+            document.getElementById('chat-view').style.display = 'none';
+            document.getElementById('docs-view').style.display = 'flex';
+            renderDocs();
+          } else {
+            currentView = 'chat';
+            document.getElementById('chat-view').style.display = 'flex';
+            document.getElementById('docs-view').style.display = 'none';
+          }
+        });
+      });
+    }
+
+    function renderDocs() {
+      const container = document.getElementById('docs-content');
+      container.innerHTML = '<p style="color:#888">加载中...</p>';
+      Promise.all(DATA_FILES.map(f => fetchFile(f))).then(results => {
+        container.innerHTML = '';
+        DATA_FILES.forEach((filename, i) => {
+          const res = results[i];
+          const card = document.createElement('div');
+          card.className = 'doc-card';
+          const formatted = res.ok
+            ? (res.ext === 'json' ? JSON.stringify(res.data, null, 2) : res.data)
+            : t(res.err);
+          card.innerHTML = `
+            <h4>${escapeHtml(filename)}</h4>
+            <pre>${escapeHtml(formatted)}</pre>
+          `;
+          container.appendChild(card);
+        });
+      });
+    }
+
+    async function refresh() {
+      const [profileRes, contactsRes, inboxRes, convRes, sseRes] = await Promise.all([
+        fetchFile('profile.json'),
+        fetchFile('contacts.json'),
+        fetchFile('inbox_pushed.md'),
+        fetchFile('conversations.md'),
+        fetchFile('sse_channel.log')
+      ]);
+
+      myId = profileRes?.data?.my_id ?? null;
+      document.getElementById('chat-title').textContent = t('allChats');
+      const ts = new Date().toLocaleTimeString(lang === 'zh' ? 'zh-CN' : 'en-US');
+      document.getElementById('last-refresh').textContent = document.getElementById('chat-refresh').textContent = ts;
+
+      renderContacts(contactsRes, profileRes);
+      if (currentView === 'chat') {
+        const history = [...parseFromData(inboxRes?.ok && inboxRes.data ? inboxRes.data : '', true), ...parseFromData(convRes?.ok && convRes.data ? convRes.data : '')];
+        renderChat(history, sseRes);
+      } else if (currentView === 'docs') {
+        renderDocs();
+      }
+    }
+
+    document.querySelectorAll('.lang-switch a').forEach(a => {
+      a.addEventListener('click', e => {
+        e.preventDefault();
+        lang = a.getAttribute('data-lang');
+        localStorage.setItem('demo_ui_lang', lang);
+        applyI18n();
+        refresh();
+      });
+    });
+
+    document.getElementById('btn-refresh-docs').addEventListener('click', () => {
+      renderDocs();
+    });
+
+    applyI18n();
+    refresh();
+    setInterval(refresh, REFRESH_INTERVAL);
+  </script>
+</body>
+</html>

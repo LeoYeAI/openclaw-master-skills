@@ -1,0 +1,51 @@
+{
+  "global_negative_prompts": {
+    "quality": {
+      "en": "low quality, worst quality, lowres, blurry, out of focus, jpeg artifacts, watermark, text, logo, signature",
+      "cn": "低质量, 模糊, 水印, 文字, 标志"
+    },
+    "anatomy": {
+      "en": "deformed, distorted, disfigured, extra limbs, extra fingers, missing fingers, mutated hands, bad anatomy, bad proportions, malformed limbs, extra arms, extra legs, fused fingers, too many fingers, long neck",
+      "cn": "变形, 扭曲, 多余肢体, 手指错误, 解剖错误"
+    },
+    "face": {
+      "en": "distorted face, asymmetrical face, ugly face, poorly drawn face, poorly drawn eyes, cross-eyed, weird eyes, extra eyes",
+      "cn": "脸部变形, 不对称, 眼睛错误"
+    },
+    "style_conflicts": {
+      "for_realistic": "cartoon, anime, 3d render, cgi, painting, illustration, drawing, sketch, art",
+      "for_anime": "photorealistic, photograph, real photo, 3d render, cgi",
+      "for_2.5d": "pure anime, pure cartoon, overly realistic, photograph"
+    }
+  },
+  
+  "platform_specific": {
+    "midjourney": {
+      "recommended_negative": "Avoid using negative prompts directly; use --no flag instead",
+      "example": "--no cartoon anime blurry watermark"
+    },
+    "stable_diffusion": {
+      "recommended_negative": "(worst quality:1.4), (low quality:1.4), lowres, bad anatomy, bad hands, error, missing fingers, extra digit, fewer digits, cropped, jpeg artifacts, signature, watermark, username, blurry, artist name",
+      "strength_weighting": "Use (term:weight) syntax, e.g., (blurry:1.3)"
+    },
+    "dalle": {
+      "recommended_negative": "DALL-E doesn't support negative prompts; describe what you want positively",
+      "workaround": "Use phrases like 'high quality, sharp focus, no blur' instead"
+    }
+  },
+  
+  "character_safety": {
+    "en": "duplicate person, clone, twin, multiple versions of same person",
+    "cn": "重复人物, 克隆"
+  },
+  
+  "scene_safety": {
+    "en": "inconsistent lighting, mixed time of day, anachronistic elements",
+    "cn": "光线不一致, 时间矛盾"
+  },
+  
+  "assembled_negative_example": {
+    "realistic_character": "low quality, worst quality, blurry, watermark, deformed, extra fingers, bad anatomy, distorted face, asymmetrical eyes, cartoon, anime, 3d render",
+    "realistic_scene": "low quality, worst quality, blurry, watermark, inconsistent lighting, anachronistic elements, cartoon, anime"
+  }
+}

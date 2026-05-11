@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: #1a1a2e;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding: 40px;
+    font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+  }
+  .terminal-window {
+    background: #0d1117;
+    border-radius: 12px;
+    width: 780px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+    overflow: hidden;
+  }
+  .terminal-header {
+    background: #161b22;
+    padding: 12px 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .dot { width: 12px; height: 12px; border-radius: 50%; }
+  .dot-red { background: #ff5f57; }
+  .dot-yellow { background: #febc2e; }
+  .dot-green { background: #28c840; }
+  .terminal-title {
+    color: #8b949e;
+    font-size: 13px;
+    margin-left: 8px;
+    font-weight: 500;
+  }
+  .terminal-body {
+    padding: 24px 24px 28px;
+    font-family: 'SF Mono', 'Fira Code', 'JetBrains Mono', 'Cascadia Code', Menlo, Monaco, monospace;
+    font-size: 13.5px;
+    line-height: 1.65;
+    color: #c9d1d9;
+  }
+  .prompt { color: #7ee787; font-weight: 600; }
+  .cmd { color: #f0f6fc; font-weight: 500; }
+  .flag { color: #79c0ff; }
+  .value { color: #ffa657; }
+  .warning { color: #f0883e; font-weight: 600; }
+  .error { color: #f85149; font-weight: 600; }
+  .success { color: #3fb950; font-weight: 600; }
+  .blue { color: #58a6ff; font-weight: 600; }
+  .purple { color: #bc8cff; font-weight: 600; }
+  .dim { color: #6e7681; }
+  .info { color: #c9d1d9; }
+  .muted { color: #8b949e; }
+  .block { margin-bottom: 20px; }
+  .indent { padding-left: 24px; }
+  .separator {
+    border-top: 1px solid #21262d;
+    margin: 16px 0;
+  }
+  .badge {
+    display: inline-block;
+    padding: 1px 8px;
+    border-radius: 4px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+  }
+  .badge-warn { background: rgba(240,136,62,0.15); color: #f0883e; border: 1px solid rgba(240,136,62,0.3); }
+  .badge-ok { background: rgba(63,185,80,0.15); color: #3fb950; border: 1px solid rgba(63,185,80,0.3); }
+  .badge-crit { background: rgba(248,81,73,0.15); color: #f85149; border: 1px solid rgba(248,81,73,0.3); }
+  .health-bar {
+    display: inline-block;
+    width: 120px;
+    height: 6px;
+    background: #21262d;
+    border-radius: 3px;
+    position: relative;
+    vertical-align: middle;
+    margin-left: 6px;
+  }
+  .health-fill {
+    display: inline-block;
+    height: 6px;
+    border-radius: 3px;
+    position: absolute;
+    left: 0;
+    top: 0;
+  }
+  .fill-good { background: #3fb950; width: 82%; }
+  .fill-bad { background: #f85149; width: 38%; }
+</style>
+</head>
+<body>
+<div class="terminal-window">
+  <div class="terminal-header">
+    <div class="dot dot-red"></div>
+    <div class="dot dot-yellow"></div>
+    <div class="dot dot-green"></div>
+    <span class="terminal-title">kiln &mdash; predictive safety</span>
+  </div>
+  <div class="terminal-body">
+    <!-- Command 1: Trend Analysis (healthy printer) -->
+    <div class="block">
+      <div>
+        <span class="prompt">$</span>
+        <span class="cmd"> kiln printer-trend-analysis</span>
+        <span class="flag"> --printer</span> <span class="value">bambu-x1c</span>
+      </div>
+      <div class="indent">
+        <span class="blue">&#9670; Trend Report</span> <span class="muted">bambu-x1c</span> <span class="dim">&middot; last 30 days</span>
+      </div>
+      <div class="indent">
+        <span class="muted">Health:</span> <span class="success">0.82</span>
+        <span class="health-bar"><span class="health-fill fill-good"></span></span>
+      </div>
+      <div class="indent">
+        <span class="muted">Success rate:</span> <span class="info">87%</span>
+        <span class="dim">&middot;</span>
+        <span class="muted">Trend:</span> <span class="success">improving</span>
+      </div>
+      <div class="indent">
+        <span class="muted">Top failure:</span> <span class="info">warping</span> <span class="dim">&times;3</span>
+        <span class="dim">&middot;</span>
+        <span class="muted">ABS:</span> <span class="warning">62%</span>
+        <span class="dim">&middot;</span>
+        <span class="muted">PLA:</span> <span class="success">96%</span>
+      </div>
+    </div>
+
+    <div class="separator"></div>
+
+    <!-- Command 2: Trend Analysis (degrading printer) -->
+    <div class="block">
+      <div>
+        <span class="prompt">$</span>
+        <span class="cmd"> kiln printer-trend-analysis</span>
+        <span class="flag"> --printer</span> <span class="value">ender3-v2</span>
+      </div>
+      <div class="indent">
+        <span class="blue">&#9670; Trend Report</span> <span class="muted">ender3-v2</span> <span class="dim">&middot; last 30 days</span>
+      </div>
+      <div class="indent">
+        <span class="muted">Health:</span> <span class="error">0.38</span>
+        <span class="health-bar"><span class="health-fill fill-bad"></span></span>
+        <span class="badge badge-crit">CRITICAL</span>
+      </div>
+      <div class="indent">
+        <span class="muted">Success rate:</span> <span class="error">48%</span>
+        <span class="dim">&middot;</span>
+        <span class="muted">Trend:</span> <span class="error">worsening</span>
+        <span class="dim">(was 72%)</span>
+      </div>
+      <div class="indent">
+        <span class="warning">&#9888; Duration increasing:</span> <span class="info">avg 2.1h &rarr; 3.4h. May indicate clogging.</span>
+      </div>
+      <div class="indent">
+        <span class="warning">&#9888; Recommend maintenance inspection.</span>
+      </div>
+    </div>
+
+    <div class="separator"></div>
+
+    <!-- Command 3: Ambient safety check -->
+    <div class="block">
+      <div>
+        <span class="prompt">$</span>
+        <span class="cmd"> kiln check-ambient</span>
+        <span class="flag"> --printer</span> <span class="value">bambu-x1c</span>
+        <span class="flag"> --material</span> <span class="value">PLA</span>
+      </div>
+      <div class="indent">
+        <span class="purple">&#127777; Ambient Check</span> <span class="muted">bambu-x1c</span>
+        <span class="dim">&middot;</span>
+        <span class="muted">chamber:</span> <span class="warning">52&deg;C</span>
+      </div>
+      <div class="indent">
+        <span class="warning">&#9888; Chamber too hot for PLA</span> <span class="dim">(softens above 45&deg;C)</span>
+      </div>
+      <div class="indent">
+        <span class="muted">&#8627;</span> <span class="info">Let chamber cool or open enclosure door before printing.</span>
+      </div>
+    </div>
+
+    <div class="separator"></div>
+
+    <!-- Command 4: Ambient check passes -->
+    <div class="block">
+      <div>
+        <span class="prompt">$</span>
+        <span class="cmd"> kiln check-ambient</span>
+        <span class="flag"> --printer</span> <span class="value">voron-350</span>
+        <span class="flag"> --material</span> <span class="value">ABS</span>
+      </div>
+      <div class="indent">
+        <span class="purple">&#127777; Ambient Check</span> <span class="muted">voron-350</span>
+        <span class="dim">&middot;</span>
+        <span class="muted">chamber:</span> <span class="success">48&deg;C</span>
+      </div>
+      <div class="indent">
+        <span class="success">&#10003; Conditions safe for ABS</span> <span class="badge badge-ok">OK</span>
+        <span class="dim">&middot; range: 35&ndash;70&deg;C</span>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

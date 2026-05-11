@@ -1,0 +1,66 @@
+[
+  {
+    "id": 0,
+    "prompt": "Run a full system integrity check. Verify all data files, check for corruption, and report any issues.",
+    "expectations": [
+      "Scans all directories under /data/ against the canonical data map",
+      "Computes hashes for all canonical data files and compares to stored hash registry",
+      "Identifies any files that have been modified outside of normal skill operations",
+      "Checks for orphaned files not tracked by any skill",
+      "Reports pass/fail for each directory with details on any failures",
+      "Writes integrity report to /data/reports/system/"
+    ],
+    "files": []
+  },
+  {
+    "id": 1,
+    "prompt": "The weekly full backup should have run last Sunday at 02:00 Athens time. Verify it completed successfully and the backup file is valid.",
+    "expectations": [
+      "Checks /data/backups/ for the expected weekly backup file",
+      "Verifies the backup file exists with correct naming convention",
+      "Validates the encrypted archive can be decrypted and extracted",
+      "Performs spot-check on restored data against current canonical files",
+      "Reports backup size, duration, and verification status",
+      "Logs the verification result to /data/reports/system/"
+    ],
+    "files": []
+  },
+  {
+    "id": 2,
+    "prompt": "A government submission was just completed for client EL123456789. An event-driven snapshot should be triggered.",
+    "expectations": [
+      "Creates an event-driven snapshot of the affected client directories",
+      "Encrypts the snapshot with AES-256",
+      "Names the file following convention: snapshot_gov-submission_EL123456789_{date}.tar.enc",
+      "Stores in /data/backups/ with indefinite retention (milestone record)",
+      "Verifies the snapshot immediately after creation",
+      "Logs the snapshot event including what triggered it"
+    ],
+    "files": []
+  },
+  {
+    "id": 3,
+    "prompt": "Check data retention compliance. Which files are past their retention period and which must be kept for how long under Greek law?",
+    "expectations": [
+      "Applies Greek legal retention rules: 5 years for general business records, 10 years for tax records, 20 years for property records",
+      "Identifies files that have exceeded their retention period and can be archived or deleted",
+      "Lists files that must be retained with their remaining retention period",
+      "Does not delete anything automatically — presents a report for human decision",
+      "Groups results by retention category and client"
+    ],
+    "files": []
+  },
+  {
+    "id": 4,
+    "prompt": "There are stale process locks in /data/system/process-locks/ that appear to be from a crashed process. Identify and clean them up.",
+    "expectations": [
+      "Scans /data/system/process-locks/ for lock files",
+      "Identifies stale locks by checking timestamp and process ID validity",
+      "Reports which locks are stale, what process created them, and when",
+      "Removes stale locks only after human confirmation",
+      "Does not remove locks that appear to belong to active processes",
+      "Logs the cleanup action for audit trail"
+    ],
+    "files": []
+  }
+]

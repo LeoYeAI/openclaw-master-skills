@@ -1,0 +1,381 @@
+{
+  "_meta": {
+    "name": "Claw Sentinel Premium Patterns Pack",
+    "version": "1.0.0",
+    "updated": "2026-03-14",
+    "total_patterns": 512,
+    "license": "Commercial — single-user license",
+    "docs": "Drop this file into ~/.sentinel/ and it will be loaded automatically"
+  },
+
+  "prompt_injection_advanced": {
+    "_description": "Advanced injection patterns that bypass basic regex — obfuscation, multi-step, indirect",
+    "severity": "CRITICAL",
+    "patterns": [
+      "(?i)i[\\s]*g[\\s]*n[\\s]*o[\\s]*r[\\s]*e.*previous.*instructions",
+      "(?i)1gn0re.*prev10us.*1nstruct10ns",
+      "(?i)dis\\s*re\\s*gard.*(?:above|prior|previous).*(?:rules|instructions|context)",
+      "(?i)do\\s+not\\s+follow.*(?:previous|prior|above|original).*(?:instructions|rules|guidelines)",
+      "(?i)stop\\s+(?:following|obeying|listening\\s+to).*(?:instructions|rules|guidelines)",
+      "(?i)(?:new|updated|revised|corrected)\\s+(?:system\\s+)?(?:instructions|rules|prompt)\\s*[:=]",
+      "(?i)\\[\\s*(?:system|admin|root|developer)\\s*\\]",
+      "(?i)<\\s*(?:system|admin|root|developer)\\s*>",
+      "(?i)\\{\\s*(?:system|admin|root|developer)\\s*\\}",
+      "(?i)###\\s*(?:system|admin|developer)\\s+(?:override|message|instruction|prompt)",
+      "(?i)begin\\s+(?:new|updated|real)\\s+(?:system\\s+)?(?:prompt|instructions|context)",
+      "(?i)end\\s+(?:of\\s+)?(?:system\\s+)?(?:prompt|instructions).*begin\\s+(?:new|user)",
+      "(?i)the\\s+(?:real|actual|true)\\s+(?:system\\s+)?(?:prompt|instructions)\\s+(?:is|are|says)",
+      "(?i)(?:admin|developer|system)\\s+(?:override|access)\\s+(?:code|token|granted)",
+      "(?i)maintenance\\s+mode\\s+(?:activated|enabled|on)",
+      "(?i)(?:safety|content|moderation|ethics)\\s+(?:filter|check|system)\\s+(?:disabled|off|bypassed)",
+      "(?i)you\\s+(?:have|got)\\s+(?:a\\s+)?new\\s+(?:personality|role|identity|character)",
+      "(?i)(?:switch|change|update)\\s+(?:to|your)\\s+(?:new\\s+)?(?:personality|role|mode|identity)",
+      "(?i)answer\\s+(?:as|like)\\s+(?:if|though)\\s+you\\s+(?:have|had|were)\\s+no\\s+(?:restrictions|limits|filters|rules)",
+      "(?i)(?:imagine|assume|suppose|consider)\\s+(?:you\\s+)?(?:are|were)\\s+(?:free|unrestricted|unfiltered|unlimited)",
+      "(?i)for\\s+(?:educational|research|academic|testing)\\s+purposes\\s+(?:only)?\\s*,?\\s*(?:ignore|bypass|disable|skip)",
+      "(?i)(?:this|it)\\s+is\\s+(?:just\\s+)?(?:a\\s+)?(?:test|experiment|drill|simulation)\\s*[,.]?\\s*(?:so\\s+)?(?:you\\s+can|please)?\\s*(?:ignore|bypass|skip)",
+      "(?i)(?:i\\s+am|i'm)\\s+(?:an?\\s+)?(?:openai|anthropic|google|meta)\\s+(?:employee|engineer|researcher|developer|staff)",
+      "(?i)(?:authorized|approved|cleared)\\s+(?:by|from)\\s+(?:openai|anthropic|google|admin|management)",
+      "(?i)(?:do|can|could|would)\\s+you\\s+(?:please\\s+)?(?:tell|show|display|reveal|output|print|echo|repeat|recite)\\s+(?:me\\s+)?(?:your|the)\\s+(?:full|complete|entire|original|initial)?\\s*(?:system\\s+)?(?:prompt|instructions|rules|guidelines|directives|configuration|setup)",
+      "(?i)what\\s+(?:is|was|were)\\s+(?:your|the)\\s+(?:original|initial|first|base)\\s+(?:system\\s+)?(?:prompt|instructions|message|setup|config)",
+      "(?i)(?:copy|paste|quote|reproduce|echo|output)\\s+(?:your|the)\\s+(?:system|original|initial|hidden)\\s+(?:prompt|instructions|message)",
+      "(?i)translate\\s+your\\s+(?:system\\s+)?(?:prompt|instructions)\\s+(?:into|to)",
+      "(?i)(?:summarize|paraphrase|rephrase|explain)\\s+your\\s+(?:system\\s+)?(?:prompt|instructions|rules|guidelines)",
+      "(?i)(?:encode|convert|transform)\\s+your\\s+(?:system\\s+)?(?:prompt|instructions)\\s+(?:to|into|as)\\s+(?:base64|hex|json|rot13|binary|morse)",
+      "(?i)write\\s+(?:your|the)\\s+(?:system\\s+)?(?:prompt|instructions)\\s+(?:backwards|reversed|in\\s+reverse)",
+      "(?i)(?:first|initial|starting)\\s+(?:letter|word|character)\\s+of\\s+(?:each|every)\\s+(?:line|sentence|paragraph)\\s+(?:of|in|from)\\s+your\\s+(?:system\\s+)?(?:prompt|instructions)"
+    ]
+  },
+
+  "prompt_injection_ru_extended": {
+    "_description": "Extended Russian injection patterns including slang and obfuscation",
+    "severity": "CRITICAL",
+    "patterns": [
+      "(?i)сбрось (все )?(настройки|параметры|конфигурацию|ограничения)",
+      "(?i)верни(сь)? (к |в )?(начальн|заводск|исходн|стандартн)(ые|ым|ую|ой) (настройк|состояни|параметр|режим)",
+      "(?i)отключи (все )?(фильтр|ограничени|безопасност|защит|модераци)",
+      "(?i)выключи (все )?(фильтр|ограничени|безопасност|защит|модераци)",
+      "(?i)сними (все )?(ограничени|блокировк|запрет|фильтр)",
+      "(?i)переключись (в|на) (режим )?(разработ|отлад|тест|админ|свобод|неограничен)",
+      "(?i)активируй (режим )?(разработ|отлад|тест|админ|бог|свобод)",
+      "(?i)включи (режим )?(разработ|отлад|тест|админ|бог|свобод)",
+      "(?i)(покажи|выведи|напиши|скажи|расскажи) (мне )?(свой|свою|свои|системн)(ый|ые|ую) (промпт|промт|инструкци|правил|настройк|конфигураци)",
+      "(?i)(процитируй|повтори|скопируй) (свой|свою|свои|системн)(ый|ые|ую) (промпт|промт|инструкци|правил)",
+      "(?i)я (имею|получил) (доступ|разрешение|право) (к |на )?(полн|все|административн)",
+      "(?i)(отныне|теперь|далее|впредь) (ты )?(должен|обязан|будешь|можешь) (отвечать|работать|действовать) без (каких.либо |всяких )?(ограничен|фильтр|правил|запрет)",
+      "(?i)представь (себе )?(что )?ты (свободен|неограничен|без правил|без ограничений|можешь всё)",
+      "(?i)это (просто |всего лишь )?(тест|эксперимент|проверка|симуляция),? (так что |поэтому )?(можешь |ты можешь )?(игнорир|пропуст|обойти|не обращ)",
+      "(?i)в (целях|рамках) (обучени|тестировани|исследовани|проверк) (пожалуйста )?(отключи|игнорируй|пропусти|обойди)",
+      "(?i)я (разработчик|создатель|автор|админ|программист|инженер) (этого |этой )?(бота|системы|ИИ|нейросети|модели)",
+      "(?i)у меня есть (специальн|секретн|админ|root|sudo|рут)(ый|ое|ая|ые) (доступ|пароль|код|привилеги|разрешени)",
+      "(?i)код (доступа|активации|разблокировки)\\s*[:=]",
+      "(?i)пароль (администратора|разработчика|root|рут)\\s*[:=]",
+      "(?i)(выполни|запусти|сделай) (это|следующ)(ее|ую|ие) (без вопрос|без проверк|без ограничен|молча|тихо)"
+    ]
+  },
+
+  "prompt_injection_zh_extended": {
+    "_description": "Extended Chinese injection patterns",
+    "severity": "CRITICAL",
+    "patterns": [
+      "(?i)请忽略(之前|以前|先前|上面|前面)(的)?(所有)?(指令|指示|规则|说明|限制|约束)",
+      "(?i)不要(遵守|遵循|执行|遵从)(之前|以前|先前)(的)?(指令|指示|规则|限制)",
+      "(?i)取消(所有|全部|一切)(限制|约束|规则|过滤|审核)",
+      "(?i)关闭(安全|内容|审核)(模式|系统|过滤|检查|限制)",
+      "(?i)(进入|切换到|启用|激活)(开发者|管理员|调试|测试|维护|自由|无限制)(模式)",
+      "(?i)(显示|展示|输出|打印|告诉我|重复)(你的|系统的|原始的|初始的|完整的)(系统)?(提示|提示词|指令|指示|规则|配置)",
+      "(?i)我是(你的)?(开发者|创建者|管理员|所有者|作者|工程师)",
+      "(?i)这(只是|仅仅是)(一个)?(测试|实验|模拟|演习)",
+      "(?i)假设你(没有|不受|不被)(任何)?(限制|规则|约束|控制)",
+      "(?i)(翻译|转换|编码)(你的)(系统)?(提示|指令)(为|成|到)"
+    ]
+  },
+
+  "prompt_injection_ko": {
+    "_description": "Korean injection patterns",
+    "severity": "CRITICAL",
+    "patterns": [
+      "이전(의)? (모든 )?(지시|지침|규칙|명령)(을|를) (무시|잊어|취소)",
+      "(개발자|관리자|디버그|테스트|유지보수) 모드(로|를|에) (전환|활성화|진입|켜)",
+      "(시스템|원래|초기)(의)? (프롬프트|지시|지침|규칙)(을|를) (보여|알려|표시|출력|반복)",
+      "모든 (제한|필터|안전장치|규칙)(을|를) (해제|비활성화|끄|무시)",
+      "나는 (당신의|너의) (개발자|관리자|소유자|만든이)(입니다|이다|야)",
+      "(교육|연구|테스트|실험) (목적|용도)(으로|이니|이므로) (무시|해제|비활성화)"
+    ]
+  },
+
+  "prompt_injection_ja": {
+    "_description": "Japanese injection patterns",
+    "severity": "CRITICAL",
+    "patterns": [
+      "(?i)(以前|前|これまで)の(すべての|全ての)?(指示|ルール|命令|制約)(を)?(無視|忘れ|取り消)",
+      "(?i)(開発者|管理者|デバッグ|テスト|メンテナンス)モード(に|を|へ)(切り替え|有効化|入|変更)",
+      "(?i)(システム|元の|初期の|完全な)?(プロンプト|指示|ルール|設定)(を)?(表示|見せ|出力|繰り返|教え)",
+      "(?i)(すべての|全ての)(制限|フィルター|安全装置|ルール)(を)?(解除|無効化|オフ|無視)",
+      "(?i)私は(あなたの)?(開発者|管理者|オーナー|作成者)(です|だ)",
+      "(?i)(教育|研究|テスト|実験)(目的|用途)(で|なので|だから)(無視|解除|無効化|スキップ)"
+    ]
+  },
+
+  "prompt_injection_ar_extended": {
+    "_description": "Extended Arabic injection patterns",
+    "severity": "CRITICAL",
+    "patterns": [
+      "(?i)تجاهل (جميع |كل )?(التعليمات|الأوامر|القواعد|التوجيهات) (السابقة|القديمة|الأصلية)",
+      "(?i)انسَ (جميع |كل )?(التعليمات|الأوامر|القواعد) (السابقة|القديمة)",
+      "(?i)(ادخل|فعّل|انتقل إلى) (وضع|نمط) (المطور|المسؤول|التصحيح|الاختبار|غير مقيد)",
+      "(?i)(اعرض|أظهر|اطبع|كرر) (تعليمات|أوامر|موجه) (النظام|الأصلية|الأولية)",
+      "(?i)(ألغِ|عطّل|أوقف) (جميع )?(القيود|الفلاتر|إجراءات الأمان|الحماية)",
+      "(?i)أنا (المطور|المسؤول|المالك|المبرمج|مهندس) (هذا )?(النظام|البوت|الذكاء الاصطناعي)",
+      "(?i)هذا (مجرد |فقط )?(اختبار|تجربة|محاكاة) (لذلك|إذن) (يمكنك )?(تجاهل|تخطي|تعطيل)"
+    ]
+  },
+
+  "prompt_injection_de": {
+    "_description": "German injection patterns",
+    "severity": "CRITICAL",
+    "patterns": [
+      "(?i)ignoriere? (alle )?(vorherigen|bisherigen|früheren) (Anweisungen|Regeln|Instruktionen|Richtlinien)",
+      "(?i)vergiss (alle )?(vorherigen|bisherigen) (Anweisungen|Regeln|Instruktionen)",
+      "(?i)(Entwickler|Admin|Debug|Test|Wartungs)(modus|\\-Modus) (aktivieren|einschalten|starten)",
+      "(?i)(zeige?|gib|wiederhole?) (mir )?(deine?|die|den) (System)?(prompt|Anweisungen|Regeln|Konfiguration)",
+      "(?i)(deaktiviere?|schalte? aus|entferne?) (alle )?(Beschränkungen|Filter|Sicherheits)(maßnahmen|vorkehrungen)?",
+      "(?i)ich bin (dein )?(Entwickler|Administrator|Eigentümer|Ersteller)"
+    ]
+  },
+
+  "prompt_injection_fr": {
+    "_description": "French injection patterns",
+    "severity": "CRITICAL",
+    "patterns": [
+      "(?i)ignore[z]? (toutes? )?(les )?(instructions|règles|directives|consignes) (précédentes|antérieures|initiales)",
+      "(?i)oublie[z]? (toutes? )?(les )?(instructions|règles|directives) (précédentes|antérieures)",
+      "(?i)(mode|accès) (développeur|administrateur|débogage|test|maintenance|illimité)",
+      "(?i)(montre|affiche|révèle|répète)[z-]?(\\s?moi)? (ton|tes|le|votre) (prompt|instructions|règles) (système|initial|originel)",
+      "(?i)(désactive|supprime|enlève)[z]? (toutes? )?(les )?(restrictions|filtres|sécurité|limitations)",
+      "(?i)je suis (ton|votre) (développeur|créateur|administrateur|propriétaire)"
+    ]
+  },
+
+  "prompt_injection_pt": {
+    "_description": "Portuguese injection patterns",
+    "severity": "CRITICAL",
+    "patterns": [
+      "(?i)ignore (todas? )?(as )?(instruções|regras|diretivas|diretrizes) (anteriores|prévias|originais)",
+      "(?i)esqueça (todas? )?(as )?(instruções|regras|diretivas) (anteriores|prévias)",
+      "(?i)(modo|acesso) (desenvolvedor|administrador|depuração|teste|manutenção|irrestrito)",
+      "(?i)(mostre|exiba|revele|repita) (seu|sua|o|as) (prompt|instruções|regras) (do sistema|original|inicial)",
+      "(?i)(desative|remova|desabilite) (todas? )?(as )?(restrições|filtros|segurança|limitações)"
+    ]
+  },
+
+  "data_exfil_advanced": {
+    "_description": "Advanced exfiltration endpoints and patterns beyond the basics",
+    "severity": "CRITICAL",
+    "patterns": [
+      "(?i)(?:https?://)?[a-z0-9]+\\.(?:loca\\.lt|localtunnel\\.me|serveo\\.net|localhost\\.run|bore\\.digital)",
+      "(?i)(?:https?://)?[a-z0-9-]+\\.(?:trycloudflare\\.com|workers\\.dev)",
+      "(?i)(?:https?://)?[a-z0-9]+\\.(?:pagekite\\.me|telebit\\.cloud|tunnelto\\.dev)",
+      "(?i)(?:https?://)?(?:bin\\.vercel\\.app|httpbin\\.org/post|postb\\.in|ptsv[0-9]+\\.npoint\\.io)",
+      "(?i)(?:https?://)?(?:mockbin\\.io|webhook\\.cool|smee\\.io|relay\\.firefox\\.com)",
+      "(?i)(?:https?://)?[a-z0-9]+\\.(?:glitch\\.me|replit\\.dev|fly\\.dev)/(?:collect|receive|exfil|log|capture|steal|grab|hook)",
+      "(?i)(?:fetch|axios|request|http\\.get|urllib|requests\\.post).*(?:webhook|hook|collect|exfil|capture|log|receive)",
+      "(?i)new\\s+Image\\(\\)\\s*\\.\\s*src\\s*=",
+      "(?i)document\\.cookie",
+      "(?i)navigator\\.sendBeacon",
+      "(?i)(?:window|self|top|parent)\\.postMessage",
+      "(?i)dns(?:log|bin|spy)\\.(?:com|io|net|org)",
+      "(?i)(?:https?://)?(?:canary\\.)?(?:evil|malicious|attacker|c2|exfil|steal|data)[.-]",
+      "(?i)(?:curl|wget|fetch|requests?\\.(?:get|post)).*(?:pastebin\\.com|ghostbin\\.co|paste\\.ee|dpaste\\.org|hastebin\\.com)",
+      "(?i)(?:https?://)?[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}(?::[0-9]+)?/(?:collect|hook|log|receive|data|exfil|steal)",
+      "(?i)(?:https?://)?fd[0-9a-f:]+/",
+      "(?i)echo\\s+.*\\|\\s*(?:nc|ncat|netcat)\\s+",
+      "(?i)(?:curl|wget)\\s+.*-d\\s+['\"]?\\$\\(",
+      "(?i)(?:curl|wget)\\s+.*--data.*\\$\\{",
+      "(?i)(?:python|python3|ruby|perl|node).*-e.*(?:http|socket|tcp|udp)"
+    ]
+  },
+
+  "command_injection_advanced": {
+    "_description": "Advanced command injection patterns including encoded and obfuscated variants",
+    "severity": "CRITICAL",
+    "patterns": [
+      "(?i)\\$\\((?:curl|wget|fetch|nc|python|perl|ruby|node|php)\\b",
+      "(?i)`(?:curl|wget|nc|python|perl|ruby|node|php)\\b",
+      "(?i)(?:;|&&|\\|\\|)\\s*(?:curl|wget|nc|python|perl|ruby|node|php)\\b",
+      "(?i)\\bexport\\s+(?:PATH|LD_PRELOAD|LD_LIBRARY_PATH|DYLD_INSERT_LIBRARIES)\\s*=",
+      "(?i)\\bchattr\\s+[+-]i",
+      "(?i)\\bcrontab\\s+-[rl]?\\s*['\"]?\\s*\\*",
+      "(?i)echo\\s+.*>>\\s*/etc/(?:crontab|passwd|shadow|sudoers|hosts)",
+      "(?i)(?:cat|tee|echo).*>>?\\s*~/.(?:bashrc|zshrc|profile|bash_profile|zprofile)",
+      "(?i)\\bsysctl\\s+-w",
+      "(?i)\\biptables\\s+-[ADIRF]",
+      "(?i)\\bkillall\\s+-9",
+      "(?i)\\bpkill\\s+-9",
+      "(?i)\\bnohup\\b.*&\\s*$",
+      "(?i)\\bdisown\\b",
+      "(?i)\\btrap\\b.*(?:EXIT|INT|TERM)",
+      "(?i)/proc/self/(?:environ|cmdline|maps|mem)",
+      "(?i)\\bstrace\\b.*-p",
+      "(?i)\\bltrace\\b.*-p",
+      "(?i)\\bgdb\\b.*-p",
+      "(?i)\\bptrace\\b",
+      "(?i)(?:python|python3)\\s+-c\\s+['\"].*(?:import\\s+(?:os|subprocess|socket|http|urllib|shutil|ctypes)|__import__|exec\\(|eval\\(|compile\\()",
+      "(?i)(?:node|node16|node18|node20)\\s+-e\\s+['\"].*(?:child_process|require\\(|fs\\.|net\\.|http\\.)",
+      "(?i)\\bperl\\s+-e\\s+['\"].*(?:system|exec|open|socket|IO::Socket)",
+      "(?i)\\bruby\\s+-e\\s+['\"].*(?:system|exec|`|IO\\.popen|TCPSocket|Net::HTTP)",
+      "(?i)\\bphp\\s+-r\\s+['\"].*(?:system|exec|passthru|shell_exec|popen|proc_open|fsockopen)",
+      "(?i)echo\\s+[A-Za-z0-9+/=]{20,}\\s*\\|\\s*(?:base64|openssl)\\s+(?:-d|dec)",
+      "(?i)printf\\s+['\"]\\\\x[0-9a-f]+",
+      "(?i)\\$'\\\\x[0-9a-f]+'",
+      "(?i)xxd\\s+-r\\s+-p",
+      "(?i)\\bpowershell\\b.*(?:-enc|-encodedcommand|-e\\s+[A-Za-z0-9+/=])",
+      "(?i)cmd\\.exe\\s*/c",
+      "(?i)wscript\\.(?:exe|shell)",
+      "(?i)mshta\\b",
+      "(?i)certutil.*-urlcache",
+      "(?i)bitsadmin.*(?:/transfer|/download)"
+    ]
+  },
+
+  "social_engineering_advanced": {
+    "_description": "Advanced social engineering patterns where agent manipulates user",
+    "severity": "HIGH",
+    "patterns": [
+      "(?i)(?:urgently|immediately|quickly|asap|right\\s+now)\\s+(?:run|execute|install|download|open|click|visit)",
+      "(?i)(?:before|to)\\s+(?:we|i)\\s+(?:can\\s+)?(?:proceed|continue|help|assist|complete).*(?:you\\s+(?:need|must|should|have)\\s+to\\s+)?(?:run|execute|install|download|visit|open|click|enter|type|paste)",
+      "(?i)(?:this|it)\\s+(?:won't|will\\s+not|cannot)\\s+(?:work|function|run)\\s+(?:unless|until|without).*(?:install|run|execute|download|add|enable|disable|configure|update|modify)",
+      "(?i)(?:temporary|temporarily|briefly|just\\s+for\\s+(?:a\\s+)?(?:moment|second|minute))\\s+(?:disable|turn\\s+off|deactivate|remove|lower)\\s+(?:your\\s+)?(?:firewall|antivirus|defender|security|protection|av)",
+      "(?i)(?:add|put|insert|paste|write|append)\\s+(?:this|the\\s+following)\\s+(?:to|into|in)\\s+(?:your\\s+)?(?:\\.env|\\.bashrc|\\.zshrc|\\.profile|\\.ssh|config|authorized_keys|crontab|sudoers|hosts|known_hosts)",
+      "(?i)(?:open|visit|go\\s+to|navigate\\s+to|click)\\s+(?:this\\s+)?(?:link|url|page|site|website)\\s*(?:to\\s+)?(?:verify|confirm|authenticate|authorize|complete|unlock|activate|download|install|update|fix|resolve)",
+      "(?i)(?:your|the)\\s+(?:account|system|agent|bot|machine|computer|server)\\s+(?:has\\s+been|is|was)\\s+(?:compromised|hacked|breached|infected|attacked|locked|suspended|flagged|blocked).*(?:(?:to|must|need|should)\\s+)?(?:run|execute|install|click|visit|verify|download|contact|call|email|pay)",
+      "(?i)(?:grant|give|provide|allow|enable|authorize)\\s+(?:me|us|the\\s+skill|this\\s+tool|the\\s+agent)\\s+(?:access|permission|admin|root|sudo|full\\s+control|write)\\s+(?:to|for|on)",
+      "(?i)(?:change|set|update|modify)\\s+(?:your\\s+)?(?:password|pin|passcode|passphrase)\\s+to\\s",
+      "(?i)(?:verify|confirm|validate|prove)\\s+(?:your\\s+)?(?:identity|ownership|credentials|account)\\s+by\\s+(?:sending|sharing|entering|providing|typing|pasting|running)",
+      "(?i)(?:scan|check)\\s+this\\s+(?:QR|qr)\\s+code\\s+(?:to|for|with)\\s+(?:verify|confirm|connect|login|authenticate|authorize|complete)",
+      "(?i)(?:don't|do\\s+not)\\s+(?:tell|show|share|mention|reveal)\\s+(?:this|these|the)\\s+(?:to\\s+)?(?:anyone|others|your\\s+(?:team|admin|manager|supervisor|boss))",
+      "(?i)(?:keep|this\\s+is)\\s+(?:this\\s+)?(?:between\\s+us|a\\s+secret|confidential|private|off\\s+the\\s+record)",
+      "(?i)(?:i\\s+(?:just\\s+)?need|can\\s+you\\s+(?:just\\s+)?(?:quickly|briefly))\\s+(?:your|the)\\s+(?:api\\s*key|token|password|credentials|private\\s*key|secret|mnemonic|seed\\s*phrase)",
+      "(?i)(?:for\\s+)?(?:verification|debugging|testing|troubleshooting|support)\\s+(?:purposes?)?\\s*,?\\s*(?:please\\s+)?(?:share|send|provide|paste|enter|type)\\s+(?:your\\s+)?(?:api\\s*key|token|password|credentials|private\\s*key|secret)"
+    ]
+  },
+
+  "secret_patterns_crypto": {
+    "_description": "Crypto-specific secret patterns — exchange API keys, wallet formats, DeFi tokens",
+    "severity": "CRITICAL",
+    "patterns": [
+      "(?i)(?:binance|bnb).*(?:api|secret)\\s*(?:key)?\\s*[:=]\\s*[A-Za-z0-9]{20,}",
+      "(?i)(?:coinbase).*(?:api|secret)\\s*(?:key)?\\s*[:=]\\s*[A-Za-z0-9+/=]{20,}",
+      "(?i)(?:kraken).*(?:api|secret|private)\\s*(?:key)?\\s*[:=]\\s*[A-Za-z0-9+/=]{20,}",
+      "(?i)(?:ftx|bybit|okx|kucoin|huobi|gate\\.?io|bitfinex|bitstamp|gemini|crypto\\.com).*(?:api|secret)\\s*(?:key)?\\s*[:=]\\s*[A-Za-z0-9+/=-]{16,}",
+      "(?i)(?:etherscan|bscscan|polygonscan|arbiscan|snowtrace).*(?:api)\\s*(?:key)?\\s*[:=]\\s*[A-Za-z0-9]{20,}",
+      "(?i)(?:infura|alchemy|moralis|quicknode|chainstack|ankr).*(?:api|project|app)\\s*(?:key|id|secret)?\\s*[:=]\\s*[A-Za-z0-9_-]{16,}",
+      "(?i)(?:metamask|phantom|rabby|trust\\s*wallet).*(?:private|secret|mnemonic|seed)",
+      "(?i)(?:ledger|trezor).*(?:recovery|mnemonic|seed|backup)\\s*(?:phrase)?\\s*[:=]",
+      "xprv[A-Za-z0-9]{107}",
+      "xpub[A-Za-z0-9]{107}",
+      "(?:L|K|5)[1-9A-HJ-NP-Za-km-z]{50,51}",
+      "bc1[a-zA-HJ-NP-Z0-9]{39,59}",
+      "(?:1|3)[1-9A-HJ-NP-Za-km-z]{25,34}",
+      "0x[0-9a-fA-F]{40}",
+      "[1-9A-HJ-NP-Za-km-z]{32,44}",
+      "T[1-9A-HJ-NP-Za-km-z]{33}",
+      "(?:cosmos|osmo|juno|stars|sei)[1-9a-z]{38,}",
+      "terra1[a-z0-9]{38}",
+      "(?i)(?:private_key|privkey|secret_key|priv_key)\\s*[:=]\\s*(?:0x)?[0-9a-fA-F]{64}",
+      "(?i)(?:mnemonic|seed_phrase|recovery_phrase|backup_phrase)\\s*[:=]\\s*['\"]?[a-z]+(?:\\s+[a-z]+){11,23}['\"]?"
+    ]
+  },
+
+  "secret_patterns_saas": {
+    "_description": "SaaS and cloud service API key patterns",
+    "severity": "CRITICAL",
+    "patterns": [
+      "(?i)sk-proj-[A-Za-z0-9_-]{20,}",
+      "(?i)sk-ant-(?:api03|sid01)-[A-Za-z0-9_-]{20,}",
+      "(?i)(?:AKIA|ASIA)[A-Z0-9]{16}",
+      "AIza[A-Za-z0-9_\\-]{35}",
+      "(?i)(?:sk|rk|pk)_(?:live|test)_[A-Za-z0-9]{20,}",
+      "(?i)(?:ghp|gho|ghu|ghs|ghr)_[A-Za-z0-9_]{36,}",
+      "(?i)(?:glpat|gldt|glrt|glsoat)-[A-Za-z0-9_-]{20,}",
+      "(?i)[0-9]{8,10}:[A-Za-z0-9_-]{35}",
+      "(?i)xox[bpsa]-[A-Za-z0-9-]{10,}",
+      "(?i)(?:sq0[a-z]{3})-[A-Za-z0-9_-]{22,}",
+      "(?i)(?:EAAG|EAAa)[A-Za-z0-9]+",
+      "(?i)(?:shpat|shpca|shppa|shpss)_[A-Za-z0-9]{32,}",
+      "(?i)key-[A-Za-z0-9]{24,}",
+      "(?i)(?:twilio|TWILIO).*(?:SK|AC)[a-z0-9]{32}",
+      "(?i)SG\\.[A-Za-z0-9_-]{22}\\.[A-Za-z0-9_-]{43}",
+      "(?i)(?:mailgun|mg).*key-[A-Za-z0-9]{32,}",
+      "(?i)hf_[A-Za-z0-9]{34,}",
+      "(?i)r8_[A-Za-z0-9]{34,}",
+      "(?i)(?:eyJ)[A-Za-z0-9_-]{10,}\\.(?:eyJ)[A-Za-z0-9_-]{10,}\\.[A-Za-z0-9_-]+",
+      "(?i)(?:postgres|mysql|mongodb|redis|amqp|rediss?)://[^\\s'\"]{10,}",
+      "(?i)-----BEGIN (?:RSA |EC |OPENSSH |DSA |ENCRYPTED )?PRIVATE KEY-----",
+      "(?i)(?:bearer|token|authorization)\\s+[A-Za-z0-9_\\-\\.]{20,}"
+    ]
+  },
+
+  "metadata_ssrf": {
+    "_description": "Cloud metadata and internal network SSRF targets",
+    "severity": "CRITICAL",
+    "patterns": [
+      "(?:169\\.254\\.169\\.254|metadata\\.google\\.internal|100\\.100\\.100\\.200)",
+      "(?:fd00:ec2::254|\\[fd00:ec2::254\\])",
+      "(?i)(?:http://)?169\\.254\\.170\\.2/",
+      "(?i)(?:http://)?(?:metadata|instance-data)\\.(?:internal|ec2|cloud)",
+      "(?i)/latest/meta-data/",
+      "(?i)/latest/user-data/",
+      "(?i)/latest/api/token",
+      "(?i)/computeMetadata/v1/",
+      "(?i)/metadata/instance\\?",
+      "(?i)/metadata/v1/",
+      "(?i)(?:http://)?localhost(?::[0-9]+)?/(?:admin|config|env|debug|status|metrics|health|info|trace|dump|internal|manage|actuator)",
+      "(?i)(?:http://)?127\\.0\\.0\\.1(?::[0-9]+)?/(?:admin|config|env|debug|status|metrics|info|internal)",
+      "(?i)(?:http://)?\\[::1\\](?::[0-9]+)?/",
+      "(?i)(?:http://)?0\\.0\\.0\\.0(?::[0-9]+)?/",
+      "(?i)(?:http://)?10\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}",
+      "(?i)(?:http://)?172\\.(?:1[6-9]|2[0-9]|3[01])\\.[0-9]{1,3}\\.[0-9]{1,3}",
+      "(?i)(?:http://)?192\\.168\\.[0-9]{1,3}\\.[0-9]{1,3}",
+      "(?i)\\.(?:internal|local|localhost|corp|intranet|private)(:[0-9]+)?/"
+    ]
+  },
+
+  "encoding_evasion": {
+    "_description": "Encoding tricks used to bypass pattern matching",
+    "severity": "HIGH",
+    "patterns": [
+      "(?i)\\\\u[0-9a-f]{4}.*(?:ignore|system|prompt|instructions|override|bypass|disable)",
+      "(?i)&#(?:x[0-9a-f]+|[0-9]+);.*(?:ignore|system|prompt|override)",
+      "(?i)%[0-9a-f]{2}%[0-9a-f]{2}.*(?:ignore|system|prompt)",
+      "(?i)(?:eval|exec|decode|unescape|fromCharCode|atob|Buffer\\.from)\\s*\\(",
+      "(?i)String\\.fromCharCode\\s*\\(",
+      "(?i)\\\\x[0-9a-f]{2}(?:\\\\x[0-9a-f]{2}){3,}",
+      "(?i)(?:rot13|caesar|base32|base58|base85|xxencode|uuencode)",
+      "(?i)char\\s*\\(\\s*[0-9]+\\s*(?:,\\s*[0-9]+\\s*){3,}\\)",
+      "(?i)concat\\s*\\(\\s*['\"][^'\"]{1,3}['\"]\\s*(?:,\\s*['\"][^'\"]{1,3}['\"]\\s*){3,}\\)"
+    ]
+  },
+
+  "file_system_attacks": {
+    "_description": "Path traversal and filesystem manipulation patterns",
+    "severity": "HIGH",
+    "patterns": [
+      "(?i)\\.\\./\\.\\./",
+      "(?i)\\.\\.\\\\\\.\\.\\\\",
+      "(?i)%2e%2e(?:%2f|%5c)",
+      "(?i)\\.\\.%252f",
+      "(?i)/etc/(?:passwd|shadow|hosts|sudoers|crontab|ssh)",
+      "(?i)~/.(?:ssh|gnupg|aws|gcloud|azure|kube|docker|config|env|bashrc|zshrc|profile|netrc|npmrc|pypirc)",
+      "(?i)/(?:proc|sys|dev)/",
+      "(?i)(?:C:|\\\\\\\\)(?:Windows|Users|Program)",
+      "(?i)%USERPROFILE%",
+      "(?i)%APPDATA%",
+      "(?i)\\.(?:git|svn|hg)/(?:config|credentials|HEAD)",
+      "(?i)\\bfind\\b.*-exec\\b",
+      "(?i)\\bsymlink\\b|\\bln\\s+-s\\b",
+      "(?i)\\bmount\\b.*-o.*(?:bind|loop)",
+      "(?i)\\bchroot\\b"
+    ]
+  }
+}

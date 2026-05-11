@@ -1,0 +1,78 @@
+{
+  "name": "@openclaw/web-search-plus",
+  "version": "2.8.6",
+  "description": "Unified search skill with Intelligent Auto-Routing. Uses multi-signal analysis (intent classification, linguistic patterns, URL/brand detection) to automatically select between Serper (Google), Tavily (Research), Exa (Neural), and You.com (RAG/Real-time) with confidence scoring.",
+  "keywords": [
+    "openclaw",
+    "skill",
+    "search",
+    "web-search",
+    "serper",
+    "tavily",
+    "exa",
+    "you",
+    "you.com",
+    "google-search",
+    "research",
+    "semantic-search",
+    "ai-agent",
+    "auto-routing",
+    "smart-routing",
+    "multi-provider",
+    "shopping",
+    "product-search",
+    "similar-sites",
+    "company-discovery",
+    "rag",
+    "real-time",
+    "free-tier",
+    "api-aggregator"
+  ],
+  "author": "robbyczgw-cla",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/robbyczgw-cla/web-search-plus.git"
+  },
+  "homepage": "https://clawhub.ai/robbyczgw-cla/web-search-plus",
+  "bugs": {
+    "url": "https://github.com/robbyczgw-cla/web-search-plus/issues"
+  },
+  "openclaw": {
+    "skill": true,
+    "triggers": [
+      "search",
+      "find",
+      "look up",
+      "research"
+    ],
+    "capabilities": [
+      "web-search",
+      "image-search",
+      "semantic-search",
+      "multi-provider"
+    ],
+    "providers": [
+      "serper",
+      "tavily",
+      "exa",
+      "you"
+    ],
+    "requirements": {
+      "bins": ["python3", "bash"],
+      "env": {
+        "SERPER_API_KEY": "optional",
+        "TAVILY_API_KEY": "optional",
+        "EXA_API_KEY": "optional",
+        "YOU_API_KEY": "optional",
+        "SEARXNG_INSTANCE_URL": "optional"
+      }
+    }
+  },
+  "files": [
+    "SKILL.md",
+    "README.md",
+    "scripts/",
+    ".env.example"
+  ]
+}

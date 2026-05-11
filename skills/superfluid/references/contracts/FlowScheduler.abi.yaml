@@ -1,0 +1,231 @@
+# FlowScheduler — Superfluid Flow Scheduler
+# Schedule future stream creation and deletion at specific timestamps.
+#
+# A sender creates a schedule specifying when a stream should start and/or stop.
+# Off-chain keepers call executeCreateFlow / executeDeleteFlow at the right time.
+# Optionally includes a one-time startAmount transfer at stream start.
+#
+# FlowScheduler is a Super App. This means schedule creation can be batched
+# in a Host.batchCall using operationType 202 (CALL_APP_ACTION), which forwards
+# ctx to the Super App. All agreement callbacks are NOOPs — it's a "dumb" Super
+# App registered solely to enable batching (e.g. approve + create schedule atomically).
+#
+# Uses Superfluid ACL flow operator permissions to create/delete flows on behalf of the sender.
+#
+# == Off-chain Automation ==
+# executeCreateFlow and executeDeleteFlow are permissionless but require off-chain
+# invocation at the correct time. Manual triggering is possible but off-chain automation
+# (e.g. Gelato, Chainlink Keepers, or a custom bot) is strongly recommended and expected.
+#
+# == Setup Requirements ==
+# Before creating a schedule, the sender must:
+# 1. Grant this contract Superfluid ACL flow operator permissions.
+#    Required permissions: create + delete (bitmask 5) — create for
+#    executeCreateFlow, delete for executeDeleteFlow.
+#    Simplest approach: CFAv1Forwarder.grantPermissions (grants full control).
+#    Granular alternative: CFAv1Forwarder.updateFlowOperatorPermissions with
+#    permissions=5 and a specific flowrateAllowance.
+# 2. If startAmount > 0: grant this contract Super Token ERC-20 allowance
+#    (via SuperToken.approve) for the startAmount transfer at stream start.
+#    This is the Super Token's own ERC-20 allowance — NOT the underlying token's.
+
+meta:
+  name: FlowScheduler
+  version: v1
+  source:
+    - https://raw.githubusercontent.com/superfluid-org/protocol-monorepo/refs/heads/dev/packages/automation-contracts/scheduler/contracts/FlowScheduler.sol
+    - https://raw.githubusercontent.com/superfluid-org/protocol-monorepo/refs/heads/dev/packages/automation-contracts/scheduler/contracts/interface/IFlowScheduler.sol
+  implements: [IFlowScheduler, SuperAppBase]
+  note: >
+    Enables scheduled stream start/stop at predetermined timestamps.
+    Sender creates the schedule and grants flow permissions;
+    a keeper triggers execution when the time window opens.
+  deployments:
+    eth-mainnet: "0xAA0cD305eD020137E302CeCede7b18c0A05aCCDA"
+    polygon-mainnet: "0x55F7758dd99d5e185f4CC08d4Ad95B71f598264D"
+    optimism-mainnet: "0x55c8fc400833eEa791087cF343Ff2409A39DeBcC"
+    arbitrum-one: "0x3fA8B653F9abf91428800C0ba0F8D145a71F97A1"
+    avalanche-c: "0xF7AfF590E9DE493D7ACb421Fca7f1E35C1ad4Ce5"
+    bsc-mainnet: "0x2f9e2A2A59405682d4F86779275CF5525AD7eC2B"
+    xdai-mainnet: "0x9cC7fc484fF588926149577e9330fA5b2cA74336"
+    base-mainnet: "0xC72CEd15204d02183c83fEbb918b183E400811Ee"
+    optimism-sepolia: "0x73B1Ce21d03ad389C2A291B1d1dc4DAFE7B5Dc68"
+
+# Registered as a Super App — the 6 agreement callback hooks (before/afterAgreement*)
+# are all NOOPs and are omitted from this reference.
+
+# == Configuration ==
+
+HOST:
+  # The Superfluid host contract (immutable, set at construction).
+  mutability: view
+  inputs: []
+  outputs:
+    - address
+
+cfaV1:
+  # Returns the resolved CFA references from SuperTokenV1Library.
+  mutability: view
+  inputs: []
+  outputs:
+    - host: address
+    - cfa: address
+
+flowSchedules:
+  # Auto-generated getter for the flow schedule mapping.
+  # Key is keccak256(abi.encodePacked(superToken, sender, receiver)).
+  mutability: view
+  inputs:
+    - id: bytes32
+  outputs:
+    - startDate: uint32
+    - startMaxDelay: uint32
+    - endDate: uint32
+    - flowRate: int96
+    - startAmount: uint256
+    - userData: bytes32
+
+# == Schedule Management ==
+
+createFlowSchedule:
+  # Creates a schedule for future stream creation and/or deletion.
+  # Pass startDate=0 for stop-only schedules (endDate only).
+  # Pass endDate=0 for start-only schedules (no auto-stop).
+  # ctx is used for Host.batchCall batching; pass bytes(0) for direct calls.
+  mutability: nonpayable
+  access: anyone  # sender is msg.sender or ctx.msgSender
+  inputs:
+    - superToken: ISuperToken
+    - receiver: address
+    - startDate: uint32
+    - startMaxDelay: uint32
+    - flowRate: int96
+    - startAmount: uint256
+    - endDate: uint32
+    - userData: bytes
+    - ctx: bytes
+  outputs:
+    - newCtx: bytes
+  emits: [FlowScheduleCreated]
+  errors: [AccountInvalid, ZeroAddress, TimeWindowInvalid]
+
+deleteFlowSchedule:
+  # Deletes an existing flow schedule.
+  # ctx is used for Host.batchCall batching; pass bytes(0) for direct calls.
+  mutability: nonpayable
+  access: anyone  # sender is msg.sender or ctx.msgSender
+  inputs:
+    - superToken: ISuperToken
+    - receiver: address
+    - ctx: bytes
+  outputs:
+    - newCtx: bytes
+  emits: [FlowScheduleDeleted]
+
+# == Permissionless Execution (keepers) ==
+
+executeCreateFlow:
+  # Executes the scheduled stream start. Called by off-chain automation.
+  # Must be called within the [startDate, startDate + startMaxDelay] window.
+  # Optionally transfers startAmount to receiver before creating the flow.
+  mutability: nonpayable
+  access: anyone
+  inputs:
+    - superToken: ISuperToken
+    - sender: address
+    - receiver: address
+    - userData: bytes
+  outputs:
+    - success: bool
+  emits: [CreateFlowExecuted]
+  errors: [TimeWindowInvalid, UserDataInvalid]
+
+executeDeleteFlow:
+  # Executes the scheduled stream stop. Called by off-chain automation.
+  # Can only be called after the endDate has passed.
+  mutability: nonpayable
+  access: anyone
+  inputs:
+    - superToken: ISuperToken
+    - sender: address
+    - receiver: address
+    - userData: bytes
+  outputs:
+    - success: bool
+  emits: [DeleteFlowExecuted]
+  errors: [TimeWindowInvalid, UserDataInvalid]
+
+# == View Functions ==
+
+getFlowSchedule:
+  mutability: view
+  inputs:
+    - superToken: address
+    - sender: address
+    - receiver: address
+  outputs:
+    - schedule: FlowSchedule
+
+# == Events ==
+
+events:
+
+  FlowScheduleCreated:
+    # Emitted when a new flow schedule is configured.
+    indexed:
+      - superToken: ISuperToken
+      - sender: address
+      - receiver: address
+    data:
+      - startDate: uint32
+      - startMaxDelay: uint32
+      - flowRate: int96
+      - endDate: uint32
+      - startAmount: uint256
+      - userData: bytes
+
+  FlowScheduleDeleted:
+    # Emitted when a flow schedule is removed.
+    indexed:
+      - superToken: ISuperToken
+      - sender: address
+      - receiver: address
+
+  CreateFlowExecuted:
+    # Emitted when the scheduled stream start is executed by a keeper.
+    indexed:
+      - superToken: ISuperToken
+      - sender: address
+      - receiver: address
+    data:
+      - startDate: uint32
+      - startMaxDelay: uint32
+      - flowRate: int96
+      - startAmount: uint256
+      - userData: bytes
+
+  DeleteFlowExecuted:
+    # Emitted when the scheduled stream stop is executed by a keeper.
+    indexed:
+      - superToken: ISuperToken
+      - sender: address
+      - receiver: address
+    data:
+      - endDate: uint32
+      - userData: bytes
+
+# == Errors ==
+
+errors:
+
+  # -- Schedule Validation --
+  - TimeWindowInvalid
+  - AccountInvalid
+  - ZeroAddress
+  - ScheduleInvalid
+
+  # -- Execution --
+  - UserDataInvalid
+
+  # -- Host --
+  - HostInvalid

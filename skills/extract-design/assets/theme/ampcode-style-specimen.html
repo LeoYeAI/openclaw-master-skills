@@ -1,0 +1,1249 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Amp Style Specimen</title>
+  <style>
+    :root {
+      --font-family-sans: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+      --font-family-display: "Sagittaire Display", serif;
+
+      --font-size-1: clamp(0.69rem, 0.65rem + 0.11vi, 0.94rem);
+      --font-size-2: clamp(0.83rem, 0.77rem + 0.15vi, 1.13rem);
+      --font-size-3: clamp(1rem, 0.91rem + 0.22vi, 1.5rem);
+      --font-size-4: clamp(1.2rem, 1.04rem + 0.4vi, 2.1rem);
+      --font-size-5: clamp(1.44rem, 1.14rem + 0.75vi, 3rem);
+      --font-size-6: clamp(1.73rem, 1.18rem + 1.36vi, 4.5rem);
+      --font-size-7: clamp(2.07rem, 1.07rem + 2.5vi, 7rem);
+      --font-size-hero: clamp(2.49rem, 0.69rem + 4.5vi, 11rem);
+
+      --line-height-tight: 1.1;
+      --line-height-snug: 1.25;
+      --line-height-normal: 1.414;
+      --line-height-relaxed: 1.65;
+      --line-height-loose: 1.8;
+
+      --space-1: 4px;
+      --space-2: 8px;
+      --space-3: 12px;
+      --space-4: 16px;
+      --space-5: 20px;
+      --space-6: 24px;
+      --space-8: 32px;
+      --space-10: 40px;
+      --space-12: 48px;
+
+      --radius-sm: 0px;
+      --radius-md: 4px;
+      --radius-lg: 8px;
+      --radius-xl: 12px;
+
+      --border-width-1: 1px;
+
+      --shadow-xs: none;
+      --shadow-sm: none;
+      --shadow-md: none;
+      --shadow-lg: none;
+
+      --motion-duration-fast: 0.15s;
+      --motion-duration-normal: 0.3s;
+      --motion-ease-standard: ease;
+
+      --container-max: 2560px;
+
+      --pattern-size-sm: 5px;
+      --pattern-size-md: 7px;
+      --pattern-size-lg: 10px;
+      --noise-opacity: 0;
+      --glow-blur-sm: 20px;
+      --glow-blur-md: 40px;
+      --glow-blur-lg: 60px;
+      --decorative-line-opacity: 0.4;
+
+      --term-fg: #fbf1c7;
+      --term-bg: #282828;
+      --term-0: #282828;
+      --term-1: #cc241d;
+      --term-2: #98971a;
+      --term-3: #d79921;
+      --term-4: #458588;
+      --term-5: #b16286;
+      --term-6: #689d6a;
+      --term-7: #a89984;
+      --term-8: #7c6f65;
+      --term-9: #fb4934;
+      --term-10: #b8bb26;
+      --term-11: #fabd2f;
+      --term-12: #83a598;
+      --term-13: #d3869b;
+      --term-14: #8ec07c;
+      --term-15: #fbf1c7;
+
+      --lens-col-yolk: #f6833b;
+    }
+
+    [data-theme="light"] {
+      --color-bg-page: rgb(223, 223, 193);
+      --color-surface-1: rgba(11, 13, 11, 0.02);
+      --color-surface-2: rgba(11, 13, 11, 0.05);
+      --color-surface-3: rgba(11, 13, 11, 0.08);
+
+      --color-text-primary: rgb(11, 13, 11);
+      --color-text-secondary: rgb(41, 86, 78);
+      --color-text-muted: rgb(41, 86, 78);
+      --color-text-inverse: rgb(223, 223, 193);
+
+      --color-border-default: rgba(11, 13, 11, 0.5);
+      --color-border-strong: rgb(11, 13, 11);
+
+      --color-brand-primary: rgb(21, 136, 178);
+      --color-brand-primary-hover: rgb(17, 110, 145);
+
+      --color-yolk: rgb(246, 131, 59);
+
+      --color-success: rgb(152, 151, 26);
+      --color-warning: rgb(215, 153, 33);
+      --color-danger: rgb(204, 36, 29);
+      --color-info: rgb(69, 133, 136);
+
+      --color-code-bg: rgb(40, 40, 40);
+      --color-code-text: rgb(251, 241, 199);
+      --color-code-muted: rgb(168, 153, 132);
+      --color-code-keyword: rgb(204, 36, 29);
+      --color-code-string: rgb(184, 187, 38);
+      --color-code-number: rgb(250, 189, 47);
+      --color-code-comment: rgb(124, 111, 101);
+
+      --focus-ring: 0 0 0 2px rgb(41, 86, 78);
+
+      --bg-page-base: rgb(223, 223, 193);
+      --bg-page-overlay: transparent;
+      --bg-page-pattern: transparent;
+      --bg-hero-gradient: rgb(223, 223, 193);
+      --bg-section-muted: rgba(11, 13, 11, 0.08);
+      --ambient-glow-primary: rgba(246, 131, 59, 0.15);
+      --ambient-glow-secondary: rgba(21, 136, 178, 0.1);
+      --pattern-stripe-color: rgba(11, 13, 11, 0.3);
+      --pattern-grid-color: rgba(11, 13, 11, 0.2);
+      --pattern-dot-color: rgba(11, 13, 11, 0.4);
+      --motif-line-color: rgba(11, 13, 11, 0.5);
+    }
+
+    [data-theme="dark"] {
+      --color-bg-page: rgb(9, 28, 30);
+      --color-surface-1: rgba(246, 255, 245, 0.03);
+      --color-surface-2: rgba(246, 255, 245, 0.06);
+      --color-surface-3: rgba(246, 255, 245, 0.1);
+
+      --color-text-primary: rgb(246, 255, 245);
+      --color-text-secondary: rgba(246, 255, 245, 0.8);
+      --color-text-muted: rgba(246, 255, 245, 0.6);
+      --color-text-inverse: rgb(9, 28, 30);
+
+      --color-border-default: rgba(246, 255, 245, 0.5);
+      --color-border-strong: rgb(246, 255, 245);
+
+      --color-brand-primary: rgb(21, 136, 178);
+      --color-brand-primary-hover: rgb(25, 155, 195);
+
+      --color-yolk: rgb(246, 131, 59);
+
+      --color-success: rgb(142, 192, 124);
+      --color-warning: rgb(250, 189, 47);
+      --color-danger: rgb(251, 73, 52);
+      --color-info: rgb(131, 165, 152);
+
+      --color-code-bg: rgb(40, 40, 40);
+      --color-code-text: rgb(251, 241, 199);
+      --color-code-muted: rgb(124, 111, 101);
+      --color-code-keyword: rgb(204, 36, 29);
+      --color-code-string: rgb(184, 187, 38);
+      --color-code-number: rgb(250, 189, 47);
+      --color-code-comment: rgb(124, 111, 101);
+
+      --focus-ring: 0 0 0 2px rgba(246, 255, 245, 0.8);
+
+      --bg-page-base: rgb(9, 28, 30);
+      --bg-page-overlay: transparent;
+      --bg-page-pattern: transparent;
+      --bg-hero-gradient: rgb(9, 28, 30);
+      --bg-section-muted: rgba(246, 255, 245, 0.06);
+      --ambient-glow-primary: rgba(246, 131, 59, 0.15);
+      --ambient-glow-secondary: rgba(21, 136, 178, 0.1);
+      --pattern-stripe-color: rgba(246, 255, 245, 0.2);
+      --pattern-grid-color: rgba(246, 255, 245, 0.15);
+      --pattern-dot-color: rgba(246, 255, 245, 0.3);
+      --motif-line-color: rgba(246, 255, 245, 0.4);
+    }
+
+    * { box-sizing: border-box; }
+    html, body { margin: 0; padding: 0; }
+    html {
+      background: var(--bg-page-base);
+    }
+
+    body {
+      font-family: var(--font-family-sans);
+      font-size: 13px;
+      color: var(--color-text-primary);
+      line-height: var(--line-height-normal);
+      background: var(--bg-page-base);
+      transition:
+        background var(--motion-duration-normal) var(--motion-ease-standard),
+        color var(--motion-duration-normal) var(--motion-ease-standard);
+    }
+
+    .page {
+      position: relative;
+      max-width: min(2560px, 100%);
+      margin: 0 auto;
+      padding: clamp(1rem, 4vw, 3rem);
+      padding-top: clamp(1.5rem, 5vw, 4rem);
+    }
+
+    .section {
+      margin-top: clamp(2rem, 5vw, 4rem);
+    }
+
+    .section h2 {
+      font-family: var(--font-family-display);
+      font-size: var(--font-size-5);
+      letter-spacing: -0.02em;
+      margin: 0 0 var(--space-5);
+    }
+
+    .muted { color: var(--color-text-muted); }
+
+    .grid {
+      display: grid;
+      gap: var(--space-4);
+    }
+
+    .grid-2 {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .grid-3 {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .card {
+      position: relative;
+      background: var(--color-surface-1);
+      border: 1px solid var(--color-border-default);
+      border-radius: var(--radius-md);
+      padding: var(--space-5);
+      box-shadow: var(--shadow-xs);
+      transition:
+        background var(--motion-duration-normal) var(--motion-ease-standard),
+        border-color var(--motion-duration-normal) var(--motion-ease-standard);
+    }
+
+    .card:hover {
+      background: var(--color-surface-2);
+    }
+
+    .surface-muted {
+      background: var(--bg-section-muted);
+    }
+
+    .swatch {
+      border-radius: var(--radius-md);
+      border: 1px solid var(--color-border-default);
+      overflow: hidden;
+      background: var(--color-surface-1);
+    }
+
+    .swatch-color {
+      height: 72px;
+      border-bottom: 1px solid var(--color-border-default);
+    }
+
+    .swatch-meta {
+      padding: var(--space-3);
+      font-size: var(--font-size-1);
+    }
+
+    .btn-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--space-3);
+    }
+
+    .btn {
+      appearance: none;
+      border: 0px solid transparent;
+      border-radius: var(--radius-sm);
+      padding: 0;
+      height: 48px;
+      min-width: 120px;
+      font: inherit;
+      font-size: 13px;
+      cursor: pointer;
+      background: transparent;
+      color: var(--color-text-primary);
+      transition:
+        opacity var(--motion-duration-fast) var(--motion-ease-standard);
+    }
+
+    .btn:hover {
+      opacity: 0.7;
+    }
+
+    .btn:focus-visible {
+      outline: none;
+      box-shadow: var(--focus-ring);
+    }
+
+    .btn-primary {
+      background: var(--color-brand-primary);
+      color: var(--color-text-inverse);
+    }
+
+    .btn-yolk {
+      background: var(--color-yolk);
+      color: var(--color-text-primary);
+    }
+
+    .btn-ghost {
+      background: transparent;
+      color: var(--color-text-primary);
+      border-color: var(--color-border-default);
+    }
+
+    .input, .select, .textarea {
+      width: 100%;
+      border: 1px solid var(--color-border-default);
+      background: var(--color-surface-1);
+      color: var(--color-text-primary);
+      border-radius: var(--radius-sm);
+      padding: 12px 14px;
+      font: inherit;
+      font-size: 13px;
+      transition:
+        border-color var(--motion-duration-fast) var(--motion-ease-standard),
+        background var(--motion-duration-fast) var(--motion-ease-standard);
+    }
+
+    .input:focus-visible,
+    .select:focus-visible,
+    .textarea:focus-visible {
+      outline: none;
+      border-color: var(--color-brand-primary);
+      box-shadow: var(--focus-ring);
+    }
+
+    .label {
+      display: block;
+      margin-bottom: 8px;
+      font-size: var(--font-size-1);
+      color: var(--color-text-secondary);
+    }
+
+    .form-stack {
+      display: grid;
+      gap: var(--space-4);
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      border-radius: 999px;
+      padding: 4px 10px;
+      background: var(--color-yolk);
+      color: var(--color-text-primary);
+      font-size: var(--font-size-1);
+      font-weight: 500;
+    }
+
+    .table {
+      width: 100%;
+      border-collapse: collapse;
+      overflow: hidden;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--color-border-default);
+    }
+
+    .table th, .table td {
+      text-align: left;
+      padding: 12px 14px;
+      border-bottom: 1px solid var(--color-border-default);
+    }
+
+    .table th {
+      background: var(--color-surface-2);
+      color: var(--color-text-secondary);
+      font-weight: 500;
+    }
+
+    .prose {
+      max-width: 72ch;
+      color: var(--color-text-primary);
+    }
+
+    .prose p { color: var(--color-text-secondary); }
+    .prose a { color: var(--color-brand-primary); text-decoration: none; }
+    .prose a:hover { text-decoration: underline; }
+
+    .code {
+      position: relative;
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      border: 1px solid var(--color-border-default);
+      background: var(--color-code-bg);
+      color: var(--color-code-text);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .code-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 14px;
+      font-size: var(--font-size-1);
+      color: var(--color-code-muted);
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+      background: rgba(0,0,0,0.2);
+    }
+
+    .code pre {
+      margin: 0;
+      padding: 16px;
+      overflow: auto;
+      font-family: var(--font-family-sans);
+      font-size: 13px;
+      line-height: 1.6;
+    }
+
+    .token-keyword { color: var(--color-code-keyword); }
+    .token-string { color: var(--color-code-string); }
+    .token-number { color: var(--color-code-number); }
+    .token-comment { color: var(--color-code-comment); }
+
+    .callout {
+      border-radius: var(--radius-md);
+      padding: var(--space-4);
+      border: 1px solid var(--color-border-default);
+      background: var(--color-surface-2);
+    }
+
+    .callout.info { border-left: 4px solid var(--color-info); }
+    .callout.success { border-left: 4px solid var(--color-success); }
+    .callout.warning { border-left: 4px solid var(--color-warning); }
+    .callout.danger { border-left: 4px solid var(--color-danger); }
+
+    .hero {
+      position: relative;
+      overflow: hidden;
+      padding: clamp(2rem, 5vw, 5rem);
+      border-radius: var(--radius-lg);
+      background: var(--bg-hero-gradient);
+      border: 1px solid var(--color-border-default);
+      isolation: isolate;
+    }
+
+    .hero::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background:
+        linear-gradient(var(--pattern-stripe-color) 1px, transparent 1px),
+        linear-gradient(90deg, var(--pattern-stripe-color) 1px, transparent 1px);
+      background-size: 40px 40px;
+      opacity: 0.15;
+      pointer-events: none;
+      z-index: -1;
+    }
+
+    .display-heading {
+      font-family: var(--font-family-display);
+      font-size: var(--font-size-hero);
+      font-weight: 400;
+      line-height: var(--line-height-tight);
+      letter-spacing: -0.06em;
+      margin: 0;
+    }
+
+    .toolbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: var(--space-4);
+      margin-bottom: var(--space-6);
+    }
+
+    .theme-toggle {
+      min-width: 120px;
+    }
+
+    .background-board {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: var(--space-4);
+    }
+
+    .bg-sample {
+      min-height: 160px;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--color-border-default);
+      overflow: hidden;
+      position: relative;
+      box-shadow: var(--shadow-xs);
+    }
+
+    .bg-label {
+      position: absolute;
+      left: 12px;
+      bottom: 12px;
+      padding: 4px 10px;
+      font-size: var(--font-size-1);
+      border-radius: 999px;
+      background: var(--color-surface-2);
+      backdrop-filter: blur(8px);
+      border: 1px solid var(--color-border-default);
+      color: var(--color-text-primary);
+    }
+
+    .bg-page-base {
+      background: var(--bg-page-base);
+    }
+
+    .bg-page-pattern {
+      background:
+        linear-gradient(var(--pattern-grid-color) 1px, transparent 1px),
+        linear-gradient(90deg, var(--pattern-grid-color) 1px, transparent 1px),
+        var(--bg-page-base);
+      background-size: 20px 20px;
+    }
+
+    .bg-hero-atmosphere {
+      background: var(--bg-hero-gradient);
+    }
+
+    .bg-muted-section {
+      background: var(--bg-section-muted);
+    }
+
+    .atmosphere-scene {
+      position: relative;
+      min-height: 280px;
+      border-radius: calc(var(--radius-lg) + 4px);
+      overflow: hidden;
+      border: 1px solid var(--color-border-default);
+      background: var(--bg-page-base);
+      isolation: isolate;
+    }
+
+    .atmosphere-layer {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+    }
+
+    .atmosphere-base {
+      background: var(--bg-page-base);
+    }
+
+    .atmosphere-pattern {
+      background:
+        linear-gradient(var(--pattern-grid-color) 1px, transparent 1px),
+        linear-gradient(90deg, var(--pattern-grid-color) 1px, transparent 1px);
+      background-size: 30px 30px;
+      opacity: 0.3;
+    }
+
+    .atmosphere-glow::before,
+    .atmosphere-glow::after {
+      content: "";
+      position: absolute;
+      border-radius: 999px;
+      filter: blur(var(--glow-blur-md));
+      opacity: 0.6;
+    }
+
+    .atmosphere-glow::before {
+      width: 200px;
+      height: 200px;
+      right: 15%;
+      top: 10%;
+      background: radial-gradient(circle, var(--color-yolk), transparent 70%);
+    }
+
+    .atmosphere-glow::after {
+      width: 150px;
+      height: 150px;
+      left: 10%;
+      bottom: 15%;
+      background: radial-gradient(circle, var(--color-brand-primary), transparent 70%);
+    }
+
+    .atmosphere-content {
+      position: relative;
+      z-index: 2;
+      padding: clamp(1.5rem, 3vw, 2.5rem);
+      max-width: 700px;
+    }
+
+    .atmosphere-content h3 {
+      margin: 0 0 10px;
+      font-family: var(--font-family-display);
+      font-size: var(--font-size-6);
+      font-weight: 400;
+      letter-spacing: -0.04em;
+      line-height: var(--line-height-tight);
+    }
+
+    .motif-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: var(--space-4);
+    }
+
+    .motif-card {
+      min-height: 150px;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--color-border-default);
+      position: relative;
+      overflow: hidden;
+      background: var(--color-surface-1);
+      box-shadow: var(--shadow-xs);
+      padding: 14px;
+      display: flex;
+      align-items: end;
+      font-size: var(--font-size-2);
+      color: var(--color-text-secondary);
+    }
+
+    .motif-card::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+    }
+
+    .motif-gridline::before {
+      background:
+        linear-gradient(var(--pattern-grid-color) 1px, transparent 1px),
+        linear-gradient(90deg, var(--pattern-grid-color) 1px, transparent 1px);
+      background-size: 20px 20px;
+    }
+
+    .motif-dots::before {
+      background:
+        radial-gradient(circle, var(--pattern-dot-color) 1.5px, transparent 1.5px);
+      background-size: 16px 16px;
+    }
+
+    .motif-glow::before {
+      background:
+        radial-gradient(circle at 30% 30%, var(--color-yolk), transparent 50%),
+        radial-gradient(circle at 70% 70%, var(--color-brand-primary), transparent 50%);
+      filter: blur(30px);
+      opacity: 0.8;
+    }
+
+    .motif-yolk::before {
+      background: var(--color-yolk);
+    }
+
+    .nav-demo {
+      display: flex;
+      gap: var(--space-3);
+      flex-wrap: wrap;
+    }
+
+    .nav-pill {
+      padding: 10px 16px;
+      border-radius: 0px;
+      border: 1px solid var(--color-border-default);
+      background: var(--color-surface-1);
+      color: var(--color-text-secondary);
+      font-size: var(--font-size-2);
+    }
+
+    .nav-pill.active {
+      background: var(--color-brand-primary);
+      color: var(--color-text-inverse);
+      border-color: var(--color-brand-primary);
+    }
+
+    .overlay-demo {
+      display: grid;
+      place-items: center;
+      min-height: 200px;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--color-border-default);
+      position: relative;
+      overflow: hidden;
+      background: var(--color-surface-2);
+    }
+
+    .overlay-demo::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: rgba(0,0,0,0.1);
+      pointer-events: none;
+    }
+
+    .modal-card {
+      position: relative;
+      z-index: 2;
+      width: min(420px, calc(100% - 32px));
+      border-radius: var(--radius-md);
+      border: 1px solid var(--color-border-default);
+      background: var(--color-surface-1);
+      box-shadow: var(--shadow-md);
+      padding: var(--space-5);
+    }
+
+    .terminal-palette {
+      display: grid;
+      grid-template-columns: repeat(8, 1fr);
+      gap: 4px;
+    }
+
+    .terminal-swatch {
+      aspect-ratio: 1;
+      border-radius: 4px;
+    }
+
+    /* ===== Keyframe Animations ===== */
+    @keyframes spin {
+      100% { transform: rotate(360deg); }
+    }
+
+    @keyframes ping {
+      75%, 100% { opacity: 0; transform: scale(2); }
+    }
+
+    @keyframes pulse {
+      50% { opacity: 0.5; }
+    }
+
+    @keyframes accordion-down {
+      0% { height: 0px; }
+      100% { height: var(--accordion-height, 200px); }
+    }
+
+    @keyframes accordion-up {
+      0% { height: var(--accordion-height, 200px); }
+      100% { height: 0px; }
+    }
+
+    @keyframes caret-blink {
+      0%, 70%, 100% { opacity: 1; }
+      20%, 50% { opacity: 0.5; }
+    }
+
+    @keyframes loader-spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    @keyframes border-shimmer {
+      0% { background-position: 200% 0px; }
+      100% { background-position: 0px 0px; }
+    }
+
+    @keyframes fade-in {
+      0% { opacity: 0; }
+      100% { opacity: 1; }
+    }
+
+    @keyframes slideUp {
+      0% { transform: translateY(5px); }
+      100% { transform: translateY(0px); }
+    }
+
+    @keyframes shake {
+      0%, 100% { transform: translateX(0px); }
+      20% { transform: translateX(-4px); }
+      40% { transform: translateX(4px); }
+      60% { transform: translateX(-3px); }
+      80% { transform: translateX(3px); }
+    }
+
+    /* ===== Animation Demo Classes ===== */
+    .animation-demo {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: var(--space-4);
+    }
+
+    .anim-box {
+      height: 100px;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--color-border-default);
+      background: var(--color-surface-1);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      font-size: var(--font-size-1);
+      color: var(--color-text-secondary);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .anim-box span {
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .spinner {
+      width: 24px;
+      height: 24px;
+      border: 2px solid var(--color-border-default);
+      border-top-color: var(--color-brand-primary);
+      border-radius: 50%;
+    }
+
+    .spin-demo { animation: spin 1s linear infinite; }
+    .ping-demo { animation: ping 1.5s ease-out infinite; }
+    .pulse-demo { animation: pulse 2s ease-in-out infinite; }
+    .fade-demo { animation: fade-in 0.5s ease forwards; opacity: 0; }
+    .slide-demo { animation: slideUp 0.4s ease forwards; opacity: 0; }
+
+    .shake-demo:hover {
+      animation: shake 0.4s ease;
+    }
+
+    .progress-bar-container {
+      width: 80%;
+      height: 4px;
+      background: var(--color-border-default);
+      border-radius: 2px;
+      overflow: hidden;
+    }
+
+    .progress-bar-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--color-brand-primary), var(--color-yolk));
+      border-radius: 2px;
+      animation: border-shimmer 2s linear infinite;
+      background-size: 200% 100%;
+    }
+
+    .caret {
+      width: 2px;
+      height: 16px;
+      background: var(--color-brand-primary);
+      animation: caret-blink 1s step-end infinite;
+    }
+
+    @media (max-width: 1000px) {
+      .background-board,
+      .motif-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+      .terminal-palette {
+        grid-template-columns: repeat(4, 1fr);
+      }
+      .animation-demo {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
+    @media (max-width: 900px) {
+      .grid-3 { grid-template-columns: 1fr 1fr; }
+    }
+
+    @media (max-width: 700px) {
+      .page { padding: var(--space-6) var(--space-4); }
+      .grid-2, .grid-3,
+      .background-board,
+      .motif-grid {
+        grid-template-columns: 1fr;
+      }
+      .toolbar {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      .display-heading {
+        font-size: var(--font-size-7);
+      }
+      .terminal-palette {
+        grid-template-columns: repeat(4, 1fr);
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *,
+      *::before,
+      *::after {
+        animation-duration: 1ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 1ms !important;
+        scroll-behavior: auto !important;
+      }
+    }
+  </style>
+
+  <script id="design-manifest" type="application/json">
+  {
+    "meta": {
+      "title": "Amp Style System",
+      "source": "https://ampcode.com/"
+    },
+    "style_character": {
+      "summary": "Editorial-meets-terminal aesthetic with warm cream/teal palette, Sagittaire display serif, fluid clamp typography, and gruvbox terminal colors",
+      "mood": "Editorial-technical, sophisticated hacker",
+      "density": "spacious",
+      "contrast": "medium-high"
+    },
+    "primitives": {
+      "fonts": {
+        "sans": "system-ui, -apple-system",
+        "display": "\"Sagittaire Display\", serif"
+      },
+      "spacing": "fluid clamp() based",
+      "radius": {"default": "0px", "card": "4px"},
+      "shadow": "none",
+      "motion": {"duration": "0.15-0.3s"}
+    },
+    "semantic": {
+      "colors": {
+        "light": {
+          "background": "rgb(223, 223, 193)",
+          "foreground": "rgb(11, 13, 11)",
+          "accent": "rgb(21, 136, 178)"
+        },
+        "dark": {
+          "background": "rgb(9, 28, 30)",
+          "foreground": "rgb(246, 255, 245)",
+          "accent": "rgb(21, 136, 178)"
+        }
+      }
+    },
+    "motifs": ["gruvbox-terminal", "yolk-orange", "sharp-edge", "fluid-type"],
+    "themes": {
+      "light": {"background": "#dfdfc1"},
+      "dark": {"background": "#091c1e"}
+    }
+  }
+  </script>
+</head>
+<body>
+  <main class="page">
+    <div class="toolbar">
+      <div>
+        <h1 class="display-heading" style="margin:0;">Amp</h1>
+        <p class="muted" style="margin:8px 0 0;font-size:var(--font-size-2);">Style Specimen</p>
+      </div>
+      <button class="btn btn-ghost theme-toggle" id="themeToggle">Toggle theme</button>
+    </div>
+
+    <section class="section hero">
+      <h2 style="margin-top:0;font-family:var(--font-family-display);font-size:var(--font-size-5);letter-spacing:-0.03em;">Visual Character</h2>
+      <p class="muted" style="max-width:60ch;">Editorial-meets-terminal aesthetic with warm cream/olive tones in light mode and deep teal-blacks in dark mode. Sharp zero-radius UI, large 48px touch targets, and gruvbox-inspired terminal palette for code.</p>
+      <div class="btn-row" style="margin-top:16px;">
+        <button class="btn btn-primary">Primary</button>
+        <button class="btn btn-yolk">Yolk</button>
+        <button class="btn btn-ghost">Ghost</button>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Color Board</h2>
+      <div class="grid grid-3">
+        <div class="swatch">
+          <div class="swatch-color" style="background:var(--color-bg-page);"></div>
+          <div class="swatch-meta"><strong>Background</strong><br><span class="muted">--color-bg-page</span></div>
+        </div>
+        <div class="swatch">
+          <div class="swatch-color" style="background:var(--color-brand-primary);"></div>
+          <div class="swatch-meta"><strong>Accent</strong><br><span class="muted">--color-brand-primary</span></div>
+        </div>
+        <div class="swatch">
+          <div class="swatch-color" style="background:var(--color-yolk);"></div>
+          <div class="swatch-meta"><strong>Yolk</strong><br><span class="muted">--color-yolk</span></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Typography</h2>
+      <div class="card">
+        <div class="display-heading" style="font-size:var(--font-size-7);">Display</div>
+        <div style="font-size:var(--font-size-6);font-family:var(--font-family-display);letter-spacing:-0.04em;line-height:var(--line-height-tight);margin-top:12px;">Heading Large</div>
+        <div style="font-size:var(--font-size-5);font-family:var(--font-family-display);letter-spacing:-0.03em;margin-top:12px;">Heading Medium</div>
+        <p style="font-size:var(--font-size-3);line-height:var(--line-height-normal);margin-top:16px;">Body text sample for reading rhythm.</p>
+        <p class="muted" style="font-size:var(--font-size-1);">Caption / muted text sample.</p>
+        <code style="font-size:13px;background:var(--color-code-bg);color:var(--color-code-text);padding:2px 6px;border-radius:2px;">inline code</code>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Fluid Type Scale</h2>
+      <div class="card" style="display:flex;flex-direction:column;gap:8px;">
+        <div style="font-size:var(--font-size-1);">XS: Variable font size clamp</div>
+        <div style="font-size:var(--font-size-2);">SM: Scales with viewport</div>
+        <div style="font-size:var(--font-size-3);">Base: Readable at all sizes</div>
+        <div style="font-size:var(--font-size-4);">LG: Section headers</div>
+        <div style="font-size:var(--font-size-5);">XL: Page titles</div>
+        <div style="font-size:var(--font-size-6);">2XL: Hero secondary</div>
+        <div style="font-size:var(--font-size-7);">3XL: Hero primary</div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Background System</h2>
+      <div class="background-board">
+        <div class="bg-sample bg-page-base">
+          <div class="bg-label">Page Base</div>
+        </div>
+        <div class="bg-sample bg-page-pattern">
+          <div class="bg-label">Grid Pattern</div>
+        </div>
+        <div class="bg-sample bg-hero-atmosphere">
+          <div class="bg-label">Hero Atmosphere</div>
+        </div>
+        <div class="bg-sample bg-muted-section">
+          <div class="bg-label">Muted Section</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Atmosphere Demo</h2>
+      <div class="atmosphere-scene">
+        <div class="atmosphere-layer atmosphere-base"></div>
+        <div class="atmosphere-layer atmosphere-pattern"></div>
+        <div class="atmosphere-layer atmosphere-glow"></div>
+        <div class="atmosphere-content">
+          <h3>Hero atmosphere</h3>
+          <p class="muted">Grid pattern with yolk orange and teal glow accents.</p>
+          <div class="btn-row" style="margin-top:16px;">
+            <button class="btn btn-primary">Launch</button>
+            <button class="btn btn-yolk">Preview</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Motif Library</h2>
+      <div class="motif-grid">
+        <div class="motif-card motif-gridline">Gridline</div>
+        <div class="motif-card motif-dots">Dot Field</div>
+        <div class="motif-card motif-yolk">Yolk Orange</div>
+        <div class="motif-card motif-glow">Glow Blend</div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Gruvbox Terminal Palette</h2>
+      <div class="card">
+        <div class="terminal-palette">
+          <div class="terminal-swatch" style="background:#282828;" title="#282828"></div>
+          <div class="terminal-swatch" style="background:#cc241d;" title="#cc241d"></div>
+          <div class="terminal-swatch" style="background:#98971a;" title="#98971a"></div>
+          <div class="terminal-swatch" style="background:#d79921;" title="#d79921"></div>
+          <div class="terminal-swatch" style="background:#458588;" title="#458588"></div>
+          <div class="terminal-swatch" style="background:#b16286;" title="#b16286"></div>
+          <div class="terminal-swatch" style="background:#689d6a;" title="#689d6a"></div>
+          <div class="terminal-swatch" style="background:#a89984;" title="#a89984"></div>
+          <div class="terminal-swatch" style="background:#7c6f65;" title="#7c6f65"></div>
+          <div class="terminal-swatch" style="background:#fb4934;" title="#fb4934"></div>
+          <div class="terminal-swatch" style="background:#b8bb26;" title="#b8bb26"></div>
+          <div class="terminal-swatch" style="background:#fabd2f;" title="#fabd2f"></div>
+          <div class="terminal-swatch" style="background:#83a598;" title="#83a598"></div>
+          <div class="terminal-swatch" style="background:#d3869b;" title="#d3869b"></div>
+          <div class="terminal-swatch" style="background:#8ec07c;" title="#8ec07c"></div>
+          <div class="terminal-swatch" style="background:#fbf1c7;" title="#fbf1c7"></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Cards</h2>
+      <div class="grid grid-3">
+        <article class="card">
+          <h3 style="margin-top:0;">Plain Card</h3>
+          <p class="muted">Base surface with subtle transparency.</p>
+        </article>
+        <article class="card" style="cursor:pointer;">
+          <h3 style="margin-top:0;">Interactive Card</h3>
+          <p class="muted">Hover to see surface darken.</p>
+        </article>
+        <article class="card">
+          <span class="badge">New</span>
+          <h3>Badge Card</h3>
+          <p style="font-size:var(--font-size-5);font-weight:500;margin:8px 0 0;">42</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Forms</h2>
+      <div class="card">
+        <div class="form-stack">
+          <div>
+            <label class="label">Name</label>
+            <input class="input" placeholder="Enter name" />
+          </div>
+          <div>
+            <label class="label">Category</label>
+            <select class="select">
+              <option>Option A</option>
+              <option>Option B</option>
+            </select>
+          </div>
+          <div>
+            <label class="label">Notes</label>
+            <textarea class="textarea" rows="4" placeholder="Write something"></textarea>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Navigation</h2>
+      <div class="card">
+        <div class="nav-demo">
+          <span class="nav-pill active">Overview</span>
+          <span class="nav-pill">Components</span>
+          <span class="nav-pill">Patterns</span>
+          <span class="nav-pill">Code</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Table</h2>
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Column</th>
+            <th>Value</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Typography</td>
+            <td>Fluid clamp()</td>
+            <td>Ready</td>
+          </tr>
+          <tr>
+            <td>Colors</td>
+            <td>Gruvbox + teal</td>
+            <td>Ready</td>
+          </tr>
+          <tr>
+            <td>Motion</td>
+            <td>Minimal</td>
+            <td>Ready</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="section">
+      <h2>Prose</h2>
+      <div class="card prose">
+        <p>This section demonstrates article-style reading content. <a href="#">Links</a> appear in accent blue, paragraph rhythm follows the fluid type scale, and muted explanatory text provides hierarchy.</p>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Code Block</h2>
+      <div class="code">
+        <div class="code-head">
+          <span>example.js</span>
+          <span>JavaScript</span>
+        </div>
+        <pre><code><span class="token-comment">// Amp code style - gruvbox palette</span>
+<span class="token-keyword">const</span> motif = {
+  type: <span class="token-string">"gruvbox"</span>,
+  yolk: <span class="token-string">"#f6833b"</span>,
+  scale: <span class="token-number">16</span>
+};
+
+<span class="token-keyword">export</span> { motif };</code></pre>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Callouts</h2>
+      <div class="grid grid-2">
+        <div class="callout info"><strong>Info</strong><br><span class="muted">Teal for informational.</span></div>
+        <div class="callout success"><strong>Success</strong><br><span class="muted">Green from gruvbox.</span></div>
+        <div class="callout warning"><strong>Warning</strong><br><span class="muted">Yellow from gruvbox.</span></div>
+        <div class="callout danger"><strong>Danger</strong><br><span class="muted">Red from gruvbox.</span></div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Overlay</h2>
+      <div class="overlay-demo">
+        <div class="modal-card">
+          <h3 style="margin-top:0;">Modal Surface</h3>
+          <p class="muted">Sharp corners, large touch target, teal accent.</p>
+          <div class="btn-row" style="margin-top:16px;">
+            <button class="btn btn-primary">Confirm</button>
+            <button class="btn btn-ghost">Cancel</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Animation System</h2>
+      <p class="muted" style="margin-bottom:16px;">Keyframe animations extracted from ampcode.com CSS. Includes loading spinners, pulses, fades, shakes, and terminal-inspired effects.</p>
+      <div class="animation-demo">
+        <div class="anim-box">
+          <div class="spinner spin-demo"></div>
+          <span>spin</span>
+        </div>
+        <div class="anim-box">
+          <div style="width:24px;height:24px;border-radius:50%;background:var(--color-brand-primary);animation:ping 1.5s ease-out infinite;"></div>
+          <span>ping</span>
+        </div>
+        <div class="anim-box">
+          <div style="width:24px;height:24px;border-radius:50%;background:var(--color-brand-primary);animation:pulse 2s ease-in-out infinite;"></div>
+          <span>pulse</span>
+        </div>
+        <div class="anim-box">
+          <div class="caret"></div>
+          <span>caret-blink</span>
+        </div>
+        <div class="anim-box">
+          <div style="opacity:0;animation:fade-in 0.5s ease forwards;">FADE</div>
+          <span>fade-in</span>
+        </div>
+        <div class="anim-box">
+          <div style="opacity:0;animation:slideUp 0.4s ease forwards;">SLIDE</div>
+          <span>slideUp</span>
+        </div>
+        <div class="anim-box">
+          <div class="progress-bar-container">
+            <div class="progress-bar-fill" style="width:60%;"></div>
+          </div>
+          <span>border-shimmer</span>
+        </div>
+        <div class="anim-box shake-demo" style="cursor:pointer;">
+          <span>hover shake</span>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const root = document.documentElement;
+    const button = document.getElementById('themeToggle');
+    button.addEventListener('click', () => {
+      root.dataset.theme = root.dataset.theme === 'dark' ? 'light' : 'dark';
+    });
+
+    window.DesignReference = JSON.parse(
+      document.getElementById('design-manifest').textContent
+    );
+  </script>
+</body>
+</html>

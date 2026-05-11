@@ -1,0 +1,60 @@
+{
+  "name": "@totalreclaw/skill",
+  "version": "0.1.0",
+  "description": "TotalReclaw Skill for OpenClaw - End-to-end encrypted memory for AI agents",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "lint": "eslint src/**/*.ts"
+  },
+  "keywords": [
+    "totalreclaw",
+    "openclaw",
+    "skill",
+    "memory",
+    "e2ee",
+    "e2e-encryption",
+    "ai",
+    "agent"
+  ],
+  "author": "TotalReclaw Team",
+  "license": "MIT",
+  "dependencies": {
+    "@totalreclaw/client": "file:../client",
+    "onnxruntime-node": "^1.17.0",
+    "uuid": "^9.0.0"
+  },
+  "devDependencies": {
+    "@types/jest": "^29.5.0",
+    "@types/node": "^20.0.0",
+    "@types/uuid": "^9.0.0",
+    "jest": "^29.7.0",
+    "ts-jest": "^29.1.0",
+    "typescript": "^5.3.0"
+  },
+  "peerDependencies": {
+    "openclaw": ">=0.1.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "openclaw": {
+    "skill": true,
+    "hooks": [
+      "before_agent_start",
+      "agent_end",
+      "pre_compaction"
+    ],
+    "tools": [
+      "totalreclaw_remember",
+      "totalreclaw_recall",
+      "totalreclaw_forget",
+      "totalreclaw_export",
+      "totalreclaw_status"
+    ],
+    "configSchema": "./dist/config.schema.json"
+  }
+}

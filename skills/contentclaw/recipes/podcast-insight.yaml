@@ -1,0 +1,63 @@
+name: Podcast Insight
+slug: podcast-insight
+version: "0.3.2"
+status: wip
+priority: p0
+platforms:
+  - linkedin
+  - reddit
+  - x
+private: true
+owner: RJG
+
+source_prerequisites:
+  min_sources: 1
+  source_types:
+    - podcast
+
+brand_graph:
+  required: true
+  required_layers:
+    - identity
+    - audience
+
+prerequisites:
+  - name: extract-transcript
+    action: extract-text
+    description: Extract or fetch the transcript from the podcast clip.
+  - name: identify-key-insights
+    action: extract-key-points
+    description: Identify 3-5 key insights or quotable moments from the episode.
+  - name: generate-title
+    action: generate-title
+    description: Generate a hook title based on the most compelling insight.
+  - name: contextualize
+    action: research-context
+    description: Add context about why these insights matter to the target audience.
+
+blocks:
+  - name: insight-post
+    format: text
+    sub_format: insight-post
+    agent: insight-post.md
+    depends_on: null
+    rules:
+      - Lead with the most compelling insight or quote
+      - Attribute ideas to the speaker
+      - Add personal perspective or brand angle
+      - Include a takeaway the reader can act on
+      - Platform-appropriate length and formatting
+    examples:
+      - https://www.linkedin.com/posts/romejgeorgio_llms-are-curating-reality-x-open-sourcing-activity-7419815247869333504-l-KW
+
+  - name: infographic
+    format: image
+    sub_format: infographic
+    agent: infographic.md
+    depends_on: null
+    rules:
+      - Visualize the key insights from the episode
+      - Include speaker name and podcast title
+      - Use brand colors and visual identity
+      - Keep text minimal, focus on the 3-5 key points
+    examples: []

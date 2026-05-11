@@ -1,0 +1,42 @@
+# AutoWrapManager selectors — computed from @sfpro/sdk ABI
+
+functions:
+  addApprovedStrategy(address):                               0x4e0e623d
+  approvedStrategies(address):                                0xc613aec0
+  cfaV1():                                                    0xd3112b2e
+  checkWrap(address,address,address):                         0xba93ca2b
+  checkWrapByIndex(bytes32):                                  0x2638ca92
+  createWrapSchedule(address,address,address,uint64,uint64,uint64): 0x5626f9e6
+  deleteWrapSchedule(address,address,address):                0x22d1d3e3
+  deleteWrapScheduleByIndex(bytes32):                         0xcb85958e
+  executeWrap(address,address,address):                       0xa4d35180
+  executeWrapByIndex(bytes32):                                0x7c430ae0
+  getWrapSchedule(address,address,address):                   0xaa964919
+  getWrapScheduleByIndex(bytes32):                            0x301f85c1
+  getWrapScheduleIndex(address,address,address):              0x5e0d69d4
+  minLower():                                                 0xa7052e6b
+  minUpper():                                                 0x59b830be
+  owner():                                                    0x8da5cb5b
+  removeApprovedStrategy(address):                            0x8bc6a941
+  renounceOwnership():                                        0x715018a6
+  setLimits(uint64,uint64):                                   0x3f34c514
+  transferOwnership(address):                                 0xf2fde38b
+
+events:
+  AddedApprovedStrategy(address):                             0x3edff2b723512b7e98f0fb394d84a670f3a40eb2f2c51e9c00c58a3f04e1e4dd
+  LimitsChanged(uint64,uint64):                               0xcdbc762ccbd384cdee07c2d0ac57883fa6bb2cd308895ed4417a0526c6baea0c
+  OwnershipTransferred(address,address):                      0x8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e0
+  RemovedApprovedStrategy(address):                           0xcccfdaf06e384e4afcea4acf18f915e4cf10ccbebf3bd41dbdbf360388fa6138
+  WrapExecuted(bytes32,uint256):                              0xa8d5485cc067b66247132342c7a9e838a67fbed672bb5235bee5d43821b1f274
+  WrapScheduleCreated(bytes32,address,address,address,address,uint256,uint256,uint256): 0x90d3f846038b7ed6357b961c2e2a5725f038437f435d19b64f5a513481109975
+  WrapScheduleDeleted(bytes32,address,address,address,address): 0xeb8e67097728e68d4db8629f19414744572c12ef5e35e9a8c9078955322e0d3f
+
+errors:
+  InsufficientLimits(uint64,uint64):     0x367e59f9
+  InvalidExpirationTime(uint64,uint256): 0xa81e80eb
+  InvalidStrategy(address):              0xeb894b34
+  UnauthorizedCaller(address,address):   0x536dd9ef
+  UnsupportedSuperToken(address):        0x1d5f93fb
+  WrapNotRequired(bytes32):              0xc0a343d5
+  WrongLimits(uint64,uint64):            0xe5277985
+  ZeroAddress():                         0xd92e233d

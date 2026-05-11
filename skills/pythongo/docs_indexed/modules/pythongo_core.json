@@ -1,0 +1,603 @@
+{
+  "source": "pythongo_core.mdx",
+  "relative_source": "modules\\pythongo_core.mdx",
+  "title": "pythongo.core",
+  "doc_kind": "module_doc",
+  "is_index_page": false,
+  "section_count": 11,
+  "table_count": 15,
+  "callout_count": 6,
+  "link_count": 0,
+  "image_count": 0,
+  "sections": [
+    {
+      "id": "modules.pythongo_core.pythongo-core",
+      "title": "pythongo.core",
+      "level": 1,
+      "content_md": "",
+      "summary": "",
+      "block_type": "section"
+    },
+    {
+      "id": "modules.pythongo_core.marketcenter",
+      "title": "MarketCenter",
+      "level": 2,
+      "content_md": "数据中心 API 类\n\n提供一些扩展数据，供用户使用\n\n> [!INFO]\n> API 调用限制由 **AI** 自动管控，请避免频繁使用这些函数，比如有规律地频繁获取某些数据，就会被 **AI** 检测到。\n>\n>   由于使用了 **AI** 技术，所以没有具体的次数限制，一切都是 **AI** 决定是否对 IP 进行封禁。",
+      "summary": "数据中心 API 类",
+      "block_type": "section"
+    },
+    {
+      "id": "modules.pythongo_core.get_kline_data",
+      "title": "`get_kline_data()`",
+      "level": 3,
+      "content_md": "获取 K 线数据\n\n> [!WARNING]\n> 此 API 有调用限制，请合理使用，否则会永久封禁 IP\n\n参数：\n\n| 参数名 | 类型 | 描述 | 默认值 |\n|---|---|---|---|\n| `exchange` | `str` | 交易所代码 | 必填 |\n| `instrument_id` | `str` | 合约代码 | 必填 |\n| `style` | `KLineStyleType` | K 线周期, KLineStyle 枚举值 | `KLineStyle.M1` |\n| `count` | `int` | 查询的 K 线数量（最大 1440），正值获取基准时间戳后的数据，负值为之前 | `-1440` |\n| `origin` | `int` | 基准时间戳（毫秒） | `None` |\n| `start_time` | `TypeDateTime` | K 线起始时间 | `None` |\n| `end_time` | `TypeDateTime` | K 线结束时间 | `None` |\n| `simply` | `bool` | 极简 K 线, 只返回带有 OHLC 和时间的 K 线 | `True` |\n\n返回：\n\n| 类型 | 描述 |\n|---|---|\n| `list[dict |\n| ` |\n| K |   | 线 | 数 | 据 |\n\n注意：\n\n使用 `start_time` 和 `end_time` 可以获取一个时间区间的 K 线，但同时这样会忽略 `count` 和 `origin` 参数\n\n也就是说要么按时间区间获取，要么按 K 线数量获取 K 线数据",
+      "summary": "获取 K 线数据",
+      "block_type": "function"
+    },
+    {
+      "id": "modules.pythongo_core.get_kline_data_by_day",
+      "title": "`get_kline_data_by_day()`",
+      "level": 3,
+      "content_md": "按天数（交易日）获取 K 线数据\n\n> [!WARNING]\n> 此 API 有调用限制，请合理使用，否则会永久封禁 IP\n\n参数：\n\n| 参数名 | 类型 | 描述 | 默认值 |\n|---|---|---|---|\n| `exchange` | `str` | 交易所代码 | 必填 |\n| `instrument_id` | `str` | 合约代码 | 必填 |\n| `day_count` | `int` | 查询 N 天的数据，正值获取基准时间戳后的数据，负值为之前 | 必填 |\n| `origin` | `int` | 基准时间戳（毫秒） | `None` |\n| `style` | `KLineStyleType` | K 线周期，KLineStyle 枚举值，仅支持 M1, M5, M15, M30, H1 | `KLineStyle.M1` |\n| `simply` | `bool` | 极简 K 线, 只返回带有 OHLC 和时间的 K 线 | `True` |\n\n返回：\n\n| 类型 | 描述 |\n|---|---|\n| `list[dict |\n| ` |\n| K |   | 线 | 数 | 据 |",
+      "summary": "按天数（交易日）获取 K 线数据",
+      "block_type": "function"
+    },
+    {
+      "id": "modules.pythongo_core.get_dominant_list",
+      "title": "`get_dominant_list()`",
+      "level": 3,
+      "content_md": "获取交易所的主连合约列表\n\n> [!WARNING]\n> 此 API 有调用限制，请合理使用，否则会永久封禁 IP\n\n参数：\n\n| 参数名 | 类型 | 描述 | 默认值 |\n|---|---|---|---|\n| `exchange` | `str` | 交易所代码 | 必填 |\n\n返回：\n\n| 类型 | 描述 |\n|---|---|\n| `list[str |\n| ` |\n| 主 | 连 | 合 | 约 | 列 | 表 |",
+      "summary": "获取交易所的主连合约列表",
+      "block_type": "function"
+    },
+    {
+      "id": "modules.pythongo_core.get_instrument_trade_time",
+      "title": "`get_instrument_trade_time()`",
+      "level": 3,
+      "content_md": "查询带交易日的合约交易时段\n\n> [!WARNING]\n> 此 API 有调用限制，请合理使用，否则会永久封禁 IP\n\n参数：\n\n| 参数名 | 类型 | 描述 | 默认值 |\n|---|---|---|---|\n| `exchange` | `str` | 交易所代码 | 必填 |\n| `instrument_id` | `str` | 合约代码 | 必填 |\n| `instant` | `int` | 基准时间戳（毫秒） | `None` |\n\n返回：\n\n| 类型 | 描述 |\n|---|---|\n| `dict` | 合约交易时段信息 |",
+      "summary": "查询带交易日的合约交易时段",
+      "block_type": "function"
+    },
+    {
+      "id": "modules.pythongo_core.get_product_trade_time",
+      "title": "`get_product_trade_time()`",
+      "level": 3,
+      "content_md": "查询品种的交易时段信息\n\n> [!WARNING]\n> 此 API 有调用限制，请合理使用，否则会永久封禁 IP\n\n参数：\n\n| 参数名 | 类型 | 描述 | 默认值 |\n|---|---|---|---|\n| `exchange` | `str` | 交易所代码 | 必填 |\n| `product_id` | `str` | 品种代码，也可填写合约代码 | 必填 |\n| `trading_day` | `str` | 品种交易日，格式为 `%Y%m%d`，例如：20240101 | `None` |\n\n返回：\n\n| 类型 | 描述 |\n|---|---|\n| `dict` | 品种交易时段信息 |",
+      "summary": "查询品种的交易时段信息",
+      "block_type": "function"
+    },
+    {
+      "id": "modules.pythongo_core.get_avl_close_time",
+      "title": "`get_avl_close_time()`",
+      "level": 3,
+      "content_md": "从缓存中获取合约可使用的收盘时间序列，如无缓存, 则获取不到任何数据\n\n参数：\n\n| 参数名 | 类型 | 描述 | 默认值 |\n|---|---|---|---|\n| `instrument_id` | `str` | 合约代码 | 必填 |\n\n返回：\n\n| 类型 | 描述 |\n|---|---|\n| `list[datetime |\n| ` |\n| 在 | 当 | 前 | 时 | 间 | 之 | 后 | 的 | 收 | 盘 | 时 | 间 | 序 | 列 |",
+      "summary": "从缓存中获取合约可使用的收盘时间序列，如无缓存, 则获取不到任何数据",
+      "block_type": "function"
+    },
+    {
+      "id": "modules.pythongo_core.get_next_gen_time",
+      "title": "`get_next_gen_time()`",
+      "level": 3,
+      "content_md": "根据提供的合约信息、时间和 K 线周期，获取下一根 K 线生成时间\n\n参数：\n\n| 参数名 | 类型 | 描述 | 默认值 |\n|---|---|---|---|\n| `exchange` | `str` | 交易所代码 | 必填 |\n| `instrument_id` | `str` | 合约代码 | 必填 |\n| `tick_time` | `datetime` | tick 时间 | 必填 |\n| `style` | `KLineStyleType` | K 线周期, KLineStyle 枚举值 | 必填 |\n\n返回：\n\n| 类型 | 描述 |\n|---|---|\n| `datetime` | 下一根 K 线生成时间 |",
+      "summary": "根据提供的合约信息、时间和 K 线周期，获取下一根 K 线生成时间",
+      "block_type": "function"
+    },
+    {
+      "id": "modules.pythongo_core.klinestyle",
+      "title": "KLineStyle",
+      "level": 2,
+      "content_md": "K 线周期\n\n枚举类型，分别有以下枚举值\n\n| 风格 | 分钟数 | 备注 |\n|---|---|---|\n| M1 | 1 | 1 分钟 |\n| M2 | 2 | 2 分钟 |\n| M3 | 3 | 3 分钟 |\n| M4 | 4 | 4 分钟 |\n| M5 | 5 | 5 分钟 |\n| M10 | 10 | 10 分钟 |\n| M15 | 15 | 15 分钟 |\n| M30 | 30 | 30 分钟 |\n| M45 | 45 | 45 分钟 |\n| H1 | 60 | 1 小时 |\n| H2 | 120 | 2 小时 |\n| H3 | 180 | 3 小时 |\n| H4 | 240 | 4 小时 |\n| D1 | 1440 | 日线 |",
+      "summary": "K 线周期",
+      "block_type": "section"
+    },
+    {
+      "id": "modules.pythongo_core.klinestyletype",
+      "title": "KLineStyleType",
+      "level": 2,
+      "content_md": "K 线周期类型\n\n`type` 类型，用于类型注释",
+      "summary": "K 线周期类型",
+      "block_type": "section"
+    }
+  ],
+  "tables": [
+    {
+      "title": "`get_kline_data()`",
+      "headers": [
+        "参数名",
+        "类型",
+        "描述",
+        "默认值"
+      ],
+      "rows": [
+        [
+          "`exchange`",
+          "`str`",
+          "交易所代码",
+          "必填"
+        ],
+        [
+          "`instrument_id`",
+          "`str`",
+          "合约代码",
+          "必填"
+        ],
+        [
+          "`style`",
+          "`KLineStyleType`",
+          "K 线周期, KLineStyle 枚举值",
+          "`KLineStyle.M1`"
+        ],
+        [
+          "`count`",
+          "`int`",
+          "查询的 K 线数量（最大 1440），正值获取基准时间戳后的数据，负值为之前",
+          "`-1440`"
+        ],
+        [
+          "`origin`",
+          "`int`",
+          "基准时间戳（毫秒）",
+          "`None`"
+        ],
+        [
+          "`start_time`",
+          "`TypeDateTime`",
+          "K 线起始时间",
+          "`None`"
+        ],
+        [
+          "`end_time`",
+          "`TypeDateTime`",
+          "K 线结束时间",
+          "`None`"
+        ],
+        [
+          "`simply`",
+          "`bool`",
+          "极简 K 线, 只返回带有 OHLC 和时间的 K 线",
+          "`True`"
+        ]
+      ],
+      "source": "pythongo_core.mdx"
+    },
+    {
+      "title": "`get_kline_data_by_day()`",
+      "headers": [
+        "类型",
+        "描述"
+      ],
+      "rows": [
+        [
+          "`list[dict"
+        ],
+        [
+          "`"
+        ],
+        [
+          "K",
+          " ",
+          "线",
+          "数",
+          "据"
+        ]
+      ],
+      "source": "pythongo_core.mdx"
+    },
+    {
+      "title": "`get_dominant_list()`",
+      "headers": [
+        "参数名",
+        "类型",
+        "描述",
+        "默认值"
+      ],
+      "rows": [
+        [
+          "`exchange`",
+          "`str`",
+          "交易所代码",
+          "必填"
+        ],
+        [
+          "`instrument_id`",
+          "`str`",
+          "合约代码",
+          "必填"
+        ],
+        [
+          "`day_count`",
+          "`int`",
+          "查询 N 天的数据，正值获取基准时间戳后的数据，负值为之前",
+          "必填"
+        ],
+        [
+          "`origin`",
+          "`int`",
+          "基准时间戳（毫秒）",
+          "`None`"
+        ],
+        [
+          "`style`",
+          "`KLineStyleType`",
+          "K 线周期，KLineStyle 枚举值，仅支持 M1, M5, M15, M30, H1",
+          "`KLineStyle.M1`"
+        ],
+        [
+          "`simply`",
+          "`bool`",
+          "极简 K 线, 只返回带有 OHLC 和时间的 K 线",
+          "`True`"
+        ]
+      ],
+      "source": "pythongo_core.mdx"
+    },
+    {
+      "title": "`get_instrument_trade_time()`",
+      "headers": [
+        "类型",
+        "描述"
+      ],
+      "rows": [
+        [
+          "`list[dict"
+        ],
+        [
+          "`"
+        ],
+        [
+          "K",
+          " ",
+          "线",
+          "数",
+          "据"
+        ]
+      ],
+      "source": "pythongo_core.mdx"
+    },
+    {
+      "title": "`get_product_trade_time()`",
+      "headers": [
+        "参数名",
+        "类型",
+        "描述",
+        "默认值"
+      ],
+      "rows": [
+        [
+          "`exchange`",
+          "`str`",
+          "交易所代码",
+          "必填"
+        ]
+      ],
+      "source": "pythongo_core.mdx"
+    },
+    {
+      "title": "`get_avl_close_time()`",
+      "headers": [
+        "类型",
+        "描述"
+      ],
+      "rows": [
+        [
+          "`list[str"
+        ],
+        [
+          "`"
+        ],
+        [
+          "主",
+          "连",
+          "合",
+          "约",
+          "列",
+          "表"
+        ]
+      ],
+      "source": "pythongo_core.mdx"
+    },
+    {
+      "title": "`get_next_gen_time()`",
+      "headers": [
+        "参数名",
+        "类型",
+        "描述",
+        "默认值"
+      ],
+      "rows": [
+        [
+          "`exchange`",
+          "`str`",
+          "交易所代码",
+          "必填"
+        ],
+        [
+          "`instrument_id`",
+          "`str`",
+          "合约代码",
+          "必填"
+        ],
+        [
+          "`instant`",
+          "`int`",
+          "基准时间戳（毫秒）",
+          "`None`"
+        ]
+      ],
+      "source": "pythongo_core.mdx"
+    },
+    {
+      "title": "KLineStyle",
+      "headers": [
+        "类型",
+        "描述"
+      ],
+      "rows": [
+        [
+          "`dict`",
+          "合约交易时段信息"
+        ]
+      ],
+      "source": "pythongo_core.mdx"
+    },
+    {
+      "title": null,
+      "headers": [
+        "参数名",
+        "类型",
+        "描述",
+        "默认值"
+      ],
+      "rows": [
+        [
+          "`exchange`",
+          "`str`",
+          "交易所代码",
+          "必填"
+        ],
+        [
+          "`product_id`",
+          "`str`",
+          "品种代码，也可填写合约代码",
+          "必填"
+        ],
+        [
+          "`trading_day`",
+          "`str`",
+          "品种交易日，格式为 `%Y%m%d`，例如：20240101",
+          "`None`"
+        ]
+      ],
+      "source": "pythongo_core.mdx"
+    },
+    {
+      "title": null,
+      "headers": [
+        "类型",
+        "描述"
+      ],
+      "rows": [
+        [
+          "`dict`",
+          "品种交易时段信息"
+        ]
+      ],
+      "source": "pythongo_core.mdx"
+    },
+    {
+      "title": null,
+      "headers": [
+        "参数名",
+        "类型",
+        "描述",
+        "默认值"
+      ],
+      "rows": [
+        [
+          "`instrument_id`",
+          "`str`",
+          "合约代码",
+          "必填"
+        ]
+      ],
+      "source": "pythongo_core.mdx"
+    },
+    {
+      "title": null,
+      "headers": [
+        "类型",
+        "描述"
+      ],
+      "rows": [
+        [
+          "`list[datetime"
+        ],
+        [
+          "`"
+        ],
+        [
+          "在",
+          "当",
+          "前",
+          "时",
+          "间",
+          "之",
+          "后",
+          "的",
+          "收",
+          "盘",
+          "时",
+          "间",
+          "序",
+          "列"
+        ]
+      ],
+      "source": "pythongo_core.mdx"
+    },
+    {
+      "title": null,
+      "headers": [
+        "参数名",
+        "类型",
+        "描述",
+        "默认值"
+      ],
+      "rows": [
+        [
+          "`exchange`",
+          "`str`",
+          "交易所代码",
+          "必填"
+        ],
+        [
+          "`instrument_id`",
+          "`str`",
+          "合约代码",
+          "必填"
+        ],
+        [
+          "`tick_time`",
+          "`datetime`",
+          "tick 时间",
+          "必填"
+        ],
+        [
+          "`style`",
+          "`KLineStyleType`",
+          "K 线周期, KLineStyle 枚举值",
+          "必填"
+        ]
+      ],
+      "source": "pythongo_core.mdx"
+    },
+    {
+      "title": null,
+      "headers": [
+        "类型",
+        "描述"
+      ],
+      "rows": [
+        [
+          "`datetime`",
+          "下一根 K 线生成时间"
+        ]
+      ],
+      "source": "pythongo_core.mdx"
+    },
+    {
+      "title": null,
+      "headers": [
+        "风格",
+        "分钟数",
+        "备注"
+      ],
+      "rows": [
+        [
+          "M1",
+          "1",
+          "1 分钟"
+        ],
+        [
+          "M2",
+          "2",
+          "2 分钟"
+        ],
+        [
+          "M3",
+          "3",
+          "3 分钟"
+        ],
+        [
+          "M4",
+          "4",
+          "4 分钟"
+        ],
+        [
+          "M5",
+          "5",
+          "5 分钟"
+        ],
+        [
+          "M10",
+          "10",
+          "10 分钟"
+        ],
+        [
+          "M15",
+          "15",
+          "15 分钟"
+        ],
+        [
+          "M30",
+          "30",
+          "30 分钟"
+        ],
+        [
+          "M45",
+          "45",
+          "45 分钟"
+        ],
+        [
+          "H1",
+          "60",
+          "1 小时"
+        ],
+        [
+          "H2",
+          "120",
+          "2 小时"
+        ],
+        [
+          "H3",
+          "180",
+          "3 小时"
+        ],
+        [
+          "H4",
+          "240",
+          "4 小时"
+        ],
+        [
+          "D1",
+          "1440",
+          "日线"
+        ]
+      ],
+      "source": "pythongo_core.mdx"
+    }
+  ],
+  "callouts": [
+    {
+      "kind": "info",
+      "text": "API 调用限制由 **AI** 自动管控，请避免频繁使用这些函数，比如有规律地频繁获取某些数据，就会被 **AI** 检测到。\n  \n  由于使用了 **AI** 技术，所以没有具体的次数限制，一切都是 **AI** 决定是否对 IP 进行封禁。",
+      "source": "pythongo_core.mdx"
+    },
+    {
+      "kind": "warning",
+      "text": "此 API 有调用限制，请合理使用，否则会永久封禁 IP",
+      "source": "pythongo_core.mdx"
+    },
+    {
+      "kind": "warning",
+      "text": "此 API 有调用限制，请合理使用，否则会永久封禁 IP",
+      "source": "pythongo_core.mdx"
+    },
+    {
+      "kind": "warning",
+      "text": "此 API 有调用限制，请合理使用，否则会永久封禁 IP",
+      "source": "pythongo_core.mdx"
+    },
+    {
+      "kind": "warning",
+      "text": "此 API 有调用限制，请合理使用，否则会永久封禁 IP",
+      "source": "pythongo_core.mdx"
+    },
+    {
+      "kind": "warning",
+      "text": "此 API 有调用限制，请合理使用，否则会永久封禁 IP",
+      "source": "pythongo_core.mdx"
+    }
+  ],
+  "links": [],
+  "images": []
+}

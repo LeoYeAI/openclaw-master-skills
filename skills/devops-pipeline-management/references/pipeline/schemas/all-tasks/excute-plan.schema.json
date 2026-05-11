@@ -1,0 +1,65 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "excute-plan.schema.json",
+  "title": "ExcutePlan Task",
+  "description": "执行计划任务配置（自动触发执行计划执行）",
+  "type": "object",
+  "required": ["taskCategory", "jobType", "name"],
+  "properties": {
+    "taskCategory": {
+      "type": "string",
+      "const": "CodeCover"
+    },
+    "jobType": {
+      "type": "string",
+      "const": "ExcutePlan"
+    },
+    "name": {
+      "type": "string",
+      "maxLength": 100,
+      "description": "任务名称"
+    },
+    "workPath": {
+      "type": "string",
+      "description": "工作目录"
+    },
+    "sourceId": {
+      "type": "string",
+      "description": "代码源ID"
+    },
+    "planId": {
+      "type": "string",
+      "description": "执行计划ID"
+    },
+    "planName": {
+      "type": "string",
+      "description": "执行计划名称"
+    },
+    "envParams": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "string"
+      },
+      "default": {},
+      "description": "环境参数"
+    },
+    "waitCompletion": {
+      "type": "boolean",
+      "default": true,
+      "description": "等待执行完成"
+    },
+    "timeout": {
+      "type": "integer",
+      "default": 3600,
+      "description": "超时时间（秒）"
+    },
+    "idInTemplate": {
+      "type": "string"
+    },
+    "dependencies": {
+      "type": "array",
+      "items": { "type": "string" },
+      "default": []
+    }
+  }
+}

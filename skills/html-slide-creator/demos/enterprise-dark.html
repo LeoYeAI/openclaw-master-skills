@@ -1,0 +1,905 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>slide-creator · Enterprise Dark</title>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg: #0d1117;
+  --bg-card: #161b22;
+  --bg-header: #21262d;
+  --border: #30363d;
+  --text-primary: #e6edf3;
+  --text-muted: #8b949e;
+  --accent-blue: #388bfd;
+  --accent-green: #3fb950;
+  --accent-red: #f85149;
+  --accent-orange: #d29922;
+}
+
+html {
+  scroll-snap-type: y mandatory;
+  scroll-behavior: smooth;
+  height: 100%;
+}
+
+body {
+  height: 100%;
+  overflow-x: hidden;
+  font-family: system-ui, "PingFang SC", "Noto Sans SC", -apple-system, sans-serif;
+  background-color: var(--bg);
+  background-image:
+    linear-gradient(rgba(48,54,61,0.5) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(48,54,61,0.5) 1px, transparent 1px);
+  background-size: 24px 24px;
+  color: var(--text-primary);
+}
+
+/* Grid opacity overlay */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(48,54,61,0.5) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(48,54,61,0.5) 1px, transparent 1px);
+  background-size: 24px 24px;
+  opacity: 0.03;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.slide {
+  width: 100vw;
+  height: 100vh;
+  height: 100dvh;
+  scroll-snap-align: start;
+  overflow: hidden;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.content {
+  width: 100%;
+  max-width: 880px;
+  padding: clamp(24px, 5vw, 60px);
+  position: relative;
+  z-index: 1;
+}
+
+/* Typography */
+h1 {
+  font-size: clamp(32px, 5.5vw, 64px);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.08;
+  color: var(--text-primary);
+}
+
+h2 {
+  font-size: clamp(22px, 3.5vw, 44px);
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  line-height: 1.12;
+  color: var(--text-primary);
+}
+
+h3 {
+  font-size: clamp(13px, 1.5vw, 16px);
+  font-weight: 600;
+  color: var(--text-primary);
+  letter-spacing: -0.01em;
+}
+
+p {
+  font-size: clamp(13px, 1.4vw, 16px);
+  color: var(--text-muted);
+  line-height: 1.6;
+}
+
+.accent-blue { color: var(--accent-blue); }
+.accent-green { color: var(--accent-green); }
+.accent-red { color: var(--accent-red); }
+.accent-orange { color: var(--accent-orange); }
+
+/* Label tag */
+.label-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 3px 10px;
+  font-size: clamp(10px, 1.1vw, 12px);
+  font-weight: 600;
+  color: var(--text-muted);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Card */
+.card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: clamp(16px, 2.5vw, 28px);
+}
+
+/* KPI */
+.kpi-row {
+  display: flex;
+  gap: clamp(12px, 2vw, 20px);
+  margin-top: clamp(20px, 3vw, 32px);
+  flex-wrap: wrap;
+}
+
+.kpi {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: clamp(16px, 2.5vw, 24px) clamp(20px, 3vw, 32px);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1;
+  min-width: 120px;
+}
+
+.kpi-value {
+  font-size: clamp(36px, 5vw, 56px);
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+
+.kpi-label {
+  font-size: clamp(10px, 1.1vw, 12px);
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+/* Split layout */
+.split {
+  display: grid;
+  grid-template-columns: 200px 1fr;
+  gap: clamp(20px, 3vw, 36px);
+  margin-top: clamp(16px, 2.5vw, 28px);
+  align-items: start;
+}
+
+.split-labels {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(10px, 1.5vw, 14px);
+  padding-top: 2px;
+}
+
+.split-label {
+  font-size: clamp(10px, 1.1vw, 12px);
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  padding: clamp(10px, 1.5vw, 14px) 0;
+  border-bottom: 1px solid var(--border);
+  line-height: 1.3;
+}
+
+.split-label:last-child { border-bottom: none; }
+
+/* Table */
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: clamp(14px, 2vw, 22px);
+  font-variant-numeric: tabular-nums;
+}
+
+.table th {
+  background: var(--bg-header);
+  color: var(--text-muted);
+  font-size: clamp(10px, 1.1vw, 12px);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  padding: clamp(8px, 1.2vw, 12px) clamp(12px, 1.5vw, 16px);
+  text-align: left;
+}
+
+.table td {
+  padding: clamp(10px, 1.3vw, 14px) clamp(12px, 1.5vw, 16px);
+  font-size: clamp(12px, 1.3vw, 15px);
+  color: var(--text-primary);
+  border-bottom: 1px solid var(--border);
+}
+
+.table tr:last-child td { border-bottom: none; }
+
+/* Progress bar */
+.prog-bar {
+  height: 2px;
+  background: var(--border);
+  border-radius: 2px;
+  overflow: hidden;
+  margin-top: 4px;
+}
+
+.prog-fill {
+  height: 100%;
+  background: var(--accent-blue);
+  border-radius: 2px;
+  transition: width 0.8s ease;
+}
+
+/* Status dot */
+.status-dot {
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  margin-right: 6px;
+  vertical-align: middle;
+}
+
+.dot-green { background: var(--accent-green); }
+.dot-blue  { background: var(--accent-blue); }
+.dot-red   { background: var(--accent-red); }
+
+/* Grid 2 */
+.grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: clamp(10px, 1.5vw, 16px);
+  margin-top: clamp(14px, 2vw, 22px);
+}
+
+/* Separator */
+.sep {
+  height: 1px;
+  background: var(--border);
+  margin: clamp(14px, 2vw, 22px) 0;
+}
+
+/* Feature row */
+.feature-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  padding: clamp(12px, 1.8vw, 16px) 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.feature-row:last-child { border-bottom: none; }
+
+.feature-icon {
+  width: 28px;
+  height: 28px;
+  min-width: 28px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+}
+
+/* Code */
+.code {
+  font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: clamp(12px, 1.8vw, 18px);
+  font-size: clamp(11px, 1.2vw, 14px);
+  color: var(--accent-blue);
+  margin-top: clamp(12px, 1.8vw, 18px);
+  line-height: 1.6;
+}
+
+.code .muted { color: var(--text-muted); }
+.code .green { color: var(--accent-green); }
+
+/* Nav dots */
+#nav-dots {
+  position: fixed;
+  right: clamp(14px, 2vw, 22px);
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  z-index: 100;
+}
+
+.dot {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--border);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border: none;
+  padding: 0;
+}
+
+.dot.active {
+  background: var(--accent-blue);
+  height: 16px;
+  border-radius: 2px;
+}
+
+/* Progress bar */
+#progress {
+  position: fixed;
+  top: 0; left: 0;
+  height: 2px;
+  background: var(--accent-blue);
+  transition: width 0.3s ease;
+  z-index: 100;
+}
+
+/* Slide number */
+#slide-num {
+  position: fixed;
+  bottom: clamp(12px, 2vw, 18px);
+  right: clamp(14px, 2vw, 22px);
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-muted);
+  letter-spacing: 0.08em;
+  z-index: 100;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Edit mode */
+#hotzone {
+  position: fixed;
+  top: 0; left: 0;
+  width: 80px; height: 80px;
+  z-index: 200;
+  cursor: default;
+}
+
+body.edit-mode [contenteditable] { outline: 1px dashed rgba(56,139,253,0.5); border-radius: 2px; }
+body.edit-mode #edit-badge { display: flex; }
+
+#edit-badge {
+  display: none;
+  position: fixed;
+  top: 10px; left: 10px;
+  align-items: center;
+  gap: 6px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 4px 10px;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-muted);
+  z-index: 200;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+/* Reveal — fade only */
+.reveal {
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.reveal.visible { opacity: 1; }
+
+/* Install */
+.install-item {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: clamp(12px, 1.8vw, 18px);
+  margin-bottom: clamp(8px, 1.2vw, 12px);
+}
+
+.install-label {
+  font-size: clamp(10px, 1.1vw, 12px);
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: 6px;
+}
+
+.install-cmd {
+  font-family: 'SF Mono', 'Fira Code', monospace;
+  font-size: clamp(11px, 1.2vw, 14px);
+  color: var(--accent-green);
+  word-break: break-all;
+}
+
+/* Badge inline */
+.badge {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: clamp(10px, 1.1vw, 12px);
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  font-variant-numeric: tabular-nums;
+}
+
+.badge-blue   { background: rgba(56,139,253,0.15); color: var(--accent-blue); border: 1px solid rgba(56,139,253,0.30); }
+.badge-green  { background: rgba(63,185,80,0.15);  color: var(--accent-green); border: 1px solid rgba(63,185,80,0.30); }
+</style>
+</head>
+<body>
+
+<div id="progress"></div>
+<div id="nav-dots"></div>
+<div id="slide-num">1 / 8</div>
+<div id="edit-badge">EDIT · Ctrl+S</div>
+<div id="hotzone"></div>
+
+<!-- SLIDE 1: Cover -->
+<section class="slide" id="s0">
+  <div class="content">
+    <div class="reveal">
+      <span class="label-tag">Enterprise · v2.0</span>
+    </div>
+    <div class="reveal" style="transition-delay:0.05s; margin-top:clamp(16px,2.5vw,28px);">
+      <h1>slide<span class="accent-blue">-creator</span></h1>
+    </div>
+    <div class="sep reveal" style="transition-delay:0.08s; margin-top:clamp(14px,2vw,22px);"></div>
+    <div class="reveal" style="transition-delay:0.1s">
+      <p style="font-size:clamp(15px,1.8vw,20px); color:var(--text-primary); max-width:520px; line-height:1.5;">Zero-dependency HTML presentations for<br>Claude Code &amp; OpenClaw.</p>
+    </div>
+    <div class="kpi-row reveal" style="transition-delay:0.15s">
+      <div class="kpi">
+        <span class="kpi-value accent-blue">19</span>
+        <span class="kpi-label">Presets</span>
+      </div>
+      <div class="kpi">
+        <span class="kpi-value accent-green">0</span>
+        <span class="kpi-label">Dependencies</span>
+      </div>
+      <div class="kpi">
+        <span class="kpi-value" style="color:var(--text-primary);">∞</span>
+        <span class="kpi-label">Slides</span>
+      </div>
+      <div class="kpi">
+        <span class="kpi-value accent-blue">60s</span>
+        <span class="kpi-label">To Install</span>
+      </div>
+    </div>
+    <div class="reveal" style="transition-delay:0.2s; margin-top:clamp(14px,2vw,20px);">
+      <p style="font-size:clamp(12px,1.3vw,14px);">19 styles. Delivered in minutes. No toolchain.</p>
+    </div>
+  </div>
+</section>
+
+<!-- SLIDE 2: Problem -->
+<section class="slide" id="s1">
+  <div class="content">
+    <div class="reveal">
+      <span class="label-tag">Problem Statement</span>
+    </div>
+    <div class="reveal" style="transition-delay:0.05s; margin-top:clamp(14px,2vw,22px);">
+      <h2>"Presentations shouldn't<br>require a build system"</h2>
+    </div>
+    <div class="sep reveal" style="transition-delay:0.08s;"></div>
+    <div class="card reveal" style="transition-delay:0.1s; margin-top:0;">
+      <div class="feature-row">
+        <div class="feature-icon">⚙️</div>
+        <div>
+          <h3>Complex Toolchain</h3>
+          <p style="margin-top:3px;">Node, Webpack, npm installs — hours of setup before producing a single slide. Cognitive overhead before the first word is written.</p>
+        </div>
+        <span class="badge badge-blue" style="margin-left:auto; white-space:nowrap; align-self:flex-start;">High friction</span>
+      </div>
+      <div class="feature-row">
+        <div class="feature-icon">📋</div>
+        <div>
+          <h3>Generic Output</h3>
+          <p style="margin-top:3px;">Boilerplate templates with no visual differentiation. Every deck signals "default settings."</p>
+        </div>
+        <span class="badge badge-blue" style="margin-left:auto; white-space:nowrap; align-self:flex-start;">Low signal</span>
+      </div>
+      <div class="feature-row">
+        <div class="feature-icon">🔒</div>
+        <div>
+          <h3>No Ownership</h3>
+          <p style="margin-top:3px;">Cloud-locked data, limited export options, vendor pricing control. Your content, their terms.</p>
+        </div>
+        <span class="badge" style="background:rgba(248,81,73,0.12); color:var(--accent-red); border:1px solid rgba(248,81,73,0.30); margin-left:auto; white-space:nowrap; align-self:flex-start;">Risk</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SLIDE 3: Show Don't Tell -->
+<section class="slide" id="s2">
+  <div class="content">
+    <div class="reveal">
+      <span class="label-tag">Workflow</span>
+    </div>
+    <div class="reveal" style="transition-delay:0.05s; margin-top:clamp(14px,2vw,22px);">
+      <h2>Style discovery that<br>actually works</h2>
+    </div>
+    <div class="sep reveal" style="transition-delay:0.08s;"></div>
+    <div class="split reveal" style="transition-delay:0.1s">
+      <div class="split-labels">
+        <div class="split-label">01 · Input</div>
+        <div class="split-label">02 · Preview</div>
+        <div class="split-label">03 · Output</div>
+      </div>
+      <div class="card" style="display:flex; flex-direction:column; gap:0;">
+        <div class="feature-row">
+          <div>
+            <h3>Ask Mood</h3>
+            <p style="margin-top:3px;">Describe your presentation intent in natural language. "Executive summary, data-heavy, confident."</p>
+          </div>
+        </div>
+        <div class="feature-row">
+          <div>
+            <h3>3 Visual Previews</h3>
+            <p style="margin-top:3px;">Three matched styles rendered side-by-side before full generation. No surprises.</p>
+          </div>
+        </div>
+        <div class="feature-row">
+          <div>
+            <h3>Pick &amp; Generate</h3>
+            <p style="margin-top:3px;">Select your style. Receive a complete, self-contained HTML file. No install required on the recipient's machine.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SLIDE 4: 19 Presets -->
+<section class="slide" id="s3">
+  <div class="content">
+    <div class="reveal">
+      <span class="label-tag">19 Presets</span>
+    </div>
+    <div class="reveal" style="transition-delay:0.05s; margin-top:clamp(14px,2vw,22px);">
+      <h2>Complete visual systems,<br>not color swaps</h2>
+    </div>
+    <div class="sep reveal" style="transition-delay:0.08s;"></div>
+    <div class="reveal" style="transition-delay:0.1s">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Category</th>
+            <th>Presets</th>
+            <th>Best For</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="status-dot dot-blue"></span>Bold &amp; Energetic</td>
+            <td><span class="badge badge-blue" style="font-variant-numeric:tabular-nums;">6</span></td>
+            <td>Product launches, pitches</td>
+          </tr>
+          <tr>
+            <td><span class="status-dot dot-green"></span>Clean &amp; Professional</td>
+            <td><span class="badge badge-blue">5</span></td>
+            <td>Executive reports, strategy</td>
+          </tr>
+          <tr>
+            <td><span class="status-dot" style="background:var(--accent-orange);"></span>Creative &amp; Expressive</td>
+            <td><span class="badge badge-blue">4</span></td>
+            <td>Design, agency, brand work</td>
+          </tr>
+          <tr>
+            <td><span class="status-dot dot-blue" style="background:#c792ea;"></span>Dark &amp; Technical</td>
+            <td><span class="badge badge-blue">4</span></td>
+            <td>Dev teams, data, ops</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="reveal" style="transition-delay:0.2s; margin-top:clamp(12px,1.8vw,18px);">
+      <p>Includes: Bold Signal · Electric Studio · Creative Voltage · Dark Botanical · Blue Sky · Notebook Tabs · Pastel Geometry · Split Pastel · Vintage Editorial · Neon Cyber · Terminal Green · Swiss Modern · Paper &amp; Ink · Aurora Mesh · <strong style="color:var(--text-primary);">Enterprise Dark ✦</strong> · Glassmorphism · Neo-Brutalism · Japanese Zen · Data Story</p>
+    </div>
+  </div>
+</section>
+
+<!-- SLIDE 5: How It Works -->
+<section class="slide" id="s4">
+  <div class="content">
+    <div class="reveal">
+      <span class="label-tag">Process</span>
+    </div>
+    <div class="reveal" style="transition-delay:0.05s; margin-top:clamp(14px,2vw,22px);">
+      <h2>Three steps to<br>your presentation</h2>
+    </div>
+    <div class="sep reveal" style="transition-delay:0.08s;"></div>
+    <div class="card reveal" style="transition-delay:0.1s; margin-top:0;">
+      <div class="feature-row">
+        <div class="feature-icon" style="background:rgba(56,139,253,0.10); border-color:rgba(56,139,253,0.25);">1</div>
+        <div>
+          <h3>Run <code style="font-family:'SF Mono',monospace; background:var(--bg); border:1px solid var(--border); padding:1px 6px; border-radius:4px; font-size:0.9em;">/slide-creator</code></h3>
+          <p style="margin-top:3px;">In Claude Code or OpenClaw. State your topic, audience, and intent.</p>
+        </div>
+        <div style="margin-left:auto; text-align:right; min-width:80px;">
+          <div class="prog-bar" style="width:80px;"><div class="prog-fill" style="width:33%"></div></div>
+        </div>
+      </div>
+      <div class="feature-row">
+        <div class="feature-icon" style="background:rgba(56,139,253,0.10); border-color:rgba(56,139,253,0.25);">2</div>
+        <div>
+          <h3>Select from 3 visual previews</h3>
+          <p style="margin-top:3px;">Compare style options before committing. Pick by gut feel.</p>
+        </div>
+        <div style="margin-left:auto; text-align:right; min-width:80px;">
+          <div class="prog-bar" style="width:80px;"><div class="prog-fill" style="width:66%"></div></div>
+        </div>
+      </div>
+      <div class="feature-row">
+        <div class="feature-icon" style="background:rgba(56,139,253,0.10); border-color:rgba(56,139,253,0.25);">3</div>
+        <div>
+          <h3>Open the HTML file</h3>
+          <p style="margin-top:3px;">Self-contained. No server. No install. Share as a file or host anywhere.</p>
+        </div>
+        <div style="margin-left:auto; text-align:right; min-width:80px;">
+          <div class="prog-bar" style="width:80px;"><div class="prog-fill" style="width:100%"></div></div>
+        </div>
+      </div>
+    </div>
+    <div class="reveal" style="transition-delay:0.2s; margin-top:clamp(12px,1.8vw,16px);">
+      <p style="font-size:clamp(12px,1.3vw,14px);"><span class="badge badge-blue">--plan</span> <span style="color:var(--text-muted);">→ outline first</span> &nbsp;&nbsp; <span class="badge badge-green">--generate</span> <span style="color:var(--text-muted);">→ full deck</span></p>
+    </div>
+  </div>
+</section>
+
+<!-- SLIDE 6: Features -->
+<section class="slide" id="s5">
+  <div class="content">
+    <div class="reveal">
+      <span class="label-tag">Capabilities</span>
+    </div>
+    <div class="reveal" style="transition-delay:0.05s; margin-top:clamp(14px,2vw,22px);">
+      <h2>Production-grade features,<br>zero configuration</h2>
+    </div>
+    <div class="sep reveal" style="transition-delay:0.08s;"></div>
+    <div class="grid-2 reveal" style="transition-delay:0.1s">
+      <div class="card">
+        <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:8px;">
+          <h3>Viewport Fitting</h3>
+          <span class="badge badge-green">Live</span>
+        </div>
+        <p>100dvh slides. Perfect on laptop, projector, 4K display.</p>
+        <div class="prog-bar" style="margin-top:10px;"><div class="prog-fill" style="width:100%"></div></div>
+      </div>
+      <div class="card">
+        <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:8px;">
+          <h3>Inline Editing</h3>
+          <span class="badge badge-green">Live</span>
+        </div>
+        <p>E key activates. Ctrl+S saves via File System Access API.</p>
+        <div class="prog-bar" style="margin-top:10px;"><div class="prog-fill" style="width:90%"></div></div>
+      </div>
+      <div class="card">
+        <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:8px;">
+          <h3>PPTX Export</h3>
+          <span class="badge badge-blue">Available</span>
+        </div>
+        <p>Export for stakeholders who need PowerPoint compatibility.</p>
+        <div class="prog-bar" style="margin-top:10px;"><div class="prog-fill" style="width:85%"></div></div>
+      </div>
+      <div class="card">
+        <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:8px;">
+          <h3>Two-Stage Workflow</h3>
+          <span class="badge badge-blue">Available</span>
+        </div>
+        <p>--plan to outline, --generate to produce. Iterate before committing.</p>
+        <div class="prog-bar" style="margin-top:10px;"><div class="prog-fill" style="width:100%"></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SLIDE 7: Install -->
+<section class="slide" id="s6">
+  <div class="content">
+    <div class="reveal">
+      <span class="label-tag">Installation</span>
+    </div>
+    <div class="reveal" style="transition-delay:0.05s; margin-top:clamp(14px,2vw,22px);">
+      <h2>Operational in<br>under 60 seconds</h2>
+    </div>
+    <div class="sep reveal" style="transition-delay:0.08s;"></div>
+    <div class="reveal" style="transition-delay:0.1s">
+      <div class="install-item">
+        <div class="install-label">Claude Code</div>
+        <div class="install-cmd">git clone https://github.com/kaisersong/slide-creator ~/.claude/skills/slide-creator</div>
+      </div>
+      <div class="install-item">
+        <div class="install-label">OpenClaw</div>
+        <div class="install-cmd">clawhub install html-slide-creator</div>
+      </div>
+    </div>
+    <div class="card reveal" style="transition-delay:0.2s; margin-top:clamp(12px,1.8vw,18px);">
+      <table class="table" style="margin-top:0;">
+        <thead>
+          <tr><th>Requirement</th><th>Status</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Node / npm</td>
+            <td><span class="status-dot dot-green"></span><span class="accent-green">Not required</span></td>
+          </tr>
+          <tr>
+            <td>Build step</td>
+            <td><span class="status-dot dot-green"></span><span class="accent-green">Not required</span></td>
+          </tr>
+          <tr>
+            <td>Cloud account</td>
+            <td><span class="status-dot dot-green"></span><span class="accent-green">Not required</span></td>
+          </tr>
+          <tr>
+            <td>Claude Code or OpenClaw</td>
+            <td><span class="status-dot dot-blue"></span><span class="accent-blue">Required</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- SLIDE 8: Get Started -->
+<section class="slide" id="s7">
+  <div class="content">
+    <div class="reveal">
+      <span class="label-tag">Get Started</span>
+    </div>
+    <div class="reveal" style="transition-delay:0.05s; margin-top:clamp(14px,2vw,22px);">
+      <h1>Your next deck,<br>delivered in <span class="accent-blue">minutes</span></h1>
+    </div>
+    <div class="sep reveal" style="transition-delay:0.08s;"></div>
+    <div class="reveal" style="transition-delay:0.1s">
+      <p style="font-size:clamp(14px,1.6vw,18px); color:var(--text-primary); line-height:1.5; max-width:540px;">Works with Claude Code and OpenClaw.<br>Runs entirely in your browser.</p>
+    </div>
+    <div class="code reveal" style="transition-delay:0.15s; font-size:clamp(14px,1.6vw,18px);">
+      <span class="muted"># In Claude Code or OpenClaw</span><br>
+      /slide-creator
+    </div>
+    <div class="kpi-row reveal" style="transition-delay:0.2s; margin-top:clamp(16px,2.5vw,24px);">
+      <div class="kpi" style="flex:none; min-width:0;">
+        <span class="kpi-value accent-blue" style="font-size:clamp(24px,3.5vw,40px);">19</span>
+        <span class="kpi-label">Presets</span>
+      </div>
+      <div class="kpi" style="flex:none; min-width:0;">
+        <span class="kpi-value accent-green" style="font-size:clamp(24px,3.5vw,40px);">0</span>
+        <span class="kpi-label">Dependencies</span>
+      </div>
+      <div class="kpi" style="flex:none; min-width:0;">
+        <span class="kpi-value" style="font-size:clamp(24px,3.5vw,40px); color:var(--text-primary);">∞</span>
+        <span class="kpi-label">Possibilities</span>
+      </div>
+    </div>
+    <div class="reveal" style="transition-delay:0.25s; margin-top:clamp(16px,2.5vw,24px);">
+      <p style="font-size:clamp(11px,1.2vw,13px); color:var(--text-muted); letter-spacing:0.06em; text-transform:uppercase;">Enterprise Dark · slide-creator</p>
+    </div>
+  </div>
+</section>
+
+<script>
+const slides = document.querySelectorAll('.slide');
+const total = slides.length;
+let cur = 0;
+
+// Nav dots
+const dotsEl = document.getElementById('nav-dots');
+const dots = [];
+for (let i = 0; i < total; i++) {
+  const d = document.createElement('button');
+  d.className = 'dot';
+  d.setAttribute('aria-label', `Slide ${i+1}`);
+  d.addEventListener('click', () => goTo(i));
+  dotsEl.appendChild(d);
+  dots.push(d);
+}
+
+function goTo(n) {
+  n = Math.max(0, Math.min(total - 1, n));
+  cur = n;
+  slides[cur].scrollIntoView({ behavior: 'smooth' });
+  updateUI();
+}
+
+function updateUI() {
+  dots.forEach((d, i) => d.classList.toggle('active', i === cur));
+  document.getElementById('progress').style.width = ((cur + 1) / total * 100) + '%';
+  document.getElementById('slide-num').textContent = `${cur + 1} / ${total}`;
+}
+
+// IntersectionObserver for reveal
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      const el = entry.target;
+      const revealEls = el.querySelectorAll('.reveal');
+      revealEls.forEach((r, i) => {
+        setTimeout(() => r.classList.add('visible'), i * 80);
+      });
+      const idx = Array.from(slides).indexOf(el);
+      if (idx !== -1) { cur = idx; updateUI(); }
+    }
+  });
+}, { threshold: 0.5 });
+
+slides.forEach(s => observer.observe(s));
+
+// Keyboard
+document.addEventListener('keydown', e => {
+  if (editMode && e.key !== 'Escape') {
+    if ((e.ctrlKey || e.metaKey) && e.key === 's') { e.preventDefault(); saveFile(); }
+    return;
+  }
+  if (e.key === 'ArrowDown' || e.key === 'ArrowRight' || e.key === ' ') { e.preventDefault(); goTo(cur + 1); }
+  if (e.key === 'ArrowUp'   || e.key === 'ArrowLeft')  { e.preventDefault(); goTo(cur - 1); }
+  if (e.key === 'e' || e.key === 'E') toggleEdit();
+  if (e.key === 'Escape' && editMode) toggleEdit();
+  if ((e.ctrlKey || e.metaKey) && e.key === 's') { e.preventDefault(); saveFile(); }
+});
+
+// Wheel — debounce-reset
+let wheelLocked = false, wheelTimer = null;
+document.addEventListener('wheel', e => {
+  clearTimeout(wheelTimer);
+  if (!wheelLocked) { wheelLocked = true; e.deltaY > 0 ? goTo(cur + 1) : goTo(cur - 1); }
+  wheelTimer = setTimeout(() => { wheelLocked = false; }, 180);
+}, { passive: true });
+
+// Touch swipe
+let touchY = 0;
+document.addEventListener('touchstart', e => { touchY = e.touches[0].clientY; }, { passive: true });
+document.addEventListener('touchend', e => {
+  const dy = touchY - e.changedTouches[0].clientY;
+  if (Math.abs(dy) > 40) dy > 0 ? goTo(cur + 1) : goTo(cur - 1);
+}, { passive: true });
+
+// Edit mode
+let editMode = false;
+let fileHandle = null;
+
+function toggleEdit() {
+  editMode = !editMode;
+  document.body.classList.toggle('edit-mode', editMode);
+  const editable = document.querySelectorAll('h1,h2,h3,p,.kpi-value,.kpi-label,.install-cmd,.badge,.label-tag');
+  editable.forEach(el => el.setAttribute('contenteditable', editMode ? 'true' : 'false'));
+}
+
+async function saveFile() {
+  const html = '<!DOCTYPE html>\n' + document.documentElement.outerHTML;
+  if (window.showSaveFilePicker) {
+    try {
+      if (!fileHandle) {
+        fileHandle = await window.showSaveFilePicker({ suggestedName: 'enterprise-dark.html', types: [{ description: 'HTML', accept: {'text/html': ['.html']} }] });
+      }
+      const writable = await fileHandle.createWritable();
+      await writable.write(html); await writable.close();
+      return;
+    } catch(_) {}
+  }
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([html], { type: 'text/html' }));
+  a.download = 'enterprise-dark.html'; a.click();
+}
+
+document.getElementById('hotzone').addEventListener('click', toggleEdit);
+updateUI();
+</script>
+</body>
+</html>

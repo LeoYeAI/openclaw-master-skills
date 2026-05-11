@@ -1,0 +1,19 @@
+{
+  "name": "Magento",
+  "slug": "magento",
+  "detection_signals": [
+    "mage/ in script sources",
+    "varien in script sources",
+    "requirejs/require in script sources"
+  ],
+  "detection_script": "!!document.querySelector('script[src*=\"mage/\"]') || !!document.querySelector('script[src*=\"varien\"]') || !!document.querySelector('script[src*=\"requirejs/require\"]')",
+  "checkout_type": "multi-step",
+  "checkout_processor": "unknown",
+  "agent_friendliness": 0.5,
+  "guest_checkout": true,
+  "multi_step": true,
+  "requires_auth": false,
+  "last_verified": "2026-03-18",
+  "maturity": "experimental",
+  "notes": "Magento 2 uses a multi-step checkout. Detection is reliable but checkout processor varies by store configuration."
+}

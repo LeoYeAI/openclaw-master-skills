@@ -1,0 +1,39 @@
+{
+  "name": "openclaw-sec",
+  "version": "0.4.0",
+  "description": "",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "directories": {
+    "doc": "docs"
+  },
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsx src/cli.ts",
+    "start": "node dist/cli.js",
+    "test": "jest",
+    "pentest": "tsx tests/zeroleaks-pentest.ts",
+    "pentest:json": "tsx tests/zeroleaks-pentest.ts --json",
+    "postinstall": "npm run build && ([ -d hooks ] && cd hooks && bash install-hooks.sh || true)"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "better-sqlite3": "^12.6.2",
+    "commander": "^14.0.3",
+    "yaml": "^2.8.2"
+  },
+  "devDependencies": {
+    "@types/better-sqlite3": "^7.6.13",
+    "@types/commander": "^2.12.0",
+    "@types/jest": "^30.0.0",
+    "@types/node": "^25.1.0",
+    "jest": "^30.2.0",
+    "ts-jest": "^29.4.6",
+    "ts-node": "^10.9.2",
+    "tsx": "^4.21.0",
+    "typescript": "^5.9.3"
+  }
+}

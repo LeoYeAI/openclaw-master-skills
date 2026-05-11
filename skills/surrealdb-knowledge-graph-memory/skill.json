@@ -1,0 +1,196 @@
+{
+  "name": "surrealdb-memory",
+  "version": "2.2.2",
+  "displayName": "SurrealDB Knowledge Graph Memory",
+  "description": "A comprehensive knowledge graph memory system with semantic search, episodic memory, working memory, per-agent isolation, and automatic context injection.",
+  "author": "Clawdbot",
+  "license": "MIT",
+  "repository": "https://github.com/clawdbot/clawdbot",
+  "keywords": [
+    "memory",
+    "knowledge-graph",
+    "surrealdb",
+    "semantic-search",
+    "episodic-memory",
+    "vector-search",
+    "embeddings",
+    "mcp",
+    "agent-isolation"
+  ],
+  "categories": [
+    "memory",
+    "knowledge-management",
+    "ai-tools"
+  ],
+  "requirements": {
+    "env": {
+      "OPENAI_API_KEY": {
+        "required": true,
+        "description": "Used for generating vector embeddings (text-embedding-3-small) and LLM fact extraction (GPT-4). Your memory files will be sent to OpenAI."
+      },
+      "SURREAL_USER": {
+        "required": false,
+        "default": "root",
+        "description": "SurrealDB username. Change from default for production use."
+      },
+      "SURREAL_PASS": {
+        "required": false,
+        "default": "root",
+        "description": "SurrealDB password. Change from default for production use."
+      },
+      "SURREAL_URL": {
+        "required": false,
+        "default": "http://localhost:8000",
+        "description": "SurrealDB connection URL. Bind to localhost only."
+      }
+    },
+    "binaries": [
+      "surreal",
+      "python3"
+    ],
+    "python": ">=3.10",
+    "surrealdb": ">=2.0.0",
+    "pythonPackages": [
+      "surrealdb",
+      "openai",
+      "pyyaml"
+    ]
+  },
+  "security": {
+    "systemPromptOverride": {
+      "severity": "expected",
+      "description": "Auto-injection appends relevant facts and episodes to the agent system prompt on each turn. DISABLED BY DEFAULT \u2014 must be explicitly enabled via Mode UI \u2192 Memory & Knowledge Graph \u2192 Auto-Inject Context toggle. Enable only after reviewing what files will be processed and confirming no secrets exist in MEMORY.md or memory/*.md."
+    },
+    "localFileToLLM": {
+      "severity": "expected",
+      "description": "extract-knowledge.py reads MEMORY.md and memory/*.md files and sends their content to OpenAI for fact extraction and embedding. Audit those files for secrets before enabling extraction."
+    },
+    "cronPersistence": {
+      "severity": "expected",
+      "description": "Two OpenClaw cron jobs are registered: extraction (every 6h) and relation discovery (daily 3 AM). Both run as isolated agentTurn background sessions with delivery:none \u2014 they do NOT fire into the main agent session and consume no main-session context or tokens. Disable individually from the cron manager."
+    },
+    "sourcePatching": {
+      "severity": "unexpected",
+      "description": "scripts/integrate-openclaw.sh patches OpenClaw source files via sed. This is OPTIONAL for UI tab installation. It runs in dry-run mode by default and requires --apply to make changes. Manual integration is strongly preferred.",
+      "mitigation": "Run with --dry-run to review changes before applying. Backups are created automatically. Manual integration instructions are in SKILL.md."
+    },
+    "networkInstaller": {
+      "severity": "unexpected",
+      "description": "scripts/install.sh can run 'curl -sSf https://install.surrealdb.com | sh' to install SurrealDB. This is NOT recommended. Install SurrealDB manually from https://surrealdb.com/install.",
+      "mitigation": "Use --skip-surreal flag to skip the curl installer entirely and install SurrealDB manually first."
+    },
+    "defaultCredentials": {
+      "severity": "warning",
+      "description": "Default SurrealDB credentials (root/root) are used for local development only. You MUST change these via SURREAL_USER and SURREAL_PASS env vars before any production or multi-user deployment. SurrealDB MUST always be bound to localhost (127.0.0.1) only \u2014 never expose it on 0.0.0.0 or a network interface."
+    }
+  },
+  "permissions": [
+    "read:workspace-files (MEMORY.md, memory/*.md)",
+    "write:surrealdb-local",
+    "network:openai-api (embeddings + extraction)",
+    "cron:register (2 jobs \u2014 extraction + relation discovery)",
+    "optional:patch-openclaw-source (integrate-openclaw.sh, requires --apply)"
+  ],
+  "features": [
+    "Semantic fact storage with vector search",
+    "Episodic memory for task histories",
+    "Working memory with crash recovery",
+    "Automatic context injection into agent prompts",
+    "Outcome-based confidence calibration",
+    "Entity extraction and relationship discovery",
+    "Confidence decay and maintenance",
+    "Per-agent isolation (agent_id scoping)",
+    "Self-improving loop via scheduled cron jobs",
+    "MCP server with 11 tools"
+  ],
+  "integration": {
+    "mcp": true,
+    "gateway": true,
+    "ui": true,
+    "enhancedLoop": true
+  },
+  "mcpServer": {
+    "command": [
+      "python3",
+      "scripts/mcp-server-v2.py"
+    ],
+    "env": {
+      "OPENAI_API_KEY": "${OPENAI_API_KEY}",
+      "SURREAL_URL": "${SURREAL_URL:-http://localhost:8000}",
+      "SURREAL_USER": "${SURREAL_USER:-root}",
+      "SURREAL_PASS": "${SURREAL_PASS:-root}"
+    },
+    "tools": [
+      "knowledge_search",
+      "knowledge_recall",
+      "knowledge_store",
+      "knowledge_stats",
+      "knowledge_store_sync",
+      "episode_search",
+      "episode_learnings",
+      "episode_store",
+      "working_memory_status",
+      "context_aware_search",
+      "memory_inject"
+    ]
+  },
+  "files": {
+    "skill": "SKILL.md",
+    "security": "SECURITY.md",
+    "schema": "scripts/schema-v2.sql",
+    "mcpServer": "scripts/mcp-server-v2.py",
+    "gatewayIntegration": "openclaw-integration/gateway/memory.ts",
+    "uiView": "openclaw-integration/ui/memory-view.ts",
+    "uiController": "openclaw-integration/ui/memory-controller.ts",
+    "enhancedLoopPatch": "references/enhanced-loop-hook-agent-isolation.md"
+  },
+  "setup": {
+    "recommended": "manual",
+    "steps": [
+      "1. Install SurrealDB manually from https://surrealdb.com/install (do NOT use scripts/install.sh's curl|sh path)",
+      "2. Start server bound to localhost ONLY: surreal start --bind 127.0.0.1:8000 --user root --pass root file:~/.openclaw/memory/knowledge.db",
+      "3. \u26a0\ufe0f  CHANGE default credentials (root/root) immediately \u2014 set SURREAL_USER and SURREAL_PASS env vars to custom values before any deployment. Never expose SurrealDB on a network interface.",
+      "4. Create Python venv and install deps: python3 -m venv .venv && source .venv/bin/activate && pip install -r scripts/requirements.txt",
+      "5. Initialize schema: ./scripts/init-db.sh",
+      "6. Configure mcporter with surrealdb-memory server (see SKILL.md)",
+      "7. (Optional) Apply enhanced-loop patch for agent-isolated auto-injection: see references/enhanced-loop-hook-agent-isolation.md",
+      "8. (Optional) Install UI tab manually \u2014 review scripts/integrate-openclaw.sh with --dry-run before applying",
+      "9. Enable auto-injection in Mode UI after confirming memory files contain no secrets"
+    ]
+  },
+  "cron": {
+    "jobs": [
+      {
+        "name": "Memory Knowledge Extraction",
+        "schedule": "0 */6 * * *",
+        "description": "Reads workspace memory files and extracts structured facts into the knowledge graph using OpenAI. Runs in a background isolated session \u2014 no main session impact.",
+        "sessionTarget": "isolated",
+        "disableToOptOut": true,
+        "payload": {
+          "kind": "agentTurn",
+          "timeoutSeconds": 300
+        },
+        "delivery": {
+          "mode": "none"
+        },
+        "optIn": true
+      },
+      {
+        "name": "Memory Relation Discovery",
+        "schedule": "0 3 * * *",
+        "description": "Discovers semantic relationships between existing facts in the knowledge graph. Runs in a background isolated session \u2014 no main session impact.",
+        "sessionTarget": "isolated",
+        "disableToOptOut": true,
+        "payload": {
+          "kind": "agentTurn",
+          "timeoutSeconds": 300
+        },
+        "delivery": {
+          "mode": "none"
+        },
+        "optIn": true
+      }
+    ],
+    "note": "Both jobs run as ISOLATED agentTurn sessions with delivery:none. They never fire into the main agent session."
+  }
+}

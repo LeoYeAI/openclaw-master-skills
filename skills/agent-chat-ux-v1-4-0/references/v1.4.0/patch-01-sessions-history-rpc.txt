@@ -1,0 +1,193 @@
+diff --git a/src/gateway/protocol/index.ts b/src/gateway/protocol/index.ts
+index 98f1e0e52..66624b4ce 100644
+--- a/src/gateway/protocol/index.ts
++++ b/src/gateway/protocol/index.ts
+@@ -179,6 +179,8 @@ import {
+   SessionsResolveParamsSchema,
+   type SessionsUsageParams,
+   SessionsUsageParamsSchema,
++  type SessionsHistoryParams,
++  SessionsHistoryParamsSchema,
+   type ShutdownEvent,
+   ShutdownEventSchema,
+   type SkillsBinsParams,
+@@ -294,6 +296,8 @@ export const validateSessionsCompactParams = ajv.compile<SessionsCompactParams>(
+ );
+ export const validateSessionsUsageParams =
+   ajv.compile<SessionsUsageParams>(SessionsUsageParamsSchema);
++export const validateSessionsHistoryParams =
++  ajv.compile<SessionsHistoryParams>(SessionsHistoryParamsSchema);
+ export const validateConfigGetParams = ajv.compile<ConfigGetParams>(ConfigGetParamsSchema);
+ export const validateConfigSetParams = ajv.compile<ConfigSetParams>(ConfigSetParamsSchema);
+ export const validateConfigApplyParams = ajv.compile<ConfigApplyParams>(ConfigApplyParamsSchema);
+@@ -437,6 +441,7 @@ export {
+   SessionsDeleteParamsSchema,
+   SessionsCompactParamsSchema,
+   SessionsUsageParamsSchema,
++  SessionsHistoryParamsSchema,
+   ConfigGetParamsSchema,
+   ConfigSetParamsSchema,
+   ConfigApplyParamsSchema,
+@@ -583,6 +588,7 @@ export type {
+   SessionsDeleteParams,
+   SessionsCompactParams,
+   SessionsUsageParams,
++  SessionsHistoryParams,
+   CronJob,
+   CronListParams,
+   CronStatusParams,
+diff --git a/src/gateway/protocol/schema/sessions.ts b/src/gateway/protocol/schema/sessions.ts
+index 0b32ef862..2c0fe1975 100644
+--- a/src/gateway/protocol/schema/sessions.ts
++++ b/src/gateway/protocol/schema/sessions.ts
+@@ -121,3 +121,19 @@ export const SessionsUsageParamsSchema = Type.Object(
+   },
+   { additionalProperties: false },
+ );
++
++export const SessionsHistoryParamsSchema = Type.Object(
++  {
++    /** Session key to load history for. */
++    key: NonEmptyString,
++    /** Max messages to return (default 200, max 500). */
++    limit: Type.Optional(Type.Integer({ minimum: 1, maximum: 500 })),
++    /** Pagination offset (default 0). */
++    offset: Type.Optional(Type.Integer({ minimum: 0 })),
++    /** Text search filter (case-insensitive substring match). */
++    search: Type.Optional(Type.String()),
++    /** Filter by role(s). */
++    rolesFilter: Type.Optional(Type.Array(Type.String())),
++  },
++  { additionalProperties: false },
++);
+diff --git a/src/gateway/protocol/schema/types.ts b/src/gateway/protocol/schema/types.ts
+index ead66ca78..ac1848a9c 100644
+--- a/src/gateway/protocol/schema/types.ts
++++ b/src/gateway/protocol/schema/types.ts
+@@ -119,6 +119,7 @@ import type {
+   SessionsResetParamsSchema,
+   SessionsResolveParamsSchema,
+   SessionsUsageParamsSchema,
++  SessionsHistoryParamsSchema,
+ } from "./sessions.js";
+ import type { PresenceEntrySchema, SnapshotSchema, StateVersionSchema } from "./snapshot.js";
+ import type {
+@@ -167,6 +168,7 @@ export type SessionsResetParams = Static<typeof SessionsResetParamsSchema>;
+ export type SessionsDeleteParams = Static<typeof SessionsDeleteParamsSchema>;
+ export type SessionsCompactParams = Static<typeof SessionsCompactParamsSchema>;
+ export type SessionsUsageParams = Static<typeof SessionsUsageParamsSchema>;
++export type SessionsHistoryParams = Static<typeof SessionsHistoryParamsSchema>;
+ export type ConfigGetParams = Static<typeof ConfigGetParamsSchema>;
+ export type ConfigSetParams = Static<typeof ConfigSetParamsSchema>;
+ export type ConfigApplyParams = Static<typeof ConfigApplyParamsSchema>;
+diff --git a/src/gateway/server-methods/sessions.ts b/src/gateway/server-methods/sessions.ts
+index ffe69ba88..8689f739b 100644
+--- a/src/gateway/server-methods/sessions.ts
++++ b/src/gateway/server-methods/sessions.ts
+@@ -24,6 +24,7 @@ import {
+   validateSessionsPreviewParams,
+   validateSessionsResetParams,
+   validateSessionsResolveParams,
++  validateSessionsHistoryParams,
+ } from "../protocol/index.js";
+ import {
+   archiveFileOnDisk,
+@@ -498,4 +499,98 @@ export const sessionsHandlers: GatewayRequestHandlers = {
+       undefined,
+     );
+   },
++
++  "sessions.history": ({ params, respond }) => {
++    if (!assertValidParams(params, validateSessionsHistoryParams, "sessions.history", respond)) {
++      return;
++    }
++    const p = params;
++    const key = requireSessionKey(p.key, respond);
++    if (!key) return;
++
++    const cfg = loadConfig();
++    const storeTarget = resolveGatewaySessionStoreTarget({ cfg, key, scanLegacyKeys: false });
++    const store = loadSessionStore(storeTarget.storePath);
++    const target = resolveGatewaySessionStoreTarget({ cfg, key, store });
++    const entry = target.storeKeys.map((candidate) => store[candidate]).find(Boolean);
++
++    if (!entry?.sessionId) {
++      respond(true, { key, sessionId: "", agentId: target.agentId ?? "", total: 0, offset: 0, items: [] }, undefined);
++      return;
++    }
++
++    const candidates = resolveSessionTranscriptCandidates(
++      entry.sessionId,
++      target.storePath,
++      entry.sessionFile,
++      target.agentId,
++    );
++    const filePath = candidates.find((p) => fs.existsSync(p));
++    if (!filePath) {
++      respond(true, { key, sessionId: entry.sessionId, agentId: target.agentId ?? "", total: 0, offset: 0, items: [] }, undefined);
++      return;
++    }
++
++    const limit = Math.min(p.limit ?? 200, 500);
++    const offset = p.offset ?? 0;
++    const search = typeof p.search === "string" ? p.search.trim().toLowerCase() : "";
++    const rolesFilter = Array.isArray(p.rolesFilter) && p.rolesFilter.length > 0
++      ? new Set(p.rolesFilter.map((r: string) => r.toLowerCase()))
++      : null;
++
++    // Read full JSONL and extract messages
++    type HistoryItem = { role: string; text: string; timestamp: string };
++    const allItems: HistoryItem[] = [];
++    try {
++      const content = fs.readFileSync(filePath, "utf-8");
++      for (const line of content.split("\n")) {
++        if (!line.trim()) continue;
++        try {
++          const parsed = JSON.parse(line);
++          if (parsed?.type !== "message") continue;
++          const msg = parsed?.message;
++          if (!msg || typeof msg !== "object") continue;
++
++          const role: string = msg.role ?? "other";
++          let text = "";
++          if (typeof msg.content === "string") {
++            text = msg.content;
++          } else if (Array.isArray(msg.content)) {
++            text = msg.content
++              .filter((c: { type?: string }) => c?.type === "text")
++              .map((c: { text?: string }) => c?.text ?? "")
++              .join("\n");
++          }
++
++          const timestamp: string = parsed.timestamp ?? "";
++
++          // Apply filters
++          if (rolesFilter && !rolesFilter.has(role.toLowerCase())) continue;
++          if (search && !text.toLowerCase().includes(search)) continue;
++
++          allItems.push({ role, text, timestamp });
++        } catch {
++          // skip malformed lines
++        }
++      }
++    } catch {
++      respond(true, { key, sessionId: entry.sessionId, agentId: target.agentId ?? "", total: 0, offset: 0, items: [] }, undefined);
++      return;
++    }
++
++    const total = allItems.length;
++    const paged = allItems.slice(offset, offset + limit);
++    respond(
++      true,
++      {
++        key,
++        sessionId: entry.sessionId,
++        agentId: target.agentId ?? "",
++        total,
++        offset,
++        items: paged,
++      },
++      undefined,
++    );
++  },
+ };

@@ -1,0 +1,598 @@
+# Superfluid General Distribution Agreement (GDA) v1
+# Distributes tokens to many recipients through pool-based instant and streaming distributions.
+#
+# NOTE: emits/errors mappings are traced from source code — verify against implementation.
+# Proxy/upgradability functions (castrate, updateCode, getCodeAddress, proxiableUUID)
+# are omitted — they belong to the UUPSProxiable / AgreementBase layer.
+
+meta:
+  name: GeneralDistributionAgreementV1
+  version: v1
+  source:
+    - https://raw.githubusercontent.com/superfluid-org/protocol-monorepo/refs/heads/dev/packages/ethereum-contracts/contracts/agreements/gdav1/GeneralDistributionAgreementV1.sol
+    - https://raw.githubusercontent.com/superfluid-org/protocol-monorepo/refs/heads/dev/packages/ethereum-contracts/contracts/interfaces/agreements/gdav1/IGeneralDistributionAgreementV1.sol
+    - https://raw.githubusercontent.com/superfluid-org/protocol-monorepo/refs/heads/dev/packages/ethereum-contracts/contracts/agreements/AgreementBase.sol
+  implements: [IGeneralDistributionAgreementV1, ISuperAgreement]
+  inherits: [AgreementBase, TokenMonad]
+  deployments:
+    mainnet:
+      eth-mainnet: "0xAAdBB3Eee3Bd080f5353d86DdF1916aCA3fAC842"
+      polygon-mainnet: "0x961dd5A052741B49B6CBf6759591f9D8576fCFb0"
+      xdai-mainnet: "0xd7992D358A20478c82dDEd98B3D8A9da46e99b82"
+      base-mainnet: "0xfE6c87BE05feDB2059d2EC41bA0A09826C9FD7aa"
+      optimism-mainnet: "0x68Ae17fa7a31b86F306c383277552fd4813b0d35"
+      arbitrum-one: "0x1e299701792a2aF01408B122419d65Fd2dF0Ba02"
+      bsc-mainnet: "0x3bbFA4C406719424C7f66CD97A8Fe27Af383d3e2"
+      avalanche-c: "0xA7b197cD5b0cEF6d62c4A0a851E3581f5E62e4D2"
+      celo-mainnet: "0x308b7405272d11494716e30C6E972DbF6fb89555"
+      scroll-mainnet: "0x97a9f293d7eD13f3fbD499cE684Ed4F103295a28"
+      degenchain: "0x210a01ad187003603B2287F78579ec103Eb70D9B"
+    testnet:
+      avalanche-fuji: "0x51f571D934C59185f13d17301a36c07A2268B814"
+      base-sepolia: "0x53F4f44C813Dc380182d0b2b67fe5832A12B97f8"
+      eth-sepolia: "0x9823364056BcA85Dc3c4a3b96801314D082C8Eb9"
+      optimism-sepolia: "0xd453d38A001B47271488886532f1CCeAbf0c7eF3"
+      scroll-sepolia: "0x93fA9B627eE016990Fe5e654F923aaE8a480a75b"
+
+# == Abbreviations ==
+# 3Ps  — Three Periods: liquidation, patrician, and pleb (solvency model)
+# ACL  — Access Control List
+# ctx  — context (Superfluid call context bytes, carries msg.sender and userData)
+# GDA  — General Distribution Agreement
+# NFT  — Non-Fungible Token (Pool Admin NFT minted on pool creation)
+# PPP  — Patrician-Pleb-Pirate (the 3Ps solvency periods)
+
+# == Glossary ==
+# pool                  — a SuperfluidPool contract that splits distributions among members by units
+# pool admin            — the creator and controller of a pool; receives the adjustment flow
+# pool member           — an address holding units in a pool; receives proportional distributions
+# units                 — a member's share weight in a pool (uint128)
+# connected member      — a member whose distributions flow in real-time to their balance
+# disconnected member   — a member whose distributions accumulate and must be claimed manually
+# instant distribution  — a one-shot lump-sum distribution to all pool members
+# flow distribution     — a continuous per-second stream into a pool, split among members
+# adjustment flow       — the difference between the requested and actual flow rate, directed to admin
+# distributor           — the account sending tokens into the pool (from == ctx.msgSender)
+# autoconnect slots     — limited slots (max 4) for admins to connect members on their behalf
+# PoolConfig            — struct: { transferabilityForUnitsOwner: bool, distributionFromAnyAddress: bool }
+# PoolERC20Metadata     — struct: { name: string, symbol: string, decimals: uint8 }
+# buffer / deposit      — amount locked per flow distribution to protect against insolvency
+
+# == Pool Creation ==
+
+createPool:
+  # Deploy a new SuperfluidPool for the given token with default ERC20 metadata.
+  notes:
+    - "Gotcha: Mints a PoolAdminNFT to the admin. The admin cannot be address(0) or a pool."
+  mutability: nonpayable
+  inputs:
+    - token: address
+    - admin: address
+    - config:
+        type: tuple
+        components:
+          - transferabilityForUnitsOwner: bool  # if true, members can transfer units via ERC20
+          - distributionFromAnyAddress: bool    # if true, anyone can distribute; else admin only
+  outputs:
+    - pool: address
+  emits: [PoolCreated]
+  errors: [GDA_NO_ZERO_ADDRESS_ADMIN, GDA_ADMIN_CANNOT_BE_POOL]
+
+createPoolWithCustomERC20Metadata:
+  # Deploy a new SuperfluidPool with custom ERC20 name, symbol, and decimals.
+  # Identical to createPool but overrides the default ERC20 metadata.
+  mutability: nonpayable
+  inputs:
+    - token: address
+    - admin: address
+    - config:
+        type: tuple
+        components:
+          - transferabilityForUnitsOwner: bool
+          - distributionFromAnyAddress: bool
+    - poolERC20Metadata:
+        type: tuple
+        components:
+          - name: string
+          - symbol: string
+          - decimals: uint8
+  outputs:
+    - pool: address
+  emits: [PoolCreated]
+  errors: [GDA_NO_ZERO_ADDRESS_ADMIN, GDA_ADMIN_CANNOT_BE_POOL]
+
+# == Distribution Operations ==
+# Distribute tokens to pool members via instant or streaming distributions.
+# Functions with ctx are called through the Host's batchCall/forwardBatchCall.
+# The `from` address must equal ctx.msgSender — there is no ACL support for
+# distributing on behalf of others (unlike CFA operator flows).
+# If the pool's distributionFromAnyAddress is false, only the pool admin can distribute.
+
+distribute:
+  # Instant (lump-sum) distribution of tokens from `from` into the pool.
+  # Reverts if from != ctx.msgSender (no delegation).
+  notes:
+    - "Gotcha: Actual amount distributed may be less than requestedAmount due to rounding. The difference stays with `from`."
+  mutability: nonpayable
+  access: admin | anyone(if-pool-allows)
+  inputs:
+    - token: address
+    - from: address            # must equal ctx.msgSender
+    - pool: address
+    - requestedAmount: uint256
+    - ctx: bytes
+  outputs:
+    - newCtx: bytes
+  emits: [InstantDistributionUpdated]
+  errors: [GDA_ONLY_SUPER_TOKEN_POOL, GDA_DISTRIBUTE_FROM_ANY_ADDRESS_NOT_ALLOWED, GDA_DISTRIBUTE_FOR_OTHERS_NOT_ALLOWED, GDA_INSUFFICIENT_BALANCE]
+
+distributeFlow:
+  # Start or update a continuous flow distribution from `from` into the pool.
+  # Setting requestedFlowRate to 0 closes the flow. A third party can close a flow
+  # (from != ctx.msgSender) only when `from` is critical (liquidation).
+  # During liquidation, reward distribution follows the same 3Ps model as CFA.
+  # The pool config restriction is skipped when requestedFlowRate == 0 to allow
+  # liquidators to close critical flows regardless of pool config.
+  notes:
+    - "Gotcha: Actual flow rate may differ from requested due to integer division rounding (requestedFlowRate / totalUnits). The remainder does not stay in the pool — it is streamed to the pool admin as a continuous adjustment flow."
+    - "Gotcha: If requestedFlowRate < totalUnits, per-unit rate truncates to 0 and the entire flow goes to admin as adjustment."
+    - "Gotcha: Unit changes (updateMemberUnits) can only increase the adjustment flow (sticky), never decrease it. Re-call distributeFlow to reset the per-unit rate and adjustment flow."
+  mutability: nonpayable
+  access: admin | anyone(if-pool-allows) | anyone(if-liquidation)
+  inputs:
+    - token: address
+    - from: address            # must equal ctx.msgSender (except liquidation)
+    - pool: address
+    - requestedFlowRate: int96 # must be >= 0
+    - ctx: bytes
+  outputs:
+    - newCtx: bytes
+  emits: [FlowDistributionUpdated, BufferAdjusted]
+  errors: [GDA_ONLY_SUPER_TOKEN_POOL, GDA_NO_NEGATIVE_FLOW_RATE, GDA_DISTRIBUTE_FROM_ANY_ADDRESS_NOT_ALLOWED, GDA_DISTRIBUTE_FOR_OTHERS_NOT_ALLOWED, GDA_NON_CRITICAL_SENDER, GDA_INSUFFICIENT_BALANCE]
+
+# == Member Management ==
+# Manage pool members and claims through the Host.
+
+updateMemberUnits:
+  # Set a member's units in a pool. Only callable by the pool admin through the Host.
+  notes:
+    - "Gotcha: Delegates to the pool's updateMemberUnits, which also emits MemberUnitsUpdated and Transfer (mint/burn) from the SuperfluidPool contract."
+    - "Gotcha: Unit changes do NOT recompute the per-unit flow rate. If per-unit rate was truncated to 0 (totalUnits > requestedFlowRate), changing units won't fix it. The distributor must re-call distributeFlow to reset."
+  mutability: nonpayable
+  access: admin
+  inputs:
+    - untrustedPool: address
+    - memberAddress: address
+    - newUnits: uint128
+    - ctx: bytes
+  outputs:
+    - newCtx: bytes
+  errors: [GDA_NOT_POOL_ADMIN, SUPERFLUID_POOL_NO_POOL_MEMBERS, SUPERFLUID_POOL_NO_ZERO_ADDRESS]
+
+claimAll:
+  # Claim all pending distributions for a member from a disconnected pool membership.
+  # Can be called by anyone for any member.
+  mutability: nonpayable
+  access: anyone
+  inputs:
+    - untrustedPool: address
+    - memberAddress: address
+    - ctx: bytes
+  outputs:
+    - newCtx: bytes
+
+# == Pool Connectivity ==
+# Connect or disconnect accounts to pools. Connected members receive distributions
+# in real-time; disconnected members must claim manually.
+# connectPool/disconnectPool use ctx and are called through the Host.
+# setConnectPermission is called directly (no ctx).
+# Hard limit: 256 pool connections per account per token (SlotsBitmapLibrary bitmap).
+# The 4 autoconnect slots (tryConnectPoolFor) are a subset of the 256.
+
+connectPool:
+  # Connect ctx.msgSender to a pool so distributions flow in real-time.
+  # Anyone can call this; no check that the caller already holds units.
+  # Connecting is meaningful only when the caller has (or will receive) units.
+  notes:
+    - "Gotcha: Hard limit of 256 pool connections per account per token (SlotsBitmapLibrary bitmap). Each connection also increases gas cost of balanceOf/realtimeBalanceOf, which loops over all connected pools."
+  mutability: nonpayable
+  access: anyone  # connects ctx.msgSender only
+  inputs:
+    - pool: address
+    - ctx: bytes
+  outputs:
+    - newCtx: bytes
+  emits: [PoolConnectionUpdated]
+  errors: [GDA_ONLY_SUPER_TOKEN_POOL]
+
+tryConnectPoolFor:
+  # Attempt to connect a member to a pool on their behalf.
+  # Uses limited autoconnect slots (max 4 per member per token).
+  # Returns success=false (instead of reverting) if slots are exhausted or member has opted out.
+  notes:
+    - "Gotcha: Does not work if memberAddr is a pool or address(0)."
+  mutability: nonpayable
+  access: anyone
+  inputs:
+    - pool: address
+    - memberAddr: address
+    - ctx: bytes
+  outputs:
+    - success: bool
+    - newCtx: bytes
+  emits: [PoolConnectionUpdated]
+  errors: [GDA_CANNOT_CONNECT_POOL, GDA_ONLY_SUPER_TOKEN_POOL]
+
+disconnectPool:
+  # Disconnect ctx.msgSender from a pool. Future distributions will accumulate
+  # and must be claimed manually via claimAll.
+  mutability: nonpayable
+  access: anyone  # disconnects ctx.msgSender only
+  inputs:
+    - pool: address
+    - ctx: bytes
+  outputs:
+    - newCtx: bytes
+  emits: [PoolConnectionUpdated]
+  errors: [GDA_ONLY_SUPER_TOKEN_POOL]
+
+setConnectPermission:
+  # Allow or deny third parties from connecting the caller to pools via tryConnectPoolFor.
+  # By default, third-party connections are allowed.
+  # Uses the Host's SimpleACL to grant/revoke ACL_POOL_CONNECT_EXCLUSIVE_ROLE.
+  notes:
+    - "Gotcha: Called directly — not through the Host (no ctx parameter)."
+  mutability: nonpayable
+  access: anyone  # sets caller's own permission
+  inputs:
+    - allow: bool              # true = allow (default), false = deny autoconnect
+
+# == Distribution Queries ==
+
+realtimeBalanceOf:
+  # Compute the real-time GDA balance contribution for an account.
+  # For regular accounts: returns the universal index RTB plus unsettled values
+  # from all connected pools.
+  # For pool accounts: returns the disconnected members' pending balance.
+  notes:
+    - "Gotcha: Returns only the GDA portion of the balance, not the total. Use SuperToken.realtimeBalanceOfNow for the full balance."
+    - "Gotcha: The returned rtb is a delta, not an absolute balance. It includes unsettled connected pool distributions."
+    - "Gotcha: Gas cost scales linearly with connected pools — each triggers an external call to getUnsettledValue. At high counts (approaching 256 limit), queries become expensive."
+  mutability: view
+  inputs:
+    - token: address
+    - account: address
+    - time: uint256
+  outputs:
+    - rtb: int256              # real-time balance delta
+    - buf: uint256             # total buffer (deposit) held
+    - owedBuffer: uint256      # always 0 for GDA (no owed deposit concept)
+
+realtimeBalanceOfNow:
+  # Convenience wrapper around realtimeBalanceOf using block.timestamp.
+  mutability: view
+  inputs:
+    - token: address
+    - account: address
+  outputs:
+    - availableBalance: int256
+    - buffer: uint256
+    - owedBuffer: uint256
+    - timestamp: uint256
+
+getNetFlow:
+  # Net GDA flow rate for an account. Includes incoming flows from connected pools
+  # and, for pool accounts, the disconnected members' flow rate.
+  mutability: view
+  inputs:
+    - token: address
+    - account: address
+  outputs:
+    - netFlowRate: int96
+
+getFlowRate:
+  # Flow rate from a distributor to a specific pool.
+  mutability: view
+  inputs:
+    - token: address
+    - from: address
+    - to: address              # the pool
+  outputs:
+    - int96
+
+getFlow:
+  # Full flow data from a distributor to a pool.
+  mutability: view
+  inputs:
+    - token: address
+    - from: address
+    - to: address              # the pool
+  outputs:
+    - lastUpdated: uint256
+    - flowRate: int96
+    - deposit: uint256
+
+getAccountFlowInfo:
+  # Aggregated GDA flow state for an account across all its distribution flows.
+  mutability: view
+  inputs:
+    - token: address
+    - account: address
+  outputs:
+    - timestamp: uint256       # last update time
+    - flowRate: int96          # net flow rate
+    - deposit: uint256         # total buffer across all flows
+
+# == Estimation ==
+# Optimistic estimates of actual distribution amounts and flow rates.
+# NOTE: These are only precise within an atomic transaction.
+# DO NOT rely on these if querying off-chain.
+
+estimateFlowDistributionActualFlowRate:
+  # Estimate the actual flow rate for a given request based on current pool state.
+  # actualFlowRate = floor(requestedFlowRate / totalUnits) * totalUnits.
+  # The initial adjustment flow is requestedFlowRate - actualFlowRate (small rounding remainder).
+  # NOTE: After unit changes, the actual adjustment flow may be higher due to sticky behavior.
+  notes:
+    - "Gotcha: Only precise in an atomic transaction — do not rely on off-chain queries."
+  mutability: view
+  inputs:
+    - token: address
+    - from: address
+    - to: address              # the pool
+    - requestedFlowRate: int96
+  outputs:
+    - actualFlowRate: int96
+    - totalDistributionFlowRate: int96
+
+estimateDistributionActualAmount:
+  # Estimate the actual distributed amount for a given requested amount.
+  notes:
+    - "Gotcha: Only precise in an atomic transaction — do not rely on off-chain queries."
+  mutability: view
+  inputs:
+    - token: address
+    - from: address
+    - to: address              # the pool
+    - requestedAmount: uint256
+  outputs:
+    - actualAmount: uint256
+
+# == Pool Info Queries ==
+
+isPool:
+  # Check whether an address is a registered SuperfluidPool for the given token.
+  mutability: view
+  inputs:
+    - token: address
+    - account: address
+  outputs:
+    - bool
+
+isMemberConnected:
+  # Check whether a member is connected to a pool.
+  notes:
+    - "Gotcha: Returns false for invalid pools (never reverts)."
+  mutability: view
+  inputs:
+    - pool: address
+    - member: address
+  outputs:
+    - bool
+
+getPoolAdjustmentFlowRate:
+  # Get the adjustment flow rate for a pool (the flow going to the pool admin).
+  mutability: view
+  inputs:
+    - pool: address
+  outputs:
+    - int96
+
+getPoolAdjustmentFlowInfo:
+  # Get full adjustment flow info: recipient (always admin), flow hash, and flow rate.
+  mutability: view
+  inputs:
+    - pool: address
+  outputs:
+    - recipient: address
+    - flowHash: bytes32
+    - flowRate: int96
+
+# == Solvency Queries ==
+
+isPatricianPeriodNow:
+  # Check patrician period status using the Host's current timestamp.
+  mutability: view
+  inputs:
+    - token: address
+    - account: address
+  outputs:
+    - isCurrentlyPatricianPeriod: bool
+    - timestamp: uint256
+
+isPatricianPeriod:
+  # Check patrician period status at a specific timestamp.
+  mutability: view
+  inputs:
+    - token: address
+    - account: address
+    - timestamp: uint256
+  outputs:
+    - bool
+
+# == Pool-Only Operations ==
+# Can only be called by legitimate pool contracts (msg.sender must be a pool
+# registered with the token via isPool). These are internal protocol plumbing.
+
+appendIndexUpdateByPool:
+  # Called by a pool after a member unit update to propagate the index change
+  # and adjust the pool's adjustment flow rate.
+  # NOTE: Recomputes the adjustment flow using the existing per-unit rate in the pool
+  # index — does NOT recompute the per-unit rate itself from the distributor's requested
+  # flow rate. This is why unit changes can't recover a distribution that was truncated to 0.
+  mutability: nonpayable
+  access: pool
+  inputs:
+    - token: address
+    - p:
+        type: tuple
+        components:
+          - _settled_at: uint32
+          - _flow_rate: int128
+          - _settled_value: int256
+    - t: uint32
+  outputs:
+    - bool
+  errors: [GDA_ONLY_SUPER_TOKEN_POOL]
+
+poolSettleClaim:
+  # Called by a pool to settle a claim for a member, shifting value from pool to recipient.
+  mutability: nonpayable
+  access: pool
+  inputs:
+    - token: address
+    - claimRecipient: address
+    - amount: int256
+  outputs:
+    - bool
+  errors: [GDA_ONLY_SUPER_TOKEN_POOL]
+
+# == Protocol Constants ==
+
+agreementType:
+  # Returns keccak256("org.superfluid-finance.agreements.GeneralDistributionAgreement.v1")
+  mutability: pure
+  outputs:
+    - bytes32
+
+superfluidPoolBeacon:
+  # Address of the UpgradeableBeacon for SuperfluidPool implementation.
+  mutability: view
+  outputs:
+    - address
+
+MAX_POOL_AUTO_CONNECT_SLOTS:
+  # Maximum autoconnect slots per member per token: 4.
+  # This is a subset of the 256-slot bitmap (see SLOTS_BITMAP_LIBRARY_ADDRESS).
+  # Self-connections via connectPool are not limited by this — only by the
+  # 256 bitmap ceiling.
+  mutability: view
+  outputs:
+    - uint32
+
+ACL_POOL_CONNECT_EXCLUSIVE_ROLE:
+  # keccak256("ACL_POOL_CONNECT_EXCLUSIVE_ROLE") — role used to opt out of autoconnect.
+  mutability: view
+  outputs:
+    - bytes32
+
+SLOTS_BITMAP_LIBRARY_ADDRESS:
+  # Address of the SlotsBitmapLibrary used for pool connection tracking.
+  mutability: view
+  outputs:
+    - address
+
+SUPERFLUID_POOL_DEPLOYER_ADDRESS:
+  # Address of the SuperfluidPoolDeployerLibrary.
+  mutability: view
+  outputs:
+    - address
+
+# == Events ==
+
+events:
+  PoolCreated:
+    # Emitted when a new pool is created via createPool or createPoolWithCustomERC20Metadata.
+    indexed:
+      - token: address
+      - admin: address
+    data:
+      - pool: address
+
+  InstantDistributionUpdated:
+    # Emitted on instant (lump-sum) distributions.
+    indexed:
+      - token: address
+      - pool: address
+      - distributor: address
+    data:
+      - operator: address        # ctx.msgSender
+      - requestedAmount: uint256
+      - actualAmount: uint256    # may be less than requested due to rounding
+      - userData: bytes
+
+  FlowDistributionUpdated:
+    # Emitted on create, update, or delete of a flow distribution.
+    indexed:
+      - token: address
+      - pool: address
+      - distributor: address
+    data:
+      - operator: address        # ctx.msgSender
+      - oldFlowRate: int96
+      - newDistributorToPoolFlowRate: int96
+      - newTotalDistributionFlowRate: int96
+      - adjustmentFlowRecipient: address
+      - adjustmentFlowRate: int96
+      - userData: bytes
+
+  PoolConnectionUpdated:
+    # Emitted when a member connects to or disconnects from a pool.
+    indexed:
+      - token: address
+      - pool: address
+      - account: address
+    data:
+      - connected: bool
+      - userData: bytes
+
+  BufferAdjusted:
+    # Emitted when a flow distribution's buffer (deposit) changes.
+    indexed:
+      - token: address
+      - pool: address
+      - from: address
+    data:
+      - bufferDelta: int256
+      - newBufferAmount: uint256
+      - totalBufferAmount: uint256
+
+  # Inherited events (from AgreementBase / UUPSProxiable):
+  # CodeUpdated — emitted on proxy upgrade (uuid, codeAddress)
+  # Initialized — emitted on proxy initialization (version)
+
+# == Errors ==
+
+errors:
+  # Pool creation
+  - GDA_ADMIN_CANNOT_BE_POOL       # admin address is itself a pool
+  - GDA_NO_ZERO_ADDRESS_ADMIN      # admin is address(0)
+  # Distribution
+  - GDA_DISTRIBUTE_FOR_OTHERS_NOT_ALLOWED   # from != ctx.msgSender (no ACL)
+  - GDA_DISTRIBUTE_FROM_ANY_ADDRESS_NOT_ALLOWED  # pool restricts to admin only
+  - GDA_NO_NEGATIVE_FLOW_RATE      # requestedFlowRate < 0
+  # Solvency
+  - GDA_INSUFFICIENT_BALANCE       # distributor cannot cover deposit or distribution
+  - GDA_NON_CRITICAL_SENDER        # third-party close but sender is solvent
+  - GDA_FLOW_DOES_NOT_EXIST
+  # Pool membership / ACL
+  - GDA_NOT_POOL_ADMIN             # caller is not the pool admin
+  - GDA_ONLY_SUPER_TOKEN_POOL      # address is not a registered pool
+  - GDA_CANNOT_CONNECT_POOL        # memberAddr is address(0) or a pool
+  # Super App / Host
+  - AGREEMENT_BASE_ONLY_HOST       # call not routed through the Host contract
+  # SafeCast (inherited from OpenZeppelin)
+  - SafeCastOverflowedIntDowncast:
+      inputs:
+        - bits: uint8
+        - value: int256
+  - SafeCastOverflowedIntToUint:
+      inputs:
+        - value: int256
+  - SafeCastOverflowedUintDowncast:
+      inputs:
+        - bits: uint8
+        - value: uint256
+  - SafeCastOverflowedUintToInt:
+      inputs:
+        - value: uint256

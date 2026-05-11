@@ -1,0 +1,67 @@
+diff --git a/ui/src/ui/views/agents-utils.ts b/ui/src/ui/views/agents-utils.ts
+index f4f604c5a..03d8b6600 100644
+--- a/ui/src/ui/views/agents-utils.ts
++++ b/ui/src/ui/views/agents-utils.ts
+@@ -372,6 +372,62 @@ export type ModelInfo = {
+   contextWindow?: number;
+ };
+ 
++export function buildModelOptionsMulti(
++  configForm: Record<string, unknown> | null,
++  selected: string[],
++  availableModels?: ModelInfo[],
++) {
++  if (availableModels && availableModels.length > 0) {
++    const providerGroups = new Map<string, ModelInfo[]>();
++    for (const model of availableModels) {
++      const group = providerGroups.get(model.provider) || [];
++      group.push(model);
++      providerGroups.set(model.provider, group);
++    }
++    const priorityProviders = ["anthropic", "openai", "google", "mistral", "cohere"];
++    const sortedProviders = [...providerGroups.keys()].toSorted((a, b) => {
++      const aIdx = priorityProviders.indexOf(a.toLowerCase());
++      const bIdx = priorityProviders.indexOf(b.toLowerCase());
++      if (aIdx !== -1 && bIdx !== -1) return aIdx - bIdx;
++      if (aIdx !== -1) return -1;
++      if (bIdx !== -1) return 1;
++      return a.localeCompare(b);
++    });
++    return sortedProviders.map(
++      (provider) => html`
++        <optgroup label="${provider}">
++          ${(providerGroups.get(provider) ?? []).map((m) => {
++            const value = `${m.provider}/${m.id}`;
++            const ctxLabel = m.contextWindow ? ` (${Math.round(m.contextWindow / 1000)}k ctx)` : "";
++            const label = (m.name || m.id) + ctxLabel;
++            return html`
++              <option value="${value}" ?selected=${selected.includes(value)}>
++                ${label}
++              </option>
++            `;
++          })}
++        </optgroup>
++      `,
++    );
++  }
++  const options = resolveConfiguredModels(configForm);
++  for (const s of selected) {
++    if (s && !options.some((o) => o.value === s)) {
++      options.unshift({ value: s, label: `Current (${s})` });
++    }
++  }
++  if (options.length === 0) {
++    return html`<option value="" disabled>No configured models</option>`;
++  }
++  return options.map(
++    (option) => html`
++      <option value=${option.value} ?selected=${selected.includes(option.value)}>
++        ${option.label}
++      </option>
++    `,
++  );
++}
++
+ export function buildModelOptions(
+   configForm: Record<string, unknown> | null,
+   current?: string | null,

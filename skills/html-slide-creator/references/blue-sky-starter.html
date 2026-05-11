@@ -1,0 +1,629 @@
+<!DOCTYPE html>
+<!--
+  ╔══════════════════════════════════════════════════════════════════════╗
+  ║  BLUE SKY STARTER TEMPLATE — slide-creator v1.4                     ║
+  ║                                                                      ║
+  ║  HOW TO USE THIS FILE:                                               ║
+  ║  1. Set --slide-count in :root to your actual slide count            ║
+  ║  2. Add your <section class="slide"> elements inside #track          ║
+  ║  3. Fill the orbPositions array in JS (one entry per slide)          ║
+  ║  4. Do NOT modify the visual system CSS — it is complete as-is       ║
+  ║                                                                      ║
+  ║  All 10 Blue Sky signature elements are pre-built:                   ║
+  ║  ✓ Sky gradient background                                           ║
+  ║  ✓ SVG noise texture overlay                                         ║
+  ║  ✓ 40px tech grid with radial mask                                   ║
+  ║  ✓ 3 animated ambient orbs (reposition per slide via JS)             ║
+  ║  ✓ Glassmorphism cards (.g)                                          ║
+  ║  ✓ Gradient headline text (.gt)                                      ║
+  ║  ✓ Spring-physics horizontal track transitions                       ║
+  ║  ✓ Pill pagination dots                                              ║
+  ║  ✓ Cloud hero effect (use class="slide cover" on title slide)        ║
+  ║  ✓ Slide counter (top-left, auto-set by JS)                          ║
+  ╚══════════════════════════════════════════════��═══════════════════════╝
+-->
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title><!-- FILL: Presentation Title --></title>
+<style>
+
+/* ═══════════════════════════════════════════════
+   STEP 1 — Set slide count. Change nothing else.
+   ═══════════════════════════════════════════════ */
+:root {
+  --slide-count: 10; /* ← CHANGE THIS to your actual number of slides */
+}
+
+/* ═══════════════════════════════════════════════
+   BLUE SKY DESIGN TOKENS — do not modify
+   ═══════════════════════════════════════════════ */
+:root {
+  /* Palette */
+  --bg-from:        #f0f9ff;
+  --bg-to:          #e0f2fe;
+  --card-bg:        rgba(255, 255, 255, 0.70);
+  --card-border:    rgba(255, 255, 255, 0.90);
+  --text-primary:   #0f172a;
+  --text-secondary: #334155;
+  --text-muted:     #64748b;
+  --accent-blue:    #2563eb;
+  --accent-sky:     #0ea5e9;
+  --accent-indigo:  #4f46e5;
+  --gradient-text:  linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+  --grid-color:     rgba(14, 165, 233, 0.06);
+
+  /* Orb colors */
+  --orb1-color: rgba(96,  165, 250, 0.35);
+  --orb2-color: rgba(99,  102, 241, 0.25);
+  --orb3-color: rgba(14,  165, 233, 0.30);
+
+  /* Semantic callouts */
+  --amber:     #f59e0b;
+  --amber-bg:  rgba(251, 191,  36, 0.12);
+  --red:       #ef4444;
+  --red-bg:    rgba(239,  68,  68, 0.10);
+  --green:     #10b981;
+  --green-bg:  rgba( 16, 185, 129, 0.10);
+}
+
+/* ═══════════════════════════════════════════════
+   RESET
+   ═══════════════════════════════════════════════ */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { width: 100%; height: 100%; overflow: hidden;
+  font-family: 'PingFang SC', 'Microsoft YaHei', system-ui, sans-serif;
+  background: linear-gradient(160deg, var(--bg-from), var(--bg-to));
+}
+
+/* ═══════════════════════════════════════════════
+   SIGNATURE ELEMENT 1 — Noise texture overlay
+   ═══════════════════════════════════════════════ */
+body::before {
+  content: ''; position: fixed; inset: 0; pointer-events: none; z-index: 0;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+}
+
+/* ═══════════════════════════════════════════════
+   SIGNATURE ELEMENT 2 — 40px tech grid
+   ═══════════════════════════════════════════════ */
+body::after {
+  content: ''; position: fixed; inset: 0; pointer-events: none; z-index: 0;
+  background-image:
+    linear-gradient(var(--grid-color) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid-color) 1px, transparent 1px);
+  background-size: 40px 40px;
+  -webkit-mask-image: radial-gradient(ellipse 70% 70% at 50% 50%, black 40%, transparent 100%);
+  mask-image:         radial-gradient(ellipse 70% 70% at 50% 50%, black 40%, transparent 100%);
+}
+
+/* ═══════════════════════════════════════════════
+   SIGNATURE ELEMENT 3 — Ambient orbs
+   Positions are controlled per-slide via JS orbPositions array.
+   ═══════════════════════════════════════════════ */
+.orb {
+  position: fixed; border-radius: 50%; pointer-events: none; z-index: 0;
+  filter: blur(80px);
+  transition: top 1.2s cubic-bezier(0.22,1,0.36,1),
+              left 1.2s cubic-bezier(0.22,1,0.36,1),
+              width 1.2s cubic-bezier(0.22,1,0.36,1),
+              height 1.2s cubic-bezier(0.22,1,0.36,1);
+}
+#orb1 { background: var(--orb1-color); }
+#orb2 { background: var(--orb2-color); }
+#orb3 { background: var(--orb3-color); }
+
+/* ═══════════════════════════════════════════════
+   SIGNATURE ELEMENT 4 — Horizontal spring track
+   CRITICAL: track = 100vw × N, slide = 100vw each.
+   Never use calc(100vw / N) for slide width.
+   ═══════════════════════════════════════════════ */
+#stage {
+  position: fixed; inset: 0; overflow: hidden; z-index: 1;
+}
+#track {
+  display: flex;
+  width: calc(100vw * var(--slide-count));
+  height: 100%;
+  transition: transform 0.7s cubic-bezier(0.22, 1, 0.36, 1); /* spring feel */
+  will-change: transform;
+}
+.slide {
+  width: 100vw;          /* each slide = one full viewport */
+  flex-shrink: 0;
+  height: 100vh;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  padding: clamp(28px, 4vw, 56px) clamp(32px, 5vw, 80px);
+  position: relative; overflow: hidden;
+}
+
+/* ═══════════════════════════════════════════════
+   SIGNATURE ELEMENT 5 — Glassmorphism card (.g)
+   ═══════════════════════════════════════════════ */
+.g {
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 20px;
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  box-shadow: 0 8px 32px rgba(14,165,233,0.10), 0 1px 0 rgba(255,255,255,0.8) inset;
+}
+
+/* ═══════════════════════════════════════════════
+   SIGNATURE ELEMENT 6 — Gradient headline (.gt)
+   ═══════════════════════════════════════════════ */
+.gt {
+  background: var(--gradient-text);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ═══════════════════════════════════════════════
+   SIGNATURE ELEMENT 7 — Cloud hero (cover slide)
+   Add class="slide cover" on your title slide.
+   ═══════════════════════════════════════════════ */
+.cloud {
+  position: absolute; border-radius: 50%; pointer-events: none;
+  filter: blur(60px);
+  animation: cloud-drift 8s ease-in-out infinite;
+}
+@keyframes cloud-drift {
+  0%, 100% { transform: translateY(0) scale(1); }
+  50%       { transform: translateY(-20px) scale(1.05); }
+}
+
+/* ═══════════════════════════════════════════════
+   SIGNATURE ELEMENT 8 — Pill pagination dots
+   Built by JS — do not duplicate in HTML.
+   ═══════════════════════════════════════════════ */
+#nav-dots {
+  position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
+  display: flex; gap: 8px; align-items: center; z-index: 10;
+}
+.dot {
+  height: 6px; border-radius: 999px; cursor: pointer; border: none;
+  background: rgba(147,197,253,0.5);
+  transition: background 0.4s, width 0.4s;
+  width: 6px;
+}
+.dot.active { background: #2563eb; width: 28px; }
+
+/* ═══════════════════════════════════════════════
+   SLIDE COUNTER (top-left, set by JS)
+   ═══════════════════════════════════════════════ */
+#slide-counter {
+  position: fixed; top: 24px; left: 36px; z-index: 10;
+  font-size: 12px; font-weight: 700; letter-spacing: 0.1em;
+  color: var(--text-muted);
+  font-family: 'SF Mono', 'Fira Code', monospace;
+}
+
+/* ═══════════════════════════════════════════════
+   TYPOGRAPHY SCALE
+   ═══════════════════════════════════════════════ */
+h1 { font-size: clamp(2.2rem, 5.5vw, 4.5rem); font-weight: 800; line-height: 1.1; }
+h2 { font-size: clamp(1.6rem, 3.5vw, 2.6rem);  font-weight: 700; line-height: 1.2; }
+h3 { font-size: clamp(1.0rem, 2.0vw, 1.5rem);  font-weight: 700; line-height: 1.3; }
+h4 { font-size: clamp(0.9rem, 1.6vw, 1.2rem);  font-weight: 600; }
+p, li { font-size: clamp(0.82rem, 1.4vw, 1.05rem); line-height: 1.6; color: var(--text-secondary); }
+
+/* ═══════════════════════════════════════════════
+   LAYOUT HELPERS
+   ═══════════════════════════════════════════════ */
+.cols2 { display: grid; grid-template-columns: 1fr 1fr;         gap: 16px; width: 100%; }
+.cols3 { display: grid; grid-template-columns: 1fr 1fr 1fr;     gap: 14px; width: 100%; }
+.cols4 { display: grid; grid-template-columns: repeat(4, 1fr);  gap: 12px; width: 100%; }
+
+/* Divider accent line */
+.divider {
+  width: 56px; height: 3px; border-radius: 2px;
+  background: linear-gradient(90deg, #2563eb, #0ea5e9);
+  margin: 8px 0 14px;
+}
+
+/* ═══════════════════════════════════════════════
+   CHAPTER SLIDE HELPER
+   Use <section class="slide chapter"> for section breaks.
+   ═══════════════════════════════════════════════ */
+.slide.chapter {
+  background: linear-gradient(135deg, rgba(219,234,254,0.7), rgba(224,242,254,0.9));
+  text-align: center;
+}
+.chapter-num {
+  font-size: clamp(5rem, 14vw, 11rem); font-weight: 900; line-height: 1;
+  background: linear-gradient(135deg, rgba(37,99,235,0.15), rgba(14,165,233,0.28));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: -16px; /* overlap with title below */
+}
+
+/* ═══════════════════════════════════════════════
+   CONTENT COMPONENTS
+   ═══════════════════════════════════════════════ */
+
+/* Pill badge */
+.pill {
+  display: inline-flex; align-items: center;
+  padding: 4px 14px; border-radius: 999px;
+  font-size: 12px; font-weight: 600; letter-spacing: 0.05em;
+  background: rgba(37,99,235,0.10); color: var(--accent-blue);
+  border: 1px solid rgba(37,99,235,0.20);
+}
+
+/* Big stat number */
+.stat {
+  font-size: clamp(2.8rem, 7vw, 5.5rem); font-weight: 900; line-height: 1;
+  background: var(--gradient-text);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Bullet list */
+ul.bl { list-style: none; padding: 0; display: flex; flex-direction: column; gap: 7px; }
+ul.bl li { display: flex; align-items: flex-start; gap: 8px; color: var(--text-secondary); }
+ul.bl li::before { content: '▸'; color: var(--accent-sky); flex-shrink: 0; margin-top: 2px; }
+
+/* Step circle */
+.step {
+  width: 34px; height: 34px; border-radius: 50%; flex-shrink: 0;
+  background: linear-gradient(135deg, #2563eb, #0ea5e9);
+  display: flex; align-items: center; justify-content: center;
+  color: #fff; font-weight: 800; font-size: 0.88rem;
+}
+
+/* Comparison table */
+.ctable { width: 100%; border-collapse: collapse; font-size: 0.86rem; }
+.ctable th { background: rgba(37,99,235,0.10); color: var(--accent-blue); font-weight: 700; padding: 10px 14px; text-align: left; }
+.ctable td { padding: 9px 14px; border-bottom: 1px solid rgba(14,165,233,0.12); vertical-align: top; }
+.ctable tr:last-child td { border-bottom: none; }
+
+/* Semantic callout — A公司 / practice */
+.co {
+  background: var(--amber-bg);
+  border: 1px solid rgba(245,158,11,0.28);
+  border-left: 4px solid var(--amber);
+  border-radius: 12px; padding: 12px 16px;
+  font-size: 0.84rem; color: var(--text-secondary); line-height: 1.6;
+}
+.co strong { color: #92400e; }
+
+/* Warning callout */
+.warn {
+  background: var(--red-bg);
+  border: 1px solid rgba(239,68,68,0.22);
+  border-left: 4px solid var(--red);
+  border-radius: 12px; padding: 12px 16px;
+  font-size: 0.84rem; color: var(--text-secondary); line-height: 1.6;
+}
+.warn strong { color: #b91c1c; }
+
+/* Info callout (blue) */
+.info {
+  background: rgba(37,99,235,0.07);
+  border: 1px solid rgba(37,99,235,0.20);
+  border-left: 4px solid var(--accent-blue);
+  border-radius: 12px; padding: 12px 16px;
+  font-size: 0.84rem; color: var(--text-secondary); line-height: 1.6;
+}
+
+/* Layer row (for org levels, timelines, etc.) */
+.layer {
+  display: flex; align-items: flex-start; gap: 14px;
+  padding: 12px 16px; border-radius: 12px;
+  background: rgba(255,255,255,0.60);
+  border: 1px solid rgba(255,255,255,0.90);
+  border-left: 4px solid var(--accent-sky);
+}
+.layer .ln { font-size: 1.1rem; font-weight: 800; color: var(--accent-blue); min-width: 32px; }
+
+/* ═══════════════════════════════════════════════
+   ENTRANCE ANIMATION
+   ═══════════════════════════════════════════════ */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(22px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.slide.active > * { animation: fadeUp 0.5s cubic-bezier(0.22,1,0.36,1) both; }
+.slide.active > *:nth-child(2) { animation-delay: 0.06s; }
+.slide.active > *:nth-child(3) { animation-delay: 0.12s; }
+.slide.active > *:nth-child(4) { animation-delay: 0.18s; }
+.slide.active > *:nth-child(5) { animation-delay: 0.24s; }
+.slide.active > *:nth-child(6) { animation-delay: 0.30s; }
+
+/* ═══════════════════════════════════════════════
+   REDUCED MOTION
+   ═══════════════════════════════════════════════ */
+@media (prefers-reduced-motion: reduce) {
+  #track, .orb, .cloud { transition: none !important; animation: none !important; }
+}
+
+</style>
+</head>
+<body>
+
+<!-- Ambient orbs — positions set per-slide by JS -->
+<div class="orb" id="orb1"></div>
+<div class="orb" id="orb2"></div>
+<div class="orb" id="orb3"></div>
+
+<!-- Slide counter -->
+<div id="slide-counter">01 / 10</div>
+
+<!-- Pagination dots (built by JS) -->
+<div id="nav-dots"></div>
+
+<!-- ═══════════════════════════════════════════════════════
+     SLIDE STAGE — spring-physics horizontal track
+     ═══════════════════════════════════════════════════════ -->
+<div id="stage">
+<div id="track">
+
+  <!--
+  ═══════════════════════════════════════════════════════════
+  SLIDE EXAMPLES — replace with your actual content
+  Follow these patterns for each slide type.
+  ═══════════════════════════════════════════════════════════
+
+  ── SLIDE TYPE: Cover ───────────────────────────────────────
+  <section class="slide cover">
+    Add .cloud divs for the cloud hero effect:
+    <div class="cloud" style="width:480px;height:480px;background:rgba(147,197,253,0.4);top:-180px;left:-80px;animation-duration:9s;"></div>
+    <div class="cloud" style="width:360px;height:360px;background:rgba(196,233,251,0.45);bottom:-120px;right:-60px;animation-duration:11s;animation-delay:-3s;"></div>
+
+    Content centered:
+    <span class="pill">Category Label</span>
+    <h1 class="gt">Main Title</h1>
+    <p style="color:var(--text-secondary);">Subtitle text</p>
+    Stat row (optional):
+    <div style="display:flex;gap:20px;">
+      <div class="g" style="padding:18px 24px;text-align:center;">
+        <div class="stat">80%</div>
+        <p>Label</p>
+      </div>
+    </div>
+  </section>
+
+  ── SLIDE TYPE: Chapter break ────────────────────────────────
+  <section class="slide chapter">
+    <div class="chapter-num">01</div>
+    <h2 class="gt">Chapter Title</h2>
+    <div class="divider" style="margin:14px auto;"></div>
+    <p style="color:var(--text-secondary);">Subtitle</p>
+  </section>
+
+  ── SLIDE TYPE: Content (bullets + callout) ──────────────────
+  <section class="slide">
+    <div style="max-width:820px;width:100%;">
+      <h2 class="gt">Slide Title</h2>
+      <div class="divider"></div>
+      <div class="g" style="padding:20px 24px;">
+        <ul class="bl">
+          <li>Point one</li>
+          <li>Point two</li>
+          <li>Point three</li>
+        </ul>
+      </div>
+      <div class="co" style="margin-top:12px;">
+        <strong>Practice note:</strong> Example text here.
+      </div>
+    </div>
+  </section>
+
+  ── SLIDE TYPE: Two-column ───────────────────────────────────
+  <section class="slide">
+    <div style="max-width:880px;width:100%;">
+      <h2 class="gt">Slide Title</h2>
+      <div class="divider"></div>
+      <div class="cols2">
+        <div class="g" style="padding:20px;">
+          <h3>Left heading</h3>
+          <ul class="bl"><li>Item</li></ul>
+        </div>
+        <div class="g" style="padding:20px;">
+          <h3>Right heading</h3>
+          <ul class="bl"><li>Item</li></ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  ── SLIDE TYPE: Comparison table ─────────────────────────────
+  <section class="slide">
+    <div style="max-width:860px;width:100%;">
+      <h2 class="gt">Slide Title</h2>
+      <div class="divider"></div>
+      <div class="g" style="padding:0;overflow:hidden;">
+        <table class="ctable">
+          <thead><tr><th>Column A</th><th>Column B</th><th>Column C</th></tr></thead>
+          <tbody>
+            <tr><td>Cell</td><td>Cell</td><td>Cell</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  ── SLIDE TYPE: Stats grid ───────────────────────────────────
+  <section class="slide">
+    <div style="max-width:820px;width:100%;">
+      <h2 class="gt">Slide Title</h2>
+      <div class="divider"></div>
+      <div class="cols3">
+        <div class="g" style="padding:20px;text-align:center;">
+          <div class="stat">3×</div>
+          <p>Label</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  ── SLIDE TYPE: Closing / end card ───────────────────────────
+  <section class="slide cover">
+    <div class="cloud" style="width:400px;height:400px;background:rgba(147,197,253,0.3);top:-140px;right:-80px;animation-duration:10s;"></div>
+    <div style="text-align:center;max-width:720px;">
+      <h2 class="gt">Closing message</h2>
+      <div class="g" style="padding:28px 36px;margin-top:20px;">
+        <p>Key takeaway text.</p>
+      </div>
+    </div>
+  </section>
+  -->
+
+  <!-- ═══ REPLACE EVERYTHING ABOVE WITH YOUR ACTUAL SLIDES ═══ -->
+
+  <!-- Example Slide 1 — Cover -->
+  <section class="slide cover">
+    <div class="cloud" style="width:480px;height:480px;background:rgba(147,197,253,0.4);top:-180px;left:-80px;animation-duration:9s;"></div>
+    <div class="cloud" style="width:360px;height:360px;background:rgba(196,233,251,0.45);bottom:-120px;right:-60px;animation-duration:11s;animation-delay:-3s;"></div>
+    <div style="text-align:center;position:relative;z-index:1;">
+      <span class="pill" style="margin-bottom:18px;display:inline-block;">Subtitle / Category</span>
+      <h1 class="gt">Presentation Title</h1>
+      <p style="font-size:1.2rem;color:var(--text-secondary);margin-top:12px;">Subtitle or tagline</p>
+    </div>
+  </section>
+
+  <!-- Example Slide 2 — Chapter -->
+  <section class="slide chapter">
+    <div class="chapter-num">01</div>
+    <h2 class="gt">Chapter Title</h2>
+    <div class="divider" style="margin:14px auto;"></div>
+    <p style="color:var(--text-secondary);">Brief chapter description</p>
+  </section>
+
+  <!-- Example Slide 3 — Content with bullets -->
+  <section class="slide">
+    <div style="max-width:820px;width:100%;">
+      <h2 class="gt">Content Slide Title</h2>
+      <div class="divider"></div>
+      <div class="g" style="padding:22px 26px;">
+        <ul class="bl">
+          <li>First key point</li>
+          <li>Second key point</li>
+          <li>Third key point</li>
+          <li>Fourth key point</li>
+        </ul>
+      </div>
+      <div class="co" style="margin-top:14px;">
+        <strong>Note:</strong> Supporting context or real-world example.
+      </div>
+    </div>
+  </section>
+
+  <!-- Add more slides here following the patterns in the comment block above -->
+
+</div><!-- /#track -->
+</div><!-- /#stage -->
+
+<script>
+/* ═══════════════════════════════════════════════════════════════
+   BLUE SKY NAVIGATION + ORB CONTROLLER
+   ═══════════════════════════════════════════════════════════════
+
+   orbPositions: one entry per slide.
+   Each entry: [orb1-left%, orb1-top%, orb1-size(px),
+                orb2-left%, orb2-top%, orb2-size(px),
+                orb3-left%, orb3-top%, orb3-size(px)]
+
+   Design guide:
+   - Cover / chapter slides: orbs in dramatic corner positions
+   - Content slides: one orb top-left, one bottom-right, one center
+   - Dense data slides: keep orbs away from center to not compete with text
+
+   ═══════════════════════════════════════════════════════════════ */
+const orbPositions = [
+  /* Slide 1 — Cover: dramatic spread */
+  [-15, -20, 500,   80, -10, 400,   50,  65, 350],
+  /* Slide 2 — Chapter: horizontal row across middle */
+  [ 10,  30, 460,   45,  20, 380,   75,  40, 320],
+  /* Slide 3 — Content: top-left + bottom-right */
+  [-20,  40, 460,   75, -15, 400,   55,  70, 300],
+  /* Add one entry per additional slide, following the same pattern */
+  /* Slide 4  */ [-10, 20, 480,  70, 10, 400, 50, 65, 290],
+  /* Slide 5  */ [ 65,-10, 460, -15, 55, 380, 40, 80, 310],
+  /* Slide 6  */ [-15, 35, 500,  75,  0, 420, 55, 65, 290],
+  /* Slide 7  */ [ 65, 15, 440, -15, 60, 380, 40, 80, 300],
+  /* Slide 8  */ [-10, 25, 480,  80,-10, 400, 50, 70, 310],
+  /* Slide 9  */ [ 70,  5, 460, -15, 60, 380, 45, 75, 300],
+  /* Slide 10 */ [-15,-20, 500,  80,-10, 400, 50, 60, 350],
+];
+
+(function () {
+  const TOTAL  = document.querySelectorAll('#track .slide').length;
+  const track  = document.getElementById('track');
+  const dotsEl = document.getElementById('nav-dots');
+  const ctrEl  = document.getElementById('slide-counter');
+  const o1     = document.getElementById('orb1');
+  const o2     = document.getElementById('orb2');
+  const o3     = document.getElementById('orb3');
+  let   cur    = 0;
+
+  /* Update CSS custom property so slide widths stay correct */
+  document.documentElement.style.setProperty('--slide-count', TOTAL);
+
+  /* Build pagination dots */
+  for (let i = 0; i < TOTAL; i++) {
+    const d = document.createElement('button');
+    d.className = 'dot' + (i === 0 ? ' active' : '');
+    d.setAttribute('aria-label', 'Slide ' + (i + 1));
+    d.addEventListener('click', () => go(i));
+    dotsEl.appendChild(d);
+  }
+
+  /* Move orbs to position for slide i */
+  function setOrbs(i) {
+    const p = orbPositions[i] || orbPositions[0];
+    const set = (el, l, t, s) => {
+      el.style.left = l + '%'; el.style.top = t + '%';
+      el.style.width = el.style.height = s + 'px';
+    };
+    set(o1, p[0], p[1], p[2]);
+    set(o2, p[3], p[4], p[5]);
+    set(o3, p[6], p[7], p[8]);
+  }
+
+  /* Navigate to slide index n */
+  function go(n) {
+    if (n < 0 || n >= TOTAL) return;
+    document.querySelectorAll('#track .slide')[cur].classList.remove('active');
+    cur = n;
+    document.querySelectorAll('#track .slide')[cur].classList.add('active');
+    track.style.transform = `translateX(-${cur * 100}vw)`;
+    document.querySelectorAll('.dot').forEach((d, i) => d.classList.toggle('active', i === cur));
+    ctrEl.textContent = String(cur + 1).padStart(2, '0') + ' / ' + String(TOTAL).padStart(2, '0');
+    setOrbs(cur);
+  }
+
+  /* Init */
+  go(0);
+
+  /* Keyboard */
+  document.addEventListener('keydown', e => {
+    if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'ArrowDown') { e.preventDefault(); go(cur + 1); }
+    if (e.key === 'ArrowLeft'  || e.key === 'ArrowUp')                    { e.preventDefault(); go(cur - 1); }
+    if (e.key === 'Home') go(0);
+    if (e.key === 'End')  go(TOTAL - 1);
+  });
+
+  /* Wheel — debounce-reset lock.
+     Inertia events keep resetting the 180ms timer; the lock releases only after
+     the gesture truly ends. Prevents trackpad inertia from double-navigating. */
+  let wheelLocked = false, wheelTimer = null;
+  document.addEventListener('wheel', e => {
+    clearTimeout(wheelTimer);
+    if (!wheelLocked) { wheelLocked = true; e.deltaY > 0 ? go(cur + 1) : go(cur - 1); }
+    wheelTimer = setTimeout(() => { wheelLocked = false; }, 180);
+  }, { passive: true });
+
+  /* Touch swipe */
+  let touchStartX = 0;
+  document.addEventListener('touchstart', e => { touchStartX = e.touches[0].clientX; }, { passive: true });
+  document.addEventListener('touchend',   e => {
+    const dx = e.changedTouches[0].clientX - touchStartX;
+    if (Math.abs(dx) > 50) dx < 0 ? go(cur + 1) : go(cur - 1);
+  });
+})();
+</script>
+</body>
+</html>

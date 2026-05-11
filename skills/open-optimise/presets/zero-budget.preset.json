@@ -1,0 +1,20 @@
+{
+  "name": "zero-budget",
+  "description": "Absolute zero cost. Free models only. Requires OpenRouter provider.",
+  "author": "cost-optimizer",
+  "version": "5.0.0",
+  "created": "2026-03-15T00:00:00Z",
+  "config": {
+    "model": {
+      "primary": "openrouter/deepseek/deepseek-chat-v3-0324:free",
+      "fallbacks": [
+        "openrouter/meta-llama/llama-4-scout-17b-16e-instruct:free",
+        "openrouter/qwen/qwen3-235b-a22b:free"
+      ]
+    },
+    "heartbeat": { "every": "55m", "model": "openrouter/deepseek/deepseek-chat-v3-0324:free", "target": "last" },
+    "compaction": { "memoryFlush": { "enabled": true, "softThresholdTokens": 2000 } },
+    "maxConcurrent": 1,
+    "subagentsMaxConcurrent": 1
+  }
+}

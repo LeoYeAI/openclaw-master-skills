@@ -1,0 +1,109 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "npm-build.schema.json",
+  "title": "NpmBuild Task",
+  "description": "Node.js构建任务配置，用于前端或Node.js项目的构建",
+  "type": "object",
+  "required": ["taskCategory", "jobType", "name"],
+  "properties": {
+    "taskCategory": {
+      "type": "string",
+      "const": "Build",
+      "description": "任务类别，固定为Build"
+    },
+    "jobType": {
+      "type": "string",
+      "const": "NpmBuild",
+      "description": "任务类型，固定为NpmBuild"
+    },
+    "name": {
+      "type": "string",
+      "maxLength": 100,
+      "description": "任务名称",
+      "examples": ["Node.js构建"]
+    },
+    "workPath": {
+      "type": "string",
+      "description": "工作目录，流水线源文件将被下载到此目录，当配置多个源时可以选择具体的工作目录"
+    },
+    "sourceId": {
+      "type": "string",
+      "description": "代码源ID，关联流水线源配置中的sourceId"
+    },
+    "buildImageModel": {
+      "type": "string",
+      "enum": ["default", "custom"],
+      "default": "default",
+      "description": "构建环境模式，default为默认环境，custom为自定义镜像"
+    },
+    "executeImageId": {
+      "type": "string",
+      "description": "执行镜像ID，当buildImageModel为custom时需要指定"
+    },
+    "sysDefault": {
+      "type": "string",
+      "enum": ["default", "custom"],
+      "default": "default",
+      "description": "Node版本选择方式，default为系统预设版本，custom为自定义版本"
+    },
+    "nodeVersion": {
+      "type": "string",
+      "description": "Node.js版本，当sysDefault为default时使用，从系统预设版本列表中选择",
+      "examples": ["Node14", "Node16", "Node18", "Node20"]
+    },
+    "nodeCustomVersion": {
+      "type": "string",
+      "maxLength": 100,
+      "description": "自定义Node.js版本，当sysDefault为custom时使用，手动输入版本号"
+    },
+    "script": {
+      "type": "string",
+      "description": "Shell命令，支持bash、cmd语法输入命令",
+      "default": "#如需指定某个模块进行单独构建，可以通过 cd命令 进入目标模块所在路径，再执行构建命令，例如\n#cd devops-base/ai-base-service\nnpm set registry https://depend.iflytek.com/artifactory/api/npm/npm-repo\nnpm install\nnpm run build"
+    },
+    "uploadArtifact": {
+      "type": "boolean",
+      "default": true,
+      "description": "是否上传构建物"
+    },
+    "artifactPath": {
+      "type": "array",
+      "items": { "type": "string" },
+      "default": ["dist/"],
+      "description": "制品路径，起始位置为项目文件夹的相对路径"
+    },
+    "artifactSuffix": {
+      "type": "array",
+      "items": { "type": "string" },
+      "default": [],
+      "description": "制品类型，指定需上传的制品类型；若不指定，将默认上传制品路径下的所有文件"
+    },
+    "artifactCompress": {
+      "type": "boolean",
+      "default": true,
+      "description": "是否压缩制品"
+    },
+    "compressType": {
+      "type": "string",
+      "enum": ["TAR(.tgz)", "TAR(.tar.gz)", "ZIP"],
+      "default": "TAR(.tgz)",
+      "description": "压缩格式"
+    },
+    "packagedName": {
+      "type": "string",
+      "maxLength": 200,
+      "default": "Artifacts_${PIPELINE_LOG_ID}",
+      "description": "压缩包名称，支持固定值例如Artifacts或者动态参数${PIPELINE_LOG_ID}"
+    },
+    "idInTemplate": {
+      "type": "string",
+      "description": "模板中的任务ID，用于从模板创建流水线时保持任务引用"
+    },
+    "dependencies": {
+      "type": "array",
+      "items": { "type": "string" },
+      "default": [],
+      "description": "依赖的任务ID列表"
+    }
+  }
+}

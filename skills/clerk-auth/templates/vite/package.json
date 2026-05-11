@@ -1,0 +1,42 @@
+{
+  "$comment": "Vite + Clerk: package.json with increased header size limit",
+  "$description": "This template shows how to configure Vite dev server to handle Clerk's authentication handshake tokens, which can exceed the default 8KB Node.js header limit when using custom JWT claims.",
+
+  "name": "vite-clerk-app",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+
+  "scripts": {
+    "dev": "NODE_OPTIONS='--max-http-header-size=32768' vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+
+  "dependencies": {
+    "@clerk/clerk-react": "^5.51.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
+  },
+
+  "devDependencies": {
+    "@vitejs/plugin-react": "^4.3.4",
+    "vite": "^6.0.0"
+  },
+
+  "$notes": [
+    "The key change is in the 'dev' script:",
+    "NODE_OPTIONS='--max-http-header-size=32768' increases the limit from 8KB to 32KB",
+    "",
+    "For Windows PowerShell, use:",
+    "\"dev\": \"cross-env NODE_OPTIONS=--max-http-header-size=32768 vite\"",
+    "And install: npm install -D cross-env",
+    "",
+    "This prevents '431 Request Header Fields Too Large' errors when:",
+    "- Testing Clerk authentication in development mode",
+    "- Using custom JWT claims that increase token size",
+    "- Clerk's __clerk_handshake parameter exceeds header limit",
+    "",
+    "Production deployments (Cloudflare, Vercel, Netlify) don't need this fix."
+  ]
+}

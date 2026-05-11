@@ -1,0 +1,106 @@
+name: who-is-actor
+version: 1.0.9
+description: >
+  A zero-*install*-dependency Git repository developer profiling skill.
+  "Zero dependency" means no Python/Node packages, no pip/npm installs, and
+  no custom scripts — however the skill DOES require standard system
+  binaries already present on most Unix-like hosts (see required_binaries
+  below for the full list: git, cut, sort, uniq, awk, grep, sed, wc, head).
+  It uses only native git READ-ONLY commands to analyze commit history, then
+  leverages AI to generate a data-driven developer portrait covering commit
+  habits, work habits, development efficiency, code style, code quality,
+  and an engagement index.
+  Security: all user inputs validated against strict allowlists; only
+  whitelisted git read-only subcommands are permitted; no write/network
+  operations; no developer emails collected. A dry-run mode is available
+  to preview all commands before execution. Commit messages are processed
+  for statistical analysis only (length, keyword matching) — full message
+  text is NOT forwarded to the AI model; only aggregated metrics are sent.
+  The engagement index is explicitly scoped as a collaboration reference
+  only, not for HR decisions.
+  Privacy note: commit messages and filenames are read locally during data
+  collection and may contain sensitive information — the skill enforces
+  automatic redaction of common secret patterns before any data leaves the
+  local environment. Run only on repositories you have permission to analyze.
+author: reky
+license: MIT
+acceptLicenseTerms: true
+tags:
+  - code-analysis
+  - git
+  - developer-profiling
+  - zero-dependency
+  - commit-patterns
+  - engagement-index
+
+dependencies:
+  - git
+  - cut
+  - sort
+  - uniq
+  - awk
+  - grep
+  - sed
+  - wc
+  - head
+
+required_binaries:
+  - name: git
+    reason: Core dependency — all data collection uses native git read-only subcommands.
+  - name: cut
+    reason: Text processing — extracts fields from git output (e.g., hour from ISO timestamps).
+  - name: sort
+    reason: Text processing — sorts lines for frequency analysis.
+  - name: uniq
+    reason: Text processing — deduplicates sorted lines and counts occurrences.
+  - name: awk
+    reason: Text processing — aggregates numeric fields (lines added/deleted) and computes lengths.
+  - name: grep
+    reason: Text processing — filters lines by pattern (e.g., file extensions, bug-fix keywords).
+  - name: sed
+    reason: Text processing — extracts first/last lines for date range detection.
+  - name: wc
+    reason: Text processing — counts matching lines (e.g., number of bug-fix commits).
+  - name: head
+    reason: Text processing — limits output to top-N results.
+
+runtime: ai
+entry: SKILL.md
+
+parameters:
+  - name: repo_path
+    type: string
+    description: >
+      Absolute path to the Git repository to analyze.
+    required: true
+
+  - name: authors
+    type: list
+    description: >
+      List of author display names to analyze (email addresses are NOT accepted — use the author's Git display name instead). If empty, analyze all contributors.
+    default: []
+
+  - name: since
+    type: string
+    description: >
+      Start date for analysis (ISO format, e.g. '2024-01-01').
+    default: ""
+
+  - name: until
+    type: string
+    description: >
+      End date for analysis (ISO format, e.g. '2024-12-31').
+    default: ""
+
+  - name: branch
+    type: string
+    description: >
+      Branch to analyze. Defaults to the current active branch.
+    default: ""
+
+outputs:
+  - name: report
+    type: string
+    description: >
+      The generated Markdown analysis report containing per-developer metrics,
+      cross-comparison table, ratings, and personalized commentary.

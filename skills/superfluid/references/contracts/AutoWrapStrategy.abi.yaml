@@ -1,0 +1,150 @@
+# AutoWrapStrategy — ERC-20 Wrap Strategy for Auto-Wrap
+# Performs the actual token wrapping: transfers underlying ERC-20 from user,
+# upgrades to Super Token, and transfers to user.
+#
+# Called exclusively by the AutoWrapManager contract.
+# Inherits StrategyBase (Ownable) for owner-only management functions.
+#
+# == Allowance Requirement ==
+# The user must approve THIS contract (the strategy, not the manager) to spend
+# their underlying ERC-20 liquidity token. The allowance must be in the underlying
+# token's native decimals (e.g. 6 for USDC, 8 for WBTC, 18 for DAI).
+meta:
+  name: AutoWrapStrategy
+  version: v1
+  notes:
+    - "Gotcha: This is the underlying token's allowance — NOT the Super Token's. The strategy pulls underlying tokens via transferFrom, wraps them (upgrade), and sends the resulting Super Tokens to the user. The allowance must cover the wrap amounts over the schedule's lifetime. For convenience, type(uint256).max approval avoids repeated approvals."
+  source:
+    - https://raw.githubusercontent.com/superfluid-org/protocol-monorepo/refs/heads/dev/packages/automation-contracts/autowrap/contracts/strategies/WrapStrategy.sol
+    - https://raw.githubusercontent.com/superfluid-org/protocol-monorepo/refs/heads/dev/packages/automation-contracts/autowrap/contracts/interfaces/IStrategy.sol
+    - https://raw.githubusercontent.com/superfluid-org/protocol-monorepo/refs/heads/dev/packages/automation-contracts/autowrap/contracts/strategies/StrategyBase.sol
+  implements: [IStrategy, Ownable]
+  note: >
+    Wraps underlying ERC-20 tokens into Super Tokens on behalf of a user.
+    Only the Manager contract can trigger wraps. Supports any Super Token
+    that has an underlying ERC-20 (not pure/native Super Tokens).
+  deployments:
+    eth-mainnet: "0x1D65c6d3AD39d454Ea8F682c49aE7744706eA96d"
+    polygon-mainnet: "0xb4afa36BAd8c76976Dc77a21c9Ad711EF720eE4b"
+    optimism-mainnet: "0x0Cf060a501c0040e9CCC708eFE94079F501c6Bb4"
+    arbitrum-one: "0x342076aA957B0ec8bC1d3893af719b288eA31e61"
+    avalanche-c: "0x51FBAbD31A615E14b1bC12E9d887f60997264a4E"
+    bsc-mainnet: "0x9e308cb079ae130790F604b1030cDf386670f199"
+    xdai-mainnet: "0x51FBAbD31A615E14b1bC12E9d887f60997264a4E"
+    base-mainnet: "0xD790CDE7A1B3194d8Ce3CF21544F03a770336E23"
+    avalanche-fuji: "0x1D65c6d3AD39d454Ea8F682c49aE7744706eA96d"
+    optimism-sepolia: "0xf232f1fd34CE12e24F4391865c2D6E374D2C34d9"
+
+# == Core ==
+
+wrap:
+  # Wraps underlying ERC-20 into Super Token for the user.
+  # Transfers underlying from user → strategy, upgrades, transfers Super Token back.
+  # Only callable by the Manager contract.
+  mutability: nonpayable
+  access: manager
+  inputs:
+    - user: address
+    - superToken: ISuperToken
+    - superTokenAmount: uint256
+  emits: [Wrapped]
+  errors:
+    - UnauthorizedCaller:
+        inputs:
+          - caller: address
+          - expectedCaller: address
+
+isSupportedSuperToken:
+  # Returns true if the Super Token has an underlying ERC-20 (getUnderlyingToken != address(0)).
+  mutability: view
+  inputs:
+    - superToken: ISuperToken
+  outputs:
+    - bool
+
+# == Manager ==
+
+manager:
+  # Returns the current Manager contract address.
+  mutability: view
+  inputs: []
+  outputs:
+    - address
+
+changeManager:
+  # Updates the Manager contract address. Only callable by owner.
+  mutability: nonpayable
+  access: admin
+  inputs:
+    - newManager: address
+  emits: [ManagerChanged]
+  errors: [ZeroAddress]
+
+# == Emergency ==
+
+emergencyWithdraw:
+  # Withdraws any token accidentally sent to this contract. Owner only.
+  mutability: nonpayable
+  access: admin
+  inputs:
+    - token: address
+  emits: [EmergencyWithdrawInitiated]
+
+# == Ownable (inherited) ==
+
+owner:
+  mutability: view
+  inputs: []
+  outputs:
+    - address
+
+transferOwnership:
+  mutability: nonpayable
+  access: admin
+  inputs:
+    - newOwner: address
+
+renounceOwnership:
+  mutability: nonpayable
+  access: admin
+  inputs: []
+
+# == Events ==
+
+events:
+
+  Wrapped:
+    # Emitted when tokens are successfully wrapped for a user.
+    indexed:
+      - user: address
+      - superToken: address
+    data:
+      - superTokenAmount: uint256
+
+  ManagerChanged:
+    # Emitted when the manager contract address is updated.
+    indexed:
+      - oldManager: address
+      - manager: address
+
+  EmergencyWithdrawInitiated:
+    # Emitted when locked tokens are emergency-withdrawn by the owner.
+    indexed:
+      - receiver: address
+      - token: address
+    data:
+      - amount: uint256
+
+# == Errors ==
+
+errors:
+
+  # -- Access --
+  - ZeroAddress
+  - UnauthorizedCaller:
+      inputs:
+        - caller: address
+        - expectedCaller: address
+  - UnsupportedSuperToken:
+      inputs:
+        - superToken: address

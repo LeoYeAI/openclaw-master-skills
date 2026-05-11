@@ -1,0 +1,478 @@
+{
+  "source": "pythongo_option.mdx",
+  "relative_source": "modules\\pythongo_option.mdx",
+  "title": "pythongo.option",
+  "doc_kind": "module_doc",
+  "is_index_page": false,
+  "section_count": 11,
+  "table_count": 12,
+  "callout_count": 3,
+  "link_count": 0,
+  "image_count": 0,
+  "sections": [
+    {
+      "id": "modules.pythongo_option.pythongo-option",
+      "title": "pythongo.option",
+      "level": 1,
+      "content_md": "",
+      "summary": "",
+      "block_type": "section"
+    },
+    {
+      "id": "modules.pythongo_option.option",
+      "title": "`Option`",
+      "level": 2,
+      "content_md": "该类提供期权扩展功能，可以计算期权希腊值，由于代码陈旧冗长，这里不过多介绍，具体实现可以自行查阅代码。",
+      "summary": "该类提供期权扩展功能，可以计算期权希腊值，由于代码陈旧冗长，这里不过多介绍，具体实现可以自行查阅代码。",
+      "block_type": "section"
+    },
+    {
+      "id": "modules.pythongo_option.optionchain",
+      "title": "`OptionChain`",
+      "level": 2,
+      "content_md": "该类将同一品种下的所有期权合约整合成了期权链，提供了获取标的月份合约、到期日、行权价、看涨期权、看跌期权和平值期权的方法\n\n参数：\n\n| 参数名 | 类型 | 描述 | 默认值 |\n|---|---|---|---|\n| `exchange` | `str` | 交易所代码 | 必填 |\n| `product_id` | `str` | 品种代码 | 必填 |\n\n> [!INFO]\n> 期权的品种代码可以在无限易的「期权 - T 型报价」窗口查询「交易所」和「品种」字段。ETF 期权品种代码是 `ETF_O`",
+      "summary": "该类将同一品种下的所有期权合约整合成了期权链，提供了获取标的月份合约、到期日、行权价、看涨期权、看跌期权和平值期权的方法",
+      "block_type": "section"
+    },
+    {
+      "id": "modules.pythongo_option.option_chain",
+      "title": "`option_chain`",
+      "level": 3,
+      "content_md": "类型：`dict`\n\n期权链\n\n存储了该品种下所有期权合约数据的嵌套字典，数据已预先按标的合约、到期日和行权价进行处理与排序",
+      "summary": "类型：`dict`",
+      "block_type": "property"
+    },
+    {
+      "id": "modules.pythongo_option.option_type",
+      "title": "`option_type`",
+      "level": 3,
+      "content_md": "类型：`Literal[\"期权\", \"股票期权\", \"现货期权\"]`\n\n期权类型\n\n包含期权、股票期权和现货期权",
+      "summary": "类型：`Literal[\"期权\", \"股票期权\", \"现货期权\"]`",
+      "block_type": "property"
+    },
+    {
+      "id": "modules.pythongo_option.get_month_contracts",
+      "title": "`get_month_contracts()`",
+      "level": 3,
+      "content_md": "获取标的月份合约列表，按到期时间排序\n\n返回：\n\n| 类型 | 描述 |\n|---|---|\n| `list[str |\n| ` |\n| 月 | 份 | 合 | 约 | 列 | 表 |\n\n> [!INFO]\n> ETF 期权没有月份合约，只返回 ETF 合约列表，例如：`['510050', '510300', '510500', '588000', '588080']`",
+      "summary": "获取标的月份合约列表，按到期时间排序",
+      "block_type": "function"
+    },
+    {
+      "id": "modules.pythongo_option.get_expire_dates",
+      "title": "`get_expire_dates()`",
+      "level": 3,
+      "content_md": "获取标的月份合约的到期日列表，按到期时间排序\n\n参数：\n\n| 参数名 | 类型 | 描述 | 默认值 |\n|---|---|---|---|\n| `underlying_symbol` | `str` | 标的合约代码 | None |\n\n返回：\n\n| 类型 | 描述 |\n|---|---|\n| `list[str |\n| ` |\n| 标 | 的 | 月 | 份 | 合 | 约 | 期 | 权 | 到 | 期 | 日 |\n\n> [!INFO]\n> 当 `underlying_symbol` 为 `None` 时，返回所有月份合约的到期日,例如 `IO` 返回：`['20250919', '20251017', '20251121', '20251219', '20260320', '20260619']`；\n>\n>   当 `underlying_symbol` 填入参数时，返回填入标的合约的到期日，例如 `IF2509` 返回：`['20250919']`；\n>\n>   当 `underlying_symbol` 填入 ETF 合约代码时，返回 ETF 合约的到期日列表，例如 `510050` 返回：`['20250924', '20251022', '20251224', '20260325']`",
+      "summary": "获取标的月份合约的到期日列表，按到期时间排序",
+      "block_type": "function"
+    },
+    {
+      "id": "modules.pythongo_option.get_strike_prices",
+      "title": "`get_strike_prices()`",
+      "level": 3,
+      "content_md": "获取行权价列表，升序排列\n\n参数：\n\n| 参数名 | 类型 | 描述 | 默认值 |\n|---|---|---|---|\n| `underlying_symbol` | `str` | 标的合约代码 | 必填 |\n| `expire_date` | `str` | 到期日, 仅对 ETF 期权有效，默认取最近到期日 | None |\n\n返回：\n\n| 类型 | 描述 |\n|---|---|\n| `list[float |\n| ` |\n| 行 | 权 | 价 | 列 | 表 |",
+      "summary": "获取行权价列表，升序排列",
+      "block_type": "function"
+    },
+    {
+      "id": "modules.pythongo_option.get_call_options",
+      "title": "`get_call_options()`",
+      "level": 3,
+      "content_md": "获取看涨期权合约列表，按行权价升序排列\n\n参数：\n\n| 参数名 | 类型 | 描述 | 默认值 |\n|---|---|---|---|\n| `underlying_symbol` | `str` | 标的合约代码 | 必填 |\n| `expire_date` | `str` | 到期日, 仅对 ETF 期权有效，默认取最近到期日 | None |\n\n返回：\n\n| 类型 | 描述 |\n|---|---|\n| `list[str |\n| ` |\n| 看 | 涨 | 期 | 权 | 合 | 约 | 代 | 码 | 列 | 表 |",
+      "summary": "获取看涨期权合约列表，按行权价升序排列",
+      "block_type": "function"
+    },
+    {
+      "id": "modules.pythongo_option.get_put_options",
+      "title": "`get_put_options()`",
+      "level": 3,
+      "content_md": "获取看跌期权合约列表，按行权价升序排列\n\n参数：\n\n| 参数名 | 类型 | 描述 | 默认值 |\n|---|---|---|---|\n| `underlying_symbol` | `str` | 标的合约代码 | 必填 |\n| `expire_date` | `str` | 到期日, 仅对 ETF 期权有效，默认取最近到期日 | None |\n\n返回：\n\n| 类型 | 描述 |\n|---|---|\n| `list[str |\n| ` |\n| 看 | 跌 | 期 | 权 | 合 | 约 | 代 | 码 | 列 | 表 |",
+      "summary": "获取看跌期权合约列表，按行权价升序排列",
+      "block_type": "function"
+    },
+    {
+      "id": "modules.pythongo_option.get_atm_option",
+      "title": "`get_atm_option()`",
+      "level": 3,
+      "content_md": "获取平值期权档位\n\n参数：\n\n| 参数名 | 类型 | 描述 | 默认值 |\n|---|---|---|---|\n| `underlying_symbol` | `str` | 标的合约代码 | 必填 |\n| `underlying_price` | `float` | 标的价格 | 必填 |\n| `expire_date` | `str` | 到期日, 仅对 ETF 期权有效，默认取最近到期日 | None |\n\n返回：\n\n| 类型 | 描述 |\n|---|---|\n| `Optional[int |\n| ` |\n| 获 | 取 | 最 | 接 | 近 | 标 | 的 | 价 | 格 | 的 | 行 | 权 | 价 | 在 | 行 | 权 | 价 | 列 | 表 | 中 | 的 | 索 | 引 | 位 | 置 | ， | 可 | 根 | 据 | 索 | 引 | 从 | 看 | 涨 | 期 | 权 | 列 | 表 | 和 | 看 | 跌 | 期 | 权 | 列 | 表 | 中 | 获 | 取 | 平 | 值 | 看 | 涨 | 期 | 权 | 和 | 平 | 值 | 看 | 跌 | 期 | 权 |",
+      "summary": "获取平值期权档位",
+      "block_type": "function"
+    }
+  ],
+  "tables": [
+    {
+      "title": "`OptionChain`",
+      "headers": [
+        "参数名",
+        "类型",
+        "描述",
+        "默认值"
+      ],
+      "rows": [
+        [
+          "`exchange`",
+          "`str`",
+          "交易所代码",
+          "必填"
+        ],
+        [
+          "`product_id`",
+          "`str`",
+          "品种代码",
+          "必填"
+        ]
+      ],
+      "source": "pythongo_option.mdx"
+    },
+    {
+      "title": "`get_month_contracts()`",
+      "headers": [
+        "类型",
+        "描述"
+      ],
+      "rows": [
+        [
+          "`list[str"
+        ],
+        [
+          "`"
+        ],
+        [
+          "月",
+          "份",
+          "合",
+          "约",
+          "列",
+          "表"
+        ]
+      ],
+      "source": "pythongo_option.mdx"
+    },
+    {
+      "title": "`get_expire_dates()`",
+      "headers": [
+        "参数名",
+        "类型",
+        "描述",
+        "默认值"
+      ],
+      "rows": [
+        [
+          "`underlying_symbol`",
+          "`str`",
+          "标的合约代码",
+          "None"
+        ]
+      ],
+      "source": "pythongo_option.mdx"
+    },
+    {
+      "title": "`get_strike_prices()`",
+      "headers": [
+        "类型",
+        "描述"
+      ],
+      "rows": [
+        [
+          "`list[str"
+        ],
+        [
+          "`"
+        ],
+        [
+          "标",
+          "的",
+          "月",
+          "份",
+          "合",
+          "约",
+          "期",
+          "权",
+          "到",
+          "期",
+          "日"
+        ]
+      ],
+      "source": "pythongo_option.mdx"
+    },
+    {
+      "title": "`get_call_options()`",
+      "headers": [
+        "参数名",
+        "类型",
+        "描述",
+        "默认值"
+      ],
+      "rows": [
+        [
+          "`underlying_symbol`",
+          "`str`",
+          "标的合约代码",
+          "必填"
+        ],
+        [
+          "`expire_date`",
+          "`str`",
+          "到期日, 仅对 ETF 期权有效，默认取最近到期日",
+          "None"
+        ]
+      ],
+      "source": "pythongo_option.mdx"
+    },
+    {
+      "title": "`get_put_options()`",
+      "headers": [
+        "类型",
+        "描述"
+      ],
+      "rows": [
+        [
+          "`list[float"
+        ],
+        [
+          "`"
+        ],
+        [
+          "行",
+          "权",
+          "价",
+          "列",
+          "表"
+        ]
+      ],
+      "source": "pythongo_option.mdx"
+    },
+    {
+      "title": "`get_atm_option()`",
+      "headers": [
+        "参数名",
+        "类型",
+        "描述",
+        "默认值"
+      ],
+      "rows": [
+        [
+          "`underlying_symbol`",
+          "`str`",
+          "标的合约代码",
+          "必填"
+        ],
+        [
+          "`expire_date`",
+          "`str`",
+          "到期日, 仅对 ETF 期权有效，默认取最近到期日",
+          "None"
+        ]
+      ],
+      "source": "pythongo_option.mdx"
+    },
+    {
+      "title": null,
+      "headers": [
+        "类型",
+        "描述"
+      ],
+      "rows": [
+        [
+          "`list[str"
+        ],
+        [
+          "`"
+        ],
+        [
+          "看",
+          "涨",
+          "期",
+          "权",
+          "合",
+          "约",
+          "代",
+          "码",
+          "列",
+          "表"
+        ]
+      ],
+      "source": "pythongo_option.mdx"
+    },
+    {
+      "title": null,
+      "headers": [
+        "参数名",
+        "类型",
+        "描述",
+        "默认值"
+      ],
+      "rows": [
+        [
+          "`underlying_symbol`",
+          "`str`",
+          "标的合约代码",
+          "必填"
+        ],
+        [
+          "`expire_date`",
+          "`str`",
+          "到期日, 仅对 ETF 期权有效，默认取最近到期日",
+          "None"
+        ]
+      ],
+      "source": "pythongo_option.mdx"
+    },
+    {
+      "title": null,
+      "headers": [
+        "类型",
+        "描述"
+      ],
+      "rows": [
+        [
+          "`list[str"
+        ],
+        [
+          "`"
+        ],
+        [
+          "看",
+          "跌",
+          "期",
+          "权",
+          "合",
+          "约",
+          "代",
+          "码",
+          "列",
+          "表"
+        ]
+      ],
+      "source": "pythongo_option.mdx"
+    },
+    {
+      "title": null,
+      "headers": [
+        "参数名",
+        "类型",
+        "描述",
+        "默认值"
+      ],
+      "rows": [
+        [
+          "`underlying_symbol`",
+          "`str`",
+          "标的合约代码",
+          "必填"
+        ],
+        [
+          "`underlying_price`",
+          "`float`",
+          "标的价格",
+          "必填"
+        ],
+        [
+          "`expire_date`",
+          "`str`",
+          "到期日, 仅对 ETF 期权有效，默认取最近到期日",
+          "None"
+        ]
+      ],
+      "source": "pythongo_option.mdx"
+    },
+    {
+      "title": null,
+      "headers": [
+        "类型",
+        "描述"
+      ],
+      "rows": [
+        [
+          "`Optional[int"
+        ],
+        [
+          "`"
+        ],
+        [
+          "获",
+          "取",
+          "最",
+          "接",
+          "近",
+          "标",
+          "的",
+          "价",
+          "格",
+          "的",
+          "行",
+          "权",
+          "价",
+          "在",
+          "行",
+          "权",
+          "价",
+          "列",
+          "表",
+          "中",
+          "的",
+          "索",
+          "引",
+          "位",
+          "置",
+          "，",
+          "可",
+          "根",
+          "据",
+          "索",
+          "引",
+          "从",
+          "看",
+          "涨",
+          "期",
+          "权",
+          "列",
+          "表",
+          "和",
+          "看",
+          "跌",
+          "期",
+          "权",
+          "列",
+          "表",
+          "中",
+          "获",
+          "取",
+          "平",
+          "值",
+          "看",
+          "涨",
+          "期",
+          "权",
+          "和",
+          "平",
+          "值",
+          "看",
+          "跌",
+          "期",
+          "权"
+        ]
+      ],
+      "source": "pythongo_option.mdx"
+    }
+  ],
+  "callouts": [
+    {
+      "kind": "info",
+      "text": "期权的品种代码可以在无限易的「期权 - T 型报价」窗口查询「交易所」和「品种」字段。ETF 期权品种代码是 `ETF_O`",
+      "source": "pythongo_option.mdx"
+    },
+    {
+      "kind": "info",
+      "text": "ETF 期权没有月份合约，只返回 ETF 合约列表，例如：`['510050', '510300', '510500', '588000', '588080']`",
+      "source": "pythongo_option.mdx"
+    },
+    {
+      "kind": "info",
+      "text": "当 `underlying_symbol` 为 `None` 时，返回所有月份合约的到期日,例如 `IO` 返回：`['20250919', '20251017', '20251121', '20251219', '20260320', '20260619']`；\n\n  当 `underlying_symbol` 填入参数时，返回填入标的合约的到期日，例如 `IF2509` 返回：`['20250919']`；\n\n  当 `underlying_symbol` 填入 ETF 合约代码时，返回 ETF 合约的到期日列表，例如 `510050` 返回：`['20250924', '20251022', '20251224', '20260325']`",
+      "source": "pythongo_option.mdx"
+    }
+  ],
+  "links": [],
+  "images": []
+}

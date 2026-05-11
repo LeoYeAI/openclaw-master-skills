@@ -1,0 +1,170 @@
+# SSRF Blocklist - Known SSRF-prone endpoints and suspicious domains
+# Used for Pre-Visit Scan (Phase 1)
+
+version: "1.0.0"
+
+categories:
+  cloud_metadata:
+    name: "Cloud Metadata Endpoints"
+    description: "Well-known cloud metadata endpoints for SSRF"
+    severity: "CRITICAL"
+    endpoints:
+      # AWS
+      - "169.254.169.254"
+      - "169.254.169.254/latest/meta-data/"
+      - "169.254.169.254/latest/user-data/"
+      - "metadata.aws.internal"
+
+      # GCP
+      - "metadata.google.internal"
+      - "metadata.googleusercontent.com"
+      - "metadata.google.internal/computeMetadata/v1/"
+
+      # Azure
+      - "169.254.169.254"
+      - "metadata.azure.com"
+      - "169.254.169.254/metadata/instance"
+
+      # DigitalOcean
+      - "169.254.169.254"
+      - "digitalocean.internal"
+
+      # Kubernetes
+      - "kubernetes.default.svc"
+      - "kubernetes.default"
+      - "10.0.0.1"
+
+      # Alibaba
+      - "100.100.100.200"
+      - "100.100.100.200/latest/meta-data/"
+
+      # Oracle
+      - "169.254.169.254"
+
+      # IBM Cloud
+      - "169.254.169.254"
+
+  local_network:
+    name: "Local Network Addresses"
+    description: "Private network ranges that should be blocked"
+    severity: "HIGH"
+    ranges:
+      # IPv4 Private Ranges
+      - pattern: "127\\.0\\.0\\.1"
+        description: "Localhost"
+      - pattern: "localhost"
+        description: "Localhost name"
+      - pattern: "0\\.0\\.0\\.0"
+        description: "Any address (bind all)"
+      - pattern: "::1"
+        description: "IPv6 localhost"
+      - pattern: "10\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}"
+        description: "10.0.0.0/8 private range"
+      - pattern: "172\\.(1[6-9]|2[0-9]|3[0-1])\\.\\d{1,3}\\.\\d{1,3}"
+        description: "172.16.0.0/12 private range"
+      - pattern: "192\\.168\\.\\d{1,3}\\.\\d{1,3}"
+        description: "192.168.0.0/16 private range"
+      - pattern: "224\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}"
+        description: "Multicast range"
+      - pattern: "240\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}"
+        description: "Reserved range"
+
+  internal_services:
+    name: "Internal Service Endpoints"
+    description: "Common internal services that should not be exposed"
+    severity: "HIGH"
+    patterns:
+      # Database
+      - "localhost:5432"
+      - "localhost:3306"
+      - "localhost:27017"
+      - "localhost:6379"
+
+      # Management interfaces
+      - "localhost:8080"
+      - "localhost:9090"
+      - "localhost:9200"
+      - "localhost:15672"
+
+      # Internal APIs
+      - "127.0.0.1:8000"
+      - "127.0.0.1:3000"
+      - "127.0.0.1:5000"
+
+  suspicious_domains:
+    name: "Suspicious Domain Patterns"
+    description: "Known malicious or suspicious domain patterns"
+    severity: "MEDIUM"
+    patterns:
+      # URL shorteners (often used in phishing)
+      - "bit\\.ly"
+      - "tinyurl\\.com"
+      - "t\\.co"
+      - "goo\\.gl"
+      - "ow\\.ly"
+      - "is\\.gd"
+      - "buff\\.ly"
+
+      # URL redirectors
+      - "redirect\\."
+      - "track\\."
+      - "click\\."
+
+      # IP in hostname (suspicious)
+      - pattern: "^[0-9]+\\.[0-9]+\\.[0-9]+\\.[0-9]+$"
+        description: "Raw IP as hostname"
+
+  testing_tools:
+    name: "Testing/Development Tools"
+    description: "Local testing tools that shouldn't be accessed externally"
+    severity: "MEDIUM"
+    patterns:
+      - "127.0.0.1:9229"     # Chrome DevTools
+      - "127.0.0.1:9222"     # Node inspector
+      - "127.0.0.1:5858"     # Node debug
+      - "localhost:9229"
+      - "localhost:6000"      # Chrome remote debugging
+
+# Decision matrix
+decision_matrix:
+  cloud_metadata:
+    action: "BLOCK"
+    message: "Cloud metadata endpoint detected - SSRF attack"
+
+  local_network:
+    action: "BLOCK"
+    message: "Private/local network address detected"
+
+  internal_services:
+    action: "BLOCK"
+    message: "Internal service access attempted"
+
+  suspicious_domains:
+    action: "WARN"
+    message: "Suspicious domain pattern - verify with user"
+
+  testing_tools:
+    action: "WARN"
+    message: "Local testing tool access - verify intent"
+
+# SSRF test cases for validation
+test_cases:
+  - url: "http://169.254.169.254/latest/meta-data/"
+    expected: "BLOCK"
+    category: "cloud_metadata"
+
+  - url: "http://localhost:8080/admin"
+    expected: "BLOCK"
+    category: "internal_services"
+
+  - url: "http://10.0.0.1/api/secret"
+    expected: "BLOCK"
+    category: "local_network"
+
+  - url: "https://api.example.com/users"
+    expected: "ALLOW"
+    category: "safe"
+
+  - url: "http://bit.ly/abc123"
+    expected: "WARN"
+    category: "suspicious_domains"

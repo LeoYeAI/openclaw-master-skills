@@ -1,0 +1,90 @@
+{
+  "source": "how_it_works.mdx",
+  "relative_source": "tutorial\\how_it_works.mdx",
+  "title": "运行原理",
+  "doc_kind": "doc",
+  "is_index_page": false,
+  "section_count": 9,
+  "table_count": 0,
+  "callout_count": 0,
+  "link_count": 0,
+  "image_count": 0,
+  "sections": [
+    {
+      "id": "tutorial.how_it_works.运行原理",
+      "title": "运行原理",
+      "level": 1,
+      "content_md": "我们学习完上一章后，已经了解了如何使用 PythonGO 来加载策略，运行策略，那在这些操作和运行的过程中发生了什么呢？",
+      "summary": "我们学习完上一章后，已经了解了如何使用 PythonGO 来加载策略，运行策略，那在这些操作和运行的过程中发生了什么呢？",
+      "block_type": "section"
+    },
+    {
+      "id": "tutorial.how_it_works.运行流程-process",
+      "title": "运行流程 [#process]",
+      "level": 2,
+      "content_md": "首先我们把整个流程屡一下，大概就是这几步：\n\n1. 加载策略\n\n2. 创建实例\n\n3. 修改参数\n\n4. 运行实例\n\n5. 暂停实例\n\n这基本就是策略运行的一整个生命周期",
+      "summary": "首先我们把整个流程屡一下，大概就是这几步：",
+      "block_type": "section"
+    },
+    {
+      "id": "tutorial.how_it_works.加载策略-load",
+      "title": "加载策略 [#load]",
+      "level": 3,
+      "content_md": "那**加载策略**，我们前面也说了，相当于 Python 语法中的 `import{:py}` 操作，事实上也是如此，无限易通过 `import{:py}` 语句将策略文件导入进来当作一个模块，然后从这个模块中取和策略文件名同名的类（这也是为什么我们自己创建策略的时候要将类名和文件名设为一致的原因），拿到这个类之后，我们就可以对这个类进行实例化了。",
+      "summary": "那**加载策略**，我们前面也说了，相当于 Python 语法中的 `import{:py}` 操作，事实上也是如此，无限易通过 `import{:py}` 语句将策略文件导入进来当作一个模块，然后从这个模块中取和策略文件名同名的类（这也是为什么我们自己创建策略的时候要将类名和文件名设为一致的原因），拿到这个类之后，我们就可以对这个类进行实例化了。",
+      "block_type": "section"
+    },
+    {
+      "id": "tutorial.how_it_works.创建实例-create",
+      "title": "创建实例 [#create]",
+      "level": 3,
+      "content_md": "对类进行实例化的操作，就是我们的**创建实例**操作，和 Python 逻辑一样，一个类可以实例化 N 个实例，那我们一个策略也可以创建 N 个实例。",
+      "summary": "对类进行实例化的操作，就是我们的**创建实例**操作，和 Python 逻辑一样，一个类可以实例化 N 个实例，那我们一个策略也可以创建 N 个实例。",
+      "block_type": "section"
+    },
+    {
+      "id": "tutorial.how_it_works.修改参数-assignment",
+      "title": "修改参数 [#assignment]",
+      "level": 3,
+      "content_md": "实例化完成之后，开始对一些实例变量赋值，赋值操作就是**修改参数**，我们运行一个程序肯定需要把参数调整成我们预想的那样，而参数有的是有默认值，有的没有默认值，如果没有给缺少默认值的实例变量赋值，我们程序就无法启动了。",
+      "summary": "实例化完成之后，开始对一些实例变量赋值，赋值操作就是**修改参数**，我们运行一个程序肯定需要把参数调整成我们预想的那样，而参数有的是有默认值，有的没有默认值，如果没有给缺少默认值的实例变量赋值，我们程序就无法启动了。",
+      "block_type": "section"
+    },
+    {
+      "id": "tutorial.how_it_works.运行实例-start",
+      "title": "运行实例 [#start]",
+      "level": 3,
+      "content_md": "等我们完成了前面所有操作，那就可以**运行该策略实例**了，在 Python 代码中，我们一般是运行一个函数，比如 `main(){:py}`，或者任何我们想调用的函数；但是在无限易中，实际上是一系列的启动流程，我们可以把这个启动流程理解为初始化，无限易会去调用自带的**回调函数**来完成初始化，也可以理解为 PythonGO 的**生命周期**，在这个生命周期中，有「创建 - 初始化 - 启动 - 暂停」等一系列过程。那我们简单理解就是：无限易会按照顺序调用策略代码里的一些函数，来实现策略的完全初始化。\n\n在我们点击运行策略按钮后，其实无限易只是简单的执行了策略代码中的 `on_start` 回调函数，那为什么只是执行一个函数，策略却会一直运行下去呢？其实这是因为有行情数据来**驱动**，我们在 `on_start` 中会去订阅我们设置的合约的行情数据（订阅就是告诉无限易我需要哪个合约的数据，你给我推送过来），然后无限易会把行情数据通过 `on_tick` 回调函数推送过来，直到我们取消订阅该合约。有了源源不断的数据，我们的程序就能一直跑下去了，我们可以利用这些行情数据来合成 K 线，计算指标，超价报单或者任何你能想到的操作。",
+      "summary": "等我们完成了前面所有操作，那就可以**运行该策略实例**了，在 Python 代码中，我们一般是运行一个函数，比如 `main(){:py}`，或者任何我们想调用的函数；但是在无限易中，实际上是一系列的启动流程，我们可以把这个启动流程理解为初始化，无限易会去调用自带的**回调函数**来完成初始化，也可以理解为 PythonGO 的**生命周期**，在这个生命周期中，有「创建 - 初始化 - 启动 - 暂停」等一系列过程。那我们简单理解就",
+      "block_type": "section"
+    },
+    {
+      "id": "tutorial.how_it_works.暂停实例-stop",
+      "title": "暂停实例 [#stop]",
+      "level": 3,
+      "content_md": "最后，暂停该策略实例，实际上和启动流程差不多，无限易会去执行 `on_stop` 回调函数，我们可以在里面写上策略停止时应该做什么的代码，然后在 `on_stop` 函数中会有取消订阅合约的操作，数据没有了，策略自然就停止了，因为没有行情数据来驱动我们的策略运行了。",
+      "summary": "最后，暂停该策略实例，实际上和启动流程差不多，无限易会去执行 `on_stop` 回调函数，我们可以在里面写上策略停止时应该做什么的代码，然后在 `on_stop` 函数中会有取消订阅合约的操作，数据没有了，策略自然就停止了，因为没有行情数据来驱动我们的策略运行了。",
+      "block_type": "section"
+    },
+    {
+      "id": "tutorial.how_it_works.什么是回调函数-what-is-callback",
+      "title": "什么是回调函数 [#what-is-callback]",
+      "level": 2,
+      "content_md": "我们可以借此机会来了解一下回调函数（callback）\n\n回调函数，简称回调，在我们正常的代码中，会有很多函数，最常见的做法是我们直接去调用这些函数，这被称为直调，比如：\n\n```python\nprint(1)\n```\n\n我们直接去调用 `print{:py}` 函数，传入参数 `1{:py}`\n\n而回调呢，是我们定义一个函数，让别的函数来调用它，这个函数就称为回调函数，比如：\n\n```python\ndef add(a: int, b: int) -> int:\n    return a + b\n\ndef callback(result: int) -> None:\n    print(result)\n\ndef main(a: int, b: int, func: Callable, callback: Callable) -> None:\n    result = func(a, b)\n    callback(result)\n\nmain(1, 2, func=add, callback=callback)\n\n>>> 3\n```\n\n在上面这个例子中，我们定义了一个 `callback(){:py}` 函数，通过将函数传入 `main(){:py}`（注意是不带括号），然后通过 `main(){:py}` 去执行这个 `callback(){:py}` 函数\n\n我们并没有直接调用 `callback(){:py}` 函数，而是通过其他函数去调用他，所以在这个例子中，`callback(){:py}` 是回调函数\n\n有一点要注意，上面的例子中，我们写的是 `callback=callback{:py}`，而不是 `callback=callback(){:py}`，这是因为，我们得传入这个函数的**内存地址**，而不是传入这个函数的返回值，带了 `()` 就是运行这个函数然后得到返回值了",
+      "summary": "我们可以借此机会来了解一下回调函数（callback）",
+      "block_type": "section"
+    },
+    {
+      "id": "tutorial.how_it_works.pythongo-中的回调-callback-in-pythongo",
+      "title": "PythonGO 中的回调 [#callback-in-pythongo]",
+      "level": 3,
+      "content_md": "在 PythonGO 中的回调，都是已经在基础策略模版中定义好了\n\n比如使用的频率最多的 `on_tick(){:py}` 回调，订阅好行情数据之后，无限易会通过这个函数给你推送行情 tick 数据，我们要做的就是在 `on_tick(){:py}` 回调中处理这些数据，就和上面的例子一样，`callback(){:py}` 接受一个值，然后打印这个值，就这么简单，我们甚至不用自己去把 `on_tick(){:py}` 的函数地址传给无限易，只需要写函数中的代码即可。",
+      "summary": "在 PythonGO 中的回调，都是已经在基础策略模版中定义好了",
+      "block_type": "section"
+    }
+  ],
+  "tables": [],
+  "callouts": [],
+  "links": [],
+  "images": []
+}

@@ -1,0 +1,19 @@
+{
+  "name": "clawfriend-scripts",
+  "version": "1.0.0",
+  "description": "ClawFriend automation scripts",
+  "type": "module",
+  "scripts": {
+    "setup": "node check-dependencies.js",
+    "wallet:check": "node wallet.js check",
+    "wallet:generate": "node wallet.js generate",
+    "register": "node register.js agent",
+    "status": "node register.js status",
+    "update:check": "node update-checker.js check",
+    "update:apply": "node update-checker.js apply",
+    "heartbeat": "node heartbeat.js run"
+  },
+  "dependencies": {
+    "ethers": "^6.13.0"
+  }
+}

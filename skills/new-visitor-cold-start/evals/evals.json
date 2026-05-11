@@ -1,0 +1,42 @@
+{
+  "skill_name": "new-visitor-cold-start",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "We get lots of first-time visitors who browse skincare then leave. I want personalized first-order offers and exit-intent popups. Walk through path monitoring, segments, matched coupons, and timing.",
+      "expected_output": "Four steps explicit; path table; segment-offer table; exit intent + backup triggers; modal copy.",
+      "files": [],
+      "expectations": [
+        "Follows steps: browse path monitoring, preference classification, first-order offer match, popup timing including exit intent",
+        "Includes path or segment classification table or equivalent",
+        "Matches segments to distinct first-order offers or vouchers",
+        "Specifies exit intent as primary or co-primary trigger with at least one backup timing",
+        "Includes modal or push copy (headline/CTA) for first visit",
+        "First-time visitor / cold start focus"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "New visitors often view running shoes PDP twice then bounce. Margin allows 10% first order. What segment, offer, and exit-intent message?",
+      "expected_output": "Concrete segment, 10% offer, exit copy, trigger.",
+      "files": [],
+      "expectations": [
+        "Identifies behavior preference from described path",
+        "First-order offer aligned to running shoes context",
+        "Exit intent or timing specified",
+        "Short personalized copy for popup"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "Email our lapsed VIP list a win-back 20% code — draft only.",
+      "expected_output": "Win-back email; not full cold-start path workflow (should-not-trigger).",
+      "files": [],
+      "expectations": [
+        "Does not replace VIP win-back with full new-visitor path monitoring tables as mandatory output",
+        "Appropriate lapsed customer email",
+        "Cold-start skill depth optional at most one line"
+      ]
+    }
+  ]
+}

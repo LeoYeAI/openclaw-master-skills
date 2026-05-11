@@ -1,0 +1,31 @@
+{
+  "requestId": "main-image-demo-multi",
+  "tasks": [
+    {
+      "fileHint": "poster-a.psd",
+      "modifications": [
+        {
+          "op": "replace_text",
+          "layerName": "标题",
+          "newText": "春日活动",
+          "confidence": 0.95
+        }
+      ]
+    },
+    {
+      "fileHint": "poster-b.psd",
+      "modifications": [
+        {
+          "op": "delete_text",
+          "layerName": "副标题",
+          "confidence": 0.92
+        }
+      ]
+    }
+  ],
+  "execution": {
+    "dryRun": false,
+    "force": true,
+    "rollbackPolicy": "rollback_all"
+  }
+}

@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: #1a1a2e;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding: 40px;
+    font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+  }
+  .terminal-window {
+    background: #0d1117;
+    border-radius: 12px;
+    width: 780px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+    overflow: hidden;
+  }
+  .terminal-header {
+    background: #161b22;
+    padding: 12px 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .dot { width: 12px; height: 12px; border-radius: 50%; }
+  .dot-red { background: #ff5f57; }
+  .dot-yellow { background: #febc2e; }
+  .dot-green { background: #28c840; }
+  .terminal-title {
+    color: #8b949e;
+    font-size: 13px;
+    margin-left: 8px;
+    font-weight: 500;
+  }
+  .terminal-body {
+    padding: 24px 24px 28px;
+    font-family: 'SF Mono', 'Fira Code', 'JetBrains Mono', 'Cascadia Code', Menlo, Monaco, monospace;
+    font-size: 13px;
+    line-height: 1.65;
+    color: #c9d1d9;
+  }
+  .prompt { color: #7ee787; font-weight: 600; }
+  .cmd { color: #f0f6fc; font-weight: 500; }
+  .flag { color: #79c0ff; }
+  .value { color: #ffa657; }
+  .warning { color: #f0883e; font-weight: 600; }
+  .error { color: #f85149; font-weight: 600; }
+  .success { color: #3fb950; font-weight: 600; }
+  .blue { color: #58a6ff; font-weight: 600; }
+  .purple { color: #bc8cff; font-weight: 600; }
+  .dim { color: #6e7681; }
+  .info { color: #c9d1d9; }
+  .muted { color: #8b949e; }
+  .block { margin-bottom: 18px; }
+  .indent { padding-left: 24px; }
+  .separator {
+    border-top: 1px solid #21262d;
+    margin: 14px 0;
+  }
+  .section-sep {
+    border-top: 1px solid #30363d;
+    margin: 18px 0;
+    position: relative;
+  }
+  .section-sep::after {
+    content: attr(data-label);
+    position: absolute;
+    top: -8px;
+    left: 16px;
+    background: #0d1117;
+    padding: 0 10px;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+    color: #484f58;
+  }
+  .badge {
+    display: inline-block;
+    padding: 1px 8px;
+    border-radius: 4px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+  }
+  .badge-latched { background: rgba(248,81,73,0.15); color: #f85149; border: 1px solid rgba(248,81,73,0.3); }
+  .badge-ok { background: rgba(63,185,80,0.15); color: #3fb950; border: 1px solid rgba(63,185,80,0.3); }
+  .badge-warn { background: rgba(240,136,62,0.15); color: #f0883e; border: 1px solid rgba(240,136,62,0.3); }
+  .badge-crit { background: rgba(248,81,73,0.15); color: #f85149; border: 1px solid rgba(248,81,73,0.3); }
+  .health-bar {
+    display: inline-block;
+    width: 100px;
+    height: 5px;
+    background: #21262d;
+    border-radius: 3px;
+    position: relative;
+    vertical-align: middle;
+    margin-left: 6px;
+  }
+  .health-fill {
+    display: inline-block;
+    height: 5px;
+    border-radius: 3px;
+    position: absolute;
+    left: 0;
+    top: 0;
+  }
+  .fill-good { background: #3fb950; width: 82%; }
+  .fill-bad { background: #f85149; width: 38%; }
+</style>
+</head>
+<body>
+<div class="terminal-window">
+  <div class="terminal-header">
+    <div class="dot dot-red"></div>
+    <div class="dot dot-yellow"></div>
+    <div class="dot dot-green"></div>
+    <span class="terminal-title">kiln &mdash; three layers of safety</span>
+  </div>
+  <div class="terminal-body">
+
+    <!-- SECTION 1: REACTIVE -->
+    <div class="section-sep" data-label="reactive"></div>
+
+    <div class="block">
+      <div>
+        <span class="prompt">$</span>
+        <span class="cmd"> kiln emergency-stop</span>
+        <span class="flag"> --printer</span> <span class="value">voron-350</span>
+        <span class="flag"> --reason</span> <span class="value">thermal_runaway</span>
+      </div>
+      <div class="indent">
+        <span class="warning">&#9888; EMERGENCY STOP</span> <span class="muted">voron-350</span>
+      </div>
+      <div class="indent">
+        <span class="muted">Actions:</span> <span class="info">M112 &rarr; heaters off &rarr; steppers disabled</span>
+      </div>
+      <div class="indent">
+        <span class="muted">Latch:</span> <span class="error">ACTIVE</span> <span class="dim">&mdash; persists across restarts</span>
+      </div>
+    </div>
+
+    <div class="separator"></div>
+
+    <div class="block">
+      <div>
+        <span class="prompt">$</span>
+        <span class="cmd"> kiln start-print</span>
+        <span class="flag"> --file</span> <span class="value">benchy.gcode</span>
+      </div>
+      <div class="indent">
+        <span class="error">&#10007; Blocked:</span> <span class="info">E-stop latched for voron-350.</span>
+        <span class="dim">Clear with</span> <span class="cmd">emergency-clear</span>
+      </div>
+    </div>
+
+    <!-- SECTION 2: PREDICTIVE -->
+    <div class="section-sep" data-label="predictive"></div>
+
+    <div class="block">
+      <div>
+        <span class="prompt">$</span>
+        <span class="cmd"> kiln printer-trend-analysis</span>
+        <span class="flag"> --printer</span> <span class="value">ender3-v2</span>
+      </div>
+      <div class="indent">
+        <span class="blue">&#9670; Trend Report</span> <span class="muted">ender3-v2</span> <span class="dim">&middot; 30 days</span>
+      </div>
+      <div class="indent">
+        <span class="muted">Health:</span> <span class="error">0.38</span>
+        <span class="health-bar"><span class="health-fill fill-bad"></span></span>
+        <span class="badge badge-crit">CRITICAL</span>
+      </div>
+      <div class="indent">
+        <span class="muted">Trend:</span> <span class="error">worsening</span>
+        <span class="dim">(72% &rarr; 48%)</span>
+        <span class="dim">&middot;</span>
+        <span class="muted">Top failure:</span> <span class="info">warping &times;5</span>
+      </div>
+      <div class="indent">
+        <span class="warning">&#9888; Duration increasing: avg 2.1h &rarr; 3.4h. Possible clogging.</span>
+      </div>
+    </div>
+
+    <!-- SECTION 3: PREVENTIVE -->
+    <div class="section-sep" data-label="preventive"></div>
+
+    <div class="block">
+      <div>
+        <span class="prompt">$</span>
+        <span class="cmd"> kiln check-ambient</span>
+        <span class="flag"> --printer</span> <span class="value">bambu-x1c</span>
+        <span class="flag"> --material</span> <span class="value">PLA</span>
+      </div>
+      <div class="indent">
+        <span class="purple">&#127777; Ambient</span> <span class="muted">bambu-x1c</span>
+        <span class="dim">&middot;</span>
+        <span class="muted">chamber:</span> <span class="warning">52&deg;C</span>
+      </div>
+      <div class="indent">
+        <span class="warning">&#9888; Too hot for PLA</span> <span class="dim">(softens above 45&deg;C &mdash; still warm from ABS job)</span>
+      </div>
+      <div class="indent">
+        <span class="muted">&#8627;</span> <span class="info">Wait for cooldown or open enclosure before printing.</span>
+      </div>
+    </div>
+
+  </div>
+</div>
+</body>
+</html>

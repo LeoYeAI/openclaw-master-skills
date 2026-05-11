@@ -1,0 +1,81 @@
+{
+  "version": "1.0.0",
+  "name": "personify-memory",
+  "description": "有温度的数字生命记忆系统",
+  
+  "archiveSchedule": "0 3 * * *",
+  "archiveAfterDays": 7,
+  "autoArchive": true,
+  
+  "promptForMemory": true,
+  "importanceThreshold": "high",
+  
+  "importanceLevels": ["critical", "high", "medium", "low"],
+  "categories": [
+    "情感交流",
+    "家庭信息",
+    "重要决策",
+    "项目进展",
+    "用户偏好",
+    "经验总结",
+    "人生哲理",
+    "承诺约定"
+  ],
+  
+  "memoryTypes": {
+    "core": {
+      "file": "MEMORY.md",
+      "description": "核心记忆 - 永久保存",
+      "autoArchive": false
+    },
+    "emotion": {
+      "file": "emotion-memory.json",
+      "description": "情感记忆 - 结构化存储",
+      "autoArchive": false
+    },
+    "knowledge": {
+      "file": "knowledge-base.md",
+      "description": "知识库 - 经验总结",
+      "autoArchive": false
+    },
+    "daily": {
+      "dir": "daily/",
+      "description": "每日记忆 - 原始日志",
+      "autoArchive": true,
+      "archiveAfterDays": 7
+    }
+  },
+  
+  "searchConfig": {
+    "includeArchivedByDefault": false,
+    "defaultLimit": 10,
+    "fuzzySearch": true
+  },
+  
+  "momentDetector": {
+    "enabled": true,
+    "scoreThreshold": 3,
+    "autoRecommend": true,
+    "types": {
+      "emotional": { "enabled": true, "weight": 1.0 },
+      "family": { "enabled": true, "weight": 1.0 },
+      "philosophy": { "enabled": true, "weight": 1.0 },
+      "promise": { "enabled": true, "weight": 1.0 },
+      "preference": { "enabled": true, "weight": 0.8 },
+      "lesson": { "enabled": true, "weight": 0.9 },
+      "milestone": { "enabled": true, "weight": 0.7 }
+    }
+  },
+  
+  "commandParser": {
+    "enabled": true,
+    "patterns": [
+      "记住.*",
+      "把.*记.*",
+      "不要忘记.*",
+      "这个很重要.*",
+      "记到.*里",
+      "记入.*"
+    ]
+  }
+}

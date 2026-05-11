@@ -1,0 +1,79 @@
+{
+  "name": "e-commerce",
+  "label": "快速电商站",
+  "labelEn": "E-Commerce",
+  "description": "完整的电商全链路：商品展示、用户认证、购物车、微信/支付宝支付、订单管理",
+  "modules": ["auth", "cart", "payment", "orders", "admin"],
+  "stackModules": ["products", "cart", "payment"],
+  "layer1": {
+    "auth": true,
+    "cart": true,
+    "payment": true,
+    "orders": true,
+    "admin": true
+  },
+  "layer2": {
+    "notification": true,
+    "seo": false,
+    "analytics": false,
+    "i18n": false
+  },
+  "dependencies": {
+    "npm": ["bcryptjs", "jsonwebtoken", "mysql2"],
+    "edgeone": {
+      "kv": true,
+      "cloudFunctions": true
+    }
+  },
+  "envVars": [
+    "JWT_PRIVATE_KEY",
+    "JWT_PUBLIC_KEY",
+    "JWT_SECRET",
+    "WX_APPID",
+    "WX_MCHID",
+    "WX_API_KEY",
+    "WX_CERT_PATH",
+    "ALI_APP_ID",
+    "ALI_PRIVATE_KEY",
+    "DATABASE_URL",
+    "EDGE_BASE"
+  ],
+  "features": [
+    "商品浏览与搜索",
+    "用户注册/登录（JWT + Refresh Token）",
+    "购物车（localStorage + KV 双模式）",
+    "微信支付 V3 预下单 + 回调",
+    "支付宝支付预下单 + 回调",
+    "订单创建（原子性：SELECT FOR UPDATE）",
+    "支付幂等原子锁",
+    "订单状态机",
+    "管理员商品 CRUD",
+    "管理员订单管理",
+    "管理员用户管理",
+    "运营统计"
+  ],
+  "pages": [
+    "/",
+    "/login",
+    "/register",
+    "/cart",
+    "/checkout",
+    "/payment/success",
+    "/orders",
+    "/admin/products",
+    "/admin/orders",
+    "/admin/users",
+    "/admin/stats"
+  ],
+  "securityChecks": [
+    "bcrypt cost=12",
+    "JWT RS256 + 30天 HS256 兼容窗口",
+    "JWT 15min AT + RT 7d 轮换",
+    "Cookie HttpOnly + Secure + SameSite=Strict",
+    "支付幂等 putIfNotExists",
+    "金额服务端 MySQL 读取",
+    "AI 限流",
+    "CSP Header",
+    "订单状态机（6状态 + 权限矩阵 + 审计日志）"
+  ]
+}

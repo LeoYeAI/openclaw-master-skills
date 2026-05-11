@@ -1,0 +1,234 @@
+# CFAv1Forwarder — convenience wrapper for ConstantFlowAgreementV1
+# Allows direct interaction with CFA functions without manually routing through
+# the Host's batchCall / forwardBatchCall. Operates as a trusted forwarder,
+# preserving msg.sender via EIP-2771.
+#
+# Each forwarder call is a standalone transaction — forwarder calls cannot be
+# combined in a Host.batchCall. To batch multiple operations atomically (e.g.
+# wrap tokens + create stream), use Host.batchCall with the raw CFA agreement
+# (operationType 201). See Superfluid.abi.yaml for batch operation details.
+# Tradeoff: forwarder calls produce human-readable descriptions in wallets
+# (e.g. "setFlowrate(token, receiver, flowrate)"), while Host.batchCall
+# shows encoded tuples that are difficult for users to verify.
+#
+# This contract has no events — all events are emitted by the underlying CFA.
+# Errors from the CFA (and Host) propagate through to the caller.
+
+meta:
+  name: CFAv1Forwarder
+  version: v1
+  source:
+    - https://raw.githubusercontent.com/superfluid-org/protocol-monorepo/refs/heads/dev/packages/ethereum-contracts/contracts/utils/CFAv1Forwarder.sol
+    - https://raw.githubusercontent.com/superfluid-org/protocol-monorepo/refs/heads/dev/packages/ethereum-contracts/contracts/utils/ForwarderBase.sol
+  inherits: [ForwarderBase]
+  deployments:
+    # Same address on all networks except avalanche-fuji
+    mainnet:
+      eth-mainnet: "0xcfA132E353cB4E398080B9700609bb008eceB125"
+      polygon-mainnet: "0xcfA132E353cB4E398080B9700609bb008eceB125"
+      xdai-mainnet: "0xcfA132E353cB4E398080B9700609bb008eceB125"
+      base-mainnet: "0xcfA132E353cB4E398080B9700609bb008eceB125"
+      optimism-mainnet: "0xcfA132E353cB4E398080B9700609bb008eceB125"
+      arbitrum-one: "0xcfA132E353cB4E398080B9700609bb008eceB125"
+      bsc-mainnet: "0xcfA132E353cB4E398080B9700609bb008eceB125"
+      avalanche-c: "0xcfA132E353cB4E398080B9700609bb008eceB125"
+      celo-mainnet: "0xcfA132E353cB4E398080B9700609bb008eceB125"
+      scroll-mainnet: "0xcfA132E353cB4E398080B9700609bb008eceB125"
+      degenchain: "0xcfA132E353cB4E398080B9700609bb008eceB125"
+    testnet:
+      avalanche-fuji: "0x2CDd45c5182602a36d391F7F16DD9f8386C3bD8D"
+      base-sepolia: "0xcfA132E353cB4E398080B9700609bb008eceB125"
+      eth-sepolia: "0xcfA132E353cB4E398080B9700609bb008eceB125"
+      optimism-sepolia: "0xcfA132E353cB4E398080B9700609bb008eceB125"
+      scroll-sepolia: "0xcfA132E353cB4E398080B9700609bb008eceB125"
+
+# == Glossary ==
+# flowrate          — token transfer rate in wad/second (int96)
+# flowOperator      — account authorized to create/update/delete flows on behalf of another
+# buffer            — deposit locked as solvency collateral while a flow is active
+# permissions       — bitmask of create | update | delete rights for an operator
+# flowrateAllowance — max flowrate an operator may set per individual flow
+
+# == Flow Management ==
+# High-level functions that automatically create, update, or delete flows as needed.
+
+setFlowrate:
+  # Smart setter: creates a new flow if none exists, updates if flowrate changed,
+  # deletes if flowrate is zero. No-ops if the current rate already matches.
+  notes:
+    - "Gotcha: Negative flowrate values revert with CFA_FWD_INVALID_FLOW_RATE."
+  mutability: nonpayable
+  access: anyone  # flow from msg.sender
+  inputs:
+    - token: address
+    - receiver: address
+    - flowrate: int96           # must be >= 0
+  outputs:
+    - bool
+  errors: [CFA_FWD_INVALID_FLOW_RATE]
+
+setFlowrateFrom:
+  # Same as setFlowrate but can be called by a flow operator on behalf of `sender`.
+  # msg.sender must have sufficient operator permissions and flowrateAllowance.
+  mutability: nonpayable
+  access: sender | operator
+  inputs:
+    - token: address
+    - sender: address
+    - receiver: address
+    - flowrate: int96
+  outputs:
+    - bool
+  errors: [CFA_FWD_INVALID_FLOW_RATE]
+
+# == Low-Level Flow Operations ==
+# Direct wrappers around CFA functions. These give full control (including userData)
+# but require the caller to know whether a flow already exists.
+# If sender != msg.sender, the *ByOperator variant is used internally.
+
+createFlow:
+  # Create a new flow. Reverts if a flow already exists between sender and receiver.
+  mutability: nonpayable
+  access: sender | operator
+  inputs:
+    - token: address
+    - sender: address
+    - receiver: address
+    - flowrate: int96
+    - userData: bytes
+  outputs:
+    - bool
+
+updateFlow:
+  # Update an existing flow's rate. Reverts if no flow exists.
+  mutability: nonpayable
+  access: sender | operator
+  inputs:
+    - token: address
+    - sender: address
+    - receiver: address
+    - flowrate: int96
+    - userData: bytes
+  outputs:
+    - bool
+
+deleteFlow:
+  # Delete an existing flow. Can be called by sender, receiver, or an operator.
+  # If msg.sender is neither sender nor receiver, deleteFlowByOperator is used.
+  mutability: nonpayable
+  access: sender | receiver | operator
+  inputs:
+    - token: address
+    - sender: address
+    - receiver: address
+    - userData: bytes
+  outputs:
+    - bool
+
+# == ACL (Operator Permissions) ==
+
+grantPermissions:
+  # Grant full create/update/delete permissions with max flowrateAllowance to an operator.
+  # Convenience wrapper — equivalent to updateFlowOperatorPermissions with full control.
+  mutability: nonpayable
+  access: anyone  # grants on msg.sender's flows
+  inputs:
+    - token: address
+    - flowOperator: address
+  outputs:
+    - bool
+
+revokePermissions:
+  # Revoke all permissions from an operator. Does not affect existing flows.
+  mutability: nonpayable
+  access: anyone  # revokes on msg.sender's flows
+  inputs:
+    - token: address
+    - flowOperator: address
+  outputs:
+    - bool
+
+updateFlowOperatorPermissions:
+  # Set granular operator permissions and flowrate allowance.
+  notes:
+    - "Gotcha: flowrateAllowance limits per-flow rate, NOT aggregate net flow."
+  mutability: nonpayable
+  access: anyone  # grants on msg.sender's flows
+  inputs:
+    - token: address
+    - flowOperator: address
+    - permissions: uint8        # bitmask: 1=create, 2=update, 4=delete
+    - flowrateAllowance: int96
+  outputs:
+    - bool
+
+# == Flow Queries ==
+
+getFlowrate:
+  mutability: view
+  inputs:
+    - token: address
+    - sender: address
+    - receiver: address
+  outputs:
+    - flowrate: int96
+
+getFlowInfo:
+  mutability: view
+  inputs:
+    - token: address
+    - sender: address
+    - receiver: address
+  outputs:
+    - lastUpdated: uint256
+    - flowrate: int96
+    - deposit: uint256
+    - owedDeposit: uint256
+
+getBufferAmountByFlowrate:
+  # Returns the deposit/buffer required for a given flowrate.
+  notes:
+    - "Gotcha: This value is governance-configurable and may change over time. Changes only affect newly created/updated flows."
+  mutability: view
+  inputs:
+    - token: address
+    - flowrate: int96
+  outputs:
+    - bufferAmount: uint256
+
+getAccountFlowrate:
+  # Net aggregate flowrate for an account (incoming minus outgoing).
+  mutability: view
+  inputs:
+    - token: address
+    - account: address
+  outputs:
+    - flowrate: int96
+
+getAccountFlowInfo:
+  mutability: view
+  inputs:
+    - token: address
+    - account: address
+  outputs:
+    - lastUpdated: uint256
+    - flowrate: int96
+    - deposit: uint256
+    - owedDeposit: uint256
+
+# == ACL Queries ==
+
+getFlowOperatorPermissions:
+  mutability: view
+  inputs:
+    - token: address
+    - sender: address
+    - flowOperator: address
+  outputs:
+    - permissions: uint8
+    - flowrateAllowance: int96
+
+# == Errors ==
+
+errors:
+  - CFA_FWD_INVALID_FLOW_RATE   # flowrate argument was negative

@@ -1,0 +1,218 @@
+[
+  {
+    "type": "function",
+    "name": "getMaxBet",
+    "inputs": [],
+    "outputs": [
+      {
+        "name": "",
+        "type": "uint256",
+        "internalType": "uint256"
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "getPlayerInfo",
+    "inputs": [
+      {
+        "name": "playerAddress",
+        "type": "address",
+        "internalType": "address"
+      }
+    ],
+    "outputs": [
+      {
+        "name": "",
+        "type": "tuple",
+        "internalType": "struct ViewFacet.PlayerView",
+        "components": [
+          {
+            "name": "shares",
+            "type": "uint256",
+            "internalType": "uint256"
+          },
+          {
+            "name": "pendingDividends",
+            "type": "uint256",
+            "internalType": "uint256"
+          },
+          {
+            "name": "pendingRequestId",
+            "type": "uint256",
+            "internalType": "uint256"
+          },
+          {
+            "name": "canClaim",
+            "type": "bool",
+            "internalType": "bool"
+          }
+        ]
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "getPrizePool",
+    "inputs": [],
+    "outputs": [
+      {
+        "name": "",
+        "type": "uint256",
+        "internalType": "uint256"
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "getSlotConfig",
+    "inputs": [],
+    "outputs": [
+      {
+        "name": "",
+        "type": "tuple",
+        "internalType": "struct ViewFacet.SlotConfig",
+        "components": [
+          {
+            "name": "token",
+            "type": "address",
+            "internalType": "address"
+          },
+          {
+            "name": "minBet",
+            "type": "uint256",
+            "internalType": "uint256"
+          },
+          {
+            "name": "maxBet",
+            "type": "uint256",
+            "internalType": "uint256"
+          },
+          {
+            "name": "prizePool",
+            "type": "uint256",
+            "internalType": "uint256"
+          },
+          {
+            "name": "totalShares",
+            "type": "uint256",
+            "internalType": "uint256"
+          },
+          {
+            "name": "devFeeBps",
+            "type": "uint16",
+            "internalType": "uint16"
+          },
+          {
+            "name": "dividendBps",
+            "type": "uint16",
+            "internalType": "uint16"
+          },
+          {
+            "name": "vrfFee",
+            "type": "uint256",
+            "internalType": "uint256"
+          },
+          {
+            "name": "totalSpins",
+            "type": "uint256",
+            "internalType": "uint256"
+          },
+          {
+            "name": "totalBetAmount",
+            "type": "uint256",
+            "internalType": "uint256"
+          },
+          {
+            "name": "totalWinAmount",
+            "type": "uint256",
+            "internalType": "uint256"
+          },
+          {
+            "name": "totalDividendsDistributed",
+            "type": "uint256",
+            "internalType": "uint256"
+          }
+        ]
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "getSpinRequest",
+    "inputs": [
+      {
+        "name": "requestId",
+        "type": "uint256",
+        "internalType": "uint256"
+      }
+    ],
+    "outputs": [
+      {
+        "name": "",
+        "type": "tuple",
+        "internalType": "struct SpinRequest",
+        "components": [
+          {
+            "name": "player",
+            "type": "address",
+            "internalType": "address"
+          },
+          {
+            "name": "betAmount",
+            "type": "uint256",
+            "internalType": "uint256"
+          },
+          {
+            "name": "prizeAmount",
+            "type": "uint256",
+            "internalType": "uint256"
+          },
+          {
+            "name": "lockedPrize",
+            "type": "uint256",
+            "internalType": "uint256"
+          },
+          {
+            "name": "fulfilled",
+            "type": "bool",
+            "internalType": "bool"
+          },
+          {
+            "name": "cancelled",
+            "type": "bool",
+            "internalType": "bool"
+          },
+          {
+            "name": "timestamp",
+            "type": "uint64",
+            "internalType": "uint64"
+          },
+          {
+            "name": "blockNumber",
+            "type": "uint64",
+            "internalType": "uint64"
+          }
+        ]
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "isPaused",
+    "inputs": [],
+    "outputs": [
+      {
+        "name": "",
+        "type": "bool",
+        "internalType": "bool"
+      }
+    ],
+    "stateMutability": "view"
+  }
+]

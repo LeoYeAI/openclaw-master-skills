@@ -1,0 +1,44 @@
+diff --git a/ui/src/ui/views/agents-panels-status-files.ts b/ui/src/ui/views/agents-panels-status-files.ts
+index 23de4cb96..2b8453dd2 100644
+--- a/ui/src/ui/views/agents-panels-status-files.ts
++++ b/ui/src/ui/views/agents-panels-status-files.ts
+@@ -274,6 +274,16 @@ export function renderAgentCron(params: {
+   onRefresh: () => void;
+ }) {
+   const jobs = params.jobs.filter((job) => job.agentId === params.agentId);
++  const agentNextWakeMs =
++    jobs.length > 0
++      ? jobs.reduce<number | null>((min, job) => {
++          const t = job.state?.nextRunAtMs ?? null;
++          if (t == null) {
++            return min;
++          }
++          return min == null ? t : Math.min(min, t);
++        }, null)
++      : null;
+   return html`
+     <section class="grid grid-cols-2">
+       ${renderAgentContextCard(params.context, "Workspace and scheduling targets.")}
+@@ -281,7 +291,7 @@ export function renderAgentCron(params: {
+         <div class="row" style="justify-content: space-between;">
+           <div>
+             <div class="card-title">Scheduler</div>
+-            <div class="card-sub">Gateway cron status.</div>
++            <div class="card-sub">Agent cron scheduling status.</div>
+           </div>
+           <button class="btn btn--sm" ?disabled=${params.loading} @click=${params.onRefresh}>
+             ${params.loading ? "Refreshing…" : "Refresh"}
+@@ -296,11 +306,11 @@ export function renderAgentCron(params: {
+           </div>
+           <div class="stat">
+             <div class="stat-label">Jobs</div>
+-            <div class="stat-value">${params.status?.jobs ?? "n/a"}</div>
++            <div class="stat-value">${jobs.length}</div>
+           </div>
+           <div class="stat">
+             <div class="stat-label">Next wake</div>
+-            <div class="stat-value">${formatNextRun(params.status?.nextWakeAtMs ?? null)}</div>
++            <div class="stat-value">${formatNextRun(agentNextWakeMs)}</div>
+           </div>
+         </div>
+         ${

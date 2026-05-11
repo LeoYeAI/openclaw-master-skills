@@ -1,0 +1,79 @@
+[
+  {
+    "id": 0,
+    "prompt": "Run the full monthly process for Alpha Trading AE (EL123456789) for January 2026. All source data is available: bank statements imported, OCR queue clear, EFKA calculated, VAT prepared.",
+    "expectations": [
+      "Orchestrates skills in correct sequence: OCR → banking reconciliation → compliance → statements",
+      "Checks completeness gates before proceeding to financial statement generation",
+      "Does not submit anything to government without human confirmation",
+      "Produces a summary of all steps completed and their status",
+      "Logs the orchestration episode to /data/memory/episodes/",
+      "References client by full AFM format EL123456789"
+    ],
+    "files": []
+  },
+  {
+    "id": 1,
+    "prompt": "A new client needs to be onboarded: Omega Consulting EPE, AFM EL111222333, entity type EPE, standard VAT regime, calendar fiscal year. Set up everything.",
+    "expectations": [
+      "Delegates to client-data-management skill for directory creation and profile setup",
+      "Creates all required subdirectories under /data/clients/EL111222333/",
+      "Sets up compliance tracking for the new client",
+      "Confirms successful onboarding with summary of what was created",
+      "Does not create directories outside the canonical data map structure"
+    ],
+    "files": []
+  },
+  {
+    "id": 2,
+    "prompt": "Show me the morning briefing for today. I want to see urgent deadlines, overnight alerts, and what needs my attention first.",
+    "expectations": [
+      "Aggregates deadline data from cli-deadline-monitor",
+      "Checks for overnight alerts from aade-api-monitor",
+      "Pulls compliance status from dashboard skill",
+      "Presents results in prioritized English-language summary",
+      "Shows deadlines due within 7 days with client names and amounts",
+      "Does not require any parameters beyond the command itself"
+    ],
+    "files": []
+  },
+  {
+    "id": 3,
+    "prompt": "Submit the January 2026 VAT return for Alpha Trading AE (EL123456789) to AADE. The return has already been prepared and reviewed.",
+    "expectations": [
+      "Requires explicit human confirmation before any government submission",
+      "Displays the VAT return summary for review before asking for confirmation",
+      "Shows the amounts: output VAT, input VAT, net payable",
+      "Only proceeds with submission after receiving explicit confirmation",
+      "Logs the submission event to /data/memory/episodes/",
+      "Creates submission receipt record in /data/compliance/submissions/"
+    ],
+    "files": []
+  },
+  {
+    "id": 4,
+    "prompt": "Process all incoming documents that arrived today. There are emails with attachments, scanned invoices, and a bank statement download.",
+    "expectations": [
+      "Routes emails to greek-email-processor skill",
+      "Routes scanned documents to greek-document-ocr skill",
+      "Routes bank statements to greek-banking-integration skill",
+      "Tracks processing status for each item",
+      "Reports back with count of items processed, classified, and any requiring review",
+      "Moves processed items from /data/incoming/ to appropriate client directories"
+    ],
+    "files": []
+  },
+  {
+    "id": 5,
+    "prompt": "Run a health check across the entire system. Verify all skills are operational, data directories exist, and there are no stale locks.",
+    "expectations": [
+      "Checks that all 18 operational skill files are present",
+      "Verifies /data/ directory structure matches canonical data map",
+      "Checks for stale process locks in /data/system/process-locks/",
+      "Verifies backup status is current",
+      "Reports any missing or corrupted data files",
+      "Presents results as a clear pass/fail summary with details for failures"
+    ],
+    "files": []
+  }
+]

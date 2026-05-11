@@ -1,0 +1,53 @@
+{
+  "name": "@openclaw/skill-yatta",
+  "version": "0.2.2",
+  "description": "OpenClaw skill for managing Yatta! tasks, projects, and productivity",
+  "main": "SKILL.md",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "openclaw",
+    "clawdbot",
+    "moltbot",
+    "skill",
+    "yatta",
+    "tasks",
+    "productivity",
+    "time-management",
+    "api"
+  ],
+  "author": "Chris Giddings <chris@chrisgiddings.net>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/chrisagiddings/openclaw-yatta-skill.git"
+  },
+  "bugs": {
+    "url": "https://github.com/chrisagiddings/openclaw-yatta-skill/issues"
+  },
+  "homepage": "https://github.com/chrisagiddings/openclaw-yatta-skill#readme",
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "openclaw": {
+    "skillName": "yatta",
+    "emoji": "✅",
+    "disable-model-invocation": true,
+    "requires": {
+      "bins": [
+        "curl",
+        "jq"
+      ],
+      "env": [
+        "YATTA_API_KEY",
+        "YATTA_API_URL"
+      ],
+      "anyBins": [
+        "openssl",
+        "dig"
+      ]
+    },
+    "primaryEnv": "YATTA_API_KEY"
+  }
+}

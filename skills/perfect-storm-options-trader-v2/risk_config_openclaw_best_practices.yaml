@@ -1,0 +1,154 @@
+mode: paper
+
+metadata:
+  profile_name: perfect-storm-openclaw-best-practices
+  version: 3.0.0
+  updated_at: 2026-03-15
+  notes: >
+    Conservative paper-trading profile for OpenClaw Perfect Storm agents.
+    Tighter than baseline to emphasize survivability, auditability, and cleaner
+    options execution.
+
+account:
+  starting_equity: 100000
+  currency: USD
+
+universe:
+  symbols:
+    - SPY
+    - QQQ
+    - IWM
+    - AAPL
+    - MSFT
+    - NVDA
+    - AMZN
+    - META
+    - GOOGL
+    - AMD
+    - TSLA
+    - COIN
+    - PLTR
+    - SMCI
+    - SNOW
+    - JPM
+    - BAC
+    - GS
+    - KO
+    - PEP
+    - WMT
+    - XOM
+    - CVX
+  max_same_sector_positions: 2
+  rank_etfs_first_for_regime: true
+
+regime:
+  enabled: true
+  trade_in_chop: limited
+  chop_size_multiplier: 0.5
+  min_regime_confidence: 0.65
+  require_exceptional_score_in_chop: true
+  block_new_entries_in_shock: true
+
+scanner:
+  min_stock_price: 20
+  min_avg_daily_share_volume: 5000000
+  min_atr_percent: 1.5
+  min_relative_volume: 1.0
+  max_symbols_ranked_per_cycle: 10
+  require_completed_bar_confirmation: true
+
+options_filters:
+  allowed_structures:
+    - long_call
+    - long_put
+  min_open_interest: 1500
+  min_option_volume: 300
+  max_bid_ask_spread_percent: 6.0
+  preferred_dte_min: 7
+  preferred_dte_max: 21
+  allow_0dte: false
+  delta_min: 0.35
+  delta_max: 0.60
+  reject_if_one_tick_gt_premium_percent: 5.0
+  require_contract_quote_fresh_seconds: 30
+
+risk:
+  max_risk_per_trade_percent: 0.75
+  max_position_premium_percent: 4.0
+  max_portfolio_heat_percent: 6.0
+  max_directional_heat_percent: 3.0
+  max_open_positions: 3
+  max_positions_per_symbol: 1
+  max_daily_loss_percent: 3.0
+  max_weekly_loss_percent: 6.0
+  max_consecutive_losses: 3
+  reduce_size_after_consecutive_losses: 2
+  reduced_size_multiplier: 0.5
+  halt_after_two_losses_in_chop: true
+
+execution:
+  order_type: limit
+  price_anchor: mid_or_better
+  max_slippage_percent: 4.0
+  cancel_if_not_filled_seconds: 30
+  do_not_chase_percent: 2.5
+  allow_partial_profit_taking: true
+  scale_out_levels_r_multiple:
+    - 1.0
+    - 2.0
+  scale_out_fractions:
+    - 0.5
+    - 0.3
+  move_stop_to_break_even_at_r: 1.0
+  runner_fraction: 0.2
+  allow_market_orders: false
+  require_client_order_id: true
+  block_duplicate_entry_within_same_cycle: true
+
+stops:
+  use_underlying_structure_stop: true
+  max_option_premium_loss_percent: 30.0
+  time_stop_minutes_intraday: 35
+  end_of_day_flatten_intraday: true
+
+confidence:
+  min_score_to_trade: 72
+  exceptional_score: 87
+  full_size_only_if_score_at_least: 82
+
+iv_context:
+  enabled: true
+  favorable_ivr_below: 30
+  elevated_ivr_above: 60
+  require_exceptional_score_when_ivr_elevated: true
+
+events:
+  avoid_earnings_days_before: 3
+  avoid_earnings_days_after: 1
+  avoid_macro_minutes_before: 45
+  avoid_macro_minutes_after: 30
+  block_new_entries_during_high_impact_news: true
+
+data_quality:
+  halt_on_stale_underlying_data: true
+  halt_on_stale_option_data: true
+  underlying_quote_fresh_seconds: 15
+  halt_on_underlying_option_timestamp_mismatch: true
+  max_timestamp_skew_seconds: 20
+
+journaling:
+  enabled: true
+  log_skipped_trades: true
+  include_reasoning: true
+  include_rule_checks: true
+  include_score_breakdown: true
+  include_scan_cycle_id: true
+  include_client_order_id: true
+  log_manual_overrides: true
+
+safety:
+  halt_on_data_error: true
+  halt_on_broker_state_uncertain: true
+  halt_on_abnormal_spread_expansion: true
+  require_manual_toggle_for_live_trading: true
+  allow_new_entries_when_agent_degraded: false

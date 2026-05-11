@@ -1,0 +1,45 @@
+{
+  "name": "qa-gate-vercel",
+  "version": "1.0.0",
+  "description": "Pre-production validation gate for Vercel/Supabase/Firebase stack — generates test plans, executes test suites, validates APIs, UI, toasts, LLM output quality, and produces go/no-go reports",
+  "author": "guifav",
+  "homepage": "https://github.com/guifav/openclaw-skills",
+  "license": "MIT",
+  "permissions": ["filesystem", "network"],
+  "models": ["claude-*"],
+  "tags": [
+    "qa",
+    "testing",
+    "validation",
+    "pre-production",
+    "go-no-go",
+    "vercel",
+    "supabase",
+    "firebase",
+    "api-testing",
+    "e2e",
+    "llm-evaluation",
+    "toast",
+    "ui-testing"
+  ],
+  "minOpenClawVersion": "0.5.0",
+  "entry": "SKILL.md",
+  "skillDependencies": {
+    "requires": ["stack-scaffold"],
+    "recommended": ["test-sentinel"]
+  },
+  "openclaw": {
+    "requires": {
+      "bins": ["node", "npx", "git"],
+      "env": [
+        "OPENROUTER_API_KEY",
+        "SUPABASE_URL",
+        "SUPABASE_ANON_KEY",
+        "VERCEL_TOKEN"
+      ]
+    },
+    "primaryEnv": "VERCEL_TOKEN",
+    "emoji": "🚦",
+    "os": ["darwin", "linux", "win32"]
+  }
+}

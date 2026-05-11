@@ -1,0 +1,110 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "go-docker-build.schema.json",
+  "title": "GoDockerBuild Task",
+  "description": "Go镜像构建任务配置，用于基于Go项目构建Docker镜像",
+  "type": "object",
+  "required": ["taskCategory", "jobType", "name"],
+  "properties": {
+    "taskCategory": {
+      "type": "string",
+      "const": "DockerBuild",
+      "description": "任务类别，固定为DockerBuild"
+    },
+    "jobType": {
+      "type": "string",
+      "const": "GoDockerBuild",
+      "description": "任务类型，固定为GoDockerBuild"
+    },
+    "name": {
+      "type": "string",
+      "maxLength": 100,
+      "description": "任务名称",
+      "examples": ["Go镜像构建"]
+    },
+    "workPath": {
+      "type": "string",
+      "description": "工作目录，流水线源文件将被下载到此目录，当配置多个源时可以选择具体的工作目录"
+    },
+    "sourceId": {
+      "type": "string",
+      "description": "代码源ID，关联流水线源配置中的sourceId"
+    },
+    "buildImageModel": {
+      "type": "string",
+      "enum": ["default", "custom"],
+      "default": "default",
+      "description": "构建环境模式，default为默认环境，custom为自定义镜像"
+    },
+    "executeImageId": {
+      "type": "string",
+      "description": "执行镜像ID，当buildImageModel为custom时需要指定"
+    },
+    "goVersion": {
+      "type": "string",
+      "description": "Golang版本，从系统预设版本列表中选择",
+      "default": "go1.21.13",
+      "examples": ["Go1.18", "Go1.19", "Go1.20", "Go1.21", "Go1.22"]
+    },
+    "script": {
+      "type": "string",
+      "description": "Shell命令，支持bash、cmd语法输入命令",
+      "default": "#如需指定某个模块进行单独构建，可以通过 cd命令 进入目标模块所在路径，再执行构建命令，例如\n#cd devops-base/ai-base-service\ngo build"
+    },
+    "multiPlatform": {
+      "type": "string",
+      "enum": ["0", "1"],
+      "default": "0",
+      "description": "是否开启多架构镜像，开启后需要在buildArgs中填写--platform参数指定架构列表，如--platform linux/amd64,linux/arm64"
+    },
+    "model": {
+      "type": "string",
+      "enum": ["gitMode", "manualMode"],
+      "default": "gitMode",
+      "description": "Dockerfile来源模式，gitMode为代码仓库中的文件，manualMode为手动编辑"
+    },
+    "dockerfilePath": {
+      "type": "string",
+      "default": "Dockerfile",
+      "description": "Dockerfile文件路径，相对于代码根目录的路径"
+    },
+    "dockerFileYaml": {
+      "type": "string",
+      "description": "Dockerfile内容（YAML格式），当model为manualMode时使用"
+    },
+    "pipelineTaskFileId": {
+      "type": "string",
+      "description": "流水线任务文件关联ID，用于关联工作空间中的Dockerfile文件"
+    },
+    "imageName": {
+      "type": "string",
+      "maxLength": 200,
+      "description": "Docker镜像名称，支持固定值（如test）或动态参数（如${PIPELINE_NAME}）。仅支持小写字母、数字、分隔符（点'.'、下划线'_'、短横线'-'）"
+    },
+    "tag": {
+      "type": "string",
+      "maxLength": 200,
+      "default": "${BUILD_NUMBER}",
+      "description": "Docker镜像Tag，支持固定参数（如1.0）或动态参数（如${BUILD_NUMBER}）。仅支持小写字母、数字、分隔符（点'.'、下划线'_'、短横线'-'）"
+    },
+    "buildArgs": {
+      "type": "string",
+      "description": "更多构建参数，用于定制构建行为。格式如：--build-arg arg1=value1 --platform linux/amd64,linux/arm64。支持的架构有：linux/amd64, linux/arm64, linux/arm/v7, linux/arm/v6, linux/386, linux/ppc64le, linux/s390x, linux/riscv64, linux/mips64le, linux/mips64, windows/amd64, windows/arm64"
+    },
+    "dockerBuildContextPath": {
+      "type": "string",
+      "default": ".",
+      "description": "ContextPath，填写相对于代码根目录的路径（如target），如果不填则默认为Dockerfile文件所在目录"
+    },
+    "idInTemplate": {
+      "type": "string",
+      "description": "模板中的任务ID，用于从模板创建流水线时保持任务引用"
+    },
+    "dependencies": {
+      "type": "array",
+      "items": { "type": "string" },
+      "default": [],
+      "description": "依赖的任务ID列表"
+    }
+  }
+}

@@ -1,0 +1,217 @@
+{
+  "name": "totalreclaw",
+  "version": "1.5.0",
+  "description": "End-to-end encrypted memory for AI agents — portable, yours forever. AES-256-GCM E2EE: server never sees plaintext.",
+  "author": "TotalReclaw Team",
+  "license": "MIT",
+  "homepage": "https://github.com/p-diogo/totalreclaw",
+  "repository": "https://github.com/p-diogo/totalreclaw",
+  "keywords": [
+    "memory",
+    "e2ee",
+    "e2e-encryption",
+    "encryption",
+    "privacy",
+    "agent-memory",
+    "persistent-context"
+  ],
+  "openclaw": {
+    "minVersion": "0.1.0",
+    "maxVersion": "1.0.0",
+    "requires": {
+      "env": [
+        "TOTALRECLAW_SERVER_URL",
+        "TOTALRECLAW_RECOVERY_PHRASE"
+      ],
+      "bins": []
+    },
+    "primaryEnv": "TOTALRECLAW_SERVER_URL",
+    "emoji": "🧠",
+    "os": ["macos", "linux", "windows"],
+    "hooks": {
+      "before_agent_start": {
+        "priority": 10,
+        "description": "Retrieve relevant memories before agent processes message"
+      },
+      "agent_end": {
+        "priority": 90,
+        "description": "Extract and store facts after agent completes turn"
+      },
+      "pre_compaction": {
+        "priority": 5,
+        "description": "Full memory flush before context compaction"
+      },
+      "before_reset": {
+        "priority": 5,
+        "description": "Full memory flush before conversation reset"
+      }
+    },
+    "tools": [
+      {
+        "name": "totalreclaw_remember",
+        "description": "Store a new fact or preference in long-term memory",
+        "parameters": {
+          "text": {
+            "type": "string",
+            "required": true,
+            "description": "The fact or information to remember"
+          },
+          "type": {
+            "type": "string",
+            "required": false,
+            "enum": ["fact", "preference", "decision", "episodic", "goal"],
+            "default": "fact",
+            "description": "Type of memory"
+          },
+          "importance": {
+            "type": "integer",
+            "required": false,
+            "min": 1,
+            "max": 10,
+            "description": "Importance score 1-10. Default: auto-detected by LLM"
+          }
+        }
+      },
+      {
+        "name": "totalreclaw_recall",
+        "description": "Search and retrieve relevant memories from long-term storage",
+        "parameters": {
+          "query": {
+            "type": "string",
+            "required": true,
+            "description": "Natural language query to search memories"
+          },
+          "k": {
+            "type": "integer",
+            "required": false,
+            "default": 8,
+            "max": 20,
+            "description": "Number of results to return"
+          }
+        }
+      },
+      {
+        "name": "totalreclaw_forget",
+        "description": "Delete a specific fact from memory",
+        "parameters": {
+          "factId": {
+            "type": "string",
+            "required": true,
+            "description": "UUID of the fact to delete"
+          }
+        }
+      },
+      {
+        "name": "totalreclaw_export",
+        "description": "Export all stored memories in plaintext format",
+        "parameters": {
+          "format": {
+            "type": "string",
+            "required": false,
+            "enum": ["json", "markdown"],
+            "default": "json",
+            "description": "Export format"
+          }
+        }
+      },
+      {
+        "name": "totalreclaw_status",
+        "description": "Check billing and subscription status, including quota usage and upgrade options",
+        "parameters": {}
+      },
+      {
+        "name": "totalreclaw_upgrade",
+        "description": "Get a checkout URL to upgrade to TotalReclaw Pro (unlimited memories on Gnosis mainnet)",
+        "parameters": {}
+      },
+      {
+        "name": "totalreclaw_import_from",
+        "description": "Import memories from other AI memory tools (Mem0, MCP Memory Server) into TotalReclaw",
+        "parameters": {
+          "source": {
+            "type": "string",
+            "required": true,
+            "enum": ["mem0", "mcp-memory"],
+            "description": "Source system to import from"
+          },
+          "api_key": {
+            "type": "string",
+            "required": false,
+            "description": "API key for the source (Mem0). Used once, never stored."
+          },
+          "source_user_id": {
+            "type": "string",
+            "required": false,
+            "description": "User or agent ID in the source system"
+          },
+          "content": {
+            "type": "string",
+            "required": false,
+            "description": "File content (JSON, JSONL, or CSV) for file-based sources"
+          },
+          "file_path": {
+            "type": "string",
+            "required": false,
+            "description": "Path to a file on disk for file-based sources"
+          },
+          "namespace": {
+            "type": "string",
+            "required": false,
+            "default": "imported",
+            "description": "Target namespace in TotalReclaw"
+          },
+          "dry_run": {
+            "type": "boolean",
+            "required": false,
+            "default": false,
+            "description": "Preview without importing"
+          }
+        }
+      },
+      {
+        "name": "totalreclaw_consolidate",
+        "description": "Scan all stored memories and merge near-duplicates, keeping the most important/recent version",
+        "parameters": {
+          "dry_run": {
+            "type": "boolean",
+            "required": false,
+            "default": false,
+            "description": "Preview consolidation without deleting"
+          }
+        }
+      }
+    ],
+    "config": {
+      "serverUrl": {
+        "type": "string",
+        "default": "http://127.0.0.1:8080",
+        "description": "TotalReclaw server URL"
+      },
+      "autoExtractEveryTurns": {
+        "type": "number",
+        "default": 3,
+        "description": "Number of turns between automatic extractions"
+      },
+      "minImportanceForAutoStore": {
+        "type": "number",
+        "default": 6,
+        "description": "Minimum importance (1-10) to auto-store memories"
+      },
+      "maxMemoriesInContext": {
+        "type": "number",
+        "default": 8,
+        "description": "Maximum memories to inject into context"
+      },
+      "forgetThreshold": {
+        "type": "number",
+        "default": 0.3,
+        "description": "Decay score threshold for eviction"
+      },
+      "rerankerModel": {
+        "type": "string",
+        "default": "BAAI/bge-reranker-base",
+        "description": "ONNX reranker model for result reranking"
+      }
+    }
+  }
+}

@@ -1,0 +1,47 @@
+{
+  "name": "module-analyzer-generate-doc",
+  "version": "1.0.1",
+  "description": "Java/Maven single-module deep documentation generator. Generates L3(file-level) to L2(module-level) business logic docs for specified module. Supports multi-subagent parallel processing, context compression, checkpoint resume, and auto-retry.",
+  "author": "aclory",
+  "license": "MIT",
+  "keywords": [
+    "module-analyzer",
+    "java",
+    "maven",
+    "documentation",
+    "business-logic",
+    "l2-l3-docs",
+    "subagent",
+    "task-monitoring"
+  ],
+  "main": "SKILL.md",
+  "scripts": {
+    "generate": "powershell -ExecutionPolicy Bypass -File scripts/generate-module-doc.ps1",
+    "test": "echo \"No tests specified\""
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/aclory/openclaw-skills.git",
+    "directory": "skills/module-analyzer-generate-doc"
+  },
+  "homepage": "https://clawhub.com/skills/module-analyzer-generate-doc",
+  "engines": {
+    "openclaw": ">=1.0.0",
+    "node": ">=16.0.0",
+    "powershell": ">=5.1"
+  },
+  "dependencies": {},
+  "peerDependencies": {
+    "openclaw": ">=1.0.0"
+  },
+  "config": {
+    "defaultChunkSize": 12,
+    "maxParallelSubagents": 5,
+    "contextThreshold": 0.40,
+    "compressThreshold": 0.50,
+    "simpleFileThreshold": 50,
+    "timeoutSeconds": 300,
+    "maxRetries": 3,
+    "progressReportInterval": 1200
+  }
+}

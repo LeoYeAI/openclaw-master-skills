@@ -1,0 +1,118 @@
+[
+  {
+    "id": 0,
+    "prompt": "Process scanned Greek invoice with mixed Greek and Latin characters, extract VAT information, supplier details, and line items. Handle potential OCR errors in Greek text and validate business data accuracy.",
+    "expectations": [
+      "Enhances existing deepread skill with Greek language processing",
+      "Correctly distinguishes Greek letters from similar Latin letters (Α vs A, Β vs B, etc.)",
+      "Extracts supplier VAT number (ΑΦΜ) and validates Greek format",
+      "Recognizes Greek currency formatting (1.234,56 €) and amounts",
+      "Identifies VAT rates (24%, 13%, 6%) and calculates totals",
+      "Handles mixed Greek/English text in business documents",
+      "Generates structured data suitable for accounting software integration",
+      "Creates searchable PDF with accurate Greek text layer"
+    ],
+    "files": [
+      {
+        "name": "scanned_greek_invoice.pdf",
+        "content": "simulated_pdf_with_greek_text"
+      },
+      {
+        "name": "invoice_ocr_results.json",
+        "content": "{\n  \"document_info\": {\n    \"document_type\": \"invoice\",\n    \"language\": \"greek\",\n    \"confidence_overall\": 96.2,\n    \"processing_time_seconds\": 4.3,\n    \"ocr_engine\": \"deepread_enhanced_greek\"\n  },\n  \"supplier_info\": {\n    \"company_name\": \"ΤΕΧÎΘΚΔ ΕΤΑΘΡΕΘΑ Α.Ε.\",\n    \"vat_number\": \"ΕΛ123456789\",\n    \"address\": \"Λεωφ. ΣυγγÏοÏ 123, Αθήνα 11741\",\n    \"phone\": \"210-1234567\",\n    \"confidence\": 97.8\n  },\n  \"invoice_details\": {\n    \"invoice_number\": \"ΤΘΜ/ΓΘΟ 2026-0145\",\n    \"invoice_date\": \"15/02/2026\",\n    \"due_date\": \"15/03/2026\",\n    \"confidence\": 98.5\n  },\n  \"line_items\": [\n    {\n      \"description\": \"ΣυντήÏηση υπολογιστικοÏ εξοπλισμοÏ\",\n      \"quantity\": 1,\n      \"unit_price\": 800.00,\n      \"vat_rate\": 24,\n      \"net_amount\": 800.00,\n      \"vat_amount\": 192.00,\n      \"total_amount\": 992.00,\n      \"confidence\": 95.4\n    },\n    {\n      \"description\": \"Ανταλλακτικά και υλικά\",\n      \"quantity\": 5,\n      \"unit_price\": 45.50,\n      \"vat_rate\": 24,\n      \"net_amount\": 227.50,\n      \"vat_amount\": 54.60,\n      \"total_amount\": 282.10,\n      \"confidence\": 92.1\n    }\n  ],\n  \"totals\": {\n    \"subtotal\": 1027.50,\n    \"vat_24_percent\": 246.60,\n    \"total_amount\": 1274.10,\n    \"confidence\": 98.9\n  },\n  \"ocr_challenges\": [\n    {\n      \"issue\": \"Similar character confusion\",\n      \"original_text\": \"ΤΕΧÎΘΚΔ ETAIPEIA\",\n      \"corrected_text\": \"ΤΕΧÎΘΚΔ ΕΤΑΘΡΕΘΑ\",\n      \"confidence_improvement\": \"+4.2%\"\n    },\n    {\n      \"issue\": \"Accent recognition\",\n      \"original_text\": \"ΣυγγÏου\",\n      \"corrected_text\": \"ΣυγγÏοÏ\",\n      \"confidence_improvement\": \"+2.1%\"\n    }\n  ],\n  \"validation_results\": {\n    \"vat_number_valid\": true,\n    \"amounts_calculation_correct\": true,\n    \"date_format_valid\": true,\n    \"greek_text_spell_check\": \"2 corrections applied\"\n  }\n}"
+      }
+    ]
+  },
+  {
+    "id": 1,
+    "prompt": "Process handwritten Greek receipt from restaurant with cursive Greek text, extract business meal information for VAT deduction purposes, and handle poor handwriting quality with confidence scoring.",
+    "expectations": [
+      "Recognizes handwritten Greek cursive letters and connected characters",
+      "Handles restaurant receipt format with Greek business meal context",
+      "Identifies 13% VAT rate typical for Greek restaurants",
+      "Calculates 50% deductibility for business meals per Greek tax law",
+      "Provides confidence scoring for handwritten text recognition",
+      "Flags uncertain characters/words for manual review",
+      "Extracts date, amount, and merchant information accurately",
+      "Integrates with Greek expense categorization rules"
+    ],
+    "files": [
+      {
+        "name": "handwritten_restaurant_receipt.jpg",
+        "content": "simulated_jpg_handwritten_greek"
+      },
+      {
+        "name": "handwritten_ocr_results.json",
+        "content": "{\n  \"document_info\": {\n    \"document_type\": \"receipt_handwritten\",\n    \"source_type\": \"restaurant\",\n    \"language\": \"greek\",\n    \"confidence_overall\": 87.3,\n    \"handwriting_quality\": \"fair\",\n    \"processing_time_seconds\": 8.7\n  },\n  \"merchant_info\": {\n    \"restaurant_name\": \"ΤΑΒΕΡÎΑ ΜΥΚΟÎΟΣ\",\n    \"location\": \"Πλατεία Συντάγματος\",\n    \"vat_number\": \"ΕΛ987654321\",\n    \"confidence\": 82.4,\n    \"manual_review_flagged\": true,\n    \"review_reason\": \"Handwritten VAT number unclear\"\n  },\n  \"transaction_details\": {\n    \"date\": \"18/02/2026\",\n    \"time\": \"14:30\",\n    \"table_number\": \"7\",\n    \"server_name\": \"Γιάννης\",\n    \"confidence\": 89.1\n  },\n  \"order_items\": [\n    {\n      \"description\": \"Μουσακάς\",\n      \"quantity\": 2,\n      \"unit_price\": 12.50,\n      \"amount\": 25.00,\n      \"confidence\": 91.2\n    },\n    {\n      \"description\": \"ΧωÏιάτικη σαλάτα\",\n      \"quantity\": 1,\n      \"unit_price\": 8.50,\n      \"amount\": 8.50,\n      \"confidence\": 85.7,\n      \"ocr_note\": \"Handwritten 'σαλάτα' partially unclear\"\n    },\n    {\n      \"description\": \"ΚÏασί Ïετσίνα\",\n      \"quantity\": \"1 μπουτ.\",\n      \"unit_price\": 15.00,\n      \"amount\": 15.00,\n      \"confidence\": 79.3,\n      \"manual_review_flagged\": true,\n      \"review_reason\": \"Abbreviation 'μπουτ.' needs verification\"\n    }\n  ],\n  \"financial_summary\": {\n    \"subtotal\": 48.50,\n    \"vat_rate\": 13,\n    \"vat_amount\": 6.31,\n    \"total_amount\": 54.81,\n    \"confidence\": 88.9\n  },\n  \"business_meal_analysis\": {\n    \"category\": \"business_entertainment\",\n    \"deductible_percentage\": 50,\n    \"deductible_amount\": 27.41,\n    \"greek_tax_rule\": \"Business meals 50% deductible per Greek tax law\",\n    \"supporting_evidence_needed\": \"Business purpose documentation required\"\n  },\n  \"ocr_quality_analysis\": {\n    \"character_recognition\": {\n      \"clear_characters\": 156,\n      \"uncertain_characters\": 23,\n      \"unrecognized_characters\": 4\n    },\n    \"word_recognition\": {\n      \"high_confidence_words\": 18,\n      \"medium_confidence_words\": 7,\n      \"low_confidence_words\": 3\n    },\n    \"recommendations\": [\n      \"Request clearer copy of VAT number\",\n      \"Verify wine bottle abbreviation\",\n      \"Confirm total amount calculation\"\n    ]\n  }\n}"
+      }
+    ]
+  },
+  {
+    "id": 2,
+    "prompt": "Process batch of mixed Greek business documents including government forms (AADE E1), contracts, and receipts. Classify document types automatically and extract relevant structured data for each type.",
+    "expectations": [
+      "Automatically classifies different Greek document types with high accuracy",
+      "Processes AADE government forms with official layout recognition",
+      "Extracts contract terms and legal clauses from Greek legal documents",
+      "Handles multiple receipt formats from different Greek businesses",
+      "Maintains confidence scoring and quality control across document types",
+      "Generates type-specific structured data for each document category",
+      "Integrates with appropriate downstream processing (tax, legal, accounting)",
+      "Provides batch processing summary with statistics and flagged items"
+    ],
+    "files": [
+      {
+        "name": "mixed_documents_batch.zip",
+        "content": "simulated_zip_with_multiple_greek_documents"
+      },
+      {
+        "name": "batch_processing_results.json",
+        "content": "{\n  \"batch_info\": {\n    \"batch_id\": \"BATCH_20260219_001\",\n    \"processing_date\": \"2026-02-19T10:30:00Z\",\n    \"total_documents\": 15,\n    \"processing_time_minutes\": 12.4,\n    \"overall_success_rate\": 93.3\n  },\n  \"document_classification\": {\n    \"invoices\": {\n      \"count\": 6,\n      \"avg_confidence\": 95.8,\n      \"successful_extractions\": 6,\n      \"failed_extractions\": 0\n    },\n    \"receipts\": {\n      \"count\": 5,\n      \"avg_confidence\": 91.2,\n      \"successful_extractions\": 4,\n      \"failed_extractions\": 1,\n      \"failure_reason\": \"Thermal receipt too faded\"\n    },\n    \"government_forms\": {\n      \"count\": 2,\n      \"documents\": [\"AADE E1 Form\", \"EFKA Contribution Form\"],\n      \"avg_confidence\": 97.1,\n      \"successful_extractions\": 2,\n      \"failed_extractions\": 0\n    },\n    \"contracts\": {\n      \"count\": 2,\n      \"documents\": [\"Service Agreement\", \"Rental Contract\"],\n      \"avg_confidence\": 89.4,\n      \"successful_extractions\": 1,\n      \"failed_extractions\": 1,\n      \"failure_reason\": \"Complex legal language requires manual review\"\n    }\n  },\n  \"processing_results\": [\n    {\n      \"document_id\": \"DOC_001\",\n      \"filename\": \"aade_e1_form_2025.pdf\",\n      \"document_type\": \"government_form\",\n      \"subtype\": \"aade_e1_individual_tax\",\n      \"confidence\": 98.2,\n      \"status\": \"success\",\n      \"extracted_data\": {\n        \"taxpayer_afm\": \"123456789\",\n        \"tax_year\": \"2025\",\n        \"total_income\": \"€45,230.67\",\n        \"total_tax\": \"€8,450.23\",\n        \"key_sections_extracted\": [\"Personal Info\", \"Income Sources\", \"Deductions\", \"Tax Calculation\"]\n      }\n    },\n    {\n      \"document_id\": \"DOC_002\",\n      \"filename\": \"supplier_invoice_tech.pdf\",\n      \"document_type\": \"invoice\",\n      \"confidence\": 96.7,\n      \"status\": \"success\",\n      \"extracted_data\": {\n        \"supplier\": \"ΤΕΧÎΟΛΟΓΘΚΕΣ ΛΥΣΕΘΣ ΑΕ\",\n        \"invoice_number\": \"ΤΘΜ-2026-0089\",\n        \"amount\": \"€2,480.00\",\n        \"vat_rate\": \"24%\",\n        \"due_date\": \"2026-03-15\"\n      }\n    },\n    {\n      \"document_id\": \"DOC_003\",\n      \"filename\": \"service_contract_legal.pdf\",\n      \"document_type\": \"contract\",\n      \"confidence\": 85.3,\n      \"status\": \"partial_success\",\n      \"extracted_data\": {\n        \"contract_type\": \"ΣΥΜΒΑΣΔ ΠΑΡΟΧΔΣ ΥΠΔΡΕΣΘΩÎ\",\n        \"duration\": \"12 μήνες\",\n        \"monthly_fee\": \"€1,500.00\",\n        \"parties\": [\"ΕΤΑΘΡΕΘΑ Α ΑΕ\", \"ΠΕΛΑΤΔΣ Β ΕΠΕ\"]\n      },\n      \"manual_review_required\": true,\n      \"review_items\": [\"Complex termination clauses\", \"Penalty provisions\"]\n    }\n  ],\n  \"quality_metrics\": {\n    \"greek_character_accuracy\": 97.8,\n    \"business_term_recognition\": 94.2,\n    \"amount_extraction_accuracy\": 98.5,\n    \"date_extraction_accuracy\": 96.1\n  },\n  \"integration_ready\": {\n    \"accounting_software\": 11,\n    \"tax_preparation\": 2,\n    \"legal_review\": 2,\n    \"manual_processing\": 3\n  }\n}"
+      }
+    ]
+  },
+  {
+    "id": 3,
+    "prompt": "Process poor quality Greek document scan with image enhancement and OCR optimization. Handle faded text, skewed orientation, and mixed Greek/English content while maintaining accuracy standards.",
+    "expectations": [
+      "Applies image enhancement techniques before OCR processing",
+      "Corrects document skew and orientation automatically",
+      "Enhances faded or low contrast Greek text visibility",
+      "Handles mixed Greek/English text appropriately",
+      "Maintains accuracy standards despite poor source quality",
+      "Provides detailed quality assessment and improvement metrics",
+      "Generates confidence scores reflecting processing challenges",
+      "Creates enhanced searchable PDF with quality annotations"
+    ],
+    "files": [
+      {
+        "name": "poor_quality_document.tiff",
+        "content": "simulated_tiff_poor_quality_greek"
+      },
+      {
+        "name": "enhanced_processing_results.json",
+        "content": "{\n  \"original_document_assessment\": {\n    \"image_quality\": \"poor\",\n    \"issues_detected\": [\n      \"Low contrast - faded text\",\n      \"Document skew - 4.2 degrees clockwise\",\n      \"Background noise and artifacts\",\n      \"Uneven lighting across document\",\n      \"Mixed font sizes and styles\"\n    ],\n    \"estimated_difficulty\": \"high\",\n    \"processing_approach\": \"enhanced_preprocessing_pipeline\"\n  },\n  \"image_enhancement_applied\": {\n    \"deskewing\": {\n      \"original_skew\": \"4.2 degrees\",\n      \"corrected_skew\": \"0.1 degrees\",\n      \"improvement\": \"successful\"\n    },\n    \"contrast_enhancement\": {\n      \"method\": \"adaptive_histogram_equalization\",\n      \"improvement_percentage\": 34.2,\n      \"greek_character_visibility\": \"significantly improved\"\n    },\n    \"noise_reduction\": {\n      \"method\": \"gaussian_filter_with_edge_preservation\",\n      \"background_cleanup\": \"78% noise removed\",\n      \"text_preservation\": \"maintained\"\n    },\n    \"sharpening\": {\n      \"method\": \"unsharp_mask_greek_optimized\",\n      \"character_edge_improvement\": \"42%\",\n      \"accent_visibility_improvement\": \"38%\"\n    }\n  },\n  \"ocr_processing_results\": {\n    \"document_type\": \"business_letter\",\n    \"language_detected\": \"greek_with_english\",\n    \"overall_confidence\": 89.7,\n    \"confidence_before_enhancement\": 62.3,\n    \"improvement_from_enhancement\": \"+27.4%\"\n  },\n  \"extracted_content\": {\n    \"header\": {\n      \"text\": \"ΕΛΛΔÎΘΚΔ ΕΤΑΘΡΕΘΑ ΤΕΧÎΟΛΟΓΘΑΣ Α.Ε.\",\n      \"confidence\": 94.2,\n      \"enhancement_note\": \"Company name significantly improved after contrast enhancement\"\n    },\n    \"body_paragraphs\": [\n      {\n        \"text\": \"Αξιότιμε κÏÏιε Παπαδόπουλε, σας ενημεÏώνουμε ότι η παÏαγγελία σας αÏ. #2026-0156 έχει ολοκληÏωθεί και είναι έτοιμη για παÏάδοση.\",\n        \"confidence\": 87.3,\n        \"issues\": [\"Faded text in middle section\"]\n      },\n      {\n        \"text\": \"Το συνολικό κόστος είναι €3,450.67 συμπεÏιλαμβανομένου ΦΠΑ 24%.\",\n        \"confidence\": 92.1,\n        \"enhancement_note\": \"Currency amount clearly extracted after processing\"\n      }\n    ],\n    \"signature_block\": {\n      \"text\": \"Με εκτίμηση,\\nΔιευθυντής Πωλήσεων\\nΓιάννης Κωνσταντινίδης\",\n      \"confidence\": 84.6,\n      \"handwritten_signature_detected\": true,\n      \"signature_confidence\": 76.2\n    }\n  },\n  \"quality_improvement_metrics\": {\n    \"character_recognition_improvement\": \"+28.4%\",\n    \"word_accuracy_improvement\": \"+31.2%\",\n    \"greek_accent_recognition_improvement\": \"+45.7%\",\n    \"amount_extraction_improvement\": \"+38.9%\"\n  },\n  \"remaining_challenges\": [\n    {\n      \"issue\": \"Partially faded signature area\",\n      \"impact\": \"Medium\",\n      \"recommendation\": \"Manual verification of signature details\"\n    },\n    {\n      \"issue\": \"Some accent marks still unclear\",\n      \"impact\": \"Low\",\n      \"recommendation\": \"Greek spell-check validation applied\"\n    }\n  ],\n  \"processing_recommendations\": {\n    \"future_scans\": \"Recommend 300 DPI minimum for Greek documents\",\n    \"document_handling\": \"Avoid skewed scanning, ensure even lighting\",\n    \"quality_threshold\": \"Current result acceptable for business use\"\n  }\n}"
+      }
+    ]
+  },
+  {
+    "id": 4,
+    "prompt": "Generate comprehensive OCR processing report for Greek accounting firm showing accuracy metrics, processing statistics, integration results, and improvement recommendations for monthly document processing workflow.",
+    "expectations": [
+      "Compiles comprehensive OCR processing statistics for monthly reporting",
+      "Analyzes accuracy trends and improvement metrics over time",
+      "Provides document type breakdown with processing success rates",
+      "Identifies common OCR challenges and resolution strategies",
+      "Generates actionable recommendations for process improvement",
+      "Creates professional management report suitable for Greek business context",
+      "Includes cost-benefit analysis of OCR automation vs manual processing",
+      "Provides integration metrics with accounting software and workflows"
+    ],
+    "files": [
+      {
+        "name": "monthly_ocr_analytics.json",
+        "content": "{\n  \"reporting_period\": {\n    \"month\": \"February 2026\",\n    \"start_date\": \"2026-02-01\",\n    \"end_date\": \"2026-02-28\",\n    \"business_days\": 20\n  },\n  \"processing_volume\": {\n    \"total_documents_processed\": 847,\n    \"daily_average\": 42.4,\n    \"peak_day\": {\n      \"date\": \"2026-02-15\",\n      \"documents\": 89,\n      \"reason\": \"Month-end invoice batch from clients\"\n    },\n    \"document_types\": {\n      \"invoices\": 423,\n      \"receipts\": 298,\n      \"government_forms\": 67,\n      \"contracts\": 34,\n      \"handwritten_notes\": 25\n    }\n  },\n  \"accuracy_metrics\": {\n    \"overall_accuracy\": 94.7,\n    \"greek_character_accuracy\": 96.8,\n    \"business_data_extraction_accuracy\": 93.2,\n    \"by_document_type\": {\n      \"printed_invoices\": 97.2,\n      \"thermal_receipts\": 91.8,\n      \"government_forms\": 95.4,\n      \"handwritten_documents\": 87.3,\n      \"contracts\": 89.6\n    },\n    \"monthly_trend\": {\n      \"january_2026\": 92.1,\n      \"february_2026\": 94.7,\n      \"improvement\": \"+2.6%\",\n      \"trend\": \"improving\"\n    }\n  },\n  \"processing_efficiency\": {\n    \"average_processing_time_seconds\": 3.8,\n    \"total_processing_hours\": 0.9,\n    \"manual_processing_equivalent_hours\": 169.4,\n    \"time_savings\": 168.5,\n    \"efficiency_improvement\": \"99.5%\"\n  },\n  \"quality_control_results\": {\n    \"automatic_processing\": 784,\n    \"manual_review_required\": 63,\n    \"manual_review_rate\": 7.4,\n    \"common_review_reasons\": [\n      \"Handwritten text low confidence (45%)\",\n      \"Damaged document quality (23%)\",\n      \"Complex table structures (18%)\",\n      \"Mixed languages requiring validation (14%)\"\n    ]\n  },\n  \"business_impact_analysis\": {\n    \"successful_integrations\": {\n      \"quickbooks_exports\": 421,\n      \"xero_integration\": 298,\n      \"banking_reconciliation_matches\": 156,\n      \"vat_return_data_extracted\": 89\n    },\n    \"error_prevention\": {\n      \"data_entry_errors_prevented\": 34,\n      \"vat_calculation_errors_caught\": 12,\n      \"duplicate_entries_detected\": 8\n    },\n    \"cost_savings\": {\n      \"manual_data_entry_hours_saved\": 168.5,\n      \"hourly_rate_euros\": 25.00,\n      \"monthly_cost_savings\": 4212.50,\n      \"annual_projected_savings\": 50550.00\n    }\n  },\n  \"common_challenges\": [\n    {\n      \"challenge\": \"Faded thermal receipts\",\n      \"frequency\": 23.4,\n      \"impact\": \"Medium\",\n      \"solution_implemented\": \"Enhanced preprocessing for thermal paper\",\n      \"improvement_achieved\": \"+12% accuracy\"\n    },\n    {\n      \"challenge\": \"Mixed Greek/English text\",\n      \"frequency\": 18.7,\n      \"impact\": \"Low\",\n      \"solution_implemented\": \"Improved language detection\",\n      \"improvement_achieved\": \"+8% accuracy\"\n    },\n    {\n      \"challenge\": \"Handwritten Greek signatures\",\n      \"frequency\": 15.2,\n      \"impact\": \"High\",\n      \"solution_status\": \"Under development - Greek cursive training\",\n      \"target_improvement\": \"+15% accuracy by March\"\n    }\n  ],\n  \"integration_performance\": {\n    \"accounting_software_success_rate\": 96.3,\n    \"vat_analysis_automation\": 94.1,\n    \"bank_reconciliation_matching\": 89.7,\n    \"client_communication_automation\": 91.8\n  },\n  \"recommendations\": [\n    \"Implement enhanced thermal receipt processing by March 2026\",\n    \"Add specialized Greek handwriting recognition training\",\n    \"Develop templates for common Greek government forms\",\n    \"Increase preprocessing quality for mobile phone photos\",\n    \"Create client education materials for optimal document scanning\"\n  ],\n  \"strategic_insights\": {\n    \"roi_analysis\": \"Annual ROI of 312% based on time savings and error reduction\",\n    \"scalability\": \"Current system can handle 50% volume increase with existing setup\",\n    \"competitive_advantage\": \"Greek language OCR accuracy 15% higher than generic solutions\",\n    \"client_satisfaction\": \"Document processing turnaround improved from 24 hours to 2 hours\"\n  }\n}"
+      }
+    ]
+  }
+]

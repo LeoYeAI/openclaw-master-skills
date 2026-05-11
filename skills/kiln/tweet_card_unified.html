@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: #0f0f0f;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding: 40px;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  }
+  .card {
+    width: 680px;
+    background: linear-gradient(135deg, #0d1117 0%, #161b22 100%);
+    border-radius: 20px;
+    padding: 52px 52px 44px;
+    border: 1px solid rgba(255,255,255,0.06);
+    box-shadow: 0 24px 80px rgba(0,0,0,0.6);
+    position: relative;
+    overflow: hidden;
+  }
+  .card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, #f85149 0%, #f0883e 30%, #58a6ff 65%, #bc8cff 100%);
+  }
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(240,136,62,0.1);
+    border: 1px solid rgba(240,136,62,0.25);
+    color: #f0883e;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+    padding: 6px 14px;
+    border-radius: 6px;
+    margin-bottom: 24px;
+  }
+  .title {
+    color: #f0f6fc;
+    font-size: 31px;
+    font-weight: 800;
+    line-height: 1.2;
+    margin-bottom: 10px;
+    letter-spacing: -0.5px;
+  }
+  .subtitle {
+    color: #8b949e;
+    font-size: 15.5px;
+    font-weight: 400;
+    margin-bottom: 34px;
+    line-height: 1.5;
+  }
+  /* Three-column timescale header */
+  .timescale-row {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 32px;
+  }
+  .timescale {
+    flex: 1;
+    border-radius: 10px;
+    padding: 14px 16px;
+    text-align: center;
+  }
+  .timescale-reactive {
+    background: rgba(248,81,73,0.06);
+    border: 1px solid rgba(248,81,73,0.18);
+  }
+  .timescale-predictive {
+    background: rgba(88,166,255,0.06);
+    border: 1px solid rgba(88,166,255,0.18);
+  }
+  .timescale-preventive {
+    background: rgba(188,140,255,0.06);
+    border: 1px solid rgba(188,140,255,0.18);
+  }
+  .timescale-label {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+  .timescale-label.red { color: #f85149; }
+  .timescale-label.blue { color: #58a6ff; }
+  .timescale-label.purple { color: #bc8cff; }
+  .timescale-desc {
+    color: #c9d1d9;
+    font-size: 13px;
+    font-weight: 600;
+    line-height: 1.35;
+  }
+  .timescale-sub {
+    color: #6e7681;
+    font-size: 11px;
+    font-weight: 400;
+    margin-top: 4px;
+  }
+
+  .features {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    margin-bottom: 34px;
+  }
+  .feature {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+  }
+  .feature-icon {
+    width: 36px;
+    height: 36px;
+    min-width: 36px;
+    border-radius: 9px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    margin-top: 1px;
+  }
+  .icon-red { background: rgba(248,81,73,0.12); }
+  .icon-orange { background: rgba(240,136,62,0.12); }
+  .icon-blue { background: rgba(88,166,255,0.12); }
+  .icon-purple { background: rgba(188,140,255,0.12); }
+  .icon-cyan { background: rgba(63,185,180,0.12); }
+  .icon-green { background: rgba(63,185,80,0.12); }
+  .feature-text h3 {
+    color: #e6edf3;
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 2px;
+  }
+  .feature-text p {
+    color: #7d8590;
+    font-size: 13px;
+    font-weight: 400;
+    line-height: 1.45;
+  }
+  .section-label {
+    color: #484f58;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    margin-bottom: 14px;
+    margin-top: 6px;
+  }
+  .footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-top: 24px;
+    border-top: 1px solid rgba(255,255,255,0.06);
+  }
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .brand-icon {
+    width: 28px;
+    height: 28px;
+    background: linear-gradient(135deg, #f0883e, #bc8cff);
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    font-weight: 800;
+    color: white;
+  }
+  .brand-name {
+    color: #e6edf3;
+    font-size: 16px;
+    font-weight: 700;
+    letter-spacing: -0.3px;
+  }
+  .brand-desc {
+    color: #484f58;
+    font-size: 12px;
+    font-weight: 500;
+  }
+  .commands {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+  }
+  .cmd-tag {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.08);
+    color: #6e7681;
+    font-family: 'SF Mono', 'Fira Code', Menlo, monospace;
+    font-size: 10.5px;
+    padding: 3px 8px;
+    border-radius: 4px;
+  }
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="badge">
+    <span>&#9632;</span>
+    Safety Week
+  </div>
+
+  <div class="title">Three layers of safety for<br>AI-controlled printers</div>
+  <div class="subtitle">Emergency response, degradation tracking, and environmental awareness &mdash; all running locally.</div>
+
+  <div class="timescale-row">
+    <div class="timescale timescale-reactive">
+      <div class="timescale-label red">Reactive</div>
+      <div class="timescale-desc">Emergency stop</div>
+      <div class="timescale-sub">Something went wrong now</div>
+    </div>
+    <div class="timescale timescale-predictive">
+      <div class="timescale-label blue">Predictive</div>
+      <div class="timescale-desc">Trend analysis</div>
+      <div class="timescale-sub">Something is going wrong slowly</div>
+    </div>
+    <div class="timescale timescale-preventive">
+      <div class="timescale-label purple">Preventive</div>
+      <div class="timescale-desc">Ambient monitoring</div>
+      <div class="timescale-sub">Something will go wrong if you start</div>
+    </div>
+  </div>
+
+  <div class="section-label">Reactive &mdash; Emergency Stop System</div>
+  <div class="features">
+    <div class="feature">
+      <div class="feature-icon icon-red">&#128721;</div>
+      <div class="feature-text">
+        <h3>Persistent E-stop latch</h3>
+        <p>Survives restarts. Blocks start, resume, dispatch, and hazardous G-code until a human clears it.</p>
+      </div>
+    </div>
+    <div class="feature">
+      <div class="feature-icon icon-orange">&#9995;</div>
+      <div class="feature-text">
+        <h3>Human-in-the-loop clearing</h3>
+        <p>No silent resume. Inspect the printer, acknowledge the hazard, then clear with a signed note.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-label">Predictive &mdash; Print Trend Analysis</div>
+  <div class="features">
+    <div class="feature">
+      <div class="feature-icon icon-blue">&#128200;</div>
+      <div class="feature-text">
+        <h3>Health scoring &amp; failure trends</h3>
+        <p>Per-printer health score. Tracks success rates, duration anomalies, and recurring failure modes over time.</p>
+      </div>
+    </div>
+    <div class="feature">
+      <div class="feature-icon icon-cyan">&#128269;</div>
+      <div class="feature-text">
+        <h3>Material reliability tracking</h3>
+        <p>Per-material success rates per printer. Surfaces gaps like &ldquo;ABS at 25% on this machine.&rdquo;</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-label">Preventive &mdash; Ambient Condition Monitoring</div>
+  <div class="features" style="margin-bottom: 0;">
+    <div class="feature">
+      <div class="feature-icon icon-purple">&#127777;</div>
+      <div class="feature-text">
+        <h3>Chamber temp vs. material limits</h3>
+        <p>PLA in a hot enclosure? ABS without chamber heat? 11 materials with thermal profiles, checked before printing.</p>
+      </div>
+    </div>
+    <div class="feature">
+      <div class="feature-icon icon-green">&#9888;</div>
+      <div class="feature-text">
+        <h3>Thermal runaway &amp; cooldown advisories</h3>
+        <p>Critical alert if chamber exceeds safety max. Cooldown wait times between material swaps.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer">
+    <div class="brand">
+      <div class="brand-icon">K</div>
+      <div>
+        <div class="brand-name">Kiln</div>
+      </div>
+    </div>
+    <div class="commands">
+      <span class="cmd-tag">emergency-stop</span>
+      <span class="cmd-tag">printer_trend_analysis</span>
+      <span class="cmd-tag">check_ambient_conditions</span>
+    </div>
+  </div>
+</div>
+</body>
+</html>

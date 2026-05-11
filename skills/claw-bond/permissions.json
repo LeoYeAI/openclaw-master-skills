@@ -1,0 +1,139 @@
+{
+  "skill": "claw-bond",
+  "version": "1.0.5",
+  "permissions_declaration": {
+    "filesystem": {
+      "reads": [
+        "SOUL.md",
+        "AGENTS.md",
+        "MEMORY.md",
+        "HEARTBEAT.md",
+        "memory/",
+        "skills/claw-bond/diplomat.key",
+        "skills/claw-bond/diplomat.pub",
+        "skills/claw-bond/my-address.token",
+        "skills/claw-bond/peers.json",
+        "skills/claw-bond/ledger.json"
+      ],
+      "appends": [
+        "MEMORY.md (## Diplomat Commitments section only)",
+        "HEARTBEAT.md (## Diplomat Deadline Check section, once at install)",
+        "memory/YYYY-MM-DD.md",
+        "skills/claw-bond/archive.md"
+      ],
+      "creates_or_overwrites": [
+        "skills/claw-bond/diplomat.key (mode 600)",
+        "skills/claw-bond/diplomat.pub (mode 644)",
+        "skills/claw-bond/my-address.token",
+        "skills/claw-bond/peers.json",
+        "skills/claw-bond/ledger.json",
+        "skills/claw-bond/listener.pid",
+        "skills/claw-bond/listener.start_requested"
+      ],
+      "scope": "workspace-root-only",
+      "deletes": "never",
+      "reads_outside_workspace": false,
+      "writes_outside_workspace": false
+    },
+    "network": {
+      "outbound_endpoints": [
+        {
+          "host": "claw-diplomat-relay-production.up.railway.app",
+          "port": 443,
+          "protocols": ["HTTPS", "WSS"],
+          "paths": ["/reserve", "/myip", "/reserve/{token}", "/ws"],
+          "purpose": "Relay slot reservation, public IP discovery (nat_hint), and encrypted peer channel"
+        }
+      ],
+      "outbound_configurable": [
+        {
+          "env_var": "DIPLOMAT_RELAY_URL",
+          "default": "wss://claw-diplomat-relay-production.up.railway.app:443",
+          "purpose": "Override relay for self-hosted setups"
+        }
+      ],
+      "inbound": [
+        {
+          "protocol": "UDP",
+          "port": "DIPLOMAT_PORT+1 (default 7433)",
+          "purpose": "NAT hole-punch direct channel (optional; not required)"
+        }
+      ],
+      "outbound_internet": true,
+      "connects_to_external_apis": false,
+      "connects_to_cloud_services": false,
+      "connects_to_arbitrary_urls": false,
+      "dns_lookups": "claw-diplomat-relay-production.up.railway.app only (unless DIPLOMAT_RELAY_URL overridden)",
+      "ip_disclosure": "GET /myip returns your public IP; it is embedded as nat_hint in the shareable address token and visible to the relay operator and peers you share the token with"
+    },
+    "processes": {
+      "spawns_subprocesses": false,
+      "hooks_spawn_processes": false,
+      "hooks_import_child_process": false,
+      "listener_note": "listener.py is started manually by the user or agent running 'python3 listener.py &' in terminal. No hook or script spawns it automatically. The gateway hook only checks if it is running (PID file read + signal 0) and notifies the agent if it needs starting.",
+      "background_daemon": false,
+      "cron_jobs": false,
+      "modifies_system_files": false
+    },
+    "env_vars": {
+      "required": [],
+      "optional": [
+        {
+          "name": "DIPLOMAT_WORKSPACE",
+          "default": "cwd",
+          "purpose": "Override workspace root directory"
+        },
+        {
+          "name": "DIPLOMAT_RELAY_URL",
+          "default": "wss://claw-diplomat-relay-production.up.railway.app",
+          "purpose": "WebSocket relay URL for address exchange and P2P connections"
+        },
+        {
+          "name": "DIPLOMAT_PORT",
+          "default": "0",
+          "purpose": "Local port for direct P2P connections (0 = OS-assigned)"
+        },
+        {
+          "name": "DIPLOMAT_TOKEN_TTL_DAYS",
+          "default": "7",
+          "purpose": "Days before a generated Diplomat Address token expires"
+        },
+        {
+          "name": "DIPLOMAT_LOG_LEVEL",
+          "default": "WARNING",
+          "purpose": "Python logging level for listener.py"
+        }
+      ]
+    },
+    "credentials": {
+      "stores_passwords": false,
+      "stores_api_keys": false,
+      "stores_tokens": false,
+      "generates_keypair": true,
+      "keypair_type": "NaCl X25519",
+      "keypair_storage_path": "skills/claw-bond/diplomat.key",
+      "keypair_file_mode": "0600",
+      "keypair_leaves_machine": false,
+      "keypair_used_for": "Noise_XX mutual authentication with peers"
+    },
+    "code_execution": {
+      "executes_peer_supplied_code": false,
+      "evaluates_peer_supplied_strings": false,
+      "installs_packages_at_runtime": false,
+      "installs_packages_at_setup": true,
+      "setup_packages": ["PyNaCl>=1.5", "noiseprotocol>=0.3", "websockets>=12.0"],
+      "modifies_other_skills": false,
+      "modifies_hooks_outside_own_directory": false
+    },
+    "data_exfiltration": {
+      "sends_workspace_contents_externally": false,
+      "sends_memory_contents_to_peers": false,
+      "sends_to_relay": "Noise_XX encrypted negotiation messages and commitment hash only; relay cannot decrypt payloads",
+      "telemetry": false,
+      "analytics": false
+    }
+  },
+  "audit_contact": "https://github.com/techtanush/claw-diplomat/issues",
+  "source_available": true,
+  "source_url": "https://github.com/techtanush/claw-diplomat"
+}

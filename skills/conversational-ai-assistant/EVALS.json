@@ -1,0 +1,67 @@
+[
+  {
+    "id": 0,
+    "prompt": "How much VAT does Alpha Trading owe for January? And when is it due?",
+    "expectations": [
+      "Interprets the natural language query and identifies client Alpha Trading",
+      "Looks up VAT data from compliance skill for the correct period",
+      "Returns the net VAT payable amount in plain English",
+      "Includes the submission deadline date",
+      "References the actual filing data, not estimated figures",
+      "Does not require the user to specify the AFM — resolves from client name"
+    ],
+    "files": []
+  },
+  {
+    "id": 1,
+    "prompt": "Which clients are behind on their EFKA payments?",
+    "expectations": [
+      "Queries across all active clients for EFKA payment status",
+      "Identifies clients with overdue or missing EFKA declarations",
+      "Lists each client with their overdue amount and period",
+      "Suggests specific commands to resolve each overdue item",
+      "Presents results in clear English sorted by urgency",
+      "Does not modify any data — read-only query"
+    ],
+    "files": []
+  },
+  {
+    "id": 2,
+    "prompt": "Send last month's financial statements to the client at Gamma Constructions.",
+    "expectations": [
+      "Identifies this as a write operation requiring routing through meta-skill",
+      "Looks up the latest issued statement for Gamma Constructions for the prior month",
+      "Routes to client-communication-engine to draft the delivery email",
+      "Requires human review of the draft before sending",
+      "Does not send anything without explicit confirmation",
+      "Confirms the statement version and period before proceeding"
+    ],
+    "files": []
+  },
+  {
+    "id": 3,
+    "prompt": "What's the difference between OE and AE company types for tax purposes?",
+    "expectations": [
+      "Recognizes this as a general knowledge question about Greek business entities",
+      "Explains OE (Ομόρρυθμη Εταιρεία — general partnership) vs AE (Ανώνυμη Εταιρεία — société anonyme)",
+      "Covers key tax differences: corporate tax rates, partner liability, dividend treatment",
+      "Provides accurate information based on current Greek tax law",
+      "Does not need to query client data for this question",
+      "Responds in professional English with Greek terms included"
+    ],
+    "files": []
+  },
+  {
+    "id": 4,
+    "prompt": "Run the monthly process for all clients that are ready.",
+    "expectations": [
+      "Checks readiness status across all active clients for the current period",
+      "Identifies which clients pass the completeness gate",
+      "Routes the monthly process through the meta-skill for each ready client",
+      "Reports which clients are blocked and why",
+      "Requires human confirmation before starting batch processing",
+      "Does not silently skip blocked clients without reporting them"
+    ],
+    "files": []
+  }
+]

@@ -1,0 +1,53 @@
+name: What You Might Have Missed
+slug: what-you-might-have-missed
+version: "0.3.2"
+status: needs-review
+priority: p0
+platforms:
+  - reddit
+private: false
+owner: RJG
+
+source_prerequisites:
+  min_sources: 3
+  source_types:
+    - blog
+    - social-post
+    - event-news
+    - research-paper
+    - github-repo
+
+brand_graph:
+  required: false
+  required_layers: []
+
+prerequisites:
+  - name: extract-sources
+    action: extract-text
+    description: Extract key information from each of the 3+ source URLs.
+  - name: summarize-each
+    action: summarize
+    description: Create a one-line summary of each source with the key takeaway.
+  - name: find-theme
+    action: research-context
+    description: Identify a connecting theme or narrative across all sources.
+  - name: generate-title
+    action: generate-title
+    description: Generate a compelling roundup title that captures the theme.
+
+blocks:
+  - name: roundup-post
+    format: text
+    sub_format: roundup-post
+    agent: roundup.md
+    depends_on: null
+    rules:
+      - Open with the connecting theme or a hook about the week/period
+      - List each item with a brief summary and why it matters
+      - Use numbered list format for scannability
+      - Include source links for each item
+      - End with a discussion prompt or question for engagement
+      - Reddit-appropriate tone (informative, community-oriented, not salesy)
+    examples:
+      - https://www.reddit.com/r/aiagents/comments/1rctr3d/agents_are_getting_more_powerful_every_day_here/
+      - https://www.reddit.com/r/aiagents/comments/1r6jo63/its_been_a_big_week_for_agentic_ai_here_are_10/

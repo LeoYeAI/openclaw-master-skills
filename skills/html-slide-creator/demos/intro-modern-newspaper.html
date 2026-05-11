@@ -1,0 +1,770 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Slide Creator — Modern Newspaper</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;700;900&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #f7f5f0;
+            --bg-dark: #111111;
+            --text: #111111;
+            --text-muted: #555555;
+            --yellow: #FFCC00;
+            --red: #FF3333;
+            --rule: #111111;
+            --slide-padding: clamp(2rem, 5vw, 5rem);
+        }
+
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+        html {
+            scroll-behavior: smooth;
+            scroll-snap-type: y mandatory;
+            height: 100%;
+            overflow-x: hidden;
+        }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            height: 100%;
+            font-family: 'Source Serif 4', Georgia, serif;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .slide {
+            width: 100vw;
+            height: 100vh;
+            height: 100dvh;
+            scroll-snap-align: start;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            padding: var(--slide-padding);
+        }
+
+        /* ── TYPOGRAPHY ── */
+        .np-headline {
+            font-family: 'Oswald', sans-serif;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: -0.02em;
+            line-height: 0.92;
+            color: var(--text);
+            font-size: clamp(3rem, 10vw, 8rem);
+        }
+        .np-headline-lg { font-size: clamp(4rem, 13vw, 11rem); }
+        .np-headline-sm { font-size: clamp(1.8rem, 4.5vw, 4rem); }
+        .np-subhead {
+            font-family: 'Oswald', sans-serif;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            font-size: clamp(0.9rem, 2vw, 1.5rem);
+        }
+        .np-body {
+            font-family: 'Source Serif 4', serif;
+            font-size: clamp(0.7rem, 1.1vw, 0.9rem);
+            line-height: 1.7;
+            color: var(--text-muted);
+            max-width: 38ch;
+        }
+        .np-stamp {
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: clamp(0.55rem, 0.9vw, 0.72rem);
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: var(--text-muted);
+        }
+        .np-red { color: var(--red); }
+        .np-yellow-text { color: var(--yellow); }
+
+        /* ── STRUCTURAL ── */
+        .np-bar-h {
+            width: 100%;
+            height: 10px;
+            background: var(--yellow);
+            flex-shrink: 0;
+        }
+        .np-bar-v {
+            width: 8px;
+            height: 100%;
+            background: var(--yellow);
+            flex-shrink: 0;
+        }
+        .np-rule-h {
+            width: 100%;
+            height: 1px;
+            background: var(--rule);
+        }
+        .np-rule-v {
+            width: 1px;
+            background: var(--rule);
+        }
+        .np-dark { background: var(--bg-dark); color: #f7f5f0; }
+        .np-dark .np-body { color: rgba(247,245,240,0.55); }
+        .np-dark .np-stamp { color: rgba(247,245,240,0.4); }
+        .np-dark .np-rule-v { background: rgba(247,245,240,0.2); }
+        .np-dark .np-rule-h { background: rgba(247,245,240,0.2); }
+
+        /* ── GHOST NUMBER ── */
+        .np-ghost {
+            position: absolute;
+            font-family: 'Oswald', sans-serif;
+            font-weight: 900;
+            font-size: clamp(12rem, 30vw, 28rem);
+            color: rgba(0,0,0,0.05);
+            line-height: 1;
+            pointer-events: none;
+            text-transform: uppercase;
+            letter-spacing: -0.04em;
+        }
+
+        /* ── ANIMATIONS ── */
+        .reveal {
+            opacity: 0;
+            transform: translateY(24px);
+            transition: opacity 0.7s cubic-bezier(0.16,1,0.3,1),
+                        transform 0.7s cubic-bezier(0.16,1,0.3,1);
+        }
+        .reveal-left {
+            opacity: 0;
+            transform: translateX(-32px);
+            transition: opacity 0.7s cubic-bezier(0.16,1,0.3,1),
+                        transform 0.7s cubic-bezier(0.16,1,0.3,1);
+        }
+        .slide.visible .reveal { opacity: 1; transform: translateY(0); }
+        .slide.visible .reveal-left { opacity: 1; transform: translateX(0); }
+        .reveal:nth-child(1), .reveal-left:nth-child(1) { transition-delay: 0.05s; }
+        .reveal:nth-child(2), .reveal-left:nth-child(2) { transition-delay: 0.15s; }
+        .reveal:nth-child(3), .reveal-left:nth-child(3) { transition-delay: 0.25s; }
+        .reveal:nth-child(4), .reveal-left:nth-child(4) { transition-delay: 0.35s; }
+        .reveal:nth-child(5) { transition-delay: 0.42s; }
+        .reveal:nth-child(6) { transition-delay: 0.49s; }
+
+        /* ── NAV DOTS ── */
+        .nav-dots {
+            position: fixed;
+            right: 1.5rem;
+            top: 50%;
+            transform: translateY(-50%);
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            z-index: 100;
+        }
+        .nav-dots button {
+            width: 7px; height: 7px;
+            border-radius: 50%;
+            border: 1.5px solid #111;
+            background: transparent;
+            cursor: pointer;
+            transition: all 0.3s;
+            padding: 0;
+        }
+        .nav-dots button.active { background: var(--yellow); border-color: #111; transform: scale(1.3); }
+
+        /* ── PROGRESS BAR ── */
+        .progress-bar {
+            position: fixed; top: 0; left: 0;
+            height: 4px; background: var(--yellow);
+            width: 0%; z-index: 200;
+            transition: width 0.3s ease;
+        }
+
+        /* ── EDIT BUTTON ── */
+        .edit-hotzone {
+            position: fixed; top: 0; left: 0;
+            width: 80px; height: 80px;
+            z-index: 10000; cursor: pointer;
+        }
+        .edit-toggle {
+            position: fixed; top: 16px; left: 16px;
+            opacity: 0; pointer-events: none;
+            transition: opacity 0.3s; z-index: 10001;
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 0.7rem; letter-spacing: 0.1em;
+            text-transform: uppercase;
+            background: var(--bg-dark); color: #f7f5f0;
+            border: none; padding: 6px 14px;
+            cursor: pointer;
+        }
+        .edit-toggle.show { opacity: 1; pointer-events: auto; }
+        .edit-toggle.active { opacity: 1; pointer-events: auto; background: var(--yellow); color: #111; }
+
+        #notes-panel {
+            display: none; position: fixed; bottom: 0; left: 0; right: 0;
+            z-index: 9998;
+            background: rgba(8,8,8,0.94);
+            backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+            border-top: 1px solid rgba(255,255,255,0.08);
+        }
+        #notes-panel.active { display: flex; flex-direction: column; }
+        #notes-panel-header {
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 0.45rem 1.4rem; cursor: pointer; user-select: none;
+        }
+        #notes-panel-label {
+            flex: 1; font-family: 'IBM Plex Mono', monospace;
+            font-size: 0.58rem; letter-spacing: 0.16em;
+            text-transform: uppercase; color: rgba(255,255,255,0.3);
+        }
+        #notes-drag-hint { flex: 1; display: flex; justify-content: center; }
+        #notes-drag-hint::after {
+            content: ''; display: block; width: 36px; height: 3px;
+            border-radius: 2px; background: rgba(255,255,255,0.25);
+        }
+        #notes-collapse-btn {
+            flex: 1; text-align: right; font-size: 1rem;
+            color: rgba(255,255,255,0.4); background: none; border: none;
+            cursor: pointer; transition: color 0.15s, transform 0.2s;
+        }
+        #notes-panel.collapsed #notes-body { display: none; }
+        #notes-panel.collapsed #notes-collapse-btn { transform: rotate(180deg); }
+        #notes-body { padding: 0 1.4rem 0.75rem; }
+        #notes-textarea {
+            width: 100%; height: 72px; min-height: 48px; max-height: 200px;
+            resize: vertical; background: transparent; border: none; outline: none;
+            color: rgba(255,255,255,0.75); font-size: 0.88rem; line-height: 1.65;
+            font-family: system-ui, sans-serif; caret-color: var(--yellow);
+        }
+        #notes-textarea::placeholder { color: rgba(255,255,255,0.18); }
+
+        @media (max-height: 700px) { :root { --slide-padding: clamp(1rem,3vw,2rem); } }
+        @media (max-height: 600px) { .nav-dots { display: none; } }
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.2s !important; }
+            html { scroll-behavior: auto; }
+        }
+
+        /* ═══════════════════════════════════════════
+           SLIDE-SPECIFIC LAYOUTS
+           ═══════════════════════════════════════════ */
+
+        /* SLIDE 1 — Cover/Masthead */
+        #s1 { justify-content: flex-end; }
+        #s1 .np-bar-h { position: absolute; top: 0; left: 0; right: 0; }
+        #s1 .stamp-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: clamp(1rem,3vh,3rem);
+        }
+        #s1 .headline-wrap { margin-bottom: 1.2rem; }
+        #s1 .tagline-row {
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+        }
+
+        /* SLIDE 2 — Breaking Headline */
+        #s2 { justify-content: flex-start; padding-top: calc(var(--slide-padding) * 1.2); }
+        #s2 .evidence-row {
+            display: flex;
+            gap: 2.5rem;
+            margin-top: clamp(1.5rem,3vh,3rem);
+            align-items: flex-start;
+        }
+        #s2 .evidence-col { flex: 1; }
+
+        /* SLIDE 3 — Zero Dependencies (Feature Story) */
+        #s3 { justify-content: flex-end; }
+        #s3 .support-col {
+            position: absolute;
+            top: var(--slide-padding);
+            right: var(--slide-padding);
+            width: 28%;
+        }
+
+        /* SLIDE 4 — Data Brief: 19 */
+        #s4 { flex-direction: row; align-items: center; justify-content: flex-start; gap: 0; }
+        #s4 .stat-left { flex: 0 0 auto; display: flex; flex-direction: column; align-items: flex-start; }
+        #s4 .stat-right { flex: 1; padding-left: 3rem; }
+        #s4 .big-num {
+            font-family: 'Oswald', sans-serif;
+            font-weight: 900;
+            font-size: clamp(7rem, 18vw, 15rem);
+            line-height: 1;
+            color: transparent;
+            -webkit-text-stroke: 3px var(--text);
+        }
+
+        /* SLIDE 5 — Split Column: Edit */
+        #s5 { flex-direction: row; padding: 0; }
+        #s5 .left-col {
+            width: 42%;
+            background: var(--bg-dark);
+            padding: var(--slide-padding);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            position: relative;
+        }
+        #s5 .left-col .np-bar-v { position: absolute; left: 0; top: 0; }
+        #s5 .right-col {
+            flex: 1;
+            padding: var(--slide-padding);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        /* SLIDE 6 — Pull Quote: Presenter */
+        #s6 { justify-content: center; }
+        #s6 .quote-wrap {
+            max-width: 65%;
+        }
+        #s6 .quote-text {
+            font-family: 'Source Serif 4', serif;
+            font-style: italic;
+            font-size: clamp(1.4rem, 3.5vw, 2.8rem);
+            line-height: 1.35;
+            color: var(--text);
+        }
+        #s6 .attribution {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        /* SLIDE 7 — Contents/Index */
+        #s7 { justify-content: center; }
+        #s7 .index-list { list-style: none; width: 100%; max-width: 680px; }
+        #s7 .index-list li {
+            display: flex;
+            align-items: baseline;
+            gap: 1.2rem;
+            padding: clamp(0.6rem,1.5vh,1.2rem) 0;
+            border-bottom: 1px solid rgba(0,0,0,0.1);
+        }
+        #s7 .index-list li:first-child { border-top: 1px solid rgba(0,0,0,0.1); }
+        #s7 .idx-num {
+            font-family: 'Oswald', sans-serif;
+            font-weight: 900;
+            font-size: clamp(1.6rem,3.5vw,2.8rem);
+            color: var(--yellow);
+            -webkit-text-stroke: 1.5px var(--text);
+            color: transparent;
+            flex-shrink: 0;
+            width: 2.2ch;
+        }
+        #s7 .idx-cmd {
+            font-family: 'Oswald', sans-serif;
+            font-weight: 700;
+            font-size: clamp(0.95rem,2vw,1.5rem);
+            text-transform: uppercase;
+            flex: 1;
+        }
+        #s7 .idx-desc { flex: 2; }
+
+        /* SLIDE 8 — PPTX Data Brief */
+        #s8 { justify-content: center; align-items: flex-start; }
+        #s8 .pptx-num {
+            font-family: 'Oswald', sans-serif;
+            font-weight: 900;
+            font-size: clamp(5rem, 16vw, 14rem);
+            line-height: 1;
+            color: transparent;
+            -webkit-text-stroke: 3px var(--text);
+            text-transform: uppercase;
+        }
+
+        /* SLIDE 9 — Closing (Inverted) */
+        #s9 { background: var(--bg-dark); color: #f7f5f0; justify-content: flex-end; }
+        #s9 .np-bar-h { position: absolute; top: 0; left: 0; right: 0; }
+    </style>
+</head>
+<body>
+
+<div class="progress-bar" id="progressBar"></div>
+<nav class="nav-dots" id="navDots" aria-label="Slide navigation"></nav>
+<div class="edit-hotzone"></div>
+<button class="edit-toggle" id="editToggle" title="Edit mode (E)">✏ Edit</button>
+<div id="notes-panel">
+    <div id="notes-panel-header">
+        <div id="notes-panel-label">SPEAKER NOTES — SLIDE 1</div>
+        <div id="notes-drag-hint"></div>
+        <button id="notes-collapse-btn">▾</button>
+    </div>
+    <div id="notes-body">
+        <textarea id="notes-textarea" placeholder="Add speaker notes for this slide…"></textarea>
+    </div>
+</div>
+
+<!-- ══ SLIDE 1: COVER / MASTHEAD ══ -->
+<section class="slide" id="s1"
+    data-notes="Welcome. Slide Creator turns your ideas into polished, zero-dependency HTML presentations. No npm, no build tools — just a single file that runs in any browser."
+    aria-label="Cover">
+    <div class="np-bar-h reveal"></div>
+    <div class="stamp-row reveal">
+        <span class="np-stamp">A Skill for Claude Code</span>
+        <span class="np-stamp">V1.8 · 2025 · Issue No. 1</span>
+    </div>
+    <div class="headline-wrap reveal">
+        <div class="np-headline np-headline-lg">SLIDE·<br>CREATOR</div>
+    </div>
+    <div class="np-bar-h reveal"></div>
+    <div class="tagline-row reveal" style="margin-top:1rem;">
+        <span class="np-body">Zero-dependency HTML presentations. Polished output, every time.</span>
+        <span class="np-stamp" style="margin-left:auto;">↓ Scroll to read</span>
+    </div>
+</section>
+
+<!-- ══ SLIDE 2: BREAKING HEADLINE ══ -->
+<section class="slide" id="s2"
+    data-notes="The core problem: great content trapped in mediocre presentations. Slide Creator fixes this — pick a style, describe your content, get a polished deck. No re-rolling needed."
+    aria-label="The problem">
+    <span class="np-ghost" style="top:-0.2em;right:-0.1em;opacity:0.04;">AI</span>
+    <div class="np-stamp reveal" style="margin-bottom:1.2rem;">The Problem</div>
+    <div class="np-headline reveal" style="font-size:clamp(2.2rem,7vw,5.8rem);max-width:80%;">
+        AI CAN GENERATE SLIDES.<br>THE RESULTS ARE <span class="np-red">INCONSISTENT</span>.
+    </div>
+    <div class="np-bar-h reveal" style="margin-top:clamp(1.2rem,3vh,2.5rem);"></div>
+    <div class="evidence-row">
+        <div class="evidence-col reveal">
+            <div class="np-subhead" style="margin-bottom:0.6rem;">The Old Way</div>
+            <p class="np-body">Re-roll prompts hoping for better output. Spend hours adjusting fonts, colors, layouts. End up with generic "AI slop" that looks like every other deck.</p>
+        </div>
+        <div class="np-rule-v reveal"></div>
+        <div class="evidence-col reveal">
+            <div class="np-subhead" style="margin-bottom:0.6rem;">The Slide Creator Way</div>
+            <p class="np-body">Pick a style that fits your audience. Get stable, polished output every time. 19 design presets, zero compromises.</p>
+        </div>
+    </div>
+</section>
+
+<!-- ══ SLIDE 3: ZERO DEPENDENCIES (Feature Story) ══ -->
+<section class="slide" id="s3"
+    data-notes="Single HTML file. No npm install, no CDN calls, no build pipeline. Send it by email, open on a plane with no internet. It just works."
+    aria-label="Zero dependencies">
+    <div class="support-col reveal">
+        <div class="np-stamp" style="margin-bottom:0.8rem;">The Architecture</div>
+        <p class="np-body">A single <code style="font-family:'IBM Plex Mono';font-size:0.85em;background:rgba(0,0,0,0.06);padding:1px 4px;">presentation.html</code> file. Inline CSS and JavaScript. No external dependencies. Runs in any browser, online or offline.</p>
+        <div class="np-rule-h" style="margin:1rem 0;"></div>
+        <p class="np-body">Share by email. Put it on a USB. Open on a plane. No CDN calls, no npm, no build tools required.</p>
+    </div>
+    <div class="np-stamp reveal" style="margin-bottom:clamp(0.5rem,2vh,1.5rem);">Core Principle</div>
+    <div class="np-bar-h reveal" style="width:6rem;height:8px;margin-bottom:1rem;"></div>
+    <div class="np-headline np-headline-lg reveal">ZERO<br>DEPEN-<br>DENCIES</div>
+    <div class="np-body reveal" style="margin-top:1rem;max-width:45ch;">One file. Any browser. No internet required after generation.</div>
+</section>
+
+<!-- ══ SLIDE 4: DATA BRIEF — 19 STYLES ══ -->
+<section class="slide" id="s4"
+    data-notes="Nineteen curated design presets — not generic templates. Each has a distinct personality. Bold Signal for keynotes. Chinese Chan for philosophical talks. Neo-Brutalism for indie devs."
+    aria-label="19 styles">
+    <div class="np-bar-v reveal"></div>
+    <div class="stat-left reveal" style="padding-left:2rem;">
+        <div class="np-stamp" style="margin-bottom:0.5rem;">Design Presets</div>
+        <div class="big-num">19</div>
+        <div class="np-subhead" style="margin-top:0.5rem;font-size:clamp(0.7rem,1.5vw,1.1rem);">Curated Styles</div>
+    </div>
+    <div class="np-rule-v reveal" style="margin: 0 2rem; height:60%;align-self:center;"></div>
+    <div class="stat-right reveal">
+        <div class="np-stamp" style="margin-bottom:1rem;">A selection:</div>
+        <ul style="list-style:none;display:flex;flex-direction:column;gap:0.5rem;">
+            <li><span class="np-subhead" style="font-size:clamp(0.75rem,1.5vw,1.1rem);">Bold Signal</span> <span class="np-body" style="display:inline;"> — keynotes &amp; pitches</span></li>
+            <li><span class="np-subhead" style="font-size:clamp(0.75rem,1.5vw,1.1rem);">Enterprise Dark</span> <span class="np-body" style="display:inline;"> — B2B &amp; investor decks</span></li>
+            <li><span class="np-subhead" style="font-size:clamp(0.75rem,1.5vw,1.1rem);">Terminal Green</span> <span class="np-body" style="display:inline;"> — dev tools &amp; APIs</span></li>
+            <li><span class="np-subhead" style="font-size:clamp(0.75rem,1.5vw,1.1rem);">Chinese Chan</span> <span class="np-body" style="display:inline;"> — design philosophy</span></li>
+            <li><span class="np-subhead" style="font-size:clamp(0.75rem,1.5vw,1.1rem);">Modern Newspaper</span> <span class="np-body" style="display:inline;"> — thought leadership</span></li>
+        </ul>
+        <div class="np-stamp" style="margin-top:1rem;">+ 14 more presets</div>
+    </div>
+</section>
+
+<!-- ══ SLIDE 5: SPLIT COLUMN — INLINE EDITING ══ -->
+<section class="slide" id="s5"
+    data-notes="Every generated presentation includes a built-in text editor. Hover the top-left corner or press E. Click any text to edit it directly in the browser. Ctrl+S saves back to the HTML file."
+    aria-label="Inline editing">
+    <div class="left-col">
+        <div class="np-bar-v"></div>
+        <div class="np-stamp reveal" style="color:rgba(247,245,240,0.45);margin-bottom:1.2rem;">Built-in Feature</div>
+        <div class="np-headline reveal" style="color:#f7f5f0;font-size:clamp(1.8rem,4.5vw,3.8rem);">EDIT<br>IN THE<br>BROWSER</div>
+        <div class="np-stamp reveal" style="color:rgba(247,245,240,0.35);margin-top:1.5rem;">SYS://INLINE-EDIT</div>
+    </div>
+    <div class="right-col">
+        <div class="np-stamp reveal" style="margin-bottom:1.2rem;">How it works</div>
+        <div class="np-subhead reveal" style="margin-bottom:0.8rem;font-size:clamp(0.85rem,1.8vw,1.3rem);">Hover top-left corner → click Edit</div>
+        <div class="np-rule-h reveal" style="margin-bottom:0.8rem;"></div>
+        <ul style="list-style:none;display:flex;flex-direction:column;gap:0.6rem;">
+            <li class="reveal"><span class="np-stamp">Press E</span> <span class="np-body" style="display:inline;margin-left:0.5rem;">— toggle edit mode</span></li>
+            <li class="reveal"><span class="np-stamp">Click text</span> <span class="np-body" style="display:inline;margin-left:0.5rem;">— edit directly in place</span></li>
+            <li class="reveal"><span class="np-stamp">Ctrl+S</span> <span class="np-body" style="display:inline;margin-left:0.5rem;">— save changes to file</span></li>
+            <li class="reveal"><span class="np-stamp">Escape</span> <span class="np-body" style="display:inline;margin-left:0.5rem;">— exit without saving</span></li>
+        </ul>
+        <div class="np-rule-h reveal" style="margin-top:1.5rem;margin-bottom:0.8rem;"></div>
+        <p class="np-body reveal">Notes sync live to any open Presenter window. No HTML file needed after generation — edit everything visually.</p>
+    </div>
+</section>
+
+<!-- ══ SLIDE 6: PULL QUOTE — PRESENTER MODE ══ -->
+<section class="slide" id="s6"
+    data-notes="Press P to open the Presenter window. It shows your speaker notes, a timer, and slide navigation. The notes panel at the bottom of the main view lets you edit notes live."
+    aria-label="Presenter mode">
+    <span class="np-ghost" style="top:-0.3em;left:-0.05em;opacity:0.04;">"</span>
+    <div class="np-stamp reveal" style="margin-bottom:2rem;">Presenter Mode</div>
+    <div class="quote-wrap">
+        <div class="np-rule-h reveal"></div>
+        <div class="quote-text reveal" style="padding:clamp(1rem,2.5vh,2rem) 0;">"Press <strong>P</strong> — your presenter window opens instantly. Notes, timer, and slide navigation. No third-party software required."</div>
+        <div class="np-rule-h reveal"></div>
+        <div class="attribution reveal">
+            <div class="np-stamp">Presenter Mode</div>
+            <div class="np-rule-v" style="height:1em;margin:0 0.5rem;"></div>
+            <div class="np-body" style="display:inline;">Syncs via BroadcastChannel API · Works offline · Zero latency</div>
+        </div>
+    </div>
+</section>
+
+<!-- ══ SLIDE 7: CONTENTS — COMMANDS ══ -->
+<section class="slide" id="s7"
+    data-notes="Four commands cover every use case. No flag starts an interactive style discovery session. --plan separates thinking from generation. --generate skips the questions when you have a plan."
+    aria-label="Commands">
+    <div class="np-bar-h reveal" style="margin-bottom:clamp(1rem,3vh,2.5rem);"></div>
+    <div class="np-stamp reveal" style="margin-bottom:clamp(0.8rem,2vh,1.5rem);">How to Use</div>
+    <ul class="index-list">
+        <li class="reveal">
+            <div class="idx-num">01</div>
+            <div class="idx-cmd"><code style="font-family:'IBM Plex Mono';font-size:0.9em;">/slide-creator</code></div>
+            <p class="idx-desc np-body">Interactive — style discovery, content gathering, generation all in one session</p>
+        </li>
+        <li class="reveal">
+            <div class="idx-num">02</div>
+            <div class="idx-cmd"><code style="font-family:'IBM Plex Mono';font-size:0.9em;">--plan</code></div>
+            <p class="idx-desc np-body">Analyze resources/, create PLANNING.md outline. Stops before generating HTML.</p>
+        </li>
+        <li class="reveal">
+            <div class="idx-num">03</div>
+            <div class="idx-cmd"><code style="font-family:'IBM Plex Mono';font-size:0.9em;">--generate</code></div>
+            <p class="idx-desc np-body">Read PLANNING.md and generate the HTML. Skip straight to production.</p>
+        </li>
+        <li class="reveal">
+            <div class="idx-num">04</div>
+            <div class="idx-cmd"><code style="font-family:'IBM Plex Mono';font-size:0.9em;">--export pptx</code></div>
+            <p class="idx-desc np-body">Screenshot every slide via system Chrome and assemble a PowerPoint file.</p>
+        </li>
+    </ul>
+</section>
+
+<!-- ══ SLIDE 8: DATA BRIEF — PPTX EXPORT ══ -->
+<section class="slide" id="s8"
+    data-notes="PPTX export uses your existing Chrome install — no 300MB Chromium download. Requires only python3 with playwright and python-pptx. Screenshots every slide, assembles a PowerPoint."
+    aria-label="PPTX export">
+    <div class="np-stamp reveal" style="margin-bottom:0.5rem;">Export Format</div>
+    <div class="pptx-num reveal">PPTX</div>
+    <div class="np-bar-h reveal" style="width:8rem;height:8px;margin:1rem 0;"></div>
+    <div style="display:flex;gap:3rem;align-items:flex-start;" class="reveal">
+        <div>
+            <div class="np-subhead" style="margin-bottom:0.5rem;font-size:clamp(0.8rem,1.8vw,1.3rem);">No Node.js</div>
+            <p class="np-body">Uses Python + playwright + system Chrome you already have.</p>
+        </div>
+        <div>
+            <div class="np-subhead" style="margin-bottom:0.5rem;font-size:clamp(0.8rem,1.8vw,1.3rem);">No 300MB Download</div>
+            <p class="np-body">Playwright uses the Chrome already installed on your machine.</p>
+        </div>
+        <div>
+            <div class="np-subhead" style="margin-bottom:0.5rem;font-size:clamp(0.8rem,1.8vw,1.3rem);">Pixel-Perfect</div>
+            <p class="np-body">Screenshots every slide at full resolution, then assembles the .pptx.</p>
+        </div>
+    </div>
+</section>
+
+<!-- ══ SLIDE 9: CLOSING (INVERTED) ══ -->
+<section class="slide" id="s9"
+    data-notes="Install takes under 30 seconds. Clone into ~/.claude/skills/ and restart Claude Code. Then just type /slide-creator and you're running."
+    aria-label="Get started">
+    <div class="np-bar-h reveal"></div>
+    <div style="flex:1;display:flex;flex-direction:column;justify-content:flex-end;">
+        <div class="np-stamp reveal" style="color:rgba(247,245,240,0.4);margin-bottom:1.2rem;">Get Started</div>
+        <div class="np-headline reveal" style="color:#f7f5f0;font-size:clamp(3rem,9vw,7.5rem);">START<br>NOW.</div>
+        <div class="np-bar-h reveal" style="background:var(--yellow);margin:1.5rem 0 1rem;"></div>
+        <div style="display:flex;align-items:center;gap:2rem;" class="reveal">
+            <code style="font-family:'IBM Plex Mono';font-size:clamp(0.65rem,1.2vw,0.9rem);color:rgba(247,245,240,0.7);background:rgba(255,255,255,0.07);padding:8px 16px;letter-spacing:0.04em;">git clone https://github.com/kaisersong/slide-creator ~/.claude/skills/slide-creator</code>
+        </div>
+        <div class="np-stamp reveal" style="color:rgba(247,245,240,0.3);margin-top:1rem;">Then: /slide-creator in Claude Code</div>
+    </div>
+</section>
+
+<script>
+if (new URLSearchParams(location.search).has('presenter')) {
+    document.title = 'Presenter — ' + document.title;
+    document.body.innerHTML = `<style>*{box-sizing:border-box;margin:0}body{background:#111;color:#fff;font-family:system-ui,sans-serif}#pv{display:grid;grid-template-columns:1fr 220px;gap:1rem;padding:1.25rem;align-items:start}.pv-panel{background:#1e1e1e;border-radius:12px;padding:1.25rem}#pv-label{font-size:.6rem;letter-spacing:.18em;text-transform:uppercase;color:#555;margin-bottom:.6rem}#pv-notes{font-size:1.05rem;line-height:1.85;color:#d0d0d0}#pv-right{display:flex;flex-direction:column;gap:1rem}#pv-nav{display:flex;align-items:center;justify-content:space-between;gap:.5rem}.pv-arrow{width:32px;height:32px;border-radius:6px;border:1px solid #333;background:#2a2a2a;color:#aaa;font-size:1rem;cursor:pointer;display:flex;align-items:center;justify-content:center}.pv-arrow:hover{background:#383838;color:#fff}#pv-counter{text-align:center;flex:1}#pv-num{font-size:1.6rem;font-weight:700;font-variant-numeric:tabular-nums;line-height:1}#pv-of{color:#555;font-size:.75rem;margin-top:.2rem}#pv-timer-box{text-align:center}#pv-timer-label{font-size:.6rem;letter-spacing:.18em;text-transform:uppercase;color:#555;margin-bottom:.3rem}#pv-timer{font-size:1.5rem;font-weight:700;font-family:monospace;font-variant-numeric:tabular-nums}</style><div id="pv"><div class="pv-panel"><div id="pv-label">Speaker Notes</div><div id="pv-notes">Waiting for main window…</div></div><div id="pv-right"><div class="pv-panel"><div id="pv-nav"><button class="pv-arrow" id="pv-prev">←</button><div id="pv-counter"><div id="pv-num">—</div><div id="pv-of">/ —</div></div><button class="pv-arrow" id="pv-next">→</button></div></div><div class="pv-panel" id="pv-timer-box"><div id="pv-timer-label">Elapsed</div><div id="pv-timer">0:00</div></div></div></div>`;
+    const ch = new BroadcastChannel('slide-creator-presenter');
+    let t0 = null;
+    ch.addEventListener('message', e => {
+        if (e.data.type !== 'state') return;
+        if (!t0) t0 = Date.now();
+        document.getElementById('pv-notes').textContent = e.data.notes || '(no notes)';
+        document.getElementById('pv-num').textContent = e.data.index + 1;
+        document.getElementById('pv-of').textContent = `/ ${e.data.total}`;
+    });
+    ch.postMessage({ type: 'request-state' });
+    setInterval(() => {
+        if (!t0) return;
+        const s = Math.floor((Date.now() - t0) / 1000);
+        document.getElementById('pv-timer').textContent = `${Math.floor(s/60)}:${String(s%60).padStart(2,'0')}`;
+    }, 1000);
+    document.getElementById('pv-prev').addEventListener('click', () => ch.postMessage({ type: 'nav-prev' }));
+    document.getElementById('pv-next').addEventListener('click', () => ch.postMessage({ type: 'nav-next' }));
+    document.addEventListener('keydown', e => {
+        if (e.key === 'ArrowRight' || e.key === ' ') ch.postMessage({ type: 'nav-next' });
+        else if (e.key === 'ArrowLeft') ch.postMessage({ type: 'nav-prev' });
+    });
+} else {
+    class SlidePresentation {
+        constructor() {
+            this.slides = document.querySelectorAll('.slide');
+            this.currentSlide = 0;
+            this.channel = new BroadcastChannel('slide-creator-presenter');
+            this.setupNavDots();
+            this.setupObserver();
+            this.setupKeyboard();
+            this.setupTouch();
+            this.setupWheel();
+            this.setupPresenter();
+            this.setupEditor();
+            this.updateProgress();
+        }
+        setupNavDots() {
+            const nav = document.getElementById('navDots');
+            this.slides.forEach((_, i) => {
+                const btn = document.createElement('button');
+                btn.setAttribute('aria-label', `Slide ${i+1}`);
+                btn.addEventListener('click', () => this.goTo(i));
+                nav.appendChild(btn);
+            });
+        }
+        setupObserver() {
+            const obs = new IntersectionObserver(entries => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('visible');
+                        this.currentSlide = [...this.slides].indexOf(entry.target);
+                        this.updateProgress();
+                        this.updateDots();
+                        this.broadcastState();
+                        this.updateNotesPanel();
+                    }
+                });
+            }, { threshold: 0.5 });
+            this.slides.forEach(s => obs.observe(s));
+        }
+        setupKeyboard() {
+            document.addEventListener('keydown', e => {
+                if (e.target.getAttribute('contenteditable') || e.target.tagName === 'TEXTAREA') return;
+                if (e.key === 'ArrowDown' || e.key === 'ArrowRight' || e.key === ' ') { e.preventDefault(); this.next(); }
+                else if (e.key === 'ArrowUp' || e.key === 'ArrowLeft') { e.preventDefault(); this.prev(); }
+                else if (e.key === 'p' || e.key === 'P') {
+                    window.open(location.href.split('?')[0]+'?presenter','slide-presenter-'+Date.now(),'width=1100,menubar=no,toolbar=no,location=no');
+                } else if (e.key === 'e' || e.key === 'E') {
+                    this.editor.toggle();
+                }
+            });
+        }
+        setupTouch() {
+            let sy = 0;
+            document.addEventListener('touchstart', e => { sy = e.touches[0].clientY; }, { passive: true });
+            document.addEventListener('touchend', e => {
+                const d = sy - e.changedTouches[0].clientY;
+                if (Math.abs(d) > 50) d > 0 ? this.next() : this.prev();
+            });
+        }
+        setupWheel() {
+            let locked = false, timer = null;
+            document.addEventListener('wheel', e => {
+                clearTimeout(timer);
+                if (!locked) { locked = true; e.deltaY > 0 ? this.next() : this.prev(); }
+                timer = setTimeout(() => { locked = false; }, 180);
+            }, { passive: true });
+        }
+        setupPresenter() {
+            this.channel.addEventListener('message', e => {
+                if (e.data.type === 'nav-next') this.next();
+                else if (e.data.type === 'nav-prev') this.prev();
+                else if (e.data.type === 'request-state') this.broadcastState();
+            });
+        }
+        setupEditor() {
+            const panel = document.getElementById('notes-panel');
+            const label = document.getElementById('notes-panel-label');
+            const textarea = document.getElementById('notes-textarea');
+            const toggle = document.getElementById('editToggle');
+            const hotzone = document.querySelector('.edit-hotzone');
+            let hideTimeout = null;
+            hotzone.addEventListener('mouseenter', () => { clearTimeout(hideTimeout); toggle.classList.add('show'); });
+            hotzone.addEventListener('mouseleave', () => { hideTimeout = setTimeout(() => { if (!this.editor.active) toggle.classList.remove('show'); }, 400); });
+            toggle.addEventListener('mouseenter', () => clearTimeout(hideTimeout));
+            toggle.addEventListener('mouseleave', () => { hideTimeout = setTimeout(() => { if (!this.editor.active) toggle.classList.remove('show'); }, 400); });
+            hotzone.addEventListener('click', () => this.editor.toggle());
+            toggle.addEventListener('click', () => this.editor.toggle());
+            document.getElementById('notes-panel-header').addEventListener('click', () => panel.classList.toggle('collapsed'));
+            textarea.addEventListener('input', () => {
+                const slide = this.slides[this.currentSlide];
+                if (slide) { slide.dataset.notes = textarea.value; this.broadcastState(); }
+            });
+            document.addEventListener('keydown', e => {
+                if ((e.ctrlKey || e.metaKey) && e.key === 's') { e.preventDefault(); this.saveFile(); }
+            });
+            this.editor = {
+                active: false,
+                toggle: () => this.editor.active ? this.editor.exit() : this.editor.enter(),
+                enter: () => {
+                    this.editor.active = true;
+                    toggle.classList.add('active'); toggle.textContent = '✓ Done';
+                    this.slides.forEach(s => s.querySelectorAll('h1,h2,h3,p,li,span,div.np-headline,div.np-body').forEach(el => { el.setAttribute('contenteditable','true'); el.style.outline='none'; }));
+                    panel.classList.add('active'); this.updateNotesPanel();
+                },
+                exit: () => {
+                    this.editor.active = false;
+                    toggle.classList.remove('active'); toggle.textContent = '✏ Edit';
+                    this.slides.forEach(s => s.querySelectorAll('[contenteditable]').forEach(el => { el.removeAttribute('contenteditable'); el.style.outline=''; }));
+                    panel.classList.remove('active');
+                }
+            };
+            this._notesLabel = label; this._notesTextarea = textarea;
+        }
+        updateNotesPanel() {
+            if (!this.editor?.active) return;
+            const slide = this.slides[this.currentSlide];
+            this._notesLabel.textContent = `SPEAKER NOTES — SLIDE ${this.currentSlide+1} / ${this.slides.length}`;
+            this._notesTextarea.value = slide?.dataset.notes || '';
+        }
+        saveFile() {
+            const html = '<!DOCTYPE html>\n' + document.documentElement.outerHTML;
+            const bytes = new TextEncoder().encode(html);
+            fetch(location.pathname, { method:'PUT', body:bytes, headers:{'Content-Type':'text/html'} })
+                .catch(() => {
+                    const a = Object.assign(document.createElement('a'), {
+                        href: URL.createObjectURL(new Blob([html],{type:'text/html'})),
+                        download: location.pathname.split('/').pop() || 'presentation.html'
+                    });
+                    a.click(); URL.revokeObjectURL(a.href);
+                });
+        }
+        broadcastState() {
+            const slide = this.slides[this.currentSlide];
+            this.channel.postMessage({ type:'state', index:this.currentSlide, total:this.slides.length, notes:slide?.dataset.notes||'' });
+        }
+        goTo(i) { this.slides[i]?.scrollIntoView({ behavior:'smooth' }); }
+        next() { this.goTo(Math.min(this.currentSlide+1, this.slides.length-1)); }
+        prev() { this.goTo(Math.max(this.currentSlide-1, 0)); }
+        updateProgress() {
+            const pct = (this.currentSlide / (this.slides.length-1)) * 100;
+            document.getElementById('progressBar').style.width = pct + '%';
+        }
+        updateDots() {
+            document.querySelectorAll('#navDots button').forEach((btn, i) => {
+                btn.classList.toggle('active', i === this.currentSlide);
+            });
+        }
+    }
+    new SlidePresentation();
+}
+</script>
+</body>
+</html>

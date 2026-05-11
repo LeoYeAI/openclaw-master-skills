@@ -1,0 +1,61 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "order-action.schema.json",
+  "title": "OrderAction Task",
+  "description": "执行命令任务配置",
+  "type": "object",
+  "required": ["taskCategory", "jobType", "name"],
+  "properties": {
+    "taskCategory": {
+      "type": "string",
+      "const": "Build"
+    },
+    "jobType": {
+      "type": "string",
+      "const": "OrderAction"
+    },
+    "name": {
+      "type": "string",
+      "maxLength": 100,
+      "description": "任务名称"
+    },
+    "workPath": {
+      "type": "string",
+      "description": "工作目录"
+    },
+    "sourceId": {
+      "type": "string",
+      "description": "代码源ID"
+    },
+    "buildImageModel": {
+      "type": "string",
+      "enum": ["default", "custom"],
+      "default": "default"
+    },
+    "executeImageId": {
+      "type": "string"
+    },
+    "script": {
+      "type": "string",
+      "description": "Shell命令脚本"
+    },
+    "timeout": {
+      "type": "number",
+      "default": 600,
+      "description": "超时时间（秒）"
+    },
+    "continueOnError": {
+      "type": "boolean",
+      "default": false,
+      "description": "失败后继续"
+    },
+    "idInTemplate": {
+      "type": "string"
+    },
+    "dependencies": {
+      "type": "array",
+      "items": { "type": "string" },
+      "default": []
+    }
+  }
+}

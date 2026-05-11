@@ -1,0 +1,64 @@
+name: Demo Diagram Breakdown
+slug: demo-diagram-breakdown
+version: "0.3.2"
+status: wip
+priority: p0
+platforms:
+  - linkedin
+  - reddit
+  - x
+private: false
+owner: RJG
+
+source_prerequisites:
+  min_sources: 1
+  source_types:
+    - case-study
+    - github-repo
+
+brand_graph:
+  required: false
+  required_layers: []
+
+prerequisites:
+  - name: extract-source
+    action: extract-text
+    description: Extract the case study content or GitHub repo README and structure.
+  - name: identify-architecture
+    action: extract-key-points
+    description: Identify the system architecture, key components, and data flow.
+  - name: generate-title
+    action: generate-title
+    description: Generate a title that highlights the most interesting technical aspect.
+  - name: map-flow
+    action: research-context
+    description: Map the end-to-end flow or pipeline described in the source.
+
+blocks:
+  - name: diagram
+    format: image
+    sub_format: diagram
+    agent: diagram.md
+    depends_on: null
+    rules:
+      - Visualize the system architecture or pipeline as a clear diagram
+      - Show components, connections, and data flow
+      - Label each component clearly
+      - Use a clean, minimal visual style
+      - Include a title and brief description
+    examples:
+      - https://www.reddit.com/r/HowToAIAgent/comments/1rfo5i7/i_opensourced_my_kindle_publishing_pipeline_with/
+
+  - name: breakdown-post
+    format: text
+    sub_format: breakdown-post
+    agent: breakdown.md
+    depends_on:
+      - diagram
+    rules:
+      - Walk through the diagram step by step
+      - Explain what each component does and why
+      - Highlight the clever or novel parts of the architecture
+      - Include practical takeaways for the reader
+      - Link to the original source
+    examples: []

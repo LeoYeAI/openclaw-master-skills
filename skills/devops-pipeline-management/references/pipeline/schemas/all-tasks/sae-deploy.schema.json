@@ -1,0 +1,66 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "sae-deploy.schema.json",
+  "title": "Sae Task",
+  "description": "SAE应用发布任务配置（首次创建SAE应用）",
+  "type": "object",
+  "required": ["taskCategory", "jobType", "name"],
+  "properties": {
+    "taskCategory": {
+      "type": "string",
+      "const": "Deploy"
+    },
+    "jobType": {
+      "type": "string",
+      "const": "Sae"
+    },
+    "name": {
+      "type": "string",
+      "maxLength": 100,
+      "description": "任务名称"
+    },
+    "workPath": {
+      "type": "string",
+      "description": "工作目录"
+    },
+    "sourceId": {
+      "type": "string",
+      "description": "代码源ID"
+    },
+    "appName": {
+      "type": "string",
+      "description": "SAE应用名称"
+    },
+    "namespace": {
+      "type": "string",
+      "description": "命名空间"
+    },
+    "cpu": {
+      "type": "integer",
+      "default": 500,
+      "description": "CPU（毫核）"
+    },
+    "memory": {
+      "type": "integer",
+      "default": 1024,
+      "description": "内存（MB）"
+    },
+    "replicas": {
+      "type": "integer",
+      "default": 1,
+      "description": "实例数"
+    },
+    "configYaml": {
+      "type": "string",
+      "description": "配置YAML"
+    },
+    "idInTemplate": {
+      "type": "string"
+    },
+    "dependencies": {
+      "type": "array",
+      "items": { "type": "string" },
+      "default": []
+    }
+  }
+}

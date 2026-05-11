@@ -1,0 +1,534 @@
+// =============================================================================
+// OpenClaw Multi-Agent Team Configuration — Full Example
+// =============================================================================
+//
+// This is a complete, annotated openclaw.json configuration for a 4-agent team:
+//   - planner (orchestrator): task decomposition, coordination, status tracking
+//   - coder: code implementation, debugging, technical execution
+//   - reviewer: code review, quality assurance, testing
+//   - writer: documentation, communication, content output
+//
+// Channel: Discord (primary) + Telegram (secondary/private)
+// Pattern: Orchestrator (planner) monitors all → Specialists @-triggered
+//
+// Copy this to ~/.openclaw/openclaw.json and replace all placeholder values.
+// Validate with: openclaw doctor --fix
+// =============================================================================
+
+{
+  // -------------------------------------------------------------------------
+  // Gateway — Core server settings
+  // -------------------------------------------------------------------------
+  "gateway": {
+    "port": 18789,
+    "mode": "local",          // "local" = loopback only; "tailscale" for remote
+    "bind": "loopback",       // Only accept connections from localhost
+    "auth": {
+      "mode": "token",
+      "token": "REPLACE_WITH_LONG_RANDOM_TOKEN"
+      // Generate with: openssl rand -hex 24
+    }
+  },
+
+  // -------------------------------------------------------------------------
+  // Session — DM scoping, reset, and agent-to-agent controls
+  // -------------------------------------------------------------------------
+  "session": {
+    "dmScope": "per-channel-peer",
+    // Options:
+    //   "main"                   — all DMs share one session (single-user only!)
+    //   "per-channel-peer"       — isolate by channel + sender (recommended)
+    //   "per-account-channel-peer" — also isolate by bot account
+
+    "reset": {
+      "mode": "daily",
+      "atHour": 4              // Reset at 4 AM gateway local time
+    },
+
+    // Agent-to-agent communication controls
+    "agentToAgent": {
+      "maxPingPongTurns": 2
+      // 0 = no reply-back (fire-and-forget only)
+      // 1 = one exchange (request → response)
+      // 2 = two exchanges (recommended for team collaboration)
+      // 5 = maximum allowed
+    },
+
+    // Policy for sessions_send delivery
+    "sendPolicy": {
+      "rules": [
+        // Example: deny agent-to-agent sends into Discord groups
+        // (forces visible @mention collaboration instead)
+        // {
+        //   "match": { "channel": "discord", "chatType": "group" },
+        //   "action": "deny"
+        // }
+      ],
+      "default": "allow"
+    }
+  },
+
+  // -------------------------------------------------------------------------
+  // Models — AI model configuration
+  // -------------------------------------------------------------------------
+  "models": {
+    "mode": "merge"
+    // Custom providers can be added here:
+    // "providers": {
+    //   "openrouter": {
+    //     "baseUrl": "https://openrouter.ai/api/v1",
+    //     "apiKey": "${OPENROUTER_API_KEY}",
+    //     "api": "openai-completions",
+    //     "models": [...]
+    //   }
+    // }
+  },
+
+  // -------------------------------------------------------------------------
+  // Agents — Team definition
+  // -------------------------------------------------------------------------
+  "agents": {
+    "defaults": {
+      // Default model for all agents (can be overridden per-agent)
+      "model": {
+        "primary": "anthropic/claude-sonnet-4-20250514",
+        "fallback": [
+          "anthropic/claude-haiku-3-5-20241022",
+          "openai/gpt-4o"
+        ]
+      },
+
+      // Workspace defaults
+      "workspace": "~/.openclaw/workspace",
+      "bootstrapMaxChars": 20000,
+      "bootstrapTotalMaxChars": 150000,
+
+      // Memory search
+      "memorySearch": {
+        "enabled": true
+        // Auto-selects embedding provider: local → OpenAI → Gemini → BM25 fallback
+        // To force a provider:
+        // "provider": "openai",
+        // "openai": { "model": "text-embedding-3-small" }
+      },
+
+      // Context compaction & memory flush
+      "compaction": {
+        "reserveTokensFloor": 20000,
+        "memoryFlush": {
+          "enabled": true,
+          "softThresholdTokens": 4000,
+          "systemPrompt": "Session nearing compaction. Store durable memories now.",
+          "prompt": "Write any lasting notes to memory/YYYY-MM-DD.md; reply with NO_REPLY if nothing to store."
+        }
+      },
+
+      // Sub-agent defaults
+      "subagents": {
+        "model": "anthropic/claude-sonnet-4-20250514",
+        "runTimeoutSeconds": 300,
+        "archiveAfterMinutes": 60
+      },
+
+      // Sandbox defaults (disabled by default — enable per-agent as needed)
+      // "sandbox": {
+      //   "mode": "all",
+      //   "scope": "agent",
+      //   "workspaceAccess": "rw"
+      // }
+    },
+
+    // --- Agent list ---
+    "list": [
+      // =====================================================================
+      // PLANNER — Orchestrator
+      // =====================================================================
+      {
+        "id": "planner",
+        "name": "Planner",
+        "default": true,       // Default agent when no binding matches
+        "workspace": "~/.openclaw/workspace-planner",
+
+        "identity": {
+          "name": "🧠 Planner"
+        },
+
+        "model": {
+          "primary": "anthropic/claude-sonnet-4-20250514"
+          // Orchestrator can use a stronger model if budget allows:
+          // "primary": "anthropic/claude-opus-4-20250514"
+        },
+
+        "groupChat": {
+          "mentionPatterns": ["@planner", "@Planner", "@Planner Bot"]
+        },
+
+        // Planner can spawn tasks to all other agents
+        "subagents": {
+          "allowAgents": ["coder", "reviewer", "writer"]
+        },
+
+        "tools": {
+          "allow": [
+            "read", "write", "edit",
+            "exec",
+            "memory_search", "memory_get",
+            "sessions_list", "sessions_history",
+            "sessions_send", "sessions_spawn",
+            "session_status",
+            "browser", "web_search", "web_fetch"
+          ],
+          "sessions": {
+            "visibility": "all"
+            // Orchestrator needs to see all sessions for coordination
+          }
+        }
+      },
+
+      // =====================================================================
+      // CODER — Technical Implementation
+      // =====================================================================
+      {
+        "id": "coder",
+        "name": "Coder",
+        "workspace": "~/.openclaw/workspace-coder",
+
+        "identity": {
+          "name": "💻 Coder"
+        },
+
+        "model": {
+          "primary": "anthropic/claude-sonnet-4-20250514"
+        },
+
+        "groupChat": {
+          "mentionPatterns": ["@coder", "@engineer", "@Coder Bot"]
+        },
+
+        "subagents": {
+          "allowAgents": ["planner"]
+          // Coder can spawn sub-tasks back to planner for re-planning
+        },
+
+        "sandbox": {
+          "mode": "all",
+          "scope": "agent",
+          "workspaceAccess": "rw"
+        },
+
+        "tools": {
+          "allow": [
+            "read", "write", "edit", "apply_patch",
+            "exec", "process",
+            "memory_search", "memory_get",
+            "sessions_list", "sessions_history",
+            "sessions_send", "sessions_spawn",
+            "session_status",
+            "browser", "web_search", "web_fetch"
+          ],
+          "deny": ["cron", "nodes", "canvas"],
+          "sessions": {
+            "visibility": "tree"
+          }
+        }
+      },
+
+      // =====================================================================
+      // REVIEWER — Quality Assurance
+      // =====================================================================
+      {
+        "id": "reviewer",
+        "name": "Reviewer",
+        "workspace": "~/.openclaw/workspace-reviewer",
+
+        "identity": {
+          "name": "🔍 Reviewer"
+        },
+
+        "model": {
+          "primary": "anthropic/claude-sonnet-4-20250514"
+        },
+
+        "groupChat": {
+          "mentionPatterns": ["@reviewer", "@review", "@Reviewer Bot"]
+        },
+
+        "subagents": {
+          "allowAgents": ["planner"]
+        },
+
+        "tools": {
+          "allow": [
+            "read",
+            "exec",
+            "memory_search", "memory_get",
+            "sessions_list", "sessions_history",
+            "sessions_send",
+            "session_status",
+            "web_search", "web_fetch"
+          ],
+          "deny": ["write", "edit", "apply_patch", "cron", "nodes", "canvas", "browser"],
+          // Reviewer is read-only for code — reviews but doesn't modify
+          "sessions": {
+            "visibility": "tree"
+          }
+        }
+      },
+
+      // =====================================================================
+      // WRITER — Documentation & Communication
+      // =====================================================================
+      {
+        "id": "writer",
+        "name": "Writer",
+        "workspace": "~/.openclaw/workspace-writer",
+
+        "identity": {
+          "name": "✍️ Writer"
+        },
+
+        "model": {
+          "primary": "anthropic/claude-sonnet-4-20250514"
+        },
+
+        "groupChat": {
+          "mentionPatterns": ["@writer", "@docs", "@Writer Bot"]
+        },
+
+        "subagents": {
+          "allowAgents": ["planner"]
+        },
+
+        "tools": {
+          "allow": [
+            "read", "write", "edit",
+            "memory_search", "memory_get",
+            "sessions_list", "sessions_history",
+            "sessions_send",
+            "session_status",
+            "web_search", "web_fetch"
+          ],
+          "deny": ["exec", "process", "apply_patch", "cron", "nodes", "canvas", "browser"],
+          "sessions": {
+            "visibility": "tree"
+          }
+        }
+      }
+    ]
+  },
+
+  // -------------------------------------------------------------------------
+  // Tools — Global tool policies
+  // -------------------------------------------------------------------------
+  "tools": {
+    // Master switch for agent-to-agent communication
+    "agentToAgent": {
+      "enabled": true,
+      "allow": ["planner", "coder", "reviewer", "writer"]
+    },
+
+    // Loop detection (safety net for agent-to-agent)
+    "loopDetection": {
+      "enabled": true,
+      "warningThreshold": 10,
+      "criticalThreshold": 20,
+      "globalCircuitBreakerThreshold": 30,
+      "historySize": 30,
+      "detectors": {
+        "genericRepeat": true,
+        "knownPollNoProgress": true,
+        "pingPong": true
+      }
+    },
+
+    // File system restrictions
+    "fs": {
+      "workspaceOnly": false
+      // Set to true if you want strict workspace-only file access
+      // Set to false if agents need to read team-shared/ via symlinks
+    },
+
+    // Exec security
+    "exec": {
+      "security": "allow",
+      "ask": "auto"
+      // "deny" = no exec at all
+      // "allow" + "ask": "always" = ask before every exec
+      // "allow" + "ask": "auto" = ask for risky commands
+    },
+
+    // Elevated (host-level) exec — keep disabled unless needed
+    "elevated": {
+      "enabled": false
+    }
+  },
+
+  // -------------------------------------------------------------------------
+  // Bindings — Route messages to agents
+  // -------------------------------------------------------------------------
+  // Evaluated in order — first match wins.
+  // More specific bindings (peer matches) should come before general ones.
+  "bindings": [
+    // Discord: each bot account → one agent
+    { "agentId": "planner",  "match": { "channel": "discord",  "accountId": "planner-bot"  } },
+    { "agentId": "coder",    "match": { "channel": "discord",  "accountId": "coder-bot"    } },
+    { "agentId": "reviewer", "match": { "channel": "discord",  "accountId": "reviewer-bot" } },
+    { "agentId": "writer",   "match": { "channel": "discord",  "accountId": "writer-bot"   } },
+
+    // Telegram: planner handles all Telegram (single bot for private channel)
+    { "agentId": "planner", "match": { "channel": "telegram", "accountId": "default" } }
+
+    // Optional: route specific Telegram users to specific agents
+    // { "agentId": "coder", "match": { "channel": "telegram", "accountId": "default",
+    //   "peer": { "kind": "direct", "id": "TELEGRAM_USER_ID" } } }
+  ],
+
+  // -------------------------------------------------------------------------
+  // Channels — Platform-specific configuration
+  // -------------------------------------------------------------------------
+  "channels": {
+
+    // --- Discord ---
+    "discord": {
+      "groupPolicy": "allowlist",
+      // "allowlist" = only explicitly allowed guilds/channels
+      // "open" = respond in any guild the bot is in
+
+      "accounts": {
+        // Each agent gets its own Discord bot
+        // Create bots at: https://discord.com/developers/applications
+        // Enable: Message Content Intent for each bot
+
+        "planner-bot": {
+          "token": "${DISCORD_TOKEN_PLANNER}",
+          "guilds": {
+            "YOUR_GUILD_ID": {
+              "channels": {
+                // Main collaboration channel — planner sees everything
+                "YOUR_COLLAB_CHANNEL_ID": {
+                  "allow": true,
+                  "requireMention": false
+                  // ^ Orchestrator does NOT require @mention
+                }
+              }
+            }
+          }
+        },
+
+        "coder-bot": {
+          "token": "${DISCORD_TOKEN_CODER}",
+          "guilds": {
+            "YOUR_GUILD_ID": {
+              "channels": {
+                "YOUR_COLLAB_CHANNEL_ID": {
+                  "allow": true,
+                  "requireMention": true
+                  // ^ Specialist REQUIRES @mention to respond
+                }
+              }
+            }
+          }
+        },
+
+        "reviewer-bot": {
+          "token": "${DISCORD_TOKEN_REVIEWER}",
+          "guilds": {
+            "YOUR_GUILD_ID": {
+              "channels": {
+                "YOUR_COLLAB_CHANNEL_ID": {
+                  "allow": true,
+                  "requireMention": true
+                }
+              }
+            }
+          }
+        },
+
+        "writer-bot": {
+          "token": "${DISCORD_TOKEN_WRITER}",
+          "guilds": {
+            "YOUR_GUILD_ID": {
+              "channels": {
+                "YOUR_COLLAB_CHANNEL_ID": {
+                  "allow": true,
+                  "requireMention": true
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+
+    // --- Telegram ---
+    "telegram": {
+      "dmPolicy": "pairing",
+      // "pairing" = new DMs require approval pairing
+      // "allowlist" = only pre-approved users
+      // "open" = anyone can DM
+
+      "accounts": {
+        "default": {
+          "botToken": "${TELEGRAM_TOKEN_PLANNER}"
+        }
+        // Add more accounts for more agents on Telegram:
+        // "coder": { "botToken": "${TELEGRAM_TOKEN_CODER}" }
+      },
+
+      "groups": {
+        "*": {
+          "requireMention": true
+          // In Telegram groups, always require @mention
+        }
+      }
+    }
+  },
+
+  // -------------------------------------------------------------------------
+  // Messages — Global message handling
+  // -------------------------------------------------------------------------
+  "messages": {
+    "groupChat": {
+      "mentionPatterns": ["@openclaw"]
+      // Fallback mention pattern if agent-specific patterns don't match
+    }
+  }
+}
+
+// =============================================================================
+// POST-INSTALL CHECKLIST
+// =============================================================================
+//
+// 1. Replace all placeholder values:
+//    - REPLACE_WITH_LONG_RANDOM_TOKEN
+//    - DISCORD_TOKEN_PLANNER, DISCORD_TOKEN_CODER, etc.
+//    - TELEGRAM_TOKEN_PLANNER
+//    - YOUR_GUILD_ID, YOUR_COLLAB_CHANNEL_ID
+//
+// 2. Create agents:
+//    openclaw agents add planner
+//    openclaw agents add coder
+//    openclaw agents add reviewer
+//    openclaw agents add writer
+//
+// 3. Set up team shared directory:
+//    mkdir -p ~/.openclaw/team-shared/projects
+//    ln -s ~/.openclaw/team-shared ~/.openclaw/workspace-planner/team-shared
+//    ln -s ~/.openclaw/team-shared ~/.openclaw/workspace-coder/team-shared
+//    ln -s ~/.openclaw/team-shared ~/.openclaw/workspace-reviewer/team-shared
+//    ln -s ~/.openclaw/team-shared ~/.openclaw/workspace-writer/team-shared
+//
+// 4. Invite all Discord bots to your guild:
+//    Use OAuth2 URL with bot + applications.commands scopes
+//    Enable Message Content Intent in Bot settings for each bot
+//
+// 5. Validate and start:
+//    openclaw doctor --fix
+//    openclaw agents list --bindings
+//    openclaw channels status --probe
+//    openclaw gateway restart
+//
+// 6. First run — bootstrap each agent:
+//    Send "Read BOOTSTRAP.md and walk me through setup" to each agent
+//
+// =============================================================================

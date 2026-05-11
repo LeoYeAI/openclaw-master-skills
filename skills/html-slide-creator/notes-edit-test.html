@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Notes Edit Test</title>
+    <style>
+        :root { --accent: #4f46e5; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-snap-type: y mandatory; overflow-y: scroll; height: 100%; }
+        body { background: #0a0f1c; color: #fff; font-family: system-ui; }
+
+        .slide {
+            height: 100dvh; scroll-snap-align: start;
+            display: flex; align-items: center; justify-content: center;
+            flex-direction: column; gap: 1rem; font-size: 1.5rem;
+        }
+        .slide:nth-child(odd)  { background: #0a0f1c; }
+        .slide:nth-child(even) { background: #111827; }
+
+        .progress-bar { position: fixed; top: 0; left: 0; height: 3px; background: var(--accent); width: 0%; z-index: 100; transition: width 0.3s; }
+        nav.nav-dots { position: fixed; right: 1.5rem; top: 50%; transform: translateY(-50%); display: flex; flex-direction: column; gap: 8px; z-index: 100; }
+
+        /* ── Edit toggle button ── */
+        .edit-hotzone {
+            position: fixed; top: 0; left: 0;
+            width: 80px; height: 80px;
+            z-index: 10000; cursor: pointer;
+        }
+        .edit-toggle {
+            position: fixed; top: 16px; left: 16px;
+            background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2);
+            color: #fff; border-radius: 8px; padding: 6px 10px; font-size: 0.85rem;
+            opacity: 0; pointer-events: none; cursor: pointer;
+            transition: opacity 0.3s ease; z-index: 10001;
+        }
+        .edit-toggle.show, .edit-toggle.active {
+            opacity: 1; pointer-events: auto;
+            background: var(--accent);
+        }
+
+        /* ── Notes editor panel ── */
+        #notes-panel {
+            display: none;
+            position: fixed; bottom: 0; left: 0; right: 0;
+            z-index: 9998;
+            background: rgba(8, 8, 18, 0.94);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border-top: 1px solid rgba(255,255,255,0.08);
+        }
+        #notes-panel.active { display: flex; flex-direction: column; }
+        /* Header row: label + drag hint + collapse toggle */
+        #notes-panel-header {
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 0.45rem 1.4rem;
+            cursor: pointer; user-select: none;
+        }
+        #notes-panel-header:hover { background: rgba(255,255,255,0.03); }
+        #notes-panel-label {
+            font-size: 0.58rem; letter-spacing: 0.16em; text-transform: uppercase;
+            color: rgba(255,255,255,0.3); flex: 1;
+        }
+        /* Centre drag-handle pill */
+        #notes-drag-hint {
+            flex: 1; display: flex; justify-content: center;
+        }
+        #notes-drag-hint::after {
+            content: '';
+            display: block; width: 36px; height: 3px;
+            border-radius: 2px; background: rgba(255,255,255,0.25);
+        }
+        #notes-panel-header:hover #notes-drag-hint::after {
+            background: rgba(255,255,255,0.45);
+        }
+        /* Collapse arrow — larger and more visible */
+        #notes-collapse-btn {
+            flex: 1; text-align: right;
+            font-size: 1rem; color: rgba(255,255,255,0.4);
+            background: none; border: none; cursor: pointer; padding: 0;
+            line-height: 1; transition: color 0.15s, transform 0.2s;
+        }
+        #notes-collapse-btn:hover { color: rgba(255,255,255,0.85); }
+        /* Textarea body — hidden when collapsed */
+        #notes-body { padding: 0 1.4rem 0.75rem; }
+        #notes-panel.collapsed #notes-body { display: none; }
+        #notes-panel.collapsed #notes-collapse-btn { transform: rotate(180deg); }
+        #notes-textarea {
+            width: 100%; height: 72px; min-height: 48px; max-height: 200px;
+            resize: vertical;
+            background: transparent; border: none; outline: none;
+            color: rgba(255,255,255,0.75); font-size: 0.88rem; line-height: 1.65;
+            font-family: system-ui, sans-serif; caret-color: var(--accent);
+        }
+        #notes-textarea::placeholder { color: rgba(255,255,255,0.18); }
+    </style>
+</head>
+<body>
+    <div class="progress-bar"></div>
+    <nav class="nav-dots" aria-label="Slide navigation"></nav>
+
+    <!-- Edit button (top-left hotzone) -->
+    <div class="edit-hotzone"></div>
+    <button class="edit-toggle" id="editToggle" title="Edit mode (E)">✏ Edit</button>
+
+    <!-- Notes editor panel (shown in edit mode; click header to collapse/expand) -->
+    <div id="notes-panel">
+        <div id="notes-panel-header">
+            <div id="notes-panel-label">SPEAKER NOTES — SLIDE 1 / 3</div>
+            <div id="notes-drag-hint"></div>
+            <button id="notes-collapse-btn" title="Collapse / expand notes">▾</button>
+        </div>
+        <div id="notes-body">
+            <textarea id="notes-textarea" placeholder="Add speaker notes for this slide…"></textarea>
+        </div>
+    </div>
+
+    <section class="slide"
+        data-notes="这是第一张。简短备注，只有一句话。"
+        aria-label="Slide 1">
+        <h1>第一张：标题</h1>
+        <p style="opacity:0.5">备注很短 — 切换到编辑模式（E）可在底部编辑</p>
+    </section>
+
+    <section class="slide"
+        data-notes="第二张备注中等长度。这里有几个要点需要展开讲：第一，慢慢来不要跳过；第二，给观众一点时间消化；第三，如果现场有问题可以在这里暂停回答。"
+        aria-label="Slide 2">
+        <h2>第二张：内容</h2>
+        <p style="opacity:0.5">备注中等长度</p>
+    </section>
+
+    <section class="slide"
+        data-notes="第三张备注非常长，用来测试窗口能否正确撑开到足够高度。第一点：引用数据时要说清楚来源，数字要念准，最好提前在脑子里过一遍。第二点：提到客户案例时要具体，具体细节让故事更有说服力。第三点：这张结束后需要平滑过渡到下一个话题，推荐用「讲完了我们面临的挑战，接下来分享我们是怎么一步步解决它的」。第四点：如果时间不够，这张可以压缩，只讲第一和第三点，中间的案例留到Q&A展开。"
+        aria-label="Slide 3">
+        <h2>第三张：长备注</h2>
+        <p style="opacity:0.5">备注很长</p>
+    </section>
+
+    <script>
+        class SlidePresentation {
+            constructor() {
+                this.slides = document.querySelectorAll('.slide');
+                this.currentSlide = 0;
+                this.channel = new BroadcastChannel('slide-creator-presenter');
+
+                this.setupNavDots();
+                this.setupObserver();
+                this.setupKeyboard();
+                this.setupTouch();
+                this.setupWheel();
+                this.setupPresenter();
+                this.setupEditor();
+                this.updateProgress();
+            }
+
+            setupNavDots() {
+                const nav = document.querySelector('.nav-dots');
+                if (!nav) return;
+                this.slides.forEach((_, i) => {
+                    const dot = document.createElement('button');
+                    dot.setAttribute('aria-label', `Go to slide ${i + 1}`);
+                    dot.style.cssText = 'width:8px;height:8px;border-radius:50%;border:none;cursor:pointer;background:rgba(255,255,255,0.3);transition:all 0.3s;';
+                    dot.addEventListener('click', () => this.goTo(i));
+                    nav.appendChild(dot);
+                });
+            }
+
+            setupObserver() {
+                const observer = new IntersectionObserver((entries) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            entry.target.classList.add('visible');
+                            this.currentSlide = [...this.slides].indexOf(entry.target);
+                            this.updateProgress();
+                            this.updateDots();
+                            this.broadcastState();
+                            this.updateNotesPanel(); // ← refresh notes textarea on slide change
+                        }
+                    });
+                }, { threshold: 0.5 });
+                this.slides.forEach(s => observer.observe(s));
+            }
+
+            setupKeyboard() {
+                document.addEventListener('keydown', (e) => {
+                    // Skip navigation when typing in contenteditable or textarea
+                    if (e.target.getAttribute('contenteditable') || e.target.tagName === 'TEXTAREA') return;
+                    if (e.key === 'ArrowDown' || e.key === 'ArrowRight' || e.key === ' ') {
+                        e.preventDefault(); this.next();
+                    } else if (e.key === 'ArrowUp' || e.key === 'ArrowLeft') {
+                        e.preventDefault(); this.prev();
+                    } else if (e.key === 'p' || e.key === 'P') {
+                        const url = location.href.split('?')[0] + '?presenter';
+                        window.open(url, 'slide-presenter', 'width=1000,menubar=no,toolbar=no,location=no');
+                    } else if ((e.key === 'e' || e.key === 'E')) {
+                        this.editor.toggle();
+                    }
+                });
+            }
+
+            setupTouch() {
+                let startY = 0;
+                document.addEventListener('touchstart', e => { startY = e.touches[0].clientY; }, { passive: true });
+                document.addEventListener('touchend', e => {
+                    const delta = startY - e.changedTouches[0].clientY;
+                    if (Math.abs(delta) > 50) delta > 0 ? this.next() : this.prev();
+                });
+            }
+
+            setupWheel() {
+                let locked = false, timer = null;
+                document.addEventListener('wheel', e => {
+                    clearTimeout(timer);
+                    if (!locked) { locked = true; e.deltaY > 0 ? this.next() : this.prev(); }
+                    timer = setTimeout(() => { locked = false; }, 180);
+                }, { passive: true });
+            }
+
+            setupPresenter() {
+                this.channel.addEventListener('message', e => {
+                    if (e.data.type === 'nav-next') this.next();
+                    else if (e.data.type === 'nav-prev') this.prev();
+                    else if (e.data.type === 'request-state') this.broadcastState();
+                });
+            }
+
+            setupEditor() {
+                const panel    = document.getElementById('notes-panel');
+                const label    = document.getElementById('notes-panel-label');
+                const textarea = document.getElementById('notes-textarea');
+                const toggle   = document.getElementById('editToggle');
+                const hotzone  = document.querySelector('.edit-hotzone');
+                let hideTimeout = null;
+
+                // Show toggle button on hotzone hover
+                hotzone.addEventListener('mouseenter', () => { clearTimeout(hideTimeout); toggle.classList.add('show'); });
+                hotzone.addEventListener('mouseleave', () => { hideTimeout = setTimeout(() => { if (!this.editor.active) toggle.classList.remove('show'); }, 400); });
+                toggle.addEventListener('mouseenter', () => clearTimeout(hideTimeout));
+                toggle.addEventListener('mouseleave', () => { hideTimeout = setTimeout(() => { if (!this.editor.active) toggle.classList.remove('show'); }, 400); });
+                hotzone.addEventListener('click', () => this.editor.toggle());
+                toggle.addEventListener('click', () => this.editor.toggle());
+
+                // Click header row to collapse/expand notes body
+                document.getElementById('notes-panel-header').addEventListener('click', () => {
+                    panel.classList.toggle('collapsed');
+                });
+
+                // Notes textarea: update data-notes in real time + broadcast to presenter
+                textarea.addEventListener('input', () => {
+                    const slide = this.slides[this.currentSlide];
+                    if (slide) {
+                        slide.dataset.notes = textarea.value;
+                        this.broadcastState(); // live-sync to presenter window
+                    }
+                });
+
+                // Ctrl+S / Cmd+S — save HTML (notes already updated in DOM)
+                document.addEventListener('keydown', (e) => {
+                    if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+                        e.preventDefault();
+                        this.saveFile();
+                    }
+                });
+
+                this.editor = {
+                    active: false,
+                    toggle: () => this.editor.active ? this.editor.exit() : this.editor.enter(),
+                    enter: () => {
+                        this.editor.active = true;
+                        toggle.classList.add('active');
+                        toggle.textContent = '✓ Done';
+                        // Make slide text editable
+                        this.slides.forEach(s => {
+                            s.querySelectorAll('h1,h2,h3,p,li,span,td,th').forEach(el => {
+                                el.setAttribute('contenteditable', 'true');
+                                el.style.outline = 'none';
+                            });
+                        });
+                        panel.classList.add('active');
+                        this.updateNotesPanel();
+                    },
+                    exit: () => {
+                        this.editor.active = false;
+                        toggle.classList.remove('active');
+                        toggle.textContent = '✏ Edit';
+                        this.slides.forEach(s => {
+                            s.querySelectorAll('[contenteditable]').forEach(el => {
+                                el.removeAttribute('contenteditable');
+                                el.style.outline = '';
+                            });
+                        });
+                        panel.classList.remove('active');
+                    }
+                };
+
+                this._notesLabel = label;
+                this._notesTextarea = textarea;
+            }
+
+            updateNotesPanel() {
+                if (!this.editor?.active) return;
+                const slide = this.slides[this.currentSlide];
+                this._notesLabel.textContent =
+                    `SPEAKER NOTES — SLIDE ${this.currentSlide + 1} / ${this.slides.length}`;
+                this._notesTextarea.value = slide?.dataset.notes || '';
+            }
+
+            saveFile() {
+                // Serialize current DOM (includes updated data-notes attributes)
+                const html = '<!DOCTYPE html>\n' + document.documentElement.outerHTML;
+                const blob = new Blob([html], { type: 'text/html' });
+                const a = document.createElement('a');
+                a.href = URL.createObjectURL(blob);
+                a.download = location.pathname.split('/').pop() || 'presentation.html';
+                a.click();
+                URL.revokeObjectURL(a.href);
+                // In a real Claude Code context, the skill uses fetch('/save') instead
+            }
+
+            broadcastState() {
+                const slide = this.slides[this.currentSlide];
+                this.channel.postMessage({
+                    type: 'state',
+                    index: this.currentSlide,
+                    total: this.slides.length,
+                    notes: slide?.dataset.notes || ''
+                });
+            }
+
+            goTo(index) { this.slides[index]?.scrollIntoView({ behavior: 'smooth' }); }
+            next() { this.goTo(Math.min(this.currentSlide + 1, this.slides.length - 1)); }
+            prev() { this.goTo(Math.max(this.currentSlide - 1, 0)); }
+
+            updateProgress() {
+                const pct = (this.currentSlide / (this.slides.length - 1)) * 100;
+                const bar = document.querySelector('.progress-bar');
+                if (bar) bar.style.width = pct + '%';
+            }
+
+            updateDots() {
+                document.querySelectorAll('.nav-dots button').forEach((dot, i) => {
+                    dot.style.background = i === this.currentSlide ? 'var(--accent)' : 'rgba(255,255,255,0.3)';
+                    dot.style.transform = i === this.currentSlide ? 'scale(1.3)' : 'scale(1)';
+                });
+            }
+        }
+
+        /* ── Presenter window ── */
+        if (new URLSearchParams(location.search).has('presenter')) {
+            document.title = 'Presenter — ' + document.title;
+            document.body.innerHTML = `
+            <style>
+                * { box-sizing: border-box; margin: 0; }
+                body { background: #111; color: #fff; font-family: system-ui, sans-serif; }
+                #pv { display: grid; grid-template-columns: 1fr 220px; gap: 1rem; padding: 1.25rem; align-items: start; }
+                .pv-panel { background: #1e1e1e; border-radius: 12px; padding: 1.25rem; }
+                #pv-label { font-size: 0.6rem; letter-spacing: 0.18em; text-transform: uppercase; color: #555; margin-bottom: 0.6rem; }
+                #pv-notes { font-size: 1.05rem; line-height: 1.85; color: #d0d0d0; white-space: pre-wrap; }
+                #pv-right { display: flex; flex-direction: column; gap: 1rem; }
+                #pv-nav { display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; }
+                .pv-arrow { width: 32px; height: 32px; border-radius: 6px; border: 1px solid #333; background: #2a2a2a; color: #aaa; font-size: 1rem; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: background 0.15s, color 0.15s; flex-shrink: 0; }
+                .pv-arrow:hover { background: #383838; color: #fff; }
+                #pv-counter { text-align: center; flex: 1; }
+                #pv-num { font-size: 1.6rem; font-weight: 700; font-variant-numeric: tabular-nums; line-height: 1; }
+                #pv-of { color: #555; font-size: 0.75rem; margin-top: 0.2rem; }
+                #pv-timer-box { text-align: center; }
+                #pv-timer-label { font-size: 0.6rem; letter-spacing: 0.18em; text-transform: uppercase; color: #555; margin-bottom: 0.3rem; }
+                #pv-timer { font-size: 1.5rem; font-weight: 700; font-family: monospace; font-variant-numeric: tabular-nums; }
+            </style>
+            <div id="pv">
+                <div class="pv-panel">
+                    <div id="pv-label">Speaker Notes</div>
+                    <div id="pv-notes">Waiting for main window…</div>
+                </div>
+                <div id="pv-right">
+                    <div class="pv-panel">
+                        <div id="pv-nav">
+                            <button class="pv-arrow" id="pv-prev">←</button>
+                            <div id="pv-counter">
+                                <div id="pv-num">—</div>
+                                <div id="pv-of">/ —</div>
+                            </div>
+                            <button class="pv-arrow" id="pv-next">→</button>
+                        </div>
+                    </div>
+                    <div class="pv-panel" id="pv-timer-box">
+                        <div id="pv-timer-label">Elapsed</div>
+                        <div id="pv-timer">0:00</div>
+                    </div>
+                </div>
+            </div>`;
+
+            const ch = new BroadcastChannel('slide-creator-presenter');
+            let startTime = null;
+
+            const pv = document.getElementById('pv');
+            let lastH = 0, roTimer = null;
+            new ResizeObserver(() => {
+                clearTimeout(roTimer);
+                roTimer = setTimeout(() => {
+                    const h = Math.ceil(pv.getBoundingClientRect().height);
+                    if (h === lastH) return;
+                    lastH = h;
+                    const chrome = window.outerHeight - window.innerHeight;
+                    window.resizeTo(window.outerWidth, Math.max(260, h + chrome + 4));
+                }, 40);
+            }).observe(pv);
+
+            ch.addEventListener('message', e => {
+                if (e.data.type !== 'state') return;
+                if (!startTime) startTime = Date.now();
+                document.getElementById('pv-notes').textContent = e.data.notes || '(no notes)';
+                document.getElementById('pv-num').textContent = e.data.index + 1;
+                document.getElementById('pv-of').textContent = `/ ${e.data.total}`;
+            });
+
+            ch.postMessage({ type: 'request-state' });
+
+            setInterval(() => {
+                if (!startTime) return;
+                const s = Math.floor((Date.now() - startTime) / 1000);
+                document.getElementById('pv-timer').textContent =
+                    `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`;
+            }, 1000);
+
+            document.getElementById('pv-prev').addEventListener('click', () => ch.postMessage({ type: 'nav-prev' }));
+            document.getElementById('pv-next').addEventListener('click', () => ch.postMessage({ type: 'nav-next' }));
+            document.addEventListener('keydown', e => {
+                if (e.key === 'ArrowRight' || e.key === ' ') ch.postMessage({ type: 'nav-next' });
+                else if (e.key === 'ArrowLeft') ch.postMessage({ type: 'nav-prev' });
+            });
+        } else {
+            new SlidePresentation();
+        }
+    </script>
+</body>
+</html>

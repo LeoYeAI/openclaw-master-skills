@@ -1,0 +1,416 @@
+[
+  {
+    "type": "function",
+    "name": "getArbiters",
+    "inputs": [],
+    "outputs": [
+      {
+        "name": "",
+        "type": "address[]",
+        "internalType": "address[]"
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "getMarketInfo",
+    "inputs": [
+      {
+        "name": "marketId",
+        "type": "uint256",
+        "internalType": "uint256"
+      }
+    ],
+    "outputs": [
+      {
+        "name": "",
+        "type": "tuple",
+        "internalType": "struct ViewFacet.MarketView",
+        "components": [
+          {
+            "name": "marketId",
+            "type": "uint256",
+            "internalType": "uint256"
+          },
+          {
+            "name": "contentHash",
+            "type": "bytes32",
+            "internalType": "bytes32"
+          },
+          {
+            "name": "creator",
+            "type": "address",
+            "internalType": "address"
+          },
+          {
+            "name": "endTime",
+            "type": "uint64",
+            "internalType": "uint64"
+          },
+          {
+            "name": "status",
+            "type": "uint8",
+            "internalType": "enum MarketStatus"
+          },
+          {
+            "name": "outcome",
+            "type": "uint8",
+            "internalType": "enum Side"
+          },
+          {
+            "name": "prizePool",
+            "type": "uint256",
+            "internalType": "uint256"
+          },
+          {
+            "name": "totalYesShares",
+            "type": "uint256",
+            "internalType": "uint256"
+          },
+          {
+            "name": "totalNoShares",
+            "type": "uint256",
+            "internalType": "uint256"
+          },
+          {
+            "name": "totalDrawShares",
+            "type": "uint256",
+            "internalType": "uint256"
+          },
+          {
+            "name": "totalShares",
+            "type": "uint256",
+            "internalType": "uint256"
+          },
+          {
+            "name": "totalBets",
+            "type": "uint256",
+            "internalType": "uint256"
+          },
+          {
+            "name": "totalBetAmount",
+            "type": "uint256",
+            "internalType": "uint256"
+          },
+          {
+            "name": "totalDividendsDistributed",
+            "type": "uint256",
+            "internalType": "uint256"
+          },
+          {
+            "name": "settlementType",
+            "type": "uint8",
+            "internalType": "uint8"
+          },
+          {
+            "name": "drawEnabled",
+            "type": "bool",
+            "internalType": "bool"
+          },
+          {
+            "name": "title",
+            "type": "string",
+            "internalType": "string"
+          },
+          {
+            "name": "metadataURI",
+            "type": "string",
+            "internalType": "string"
+          }
+        ]
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "getOptimisticConfig",
+    "inputs": [
+      {
+        "name": "marketId",
+        "type": "uint256",
+        "internalType": "uint256"
+      }
+    ],
+    "outputs": [
+      {
+        "name": "",
+        "type": "tuple",
+        "internalType": "struct ViewFacet.OptimisticConfigView",
+        "components": [
+          {
+            "name": "bondAmount",
+            "type": "uint256",
+            "internalType": "uint256"
+          },
+          {
+            "name": "challengePeriod",
+            "type": "uint64",
+            "internalType": "uint64"
+          },
+          {
+            "name": "proposer",
+            "type": "address",
+            "internalType": "address"
+          },
+          {
+            "name": "proposedOutcome",
+            "type": "uint8",
+            "internalType": "uint8"
+          },
+          {
+            "name": "proposalTime",
+            "type": "uint64",
+            "internalType": "uint64"
+          },
+          {
+            "name": "hasProposal",
+            "type": "bool",
+            "internalType": "bool"
+          },
+          {
+            "name": "disputed",
+            "type": "bool",
+            "internalType": "bool"
+          },
+          {
+            "name": "disputer",
+            "type": "address",
+            "internalType": "address"
+          },
+          {
+            "name": "challengeDeadline",
+            "type": "uint64",
+            "internalType": "uint64"
+          }
+        ]
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "getOracleConfig",
+    "inputs": [
+      {
+        "name": "marketId",
+        "type": "uint256",
+        "internalType": "uint256"
+      }
+    ],
+    "outputs": [
+      {
+        "name": "",
+        "type": "tuple",
+        "internalType": "struct ViewFacet.OracleConfigView",
+        "components": [
+          {
+            "name": "feedAddress",
+            "type": "address",
+            "internalType": "address"
+          },
+          {
+            "name": "strikePrice",
+            "type": "int256",
+            "internalType": "int256"
+          },
+          {
+            "name": "isAbove",
+            "type": "bool",
+            "internalType": "bool"
+          },
+          {
+            "name": "settlementPrice",
+            "type": "int256",
+            "internalType": "int256"
+          },
+          {
+            "name": "feedDecimals",
+            "type": "uint8",
+            "internalType": "uint8"
+          },
+          {
+            "name": "currentPrice",
+            "type": "int256",
+            "internalType": "int256"
+          },
+          {
+            "name": "feedDescription",
+            "type": "string",
+            "internalType": "string"
+          }
+        ]
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "getPlayerPosition",
+    "inputs": [
+      {
+        "name": "marketId",
+        "type": "uint256",
+        "internalType": "uint256"
+      },
+      {
+        "name": "player",
+        "type": "address",
+        "internalType": "address"
+      }
+    ],
+    "outputs": [
+      {
+        "name": "",
+        "type": "tuple",
+        "internalType": "struct ViewFacet.PlayerPositionView",
+        "components": [
+          {
+            "name": "yesShares",
+            "type": "uint256",
+            "internalType": "uint256"
+          },
+          {
+            "name": "noShares",
+            "type": "uint256",
+            "internalType": "uint256"
+          },
+          {
+            "name": "drawShares",
+            "type": "uint256",
+            "internalType": "uint256"
+          },
+          {
+            "name": "pendingYesDividends",
+            "type": "uint256",
+            "internalType": "uint256"
+          },
+          {
+            "name": "pendingNoDividends",
+            "type": "uint256",
+            "internalType": "uint256"
+          },
+          {
+            "name": "pendingDrawDividends",
+            "type": "uint256",
+            "internalType": "uint256"
+          },
+          {
+            "name": "estimatedPrizeIfYes",
+            "type": "uint256",
+            "internalType": "uint256"
+          },
+          {
+            "name": "estimatedPrizeIfNo",
+            "type": "uint256",
+            "internalType": "uint256"
+          },
+          {
+            "name": "estimatedPrizeIfDraw",
+            "type": "uint256",
+            "internalType": "uint256"
+          },
+          {
+            "name": "exited",
+            "type": "bool",
+            "internalType": "bool"
+          },
+          {
+            "name": "settled",
+            "type": "bool",
+            "internalType": "bool"
+          }
+        ]
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "getPredictionConfig",
+    "inputs": [],
+    "outputs": [
+      {
+        "name": "",
+        "type": "tuple",
+        "internalType": "struct ViewFacet.PredictionConfig",
+        "components": [
+          {
+            "name": "token",
+            "type": "address",
+            "internalType": "address"
+          },
+          {
+            "name": "minBet",
+            "type": "uint256",
+            "internalType": "uint256"
+          },
+          {
+            "name": "devFeeBps",
+            "type": "uint16",
+            "internalType": "uint16"
+          },
+          {
+            "name": "creatorFeeBps",
+            "type": "uint16",
+            "internalType": "uint16"
+          },
+          {
+            "name": "dividendBps",
+            "type": "uint16",
+            "internalType": "uint16"
+          },
+          {
+            "name": "nextMarketId",
+            "type": "uint256",
+            "internalType": "uint256"
+          },
+          {
+            "name": "paused",
+            "type": "bool",
+            "internalType": "bool"
+          },
+          {
+            "name": "minDuration",
+            "type": "uint64",
+            "internalType": "uint64"
+          }
+        ]
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "isArbiter",
+    "inputs": [
+      {
+        "name": "account",
+        "type": "address",
+        "internalType": "address"
+      }
+    ],
+    "outputs": [
+      {
+        "name": "",
+        "type": "bool",
+        "internalType": "bool"
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "isPaused",
+    "inputs": [],
+    "outputs": [
+      {
+        "name": "",
+        "type": "bool",
+        "internalType": "bool"
+      }
+    ],
+    "stateMutability": "view"
+  }
+]

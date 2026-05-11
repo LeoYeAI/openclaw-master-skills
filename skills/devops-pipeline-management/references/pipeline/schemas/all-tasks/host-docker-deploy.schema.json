@@ -1,0 +1,109 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "host-docker-deploy.schema.json",
+  "title": "HostDockerDeploy Task",
+  "description": "主机Docker部署任务配置",
+  "type": "object",
+  "required": ["taskCategory", "jobType", "name"],
+  "properties": {
+    "taskCategory": {
+      "type": "string",
+      "const": "Deploy"
+    },
+    "jobType": {
+      "type": "string",
+      "const": "HostDockerDeploy"
+    },
+    "name": {
+      "type": "string",
+      "maxLength": 100,
+      "description": "任务名称"
+    },
+    "workPath": {
+      "type": "string",
+      "description": "工作目录"
+    },
+    "sourceId": {
+      "type": "string",
+      "description": "代码源ID"
+    },
+    "hostGroupId": {
+      "type": "string",
+      "description": "主机组ID"
+    },
+    "deployType": {
+      "type": "string",
+      "enum": ["image", "compose"],
+      "default": "image",
+      "description": "部署类型"
+    },
+    "imageName": {
+      "type": "string",
+      "description": "镜像名称"
+    },
+    "imageTag": {
+      "type": "string",
+      "description": "镜像标签"
+    },
+    "containerName": {
+      "type": "string",
+      "description": "容器名称"
+    },
+    "portMapping": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "hostPort": { "type": "integer" },
+          "containerPort": { "type": "integer" }
+        }
+      },
+      "default": [],
+      "description": "端口映射"
+    },
+    "volumeMapping": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "hostPath": { "type": "string" },
+          "containerPath": { "type": "string" }
+        }
+      },
+      "default": [],
+      "description": "卷挂载"
+    },
+    "envVars": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "key": { "type": "string" },
+          "value": { "type": "string" }
+        }
+      },
+      "default": [],
+      "description": "环境变量"
+    },
+    "dockerComposePath": {
+      "type": "string",
+      "description": "docker-compose.yml路径"
+    },
+    "preScript": {
+      "type": "string",
+      "description": "前置脚本"
+    },
+    "postScript": {
+      "type": "string",
+      "description": "后置脚本"
+    },
+    "idInTemplate": {
+      "type": "string"
+    },
+    "dependencies": {
+      "type": "array",
+      "items": { "type": "string" },
+      "default": []
+    }
+  }
+}

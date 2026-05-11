@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Comparativa Skills Home Assistant — con skill definitiva</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #0f1117; color: #e0e0e0; padding: 24px; }
+  h1 { color: #fff; margin-bottom: 8px; font-size: 1.6rem; }
+  .subtitle { color: #888; margin-bottom: 24px; font-size: 0.95rem; }
+  .legend { display: flex; gap: 20px; margin-bottom: 20px; flex-wrap: wrap; }
+  .legend span { display: flex; align-items: center; gap: 6px; font-size: 0.85rem; color: #aaa; }
+  .legend .dot { width: 12px; height: 12px; border-radius: 3px; display: inline-block; }
+  .dot.yes { background: #22c55e; }
+  .dot.partial { background: #f59e0b; }
+  .dot.no { background: #ef4444; }
+  .dot.unique { background: #8b5cf6; }
+  .dot.new { background: #06b6d4; }
+
+  .table-wrap { overflow-x: auto; border-radius: 12px; border: 1px solid #2a2d35; }
+  table { width: 100%; border-collapse: collapse; min-width: 1100px; }
+  th, td { padding: 10px 12px; text-align: left; border-bottom: 1px solid #1e2028; font-size: 0.82rem; }
+  th { background: #1a1d26; color: #94a3b8; font-weight: 600; position: sticky; top: 0; z-index: 2; }
+  th:first-child { min-width: 200px; }
+  td:first-child { font-weight: 500; color: #c8d0db; white-space: nowrap; }
+  tr:hover td { background: #1a1d26; }
+
+  .y { color: #22c55e; font-weight: 600; }
+  .n { color: #555; }
+  .p { color: #f59e0b; }
+  .u { color: #8b5cf6; font-weight: 600; }
+
+  /* New skill column highlight */
+  .col-new { background: #0c1a2a !important; min-width: 140px; }
+  th.col-new { background: #0f2340 !important; color: #38bdf8; }
+  .new-y { color: #22c55e; font-weight: 700; }
+
+  .section-header td { background: #12141c; font-weight: 700; color: #60a5fa; font-size: 0.9rem; letter-spacing: 0.5px; border-top: 2px solid #2a3a5a; }
+
+  .winner-badge { display: inline-block; background: linear-gradient(135deg, #06b6d422, #06b6d411); border: 1px solid #06b6d444; border-radius: 6px; padding: 4px 12px; color: #38bdf8; font-size: 0.85rem; font-weight: 600; }
+  .source-badge { display: inline-block; background: #1e1e2e; border: 1px solid #333; border-radius: 4px; padding: 2px 8px; color: #888; font-size: 0.75rem; margin: 1px 2px; }
+
+  .summary { background: #1a1d26; border: 1px solid #2a2d35; border-radius: 12px; padding: 20px; margin-top: 24px; line-height: 1.7; }
+  .summary h3 { color: #60a5fa; margin-bottom: 8px; }
+  .summary p { color: #bbb; margin-bottom: 12px; }
+  .summary strong { color: #e0e0e0; }
+  ul { padding-left: 20px; margin: 8px 0; }
+  li { color: #bbb; margin: 4px 0; }
+
+  .credit-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 12px; margin: 16px 0; }
+  .credit-card { background: #12141c; border: 1px solid #2a2d35; border-radius: 8px; padding: 14px; }
+  .credit-card h4 { color: #94a3b8; font-size: 0.85rem; margin-bottom: 6px; }
+  .credit-card .contrib { color: #22c55e; font-size: 0.82rem; }
+</style>
+</head>
+<body>
+
+<h1>🏠 Comparativa Skills Home Assistant — Edición Definitiva</h1>
+<p class="subtitle">4 skills de ClawHub + 1 personal + <span class="winner-badge">🆕 homeassistant v1.0.0</span> — Febrero 2026</p>
+
+<div class="legend">
+  <span><span class="dot yes"></span> Soportado</span>
+  <span><span class="dot partial"></span> Parcial</span>
+  <span><span class="dot no"></span> No soportado</span>
+  <span><span class="dot unique"></span> Único en esa skill</span>
+  <span><span class="dot new"></span> Columna skill definitiva</span>
+</div>
+
+<div class="table-wrap">
+<table>
+<thead>
+<tr>
+  <th>Funcionalidad</th>
+  <th>S1: home-assistant<br><small>v1.0.0</small></th>
+  <th>S2: homeassistant-cli<br><small>v1.0.0</small></th>
+  <th>S3: homeassistant-skill<br><small>v2.1.0 (anotb)</small></th>
+  <th>S4: moltbot-ha<br><small>v0.1.1</small></th>
+  <th>S5: mia personal<br><small>(fork S3)</small></th>
+  <th class="col-new">🆕 homeassistant<br><small>v1.0.0 DEFINITIVA</small></th>
+</tr>
+</thead>
+<tbody>
+
+<!-- GENERAL -->
+<tr class="section-header"><td colspan="7">⚙️ ARQUITECTURA Y DEPENDENCIAS</td></tr>
+<tr>
+  <td>Enfoque</td>
+  <td>curl + jq + bash</td>
+  <td>hass-cli (Python)</td>
+  <td>curl + jq (raw API)</td>
+  <td>moltbot-ha (Python)</td>
+  <td>curl + jq + Node.js</td>
+  <td class="col-new">curl + jq + bash + Node.js</td>
+</tr>
+<tr>
+  <td>Dependencias mínimas</td>
+  <td class="y">✅</td>
+  <td class="p">pip/brew</td>
+  <td class="y">✅</td>
+  <td class="p">uv/pip</td>
+  <td class="p">+ Node.js</td>
+  <td class="col-new new-y">✅ curl+jq (Node opcional)</td>
+</tr>
+<tr>
+  <td>CLI wrapper</td>
+  <td class="y">✅ ha.sh</td>
+  <td class="y">✅ hass-cli</td>
+  <td class="n">❌</td>
+  <td class="y">✅ moltbot-ha</td>
+  <td class="n">❌</td>
+  <td class="col-new new-y">✅ ha.sh mejorado</td>
+</tr>
+<tr>
+  <td>Configuración</td>
+  <td>JSON + env</td>
+  <td>Env vars</td>
+  <td>Env vars</td>
+  <td>TOML + env</td>
+  <td>Env + .env</td>
+  <td class="col-new new-y">✅ .env + JSON + env</td>
+</tr>
+
+<!-- DOMINIOS -->
+<tr class="section-header"><td colspan="7">💡 DOMINIOS DE ENTIDAD</td></tr>
+<tr>
+  <td>Lights (on/off/brightness)</td>
+  <td class="y">✅</td><td class="y">✅</td><td class="y">✅</td><td class="y">✅</td><td class="y">✅</td>
+  <td class="col-new new-y">✅</td>
+</tr>
+<tr>
+  <td>Lights — color RGB + temp + transition</td>
+  <td class="n">❌</td><td class="p">parcial</td><td class="y">✅ (sin transition)</td><td class="p">parcial</td><td class="y">✅</td>
+  <td class="col-new new-y">✅ RGB + temp + transition</td>
+</tr>
+<tr>
+  <td>Switches</td>
+  <td class="y">✅</td><td class="y">✅</td><td class="y">✅</td><td class="y">✅</td><td class="y">✅</td>
+  <td class="col-new new-y">✅</td>
+</tr>
+<tr>
+  <td>Scenes</td>
+  <td class="y">✅</td><td class="y">✅</td><td class="y">✅</td><td class="y">✅</td><td class="y">✅</td>
+  <td class="col-new new-y">✅</td>
+</tr>
+<tr>
+  <td>Scripts (+ con variables)</td>
+  <td class="y">✅</td><td class="y">✅</td><td class="y">✅ + vars</td><td class="y">✅ + JSON</td><td class="y">✅ + vars</td>
+  <td class="col-new new-y">✅ + variables</td>
+</tr>
+<tr>
+  <td>Automations (trigger/on/off)</td>
+  <td class="y">✅</td><td class="y">✅</td><td class="y">✅</td><td class="y">✅</td><td class="y">✅</td>
+  <td class="col-new new-y">✅</td>
+</tr>
+<tr>
+  <td>Climate (temp + HVAC + preset)</td>
+  <td class="p">solo temp</td><td class="y">✅</td><td class="y">✅ temp+HVAC</td><td class="y">✅</td><td class="y">✅</td>
+  <td class="col-new new-y">✅ temp + HVAC + preset</td>
+</tr>
+<tr>
+  <td>Covers (+ set position + stop)</td>
+  <td class="y">✅</td><td class="p">genérico</td><td class="y">✅ + position</td><td class="y">✅</td><td class="y">✅</td>
+  <td class="col-new new-y">✅ + position + stop</td>
+</tr>
+<tr>
+  <td>Locks</td>
+  <td class="n">❌</td><td class="p">genérico</td><td class="y">✅</td><td class="p">vía call</td><td class="y">✅</td>
+  <td class="col-new new-y">✅</td>
+</tr>
+<tr>
+  <td>Fans (+ velocidad %)</td>
+  <td class="n">❌</td><td class="p">genérico</td><td class="y">✅</td><td class="p">vía call</td><td class="y">✅</td>
+  <td class="col-new new-y">✅</td>
+</tr>
+<tr>
+  <td>Media players (+ play_media)</td>
+  <td class="y">✅</td><td class="p">genérico</td><td class="y">✅</td><td class="p">vía call</td><td class="y">✅</td>
+  <td class="col-new new-y">✅ + play_media</td>
+</tr>
+<tr>
+  <td>Vacuum</td>
+  <td class="n">❌</td><td class="n">❌</td><td class="y">✅</td><td class="n">❌</td><td class="y">✅</td>
+  <td class="col-new new-y">✅</td>
+</tr>
+<tr>
+  <td>Alarm (+ arm_away + code)</td>
+  <td class="n">❌</td><td class="n">❌</td><td class="y">✅</td><td class="p">crítico</td><td class="y">✅</td>
+  <td class="col-new new-y">✅ + arm_away</td>
+</tr>
+<tr>
+  <td>Notifications</td>
+  <td class="n">❌</td><td class="y">✅</td><td class="y">✅</td><td class="n">❌</td><td class="y">✅</td>
+  <td class="col-new new-y">✅ + ha.sh notify</td>
+</tr>
+<tr>
+  <td>Person / Presence</td>
+  <td class="n">❌</td><td class="y">✅</td><td class="y">✅</td><td class="p">vía state</td><td class="y">✅</td>
+  <td class="col-new new-y">✅</td>
+</tr>
+<tr>
+  <td>Weather / Forecasts</td>
+  <td class="n">❌</td><td class="n">❌</td><td class="y">✅</td><td class="n">❌</td><td class="y">✅</td>
+  <td class="col-new new-y">✅</td>
+</tr>
+<tr>
+  <td>Calendar</td>
+  <td class="n">❌</td><td class="n">❌</td><td class="y">✅</td><td class="n">❌</td><td class="y">✅</td>
+  <td class="col-new new-y">✅</td>
+</tr>
+<tr>
+  <td>Input helpers (5 tipos)</td>
+  <td class="n">❌</td><td class="n">❌</td><td class="y">✅</td><td class="n">❌</td><td class="y">✅</td>
+  <td class="col-new new-y">✅</td>
+</tr>
+<tr>
+  <td>Text-to-Speech</td>
+  <td class="n">❌</td><td class="n">❌</td><td class="y">✅</td><td class="n">❌</td><td class="y">✅</td>
+  <td class="col-new new-y">✅</td>
+</tr>
+<tr>
+  <td>Sensors / Binary sensors</td>
+  <td class="p">listar</td><td class="y">✅</td><td class="y">✅</td><td class="y">✅</td><td class="y">✅</td>
+  <td class="col-new new-y">✅</td>
+</tr>
+<tr>
+  <td><strong>Total dominios</strong></td>
+  <td>~8</td><td>~10</td><td><strong>25</strong></td><td>~8</td><td><strong>25</strong></td>
+  <td class="col-new" style="color:#38bdf8;font-weight:700">25+ ✨</td>
+</tr>
+
+<!-- FUNCIONES AVANZADAS -->
+<tr class="section-header"><td colspan="7">🔧 FUNCIONES AVANZADAS</td></tr>
+<tr>
+  <td>Area & Floor discovery</td>
+  <td class="n">❌</td><td class="p">parcial</td><td class="y">✅</td><td class="n">❌</td><td class="y">✅</td>
+  <td class="col-new new-y">✅ + ha.sh areas</td>
+</tr>
+<tr>
+  <td>Template evaluation (Jinja2)</td>
+  <td class="n">❌</td><td class="n">❌</td><td class="y">✅</td><td class="n">❌</td><td class="y">✅</td>
+  <td class="col-new new-y">✅</td>
+</tr>
+<tr>
+  <td>History & Logbook</td>
+  <td class="n">❌</td><td class="y">✅</td><td class="y">✅</td><td class="n">❌</td><td class="y">✅</td>
+  <td class="col-new new-y">✅</td>
+</tr>
+<tr>
+  <td>Batch operations</td>
+  <td class="n">❌</td><td class="n">❌</td><td class="y">✅</td><td class="n">❌</td><td class="y">✅</td>
+  <td class="col-new new-y">✅</td>
+</tr>
+<tr>
+  <td>Dashboard overview</td>
+  <td class="n">❌</td><td class="n">❌</td><td class="y">✅</td><td class="n">❌</td><td class="y">✅</td>
+  <td class="col-new new-y">✅ + ha.sh dashboard</td>
+</tr>
+<tr>
+  <td>Webhooks (HA → Agent)</td>
+  <td class="u">✅</td><td class="n">❌</td><td class="n">❌</td><td class="n">❌</td><td class="n">❌</td>
+  <td class="col-new new-y">✅ + docs completos</td>
+</tr>
+<tr>
+  <td>Call any service</td>
+  <td class="y">✅</td><td class="y">✅</td><td class="y">✅</td><td class="y">✅</td><td class="y">✅</td>
+  <td class="col-new new-y">✅</td>
+</tr>
+<tr>
+  <td>Entity search</td>
+  <td class="y">✅</td><td class="y">✅</td><td class="y">✅</td><td class="y">✅</td><td class="y">✅</td>
+  <td class="col-new new-y">✅</td>
+</tr>
+<tr>
+  <td>Error handling documentado</td>
+  <td class="p">básico</td><td class="y">✅</td><td class="y">✅</td><td class="y">✅</td><td class="y">✅</td>
+  <td class="col-new new-y">✅ + troubleshooting.md</td>
+</tr>
+<tr>
+  <td>API reference doc</td>
+  <td class="y">✅</td><td class="p">parcial</td><td class="y">✅</td><td class="n">❌</td><td class="y">✅</td>
+  <td class="col-new new-y">✅ references/api.md</td>
+</tr>
+
+<!-- SEGURIDAD -->
+<tr class="section-header"><td colspan="7">🛡️ SEGURIDAD</td></tr>
+<tr>
+  <td>Safety rules documentadas</td>
+  <td class="n">❌</td><td class="n">❌</td><td class="y">✅</td><td class="u">✅ 3 niveles</td><td class="y">✅</td>
+  <td class="col-new new-y">✅ Sistema por capas</td>
+</tr>
+<tr>
+  <td>Confirmación usuario</td>
+  <td class="n">❌</td><td class="n">❌</td><td class="y">✅ texto</td><td class="u">✅ --force</td><td class="y">✅ texto</td>
+  <td class="col-new new-y">✅ Workflow definido</td>
+</tr>
+<tr>
+  <td>Blocked entities</td>
+  <td class="n">❌</td><td class="n">❌</td><td class="n">❌</td><td class="u">✅ TOML</td><td class="n">❌</td>
+  <td class="col-new new-y">✅ JSON + ha.sh check</td>
+</tr>
+
+<!-- EXTRAS -->
+<tr class="section-header"><td colspan="7">🌟 EXTRAS</td></tr>
+<tr>
+  <td>Inventory generator → ENTITIES.md</td>
+  <td class="n">❌</td><td class="n">❌</td><td class="n">❌</td><td class="n">❌</td><td class="u">✅</td>
+  <td class="col-new new-y">✅ mejorado + fallback</td>
+</tr>
+<tr>
+  <td>Docker networking docs</td>
+  <td class="n">❌</td><td class="n">❌</td><td class="n">❌</td><td class="y">✅</td><td class="n">❌</td>
+  <td class="col-new new-y">✅</td>
+</tr>
+<tr>
+  <td>Notify command directo</td>
+  <td class="n">❌</td><td class="n">❌</td><td class="n">❌</td><td class="n">❌</td><td class="n">❌</td>
+  <td class="col-new new-y">✅ ha.sh notify</td>
+</tr>
+<tr>
+  <td>.env file</td>
+  <td class="n">❌</td><td class="n">❌</td><td class="n">❌</td><td class="n">❌</td><td class="u">✅</td>
+  <td class="col-new new-y">✅</td>
+</tr>
+<tr>
+  <td>Webhook docs completos</td>
+  <td class="p">básico</td><td class="n">❌</td><td class="n">❌</td><td class="n">❌</td><td class="n">❌</td>
+  <td class="col-new new-y">✅ references/webhooks.md</td>
+</tr>
+
+</tbody>
+</table>
+</div>
+
+<!-- CREDITS -->
+<div class="summary">
+  <h3>🏆 Resultado</h3>
+  <p>La skill <span style="color:#38bdf8;font-weight:600">homeassistant v1.0.0</span> combina lo mejor de las 5 fuentes en una sola skill unificada. Todas las funcionalidades que antes estaban dispersas ahora están en un solo lugar, con documentación consistente y estructura limpia.</p>
+
+  <h3>📦 Origen de cada funcionalidad</h3>
+  <div class="credit-grid">
+    <div class="credit-card">
+      <h4>S3: homeassistant-skill (anotb) — BASE</h4>
+      <div class="contrib">25 dominios, templates, history, areas, batch ops, dashboard, safety rules, error handling, API reference</div>
+    </div>
+    <div class="credit-card">
+      <h4>S1: home-assistant — WEBHOOKS + CLI</h4>
+      <div class="contrib">CLI wrapper (ha.sh), webhooks HA→Agent, config file pattern</div>
+    </div>
+    <div class="credit-card">
+      <h4>S4: moltbot-ha — SAFETY</h4>
+      <div class="contrib">Blocked entities, safety workflow, Docker networking docs</div>
+    </div>
+    <div class="credit-card">
+      <h4>S2: homeassistant-cli — DOCS</h4>
+      <div class="contrib">Troubleshooting patterns, SSL/timeout docs</div>
+    </div>
+    <div class="credit-card">
+      <h4>S5: mia personal (Paco) — INVENTORY</h4>
+      <div class="contrib">inventory.js generator, .env configuration pattern</div>
+    </div>
+    <div class="credit-card">
+      <h4>🆕 Nuevas mejoras</h4>
+      <div class="contrib">ha.sh notify, ha.sh dashboard, ha.sh areas, ha.sh inventory (con fallback), light transition, cover stop, climate preset, alarm arm_away, .env auto-load en ha.sh</div>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

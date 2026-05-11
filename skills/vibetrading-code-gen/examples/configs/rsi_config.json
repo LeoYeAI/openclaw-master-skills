@@ -1,0 +1,34 @@
+{
+  "strategy_type": "rsi_mean_reversion",
+  "symbol": "HYPE",
+  "description": "Example RSI mean reversion strategy for HYPE",
+  
+  "parameters": {
+    "rsi_period": 14,
+    "oversold_threshold": 30,
+    "overbought_threshold": 70,
+    "position_size": 10,
+    "check_interval": 300
+  },
+  
+  "risk_management": {
+    "stop_loss": 0.05,
+    "take_profit": 0.10,
+    "trailing_stop": 0.03,
+    "max_position": 50
+  },
+  
+  "trading_rules": {
+    "enter_long": "RSI < oversold_threshold",
+    "exit_long": "RSI > 50 or take_profit reached",
+    "enter_short": "RSI > overbought_threshold",
+    "exit_short": "RSI < 50 or take_profit reached"
+  },
+  
+  "example_notes": [
+    "RSI works best in ranging or slightly trending markets",
+    "Combine with other indicators for confirmation",
+    "Adjust thresholds based on market volatility",
+    "Use longer periods for smoother signals"
+  ]
+}

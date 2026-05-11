@@ -1,0 +1,393 @@
+# AutoWrapManager — Automatic Super Token Top-Up Manager
+# Monitors Super Token balances and triggers automatic wrapping (top-up) from
+# underlying ERC-20 tokens when the balance drops below a threshold.
+#
+# Users create "wrap schedules" specifying:
+#   - which Super Token to monitor
+#   - which strategy contract performs the actual wrapping
+#   - the underlying ERC-20 liquidity token
+#   - lowerLimit: seconds of stream remaining that triggers a wrap
+#   - upperLimit: seconds worth of tokens to wrap (top-up target)
+#   - expiry: when the schedule becomes invalid
+#
+# Off-chain keepers call executeWrap when conditions are met.
+# The owner manages approved strategies and global minimum limits.
+#
+#
+# Trigger condition: CFA net flow rate is negative AND Super Token balance <=
+# abs(positiveFlowRate) * lowerLimit. Wrap amount = abs(positiveFlowRate) *
+# upperLimit. lowerLimit and upperLimit are in seconds of streaming time
+# (e.g. lowerLimit=172800 means trigger when balance covers < 2 days of outflow,
+# upperLimit=604800 means wrap enough for 7 days of outflow).
+#
+# Inherits Ownable (OpenZeppelin) for admin functions.
+#
+# == Off-chain Automation ==
+# executeWrap is permissionless but requires off-chain invocation when the
+# Super Token balance drops below the threshold. Manual triggering is possible
+# but off-chain automation (e.g. Gelato, Chainlink Keepers, or a custom bot)
+# is strongly recommended and expected.
+#
+# == Setup Requirements ==
+# Before creating a wrap schedule, the user must:
+# 1. Approve the strategy contract (NOT the manager) to spend the underlying
+#    ERC-20 liquidity token. This is the underlying token's native allowance
+#    in its own decimals (e.g. 6 for USDC). The strategy pulls the underlying
+#    tokens, wraps them into Super Tokens, and transfers them to the user.
+#    The allowance must cover the wrap amounts over the schedule's lifetime.
+#    For convenience, type(uint256).max approval avoids repeated approvals.
+#    See AutoWrapStrategy for details.
+
+meta:
+  name: AutoWrapManager
+  version: v1
+  notes:
+    - "Gotcha: Auto-Wrap monitors only CFA net flow rate (cfaV1.getNetFlow), NOT GDA flows. If an account streams exclusively through GDA pools, Auto-Wrap will never trigger because it sees zero CFA flow rate. This is a legacy limitation — GDA was introduced after Auto-Wrap was built."
+  source:
+    - https://raw.githubusercontent.com/superfluid-org/protocol-monorepo/refs/heads/dev/packages/automation-contracts/autowrap/contracts/Manager.sol
+    - https://raw.githubusercontent.com/superfluid-org/protocol-monorepo/refs/heads/dev/packages/automation-contracts/autowrap/contracts/interfaces/IManager.sol
+  implements: [IManager, Ownable]
+  note: >
+    Automates Super Token balance top-ups by wrapping underlying ERC-20 tokens.
+    Users create wrap schedules; keepers execute wraps when the balance is low.
+    The manager delegates the actual wrapping to approved strategy contracts.
+  deployments:
+    eth-mainnet: "0x30aE282CF477E2eF28B14d0125aCEAd57Fe1d7a1"
+    polygon-mainnet: "0x2581c27E7f6D6AF452E63fCe884EDE3EDd716b32"
+    optimism-mainnet: "0x1fA76f2Cd0C3fe6c399A80111408d9C42C0CAC23"
+    arbitrum-one: "0xf01825eAFAe5CD1Dab5593EFAF218efC8968D272"
+    avalanche-c: "0x8082e58681350876aFe8f52d3Bf8672034A03Db0"
+    bsc-mainnet: "0x2AcdD61ac1EFFe1535109449c31889bdE8d7f325"
+    xdai-mainnet: "0x8082e58681350876aFe8f52d3Bf8672034A03Db0"
+    base-mainnet: "0x041D4bF21367e9B92016B28Fb5A2f697c1befd01"
+    avalanche-fuji: "0x30aE282CF477E2eF28B14d0125aCEAd57Fe1d7a1"
+    optimism-sepolia: "0xe567b32C10B0dB72d9490eB1B9A409C5ADed192C"
+
+# == Configuration ==
+
+cfaV1:
+  # The CFA agreement contract (immutable, set at construction).
+  # Used to read net flow rates for wrap condition checks via getNetFlow.
+  # This is the sole flow rate source — GDA flows are not monitored.
+  mutability: view
+  inputs: []
+  outputs:
+    - address
+
+# == Admin Functions ==
+
+addApprovedStrategy:
+  # Adds a strategy to the approved list. Only approved strategies can be used in schedules.
+  mutability: nonpayable
+  access: admin
+  inputs:
+    - strategy: address
+  emits: [AddedApprovedStrategy]
+  errors:
+    - InvalidStrategy:
+        inputs:
+          - strategy: address
+
+removeApprovedStrategy:
+  # Removes a strategy from the approved list.
+  mutability: nonpayable
+  access: admin
+  inputs:
+    - strategy: address
+  emits: [RemovedApprovedStrategy]
+
+setLimits:
+  # Sets the global minimum lower and upper limits for wrap schedules.
+  # Enforced at wrap execution time: max(global, user-defined) is used.
+  mutability: nonpayable
+  access: admin
+  inputs:
+    - lowerLimit: uint64
+    - upperLimit: uint64
+  emits: [LimitsChanged]
+  errors:
+    - WrongLimits:
+        inputs:
+          - lowerLimit: uint64
+          - upperLimit: uint64
+
+# == Schedule Management ==
+
+createWrapSchedule:
+  # Creates or updates a wrap schedule for automatic top-ups.
+  # If a schedule already exists for the same (user, superToken, liquidityToken),
+  # only the expiry and limits are updated (saves gas).
+  # User must also approve the strategy to spend their liquidityToken.
+  mutability: nonpayable
+  access: anyone  # schedule is created for msg.sender
+  inputs:
+    - superToken: address
+    - strategy: address
+    - liquidityToken: address
+    - expiry: uint64
+    - lowerLimit: uint64
+    - upperLimit: uint64
+  emits: [WrapScheduleCreated]
+  errors:
+    - InvalidExpirationTime:
+        inputs:
+          - expirationTimeGiven: uint64
+          - timeNow: uint256
+    - InsufficientLimits:
+        inputs:
+          - limitGiven: uint64
+          - minLimit: uint64
+    - ZeroAddress
+    - InvalidStrategy:
+        inputs:
+          - strategy: address
+    - UnsupportedSuperToken:
+        inputs:
+          - superToken: address
+
+deleteWrapSchedule:
+  # Deletes a wrap schedule by user + superToken + liquidityToken.
+  # Anyone can delete expired schedules; only the user can delete active ones.
+  mutability: nonpayable
+  access: anyone  # user can always delete own; others only after expiry
+  inputs:
+    - user: address
+    - superToken: address
+    - liquidityToken: address
+  emits: [WrapScheduleDeleted]
+  errors:
+    - ZeroAddress
+    - UnauthorizedCaller:
+        inputs:
+          - caller: address
+          - expectedCaller: address
+
+deleteWrapScheduleByIndex:
+  # Deletes a wrap schedule by its index (hash).
+  mutability: nonpayable
+  access: anyone  # user can always delete own; others only after expiry
+  inputs:
+    - index: bytes32
+  emits: [WrapScheduleDeleted]
+  errors:
+    - ZeroAddress
+    - UnauthorizedCaller:
+        inputs:
+          - caller: address
+          - expectedCaller: address
+
+# == Permissionless Execution (keepers) ==
+
+executeWrap:
+  # Executes a wrap (top-up) if conditions are met.
+  # Checks CFA net flow rate, balance vs lowerLimit threshold, and delegates to strategy.
+  notes:
+    - "Gotcha: Only CFA flows affect the trigger — GDA flows are ignored."
+  mutability: nonpayable
+  access: anyone
+  inputs:
+    - user: address
+    - superToken: address
+    - liquidityToken: address
+  emits: [WrapExecuted]
+  errors:
+    - WrapNotRequired:
+        inputs:
+          - index: bytes32
+    - UnsupportedSuperToken:
+        inputs:
+          - superToken: address
+
+executeWrapByIndex:
+  # Same as executeWrap but takes the schedule index directly.
+  mutability: nonpayable
+  access: anyone
+  inputs:
+    - index: bytes32
+  emits: [WrapExecuted]
+  errors:
+    - WrapNotRequired:
+        inputs:
+          - index: bytes32
+    - UnsupportedSuperToken:
+        inputs:
+          - superToken: address
+
+# == View Functions ==
+
+getWrapSchedule:
+  mutability: view
+  inputs:
+    - user: address
+    - superToken: address
+    - liquidityToken: address
+  outputs:
+    - schedule: WrapSchedule
+
+getWrapScheduleByIndex:
+  mutability: view
+  inputs:
+    - index: bytes32
+  outputs:
+    - schedule: WrapSchedule
+
+getWrapScheduleIndex:
+  # Computes the deterministic schedule index: keccak256(abi.encode(user, superToken, liquidityToken)).
+  mutability: pure
+  inputs:
+    - user: address
+    - superToken: address
+    - liquidityToken: address
+  outputs:
+    - index: bytes32
+
+checkWrap:
+  # Returns the amount to wrap (0 if no wrap needed).
+  # Checks: schedule exists, not expired, allowance > 0, balance > 0, strategy supports token,
+  # CFA net flow rate is negative, and balance <= abs(positiveFlowRate) * lowerLimit.
+  notes:
+    - "Gotcha: Uses cfaV1.getNetFlow — only CFA flows are considered, not GDA."
+  mutability: view
+  inputs:
+    - user: address
+    - superToken: address
+    - liquidityToken: address
+  outputs:
+    - amount: uint256
+
+checkWrapByIndex:
+  # Same as checkWrap but takes the schedule index directly.
+  mutability: view
+  inputs:
+    - index: bytes32
+  outputs:
+    - amount: uint256
+
+minLower:
+  # Global minimum for lowerLimit (seconds).
+  mutability: view
+  inputs: []
+  outputs:
+    - uint64
+
+minUpper:
+  # Global minimum for upperLimit (seconds).
+  mutability: view
+  inputs: []
+  outputs:
+    - uint64
+
+approvedStrategies:
+  # Returns whether a strategy is approved.
+  mutability: view
+  inputs:
+    - strategy: address
+  outputs:
+    - bool
+
+# == Ownable (inherited) ==
+
+owner:
+  mutability: view
+  inputs: []
+  outputs:
+    - address
+
+transferOwnership:
+  mutability: nonpayable
+  access: admin
+  inputs:
+    - newOwner: address
+
+renounceOwnership:
+  mutability: nonpayable
+  access: admin
+  inputs: []
+
+# == Events ==
+
+events:
+
+  WrapScheduleCreated:
+    # Emitted when a wrap schedule is created or updated.
+    indexed:
+      - id: bytes32
+      - user: address
+      - superToken: address
+    data:
+      - strategy: address
+      - liquidityToken: address
+      - expiry: uint256
+      - lowerLimit: uint256
+      - upperLimit: uint256
+
+  WrapScheduleDeleted:
+    # Emitted when a wrap schedule is removed.
+    indexed:
+      - id: bytes32
+      - user: address
+      - superToken: address
+    data:
+      - strategy: address
+      - liquidityToken: address
+
+  WrapExecuted:
+    # Emitted when a wrap (top-up) is executed by a keeper.
+    indexed:
+      - id: bytes32
+    data:
+      - wrapAmount: uint256
+
+  AddedApprovedStrategy:
+    # Emitted when a strategy is added to the approved list.
+    indexed:
+      - strategy: address
+
+  RemovedApprovedStrategy:
+    # Emitted when a strategy is removed from the approved list.
+    indexed:
+      - strategy: address
+
+  LimitsChanged:
+    # Emitted when global minimum limits are updated.
+    data:
+      - lowerLimit: uint64
+      - upperLimit: uint64
+
+# == Errors ==
+
+errors:
+
+  # -- Address Validation --
+  - ZeroAddress
+
+  # -- Strategy --
+  - InvalidStrategy:
+      inputs:
+        - strategy: address
+
+  # -- Schedule Validation --
+  - InvalidExpirationTime:
+      inputs:
+        - expirationTimeGiven: uint64
+        - timeNow: uint256
+  - InsufficientLimits:
+      inputs:
+        - limitGiven: uint64
+        - minLimit: uint64
+  - WrongLimits:
+      inputs:
+        - lowerLimit: uint64
+        - upperLimit: uint64
+  - UnsupportedSuperToken:
+      inputs:
+        - superToken: address
+
+  # -- Execution --
+  - WrapNotRequired:
+      inputs:
+        - index: bytes32
+  - UnauthorizedCaller:
+      inputs:
+        - caller: address
+        - expectedCaller: address

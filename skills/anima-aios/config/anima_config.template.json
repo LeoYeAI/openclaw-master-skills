@@ -1,0 +1,84 @@
+{
+  "_comment": "全局配置模板 - 所有 Agent 共享的默认配置",
+  "version": "6.2.2",
+  "agent": "{AGENT_NAME}",
+  
+  "normalization": {
+    "mode": "auto",
+    "use_global_benchmark": false,
+    "team_size_threshold": {
+      "percentile": 5,
+      "hybrid": 2,
+      "absolute": 1
+    }
+  },
+  
+  "weights": {
+    "understanding": 0.20,
+    "application": 0.20,
+    "creation": 0.25,
+    "metacognition": 0.15,
+    "collaboration": 0.20
+  },
+  
+  "benchmarks": {
+    "understanding": {
+      "novice": 10,
+      "beginner": 30,
+      "competent": 60,
+      "proficient": 100,
+      "expert": 200
+    },
+    "application": {
+      "novice": 5,
+      "beginner": 15,
+      "competent": 30,
+      "proficient": 60,
+      "expert": 120
+    },
+    "creation": {
+      "novice": 0,
+      "beginner": 5,
+      "competent": 15,
+      "proficient": 30,
+      "expert": 50
+    },
+    "metacognition": {
+      "novice": 2,
+      "beginner": 8,
+      "competent": 15,
+      "proficient": 30,
+      "expert": 60
+    },
+    "collaboration": {
+      "novice": 3,
+      "beginner": 10,
+      "competent": 25,
+      "proficient": 50,
+      "expert": 100
+    }
+  },
+  
+  "daily_exp_limits": {
+    "understanding": 50,
+    "application": 40,
+    "creation": 60,
+    "metacognition": 30,
+    "collaboration": 50
+  },
+  
+  "quality_thresholds": {
+    "fact": {
+      "short": 50,
+      "normal": 200,
+      "long": 200
+    }
+  },
+  
+  "daily_quests": {
+    "enabled": true,
+    "refresh_time": "05:00",
+    "check_interval_hours": 1,
+    "all_complete_bonus": 50
+  }
+}

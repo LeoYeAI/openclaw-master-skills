@@ -1,0 +1,139 @@
+# ============================================
+# Subagent 节点测试 (v2 — 隔离 session + JSONL 完成检测)
+# ============================================
+# 测试子代理的创建、异步模式和等待模式。
+# 每个 spawn 使用独立的隔离 session，通过读取 JSONL 文件检测完成。
+
+name: "Subagent 节点测试 v2"
+flow_id: subagent_test
+
+variables:
+  test_topic: "Rust 编程语言的优势"
+
+settings:
+  on_error: stop
+
+steps:
+  # ── 1) Fire-and-forget 模式 ──
+  - id: async_subagent
+    type: subagent
+    task: "请用一句话回答：1 + 1 等于几？"
+    label: "数学助手"
+    wait: false
+    timeout: 60
+
+  - id: check_async
+    type: code
+    python: |
+      output = async_subagent if isinstance(async_subagent, dict) else {}
+      has_child = bool(output.get("child_session_key", ""))
+      has_spawn_session = bool(output.get("spawn_session_key", ""))
+      not_waited = output.get("waited") == False
+      # 隔离 session 应该不同于工作流主 session
+      spawn_sk = output.get("spawn_session_key", "")
+      is_isolated = "spawn:" in spawn_sk
+      result = {
+        "has_child": has_child,
+        "has_spawn_session": has_spawn_session,
+        "not_waited": not_waited,
+        "is_isolated": is_isolated,
+        "spawn_session_key": spawn_sk,
+        "child_session_key": output.get("child_session_key", ""),
+      }
+
+  - id: log_async
+    type: log
+    message: "异步子代理: child={{check_async.has_child}}, isolated={{check_async.is_isolated}}, not_waited={{check_async.not_waited}}"
+
+  # ── 2) Wait 模式 — 通过 JSONL 文件检测完成 ──
+  - id: wait_subagent
+    type: subagent
+    task: "请直接回答：中国的首都是哪个城市？只需要回答城市名。"
+    label: "地理助手"
+    wait: true
+    timeout: 120
+    poll_interval: 3
+
+  - id: check_wait
+    type: code
+    python: |
+      output = wait_subagent if isinstance(wait_subagent, dict) else {}
+      waited = output.get("waited") == True
+      has_result = bool(output.get("result", ""))
+      no_timeout = output.get("wait_timeout") == False
+      has_status = bool(output.get("status", ""))
+      # 验证隔离性：spawn session 应包含 "spawn:" 前缀
+      spawn_sk = output.get("spawn_session_key", "")
+      is_isolated = "spawn:" in spawn_sk
+      result = {
+        "waited": waited,
+        "has_result": has_result,
+        "no_timeout": no_timeout,
+        "has_status": has_status,
+        "is_isolated": is_isolated,
+        "result_preview": str(output.get("result", ""))[:100],
+        "elapsed": output.get("elapsed", 0),
+      }
+
+  - id: log_wait
+    type: log
+    message: "等待子代理: waited={{check_wait.waited}}, result={{check_wait.has_result}}, isolated={{check_wait.is_isolated}}, elapsed={{check_wait.elapsed}}s"
+
+  # ── 3) 第二个 Wait — 验证不同 spawn 使用不同隔离 session ──
+  - id: topic_subagent
+    type: subagent
+    task: "请用两三句话简要介绍: {{test_topic}}"
+    label: "技术研究员"
+    wait: true
+    timeout: 120
+    poll_interval: 3
+
+  - id: check_isolation
+    type: code
+    python: |
+      # 三次 spawn 应该各自使用不同的隔离 session
+      sk1 = async_subagent.get("spawn_session_key", "") if isinstance(async_subagent, dict) else ""
+      sk2 = wait_subagent.get("spawn_session_key", "") if isinstance(wait_subagent, dict) else ""
+      sk3 = topic_subagent.get("spawn_session_key", "") if isinstance(topic_subagent, dict) else ""
+      all_different = len({sk1, sk2, sk3}) == 3
+      all_isolated = all("spawn:" in sk for sk in [sk1, sk2, sk3] if sk)
+      result = {
+        "all_different": all_different,
+        "all_isolated": all_isolated,
+        "session_keys": [sk1, sk2, sk3],
+      }
+
+  - id: log_isolation
+    type: log
+    message: "隔离性验证: all_different={{check_isolation.all_different}}, all_isolated={{check_isolation.all_isolated}}"
+
+  - id: log_topic
+    type: log
+    message: "主题研究结果: {{topic_subagent.result}}"
+
+  # ── 4) 最终验证 ──
+  - id: final_check
+    type: code
+    python: |
+      # 检查异步模式
+      async_ok = check_async.get("has_child", False) and check_async.get("is_isolated", False) and check_async.get("not_waited", False)
+      # 检查等待模式
+      wait_ok = check_wait.get("waited", False) and check_wait.get("has_result", False) and check_wait.get("no_timeout", False)
+      # 检查隔离性
+      isolation_ok = check_isolation.get("all_different", False) and check_isolation.get("all_isolated", False)
+      # 检查主题子代理
+      topic_ok = isinstance(topic_subagent, dict) and bool(topic_subagent.get("result", ""))
+
+      all_pass = async_ok and wait_ok and isolation_ok and topic_ok
+      result = {
+        "async_ok": async_ok,
+        "wait_ok": wait_ok,
+        "isolation_ok": isolation_ok,
+        "topic_ok": topic_ok,
+        "ALL_PASS": all_pass,
+      }
+
+  - id: summary
+    type: log
+    message: "🧬 Subagent 测试 v2 完成 — ALL_PASS: {{final_check.ALL_PASS}} (async={{final_check.async_ok}}, wait={{final_check.wait_ok}}, isolation={{final_check.isolation_ok}}, topic={{final_check.topic_ok}})"
+    level: "INFO"

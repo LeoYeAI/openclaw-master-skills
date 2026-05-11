@@ -1,0 +1,1014 @@
+{
+  "source": "pythongo_utils.mdx",
+  "relative_source": "modules\\pythongo_utils.mdx",
+  "title": "pythongo.utils",
+  "doc_kind": "module_doc",
+  "is_index_page": false,
+  "section_count": 49,
+  "table_count": 24,
+  "callout_count": 4,
+  "link_count": 0,
+  "image_count": 0,
+  "sections": [
+    {
+      "id": "modules.pythongo_utils.pythongo-utils",
+      "title": "pythongo.utils",
+      "level": 1,
+      "content_md": "此模块为工具模块，很多重要的工具，例如：K 线合成器、定时器，就定义在这里",
+      "summary": "此模块为工具模块，很多重要的工具，例如：K 线合成器、定时器，就定义在这里",
+      "block_type": "section"
+    },
+    {
+      "id": "modules.pythongo_utils.customloghandler",
+      "title": "`CustomLogHandler`",
+      "level": 2,
+      "content_md": "自定义日志 Handler\n\n这个类的作用是，当你使用的 Python 库有自己的日志模块，那这个库所打印的消息你是看不到的，因为 PythonGO 的日志是通过传给无限易，然后展示在界面的，最后才存在文件里，并不是普通输出函数的那种标准输入输出模式。所以当遇到这种情况时，可以使用此 `Handler` 来对你使用的库的 `Logger` 新增一个 `Handler`\n\n具体的使用方法可以自行百度，也可以参考定时器（`Scheduler`）的初始化函数中的代码",
+      "summary": "自定义日志 Handler",
+      "block_type": "section"
+    },
+    {
+      "id": "modules.pythongo_utils.scheduler",
+      "title": "`Scheduler()`",
+      "level": 2,
+      "content_md": "简易定时器\n\n通过使用 `apscheduler` 中的 `BackgroundScheduler`（非阻塞定时器），实现一些必要的功能和语法糖，既可以统一定时器的使用规则，还方便用户理解。\n\n参数：\n\n| 参数名 | 类型 | 描述 | 默认值 |\n|---|---|---|---|\n| `scheduler_name` | `str` | 定时器名称 | None |\n\n如果传入定时器名称, 则后续实例化同一定时器名称的类时, 都将返回同一内存地址的实例，此为**单例模式**\n\n这样可以让你在不同的策略或实例中管理同一个定时器。",
+      "summary": "简易定时器",
+      "block_type": "function"
+    },
+    {
+      "id": "modules.pythongo_utils.add_job-scheduler-add_job",
+      "title": "`add_job()` [#Scheduler-add_job]",
+      "level": 3,
+      "content_md": "添加定时任务\n\n参数：\n\n| 参数名 | 类型 | 描述 | 默认值 |\n|---|---|---|---|\n| `func` | `Callable` | 定时任务函数 | 必填 |\n| `trigger` | `Literal[\"date\" | interval | cron |\n| ` |\n| 触 | 发 | 器 |\n| 必 | 填 |\n\n触发器 `trigger` 介绍：\n\n* `date`：在某个确定的时间点运行你的任务函数 （只运行一次）\n\n* `interval`：在固定的时间间隔周期性地运行你的任务函数\n\n* `cron`：在一天的某些固定时间点周期性地运行你的任务函数\n\n此方法用法和 `apscheduler` 完全一致，具体使用方法可以[看这里](https://sinhub.cn/2018/11/apscheduler-user-guide/)或者上网搜索，这里就不做过多解释了，因为每个触发器所需要的参数都是不一样的。\n\n这里实现一个最简单的定时器：\n\n```python copy\nfrom datetime import datetime\n\nfrom pythongo.utils import Scheduler\n\nscheduler = Scheduler()",
+      "summary": "添加定时任务",
+      "block_type": "section"
+    },
+    {
+      "id": "modules.pythongo_utils.启用定时器",
+      "title": "启用定时器",
+      "level": 1,
+      "content_md": "scheduler.start()\n\ndef foo():\n    \"\"\"任务函数\"\"\"\n    print(\"Amazing PythonGO!\")",
+      "summary": "scheduler.start()",
+      "block_type": "section"
+    },
+    {
+      "id": "modules.pythongo_utils.添加定时器任务",
+      "title": "添加定时器任务",
+      "level": 1,
+      "content_md": "scheduler.add_job(\n    func=foo,\n    trigger=\"interval\",\n    id=\"foo_print\",\n    seconds=5,\n    next_run_time=datetime.now()\n)",
+      "summary": "scheduler.add_job(\n    func=foo,\n    trigger=\"interval\",\n    id=\"foo_print\",\n    seconds=5,\n    next_run_time=datetime.now()\n)",
+      "block_type": "section"
+    },
+    {
+      "id": "modules.pythongo_utils.该任务会每隔五秒钟执行一次-foo-函数",
+      "title": "该任务会每隔五秒钟执行一次 foo 函数",
+      "level": 1,
+      "content_md": "",
+      "summary": "",
+      "block_type": "section"
+    },
+    {
+      "id": "modules.pythongo_utils.next_run_time-设置为当前时间-表示让定时任务立刻运行-如果没设置-则是五秒后才运行",
+      "title": "next_run_time 设置为当前时间，表示让定时任务立刻运行，如果没设置，则是五秒后才运行",
+      "level": 1,
+      "content_md": "",
+      "summary": "",
+      "block_type": "section"
+    },
+    {
+      "id": "modules.pythongo_utils.移除定时器",
+      "title": "移除定时器",
+      "level": 1,
+      "content_md": "scheduler.remove(\"foo_print\")",
+      "summary": "scheduler.remove(\"foo_print\")",
+      "block_type": "section"
+    },
+    {
+      "id": "modules.pythongo_utils.或者直接停止定时器",
+      "title": "或者直接停止定时器",
+      "level": 1,
+      "content_md": "",
+      "summary": "",
+      "block_type": "section"
+    },
+    {
+      "id": "modules.pythongo_utils.注意-定时器停止以后-无法再启动-需要重新实例化定时器",
+      "title": "注意：定时器停止以后，无法再启动，需要重新实例化定时器",
+      "level": 1,
+      "content_md": "scheduler.stop()\n```",
+      "summary": "scheduler.stop()\n```",
+      "block_type": "section"
+    },
+    {
+      "id": "modules.pythongo_utils.get_job-scheduler-get_job",
+      "title": "`get_job()` [#Scheduler-get_job]",
+      "level": 3,
+      "content_md": "根据 `job_id` 获取对应的定时任务\n\n参数：\n\n| 参数名 | 类型 | 描述 | 默认值 |\n|---|---|---|---|\n| `job_id` | `str` | 任务备注 ID | 必填 |\n\n返回：\n\n| 类型 | 描述 |\n|---|---|\n| `apscheduler.job.Job` | 定时任务 |",
+      "summary": "根据 `job_id` 获取对应的定时任务",
+      "block_type": "section"
+    },
+    {
+      "id": "modules.pythongo_utils.get_jobs-scheduler-get_jobs",
+      "title": "`get_jobs()` [#Scheduler-get_jobs]",
+      "level": 3,
+      "content_md": "返回所有定时任务\n\n返回：\n\n| 类型 | 描述 |\n|---|---|\n| `list[apscheduler.job.Job |\n| ` |\n| 所 | 有 | 定 | 时 | 任 | 务 |",
+      "summary": "返回所有定时任务",
+      "block_type": "section"
+    },
+    {
+      "id": "modules.pythongo_utils.remove_job-scheduler-remove_job",
+      "title": "`remove_job()` [#Scheduler-remove_job]",
+      "level": 3,
+      "content_md": "根据 `job_id` 移除定时任务\n\n参数：\n\n| 参数名 | 类型 | 描述 | 默认值 |\n|---|---|---|---|\n| `job_id` | `str` | 任务备注 ID | 必填 |",
+      "summary": "根据 `job_id` 移除定时任务",
+      "block_type": "section"
+    },
+    {
+      "id": "modules.pythongo_utils.start-scheduler-start",
+      "title": "`start()` [#Scheduler-start]",
+      "level": 3,
+      "content_md": "启动定时器",
+      "summary": "启动定时器",
+      "block_type": "section"
+    },
+    {
+      "id": "modules.pythongo_utils.stop-scheduler-stop",
+      "title": "`stop()` [#Scheduler-stop]",
+      "level": 3,
+      "content_md": "停止定时器\n\n> [!INFO]\n> 如果使用**单例模式**，调用该方法会执行移除所有定时任务操作，并不会停止整个定时器",
+      "summary": "停止定时器",
+      "block_type": "section"
+    },
+    {
+      "id": "modules.pythongo_utils.klinegeneratorsec-kline-generator-sec",
+      "title": "`KLineGeneratorSec` [#KLine-Generator-Sec]",
+      "level": 2,
+      "content_md": "秒级 K 线生成器\n\n参数：\n\n| 参数名 | 类型 | 描述 | 默认值 |\n|---|---|---|---|\n| `callback` | `Callable[[KLineData |\n| N | o | n | e |",
+      "summary": "秒级 K 线生成器",
+      "block_type": "section"
+    },
+    {
+      "id": "modules.pythongo_utils.tick_to_kline-kline-generator-sec-tick_to_kline",
+      "title": "`tick_to_kline()` [#KLine-Generator-Sec-tick_to_kline]",
+      "level": 3,
+      "content_md": "合成秒级 K 线\n\n接收 `tick` 来合成 K 线，当 K 线周期达到设置的周期，则通过上面传入的 `callback` 推送过去\n\n参数：\n\n| 参数名 | 类型 | 描述 | 默认值 |\n|---|---|---|---|\n| `tick` | `TickData` | tick 对象 | 必填 |",
+      "summary": "合成秒级 K 线",
+      "block_type": "section"
+    },
+    {
+      "id": "modules.pythongo_utils.klinegenerator-kline-generator",
+      "title": "`KLineGenerator` [#KLine-Generator]",
+      "level": 2,
+      "content_md": "分钟级 K 线合成\n\n参数：\n\n| 参数名 | 类型 | 描述 | 默认值 |\n|---|---|---|---|\n| `exchange` | `str` | 交易所代码 | 必填 |\n| `instrument_id` | `str` | 合约代码 | 必填 |\n| `callback` | `Callable[[KLineData |\n| N | o | n | e |",
+      "summary": "分钟级 K 线合成",
+      "block_type": "section"
+    },
+    {
+      "id": "modules.pythongo_utils.exchange-kline-generator-exchange",
+      "title": "`exchange` [#KLine-Generator-exchange]",
+      "level": 3,
+      "content_md": "类型：`str`\n\n交易所代码",
+      "summary": "类型：`str`",
+      "block_type": "property"
+    },
+    {
+      "id": "modules.pythongo_utils.instrument_id-kline-generator-instrument_id",
+      "title": "`instrument_id` [#KLine-Generator-instrument_id]",
+      "level": 3,
+      "content_md": "类型：`str`\n\n合约代码",
+      "summary": "类型：`str`",
+      "block_type": "property"
+    },
+    {
+      "id": "modules.pythongo_utils.style-kline-generator-style",
+      "title": "`style` [#KLine-Generator-style]",
+      "level": 3,
+      "content_md": "类型：`KLineStyleType`\n\nK 线周期",
+      "summary": "类型：`KLineStyleType`",
+      "block_type": "property"
+    },
+    {
+      "id": "modules.pythongo_utils.producer-kline-generator-producer",
+      "title": "`producer` [#KLine-Generator-producer]",
+      "level": 3,
+      "content_md": "类型：`KLineProducer`\n\nK 线生产器（内置指标方法），[详细介绍](#kline-producer)",
+      "summary": "类型：`KLineProducer`",
+      "block_type": "property"
+    },
+    {
+      "id": "modules.pythongo_utils.push_history_data-kline-generator-push_history_data",
+      "title": "`push_history_data()` [#KLine-Generator-push_history_data]",
+      "level": 3,
+      "content_md": "推送历史 K 线数据到回调\n\n> [!INFO]\n> 如果你不需要历史数据，则不用在实例化 `KLineGenerator` 后调用此方法",
+      "summary": "推送历史 K 线数据到回调",
+      "block_type": "section"
+    },
+    {
+      "id": "modules.pythongo_utils.stop_push_scheduler-kline-generator-stop_push_scheduler",
+      "title": "`stop_push_scheduler()` [#KLine-Generator-stop_push_scheduler]",
+      "level": 3,
+      "content_md": "停止推送每个交易时段最后一根 K 线的定时器\n\n> [!INFO]\n> 在当前方法中，`self.scheduler` 是单例模式，所以只会移除所有的定时任务，不会停止本类中的定时器（一般用不到本方法）",
+      "summary": "停止推送每个交易时段最后一根 K 线的定时器",
+      "block_type": "section"
+    },
+    {
+      "id": "modules.pythongo_utils.tick_to_kline-kline-generator-tick_to_kline",
+      "title": "`tick_to_kline()` [#KLine-Generator-tick_to_kline]",
+      "level": 3,
+      "content_md": "合成 K 线\n\n接收 `tick` 来合成 K 线，当 K 线周期达到设置的周期，则通过 `callback` 推送过去，如果定义了 `real_time_callback` 回调，则每次 K 线有更新，都会将最新的 K 线通过 `real_time_callback` 推送过去\n\n参数：\n\n| 参数名 | 类型 | 描述 | 默认值 |\n|---|---|---|---|\n| `tick` | `TickData` | tick 对象 | 必填 |\n| `push` | `bool` | 直接推送 K 线（请不要填写该参数） | False |",
+      "summary": "合成 K 线",
+      "block_type": "section"
+    },
+    {
+      "id": "modules.pythongo_utils.klinegeneratorarb-kline-generator-arb",
+      "title": "`KLineGeneratorArb`  [#KLine-Generator-Arb]",
+      "level": 2,
+      "content_md": "标准套利合约的分钟级 K 线合成器\n\n所有功能继承自 `KLineGenerator`，重新实现了 `tick_to_kline`，可以接受套利合约的两腿合约 `tick`，然后合成一个新的 `tick`，再传入到父类的 `tick_to_kline`\n\n所有方法和属性以及用法都和 `KLineGenerator` 一样，入参也一样，这里不重复介绍了（可以去看自带的示例套利策略）\n\n> [!INFO]\n> 支持套利合约的站点环境才能收到套利合约的行情",
+      "summary": "标准套利合约的分钟级 K 线合成器",
+      "block_type": "section"
+    },
+    {
+      "id": "modules.pythongo_utils.klinecontainer-kline-container",
+      "title": "`KLineContainer` [#KLine-Container]",
+      "level": 2,
+      "content_md": "K 线容器\n\n可以自动缓存实例本身, 重复的交易所及合约不再重新获取 K 线\n\n本类很简单，获取 K 线数据后，把数据缓存起来，然后供取用，但是数据不会自己更新（需要配合 `KLineGenerator` 合成 K 线后自动更新数据），所以一般不单独使用，如果只是需要取 K 线的话，可以查阅 [深入框架 - pythongo.core](./pythongo_core.mdx)\n\n实例化本类后会自动调用 `init()` 方法来获取 K 线并缓存\n\n参数：\n\n| 参数名 | 类型 | 描述 | 默认值 |\n|---|---|---|---|\n| `exchange` | `str` | 交易所代码 | 必填 |\n| `instrument_id` | `str` | 合约代码 | 必填 |\n| `style` | `KLineStyleType` | K 线周期 | 必填 |",
+      "summary": "K 线容器",
+      "block_type": "section"
+    },
+    {
+      "id": "modules.pythongo_utils.get",
+      "title": "`get()`",
+      "level": 3,
+      "content_md": "根据交易所, 合约和 K 线分钟获取缓存的 K 线\n\n参数：\n\n| 参数名 | 类型 | 描述 | 默认值 |\n|---|---|---|---|\n| `exchange` | `str` | 交易所代码 | 必填 |\n| `instrument_id` | `str` | 合约代码 | 必填 |\n| `style` | `KLineStyleType` | K 线周期 | 必填 |\n\n返回：\n\n| 类型 | 描述 |\n|---|---|\n| `list[dict |\n| ` |\n| K |   | 线 | 数 | 据 |",
+      "summary": "根据交易所, 合约和 K 线分钟获取缓存的 K 线",
+      "block_type": "function"
+    },
+    {
+      "id": "modules.pythongo_utils.set",
+      "title": "`set()`",
+      "level": 3,
+      "content_md": "根据交易所, 合约和 K 线分钟缓存 K 线\n\n参数：\n\n| 参数名 | 类型 | 描述 | 默认值 |\n|---|---|---|---|\n| `exchange` | `str` | 交易所代码 | 必填 |\n| `instrument_id` | `str` | 合约代码 | 必填 |\n| `style` | `KLineStyleType` | K 线周期 | 必填 |\n| `data` | `list[dict |\n| ` |\n| K |   | 线 | 数 | 据 |\n| 必 | 填 |",
+      "summary": "根据交易所, 合约和 K 线分钟缓存 K 线",
+      "block_type": "function"
+    },
+    {
+      "id": "modules.pythongo_utils.init",
+      "title": "`init()`",
+      "level": 3,
+      "content_md": "获取合约 K 线并缓存\n\n参数：\n\n| 参数名 | 类型 | 描述 | 默认值 |\n|---|---|---|---|\n| `exchange` | `str` | 交易所代码 | 必填 |\n| `instrument_id` | `str` | 合约代码 | 必填 |\n| `style` | `KLineStyleType` | K 线周期 | 必填 |",
+      "summary": "获取合约 K 线并缓存",
+      "block_type": "function"
+    },
+    {
+      "id": "modules.pythongo_utils.klineproducer-kline-producer",
+      "title": "`KLineProducer` [#KLine-Producer]",
+      "level": 2,
+      "content_md": "K 线生产器\n\n本类继承了 `Indicators`（[技术指标类](./pythongo_indicator.mdx)），所以可以直接使用对应的指标方法\n\n本类可以单独使用，前提是你完全了解本类的用法，且不需要最新的 K 线数据，因为本类的数据一旦获取，不会再更新，除非手动更新\n\n实例化本类会自动实例化 `KLineContainer`\n\n参数：\n\n| 参数名 | 类型 | 描述 | 默认值 |\n|---|---|---|---|\n| `exchange` | `str` | 交易所代码 | 必填 |\n| `instrument_id` | `str` | 合约代码 | 必填 |\n| `style` | `KLineStyleType` | K 线周期 | \"M1\" |\n| `callback` | `Callable[[KLineData |\n| N | o | n | e |",
+      "summary": "K 线生产器",
+      "block_type": "section"
+    },
+    {
+      "id": "modules.pythongo_utils.exchange",
+      "title": "`exchange`",
+      "level": 3,
+      "content_md": "类型：`str`\n\n交易所代码",
+      "summary": "类型：`str`",
+      "block_type": "property"
+    },
+    {
+      "id": "modules.pythongo_utils.instrument_id",
+      "title": "`instrument_id`",
+      "level": 3,
+      "content_md": "类型：`str`\n\n合约代码",
+      "summary": "类型：`str`",
+      "block_type": "property"
+    },
+    {
+      "id": "modules.pythongo_utils.style",
+      "title": "`style`",
+      "level": 3,
+      "content_md": "类型：`KLineStyleType`\n\nK 线周期",
+      "summary": "类型：`KLineStyleType`",
+      "block_type": "property"
+    },
+    {
+      "id": "modules.pythongo_utils.kline_container",
+      "title": "`kline_container`",
+      "level": 3,
+      "content_md": "类型：`KLineContainer`\n\n实例化的 K 线容器",
+      "summary": "类型：`KLineContainer`",
+      "block_type": "property"
+    },
+    {
+      "id": "modules.pythongo_utils.open",
+      "title": "`open`",
+      "level": 3,
+      "content_md": "类型：`list[np.float64]`\n\n开盘价序列",
+      "summary": "类型：`list[np.float64]`",
+      "block_type": "property"
+    },
+    {
+      "id": "modules.pythongo_utils.close",
+      "title": "`close`",
+      "level": 3,
+      "content_md": "类型：`list[np.float64]`\n\n收盘价序列",
+      "summary": "类型：`list[np.float64]`",
+      "block_type": "property"
+    },
+    {
+      "id": "modules.pythongo_utils.high",
+      "title": "`high`",
+      "level": 3,
+      "content_md": "类型：`list[np.float64]`\n\n最高价序列",
+      "summary": "类型：`list[np.float64]`",
+      "block_type": "property"
+    },
+    {
+      "id": "modules.pythongo_utils.low",
+      "title": "`low`",
+      "level": 3,
+      "content_md": "类型：`list[np.float64]`\n\n最低价序列",
+      "summary": "类型：`list[np.float64]`",
+      "block_type": "property"
+    },
+    {
+      "id": "modules.pythongo_utils.volume",
+      "title": "`volume`",
+      "level": 3,
+      "content_md": "类型：`list[np.float64]`\n\n成交量序列",
+      "summary": "类型：`list[np.float64]`",
+      "block_type": "property"
+    },
+    {
+      "id": "modules.pythongo_utils.datetime",
+      "title": "`datetime`",
+      "level": 3,
+      "content_md": "类型：`list[TypeDateTime]`\n\n时间序列",
+      "summary": "类型：`list[TypeDateTime]`",
+      "block_type": "property"
+    },
+    {
+      "id": "modules.pythongo_utils.update",
+      "title": "`update()`",
+      "level": 3,
+      "content_md": "更新数据序列\n\n根据 K 线时间自动添加、插入数据，或者更新最后一根 K 线数据\n\n参数：\n\n| 参数名 | 类型 | 描述 | 默认值 |\n|---|---|---|---|\n| `kline` | `KLineData` | K 线对象 | 必填 |",
+      "summary": "更新数据序列",
+      "block_type": "function"
+    },
+    {
+      "id": "modules.pythongo_utils.append_data",
+      "title": "`append_data()`",
+      "level": 3,
+      "content_md": "添加 K 线数据\n\n参数：\n\n| 参数名 | 类型 | 描述 | 默认值 |\n|---|---|---|---|\n| `kline` | `KLineData` | K 线对象 | 必填 |",
+      "summary": "添加 K 线数据",
+      "block_type": "function"
+    },
+    {
+      "id": "modules.pythongo_utils.insert_data",
+      "title": "`insert_data()`",
+      "level": 3,
+      "content_md": "根据数组下标插入 K 线数据\n\n参数：\n\n| 参数名 | 类型 | 描述 | 默认值 |\n|---|---|---|---|\n| `kline` | `KLineData` | K 线对象 | 必填 |\n| `index` | `int` | K 线插入的位置 | -1 |",
+      "summary": "根据数组下标插入 K 线数据",
+      "block_type": "function"
+    },
+    {
+      "id": "modules.pythongo_utils.update_last_kline",
+      "title": "`update_last_kline()`",
+      "level": 3,
+      "content_md": "更新最后一根 K 线数据\n\n参数：\n\n| 参数名 | 类型 | 描述 | 默认值 |\n|---|---|---|---|\n| `kline` | `KLineData` | K 线对象 | 必填 |",
+      "summary": "更新最后一根 K 线数据",
+      "block_type": "function"
+    },
+    {
+      "id": "modules.pythongo_utils.worker",
+      "title": "`worker()`",
+      "level": 3,
+      "content_md": "将 K 线数据转成 K 线对象后更新到本实例中的 K 线数据序列，并且推送到 K 线回调中，这部分数据也称 K 线历史数据",
+      "summary": "将 K 线数据转成 K 线对象后更新到本实例中的 K 线数据序列，并且推送到 K 线回调中，这部分数据也称 K 线历史数据",
+      "block_type": "function"
+    },
+    {
+      "id": "modules.pythongo_utils.isdigit",
+      "title": "`isdigit()`",
+      "level": 2,
+      "content_md": "判断字符串是否整数或小数\n\n参数：\n\n| 参数名 | 类型 | 描述 | 默认值 |\n|---|---|---|---|\n| `value` | `str` | 任意字符串 | 必填 |\n\n返回：\n\n| 类型 | 描述 |\n|---|---|\n| `bool` | 是否整数或小数 |",
+      "summary": "判断字符串是否整数或小数",
+      "block_type": "function"
+    },
+    {
+      "id": "modules.pythongo_utils.split_arbitrage_code",
+      "title": "`split_arbitrage_code()`",
+      "level": 2,
+      "content_md": "分割套利合约代码\n\n参数：\n\n| 参数名 | 类型 | 描述 | 默认值 |\n|---|---|---|---|\n| `instrument_id` | `str` | 标准套利合约代码 | 必填 |\n\n返回：\n\n| 类型 | 描述 |\n|---|---|\n| `tuple[Optional[str |\n| O | p | t | i | o | n | a | l | [ | s | t | r |",
+      "summary": "分割套利合约代码",
+      "block_type": "function"
+    }
+  ],
+  "tables": [
+    {
+      "title": "`Scheduler()`",
+      "headers": [
+        "参数名",
+        "类型",
+        "描述",
+        "默认值"
+      ],
+      "rows": [
+        [
+          "`scheduler_name`",
+          "`str`",
+          "定时器名称",
+          "None"
+        ]
+      ],
+      "source": "pythongo_utils.mdx"
+    },
+    {
+      "title": "`add_job()` [#Scheduler-add_job]",
+      "headers": [
+        "参数名",
+        "类型",
+        "描述",
+        "默认值"
+      ],
+      "rows": [
+        [
+          "`func`",
+          "`Callable`",
+          "定时任务函数",
+          "必填"
+        ],
+        [
+          "`trigger`",
+          "`Literal[\"date\"",
+          "interval",
+          "cron"
+        ],
+        [
+          "`"
+        ],
+        [
+          "触",
+          "发",
+          "器"
+        ],
+        [
+          "必",
+          "填"
+        ]
+      ],
+      "source": "pythongo_utils.mdx"
+    },
+    {
+      "title": "`get_job()` [#Scheduler-get_job]",
+      "headers": [
+        "参数名",
+        "类型",
+        "描述",
+        "默认值"
+      ],
+      "rows": [
+        [
+          "`job_id`",
+          "`str`",
+          "任务备注 ID",
+          "必填"
+        ]
+      ],
+      "source": "pythongo_utils.mdx"
+    },
+    {
+      "title": "`get_jobs()` [#Scheduler-get_jobs]",
+      "headers": [
+        "类型",
+        "描述"
+      ],
+      "rows": [
+        [
+          "`apscheduler.job.Job`",
+          "定时任务"
+        ]
+      ],
+      "source": "pythongo_utils.mdx"
+    },
+    {
+      "title": "`remove_job()` [#Scheduler-remove_job]",
+      "headers": [
+        "类型",
+        "描述"
+      ],
+      "rows": [
+        [
+          "`list[apscheduler.job.Job"
+        ],
+        [
+          "`"
+        ],
+        [
+          "所",
+          "有",
+          "定",
+          "时",
+          "任",
+          "务"
+        ]
+      ],
+      "source": "pythongo_utils.mdx"
+    },
+    {
+      "title": "`KLineGeneratorSec` [#KLine-Generator-Sec]",
+      "headers": [
+        "参数名",
+        "类型",
+        "描述",
+        "默认值"
+      ],
+      "rows": [
+        [
+          "`job_id`",
+          "`str`",
+          "任务备注 ID",
+          "必填"
+        ]
+      ],
+      "source": "pythongo_utils.mdx"
+    },
+    {
+      "title": "`tick_to_kline()` [#KLine-Generator-Sec-tick_to_kline]",
+      "headers": [
+        "参数名",
+        "类型",
+        "描述",
+        "默认值"
+      ],
+      "rows": [
+        [
+          "`callback`",
+          "`Callable[[KLineData"
+        ],
+        [
+          "N",
+          "o",
+          "n",
+          "e"
+        ]
+      ],
+      "source": "pythongo_utils.mdx"
+    },
+    {
+      "title": "`KLineGenerator` [#KLine-Generator]",
+      "headers": [
+        "参数名",
+        "类型",
+        "描述",
+        "默认值"
+      ],
+      "rows": [
+        [
+          "`tick`",
+          "`TickData`",
+          "tick 对象",
+          "必填"
+        ]
+      ],
+      "source": "pythongo_utils.mdx"
+    },
+    {
+      "title": "`tick_to_kline()` [#KLine-Generator-tick_to_kline]",
+      "headers": [
+        "参数名",
+        "类型",
+        "描述",
+        "默认值"
+      ],
+      "rows": [
+        [
+          "`exchange`",
+          "`str`",
+          "交易所代码",
+          "必填"
+        ],
+        [
+          "`instrument_id`",
+          "`str`",
+          "合约代码",
+          "必填"
+        ],
+        [
+          "`callback`",
+          "`Callable[[KLineData"
+        ],
+        [
+          "N",
+          "o",
+          "n",
+          "e"
+        ]
+      ],
+      "source": "pythongo_utils.mdx"
+    },
+    {
+      "title": "`KLineContainer` [#KLine-Container]",
+      "headers": [
+        "参数名",
+        "类型",
+        "描述",
+        "默认值"
+      ],
+      "rows": [
+        [
+          "`tick`",
+          "`TickData`",
+          "tick 对象",
+          "必填"
+        ],
+        [
+          "`push`",
+          "`bool`",
+          "直接推送 K 线（请不要填写该参数）",
+          "False"
+        ]
+      ],
+      "source": "pythongo_utils.mdx"
+    },
+    {
+      "title": "`get()`",
+      "headers": [
+        "参数名",
+        "类型",
+        "描述",
+        "默认值"
+      ],
+      "rows": [
+        [
+          "`exchange`",
+          "`str`",
+          "交易所代码",
+          "必填"
+        ],
+        [
+          "`instrument_id`",
+          "`str`",
+          "合约代码",
+          "必填"
+        ],
+        [
+          "`style`",
+          "`KLineStyleType`",
+          "K 线周期",
+          "必填"
+        ]
+      ],
+      "source": "pythongo_utils.mdx"
+    },
+    {
+      "title": "`set()`",
+      "headers": [
+        "参数名",
+        "类型",
+        "描述",
+        "默认值"
+      ],
+      "rows": [
+        [
+          "`exchange`",
+          "`str`",
+          "交易所代码",
+          "必填"
+        ],
+        [
+          "`instrument_id`",
+          "`str`",
+          "合约代码",
+          "必填"
+        ],
+        [
+          "`style`",
+          "`KLineStyleType`",
+          "K 线周期",
+          "必填"
+        ]
+      ],
+      "source": "pythongo_utils.mdx"
+    },
+    {
+      "title": "`init()`",
+      "headers": [
+        "类型",
+        "描述"
+      ],
+      "rows": [
+        [
+          "`list[dict"
+        ],
+        [
+          "`"
+        ],
+        [
+          "K",
+          " ",
+          "线",
+          "数",
+          "据"
+        ]
+      ],
+      "source": "pythongo_utils.mdx"
+    },
+    {
+      "title": "`KLineProducer` [#KLine-Producer]",
+      "headers": [
+        "参数名",
+        "类型",
+        "描述",
+        "默认值"
+      ],
+      "rows": [
+        [
+          "`exchange`",
+          "`str`",
+          "交易所代码",
+          "必填"
+        ],
+        [
+          "`instrument_id`",
+          "`str`",
+          "合约代码",
+          "必填"
+        ],
+        [
+          "`style`",
+          "`KLineStyleType`",
+          "K 线周期",
+          "必填"
+        ],
+        [
+          "`data`",
+          "`list[dict"
+        ],
+        [
+          "`"
+        ],
+        [
+          "K",
+          " ",
+          "线",
+          "数",
+          "据"
+        ],
+        [
+          "必",
+          "填"
+        ]
+      ],
+      "source": "pythongo_utils.mdx"
+    },
+    {
+      "title": "`update()`",
+      "headers": [
+        "参数名",
+        "类型",
+        "描述",
+        "默认值"
+      ],
+      "rows": [
+        [
+          "`exchange`",
+          "`str`",
+          "交易所代码",
+          "必填"
+        ],
+        [
+          "`instrument_id`",
+          "`str`",
+          "合约代码",
+          "必填"
+        ],
+        [
+          "`style`",
+          "`KLineStyleType`",
+          "K 线周期",
+          "必填"
+        ]
+      ],
+      "source": "pythongo_utils.mdx"
+    },
+    {
+      "title": "`append_data()`",
+      "headers": [
+        "参数名",
+        "类型",
+        "描述",
+        "默认值"
+      ],
+      "rows": [
+        [
+          "`exchange`",
+          "`str`",
+          "交易所代码",
+          "必填"
+        ],
+        [
+          "`instrument_id`",
+          "`str`",
+          "合约代码",
+          "必填"
+        ],
+        [
+          "`style`",
+          "`KLineStyleType`",
+          "K 线周期",
+          "\"M1\""
+        ],
+        [
+          "`callback`",
+          "`Callable[[KLineData"
+        ],
+        [
+          "N",
+          "o",
+          "n",
+          "e"
+        ]
+      ],
+      "source": "pythongo_utils.mdx"
+    },
+    {
+      "title": "`insert_data()`",
+      "headers": [
+        "参数名",
+        "类型",
+        "描述",
+        "默认值"
+      ],
+      "rows": [
+        [
+          "`kline`",
+          "`KLineData`",
+          "K 线对象",
+          "必填"
+        ]
+      ],
+      "source": "pythongo_utils.mdx"
+    },
+    {
+      "title": "`update_last_kline()`",
+      "headers": [
+        "参数名",
+        "类型",
+        "描述",
+        "默认值"
+      ],
+      "rows": [
+        [
+          "`kline`",
+          "`KLineData`",
+          "K 线对象",
+          "必填"
+        ]
+      ],
+      "source": "pythongo_utils.mdx"
+    },
+    {
+      "title": "`isdigit()`",
+      "headers": [
+        "参数名",
+        "类型",
+        "描述",
+        "默认值"
+      ],
+      "rows": [
+        [
+          "`kline`",
+          "`KLineData`",
+          "K 线对象",
+          "必填"
+        ],
+        [
+          "`index`",
+          "`int`",
+          "K 线插入的位置",
+          "-1"
+        ]
+      ],
+      "source": "pythongo_utils.mdx"
+    },
+    {
+      "title": "`split_arbitrage_code()`",
+      "headers": [
+        "参数名",
+        "类型",
+        "描述",
+        "默认值"
+      ],
+      "rows": [
+        [
+          "`kline`",
+          "`KLineData`",
+          "K 线对象",
+          "必填"
+        ]
+      ],
+      "source": "pythongo_utils.mdx"
+    },
+    {
+      "title": null,
+      "headers": [
+        "参数名",
+        "类型",
+        "描述",
+        "默认值"
+      ],
+      "rows": [
+        [
+          "`value`",
+          "`str`",
+          "任意字符串",
+          "必填"
+        ]
+      ],
+      "source": "pythongo_utils.mdx"
+    },
+    {
+      "title": null,
+      "headers": [
+        "类型",
+        "描述"
+      ],
+      "rows": [
+        [
+          "`bool`",
+          "是否整数或小数"
+        ]
+      ],
+      "source": "pythongo_utils.mdx"
+    },
+    {
+      "title": null,
+      "headers": [
+        "参数名",
+        "类型",
+        "描述",
+        "默认值"
+      ],
+      "rows": [
+        [
+          "`instrument_id`",
+          "`str`",
+          "标准套利合约代码",
+          "必填"
+        ]
+      ],
+      "source": "pythongo_utils.mdx"
+    },
+    {
+      "title": null,
+      "headers": [
+        "类型",
+        "描述"
+      ],
+      "rows": [
+        [
+          "`tuple[Optional[str"
+        ],
+        [
+          "O",
+          "p",
+          "t",
+          "i",
+          "o",
+          "n",
+          "a",
+          "l",
+          "[",
+          "s",
+          "t",
+          "r"
+        ]
+      ],
+      "source": "pythongo_utils.mdx"
+    }
+  ],
+  "callouts": [
+    {
+      "kind": "info",
+      "text": "如果使用**单例模式**，调用该方法会执行移除所有定时任务操作，并不会停止整个定时器",
+      "source": "pythongo_utils.mdx"
+    },
+    {
+      "kind": "info",
+      "text": "如果你不需要历史数据，则不用在实例化 `KLineGenerator` 后调用此方法",
+      "source": "pythongo_utils.mdx"
+    },
+    {
+      "kind": "info",
+      "text": "在当前方法中，`self.scheduler` 是单例模式，所以只会移除所有的定时任务，不会停止本类中的定时器（一般用不到本方法）",
+      "source": "pythongo_utils.mdx"
+    },
+    {
+      "kind": "info",
+      "text": "支持套利合约的站点环境才能收到套利合约的行情",
+      "source": "pythongo_utils.mdx"
+    }
+  ],
+  "links": [],
+  "images": []
+}

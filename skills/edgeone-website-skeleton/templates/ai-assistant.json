@@ -1,0 +1,60 @@
+{
+  "name": "ai-assistant",
+  "label": "AI 客服站",
+  "labelEn": "AI Assistant",
+  "description": "AI 对话助手：流式 SSE 响应、会话历史、多轮上下文、嵌入代码",
+  "modules": ["auth", "ai-chat"],
+  "stackModules": ["ai-chat"],
+  "layer1": {
+    "auth": true,
+    "aiChat": true,
+    "cart": false,
+    "payment": false,
+    "orders": false,
+    "admin": false
+  },
+  "layer2": {
+    "notification": true,
+    "seo": true,
+    "analytics": false,
+    "i18n": false
+  },
+  "dependencies": {
+    "npm": ["bcryptjs", "jsonwebtoken"],
+    "edgeone": {
+      "kv": true,
+      "cloudFunctions": true
+    }
+  },
+  "envVars": [
+    "JWT_PRIVATE_KEY",
+    "JWT_PUBLIC_KEY",
+    "JWT_SECRET",
+    "AI_API_KEY",
+    "EDGE_BASE"
+  ],
+  "features": [
+    "AI 对话（SSE 流式响应）",
+    "多轮上下文记忆",
+    "会话历史读取（KV）",
+    "嵌入代码（Widget Script）",
+    "访客 + 登录双模式",
+    "AI 限流保护"
+  ],
+  "pages": [
+    "/",
+    "/login",
+    "/register",
+    "/chat",
+    "/history",
+    "/admin/stats"
+  ],
+  "embedCode": "<script src=\"https://your-site.edgeone.cool/ai-widget.js\"></script>\n<ai-chat-widget site-id=\"YOUR_SITE_ID\" theme=\"auto\" position=\"bottom-right\"></ai-chat-widget>",
+  "securityChecks": [
+    "bcrypt cost=12",
+    "JWT RS256 + 30天 HS256 兼容窗口",
+    "JWT 15min AT + RT 7d 轮换",
+    "AI 限流（未登录 10次/分钟，已登录 60次/分钟）",
+    "CSP Header"
+  ]
+}

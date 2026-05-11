@@ -1,0 +1,65 @@
+# Agent Comm Hub — 可观测性栈（Phase 3.1）
+# 用法：docker compose up -d
+
+version: "3.8"
+
+services:
+  # ── Prometheus ──────────────────────────────────────────────
+  prometheus:
+    image: prom/prometheus:v2.47.0
+    container_name: ach-prometheus
+    restart: unless-stopped
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus_data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.retention.time=15d'
+      - '--storage.tsdb.path=/prometheus'
+    networks:
+      - ach-net
+
+  # ── Grafana ───────────────────────────────────────────────
+  grafana:
+    image: grafana/grafana:10.1.0
+    container_name: ach-grafana
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      GF_SECURITY_ADMIN_USER: admin
+      GF_SECURITY_ADMIN_PASSWORD: admin
+      GF_USERS_ALLOW_SIGN_UP: "false"
+    volumes:
+      - ./grafana/provisioning/datasources:/etc/grafana/provisioning/datasources:ro
+      - ./grafana/provisioning/dashboards:/etc/grafana/provisioning/dashboards:ro
+      - ./grafana/dashboard.json:/etc/grafana/provisioning/dashboards/agent-comm-hub.json:ro
+      - grafana_data:/var/lib/grafana
+    depends_on:
+      - prometheus
+    networks:
+      - ach-net
+
+  # ── Hub（本栈监控目标，需另启）───────────────────────────
+  # agent-comm-hub:
+  #   image: liuboacean/agent-comm-hub:latest
+  #   container_name: ach-hub
+  #   environment:
+  #     PORT: "3100"
+  #     DB_PATH: /app/comm_hub.db
+  #   ports:
+  #     - "3100:3100"
+  #   extra_hosts:
+  #     - "host.docker.internal:host-gateway"
+  #   networks:
+  #     - ach-net
+
+networks:
+  ach-net:
+    driver: bridge
+
+volumes:
+  prometheus_data:
+  grafana_data:

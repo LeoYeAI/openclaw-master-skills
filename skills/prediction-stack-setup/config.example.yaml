@@ -1,0 +1,93 @@
+# OpenClaw Prediction Market Trading Stack — Configuration Template
+#
+# Copy this file to ~/.openclaw/config.yaml and fill in your credentials.
+# Lines marked REQUIRED must be set. Lines marked OPTIONAL enhance the stack.
+#
+# CODEX: reconciled this template with the current public runtime defaults.
+
+# ═══════════════════════════════════════════════════════
+# REQUIRED — Kalshi API (free at kalshi.com)
+# ═══════════════════════════════════════════════════════
+
+kalshi:
+  enabled: true
+  api_key_id: "YOUR_KALSHI_KEY_ID"                    # Settings → API Keys on kalshi.com
+  private_key_file: "~/.openclaw/keys/kalshi-secret.pem"  # chmod 600 this file
+
+anthropic:
+  api_key: "YOUR_ANTHROPIC_API_KEY"                  # Required for the reference Kalshalyst path
+
+# ═══════════════════════════════════════════════════════
+# OPTIONAL — Polygon.io (free tier at polygon.io)
+# Adds news context + economic indicators to Kalshalyst
+# ═══════════════════════════════════════════════════════
+
+polygon:
+  api_key: "YOUR_POLYGON_KEY"
+
+# ═══════════════════════════════════════════════════════
+# OPTIONAL — Ollama + Qwen (free, local inference)
+# Required for: Xpulse materiality gate, Kalshalyst fallback
+# Install: https://ollama.ai then: ollama pull qwen3:latest
+# ═══════════════════════════════════════════════════════
+
+ollama:
+  enabled: true
+  model: "qwen3:latest"
+  timeout_seconds: 60
+
+# ═══════════════════════════════════════════════════════
+# KALSHALYST — Edge detection tuning
+# Sensible defaults shown. Adjust after a week of operation.
+# ═══════════════════════════════════════════════════════
+
+kalshalyst:
+  enabled: true
+  check_interval_minutes: 60      # How often the cron job runs
+  min_volume: 50                   # Skip illiquid markets
+  min_days_to_close: 7             # Skip markets closing too soon
+  max_days_to_close: 365           # Skip markets too far out
+  max_markets_to_analyze: 50       # Claude calls per run (cost control)
+  min_edge_pct: 3.0                # Minimum edge to record
+  alert_edge_pct: 6.0              # Minimum edge to alert you
+  # Kelly sizing:
+  # kelly:
+  #   alpha: 0.25                  # Fractional Kelly multiplier (0.25 = conservative)
+  #   max_contracts_per_trade: 100
+  #   max_cost_per_trade_usd: 25.0
+  #   max_portfolio_exposure_usd: 100.0
+  #   confidence_exponent: 2.0     # Penalize low-confidence estimates
+
+# ═══════════════════════════════════════════════════════
+# XPULSE — Social signal scanning
+# Topics should match your active trading positions.
+# ═══════════════════════════════════════════════════════
+
+xpulse:
+  enabled: true
+  check_interval_minutes: 30
+  topics:                          # Replace with YOUR topics
+    - "Trump tariff"
+    - "Ukraine"
+    - "inflation CPI"
+    - "Fed rate decision"
+  min_confidence: 0.7              # Signal confidence threshold
+  materiality_gate: true           # Two-stage Qwen filtering (requires Ollama)
+  position_gate: true              # Only alert on signals matching your positions
+  max_history_entries: 200         # Dedup window
+
+# ═══════════════════════════════════════════════════════
+# PORTFOLIO DRIFT — Position monitoring
+# ═══════════════════════════════════════════════════════
+
+portfolio_drift:
+  threshold_pct: 5.0               # Alert when position moves >= this %
+  check_interval_minutes: 60
+
+# ═══════════════════════════════════════════════════════
+# PREDICTION MARKET ARBITER — Cross-platform divergence detection
+# ═══════════════════════════════════════════════════════
+
+prediction_market_arbiter:
+  divergence_threshold_pct: 10.0   # Minimum Kalshi vs Polymarket gap to alert
+  min_volume: 100                  # Skip low-volume matches

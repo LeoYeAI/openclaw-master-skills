@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Terminal Green — slide-creator</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-snap-type: y mandatory; scroll-behavior: smooth; height: 100%; }
+    body {
+      height: 100%; overflow-x: hidden;
+      background: #0d1117;
+      font-family: 'JetBrains Mono', 'Courier New', monospace;
+      color: #c9d1d9;
+    }
+
+    /* CRT scanline overlay */
+    body::before {
+      content: '';
+      position: fixed; inset: 0; z-index: 9999;
+      pointer-events: none;
+      background: repeating-linear-gradient(
+        0deg,
+        transparent, transparent 2px,
+        rgba(0,255,65,0.01) 2px, rgba(0,255,65,0.01) 4px
+      );
+    }
+    /* CRT edge vignette */
+    body::after {
+      content: '';
+      position: fixed; inset: 0; z-index: 9998;
+      pointer-events: none;
+      box-shadow: inset 0 0 120px rgba(0,0,0,0.6), inset 0 0 40px rgba(0,255,65,0.04);
+    }
+
+    .slide {
+      width: 100vw; height: 100vh; height: 100dvh;
+      scroll-snap-align: start; overflow: hidden;
+      position: relative; display: flex; flex-direction: column;
+      background: #0d1117;
+      padding: clamp(2rem, 5vw, 4rem);
+      border-bottom: 1px solid rgba(57,211,83,0.15);
+    }
+
+    /* Progress bar */
+    #progress {
+      position: fixed; top: 0; left: 0; height: 2px;
+      background: #39d353; z-index: 1000;
+      transition: width 0.4s ease;
+      box-shadow: 0 0 8px #39d353;
+    }
+
+    /* Nav dots */
+    #nav-dots {
+      position: fixed; right: 1.5rem; top: 50%; transform: translateY(-50%);
+      display: flex; flex-direction: column; gap: 0.6rem; z-index: 1000;
+    }
+    .dot {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.7rem; color: rgba(57,211,83,0.3);
+      cursor: pointer; transition: color 0.2s;
+      line-height: 1;
+    }
+    .dot.active { color: #39d353; text-shadow: 0 0 6px #39d353; }
+
+    /* Edit mode */
+    #edit-indicator {
+      position: fixed; bottom: 1rem; right: 1rem; z-index: 1000;
+      font-family: 'JetBrains Mono', monospace; font-size: 0.65rem;
+      color: #39d353; background: rgba(57,211,83,0.1);
+      border: 1px solid rgba(57,211,83,0.3);
+      padding: 0.25rem 0.5rem; display: none;
+    }
+    body.edit-mode #edit-indicator { display: block; }
+    body.edit-mode [contenteditable] { outline: 1px dashed rgba(57,211,83,0.5); }
+    #hotzone {
+      position: fixed; top: 0; left: 0; width: 80px; height: 80px;
+      z-index: 999; cursor: pointer;
+    }
+
+    /* Animations */
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0; }
+    }
+    @keyframes lineReveal {
+      from { opacity: 0; max-height: 0; }
+      to { opacity: 1; max-height: 3rem; }
+    }
+    @keyframes glow {
+      0%, 100% { text-shadow: 0 0 8px rgba(57,211,83,0.6); }
+      50% { text-shadow: 0 0 20px rgba(57,211,83,0.9), 0 0 40px rgba(57,211,83,0.4); }
+    }
+
+    .cursor {
+      display: inline-block; color: #39d353;
+      animation: blink 1s step-end infinite;
+    }
+
+    /* Reveal stagger */
+    .reveal { opacity: 0; transform: translateY(8px); transition: opacity 0.3s ease, transform 0.3s ease; }
+    .slide.visible .reveal { opacity: 1; transform: none; }
+    .slide.visible .reveal:nth-child(1) { transition-delay: 0.05s; }
+    .slide.visible .reveal:nth-child(2) { transition-delay: 0.1s; }
+    .slide.visible .reveal:nth-child(3) { transition-delay: 0.15s; }
+    .slide.visible .reveal:nth-child(4) { transition-delay: 0.2s; }
+    .slide.visible .reveal:nth-child(5) { transition-delay: 0.25s; }
+    .slide.visible .reveal:nth-child(6) { transition-delay: 0.3s; }
+    .slide.visible .reveal:nth-child(7) { transition-delay: 0.35s; }
+
+    /* Common elements */
+    .slide-num {
+      font-size: clamp(0.6rem, 1.2vw, 0.75rem);
+      color: #39d353; letter-spacing: 0.1em;
+      margin-bottom: clamp(1.5rem, 4vh, 3rem);
+    }
+    .label {
+      font-size: clamp(0.6rem, 1vw, 0.7rem);
+      color: #39d353; letter-spacing: 0.12em;
+      margin-bottom: 0.6rem; opacity: 0.8;
+    }
+    .rule { border: none; border-top: 1px solid rgba(57,211,83,0.2); margin: clamp(1rem, 2vh, 1.5rem) 0; }
+
+    h1 {
+      font-family: 'JetBrains Mono', monospace; font-weight: 700;
+      font-size: clamp(2.5rem, 7vw, 5rem);
+      color: #39d353; letter-spacing: -0.02em;
+      animation: glow 3s ease-in-out infinite;
+      line-height: 1;
+    }
+    h2 {
+      font-family: 'JetBrains Mono', monospace; font-weight: 700;
+      font-size: clamp(1.4rem, 3.5vw, 2.5rem);
+      color: #c9d1d9; line-height: 1.2;
+    }
+    h2 span.accent { color: #39d353; }
+    p {
+      font-size: clamp(0.85rem, 1.5vw, 1rem);
+      color: #8b949e; line-height: 1.7;
+      max-width: 64ch;
+    }
+
+    .stat-row {
+      display: flex; gap: clamp(1.5rem, 4vw, 3rem);
+      margin-top: clamp(1rem, 2vh, 2rem);
+      flex-wrap: wrap;
+    }
+    .stat { display: flex; flex-direction: column; }
+    .stat-val {
+      font-size: clamp(1.2rem, 2.5vw, 1.8rem);
+      color: #58a6ff; font-weight: 700;
+    }
+    .stat-label {
+      font-size: 0.65rem; color: #39d353; opacity: 0.7; letter-spacing: 0.1em;
+    }
+
+    /* Boot sequence — title slide only */
+    .boot-lines { margin: clamp(1rem, 2vh, 2rem) 0; }
+    .boot-line {
+      font-size: clamp(0.75rem, 1.3vw, 0.9rem);
+      color: #8b949e; line-height: 2;
+      overflow: hidden; max-height: 0; opacity: 0;
+    }
+    .boot-line .ok { color: #39d353; }
+    .slide.visible .boot-line:nth-child(1) { animation: lineReveal 0.3s ease forwards 0.3s; }
+    .slide.visible .boot-line:nth-child(2) { animation: lineReveal 0.3s ease forwards 0.8s; }
+    .slide.visible .boot-line:nth-child(3) { animation: lineReveal 0.3s ease forwards 1.3s; }
+    .slide.visible .boot-line:nth-child(4) { animation: lineReveal 0.3s ease forwards 1.8s; }
+    .main-title { opacity: 0; transition: opacity 0.5s ease 2.3s; }
+    .slide.visible .main-title { opacity: 1; }
+
+    /* Terminal block */
+    .terminal-block {
+      background: #161b22;
+      border: 1px solid rgba(57,211,83,0.2);
+      border-left: 3px solid #39d353;
+      padding: clamp(0.8rem, 2vw, 1.2rem) clamp(1rem, 2vw, 1.5rem);
+      margin: clamp(0.8rem, 1.5vh, 1.2rem) 0;
+      font-size: clamp(0.7rem, 1.2vw, 0.85rem);
+      color: #c9d1d9; line-height: 1.8;
+    }
+    .terminal-block .prompt { color: #39d353; }
+    .terminal-block .cmd { color: #58a6ff; }
+    .terminal-block .comment { color: #484f58; }
+
+    /* Pain points */
+    .pain-list { list-style: none; margin: clamp(1rem, 2vh, 1.5rem) 0; }
+    .pain-list li {
+      font-size: clamp(0.8rem, 1.4vw, 0.95rem);
+      color: #8b949e; padding: 0.6rem 0;
+      border-bottom: 1px solid rgba(57,211,83,0.1);
+      display: flex; gap: 0.8rem; line-height: 1.5;
+    }
+    .pain-list li::before { content: '✗'; color: #f85149; flex-shrink: 0; }
+
+    /* Steps */
+    .steps { display: flex; flex-direction: column; gap: clamp(0.8rem, 1.5vh, 1.2rem); margin-top: clamp(1rem, 2vh, 1.5rem); }
+    .step {
+      display: flex; align-items: flex-start; gap: 1rem;
+      background: #161b22; border: 1px solid rgba(57,211,83,0.15);
+      padding: clamp(0.7rem, 1.5vw, 1rem) clamp(1rem, 2vw, 1.4rem);
+    }
+    .step-num { color: #39d353; font-weight: 700; flex-shrink: 0; font-size: clamp(0.8rem, 1.3vw, 1rem); }
+    .step-text { font-size: clamp(0.75rem, 1.2vw, 0.9rem); color: #c9d1d9; line-height: 1.5; }
+    .step-text .accent { color: #58a6ff; }
+
+    /* Preset grid */
+    .preset-grid {
+      display: flex; flex-wrap: wrap; gap: 0.5rem;
+      margin-top: clamp(1rem, 2vh, 1.5rem);
+    }
+    .preset-tag {
+      font-size: clamp(0.6rem, 1vw, 0.75rem);
+      color: #39d353; border: 1px solid rgba(57,211,83,0.3);
+      padding: 0.3rem 0.7rem; background: rgba(57,211,83,0.05);
+      letter-spacing: 0.05em;
+    }
+
+    /* Feature grid */
+    .feature-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: clamp(0.8rem, 1.5vw, 1.2rem); margin-top: clamp(1rem, 2vh, 1.5rem);
+    }
+    .feature-card {
+      background: #161b22; border: 1px solid rgba(57,211,83,0.15);
+      border-top: 2px solid #39d353;
+      padding: clamp(0.8rem, 1.5vw, 1.2rem);
+    }
+    .feature-title { color: #39d353; font-size: clamp(0.7rem, 1.1vw, 0.85rem); margin-bottom: 0.4rem; font-weight: 700; }
+    .feature-desc { color: #8b949e; font-size: clamp(0.65rem, 1vw, 0.78rem); line-height: 1.6; }
+
+    /* CTA */
+    .cta-block {
+      margin-top: clamp(1.5rem, 3vh, 2.5rem);
+      background: rgba(57,211,83,0.08);
+      border: 1px solid rgba(57,211,83,0.4);
+      padding: clamp(1rem, 2.5vw, 2rem) clamp(1.5rem, 3vw, 2.5rem);
+      display: inline-block;
+    }
+    .cta-cmd {
+      font-size: clamp(1.5rem, 3.5vw, 2.5rem);
+      color: #39d353; font-weight: 700;
+      animation: glow 2s ease-in-out infinite;
+    }
+    .cta-sub { font-size: clamp(0.65rem, 1vw, 0.8rem); color: #8b949e; margin-top: 0.5rem; }
+
+    /* How it works */
+    .how-steps {
+      display: flex; flex-direction: column; gap: clamp(1rem, 2vh, 1.5rem);
+      margin-top: clamp(1rem, 2vh, 1.5rem); max-width: 650px;
+    }
+    .how-step {
+      display: grid; grid-template-columns: 2.5rem 1fr;
+      gap: 1rem; align-items: start;
+    }
+    .how-num {
+      font-size: clamp(1rem, 2vw, 1.4rem); font-weight: 700;
+      color: #39d353; padding-top: 0.1rem;
+    }
+    .how-content h3 { color: #c9d1d9; font-size: clamp(0.85rem, 1.4vw, 1rem); margin-bottom: 0.25rem; }
+    .how-content p { font-size: clamp(0.7rem, 1.1vw, 0.82rem); color: #484f58; }
+  </style>
+</head>
+<body>
+
+<div id="progress"></div>
+
+<div id="nav-dots">
+  <span class="dot active" data-idx="0">●</span>
+  <span class="dot" data-idx="1">●</span>
+  <span class="dot" data-idx="2">●</span>
+  <span class="dot" data-idx="3">●</span>
+  <span class="dot" data-idx="4">●</span>
+  <span class="dot" data-idx="5">●</span>
+  <span class="dot" data-idx="6">●</span>
+  <span class="dot" data-idx="7">●</span>
+</div>
+
+<div id="hotzone"></div>
+<div id="edit-indicator">&gt; EDIT_MODE [Ctrl+S to save]</div>
+
+<!-- SLIDE 01: Cover -->
+<section class="slide" id="slide-0">
+  <div class="slide-num reveal">[01/08] &gt; BOOT_SEQUENCE</div>
+
+  <div class="boot-lines">
+    <div class="boot-line">&gt; initializing slide-creator v1.5.0...</div>
+    <div class="boot-line">&gt; loading 19 design presets... <span class="ok">[OK]</span></div>
+    <div class="boot-line">&gt; zero dependencies confirmed... <span class="ok">[OK]</span></div>
+    <div class="boot-line">&gt; ready.<span class="cursor">|</span></div>
+  </div>
+
+  <div class="main-title">
+    <div class="label">&gt; SYSTEM_NAME</div>
+    <h1>slide-creator</h1>
+    <hr class="rule">
+    <p style="color:#8b949e; font-size: clamp(0.8rem,1.4vw,1rem); margin-bottom: clamp(1rem,2vh,1.5rem);">
+      # Zero-dependency HTML presentations<br>
+      # for Claude Code &amp; OpenClaw
+    </p>
+    <div class="stat-row">
+      <div class="stat">
+        <span class="stat-val">19</span>
+        <span class="stat-label">&gt; PRESETS</span>
+      </div>
+      <div class="stat">
+        <span class="stat-val">0</span>
+        <span class="stat-label">&gt; DEPENDENCIES</span>
+      </div>
+      <div class="stat">
+        <span class="stat-val">∞</span>
+        <span class="stat-label">&gt; SLIDES</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SLIDE 02: The Problem -->
+<section class="slide" id="slide-1">
+  <div class="slide-num reveal">[02/08] &gt; PROBLEM_STATEMENT</div>
+  <div class="label reveal">&gt; KNOWN_ISSUES</div>
+  <h2 class="reveal">Presentations shouldn't <span class="accent">require</span><br>a build system</h2>
+  <hr class="rule reveal">
+  <ul class="pain-list">
+    <li class="reveal">
+      <span>// Complex toolchain: npm install, webpack config, 300MB node_modules just to ship some slides</span>
+    </li>
+    <li class="reveal">
+      <span>// Generic output: every AI deck looks the same — Inter font, purple gradients, zero personality</span>
+    </li>
+    <li class="reveal">
+      <span>// No ownership: closed platforms, export locks, monthly fees for your own content</span>
+    </li>
+  </ul>
+  <div class="terminal-block reveal">
+    <span class="comment"># what you actually want</span><br>
+    <span class="prompt">$</span> <span class="cmd">/slide-creator</span>  <span class="comment"># done.</span>
+  </div>
+</section>
+
+<!-- SLIDE 03: Show Don't Tell -->
+<section class="slide" id="slide-2">
+  <div class="slide-num reveal">[03/08] &gt; DISCOVERY_PROTOCOL</div>
+  <div class="label reveal">&gt; FEATURE</div>
+  <h2 class="reveal">Style discovery that <span class="accent">actually</span> works</h2>
+  <hr class="rule reveal">
+  <p class="reveal" style="margin-bottom: clamp(1rem,2vh,1.5rem);">
+    You can't describe design preferences in words. slide-creator generates 3 visual previews — you react, not describe.
+  </p>
+  <div class="steps">
+    <div class="step reveal">
+      <span class="step-num">01&gt;</span>
+      <div class="step-text">Ask mood → <span class="accent">system queries your intent</span></div>
+    </div>
+    <div class="step reveal">
+      <span class="step-num">02&gt;</span>
+      <div class="step-text">Generate 3 mini previews → <span class="accent">rendered, not described</span></div>
+    </div>
+    <div class="step reveal">
+      <span class="step-num">03&gt;</span>
+      <div class="step-text">Pick the one that <span class="accent">feels right</span> → proceed</div>
+    </div>
+  </div>
+</section>
+
+<!-- SLIDE 04: 19 Presets -->
+<section class="slide" id="slide-3">
+  <div class="slide-num reveal">[04/08] &gt; PRESET_REGISTRY</div>
+  <div class="label reveal">&gt; LOADED_MODULES</div>
+  <h2 class="reveal">19 curated styles.<br><span class="accent">No generic AI aesthetics.</span></h2>
+  <hr class="rule reveal">
+  <div class="preset-grid reveal">
+    <span class="preset-tag">Bold Signal</span>
+    <span class="preset-tag">Electric Studio</span>
+    <span class="preset-tag">Creative Voltage</span>
+    <span class="preset-tag">Dark Botanical</span>
+    <span class="preset-tag">Blue Sky</span>
+    <span class="preset-tag">Notebook Tabs</span>
+    <span class="preset-tag">Pastel Geometry</span>
+    <span class="preset-tag">Split Pastel</span>
+    <span class="preset-tag">Vintage Editorial</span>
+    <span class="preset-tag">Neon Cyber</span>
+    <span class="preset-tag" style="border-color: #39d353; color:#39d353; background: rgba(57,211,83,0.12);">Terminal Green ◀</span>
+    <span class="preset-tag">Swiss Modern</span>
+    <span class="preset-tag">Paper &amp; Ink</span>
+    <span class="preset-tag">Aurora Mesh</span>
+    <span class="preset-tag">Enterprise Dark</span>
+    <span class="preset-tag">Glassmorphism</span>
+    <span class="preset-tag">Neo-Brutalism</span>
+    <span class="preset-tag">Japanese Zen</span>
+    <span class="preset-tag">Data Story</span>
+  </div>
+  <p class="reveal" style="margin-top: clamp(1rem,2vh,1.5rem);">
+    <span style="color:#39d353;">// 19 entries loaded.</span> Each ships as a complete, self-contained HTML file.
+  </p>
+</section>
+
+<!-- SLIDE 05: How It Works -->
+<section class="slide" id="slide-4">
+  <div class="slide-num reveal">[05/08] &gt; EXECUTION_FLOW</div>
+  <div class="label reveal">&gt; HOW_IT_WORKS</div>
+  <h2 class="reveal">Three commands.<br><span class="accent">One presentation.</span></h2>
+  <hr class="rule reveal">
+  <div class="how-steps">
+    <div class="how-step reveal">
+      <span class="how-num">01</span>
+      <div class="how-content">
+        <h3><span style="color:#39d353;">/slide-creator</span> — Answer 4 questions</h3>
+        <p>Topic, audience, mood, duration. System does the rest.</p>
+      </div>
+    </div>
+    <div class="how-step reveal">
+      <span class="how-num">02</span>
+      <div class="how-content">
+        <h3>Pick your style — React to 3 visual previews</h3>
+        <p>No describing aesthetics in text. See &gt; choose &gt; done.</p>
+      </div>
+    </div>
+    <div class="how-step reveal">
+      <span class="how-num">03</span>
+      <div class="how-content">
+        <h3>Open your presentation — Arrow keys · Space · Swipe</h3>
+        <p>Pure HTML. Works offline. No server. No runtime.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SLIDE 06: Key Features -->
+<section class="slide" id="slide-5">
+  <div class="slide-num reveal">[06/08] &gt; FEATURE_FLAGS</div>
+  <div class="label reveal">&gt; CAPABILITIES</div>
+  <h2 class="reveal">Built for <span class="accent">real use.</span></h2>
+  <hr class="rule reveal">
+  <div class="feature-grid">
+    <div class="feature-card reveal">
+      <div class="feature-title">&gt; VIEWPORT_FIT</div>
+      <div class="feature-desc">Every slide fits exactly 100vh. No scrolling ever. Every layout is designed for the viewport.</div>
+    </div>
+    <div class="feature-card reveal">
+      <div class="feature-title">&gt; INLINE_EDIT</div>
+      <div class="feature-desc">Press E, click any text, Ctrl+S to save. Edit mode built into every presentation.</div>
+    </div>
+    <div class="feature-card reveal">
+      <div class="feature-title">&gt; PPTX_EXPORT</div>
+      <div class="feature-desc"><code>/slide-creator --export pptx</code> — Converts to PowerPoint when the boardroom demands it.</div>
+    </div>
+    <div class="feature-card reveal">
+      <div class="feature-title">&gt; TWO_STAGE</div>
+      <div class="feature-desc"><code>--plan</code> creates outline first. <code>--generate</code> produces final HTML. Review before committing.</div>
+    </div>
+  </div>
+</section>
+
+<!-- SLIDE 07: Install -->
+<section class="slide" id="slide-6">
+  <div class="slide-num reveal">[07/08] &gt; INSTALL_SEQUENCE</div>
+  <div class="label reveal">&gt; SETUP</div>
+  <h2 class="reveal">Two lines.<br><span class="accent">Zero setup.</span></h2>
+  <hr class="rule reveal">
+  <div class="label reveal" style="margin-top: clamp(1rem,2vh,1.5rem);">&gt; CLAUDE_CODE</div>
+  <div class="terminal-block reveal">
+    <span class="prompt">$</span> <span class="cmd">git clone https://github.com/kaisersong/slide-creator \</span><br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="cmd">~/.claude/skills/slide-creator</span><br>
+    <span class="comment"># that's it. restart Claude Code.</span>
+  </div>
+  <div class="label reveal">&gt; OPENCLAW</div>
+  <div class="terminal-block reveal">
+    <span class="prompt">$</span> <span class="cmd">clawhub install html-slide-creator</span><br>
+    <span class="comment"># one command. available immediately.</span>
+  </div>
+</section>
+
+<!-- SLIDE 08: Get Started -->
+<section class="slide" id="slide-7">
+  <div class="slide-num reveal">[08/08] &gt; READY</div>
+  <div class="label reveal">&gt; EXECUTE</div>
+  <h2 class="reveal" style="color:#c9d1d9;">Run it.<span class="cursor">|</span></h2>
+  <hr class="rule reveal">
+  <div class="cta-block reveal">
+    <div class="cta-cmd">/slide-creator</div>
+    <div class="cta-sub">Works with Claude Code and OpenClaw.</div>
+  </div>
+  <p class="reveal" style="margin-top: clamp(1.5rem,3vh,2rem);">
+    <span style="color:#39d353;"># 19 presets loaded. 0 dependencies. ∞ slides.</span><br>
+    <span style="color:#484f58;"># Your presentation. Your file. No platform lock-in.</span>
+  </p>
+</section>
+
+<script>
+  const slides = Array.from(document.querySelectorAll('.slide'));
+  const dots = Array.from(document.querySelectorAll('.dot'));
+  const progress = document.getElementById('progress');
+  let cur = 0;
+  let editMode = false;
+
+  // IntersectionObserver
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+        const idx = slides.indexOf(entry.target);
+        if (idx !== -1) updateNav(idx);
+      }
+    });
+  }, { threshold: 0.6 });
+  slides.forEach(s => observer.observe(s));
+
+  function updateNav(idx) {
+    cur = idx;
+    dots.forEach((d, i) => d.classList.toggle('active', i === idx));
+    progress.style.width = ((idx + 1) / slides.length * 100) + '%';
+  }
+
+  function goTo(idx) {
+    if (idx < 0 || idx >= slides.length) return;
+    slides[idx].scrollIntoView({ behavior: 'smooth' });
+  }
+
+  // Dot nav
+  dots.forEach(d => d.addEventListener('click', () => goTo(+d.dataset.idx)));
+
+  // Keyboard
+  document.addEventListener('keydown', e => {
+    if (editMode && (e.key === 's' || e.key === 'S') && (e.ctrlKey || e.metaKey)) {
+      e.preventDefault(); saveFile(); return;
+    }
+    if (editMode && e.key === 'Escape') { toggleEdit(); return; }
+    if (document.activeElement.isContentEditable) return;
+    if (e.key === 'ArrowDown' || e.key === ' ') { e.preventDefault(); goTo(cur + 1); }
+    if (e.key === 'ArrowUp') { e.preventDefault(); goTo(cur - 1); }
+    if (e.key === 'e' || e.key === 'E') toggleEdit();
+  });
+
+  // Wheel — debounce-reset
+  let wheelLocked = false, wheelTimer = null;
+  document.addEventListener('wheel', e => {
+    clearTimeout(wheelTimer);
+    if (!wheelLocked) { wheelLocked = true; e.deltaY > 0 ? goTo(cur + 1) : goTo(cur - 1); }
+    wheelTimer = setTimeout(() => { wheelLocked = false; }, 180);
+  }, { passive: true });
+
+  // Touch swipe
+  let touchStart = null;
+  document.addEventListener('touchstart', e => { touchStart = e.touches[0].clientY; }, { passive: true });
+  document.addEventListener('touchend', e => {
+    if (!touchStart) return;
+    const diff = touchStart - e.changedTouches[0].clientY;
+    if (Math.abs(diff) > 50) { diff > 0 ? goTo(cur + 1) : goTo(cur - 1); }
+    touchStart = null;
+  });
+
+  // Edit mode
+  function toggleEdit() {
+    editMode = !editMode;
+    document.body.classList.toggle('edit-mode', editMode);
+    slides.forEach(s => {
+      s.querySelectorAll('h1,h2,h3,p,.stat-val,.cta-cmd,.feature-desc,.step-text,.how-content h3,.how-content p').forEach(el => {
+        el.contentEditable = editMode ? 'true' : 'false';
+      });
+    });
+  }
+
+  document.getElementById('hotzone').addEventListener('click', toggleEdit);
+
+  // Save
+  async function saveFile() {
+    const html = '<!DOCTYPE html>\n' + document.documentElement.outerHTML;
+    if (window.showSaveFilePicker) {
+      try {
+        const h = await window.showSaveFilePicker({ suggestedName: 'terminal-green.html', types: [{ accept: { 'text/html': ['.html'] } }] });
+        const w = await h.createWritable(); await w.write(html); await w.close();
+      } catch(e) { if (e.name !== 'AbortError') fallbackSave(html); }
+    } else fallbackSave(html);
+  }
+  function fallbackSave(html) {
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(new Blob([html], { type: 'text/html' }));
+    a.download = 'terminal-green.html'; a.click();
+  }
+</script>
+</body>
+</html>

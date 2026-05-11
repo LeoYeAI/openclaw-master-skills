@@ -1,0 +1,283 @@
+# CFASuperAppBase — abstract base contract for building CFA-based SuperApps
+# Provides a simplified callback API for reacting to CFA flow lifecycle events.
+# Instead of implementing the raw ISuperApp before/after hooks, developers
+# override four intuitive internal hooks: onFlowCreated, onFlowUpdated,
+# onInFlowDeleted, and onOutFlowDeleted.
+#
+# This is an abstract contract — it is NOT deployed standalone.  Developers
+# inherit from it and deploy their own SuperApp.  No deployment addresses.
+#
+# The before/after ISuperApp callbacks are implemented internally and should
+# NOT be overridden by inheriting contracts.  They relay data (previous flow
+# rate, last updated timestamp) to the simplified onX hooks.
+#
+# Important: the "terminated" callbacks (delete) are NOT allowed to revert.
+# Reverting in a delete callback causes the SuperApp to be "jailed" (defunct).
+# Other jailing causes: corrupted context, exceeded app credit, non-whitelisted
+# composite apps. See guides/super-apps.md for the full list and explanation.
+#
+meta:
+  name: CFASuperAppBase
+  version: v1
+  notes:
+    - "Gotcha: When a Super App relays an incoming flow by opening outgoing streams in its callback, the deposits for those outgoing streams are covered by app credit but ultimately backed by the original sender via \"owed deposit\". The sender's total locked capital roughly doubles (their deposit + owed deposit). Fan-out (1 incoming → N outgoing) amplifies this further."
+  source:
+    - https://raw.githubusercontent.com/superfluid-org/protocol-monorepo/refs/heads/dev/packages/ethereum-contracts/contracts/apps/CFASuperAppBase.sol
+    - https://raw.githubusercontent.com/superfluid-org/protocol-monorepo/refs/heads/dev/packages/ethereum-contracts/contracts/apps/SuperAppBase.sol
+  implements: [ISuperApp]
+  abstract: true
+  note: >
+    Abstract base contract for SuperApps that react to CFA (Constant Flow
+    Agreement) flow events.  Inheriting contracts override the onX hooks to
+    implement custom logic.  The constructor disables GDA pool auto-connect.
+    After deployment, the app must be registered with the host via
+    selfRegister() or host.registerApp().
+
+# == Constants & Immutables ==
+
+CFAV1_TYPE:
+  # Public constant — keccak256 hash identifying the CFA agreement type.
+  # Value: keccak256("org.superfluid-finance.agreements.ConstantFlowAgreement.v1")
+  mutability: view
+  access: anyone
+  inputs: []
+  outputs:
+    - "": bytes32
+
+HOST:
+  # Public immutable — the Superfluid Host this SuperApp is registered with.
+  # Set in the constructor.
+  mutability: view
+  access: anyone
+  inputs: []
+  outputs:
+    - "": ISuperfluid
+
+# == Setup ==
+
+selfRegister:
+  # Registers the SuperApp with its Superfluid Host, activating the
+  # specified callbacks.  Must be called after deployment (or use
+  # host.registerApp() externally instead).
+  #
+  # On networks with permissioned SuperApp registration, self-registration
+  # requires the tx.origin (EOA) to be whitelisted as a deployer.
+  # If using a whitelisted factory, call host.registerApp(address) instead.
+  mutability: nonpayable
+  access: anyone
+  inputs:
+    - activateOnCreated: bool   # enable onFlowCreated callback
+    - activateOnUpdated: bool   # enable onFlowUpdated callback
+    - activateOnDeleted: bool   # enable onInFlowDeleted / onOutFlowDeleted callbacks
+
+getConfigWord:
+  # Computes the configWord for app registration without self-registering.
+  # Useful when a factory calls host.registerApp(app, configWord) on behalf
+  # of the SuperApp.
+  #
+  # The configWord encodes APP_LEVEL_FINAL and NOOP flags for disabled
+  # callbacks.  BEFORE_AGREEMENT_CREATED is always disabled (set to NOOP).
+  notes:
+    - "Gotcha: CFASuperAppBase always uses APP_LEVEL_FINAL. FINAL apps cannot call other Super Apps downstream. To compose with other Super Apps, use APP_LEVEL_SECOND and call host.allowCompositeApp(targetApp)."
+  mutability: pure
+  access: anyone
+  inputs:
+    - activateOnCreated: bool
+    - activateOnUpdated: bool
+    - activateOnDeleted: bool
+  outputs:
+    - configWord: uint256
+
+isAcceptedSuperToken:
+  # Optional positive filter — override to restrict which Super Tokens
+  # the SuperApp accepts.  Default implementation returns true for all tokens.
+  # If a non-accepted token is streamed to the app, the callback reverts
+  # with NotAcceptedSuperToken.
+  mutability: view
+  access: anyone
+  inputs:
+    - superToken: ISuperToken
+  outputs:
+    - "": bool
+
+# == Developer Hooks (internal virtual — override in your SuperApp) ==
+# These functions are NOT on the ABI.  They are internal virtual methods
+# that inheriting SuperApps override to implement custom logic.
+# Documented here because they are the primary developer API.
+
+onFlowCreated:
+  # Called when a new CFA flow to this SuperApp is created.
+  # Override to implement custom logic (e.g., open a counter-flow).
+  #
+  # Access ctx.userData via host.decodeCtx(ctx).userData.
+  visibility: internal virtual
+  inputs:
+    - superToken: ISuperToken
+    - sender: address           # flow sender
+    - flowRate: int96           # new flow rate (wei/second)
+    - ctx: bytes                # Superfluid context
+  outputs:
+    - newCtx: bytes
+
+onFlowUpdated:
+  # Called when an existing CFA flow to this SuperApp is updated
+  # (flow rate changed).  Provides the previous flow rate and timestamp
+  # for comparison.
+  visibility: internal virtual
+  inputs:
+    - superToken: ISuperToken
+    - sender: address           # flow sender
+    - flowRate: int96           # new flow rate
+    - previousFlowRate: int96   # flow rate before this update
+    - lastUpdated: uint256      # timestamp of previous flow update
+    - ctx: bytes
+  outputs:
+    - newCtx: bytes
+
+onInFlowDeleted:
+  # Called when an incoming flow to this SuperApp is deleted.
+  # WARNING: This callback MUST NOT revert — reverting causes the
+  # SuperApp to be jailed (become defunct).
+  visibility: internal virtual
+  inputs:
+    - superToken: ISuperToken
+    - sender: address           # the party that was sending the flow
+    - previousFlowRate: int96   # flow rate before deletion
+    - lastUpdated: uint256      # timestamp of last update before deletion
+    - ctx: bytes
+  outputs:
+    - newCtx: bytes
+
+onOutFlowDeleted:
+  # Called when a receiver deletes an outgoing flow FROM this SuperApp.
+  # Not triggered when the SuperApp itself deletes its own outgoing flow.
+  #
+  # Use case: reopen "sticky" flows that recipients cannot cancel.
+  #
+  # WARNING: This callback MUST NOT revert — reverting causes jailing.
+  #
+  # Safe to leave unoverridden if the SuperApp has no outgoing flows or
+  # doesn't need to react to receiver-initiated deletions.
+  # In theory could be triggered by liquidation, but that implies
+  # insolvency and the app would already be jailed.
+  visibility: internal virtual
+  inputs:
+    - superToken: ISuperToken
+    - receiver: address         # the receiver who deleted the outgoing flow
+    - previousFlowRate: int96   # flow rate before deletion
+    - lastUpdated: uint256      # timestamp of last update before deletion
+    - ctx: bytes
+  outputs:
+    - newCtx: bytes
+
+# == ISuperApp Callbacks (called by Host — do NOT override) ==
+# These implement the ISuperApp interface.  They are called by the Host
+# during agreement operations and relay data to the onX hooks above.
+# They should NOT be overridden when using CFASuperAppBase.
+
+beforeAgreementCreated:
+  # Empty implementation — always returns "0x".
+  # The BEFORE_AGREEMENT_CREATED_NOOP flag is always set, so this is
+  # never actually called by the Host.
+  mutability: pure
+  access: host-only
+  inputs:
+    - superToken: ISuperToken
+    - agreementClass: address
+    - agreementId: bytes32
+    - agreementData: bytes
+    - ctx: bytes
+  outputs:
+    - cbdata: bytes
+
+afterAgreementCreated:
+  # Decodes the flow sender from agreementData, reads the current flow
+  # rate, then delegates to onFlowCreated.
+  mutability: nonpayable
+  access: host-only
+  inputs:
+    - superToken: ISuperToken
+    - agreementClass: address
+    - agreementId: bytes32
+    - agreementData: bytes
+    - cbdata: bytes
+    - ctx: bytes
+  outputs:
+    - newCtx: bytes
+  errors: [UnauthorizedHost, NotAcceptedSuperToken]
+
+beforeAgreementUpdated:
+  # Reads the current flow rate and lastUpdated timestamp, encodes them
+  # as cbdata to pass to afterAgreementUpdated.
+  mutability: view
+  access: host-only
+  inputs:
+    - superToken: ISuperToken
+    - agreementClass: address
+    - agreementId: bytes32
+    - agreementData: bytes
+    - ctx: bytes
+  outputs:
+    - cbdata: bytes
+  errors: [UnauthorizedHost, NotAcceptedSuperToken]
+
+afterAgreementUpdated:
+  # Decodes previousFlowRate and lastUpdated from cbdata, reads the new
+  # flow rate, then delegates to onFlowUpdated.
+  mutability: nonpayable
+  access: host-only
+  inputs:
+    - superToken: ISuperToken
+    - agreementClass: address
+    - agreementId: bytes32
+    - agreementData: bytes
+    - cbdata: bytes
+    - ctx: bytes
+  outputs:
+    - newCtx: bytes
+  errors: [UnauthorizedHost, NotAcceptedSuperToken]
+
+beforeAgreementTerminated:
+  # Reads the flow rate and lastUpdated for the flow being terminated,
+  # encodes them as cbdata.  Does NOT revert on failed checks — returns
+  # empty "0x" instead (termination callbacks must not revert).
+  mutability: view
+  access: host-only
+  inputs:
+    - superToken: ISuperToken
+    - agreementClass: address
+    - agreementId: bytes32
+    - agreementData: bytes
+    - ctx: bytes
+  outputs:
+    - cbdata: bytes
+
+afterAgreementTerminated:
+  # Determines if the deleted flow was incoming or outgoing by comparing
+  # the receiver to address(this), then delegates to onInFlowDeleted or
+  # onOutFlowDeleted respectively.
+  # Does NOT revert on failed checks — returns ctx unchanged instead.
+  mutability: nonpayable
+  access: host-only
+  inputs:
+    - superToken: ISuperToken
+    - agreementClass: address
+    - agreementId: bytes32
+    - agreementData: bytes
+    - cbdata: bytes
+    - ctx: bytes
+  outputs:
+    - newCtx: bytes
+
+# == Errors ==
+
+errors:
+
+  # -- Access Control --
+  - UnauthorizedHost                # callback caller is not the Superfluid Host
+
+  # -- Implementation --
+  - NotImplemented                  # required callback not overridden by the SuperApp
+
+  # -- Token Filtering --
+  - NotAcceptedSuperToken           # non-accepted Super Token streamed to this SuperApp

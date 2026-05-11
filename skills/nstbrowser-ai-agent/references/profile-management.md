@@ -1,0 +1,675 @@
+# Profile Management Guide
+
+Comprehensive guide for managing Nstbrowser profiles with nstbrowser-ai-agent.
+
+## Table of Contents
+
+- [Profile Concepts](#profile-concepts)
+- [Profile Creation](#profile-creation)
+- [Profile Name vs ID](#profile-name-vs-id)
+- [Profile Organization](#profile-organization)
+- [Profile Operations](#profile-operations)
+- [Best Practices](#best-practices)
+
+## Profile Concepts
+
+### What is a Profile?
+
+A Nstbrowser profile is a complete browser environment that includes:
+
+- **Browser Fingerprint**: Unique characteristics that identify the browser
+  - Canvas fingerprint
+  - WebGL fingerprint
+  - Audio context fingerprint
+  - Font list
+  - Screen resolution
+  - Timezone
+  - Language settings
+  - Hardware concurrency
+
+- **Session Data**: Persistent browser state
+  - Cookies
+  - localStorage
+  - sessionStorage
+  - IndexedDB
+  - Service workers
+
+- **Configuration**: Browser settings
+  - User agent
+  - Platform (Windows, macOS, Linux)
+  - Kernel version (Chrome version)
+  - Proxy settings
+  - Geolocation
+
+- **Metadata**: Organization and tracking
+  - Profile name
+  - Profile ID (UUID)
+  - Group membership
+  - Tags
+  - Creation date
+  - Last launch record
+
+### Profile Components
+
+#### Fingerprint
+
+The fingerprint makes each profile unique and helps avoid detection. Nstbrowser automatically generates realistic fingerprints that match the selected platform and kernel version.
+
+**Key fingerprint components:**
+- Canvas: Unique rendering characteristics
+- WebGL: Graphics card identification
+- Fonts: Installed font list
+- Audio: Audio context fingerprint
+- Screen: Resolution and color depth
+- Navigator: Browser properties
+
+#### Cookies and Storage
+
+Profiles persist all browser storage:
+- HTTP cookies (session and persistent)
+- localStorage (key-value pairs)
+- sessionStorage (temporary storage)
+- IndexedDB (structured data)
+- Service workers (background scripts)
+
+This allows you to:
+- Stay logged in across sessions
+- Maintain shopping carts
+- Preserve user preferences
+- Keep application state
+
+#### Proxy Settings
+
+Each profile can have its own proxy configuration:
+- Proxy type (HTTP, HTTPS, SOCKS5)
+- Proxy host and port
+- Authentication credentials
+- Enable/disable toggle
+
+This enables:
+- Geo-targeting (appear from different locations)
+- IP rotation (use different IPs per profile)
+- Privacy (hide your real IP)
+- Access control (bypass restrictions)
+
+### Profile Lifecycle
+
+1. **Creation**: Profile is created with initial configuration
+2. **Configuration**: Proxy, tags, and group are set
+3. **Usage**: Browser is launched and used for automation
+4. **Persistence**: Session data is saved automatically
+5. **Reuse**: Profile is reused in future sessions
+6. **Maintenance**: Cache and cookies are cleared as needed
+7. **Deletion**: Profile is removed when no longer needed
+
+## Profile Creation
+
+### Basic Creation
+
+Create a profile with default settings:
+
+```bash
+nstbrowser-ai-agent profile create my-profile
+```
+
+This creates a profile with:
+- Random fingerprint
+- No proxy
+- Default platform (Windows)
+- Latest kernel version
+- No group or tags
+
+### Creation with Platform
+
+Specify the operating system:
+
+```bash
+nstbrowser-ai-agent profile create my-profile --platform macOS
+```
+
+**Available platforms:**
+- `Windows`: Windows 10/11
+- `macOS`: macOS 10.15+
+- `Linux`: Ubuntu/Debian
+
+### Creation with Kernel Version
+
+Specify the Chrome version:
+
+```bash
+nstbrowser-ai-agent profile create my-profile --kernel 124
+```
+
+**Kernel versions:**
+- Use recent versions (120+) for best compatibility
+- Match the version to your target website's requirements
+- Check Nstbrowser dashboard for available versions
+
+### Creation with Proxy
+
+Create a profile with proxy configuration:
+
+```bash
+nstbrowser-ai-agent profile create my-profile \
+  --proxy-host proxy.example.com \
+  --proxy-port 8080 \
+  --proxy-type http \
+  --proxy-username user \
+  --proxy-password pass
+```
+
+**Proxy types:**
+- `http`: HTTP proxy (most common)
+- `https`: HTTPS proxy (encrypted)
+- `socks5`: SOCKS5 proxy (supports UDP)
+
+### Creation with Group
+
+Create a profile in a specific group:
+
+```bash
+# First, get the group ID
+nstbrowser-ai-agent profile groups list
+
+# Then create profile with group
+nstbrowser-ai-agent profile create my-profile --group-id group-123
+```
+
+### Complete Example
+
+Create a fully configured profile:
+
+```bash
+nstbrowser-ai-agent profile create production-profile \
+  --platform Windows \
+  --kernel 124 \
+  --proxy-host proxy.example.com \
+  --proxy-port 8080 \
+  --proxy-type http \
+  --proxy-username user \
+  --proxy-password pass \
+  --group-id group-123
+```
+
+## Profile Name vs ID
+
+### Understanding the Difference
+
+**Profile Name:**
+- Human-readable identifier (e.g., "my-profile")
+- Set by you during creation
+- Can be duplicated (multiple profiles with same name)
+- Easier to remember and use
+
+**Profile ID:**
+- UUID generated by Nstbrowser (e.g., "86581051-fb0d-4c4a-b1e3-ebc1abd17174")
+- Guaranteed unique
+- Never changes
+- Better for scripts and automation
+
+### Resolution Priority
+
+When you specify a profile, nstbrowser-ai-agent uses the `--profile` flag which automatically detects whether you're providing a profile name or UUID:
+
+```bash
+# Use profile name
+nstbrowser-ai-agent --profile my-profile open example.com
+
+# Use profile UUID (auto-detected)
+nstbrowser-ai-agent --profile 86581051-fb0d-4c4a-b1e3-ebc1abd17174 open example.com
+```
+
+2. **Explicit `--profile` flag** (profile name)
+   ```bash
+   nstbrowser-ai-agent --profile my-profile open example.com
+   ```
+
+3. **`NST_PROFILE_ID` environment variable**
+   ```bash
+   export NST_PROFILE_ID="86581051-fb0d-4c4a-b1e3-ebc1abd17174"
+   nstbrowser-ai-agent open example.com
+   ```
+
+4. **`NST_PROFILE` environment variable**
+   ```bash
+   export NST_PROFILE="my-profile"
+   nstbrowser-ai-agent open example.com
+   ```
+
+5. **Temporary browser** (if no profile specified)
+   ```bash
+   nstbrowser-ai-agent open example.com  # Uses temporary profile
+   ```
+
+### Name Resolution Logic
+
+When using a profile name, nstbrowser-ai-agent:
+
+1. **Checks running browsers** for matching name
+   - If found, uses that browser instance
+   - If multiple matches, uses the earliest one
+
+2. **Queries profile API** for matching name
+   - If found, uses that profile
+   - If multiple matches, uses the first one
+
+3. **Throws error** if not found
+   - Lists available profiles
+   - Suggests using profile ID for uniqueness
+
+### When to Use Name vs ID
+
+**Use Profile Name when:**
+- Working interactively
+- Profile names are unique
+- Readability is important
+- Sharing commands with others
+
+**Use Profile ID when:**
+- Writing scripts or automation
+- Multiple profiles have the same name
+- Guaranteed uniqueness is required
+- Working with API responses
+
+### Examples
+
+**By Name (Recommended for Interactive Use):**
+```bash
+# Set default profile by name
+export NST_PROFILE="my-profile"
+
+# All commands use this profile
+nstbrowser-ai-agent open https://example.com
+nstbrowser-ai-agent snapshot -i
+nstbrowser-ai-agent close
+```
+
+**By ID (Recommended for Scripts):**
+```bash
+# Get profile ID from API
+PROFILE_ID=$(nstbrowser-ai-agent profile list --json | jq -r '.data.profiles[0].profileId')
+
+# Set default profile by ID
+export NST_PROFILE_ID="$PROFILE_ID"
+
+# All commands use this profile
+nstbrowser-ai-agent open https://example.com
+nstbrowser-ai-agent snapshot -i
+nstbrowser-ai-agent close
+```
+
+**Mixed Approach:**
+```bash
+# Use name for main profile
+export NST_PROFILE="main-profile"
+
+# Use profile name or UUID with --profile flag
+nstbrowser-ai-agent --profile 86581051-fb0d-4c4a-b1e3-ebc1abd17174 open example.com
+```
+
+## Profile Organization
+
+### Groups
+
+Groups help organize profiles by purpose, project, or team.
+
+#### List Groups
+
+```bash
+nstbrowser-ai-agent profile groups list
+```
+
+Output:
+```
+Available groups:
+- Production (group-123)
+- Testing (group-456)
+- Staging (group-789)
+```
+
+#### Create Group
+
+Groups are created in the Nstbrowser dashboard, not via CLI.
+
+#### Move Profiles to Group
+
+```bash
+# Move single profile
+nstbrowser-ai-agent profile groups change group-123 <profile-name-or-id>
+
+# Move multiple profiles
+nstbrowser-ai-agent profile groups change group-123 id-1 id-2 id-3
+
+# Batch move (alias)
+nstbrowser-ai-agent profile groups batch-change group-123 id-1 id-2 id-3
+```
+
+#### Find Profiles in Group
+
+```bash
+# List all profiles and filter by group
+nstbrowser-ai-agent profile list --json | jq '.data.profiles[] | select(.group.name == "Production")'
+```
+
+#### Group Use Cases
+
+- **By Environment**: Production, Staging, Testing, Development
+- **By Project**: Project A, Project B, Client X, Client Y
+- **By Team**: Marketing, Sales, Support, Engineering
+- **By Purpose**: Scraping, Testing, Monitoring, Research
+
+### Tags
+
+Tags provide flexible labeling for profiles.
+
+#### List Tags
+
+```bash
+nstbrowser-ai-agent profile tags list
+```
+
+Output:
+```
+Available tags:
+- production (blue)
+- testing (green)
+- staging (yellow)
+- automated (purple)
+```
+
+#### Add Tags
+
+```bash
+# Add single tag
+nstbrowser-ai-agent profile tags create <profile-name-or-id> production
+
+# Add multiple tags (batch)
+nstbrowser-ai-agent profile tags batch-create id-1 id-2 id-3 \
+  production:blue automated:green
+```
+
+#### Update Tags
+
+```bash
+# Replace all tags for a profile
+nstbrowser-ai-agent profile tags update <profile-name-or-id> \
+  production:blue verified:green active:yellow
+
+# Batch update
+nstbrowser-ai-agent profile tags batch-update id-1 id-2 id-3 \
+  updated:red verified:green
+```
+
+#### Clear Tags
+
+```bash
+# Clear single profile
+nstbrowser-ai-agent profile tags clear <profile-name-or-id>
+
+# Clear multiple profiles (batch)
+nstbrowser-ai-agent profile tags batch-clear id-1 id-2 id-3
+```
+
+#### Tag Use Cases
+
+- **Status**: active, inactive, archived, deprecated
+- **Environment**: production, staging, testing, development
+- **Purpose**: scraping, testing, monitoring, research
+- **Quality**: verified, unverified, working, broken
+- **Automation**: automated, manual, scheduled, on-demand
+- **Priority**: high, medium, low, critical
+
+### Naming Strategies
+
+#### Descriptive Names
+
+Use clear, descriptive names:
+```
+production-main
+testing-api-v2
+staging-frontend
+development-local
+```
+
+#### Hierarchical Names
+
+Use prefixes for organization:
+```
+prod-web-01
+prod-web-02
+test-api-01
+test-api-02
+```
+
+#### Purpose-Based Names
+
+Name by function:
+```
+scraper-amazon
+scraper-ebay
+monitor-uptime
+monitor-performance
+```
+
+#### Project-Based Names
+
+Name by project:
+```
+projecta-prod
+projecta-test
+projectb-prod
+projectb-test
+```
+
+## Profile Operations
+
+### Viewing Profile Details
+
+```bash
+# Show complete profile information
+nstbrowser-ai-agent profile show my-profile --json
+```
+
+Returns:
+- Profile ID and name
+- Platform and kernel version
+- Group membership
+- Proxy configuration
+- Tags
+- Fingerprint details
+- Last launch record
+
+### Updating Profile Settings
+
+Profile settings are updated through specific commands:
+
+**Update Proxy:**
+```bash
+nstbrowser-ai-agent profile proxy update my-profile \
+  --host new-proxy.com \
+  --port 8080
+```
+
+**Update Tags:**
+```bash
+nstbrowser-ai-agent profile tags update <profile-name-or-id> \
+  new-tag-1:blue new-tag-2:green
+```
+
+**Update Group:**
+```bash
+nstbrowser-ai-agent profile groups change new-group-id <profile-name-or-id>
+```
+
+### Deleting Profiles
+
+```bash
+# Delete single profile
+nstbrowser-ai-agent profile delete <profile-name-or-id>
+
+# Delete multiple profiles
+nstbrowser-ai-agent profile delete id-1 id-2 id-3
+```
+
+**Warning:** Deletion is permanent and cannot be undone. All profile data (fingerprint, cookies, sessions) will be lost.
+
+### Clearing Profile Data
+
+Clear cached data without deleting the profile:
+
+**Clear Cache:**
+```bash
+# Clear single profile
+nstbrowser-ai-agent profile cache clear <profile-name-or-id>
+
+# Clear multiple profiles
+nstbrowser-ai-agent profile cache clear id-1 id-2 id-3
+```
+
+**Clear Cookies:**
+```bash
+# Clear single profile
+nstbrowser-ai-agent profile cookies clear <profile-name-or-id>
+
+# Clear multiple profiles
+nstbrowser-ai-agent profile cookies clear id-1 id-2 id-3
+```
+
+**When to clear data:**
+- After testing (remove test data)
+- Before sharing profile (remove personal data)
+- When troubleshooting (start fresh)
+- Periodically (prevent bloat)
+
+## Best Practices
+
+### Profile Naming Conventions
+
+1. **Use lowercase with hyphens**: `my-profile` not `My_Profile`
+2. **Be descriptive**: `production-web-scraper` not `profile1`
+3. **Include environment**: `prod-`, `test-`, `dev-` prefixes
+4. **Include purpose**: `-scraper`, `-monitor`, `-test` suffixes
+5. **Keep it short**: Aim for 20-30 characters max
+
+### Organization Strategies
+
+1. **Use Groups for Major Categories**
+   - Environment (Production, Testing, Staging)
+   - Project (Project A, Project B)
+   - Team (Marketing, Engineering)
+
+2. **Use Tags for Flexible Labeling**
+   - Status (active, inactive)
+   - Quality (verified, working)
+   - Automation (automated, manual)
+
+3. **Combine Groups and Tags**
+   - Group: Production
+   - Tags: automated, verified, high-priority
+
+### Lifecycle Management
+
+1. **Creation**
+   - Create profiles with descriptive names
+   - Set proxy if needed
+   - Add to appropriate group
+   - Tag with initial status
+
+2. **Configuration**
+   - Test proxy connection
+   - Verify fingerprint
+   - Set up initial sessions
+
+3. **Usage**
+   - Use sticky sessions for efficiency
+   - Monitor for issues
+   - Update tags as needed
+
+4. **Maintenance**
+   - Clear cache periodically
+   - Update proxies when needed
+   - Review and update tags
+   - Archive unused profiles
+
+5. **Deletion**
+   - Tag as deprecated first
+   - Verify no active usage
+   - Export important data
+   - Delete permanently
+
+### Security Considerations
+
+1. **Proxy Credentials**
+   - Store in environment variables
+   - Never commit to version control
+   - Rotate regularly
+   - Use different credentials per profile
+
+2. **Profile Isolation**
+   - Use separate profiles for different accounts
+   - Don't share profiles between users
+   - Clear data when switching purposes
+
+3. **API Key Protection**
+   - Store `NST_API_KEY` securely
+   - Never expose in logs or screenshots
+   - Rotate if compromised
+   - Use different keys for different environments
+
+4. **Data Privacy**
+   - Clear cookies before sharing profiles
+   - Don't store sensitive data in profiles
+   - Use temporary profiles for testing
+   - Delete profiles when no longer needed
+
+### Performance Optimization
+
+1. **Profile Reuse**
+   - Reuse profiles instead of creating new ones
+   - Use sticky sessions to avoid restarts
+   - Keep frequently used profiles active
+
+2. **Batch Operations**
+   - Use batch commands for multiple profiles
+   - Group related operations together
+   - Schedule batch operations during off-peak
+
+3. **Cache Management**
+   - Clear cache periodically to prevent bloat
+   - Balance between performance and freshness
+   - Monitor profile size
+
+4. **Proxy Selection**
+   - Use fast, reliable proxies
+   - Test proxy speed before assigning
+   - Rotate proxies for load balancing
+
+### Troubleshooting
+
+1. **Profile Not Found**
+   - List all profiles: `nstbrowser-ai-agent profile list`
+   - Check spelling of profile name
+   - Use profile ID for guaranteed match
+
+2. **Multiple Profiles with Same Name**
+   - Use profile ID instead of name
+   - Rename profiles to be unique
+   - Use groups and tags for organization
+
+3. **Profile Won't Start**
+   - Check proxy configuration
+   - Verify Nstbrowser client is running
+   - Check profile details for errors
+   - Try clearing cache and cookies
+
+4. **Session Not Persisting**
+   - Verify profile is being used (not temporary)
+   - Check that browser is closed properly
+   - Verify cookies are not being cleared
+
+## See Also
+
+- [NST API Reference](nst-api-reference.md)
+- [Proxy Configuration Guide](proxy-configuration.md)
+- [Batch Operations Guide](batch-operations.md)
+- [Troubleshooting Guide](troubleshooting.md)

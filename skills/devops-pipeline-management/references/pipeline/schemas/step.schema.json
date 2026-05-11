@@ -1,0 +1,40 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "step.schema.json",
+  "title": "Step",
+  "description": "步骤数据结构",
+  "type": "object",
+  "required": ["id", "name", "nodeType", "idx", "driven", "tasks"],
+  "properties": {
+    "id": {
+      "type": "string",
+      "description": "步骤唯一标识"
+    },
+    "name": {
+      "type": "string",
+      "description": "步骤名称"
+    },
+    "nodeType": {
+      "type": "string",
+      "const": "custom-step-node",
+      "description": "节点类型"
+    },
+    "idx": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "步骤索引"
+    },
+    "driven": {
+      "type": "integer",
+      "enum": [0, 1],
+      "description": "执行方式: 0-串行, 1-并行"
+    },
+    "tasks": {
+      "type": "array",
+      "items": {
+        "$ref": "task.schema.json"
+      },
+      "description": "任务列表"
+    }
+  }
+}

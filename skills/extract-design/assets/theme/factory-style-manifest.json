@@ -1,0 +1,398 @@
+{
+  "meta": {
+    "title": "Factory AI Style System",
+    "source": "https://factory.ai/",
+    "captureTime": "2026-03-19",
+    "viewport": "1280x720",
+    "darkModeExists": true,
+    "reducedMotionExists": "inferred",
+    "canvasWebGLHeavy": false,
+    "shadowDOM": false,
+    "extractionMode": "live-render",
+    "keyframesCaptured": true
+  },
+  "style_character": {
+    "summary": "Factory.ai is an AI-powered software development platform with a distinctive monospace-forward, industrial-technical aesthetic. The design language emphasizes raw functionality with precise geometric patterns, diagonal stripe motifs, and a bold orange accent against neutral grays. Typography is Geist-based with heavy use of mono for labels and code.",
+    "mood": "Industrial-technical, precision-engineered, developer-focused",
+    "density": "moderate",
+    "contrast": "high",
+    "motionIntensity": "moderate",
+    "componentComplexity": "medium",
+    "atmosphereCharacter": "Technical brutalism meets clean minimalism",
+    "recurringMotifs": [
+      "Diagonal stripe hover patterns (slidePattern animation)",
+      "Edge fade gradients (vignette effect)",
+      "Mono typography for labels",
+      "Progress loader orange gradient (progress-slide)",
+      "Modal slide-in animations (enterFromRight/Left)"
+    ]
+  },
+  "primitives": {
+    "fonts": {
+      "sans": "\"Geist\", \"Geist Fallback\"",
+      "mono": "\"Geist Mono\", \"Geist Mono Fallback\"",
+      "weights": [400, 500, 600, 700],
+      "sizeScale": ["12px", "14px", "16px", "48px", "60px"],
+      "lineHeightNormal": "1.5",
+      "lineHeightTight": "1.0"
+    },
+    "spacing": {
+      "unit": "4px base, --tw-leading: calc(var(--spacing)*6)"
+    },
+    "radius": {
+      "default": "6px",
+      "card": "6px",
+      "button": "4px"
+    },
+    "shadow": {
+      "card": "none"
+    },
+    "motion": {
+      "durationFast": "0.15s",
+      "durationNormal": "0.2s",
+      "easeStandard": "cubic-bezier(0.4, 0, 0.2, 1)",
+      "easeEmphasized": "cubic-bezier(0.4, 0, 0.2, 1)"
+    },
+    "pattern": {
+      "diagonalStripeSize": "7.07px",
+      "diagonalStripeColors": ["rgb(77, 73, 71)", "rgb(164, 157, 154)"],
+      "stripeAngle": "45deg"
+    }
+  },
+  "semantic": {
+    "colors": {
+      "light": {
+        "brandPrimary": "rgb(238, 96, 24)",
+        "brandPrimaryHover": "#ef6f2e",
+        "textPrimary": "rgb(2, 2, 2)",
+        "textSecondary": "rgb(77, 73, 71)",
+        "textMuted": "rgb(164, 157, 154)"
+      },
+      "dark": {
+        "brandPrimary": "rgb(238, 96, 24)",
+        "brandPrimaryHover": "#ef6f2e",
+        "textPrimary": "rgb(238, 238, 238)",
+        "textSecondary": "rgb(164, 157, 154)",
+        "textMuted": "rgb(77, 73, 71)"
+      }
+    },
+    "surfaces": {
+      "light": {
+        "page": "rgb(238, 238, 238)",
+        "card": "rgb(250, 250, 250)",
+        "border": "rgb(184, 179, 176)"
+      },
+      "dark": {
+        "page": "rgb(2, 2, 2)",
+        "card": "rgb(16, 16, 16)",
+        "border": "rgb(61, 58, 57)"
+      }
+    }
+  },
+  "background": {
+    "page": {
+      "light": "rgb(238, 238, 238)",
+      "dark": "rgb(2, 2, 2)"
+    },
+    "sections": [
+      {
+        "type": "hero",
+        "light": "linear-gradient fade edges on dark card bg",
+        "dark": "linear-gradient fade edges on dark card bg"
+      }
+    ],
+    "layers": [
+      {
+        "name": "edge-fade-left",
+        "gradient": "linear-gradient(to right in oklab, [bg] 0px, transparent 100%)",
+        "width": "40px",
+        "position": "absolute top-0 left-0"
+      },
+      {
+        "name": "edge-fade-right",
+        "gradient": "linear-gradient(to left in oklab, [bg] 0px, transparent 100%)",
+        "width": "40px",
+        "position": "absolute top-0 right-0"
+      }
+    ],
+    "gradients": [
+      {
+        "name": "progress-loader",
+        "value": "linear-gradient(90deg, transparent 0%, rgb(209, 80, 16) 50%, rgb(209, 80, 16) 65%, transparent 100%)"
+      }
+    ],
+    "patterns": [
+      {
+        "name": "diagonal-stripe-hover",
+        "type": "repeating-linear-gradient",
+        "angle": "45deg",
+        "transparent": "0px - 2px",
+        "color": "2px - 3px",
+        "next": "3px - 5px",
+        "colors": ["rgb(77, 73, 71)", "rgb(164, 157, 154)"],
+        "size": "7.07px",
+        "usage": "hover reveal on interactive cards"
+      },
+      {
+        "name": "bg-lines",
+        "type": "image",
+        "value": "url(\"https://factory.ai/assets/bg-lines.png\")",
+        "usage": "section backgrounds"
+      }
+    ],
+    "images": [
+      {
+        "url": "https://factory.ai/assets/bg-lines.png",
+        "usage": "section grid background"
+      }
+    ],
+    "overlays": []
+  },
+  "motifs": [
+    {
+      "name": "diagonal-stripe",
+      "description": "45-degree repeating stripe pattern revealed on hover, used for interactive feedback",
+      "colors": ["neutral-700", "neutral-500"],
+      "animation": "fade-in on hover"
+    },
+    {
+      "name": "edge-vignette",
+      "description": "Subtle gradient fade at horizontal edges to create depth and focus",
+      "type": "linear-gradient",
+      "direction": "horizontal"
+    },
+    {
+      "name": "progress-gradient",
+      "description": "Orange loading bar gradient for progress indicators",
+      "colors": ["transparent", "accent-dark", "accent-dark", "transparent"]
+    }
+  ],
+  "themes": {
+    "light": {
+      "bgPrimary": "#eee",
+      "bgSecondary": "#fafafa",
+      "textPrimary": "#020202",
+      "accent": "#ef6f2e"
+    },
+    "dark": {
+      "bgPrimary": "#020202",
+      "bgSecondary": "#101010",
+      "textPrimary": "#eee",
+      "accent": "#ef6f2e"
+    }
+  },
+  "motion": {
+    "duration": {
+      "fast": "0.15s",
+      "normal": "0.2s"
+    },
+    "easing": {
+      "standard": "cubic-bezier(0.4, 0, 0.2, 1)"
+    },
+    "keyframes": [
+      {
+        "name": "scaleIn",
+        "description": "Modal/overlay scale in animation",
+        "from": "opacity: 0; transform: scale(0.95)",
+        "to": "opacity: 1; transform: scale(1)"
+      },
+      {
+        "name": "scaleOut",
+        "description": "Modal/overlay scale out animation",
+        "from": "opacity: 1; transform: scale(1)",
+        "to": "opacity: 0; transform: scale(0.95)"
+      },
+      {
+        "name": "enterFromRight",
+        "description": "Slide in from right for modals/drawers",
+        "from": "opacity: 0; transform: translate(100px)",
+        "to": "opacity: 1; transform: translate(0px)"
+      },
+      {
+        "name": "enterFromLeft",
+        "description": "Slide in from left for modals/drawers",
+        "from": "opacity: 0; transform: translate(-100px)",
+        "to": "opacity: 1; transform: translate(0px)"
+      },
+      {
+        "name": "exitToRight",
+        "description": "Slide out to right",
+        "from": "opacity: 1; transform: translate(0px)",
+        "to": "opacity: 0; transform: translate(200px)"
+      },
+      {
+        "name": "exitToLeft",
+        "description": "Slide out to left",
+        "from": "opacity: 1; transform: translate(0px)",
+        "to": "opacity: 0; transform: translate(-200px)"
+      },
+      {
+        "name": "accordion-down",
+        "description": "Accordion content expand",
+        "from": "height: 0px",
+        "to": "height: var(--accordion-content-height)"
+      },
+      {
+        "name": "accordion-up",
+        "description": "Accordion content collapse",
+        "from": "height: var(--accordion-content-height)",
+        "to": "height: 0px"
+      },
+      {
+        "name": "slidePattern",
+        "description": "Diagonal stripe pattern slide animation - moves 28.28px (pattern shift)",
+        "from": "background-position: 0px 0px",
+        "to": "background-position: 28.28px -28.28px"
+      },
+      {
+        "name": "delayedFadeIn",
+        "description": "Fade in with delay for staggered reveals",
+        "keyframes": "0%, 80% { opacity: 0 }, 100% { opacity: 1 }"
+      },
+      {
+        "name": "spin",
+        "description": "360 degree rotation for loading spinners",
+        "to": "transform: rotate(1turn)"
+      },
+      {
+        "name": "pulse",
+        "description": "Opacity pulse for loading states",
+        "keyframes": "50% { opacity: 0.5 }"
+      },
+      {
+        "name": "progress-slide",
+        "description": "Progress bar slide animation",
+        "keyframes": "0% { transform: translateX(-100%) }, 50% { transform: translateX(0%) }, 100% { transform: translateX(100%) }"
+      },
+      {
+        "name": "enter",
+        "description": "Tailwind-style enter animation with configurable vars",
+        "note": "Uses CSS custom properties for direction/scale"
+      },
+      {
+        "name": "exit",
+        "description": "Tailwind-style exit animation with configurable vars",
+        "note": "Uses CSS custom properties for direction/scale"
+      }
+    ],
+    "hoverEffects": [
+      "diagonal stripe reveal",
+      "text color shift to accent"
+    ],
+    "reducedMotion": "prefers-reduced-motion media query should fallback to instant transitions"
+  },
+  "components": [
+    {
+      "name": "button",
+      "states": {
+        "default": {
+          "bg": "rgb(238, 238, 238) light / rgb(31, 29, 28) dark",
+          "color": "rgb(2, 2, 2) light / rgb(238, 238, 238) dark",
+          "border": "1px solid rgb(164, 157, 154) light / transparent dark",
+          "radius": "4px",
+          "padding": "0px 14px",
+          "height": "31px",
+          "fontSize": "16px"
+        },
+        "hover": {
+          "effect": "diagonal stripe pattern reveal",
+          "textColor": "accent color"
+        },
+        "focus": "outline with accent ring",
+        "active": "slightly darker",
+        "disabled": "50% opacity"
+      }
+    },
+    {
+      "name": "card",
+      "states": {
+        "default": {
+          "bg": "rgb(250, 250, 250) light / rgb(16, 16, 16) dark",
+          "border": "rgb(184, 179, 176) light / rgb(61, 58, 57) dark",
+          "radius": "6px",
+          "shadow": "none"
+        },
+        "hover": {
+          "effect": "diagonal stripe overlay reveal"
+        },
+        "interactive": "has stripe hover pattern"
+      }
+    },
+    {
+      "name": "modal",
+      "animations": {
+        "enter": "scaleIn + enterFromRight",
+        "exit": "scaleOut + exitToRight"
+      }
+    },
+    {
+      "name": "progress-bar",
+      "animations": {
+        "progress": "progress-slide"
+      }
+    },
+    {
+      "name": "accordion",
+      "animations": {
+        "expand": "accordion-down",
+        "collapse": "accordion-up"
+      }
+    },
+    {
+      "name": "link",
+      "states": {
+        "default": {
+          "color": "rgb(77, 73, 71) light / rgb(164, 157, 154) dark"
+        },
+        "hover": {
+          "color": "rgb(238, 96, 24)"
+        }
+      }
+    },
+    {
+      "name": "nav-pill",
+      "states": {
+        "default": {
+          "bg": "transparent",
+          "border": "1px solid border color",
+          "radius": "999px"
+        },
+        "active": {
+          "bg": "surface-2",
+          "borderColor": "border-strong"
+        }
+      }
+    },
+    {
+      "name": "badge",
+      "appearance": "mono font, small size, pill shape"
+    },
+    {
+      "name": "code-block",
+      "appearance": "mono font, rounded corners, progress gradient accent"
+    }
+  ],
+  "responsive_rules": [
+    {
+      "breakpoint": "lg",
+      "grid": "grid-cols-12",
+      "gap": "gap-x-6"
+    },
+    {
+      "breakpoint": "default",
+      "grid": "grid-cols-4",
+      "gap": "gap-x-4"
+    }
+  ],
+  "accessibility_notes": [
+    "High contrast text (rgb(2,2,2) on rgb(238,238,238))",
+    "Accent color (orange) provides visual emphasis",
+    "Focus states should use accent color ring",
+    "Reduced motion should disable stripe animations"
+  ],
+  "limitations": [
+    "Captured static styles; some interactive states inferred",
+    "Reduced motion behavior not directly observed",
+    "Full component library not explored"
+  ]
+}

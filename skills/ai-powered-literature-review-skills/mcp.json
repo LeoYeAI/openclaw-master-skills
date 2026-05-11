@@ -1,0 +1,239 @@
+{
+  "$schema": "https://raw.githubusercontent.com/modelcontextprotocol/spec/main/schema.json",
+  "name": "literature-reviewer-skill",
+  "version": "3.1.0",
+  "description": "系统性学术文献回顾（Literature Survey）Skill - 支持 CNKI、Web of Science 等数据库的浏览器自动化文献检索与综述生成",
+  
+  "author": {
+    "name": "stephenlzc",
+    "url": "https://github.com/stephenlzc"
+  },
+  
+  "license": "MIT-0",
+  
+  "homepage": "https://github.com/stephenlzc/AI-Powered-Literature-Review-Skills",
+  
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/stephenlzc/AI-Powered-Literature-Review-Skills.git"
+  },
+  
+  "bugs": {
+    "url": "https://github.com/stephenlzc/AI-Powered-Literature-Review-Skills/issues"
+  },
+  
+  "categories": [
+    "research",
+    "academic",
+    "literature-review",
+    "web-scraping"
+  ],
+  
+  "keywords": [
+    "literature-survey",
+    "literature-review",
+    "academic-research",
+    "cnki",
+    "web-of-science",
+    "paper-search",
+    "bibliography",
+    "citation"
+  ],
+  
+  "runtime": {
+    "type": "skill",
+    "entry_point": "SKILL.md",
+    "min_runtime_version": "1.0.0"
+  },
+  
+  "dependencies": {
+    "required": [
+      {
+        "name": "browser",
+        "version": ">=1.0.0",
+        "description": "浏览器自动化（Playwright）",
+        "reason": "用于访问 CNKI、Web of Science 等学术数据库"
+      }
+    ],
+    "optional": [
+      {
+        "name": "web_search",
+        "version": ">=1.0.0",
+        "description": "网页搜索",
+        "reason": "辅助获取文献信息"
+      },
+      {
+        "name": "docx",
+        "version": ">=1.0.0",
+        "description": "Word 文档处理",
+        "reason": "生成 .docx 格式综述文档"
+      }
+    ]
+  },
+  
+  "system_requirements": {
+    "os": ["linux", "macos", "windows"],
+    "python": ">=3.8",
+    "nodejs": ">=16.0",
+    "dependencies": ["playwright"]
+  },
+  
+  "permissions": {
+    "filesystem": {
+      "read": [
+        "${skill_dir}/agents/*",
+        "${skill_dir}/references/*",
+        "${skill_dir}/scripts/*",
+        "${skill_dir}/examples/*"
+      ],
+      "write": [
+        "${skill_dir}/sessions/*",
+        "${skill_dir}/output/*"
+      ]
+    },
+    "network": {
+      "domains": [
+        {
+          "host": "kns.cnki.net",
+          "protocol": "https",
+          "reason": "中国知网数据库"
+        },
+        {
+          "host": "www.webofscience.com",
+          "protocol": "https",
+          "reason": "Web of Science 数据库"
+        },
+        {
+          "host": "www.sciencedirect.com",
+          "protocol": "https",
+          "reason": "ScienceDirect 数据库"
+        },
+        {
+          "host": "scholar.google.com",
+          "protocol": "https",
+          "reason": "Google Scholar 学术搜索"
+        },
+        {
+          "host": "pubmed.ncbi.nlm.nih.gov",
+          "protocol": "https",
+          "reason": "PubMed 医学数据库"
+        },
+        {
+          "host": "api.crossref.org",
+          "protocol": "https",
+          "reason": "DOI 解析服务"
+        },
+        {
+          "host": "doi.org",
+          "protocol": "https",
+          "reason": "DOI 跳转服务"
+        }
+      ],
+      "blocked": [
+        "file://*",
+        "http://localhost/*",
+        "http://127.0.0.1/*"
+      ]
+    },
+    "browser": {
+      "allowed_actions": [
+        "navigate",
+        "click",
+        "fill",
+        "evaluate",
+        "screenshot",
+        "download"
+      ],
+      "restrictions": [
+        "禁止访问本地文件系统 (file://)",
+        "禁止访问 localhost/127.0.0.1",
+        "仅允许访问声明的学术数据库域名"
+      ]
+    }
+  },
+  
+  "security": {
+    "sandbox_recommended": true,
+    "docker_supported": true,
+    "resource_limits": {
+      "cpu": "2.0",
+      "memory": "4G",
+      "max_downloads_per_session": 50
+    },
+    "warnings": [
+      "本 Skill 依赖 browser skill 进行浏览器自动化",
+      "将访问用户浏览器的 cookies 和登录状态",
+      "可能触发目标网站的验证码机制",
+      "请遵守各数据库的服务条款"
+    ]
+  },
+  
+  "installation": {
+    "type": "git_clone",
+    "url": "https://github.com/stephenlzc/AI-Powered-Literature-Review-Skills.git",
+    "target_directory": "literature-reviewer-skill",
+    "verification": {
+      "files_exist": ["SKILL.md", "AGENTS.md", "README.md"],
+      "directories_exist": ["agents", "references"]
+    }
+  },
+  
+  "triggers": [
+    {
+      "type": "keyword",
+      "patterns": [
+        "文献回顾",
+        "文献综述",
+        "帮我找文献",
+        "中英文文献搜索",
+        "写综述",
+        "literature survey",
+        "systematic review"
+      ]
+    }
+  ],
+  
+  "documentation": {
+    "main": "README.md",
+    "agents": "AGENTS.md",
+    "security": "SECURITY.md",
+    "examples": "examples/README.md"
+  },
+  
+  "config": {
+    "schema": {
+      "type": "object",
+      "properties": {
+        "default_databases": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": ["cnki", "wos", "sciencedirect", "pubmed", "googlescholar"]
+          },
+          "default": ["cnki", "wos", "sciencedirect"]
+        },
+        "max_results_per_db": {
+          "type": "integer",
+          "default": 50,
+          "minimum": 10,
+          "maximum": 200
+        },
+        "output_format": {
+          "type": "string",
+          "enum": ["markdown", "docx"],
+          "default": "markdown"
+        },
+        "citation_style": {
+          "type": "string",
+          "enum": ["gb7714", "apa", "mla"],
+          "default": "gb7714"
+        }
+      }
+    }
+  },
+  
+  "update": {
+    "auto_check": true,
+    "channel": "stable"
+  }
+}

@@ -1,0 +1,141 @@
+{
+  "version": "1.0",
+  "description": "AI Agent Code Annotation Standards - Central Registry for GxP Compliance",
+  "purpose": "Provides unified code annotation conventions that AI agents can follow for traceability in regulated industries (pharmaceutical, medical devices). Skill-agnostic: can be used by any coding skill without coupling.",
+  "standards": {
+    "requirement_markers": {
+      "enabled": true,
+      "description": "Markers that link code to requirements traceability",
+      "patterns": [
+        {"style": "cpp", "pattern": "// @REQ {id} - {description}", "example": "// @REQ URS-001 - System shall support RBAC"},
+        {"style": "python", "pattern": "# @REQ {id} - {description}", "example": "# @REQ URS-001 - System shall support RBAC"},
+        {"style": "javascript", "pattern": "// @REQ {id} - {description}", "example": "// @REQ URS-001 - System shall support RBAC"},
+        {"style": "sql", "pattern": "-- @REQ {id} - {description}", "example": "-- @REQ URS-001 - System shall support RBAC"},
+        {"style": "java", "pattern": "// @REQ {id} - {description}", "example": "// @REQ URS-001 - System shall support RBAC"},
+        {"style": "csharp", "pattern": "// @REQ {id} - {description}", "example": "// @REQ URS-001 - System shall support RBAC"},
+        {"style": "go", "pattern": "// @REQ {id} - {description}", "example": "// @REQ URS-001 - System shall support RBAC"},
+        {"style": "rust", "pattern": "// @REQ {id} - {description}", "example": "// @REQ URS-001 - System shall support RBAC"},
+        {"style": "ruby", "pattern": "# @REQ {id} - {description}", "example": "# @REQ URS-001 - System shall support RBAC"},
+        {"style": "php", "pattern": "// @REQ {id} - {description}", "example": "// @REQ URS-001 - System shall support RBAC"},
+        {"style": "typescript", "pattern": "// @REQ {id} - {description}", "example": "// @REQ URS-001 - System shall support RBAC"},
+        {"style": "shell", "pattern": "# @REQ {id} - {description}", "example": "# @REQ URS-001 - System shall support RBAC"},
+        {"style": "yaml", "pattern": "# @REQ {id} - {description}", "example": "# @REQ URS-001 - System shall support RBAC"},
+        {"style": "multiline_c", "pattern": "/* @REQ {id} - {description} */", "example": "/* @REQ URS-001 - System shall support RBAC */"},
+        {"style": "html", "pattern": "<!-- @REQ {id} - {description} -->", "example": "<!-- @REQ URS-001 - System shall support RBAC -->"}
+      ],
+      "id_format": "URS-{3 digits}",
+      "id_example": "URS-001",
+      "required_for_skills": ["csv-documentation-generator"]
+    },
+    "test_markers": {
+      "enabled": true,
+      "description": "Markers that link code to test cases",
+      "patterns": [
+        {"style": "cpp", "pattern": "// @TEST[{type-id}] - {description}", "example": "// @TEST[OQ-UM-001] - Verify user role assignment"},
+        {"style": "python", "pattern": "# @TEST[{type-id}] - {description}", "example": "# @TEST[OQ-UM-001] - Verify user role assignment"},
+        {"style": "javascript", "pattern": "// @TEST[{type-id}] - {description}", "example": "// @TEST[OQ-UM-001] - Verify user role assignment"},
+        {"style": "multiline_c", "pattern": "/* @TEST[{type-id}] - {description} */", "example": "/* @TEST[OQ-UM-001] - Verify user role assignment */"}
+      ],
+      "id_format": "{IQ|OQ|PQ}-{ModulePrefix}-{3 digits}",
+      "id_example": "OQ-UM-001",
+      "type_meaning": {
+        "IQ": "Installation Qualification",
+        "OQ": "Operational Qualification",
+        "PQ": "Performance Qualification"
+      }
+    },
+    "design_markers": {
+      "enabled": true,
+      "description": "Markers that reference design specifications",
+      "patterns": [
+        {"style": "cpp", "pattern": "// @FS {id}", "example": "// @FS FS-001"},
+        {"style": "python", "pattern": "# @FS {id}", "example": "# @FS FS-001"},
+        {"style": "cpp", "pattern": "// @TS {id}", "example": "// @TS TS-001"},
+        {"style": "python", "pattern": "# @TS {id}", "example": "# @TS TS-001"}
+      ],
+      "fs_id_format": "FS-{3 digits}",
+      "ts_id_format": "TS-{3 digits}"
+    },
+    "risk_markers": {
+      "enabled": true,
+      "description": "Markers that indicate risk level of code sections",
+      "pattern": "// @RISK [{H|M|L}]",
+      "pattern_example": "// @RISK H",
+      "levels": {
+        "H": {
+          "name": "High Risk",
+          "description": "Security, compliance, electronic signature, audit trail related",
+          "requires_validation": true
+        },
+        "M": {
+          "name": "Medium Risk",
+          "description": "Default for most requirements",
+          "requires_validation": true
+        },
+        "L": {
+          "name": "Low Risk",
+          "description": "Simple features, documentation, reports",
+          "requires_validation": false
+        }
+      }
+    },
+    "modules": {
+      "user_mgmt": {
+        "name": "User Management",
+        "name_cn": "用户管理",
+        "test_prefix": "UM",
+        "description": "User authentication, authorization, role management"
+      },
+      "audit_trail": {
+        "name": "Audit Trail",
+        "name_cn": "审计追踪",
+        "test_prefix": "AT",
+        "description": "Recording all user actions and system events"
+      },
+      "data_mgmt": {
+        "name": "Data Management",
+        "name_cn": "数据管理",
+        "test_prefix": "DM",
+        "description": "Data storage, retrieval, integrity"
+      },
+      "business_func": {
+        "name": "Business Functions",
+        "name_cn": "业务功能",
+        "test_prefix": "BF",
+        "description": "Core business logic and workflows"
+      },
+      "reporting": {
+        "name": "Reporting",
+        "name_cn": "报告功能",
+        "test_prefix": "RP",
+        "description": "Report generation and export"
+      },
+      "integration": {
+        "name": "Integration",
+        "name_cn": "接口集成",
+        "test_prefix": "INT",
+        "description": "System integrations and interfaces"
+      },
+      "security": {
+        "name": "Security",
+        "name_cn": "安全",
+        "test_prefix": "SEC",
+        "description": "Security controls, encryption, access control"
+      },
+      "compliance": {
+        "name": "Compliance",
+        "name_cn": "合规",
+        "test_prefix": "CMP",
+        "description": "Regulatory compliance features"
+      }
+    }
+  },
+  "configurable": true,
+  "enforcement": "advisory",
+  "notes": [
+    "This file is skill-agnostic and can be used by any AI agent for code annotation.",
+    "csv-documentation-generator skill reads this file to parse requirements from code.",
+    "Other skills can optionally read this file for consistent annotation conventions.",
+    "Set 'enforcement' to 'strict' if you want to enforce annotation requirements."
+  ]
+}

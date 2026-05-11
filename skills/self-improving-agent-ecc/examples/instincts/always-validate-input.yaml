@@ -1,0 +1,49 @@
+---
+id: always-validate-input
+trigger: "when handling user input or external data"
+confidence: 0.9
+domain: "security"
+source: "user-correction"
+scope: global
+created_at: "2025-01-10T14:30:00Z"
+updated_at: "2025-01-15T09:00:00Z"
+evidence_count: 8
+---
+
+# Always Validate Input
+
+## Action
+Validate all user input and external data before processing. Never trust input from external sources.
+
+## Rationale
+Unvalidated input is the #1 cause of security vulnerabilities. Always validate type, format, range, and sanitize where necessary.
+
+## Examples
+
+### Positive
+```typescript
+import { z } from 'zod'
+
+const UserSchema = z.object({
+  email: z.string().email(),
+  age: z.number().int().min(0).max(150)
+})
+
+function createUser(input: unknown) {
+  const validated = UserSchema.parse(input)
+  // Now safe to use
+}
+```
+
+### Negative
+```typescript
+// Never use raw input
+function createUser(input: any) {
+  await db.users.create(input)  // DANGEROUS
+}
+```
+
+## Evidence
+- User corrected missing validation on 2025-01-10
+- Pattern observed in 8 secure code reviews
+- Prevents injection attacks and data corruption

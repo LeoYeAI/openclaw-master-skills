@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{PRODUCT_NAME}} | {{COMPANY_NAME}}</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.6; color: #333; }
+        
+        :root {
+            --primary: #2D3436;
+            --accent: #0984E3;
+            --cta-bg: #E17055;
+            --cta-text: #FFFFFF;
+            --bg-light: #F8F9FA;
+            --text-muted: #636E72;
+            --star: #F9CA24;
+            --border: #E0E0E0;
+        }
+        
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
+        .section { padding: 60px 0; }
+        
+        /* ============================================
+           1. NAV (TOP MENU)
+        ============================================ */
+        .nav { 
+            background: #fff; border-bottom: 1px solid var(--border);
+            padding: 15px 0; position: sticky; top: 0; z-index: 100;
+        }
+        .nav-inner { display: flex; justify-content: space-between; align-items: center; }
+        .nav-logo { font-size: 24px; font-weight: 700; color: var(--primary); text-decoration: none; }
+        .nav-links { display: flex; gap: 30px; }
+        .nav-links a { color: var(--text-muted); text-decoration: none; font-weight: 500; transition: color 0.2s; }
+        .nav-links a:hover { color: var(--primary); }
+        .nav-cart { position: relative; cursor: pointer; }
+        .nav-cart-icon { font-size: 24px; }
+        .nav-cart-count { 
+            position: absolute; top: -8px; right: -8px; 
+            background: var(--cta-bg); color: #fff;
+            font-size: 12px; width: 20px; height: 20px; 
+            border-radius: 50%; display: flex; align-items: center; justify-content: center;
+        }
+        
+        /* ============================================
+           2. BUYBOX (HERO PRODUCT MODULE)
+        ============================================ */
+        .buybox { background: #fff; padding: 60px 0; }
+        .buybox-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 60px; align-items: start; }
+        .buybox-image img { width: 100%; border-radius: 12px; box-shadow: 0 10px 40px rgba(0,0,0,0.1); }
+        .buybox-details { padding-top: 20px; }
+        .buybox-rating { display: flex; align-items: center; gap: 8px; margin-bottom: 15px; }
+        .buybox-stars { color: var(--star); letter-spacing: 2px; }
+        .buybox-rating span { color: var(--text-muted); font-size: 14px; }
+        .buybox-title { font-size: 36px; font-weight: 700; margin-bottom: 15px; line-height: 1.2; }
+        .buybox-price { font-size: 32px; font-weight: 700; margin-bottom: 25px; }
+        .buybox-price .original { text-decoration: line-through; color: var(--text-muted); font-size: 20px; margin-left: 10px; }
+        .buybox-variants { margin-bottom: 25px; }
+        .variant-group { margin-bottom: 15px; }
+        .variant-label { font-weight: 600; margin-bottom: 8px; display: block; }
+        .variant-options { display: flex; gap: 10px; flex-wrap: wrap; }
+        .variant-option { 
+            padding: 10px 20px; border: 2px solid var(--border); 
+            border-radius: 8px; cursor: pointer; transition: all 0.2s;
+        }
+        .variant-option:hover, .variant-option.active { border-color: var(--accent); background: var(--bg-light); }
+        .buybox-ctas { display: flex; gap: 15px; margin-bottom: 30px; }
+        .btn { padding: 18px 40px; font-size: 16px; font-weight: 600; border: none; border-radius: 8px; cursor: pointer; transition: all 0.2s; }
+        .btn-primary { background: var(--cta-bg); color: var(--cta-text); flex: 1; }
+        .btn-primary:hover { background: #c55b3e; transform: translateY(-2px); }
+        .btn-secondary { background: var(--primary); color: #fff; }
+        .btn-secondary:hover { background: #1a1f21; }
+        
+        /* ============================================
+           3. SOCIAL PROOF #1 (TESTIMONIALS ROW 1)
+        ============================================ */
+        .social-proof-1 { background: var(--bg-light); }
+        .sp1-header { text-align: center; margin-bottom: 40px; }
+        .sp1-header h2 { font-size: 28px; margin-bottom: 10px; }
+        .sp1-share { display: flex; justify-content: center; gap: 15px; margin-bottom: 15px; }
+        .sp1-share a { color: var(--text-muted); font-size: 20px; text-decoration: none; }
+        .sp1-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 30px; }
+        .sp1-card { background: #fff; padding: 30px; border-radius: 12px; text-align: center; }
+        .sp1-card-stars { color: var(--star); margin-bottom: 15px; }
+        .sp1-card-quote { font-style: italic; margin-bottom: 20px; line-height: 1.6; }
+        .sp1-card-author { display: flex; align-items: center; justify-content: center; gap: 12px; }
+        .sp1-avatar { width: 48px; height: 48px; border-radius: 50%; background: var(--accent); display: flex; align-items: center; justify-content: center; color: #fff; font-weight: 600; }
+        .sp1-name { font-weight: 600; }
+        
+        /* ============================================
+           4. SOCIAL PROOF #2 (MORE PROOF / UGC)
+        ============================================ */
+        .social-proof-2 { background: #fff; }
+        .sp2-header { text-align: center; margin-bottom: 40px; }
+        .sp2-header h2 { font-size: 28px; margin-bottom: 10px; }
+        .sp2-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; }
+        .sp2-photo { 
+            aspect-ratio: 1; border-radius: 12px; 
+            background: var(--bg-light); overflow: hidden;
+        }
+        .sp2-photo img { width: 100%; height: 100%; object-fit: cover; }
+        .sp2-attribution { text-align: center; margin-top: 20px; color: var(--text-muted); font-size: 14px; }
+        
+        /* ============================================
+           5. BENEFITS (ICON-BULLETED LIST)
+        ============================================ */
+        .benefits { background: var(--bg-light); }
+        .benefits h2 { font-size: 32px; margin-bottom: 40px; text-align: center; }
+        .benefits-list { max-width: 800px; margin: 0 auto; }
+        .benefit-item { 
+            display: flex; gap: 20px; padding: 25px; 
+            background: #fff; border-radius: 12px; margin-bottom: 15px;
+        }
+        .benefit-icon { 
+            width: 56px; height: 56px; background: var(--accent);
+            border-radius: 12px; display: flex; align-items: center; 
+            justify-content: center; font-size: 28px; flex-shrink: 0;
+        }
+        .benefit-content h3 { margin-bottom: 8px; font-size: 18px; }
+        .benefit-content p { color: var(--text-muted); margin: 0; }
+        
+        /* ============================================
+           6. INGREDIENTS/MATERIALS (SPECS GRID)
+        ============================================ */
+        .ingredients { background: #fff; }
+        .ingredients h2 { font-size: 32px; margin-bottom: 40px; text-align: center; }
+        .ingredients-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 30px; margin-bottom: 40px; }
+        .ingredient-card { text-align: center; padding: 30px; background: var(--bg-light); border-radius: 12px; }
+        .ingredient-img { width: 80px; height: 80px; margin: 0 auto 15px; background: #fff; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 36px; }
+        .ingredient-name { font-weight: 600; margin-bottom: 8px; }
+        .ingredient-check { color: #00B894; font-size: 14px; }
+        .ingredients-full { max-width: 800px; margin: 0 auto; }
+        .ingredients-full h3 { font-size: 20px; margin-bottom: 15px; }
+        .ingredients-full-list { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+        .ingredient-row { display: flex; align-items: center; gap: 10px; padding: 12px; background: var(--bg-light); border-radius: 8px; }
+        .ingredient-row::before { content: "✓"; color: #00B894; }
+        
+        /* ============================================
+           7. SOCIAL PROOF #3 (VIDEO / CASE STUDIES)
+        ============================================ */
+        .social-proof-3 { background: var(--bg-light); }
+        .sp3-header { text-align: center; margin-bottom: 40px; }
+        .sp3-header h2 { font-size: 28px; margin-bottom: 10px; }
+        .sp3-video { 
+            max-width: 700px; margin: 0 auto 40px; 
+            background: #000; border-radius: 16px; aspect-ratio: 16/9;
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer; position: relative; overflow: hidden;
+        }
+        .sp3-video::before { 
+            content: "▶"; font-size: 60px; color: #fff; 
+            position: absolute; z-index: 2;
+        }
+        .sp3-video img { width: 100%; height: 100%; object-fit: cover; opacity: 0.7; }
+        .sp3-cases { display: grid; grid-template-columns: repeat(2, 1fr); gap: 30px; max-width: 900px; margin: 0 auto; }
+        .sp3-case { background: #fff; padding: 30px; border-radius: 12px; }
+        .sp3-case h3 { margin-bottom: 20px; font-size: 18px; }
+        .sp3-before-after { display: flex; gap: 15px; align-items: center; }
+        .sp3-before, .sp3-after { flex: 1; text-align: center; }
+        .sp3-before img, .sp3-after img { width: 100%; border-radius: 8px; }
+        .sp3-arrow { font-size: 24px; color: var(--accent); }
+        .sp3-case-meta { margin-top: 15px; color: var(--text-muted); font-size: 14px; }
+        .sp3-influencer { text-align: center; margin-top: 30px; padding: 20px; }
+        .sp3-influencer-quote { font-size: 18px; font-style: italic; margin-bottom: 10px; }
+        .sp3-influencer-handle { color: var(--accent); font-weight: 500; }
+        
+        /* ============================================
+           8. COMPARISON (TABLE)
+        ============================================ */
+        .comparison { background: #fff; }
+        .comparison h2 { font-size: 32px; margin-bottom: 40px; text-align: center; }
+        .comparison-table { 
+            width: 100%; max-width: 900px; margin: 0 auto; 
+            border-collapse: collapse; border-radius: 12px; overflow: hidden;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+        }
+        .comparison-table th, .comparison-table td { 
+            padding: 18px 20px; text-align: center; border-bottom: 1px solid var(--border);
+        }
+        .comparison-table th { background: var(--primary); color: #fff; font-weight: 600; }
+        .comparison-table th:first-child { text-align: left; }
+        .comparison-table td:first-child { text-align: left; font-weight: 500; }
+        .comparison-table tr:last-child td { border-bottom: none; }
+        .comparison-check { color: #00B894; font-size: 20px; }
+        .comparison-x { color: #FF6B6B; font-size: 20px; }
+        .comparison-our { background: #F0FFF4; }
+        .comparison-price { font-weight: 700; font-size: 18px; }
+        .comparison-stars { color: var(--star); }
+        
+        /* ============================================
+           9. FAQ (ACCORDION)
+        ============================================ */
+        .faq { background: var(--bg-light); }
+        .faq h2 { font-size: 32px; margin-bottom: 40px; text-align: center; }
+        .faq-list { max-width: 800px; margin: 0 auto; }
+        .faq-item { 
+            background: #fff; border-radius: 12px; margin-bottom: 15px; 
+            overflow: hidden; box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+        .faq-question { 
+            padding: 20px 25px; cursor: pointer; font-weight: 600; 
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        .faq-question::after { content: "+"; font-size: 24px; color: var(--accent); }
+        .faq-answer { 
+            padding: 0 25px 20px; color: var(--text-muted); line-height: 1.7;
+            display: none;
+        }
+        .faq-item.open .faq-answer { display: block; }
+        .faq-item.open .faq-question::after { content: "-"; }
+        
+        /* ============================================
+           10. CTA (FINAL CALL-TO-ACTION)
+        ============================================ */
+        .cta-final { 
+            background: linear-gradient(135deg, var(--primary) 0%, #000 100%); 
+            color: #fff; text-align: center; padding: 80px 0;
+        }
+        .cta-final h2 { font-size: 36px; margin-bottom: 30px; }
+        .cta-final .btn-primary { 
+            display: inline-block; max-width: 300px; font-size: 20px; 
+            padding: 20px 60px;
+        }
+        .cta-badges { 
+            display: flex; justify-content: center; gap: 40px; margin-top: 40px; 
+            flex-wrap: wrap;
+        }
+        .cta-badge { display: flex; align-items: center; gap: 10px; font-size: 14px; opacity: 0.9; }
+        .cta-badge-icon { font-size: 20px; }
+        
+        /* FOOTER */
+        .footer { background: var(--primary); color: #fff; padding: 40px 0; text-align: center; }
+        .footer-links { display: flex; justify-content: center; gap: 30px; margin-bottom: 20px; flex-wrap: wrap; }
+        .footer-links a { color: #fff; text-decoration: none; opacity: 0.8; }
+        .footer-links a:hover { opacity: 1; }
+        .footer p { opacity: 0.6; font-size: 14px; }
+        
+        @media (max-width: 768px) {
+            .nav-links { display: none; }
+            .buybox-grid { grid-template-columns: 1fr; }
+            .sp1-grid, .sp2-grid, .ingredients-grid, .sp3-cases { grid-template-columns: 1fr; }
+            .benefits-list, .faq-list { padding: 0 20px; }
+            .comparison-table { font-size: 14px; }
+            .cta-badges { gap: 20px; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- 1. NAV (TOP MENU) -->
+    <nav class="nav">
+        <div class="container nav-inner">
+            <a href="{{SHOP_URL}}" class="nav-logo">{{LOGO}}</a>
+            <div class="nav-links">
+                <a href="{{SHOP_URL}}">Shop</a>
+                <a href="{{ABOUT_URL}}">About</a>
+                <a href="{{BLOG_URL}}">Blog</a>
+                <a href="{{CONTACT_URL}}">Contact</a>
+            </div>
+            <div class="nav-cart">
+                <span class="nav-cart-icon">🛒</span>
+                <span class="nav-cart-count">{{CART_COUNT}}</span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 2. BUYBOX (HERO PRODUCT MODULE) -->
+    <section class="buybox">
+        <div class="container">
+            <div class="buybox-grid">
+                <div class="buybox-image">
+                    <img src="{{PRODUCT_IMAGE}}" alt="{{PRODUCT_NAME}}">
+                </div>
+                <div class="buybox-details">
+                    <!-- Social proof ABOVE product name -->
+                    <div class="buybox-rating">
+                        <span class="buybox-stars">{{STAR_RATING}}</span>
+                        <span>({{REVIEW_COUNT}} reviews)</span>
+                    </div>
+                    <h1 class="buybox-title">{{PRODUCT_NAME}}</h1>
+                    <div class="buybox-price">
+                        {{CURRENT_PRICE}}
+                        {{#if ORIGINAL_PRICE}}<span class="original">{{ORIGINAL_PRICE}}</span>{{/if}}
+                    </div>
+                    <div class="buybox-variants">
+                        {{#if COLOR_OPTIONS}}
+                        <div class="variant-group">
+                            <span class="variant-label">Color:</span>
+                            <div class="variant-options">
+                                {{#each COLOR_OPTIONS}}
+                                <div class="variant-option {{selected}}">{{label}}</div>
+                                {{/each}}
+                            </div>
+                        </div>
+                        {{/if}}
+                        {{#if SIZE_OPTIONS}}
+                        <div class="variant-group">
+                            <span class="variant-label">Size:</span>
+                            <div class="variant-options">
+                                {{#each SIZE_OPTIONS}}
+                                <div class="variant-option {{selected}}">{{label}}</div>
+                                {{/each}}
+                            </div>
+                        </div>
+                        {{/if}}
+                    </div>
+                    <div class="buybox-ctas">
+                        <button class="btn btn-primary">{{ADD_TO_CART}}</button>
+                        <button class="btn btn-secondary">{{BUY_NOW}}</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 3. SOCIAL PROOF #1 (TESTIMONIALS ROW 1) -->
+    <section class="section social-proof-1">
+        <div class="container">
+            <div class="sp1-header">
+                <div class="sp1-share">
+                    <a href="#">FB</a>
+                    <a href="#">TW</a>
+                    <a href="#">IG</a>
+                    <a href="#">PI</a>
+                </div>
+                <h2>Loved by {{TOTAL_CUSTOMERS}}+ customers</h2>
+            </div>
+            <div class="sp1-grid">
+                <div class="sp1-card">
+                    <div class="sp1-card-stars">★★★★★</div>
+                    <p class="sp1-card-quote">"{{TESTIMONIAL_1}}"</p>
+                    <div class="sp1-card-author">
+                        <div class="sp1-avatar">{{TESTIMONIAL_1_INITIAL}}</div>
+                        <span class="sp1-name">{{TESTIMONIAL_1_NAME}}</span>
+                    </div>
+                </div>
+                <div class="sp1-card">
+                    <div class="sp1-card-stars">★★★★★</div>
+                    <p class="sp1-card-quote">"{{TESTIMONIAL_2}}"</p>
+                    <div class="sp1-card-author">
+                        <div class="sp1-avatar">{{TESTIMONIAL_2_INITIAL}}</div>
+                        <span class="sp1-name">{{TESTIMONIAL_2_NAME}}</span>
+                    </div>
+                </div>
+                <div class="sp1-card">
+                    <div class="sp1-card-stars">★★★★★</div>
+                    <p class="sp1-card-quote">"{{TESTIMONIAL_3}}"</p>
+                    <div class="sp1-card-author">
+                        <div class="sp1-avatar">{{TESTIMONIAL_3_INITIAL}}</div>
+                        <span class="sp1-name">{{TESTIMONIAL_3_NAME}}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 4. SOCIAL PROOF #2 (MORE PROOF / UGC) -->
+    <section class="section social-proof-2">
+        <div class="container">
+            <div class="sp2-header">
+                <h2>Here's what real customers are sharing...</h2>
+            </div>
+            <div class="sp2-grid">
+                <div class="sp2-photo"><img src="{{UGC_PHOTO_1}}" alt="Customer photo"></div>
+                <div class="sp2-photo"><img src="{{UGC_PHOTO_2}}" alt="Customer photo"></div>
+                <div class="sp2-photo"><img src="{{UGC_PHOTO_3}}" alt="Customer photo"></div>
+                <div class="sp2-photo"><img src="{{UGC_PHOTO_4}}" alt="Customer photo"></div>
+            </div>
+            <p class="sp2-attribution">Posted on Instagram, Twitter & TikTok</p>
+        </div>
+    </section>
+
+    <!-- 5. BENEFITS (ICON-BULLETED LIST) -->
+    <section class="section benefits">
+        <div class="container">
+            <h2>Why You'll Love {{PRODUCT_NAME}}</h2>
+            <div class="benefits-list">
+                <div class="benefit-item">
+                    <div class="benefit-icon">{{BENEFIT_1_ICON}}</div>
+                    <div class="benefit-content">
+                        <h3>{{BENEFIT_1_TITLE}}</h3>
+                        <p>{{BENEFIT_1_DESC}}</p>
+                    </div>
+                </div>
+                <div class="benefit-item">
+                    <div class="benefit-icon">{{BENEFIT_2_ICON}}</div>
+                    <div class="benefit-content">
+                        <h3>{{BENEFIT_2_TITLE}}</h3>
+                        <p>{{BENEFIT_2_DESC}}</p>
+                    </div>
+                </div>
+                <div class="benefit-item">
+                    <div class="benefit-icon">{{BENEFIT_3_ICON}}</div>
+                    <div class="benefit-content">
+                        <h3>{{BENEFIT_3_TITLE}}</h3>
+                        <p>{{BENEFIT_3_DESC}}</p>
+                    </div>
+                </div>
+                <div class="benefit-item">
+                    <div class="benefit-icon">{{BENEFIT_4_ICON}}</div>
+                    <div class="benefit-content">
+                        <h3>{{BENEFIT_4_TITLE}}</h3>
+                        <p>{{BENEFIT_4_DESC}}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 6. INGREDIENTS/MATERIALS (SPECS GRID) -->
+    <section class="section ingredients">
+        <div class="container">
+            <h2>What's Inside / Specifications</h2>
+            <div class="ingredients-grid">
+                <div class="ingredient-card">
+                    <div class="ingredient-img">{{INGREDIENT_1_ICON}}</div>
+                    <div class="ingredient-name">{{INGREDIENT_1_NAME}}</div>
+                    <div class="ingredient-check">✓ Premium Quality</div>
+                </div>
+                <div class="ingredient-card">
+                    <div class="ingredient-img">{{INGREDIENT_2_ICON}}</div>
+                    <div class="ingredient-name">{{INGREDIENT_2_NAME}}</div>
+                    <div class="ingredient-check">✓ Verified</div>
+                </div>
+                <div class="ingredient-card">
+                    <div class="ingredient-img">{{INGREDIENT_3_ICON}}</div>
+                    <div class="ingredient-name">{{INGREDIENT_3_NAME}}</div>
+                    <div class="ingredient-check">✓ Included</div>
+                </div>
+            </div>
+            <div class="ingredients-full">
+                <h3>Full {{INGREDIENTS_OR_SPECS}} List</h3>
+                <div class="ingredients-full-list">
+                    <div class="ingredient-row">{{INGREDIENT_FULL_1}}</div>
+                    <div class="ingredient-row">{{INGREDIENT_FULL_2}}</div>
+                    <div class="ingredient-row">{{INGREDIENT_FULL_3}}</div>
+                    <div class="ingredient-row">{{INGREDIENT_FULL_4}}</div>
+                    <div class="ingredient-row">{{INGREDIENT_FULL_5}}</div>
+                    <div class="ingredient-row">{{INGREDIENT_FULL_6}}</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 7. SOCIAL PROOF #3 (VIDEO / CASE STUDIES) -->
+    <section class="section social-proof-3">
+        <div class="container">
+            <div class="sp3-header">
+                <h2>See the Results</h2>
+            </div>
+            <div class="sp3-video">
+                <img src="{{VIDEO_THUMBNAIL}}" alt="Video thumbnail">
+            </div>
+            <div class="sp3-cases">
+                <div class="sp3-case">
+                    <h3>"My Results After {{CASE_STUDY_DAYS}} Days"</h3>
+                    <div class="sp3-before-after">
+                        <div class="sp3-before">
+                            <img src="{{BEFORE_IMAGE}}" alt="Before">
+                            <div>Before</div>
+                        </div>
+                        <span class="sp3-arrow">→</span>
+                        <div class="sp3-after">
+                            <img src="{{AFTER_IMAGE}}" alt="After">
+                            <div>After</div>
+                        </div>
+                    </div>
+                    <p class="sp3-case-meta">- {{CASE_STUDY_NAME}}, {{CASE_STUDY_LOCATION}}</p>
+                </div>
+                <div class="sp3-case">
+                    <h3>"My Results After {{CASE_STUDY_2_DAYS}} Days"</h3>
+                    <div class="sp3-before-after">
+                        <div class="sp3-before">
+                            <img src="{{BEFORE_IMAGE_2}}" alt="Before">
+                            <div>Before</div>
+                        </div>
+                        <span class="sp3-arrow">→</span>
+                        <div class="sp3-after">
+                            <img src="{{AFTER_IMAGE_2}}" alt="After">
+                            <div>After</div>
+                        </div>
+                    </div>
+                    <p class="sp3-case-meta">- {{CASE_STUDY_2_NAME}}, {{CASE_STUDY_2_LOCATION}}</p>
+                </div>
+            </div>
+            <div class="sp3-influencer">
+                <p class="sp3-influencer-quote">"{{INFLUENCER_QUOTE}}"</p>
+                <p class="sp3-influencer-handle">{{INFLUENCER_HANDLE}}</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- 8. COMPARISON (TABLE) -->
+    <section class="section comparison">
+        <div class="container">
+            <h2>How We Compare</h2>
+            <table class="comparison-table">
+                <thead>
+                    <tr>
+                        <th>Features</th>
+                        <th class="comparison-our">OUR PRODUCT</th>
+                        <th>{{COMPETITOR_A}}</th>
+                        <th>{{COMPETITOR_B}}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>{{FEATURE_1}}</td>
+                        <td class="comparison-our"><span class="comparison-check">✓</span></td>
+                        <td><span class="comparison-check">✓</span></td>
+                        <td><span class="comparison-x">✗</span></td>
+                    </tr>
+                    <tr>
+                        <td>{{FEATURE_2}}</td>
+                        <td class="comparison-our"><span class="comparison-check">✓</span></td>
+                        <td><span class="comparison-x">✗</span></td>
+                        <td><span class="comparison-check">✓</span></td>
+                    </tr>
+                    <tr>
+                        <td>{{FEATURE_3}}</td>
+                        <td class="comparison-our"><span class="comparison-check">✓</span></td>
+                        <td><span class="comparison-check">✓</span></td>
+                        <td><span class="comparison-x">✗</span></td>
+                    </tr>
+                    <tr>
+                        <td>{{FEATURE_4}}</td>
+                        <td class="comparison-our"><span class="comparison-check">✓</span></td>
+                        <td><span class="comparison-x">✗</span></td>
+                        <td><span class="comparison-x">✗</span></td>
+                    </tr>
+                    <tr>
+                        <td>Price</td>
+                        <td class="comparison-our"><span class="comparison-price">{{OUR_PRICE}}</span></td>
+                        <td><span class="comparison-price">{{COMPETITOR_A_PRICE}}</span></td>
+                        <td><span class="comparison-price">{{COMPETITOR_B_PRICE}}</span></td>
+                    </tr>
+                    <tr>
+                        <td>Quality Rating</td>
+                        <td class="comparison-our"><span class="comparison-stars">★★★★★</span></td>
+                        <td><span class="comparison-stars">★★★</span></td>
+                        <td><span class="comparison-stars">★★</span></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <!-- 9. FAQ (ACCORDION) -->
+    <section class="section faq">
+        <div class="container">
+            <h2>Frequently Asked Questions</h2>
+            <div class="faq-list">
+                <div class="faq-item">
+                    <div class="faq-question">{{FAQ_1_QUESTION}}</div>
+                    <div class="faq-answer">{{FAQ_1_ANSWER}}</div>
+                </div>
+                <div class="faq-item">
+                    <div class="faq-question">{{FAQ_2_QUESTION}}</div>
+                    <div class="faq-answer">{{FAQ_2_ANSWER}}</div>
+                </div>
+                <div class="faq-item">
+                    <div class="faq-question">{{FAQ_3_QUESTION}}</div>
+                    <div class="faq-answer">{{FAQ_3_ANSWER}}</div>
+                </div>
+                <div class="faq-item">
+                    <div class="faq-question">{{FAQ_4_QUESTION}}</div>
+                    <div class="faq-answer">{{FAQ_4_ANSWER}}</div>
+                </div>
+                <div class="faq-item">
+                    <div class="faq-question">{{FAQ_5_QUESTION}}</div>
+                    <div class="faq-answer">{{FAQ_5_ANSWER}}</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 10. CTA (FINAL CALL-TO-ACTION) -->
+    <section class="cta-final">
+        <div class="container">
+            <h2>Ready to experience {{KEY_BENEFIT}}?</h2>
+            <button class="btn btn-primary">{{ADD_TO_CART}}</button>
+            <div class="cta-badges">
+                <div class="cta-badge">
+                    <span class="cta-badge-icon">🛡️</span>
+                    <span>{{GUARANTEE}}</span>
+                </div>
+                <div class="cta-badge">
+                    <span class="cta-badge-icon">🚚</span>
+                    <span>{{SHIPPING}}</span>
+                </div>
+                <div class="cta-badge">
+                    <span class="cta-badge-icon">🔒</span>
+                    <span>{{SECURITY}}</span>
+                </div>
+                <div class="cta-badge">
+                    <span class="cta-badge-icon">⚡</span>
+                    <span>{{SPEED}}</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-links">
+                <a href="{{SHOP_URL}}">Shop</a>
+                <a href="{{ABOUT_URL}}">About</a>
+                <a href="{{CONTACT_URL}}">Contact</a>
+                <a href="{{PRIVACY_URL}}">Privacy</a>
+                <a href="{{TERMS_URL}}">Terms</a>
+            </div>
+            <p>&copy; {{YEAR}} {{COMPANY_NAME}}. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        // FAQ Accordion Toggle
+        document.querySelectorAll('.faq-question').forEach(q => {
+            q.addEventListener('click', () => {
+                q.parentElement.classList.toggle('open');
+            });
+        });
+    </script>
+
+</body>
+</html>

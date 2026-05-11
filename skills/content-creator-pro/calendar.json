@@ -1,0 +1,103 @@
+{
+  "_comment": "content-creator-pro calendar — defines what to post and when",
+  "_usage": "Agent reads this file at the start of each content session to find today's slot",
+
+  "week_template": {
+    "monday": {
+      "platform": "linkedin",
+      "format": "story_post",
+      "hook_type": "personal_failure",
+      "topic_pillar": 1,
+      "target_length": "800-1200 chars",
+      "status": "pending"
+    },
+    "tuesday": {
+      "platform": "twitter",
+      "format": "thread",
+      "hook_type": "result",
+      "topic_pillar": 2,
+      "target_length": "7-10 tweets",
+      "status": "pending"
+    },
+    "wednesday": {
+      "platform": "linkedin",
+      "format": "observation_post",
+      "hook_type": "contrarian",
+      "topic_pillar": 1,
+      "target_length": "600-900 chars",
+      "status": "pending"
+    },
+    "thursday": {
+      "platform": "twitter",
+      "format": "thread",
+      "hook_type": "data_pattern",
+      "topic_pillar": 3,
+      "target_length": "5-8 tweets",
+      "status": "pending"
+    },
+    "friday": {
+      "platform": "reddit",
+      "format": "long_comment",
+      "hook_type": "educational",
+      "topic_pillar": 2,
+      "target_length": "300-600 words",
+      "status": "pending"
+    },
+    "saturday": {
+      "platform": "twitter",
+      "format": "single_tweet",
+      "hook_type": "declaration",
+      "topic_pillar": 4,
+      "target_length": "280 chars max",
+      "status": "pending"
+    },
+    "sunday": {
+      "platform": "substack",
+      "format": "deep_article",
+      "hook_type": "story",
+      "topic_pillar": 1,
+      "target_length": "1500-3000 words",
+      "status": "pending",
+      "note": "Also repurpose top 3 posts from the week"
+    }
+  },
+
+  "current_week": {
+    "week_start": "YYYY-MM-DD",
+    "slots": [
+      {
+        "date": "YYYY-MM-DD",
+        "day": "monday",
+        "platform": "linkedin",
+        "format": "story_post",
+        "hook_type": "personal_failure",
+        "topic": "[fill when writing]",
+        "status": "pending",
+        "file": null
+      }
+    ]
+  },
+
+  "formats": {
+    "story_post": "Personal story with lesson — Moment of Change framework",
+    "thread": "Multi-tweet thread — one idea per tweet, hook first",
+    "observation_post": "Something noticed + why it matters",
+    "long_comment": "Substantive reply that adds value to a Reddit thread",
+    "single_tweet": "One bold statement — declaration or contrarian hook",
+    "deep_article": "Long-form newsletter piece — Lead / Turn / Close architecture"
+  },
+
+  "hook_types": {
+    "credibility": "Lead with proof you have the right to speak",
+    "curiosity_gap": "Open a gap between what they know and what's coming",
+    "contrarian": "Challenge something the audience believes",
+    "result": "Lead with the outcome, not the journey",
+    "story": "Drop into a specific moment — no setup",
+    "personal_failure": "Vulnerability with a lesson",
+    "data_pattern": "Surprising number or observation",
+    "question": "A question they haven't been asked",
+    "list": "Promise a specific number of things",
+    "declaration": "Bold statement of belief or position",
+    "educational": "Step-by-step with a specific result"
+  }
+}

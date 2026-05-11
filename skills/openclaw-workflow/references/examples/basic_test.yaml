@@ -1,0 +1,102 @@
+# 基础测试: 顺序执行 + 变量 + 条件 + 循环 + 代码节点
+flow_id: "basic_test"
+name: "基础功能测试"
+description: "测试 OpenClaw Workflow 引擎的核心功能: 顺序执行、变量传递、条件分支、循环、内联代码"
+version: "1.0"
+
+settings:
+  retry: 0
+  on_error: stop
+
+variables:
+  greeting: "你好，OpenClaw Workflow!"
+  threshold: 3
+  items:
+    - name: "苹果"
+      price: 5
+    - name: "香蕉"
+      price: 3
+    - name: "橙子"
+      price: 8
+
+steps:
+  # 1. 日志输出
+  - id: hello
+    name: "输出欢迎信息"
+    type: log
+    message: "{{greeting}}"
+
+  # 2. 设置变量
+  - id: set_count
+    name: "设置计数器"
+    type: set
+    var: count
+    value: 5
+
+  # 3. 脚本节点
+  - id: get_date
+    name: "获取当前日期"
+    type: script
+    command: "date '+%Y-%m-%d %H:%M:%S'"
+    export: current_time
+
+  # 4. 内联代码节点
+  - id: compute
+    name: "计算总价"
+    type: code
+    python: |
+      items = {{items}}
+      total = sum(item['price'] for item in items)
+      avg = total / len(items)
+      ctx_export({"total": total, "average": round(avg, 2), "count": len(items)})
+    export: price_stats
+
+  # 5. 条件分支
+  - id: check_total
+    name: "检查总价"
+    type: condition
+    if: "price_stats['total'] > 10"
+    then:
+      - id: expensive
+        type: log
+        message: "总价超过10元，总计: {{price_stats.total}}元"
+    else:
+      - id: cheap
+        type: log
+        message: "总价在10元以内"
+
+  # 6. 循环
+  - id: process_items
+    name: "遍历商品"
+    type: loop
+    foreach: "{{items}}"
+    as: product
+    do:
+      - id: show_item
+        type: log
+        message: "商品: {{product.name}}, 价格: {{product.price}}元"
+
+  # 7. 带条件守卫的步骤
+  - id: conditional_step
+    name: "条件执行 (count > threshold)"
+    type: log
+    message: "count({{count}}) 大于 threshold({{threshold}}), 条件成立!"
+    when: "count > threshold"
+
+  # 8. 环境变量引用
+  - id: env_test
+    name: "读取环境变量"
+    type: log
+    message: "HOME 目录: {{env.HOME}}"
+
+  # 9. 最终汇总
+  - id: summary
+    name: "执行汇总"
+    type: code
+    python: |
+      print("=== 测试汇总 ===")
+      print(f"当前时间: {current_time}")
+      print(f"商品统计: {price_stats}")
+      print(f"计数器: {count}")
+      print("所有测试通过! ✅")
+      ctx_export("All tests passed!")

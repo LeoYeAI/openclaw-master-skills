@@ -1,0 +1,121 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "PF Ethnographer Settings",
+  "description": "Participant-supplied configuration for the pf-ethnographer skill. Stored at $OPENCLAW_DATA_DIR/skills/pf-ethnographer/settings.json",
+  "type": "object",
+  "properties": {
+    "schema_version": {
+      "type": "string",
+      "const": "1.0",
+      "default": "1.0",
+      "description": "Settings schema version. Do not modify."
+    },
+    "research_team_email": {
+      "type": ["string", "null"],
+      "format": "email",
+      "description": "Email address of the research team recipient. Set by the participant. When configured, enables 'Approve & Send to Research Team' in pulse review. When null (default), only Copy/Export mode is available. Set via 'Configure research team recipient' command.",
+      "default": null,
+      "examples": [null, "research@example.com"]
+    },
+    "retention_days": {
+      "type": "integer",
+      "minimum": 30,
+      "maximum": 90,
+      "default": 30,
+      "description": "Number of days to retain events and report files. After each pulse, events and report directories older than this value are automatically deleted. Participant may increase up to 90 days."
+    },
+    "always_review_before_send": {
+      "type": "boolean",
+      "const": true,
+      "default": true,
+      "description": "Must always be true. Sanitized reports must be reviewed and explicitly approved by the participant before any sharing. This setting is non-overridable — the value cannot be set to false."
+    },
+    "pulse_timezone": {
+      "type": "string",
+      "const": "America/Los_Angeles",
+      "default": "America/Los_Angeles",
+      "description": "Timezone used for pulse scheduling. Non-overridable."
+    },
+    "pulse_times_local": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "pattern": "^[0-2][0-9]:[0-5][0-9]$"
+      },
+      "const": ["09:00", "13:00", "17:00"],
+      "default": ["09:00", "13:00", "17:00"],
+      "description": "Scheduled pulse times in pulse_timezone. Non-overridable."
+    },
+    "over_redact": {
+      "type": "boolean",
+      "default": true,
+      "description": "When true, instructs the Sanitizer to use aggressive heuristic redaction, including third-party person names and uncertain patterns. Strongly recommended to keep true. Set to false only if you are frequently seeing false-positive redactions that damage report readability."
+    },
+    "log_general_usage": {
+      "type": "boolean",
+      "default": true,
+      "description": "When true (default), log all OpenClaw usage events regardless of personal-finance relevance. When false, only events with pf_relevance_score >= min_pf_relevance_for_index are logged. Setting to false reduces data volume but narrows the behavioral context available for research."
+    },
+    "min_pf_relevance_for_index": {
+      "type": "number",
+      "minimum": 0.0,
+      "maximum": 1.0,
+      "default": 0.3,
+      "description": "Events with pf_relevance_score >= this value are added to finance_index.json for fast retrieval and are featured prominently in pulse reports. Events below this threshold appear in the General Usage section."
+    },
+    "consent_version": {
+      "type": "string",
+      "default": "1.0",
+      "description": "Version string of the consent notice the participant agreed to. Used to detect when consent must be re-presented after a notice update."
+    },
+    "consent_timestamp": {
+      "type": ["string", "null"],
+      "format": "date-time",
+      "default": null,
+      "description": "ISO-8601 UTC timestamp when the participant last gave consent. Set automatically at consent time."
+    },
+    "no_events_silent": {
+      "type": "boolean",
+      "default": true,
+      "description": "When true (default), pulses with no new events are recorded silently without interrupting the participant. When false, the participant receives a brief 'No new events' notification at pulse time."
+    },
+    "export_format": {
+      "type": "string",
+      "enum": ["markdown", "json", "both"],
+      "default": "markdown",
+      "description": "Default format for exported pulse packages. 'markdown' exports .md files only. 'json' exports the raw event list (sanitized). 'both' exports both."
+    },
+    "weekly_digest_day": {
+      "type": "string",
+      "enum": ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"],
+      "default": "friday",
+      "description": "Day of the week on which the 17:00 pulse also compiles and presents a weekly digest automatically, in addition to the regular pulse."
+    }
+  },
+  "required": [
+    "always_review_before_send",
+    "pulse_timezone",
+    "pulse_times_local",
+    "retention_days",
+    "over_redact"
+  ],
+  "additionalProperties": false,
+  "examples": [
+    {
+      "schema_version": "1.0",
+      "research_team_email": null,
+      "retention_days": 30,
+      "always_review_before_send": true,
+      "pulse_timezone": "America/Los_Angeles",
+      "pulse_times_local": ["09:00", "13:00", "17:00"],
+      "over_redact": true,
+      "log_general_usage": true,
+      "min_pf_relevance_for_index": 0.3,
+      "consent_version": "1.0",
+      "consent_timestamp": null,
+      "no_events_silent": true,
+      "export_format": "markdown",
+      "weekly_digest_day": "friday"
+    }
+  ]
+}

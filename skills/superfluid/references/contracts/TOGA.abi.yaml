@@ -1,0 +1,182 @@
+# TOGA — Transparent Ongoing Auction
+# A continuous auction that designates a PIC (Patrician In Charge) per Super Token.
+# The PIC receives liquidation rewards for the token.
+#
+# Anyone can become PIC by sending a bond (via ERC-777 send()) that exceeds the
+# current PIC's bond.  The bond is streamed back at an exit rate chosen by the bidder.
+# When outbid, the remaining bond is returned to the previous PIC via ERC-20 transfer.
+#
+# Implements ITOGAv3 (uses ERC-20 transfer instead of ERC-777 send for outbid payouts)
+# and IERC777Recipient (receives new bids via the tokensReceived hook).
+#
+# NOTE: TOGA uses require() with string messages, not custom errors.
+# Revert reasons are documented per-function in the "requires" comments.
+
+meta:
+  name: TOGA
+  version: v3
+  source:
+    - https://raw.githubusercontent.com/superfluid-org/protocol-monorepo/refs/heads/dev/packages/ethereum-contracts/contracts/utils/TOGA.sol
+  implements: [ITOGAv3, IERC777Recipient]
+  note: >
+    TOGA designates one PIC per Super Token via a continuous bond auction.
+    The PIC receives all liquidation rewards for that token.  Anyone can
+    outbid the current PIC by staking a larger bond.  The bond is streamed
+    back to the PIC at a configurable exit rate.
+  deployments:
+    eth-mainnet: "0x8B5a2CF69a56d7F8Fa027edcA23594cdDF544dDc"
+    polygon-mainnet: "0x6AEAeE5Fd4D05A741723D752D30EE4D72690A8f7"
+    optimism-mainnet: "0xA3c8502187fD7a7118eAD59dc811281448946C8f"
+    arbitrum-one: "0xFC63B7C762B10670Eda15cF3ca3970bCDB28C9eF"
+    avalanche-c: "0x3D9A67D5ec1E72CEcA8157e028855056786b6159"
+    bsc-mainnet: "0xFCD84210f5d51Cd40a30443d44d6A5500d5D10dF"
+    xdai-mainnet: "0xb7DE52F4281a7a276E18C40F94cd93159C4A2d22"
+    celo-mainnet: "0x9bCa3a623e7b2e248510d88B2894F54898d88F91"
+    base-mainnet: "0xA87F76e99f6C8Ff8996d14f550ceF47f193D9A09"
+    scroll-mainnet: "0x1bF9D75d50fD828a93f69ECB06f2B85767792CEB"
+    degenchain: "0x38ed5512Ac11926bB697F4CF4eE0DD04358E2E7e"
+
+# PIC (Patrician In Charge) — the account that receives sentinel rewards for a given Super Token
+# bond        — the amount staked by the PIC; grows with accrued rewards, shrinks with the exit stream
+# exit rate   — the CFA flow rate at which the bond is streamed back to the PIC
+# bid         — an ERC-777 send() to this contract; must exceed the current bond to become PIC
+# min bond duration — immutable parameter; bond / minBondDuration = max allowed exit rate
+
+# == PIC Queries ==
+
+getCurrentPIC:
+  mutability: view
+  inputs:
+    - token: address
+  outputs:
+    - pic: address
+
+getCurrentPICInfo:
+  # Returns the current PIC address, live bond amount, and exit rate.
+  # Bond is dynamic: it grows with accrued rewards and shrinks with the exit stream.
+  mutability: view
+  inputs:
+    - token: address
+  outputs:
+    - pic: address
+    - bond: uint256
+    - exitRate: int96
+
+getDefaultExitRateFor:
+  # Returns bond / (minBondDuration * 4) — a conservative default.
+  mutability: view
+  inputs:
+    - token: address
+    - bondAmount: uint256
+  outputs:
+    - exitRate: int96
+  errors: [SafeCastOverflowedUintToInt]
+
+getMaxExitRateFor:
+  # Returns bond / minBondDuration — the upper bound for exit rate.
+  mutability: view
+  inputs:
+    - token: address
+    - bondAmount: uint256
+  outputs:
+    - exitRate: int96
+  errors: [SafeCastOverflowedUintToInt]
+
+# == PIC Actions ==
+
+changeExitRate:
+  # Allows the current PIC to update the exit rate for a given token.
+  # Setting newExitRate to 0 closes the exit stream.
+  # Setting newExitRate > 0 when no stream exists creates one.
+  #
+  # Requires:
+  #   "TOGA: only PIC allowed"          — msg.sender must be the current PIC
+  #   "TOGA: negative exitRate not allowed" — newExitRate must be >= 0
+  #   "TOGA: exitRate too high"         — newExitRate * minBondDuration must be <= current bond
+  mutability: nonpayable
+  access: pic
+  inputs:
+    - token: address
+    - newExitRate: int96
+  emits: [ExitRateChanged]
+
+# == Bidding ==
+
+tokensReceived:
+  # ERC-777 tokensReceived hook — the entry point for new bids and bond increases.
+  #
+  # If the sender is NOT the current PIC → treated as a new bid:
+  #   - userData is abi-decoded as int96 exitRate; if empty, getDefaultExitRateFor is used
+  #   - Bond must exceed the current PIC's bond
+  #   - Previous PIC receives their remaining bond via ERC-20 transfer
+  #   - Emits NewPIC
+  #
+  # If the sender IS the current PIC → treated as a bond increase:
+  #   - The sent amount is added to the existing bond
+  #   - Emits BondIncreased
+  #
+  # Requires (for new bids, via _becomePIC):
+  #   "TOGA: reentrancy not allowed"       — reentrancy guard
+  #   "TOGA: negative exitRate not allowed" — exitRate must be >= 0
+  #   "TOGA: exitRate too high"            — exitRate * minBondDuration must be <= bid amount
+  #   "TOGA: bid too low"                  — bid must exceed current PIC's bond
+  mutability: nonpayable
+  access: anyone
+  inputs:
+    - operator: address
+    - from: address
+    - to: address
+    - amount: uint256
+    - userData: bytes
+    - operatorData: bytes
+  emits: [NewPIC, BondIncreased]
+
+# == Configuration ==
+
+minBondDuration:
+  # Immutable parameter set at deployment.
+  # Defines the maximum exit rate: maxExitRate = bond / minBondDuration.
+  # Default exit rate is bond / (minBondDuration * 4).
+  mutability: view
+  inputs: []
+  outputs:
+    - uint256
+
+# == Events ==
+
+events:
+
+  NewPIC:
+    # Emitted when a new PIC is designated via a successful bid.
+    indexed:
+      - token: address
+    data:
+      - pic: address
+      - bond: uint256
+      - exitRate: int96
+
+  ExitRateChanged:
+    # Emitted when the current PIC changes the exit rate.
+    indexed:
+      - token: address
+    data:
+      - exitRate: int96
+
+  BondIncreased:
+    # Emitted when the current PIC sends additional tokens to increase their bond.
+    indexed:
+      - token: address
+    data:
+      - additionalBond: uint256
+
+# == Errors ==
+# TOGA primarily uses require() with string messages (not custom errors).
+# The string-based revert reasons are documented per-function above.
+# The only custom error in the ABI comes from OpenZeppelin SafeCast:
+
+errors:
+
+  # -- OpenZeppelin SafeCast --
+  - SafeCastOverflowedUintToInt:
+      inputs:
+        - value: uint256

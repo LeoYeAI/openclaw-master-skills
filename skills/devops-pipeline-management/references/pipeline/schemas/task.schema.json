@@ -1,0 +1,28 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "task.schema.json",
+  "title": "Task",
+  "description": "任务节点数据结构",
+  "type": "object",
+  "required": ["id", "name", "nodeType"],
+  "properties": {
+    "id": {
+      "type": "string",
+      "description": "任务唯一标识"
+    },
+    "name": {
+      "type": "string",
+      "description": "任务名称"
+    },
+    "nodeType": {
+      "type": "string",
+      "enum": ["custom-task-node", "custom-add-task-node"],
+      "description": "节点类型"
+    },
+    "idx": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "任务索引"
+    }
+  }
+}

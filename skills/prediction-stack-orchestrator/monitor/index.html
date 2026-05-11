@@ -1,0 +1,587 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OpenClaw Prediction Stack — Monitor</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.9/babel.min.js"></script>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Inter:wght@400;500;600&display=swap');
+
+  :root {
+    --oc-green: #22c55e;
+    --oc-green-dim: #15803d;
+    --oc-green-bg: rgba(34, 197, 94, 0.06);
+    --oc-amber: #f59e0b;
+    --oc-red: #ef4444;
+    --oc-bg: #09090b;
+    --oc-surface: #111113;
+    --oc-surface-2: #18181b;
+    --oc-border: #27272a;
+    --oc-text: #e4e4e7;
+    --oc-text-dim: #71717a;
+    --oc-text-muted: #52525b;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--oc-bg);
+    color: var(--oc-text);
+    font-family: 'Inter', -apple-system, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .mono { font-family: 'JetBrains Mono', monospace; }
+
+  .app { max-width: 1200px; margin: 0 auto; padding: 24px 20px 60px; }
+
+  /* Header */
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 20px;
+    border-bottom: 1px solid var(--oc-border);
+    margin-bottom: 24px;
+  }
+  .header h1 {
+    font-size: 20px;
+    font-weight: 600;
+    letter-spacing: -0.3px;
+  }
+  .header h1 span { color: var(--oc-green); }
+  .header-meta {
+    font-size: 12px;
+    color: var(--oc-text-dim);
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  /* Tabs */
+  .tabs {
+    display: flex;
+    gap: 2px;
+    margin-bottom: 24px;
+    background: var(--oc-surface);
+    border-radius: 8px;
+    padding: 3px;
+    width: fit-content;
+  }
+  .tab {
+    padding: 7px 18px;
+    cursor: pointer;
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--oc-text-dim);
+    background: transparent;
+    border: none;
+    border-radius: 6px;
+    transition: all 0.15s;
+  }
+  .tab:hover { color: var(--oc-text); }
+  .tab.active {
+    color: var(--oc-text);
+    background: var(--oc-surface-2);
+    box-shadow: 0 1px 2px rgba(0,0,0,0.3);
+  }
+
+  /* Cards */
+  .card {
+    background: var(--oc-surface);
+    border: 1px solid var(--oc-border);
+    border-radius: 10px;
+    margin-bottom: 16px;
+    overflow: hidden;
+  }
+  .card-header {
+    padding: 14px 18px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid var(--oc-border);
+  }
+  .card-header h2 {
+    font-size: 13px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--oc-text-dim);
+  }
+  .card-body { padding: 18px; }
+
+  /* Stat Grid */
+  .stat-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+  }
+  .stat-box {
+    background: var(--oc-surface-2);
+    border: 1px solid var(--oc-border);
+    border-radius: 8px;
+    padding: 14px;
+  }
+  .stat-box .label {
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    color: var(--oc-text-muted);
+    margin-bottom: 6px;
+  }
+  .stat-box .value {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--oc-text);
+  }
+  .stat-box .value.green { color: var(--oc-green); }
+  .stat-box .value.amber { color: var(--oc-amber); }
+  .stat-box .value.dim { color: var(--oc-text-dim); }
+
+  /* Progress Bars */
+  .bar-row {
+    display: flex;
+    align-items: center;
+    margin-bottom: 12px;
+  }
+  .bar-row:last-child { margin-bottom: 0; }
+  .bar-label {
+    width: 150px;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--oc-text-dim);
+  }
+  .bar-track {
+    flex: 1;
+    height: 8px;
+    background: var(--oc-surface-2);
+    border-radius: 4px;
+    margin: 0 14px;
+    overflow: hidden;
+  }
+  .bar-fill {
+    height: 100%;
+    border-radius: 4px;
+    transition: width 0.6s ease;
+    background: var(--oc-green);
+  }
+  .bar-fill.amber { background: var(--oc-amber); }
+  .bar-fill.red { background: var(--oc-red); }
+  .bar-fill.neutral { background: var(--oc-green); opacity: 0.7; }
+  .bar-value {
+    width: 60px;
+    text-align: right;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--oc-text);
+  }
+
+  /* Skills Grid */
+  .skills-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+  }
+  .skill-card {
+    background: var(--oc-surface-2);
+    border: 1px solid var(--oc-border);
+    border-radius: 8px;
+    padding: 14px;
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    transition: border-color 0.15s;
+  }
+  .skill-card:hover { border-color: var(--oc-text-muted); }
+  .skill-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    margin-top: 4px;
+    flex-shrink: 0;
+  }
+  .skill-dot.active { background: var(--oc-green); box-shadow: 0 0 6px rgba(34,197,94,0.4); }
+  .skill-dot.missing { background: var(--oc-red); }
+  .skill-info .skill-name {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--oc-text);
+    margin-bottom: 2px;
+  }
+  .skill-info .skill-desc {
+    font-size: 11px;
+    color: var(--oc-text-dim);
+    margin-bottom: 6px;
+  }
+  .skill-info .skill-meta {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--oc-text-muted);
+  }
+
+  /* Process Table */
+  .proc-table { width: 100%; border-collapse: collapse; }
+  .proc-table th {
+    text-align: left;
+    padding: 8px 12px;
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    color: var(--oc-text-muted);
+    border-bottom: 1px solid var(--oc-border);
+  }
+  .proc-table td {
+    padding: 8px 12px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: var(--oc-text-dim);
+    border-bottom: 1px solid rgba(39,39,42,0.5);
+  }
+  .proc-table tr:hover td { color: var(--oc-text); }
+
+  /* Log Viewer */
+  .log-viewer {
+    background: var(--oc-bg);
+    border: 1px solid var(--oc-border);
+    border-radius: 6px;
+    padding: 14px;
+    max-height: 280px;
+    overflow-y: auto;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    line-height: 1.7;
+  }
+  .log-viewer::-webkit-scrollbar { width: 5px; }
+  .log-viewer::-webkit-scrollbar-track { background: transparent; }
+  .log-viewer::-webkit-scrollbar-thumb { background: var(--oc-border); border-radius: 3px; }
+  .log-line { color: var(--oc-text-muted); }
+  .log-line.accept { color: var(--oc-green); }
+  .log-line.reject { color: var(--oc-red); }
+  .log-line.error { color: var(--oc-amber); }
+  .log-line.iteration { color: var(--oc-text); font-weight: 600; }
+
+  /* Config Items */
+  .config-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+  }
+  .config-item {
+    background: var(--oc-surface-2);
+    border: 1px solid var(--oc-border);
+    border-radius: 8px;
+    padding: 12px;
+  }
+  .config-item .ck { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.8px; color: var(--oc-text-muted); margin-bottom: 4px; }
+  .config-item .cv { font-family: 'JetBrains Mono', monospace; font-size: 18px; font-weight: 700; color: var(--oc-green); }
+
+  /* Empty State */
+  .empty {
+    text-align: center;
+    padding: 40px;
+    color: var(--oc-text-muted);
+    font-size: 13px;
+  }
+
+  /* Status Bar */
+  .status-bar {
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    background: var(--oc-surface);
+    border-top: 1px solid var(--oc-border);
+    padding: 6px 24px;
+    display: flex;
+    justify-content: space-between;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--oc-text-muted);
+    z-index: 100;
+  }
+  .status-dot {
+    display: inline-block;
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    margin-right: 6px;
+  }
+  .status-dot.ok { background: var(--oc-green); box-shadow: 0 0 4px rgba(34,197,94,0.4); }
+  .status-dot.err { background: var(--oc-red); }
+
+  /* AR Cards */
+  .ar-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .ar-card {
+    background: var(--oc-surface-2);
+    border: 1px solid var(--oc-border);
+    border-radius: 8px;
+    padding: 16px;
+  }
+  .ar-card h3 { font-size: 12px; font-weight: 600; color: var(--oc-text); margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+  .ar-row { display: flex; justify-content: space-between; margin-bottom: 6px; font-size: 12px; }
+  .ar-row .al { color: var(--oc-text-dim); }
+  .ar-row .av { color: var(--oc-text); font-family: 'JetBrains Mono', monospace; }
+
+  @media (max-width: 768px) {
+    .stat-grid { grid-template-columns: repeat(2, 1fr); }
+    .skills-grid { grid-template-columns: 1fr; }
+    .config-grid { grid-template-columns: 1fr; }
+    .ar-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel">
+const { useState, useEffect, useCallback } = React;
+const API = window.location.origin;
+
+function Bar({ label, value, max = 1.0, format = "pct", neutral = false }) {
+  const pct = Math.min(100, (value / max) * 100);
+  const cls = neutral ? "neutral" : (pct >= 80 ? "" : pct >= 50 ? "amber" : "red");
+  const txt = format === "pct" ? `${(value * 100).toFixed(1)}%` : value.toFixed(4);
+  return (
+    <div className="bar-row">
+      <span className="bar-label">{label}</span>
+      <div className="bar-track"><div className={`bar-fill ${cls}`} style={{ width: `${pct}%` }} /></div>
+      <span className="bar-value">{txt}</span>
+    </div>
+  );
+}
+
+function StatTab({ data }) {
+  const active = data.skills?.filter(s => s.status === "active").length || 0;
+  const total = data.skills?.length || 10;
+  const procs = data.processes?.length || 0;
+  const arRunning = data.autoresearch?.xpulse?.running || data.autoresearch?.kalshalyst?.running;
+  const xpScore = data.eval?.xpulse?.composite_score;
+  const kalScore = data.eval?.kalshalyst?.trading_score;
+
+  return (
+    <div>
+      <div className="card">
+        <div className="card-header"><h2>System Overview</h2></div>
+        <div className="card-body">
+          <div className="stat-grid">
+            <div className="stat-box"><div className="label">Skills Online</div><div className={`value ${active === total ? "green" : "amber"}`}>{active}/{total}</div></div>
+            <div className="stat-box"><div className="label">Processes</div><div className={`value ${procs > 0 ? "green" : "dim"}`}>{procs}</div></div>
+            <div className="stat-box"><div className="label">Autoresearch</div><div className={`value ${arRunning ? "green" : "dim"}`}>{arRunning ? "ACTIVE" : "IDLE"}</div></div>
+            <div className="stat-box"><div className="label">Xpulse Score</div><div className="value green">{xpScore?.toFixed(4) || "—"}</div></div>
+          </div>
+        </div>
+      </div>
+
+      <div className="card">
+        <div className="card-header"><h2>Performance</h2></div>
+        <div className="card-body">
+          {xpScore != null && <Bar label="Xpulse Composite" value={xpScore} />}
+          {data.eval?.xpulse?.precision != null && <Bar label="Precision" value={data.eval.xpulse.precision} />}
+          {data.eval?.xpulse?.recall != null && <Bar label="Recall" value={data.eval.xpulse.recall} />}
+          {data.eval?.xpulse?.direction_accuracy != null && <Bar label="Direction Acc" value={data.eval.xpulse.direction_accuracy} />}
+          {kalScore != null && <Bar label="Kalshalyst Score" value={kalScore} />}
+          {!xpScore && !kalScore && <div className="empty">No eval results yet. Run an eval to see metrics.</div>}
+        </div>
+      </div>
+
+      <div className="card">
+        <div className="card-header"><h2>Config Snapshot</h2></div>
+        <div className="card-body">
+          <div className="stat-grid">
+            <div className="stat-box"><div className="label">Kelly Alpha</div><div className="value mono">{data.configs?.kelly?.alpha ?? "—"}</div></div>
+            <div className="stat-box"><div className="label">Ensemble K/X</div><div className="value mono">{data.configs?.ensemble?.w_kalshalyst ?? "—"}/{data.configs?.ensemble?.w_xpulse ?? "—"}</div></div>
+            <div className="stat-box"><div className="label">Bankroll</div><div className="value mono">${data.configs?.kelly?.bankroll_usd ?? "—"}</div></div>
+            <div className="stat-box"><div className="label">Best Xpulse</div><div className="value mono">{data.autoresearch?.xpulse?.best_score?.toFixed(4) || "—"}</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function SkillsTab({ skills }) {
+  if (!skills?.length) return <div className="empty">No skills data</div>;
+  return (
+    <div className="skills-grid">
+      {skills.map(s => (
+        <div className="skill-card" key={s.id}>
+          <div className={`skill-dot ${s.status === "active" ? "active" : "missing"}`} />
+          <div className="skill-info">
+            <div className="skill-name">{s.name}</div>
+            <div className="skill-desc">{s.description}</div>
+            <div className="skill-meta">{s.lines} lines | {s.scripts} scripts | {s.status.toUpperCase()}</div>
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function OpsTab({ data }) {
+  const procs = data.processes || [];
+  const ar = data.autoresearch || {};
+  const logs = data.logs || {};
+
+  return (
+    <div>
+      <div className="card">
+        <div className="card-header"><h2>Active Processes</h2><span style={{ fontSize: "11px", color: "var(--oc-text-muted)" }}>{procs.length} running</span></div>
+        <div className="card-body">
+          {procs.length > 0 ? (
+            <table className="proc-table">
+              <thead><tr><th>Type</th><th>PID</th><th>CPU</th><th>MEM</th><th>Command</th></tr></thead>
+              <tbody>{procs.map((p,i) => (
+                <tr key={i}><td>{p.type}</td><td>{p.pid}</td><td>{p.cpu}%</td><td>{p.mem}%</td><td>{p.command?.slice(0,70)}</td></tr>
+              ))}</tbody>
+            </table>
+          ) : <div className="empty">No active processes</div>}
+        </div>
+      </div>
+
+      <div className="ar-grid">
+        <div className="ar-card">
+          <h3><span className={`skill-dot ${ar.xpulse?.running ? "active" : "missing"}`} style={{ width: 6, height: 6 }} /> Xpulse Autoresearch</h3>
+          <div className="ar-row"><span className="al">Status</span><span className="av">{ar.xpulse?.running ? "RUNNING" : "STOPPED"}</span></div>
+          <div className="ar-row"><span className="al">Iteration</span><span className="av">{ar.xpulse?.iteration || 0}</span></div>
+          <div className="ar-row"><span className="al">Best Score</span><span className="av">{ar.xpulse?.best_score?.toFixed(4) || "—"}</span></div>
+        </div>
+        <div className="ar-card">
+          <h3><span className={`skill-dot ${ar.kalshalyst?.running ? "active" : "missing"}`} style={{ width: 6, height: 6 }} /> Kalshalyst Autoresearch</h3>
+          <div className="ar-row"><span className="al">Status</span><span className="av">{ar.kalshalyst?.running ? "RUNNING" : "STOPPED"}</span></div>
+          <div className="ar-row"><span className="al">Best Score</span><span className="av">{ar.kalshalyst?.best_score?.toFixed(4) || "—"}</span></div>
+        </div>
+      </div>
+
+      {(logs.xpulse?.length > 0 || logs.kalshalyst?.length > 0) && (
+        <div className="card" style={{ marginTop: 16 }}>
+          <div className="card-header"><h2>Recent Logs</h2></div>
+          <div className="card-body">
+            <div className="log-viewer">
+              {(logs.xpulse || logs.kalshalyst || []).map((line, i) => {
+                let cls = "log-line";
+                if (line.includes("ACCEPT")) cls += " accept";
+                else if (line.includes("REJECT") || line.includes("Reverted")) cls += " reject";
+                else if (line.includes("ERROR")) cls += " error";
+                else if (line.includes("ITERATION")) cls += " iteration";
+                return <div key={i} className={cls}>{line}</div>;
+              })}
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function ConfigTab({ data }) {
+  const kelly = data.configs?.kelly || {};
+  const ensemble = data.configs?.ensemble || {};
+  const filter = data.configs?.market_filter || {};
+
+  return (
+    <div>
+      <div className="card">
+        <div className="card-header"><h2>Kelly Criterion</h2></div>
+        <div className="card-body">
+          <div className="config-grid">
+            <div className="config-item"><div className="ck">Alpha</div><div className="cv">{kelly.alpha ?? "—"}</div></div>
+            <div className="config-item"><div className="ck">Conf Exponent</div><div className="cv">{kelly.confidence_exponent ?? "—"}</div></div>
+            <div className="config-item"><div className="ck">Min Edge</div><div className="cv">{kelly.min_edge_for_sizing ?? "—"}</div></div>
+            <div className="config-item"><div className="ck">Max Contracts</div><div className="cv">{kelly.max_contracts_per_trade ?? "—"}</div></div>
+            <div className="config-item"><div className="ck">Max Cost/Trade</div><div className="cv">${kelly.max_cost_per_trade_usd ?? "—"}</div></div>
+            <div className="config-item"><div className="ck">Bankroll</div><div className="cv">${kelly.bankroll_usd ?? "—"}</div></div>
+          </div>
+        </div>
+      </div>
+
+      <div className="card">
+        <div className="card-header"><h2>Ensemble Weights</h2></div>
+        <div className="card-body">
+          <Bar label="Kalshalyst" value={ensemble.w_kalshalyst || 0} neutral />
+          <Bar label="Xpulse" value={ensemble.w_xpulse || 0} neutral />
+          <Bar label="Market" value={ensemble.w_market || 0} neutral />
+        </div>
+      </div>
+
+      <div className="card">
+        <div className="card-header"><h2>Market Filter</h2></div>
+        <div className="card-body">
+          {(filter.skip_rules || filter.skip_categories) ? (
+            <div style={{ fontSize: 12, lineHeight: 2, fontFamily: "'JetBrains Mono', monospace" }}>
+              <div><span style={{ color: "var(--oc-text-muted)" }}>Mode: </span>{filter.filter_mode || "—"}</div>
+              <div><span style={{ color: "var(--oc-text-muted)" }}>Skip: </span>{JSON.stringify(filter.skip_rules?.categories || filter.skip_categories || [])}</div>
+              <div><span style={{ color: "var(--oc-text-muted)" }}>Max Price: </span>{filter.skip_rules?.max_price_cents || "—"}c</div>
+              <div><span style={{ color: "var(--oc-text-muted)" }}>Min Days: </span>{filter.skip_rules?.min_days_to_close || "—"}</div>
+              <div><span style={{ color: "var(--oc-text-muted)" }}>Boost: </span>{JSON.stringify(filter.boost_rules?.high_edge_categories || [])}</div>
+            </div>
+          ) : <div className="empty">No filter config found</div>}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function App() {
+  const [data, setData] = useState(null);
+  const [tab, setTab] = useState("overview");
+  const [lastPoll, setLastPoll] = useState(null);
+  const [error, setError] = useState(null);
+
+  const poll = useCallback(async () => {
+    try {
+      const res = await fetch(`${API}/api/status`);
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const json = await res.json();
+      setData(json);
+      setLastPoll(new Date());
+      setError(null);
+    } catch (e) { setError(e.message); }
+  }, []);
+
+  useEffect(() => { poll(); const iv = setInterval(poll, 5000); return () => clearInterval(iv); }, [poll]);
+
+  const tabs = [
+    { id: "overview", label: "Overview" },
+    { id: "skills", label: "Skills" },
+    { id: "ops", label: "Operations" },
+    { id: "config", label: "Config" },
+  ];
+
+  return (
+    <div className="app">
+      <div className="header">
+        <h1><span>OpenClaw</span> Prediction Stack</h1>
+        <div className="header-meta">Monitor v1.0</div>
+      </div>
+
+      <div className="tabs">
+        {tabs.map(t => <button key={t.id} className={`tab ${tab === t.id ? "active" : ""}`} onClick={() => setTab(t.id)}>{t.label}</button>)}
+      </div>
+
+      {error && !data && (
+        <div className="card"><div className="card-body empty">
+          <div style={{ color: "var(--oc-amber)", marginBottom: 8 }}>Connection lost</div>
+          <div>Start the monitor server: <code className="mono">python3 server.py</code></div>
+        </div></div>
+      )}
+
+      {tab === "overview" && data && <StatTab data={data} />}
+      {tab === "skills" && <SkillsTab skills={data?.skills} />}
+      {tab === "ops" && data && <OpsTab data={data} />}
+      {tab === "config" && data && <ConfigTab data={data} />}
+
+      <div className="status-bar">
+        <span><span className={`status-dot ${error ? "err" : "ok"}`} />{error ? `Disconnected: ${error}` : "Connected"}</span>
+        <span>Poll: 5s | Last: {lastPoll?.toLocaleTimeString() || "—"}</span>
+        <span>{data?.timestamp?.split("T")[0] || "—"}</span>
+      </div>
+    </div>
+  );
+}
+
+ReactDOM.render(<App />, document.getElementById("root"));
+</script>
+</body>
+</html>

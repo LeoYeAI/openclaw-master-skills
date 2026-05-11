@@ -1,0 +1,63 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "manual-review.schema.json",
+  "title": "ManualReview Task",
+  "description": "人工审核任务配置",
+  "type": "object",
+  "required": ["taskCategory", "jobType", "name"],
+  "properties": {
+    "taskCategory": {
+      "type": "string",
+      "const": "Normal"
+    },
+    "jobType": {
+      "type": "string",
+      "const": "ManualReview"
+    },
+    "name": {
+      "type": "string",
+      "maxLength": 100,
+      "description": "任务名称"
+    },
+    "workPath": {
+      "type": "string",
+      "description": "工作目录"
+    },
+    "sourceId": {
+      "type": "string",
+      "description": "代码源ID"
+    },
+    "reviewers": {
+      "type": "array",
+      "items": { "type": "string" },
+      "default": [],
+      "description": "审核人列表（用户名）"
+    },
+    "reviewMessage": {
+      "type": "string",
+      "description": "审核说明"
+    },
+    "timeout": {
+      "type": "integer",
+      "default": 86400,
+      "description": "超时时间（秒），默认24小时"
+    },
+    "notifyType": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": ["email", "sms", "webhook"]
+      },
+      "default": ["email"],
+      "description": "通知方式"
+    },
+    "idInTemplate": {
+      "type": "string"
+    },
+    "dependencies": {
+      "type": "array",
+      "items": { "type": "string" },
+      "default": []
+    }
+  }
+}

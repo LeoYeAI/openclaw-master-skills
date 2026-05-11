@@ -1,0 +1,70 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "host-deploy.schema.json",
+  "title": "HostDeploy Task",
+  "description": "主机部署任务配置",
+  "type": "object",
+  "required": ["taskCategory", "jobType", "name"],
+  "properties": {
+    "taskCategory": {
+      "type": "string",
+      "const": "Deploy"
+    },
+    "jobType": {
+      "type": "string",
+      "const": "HostDeploy"
+    },
+    "name": {
+      "type": "string",
+      "maxLength": 100,
+      "description": "任务名称"
+    },
+    "workPath": {
+      "type": "string",
+      "description": "工作目录"
+    },
+    "sourceId": {
+      "type": "string",
+      "description": "代码源ID"
+    },
+    "deployType": {
+      "type": "string",
+      "enum": ["artifact", "script"],
+      "default": "artifact",
+      "description": "部署类型"
+    },
+    "artifactPath": {
+      "type": "string",
+      "description": "制品路径（deployType=artifact时使用）"
+    },
+    "hostGroupId": {
+      "type": "string",
+      "description": "主机组ID"
+    },
+    "targetPath": {
+      "type": "string",
+      "description": "目标路径"
+    },
+    "preScript": {
+      "type": "string",
+      "description": "前置脚本"
+    },
+    "postScript": {
+      "type": "string",
+      "description": "后置脚本"
+    },
+    "timeout": {
+      "type": "number",
+      "default": 600,
+      "description": "超时时间（秒）"
+    },
+    "idInTemplate": {
+      "type": "string"
+    },
+    "dependencies": {
+      "type": "array",
+      "items": { "type": "string" },
+      "default": []
+    }
+  }
+}

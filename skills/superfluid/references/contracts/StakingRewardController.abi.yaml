@@ -1,0 +1,298 @@
+# StakingRewardController — Unlock Tax Revenue Splitter
+# Splits unlock tax revenue between a staker pool and an LP pool using
+# Superfluid GDA distributions. Approved Reserves (FluidLockers) report their
+# staked / LP balances; the controller converts them to pool units.
+#
+# NOTE: Contracts use "FLUID" and "Locker" internally. Public-facing names are
+# "SUP" and "Reserve" respectively. Solidity identifiers in this file match
+# the on-chain names (FLUID / Locker).
+#
+# NOTE: emits/errors mappings are traced from source code — verify against implementation.
+
+meta:
+  name: StakingRewardController
+  version: v1
+  source:
+    - https://raw.githubusercontent.com/superfluid-org/sup-token/refs/heads/dev/packages/contracts/src/StakingRewardController.sol
+  inherits: [OwnableUpgradeable, UUPSUpgradeable]
+  deployments:
+    base-mainnet: "0xb19Ae25A98d352B36CED60F93db926247535048b"
+
+# == Abbreviations ==
+# BP  — Basis Points (1 BP = 0.01%, 10000 BP = 100%)
+# GDA — General Distribution Agreement
+# LP  — Liquidity Provider
+# SUP — Superfluid Token (contract name: FLUID)
+
+# == Glossary ==
+# FLUID / SUP                — the Superfluid Token; contracts say FLUID, UI says SUP
+# Locker / Reserve           — the user's lock/stake contract; contracts say Locker, UI says Reserve
+# tax allocation             — BP split between staker pool and LP pool (must sum to 10000)
+# staker distribution pool   — Superfluid Pool receiving the staker share of unlock tax
+# LP distribution pool       — Superfluid Pool receiving the LP share of unlock tax
+# approved locker            — a FluidLocker registered via approveLocker by the factory
+# downscaling                — unit values are divided before writing to pool (1e18 for staking, 1e16 for LP)
+
+# == Constants ==
+
+FLUID:
+  # Immutable reference to the SUP (FLUID) SuperToken. Set at construction.
+  mutability: view
+  outputs:
+    - address
+
+# == Tax Configuration ==
+
+setTaxAllocation:
+  # Set the BP split between staker and LP pools.
+  notes:
+    - "Gotcha: Both values must sum to exactly 10000 or the call reverts."
+  mutability: nonpayable
+  access: owner
+  inputs:
+    - stakerAllocationBP: uint128
+    - liquidityProviderAllocationBP: uint128
+  emits: [TaxAllocationUpdated]
+  errors: [INVALID_PARAMETER]
+
+getTaxAllocation:
+  # Returns the current BP split between staker and LP pools.
+  mutability: view
+  outputs:
+    - stakerAllocationBP: uint128
+    - liquidityProviderAllocationBP: uint128
+
+taxAllocation:
+  # Raw storage getter — same data as getTaxAllocation.
+  mutability: view
+  outputs:
+    - stakerAllocationBP: uint128
+    - liquidityProviderAllocationBP: uint128
+
+# == Distribution Flow ==
+
+refreshTaxDistributionFlow:
+  # Recalculates and updates the GDA flow rates to both pools based on the
+  # contract's current FLUID balance spread over a 180-day window.
+  notes:
+    - "Gotcha: Permissionless — anyone can call at any time."
+  mutability: nonpayable
+  access: anyone
+  emits: [TaxDistributionFlowUpdated]
+
+setupLPDistributionPool:
+  # Creates the LP distribution pool. Must be called once after deployment.
+  notes:
+    - "Gotcha: Can only be called once — reverts with LP_DISTRIBUTION_POOL_ALREADY_SET on repeat calls."
+  mutability: nonpayable
+  access: owner
+  errors: [LP_DISTRIBUTION_POOL_ALREADY_SET]
+
+# == Unit Updates ==
+# Called by approved Reserves (FluidLockers) to report their staking / LP balances.
+# The controller downscales the balance and writes it as pool member units.
+
+updateStakerUnits:
+  # Report the caller's staked balance. Downscaled by 1e18 before writing units.
+  notes:
+    - "Gotcha: The locker itself is msg.sender — users do not call these directly."
+  mutability: nonpayable
+  access: approved-locker
+  inputs:
+    - lockerStakedBalance: uint256  # raw 18-decimal staked balance
+  emits: [UpdatedStakersUnits]
+  errors: [NOT_APPROVED_LOCKER]
+
+updateLiquidityProviderUnits:
+  # Report the caller's LP balance. Downscaled by 1e16 before writing units.
+  mutability: nonpayable
+  access: approved-locker
+  inputs:
+    - lockerLiquidityBalance: uint256  # raw LP balance
+  emits: [UpdatedLiquidityProviderUnits]
+  errors: [NOT_APPROVED_LOCKER]
+
+approveLocker:
+  # Register a FluidLocker so it can call updateStakerUnits / updateLiquidityProviderUnits.
+  notes:
+    - "Gotcha: Only callable by the factory — not by the owner."
+  mutability: nonpayable
+  access: locker-factory
+  inputs:
+    - lockerAddress: address
+  emits: [LockerApproved]
+  errors: [NOT_LOCKER_FACTORY]
+
+# == State Queries ==
+
+lockerFactory:
+  # Address of the FluidLockerFactory authorized to approve lockers.
+  mutability: view
+  outputs:
+    - address
+
+lpDistributionPool:
+  # The Superfluid Pool receiving LP share of unlock tax.
+  # Returns address(0) before setupLPDistributionPool is called.
+  mutability: view
+  outputs:
+    - address
+
+taxDistributionPool:
+  # The Superfluid Pool receiving staker share of unlock tax.
+  # Created during initialize.
+  mutability: view
+  outputs:
+    - address
+
+owner:
+  mutability: view
+  outputs:
+    - address
+
+# == Admin ==
+
+initialize:
+  # Proxy initializer. Sets the owner and creates the staker distribution pool.
+  notes:
+    - "Gotcha: Can only be called once (OpenZeppelin initializer modifier)."
+  mutability: nonpayable
+  inputs:
+    - owner: address
+  emits: [Initialized]
+
+setLockerFactory:
+  # Set or update the FluidLockerFactory address.
+  mutability: nonpayable
+  access: owner
+  inputs:
+    - lockerFactoryAddress: address
+  emits: [LockerFactoryAddressUpdated]
+  errors: [INVALID_PARAMETER]
+
+transferOwnership:
+  mutability: nonpayable
+  access: owner
+  inputs:
+    - newOwner: address
+  emits: [OwnershipTransferred]
+
+renounceOwnership:
+  mutability: nonpayable
+  access: owner
+  emits: [OwnershipTransferred]
+
+# == Upgrade ==
+
+upgradeTo:
+  # UUPS proxy upgrade with optional re-initialization data.
+  mutability: nonpayable
+  access: owner
+  inputs:
+    - newImplementation: address
+    - data: bytes  # calldata for post-upgrade initialization (can be empty)
+  emits: [Upgraded]
+  errors: [ERC1967InvalidImplementation, ERC1967NonPayable, FailedInnerCall, AddressEmptyCode]
+
+# == Events ==
+
+events:
+
+  TaxAllocationUpdated:
+    # Emitted when the staker/LP BP split is changed.
+    data:
+      - stakerAllocationBP: uint128
+      - liquidityProviderAllocationBP: uint128
+
+  TaxDistributionFlowUpdated:
+    # Emitted when distribution flow rates are recalculated.
+    data:
+      - liquidityProviderFlowRate: int96
+      - stakerFlowRate: int96
+
+  UpdatedStakersUnits:
+    # Emitted when a locker updates its staker units.
+    indexed:
+      - staker: address
+      - totalStakerUnits: uint128
+
+  UpdatedLiquidityProviderUnits:
+    # Emitted when a locker updates its LP units.
+    indexed:
+      - liquidityProvider: address
+      - totalLiquidityProviderUnits: uint128
+
+  LockerApproved:
+    # Emitted when a locker is registered by the factory.
+    indexed:
+      - approvedLocker: address
+
+  LockerFactoryAddressUpdated:
+    # Emitted when the factory address is set or changed.
+    indexed:
+      - newLockerFactoryAddress: address
+
+  OwnershipTransferred:
+    indexed:
+      - previousOwner: address
+      - newOwner: address
+
+  Upgraded:
+    # ERC1967 proxy upgrade event.
+    indexed:
+      - implementation: address
+
+  Initialized:
+    # OpenZeppelin initializer event.
+    data:
+      - version: uint64
+
+  # Legacy / unused events present in ABI:
+  ProgramManagerAddressUpdated:
+    indexed:
+      - newProgramManagerAddress: address
+
+  SubsidyFlowRateUpdated:
+    indexed:
+      - newSubsidyFlowRate: int96
+
+# == Errors ==
+
+errors:
+
+  # -- Access Control --
+  - NOT_APPROVED_LOCKER           # caller is not in the approved lockers mapping
+  - NOT_LOCKER_FACTORY            # caller is not the registered FluidLockerFactory
+  - NOT_PROGRAM_MANAGER           # legacy — caller is not the program manager
+  - OwnableInvalidOwner:
+      inputs:
+        - owner: address
+  - OwnableUnauthorizedAccount:
+      inputs:
+        - account: address
+
+  # -- Validation --
+  - INVALID_PARAMETER             # zero address or tax allocation BP don't sum to 10000
+
+  # -- LP Pool --
+  - LP_DISTRIBUTION_POOL_ALREADY_SET  # setupLPDistributionPool already called
+
+  # -- Initialization --
+  - InvalidInitialization
+  - NotInitializing
+
+  # -- Proxy / ERC1967 --
+  - AddressEmptyCode:
+      inputs:
+        - target: address
+  - ERC1967InvalidImplementation:
+      inputs:
+        - implementation: address
+  - ERC1967NonPayable
+  - FailedInnerCall
+
+  # -- SafeCast (inherited) --
+  - SafeCastOverflowedIntDowncast:
+      inputs:
+        - bits: uint8
+        - value: int256

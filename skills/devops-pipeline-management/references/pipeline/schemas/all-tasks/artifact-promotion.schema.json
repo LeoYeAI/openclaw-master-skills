@@ -1,0 +1,65 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "artifact-promotion.schema.json",
+  "title": "ArtifactPromotion Task",
+  "description": "制品晋级任务配置（从build库晋级到release库）",
+  "type": "object",
+  "required": ["taskCategory", "jobType", "name"],
+  "properties": {
+    "taskCategory": {
+      "type": "string",
+      "const": "Normal"
+    },
+    "jobType": {
+      "type": "string",
+      "const": "ArtifactPromotion"
+    },
+    "name": {
+      "type": "string",
+      "maxLength": 100,
+      "description": "任务名称"
+    },
+    "workPath": {
+      "type": "string",
+      "description": "工作目录"
+    },
+    "sourceId": {
+      "type": "string",
+      "description": "代码源ID"
+    },
+    "artifactType": {
+      "type": "string",
+      "enum": ["docker", "maven", "npm", "generic"],
+      "default": "docker",
+      "description": "制品类型"
+    },
+    "sourceArtifact": {
+      "type": "string",
+      "description": "源制品路径"
+    },
+    "sourceVersion": {
+      "type": "string",
+      "description": "源版本"
+    },
+    "targetRepo": {
+      "type": "string",
+      "description": "目标仓库"
+    },
+    "targetVersion": {
+      "type": "string",
+      "description": "目标版本"
+    },
+    "preDependTaskId": {
+      "type": "string",
+      "description": "前置构建任务ID"
+    },
+    "idInTemplate": {
+      "type": "string"
+    },
+    "dependencies": {
+      "type": "array",
+      "items": { "type": "string" },
+      "default": []
+    }
+  }
+}

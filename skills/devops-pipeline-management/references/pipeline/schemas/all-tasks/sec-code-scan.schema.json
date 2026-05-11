@@ -1,0 +1,66 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "sec-code-scan.schema.json",
+  "title": "SecCodeScan Task",
+  "description": "代码安全扫描任务配置",
+  "type": "object",
+  "required": ["taskCategory", "jobType", "name"],
+  "properties": {
+    "taskCategory": {
+      "type": "string",
+      "const": "CodeScanner"
+    },
+    "jobType": {
+      "type": "string",
+      "const": "SecCodeScan"
+    },
+    "name": {
+      "type": "string",
+      "maxLength": 100,
+      "description": "任务名称"
+    },
+    "workPath": {
+      "type": "string",
+      "description": "工作目录"
+    },
+    "sourceId": {
+      "type": "string",
+      "description": "代码源ID"
+    },
+    "buildImageModel": {
+      "type": "string",
+      "enum": ["default", "custom"],
+      "default": "default"
+    },
+    "executeImageId": {
+      "type": "string"
+    },
+    "scanPath": {
+      "type": "string",
+      "default": "./",
+      "description": "扫描路径"
+    },
+    "language": {
+      "type": "string",
+      "enum": ["java", "nodejs", "python", "go", "cpp"],
+      "description": "代码语言"
+    },
+    "ruleSet": {
+      "type": "string",
+      "description": "规则集ID"
+    },
+    "failOnIssue": {
+      "type": "boolean",
+      "default": false,
+      "description": "发现问题时失败"
+    },
+    "idInTemplate": {
+      "type": "string"
+    },
+    "dependencies": {
+      "type": "array",
+      "items": { "type": "string" },
+      "default": []
+    }
+  }
+}

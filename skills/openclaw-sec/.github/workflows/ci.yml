@@ -1,0 +1,48 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build
+        run: npm run build
+
+      - name: Run unit tests
+        run: npm test
+
+      - name: Run ZeroLeaks pen test
+        run: npm run pentest
+        env:
+          OPENCLAW_SEC_NO_DB: 1
+
+      - name: Summary
+        if: always()
+        continue-on-error: true
+        env:
+          OPENCLAW_SEC_NO_DB: 1
+        run: |
+          npm run pentest:json > pentest-results.json 2>&1 || true
+          if [ -f pentest-results.json ]; then
+            echo "## ZeroLeaks Pen Test Results" >> $GITHUB_STEP_SUMMARY
+            echo '```json' >> $GITHUB_STEP_SUMMARY
+            jq '.summary' pentest-results.json >> $GITHUB_STEP_SUMMARY 2>/dev/null || cat pentest-results.json >> $GITHUB_STEP_SUMMARY
+            echo '```' >> $GITHUB_STEP_SUMMARY
+          fi

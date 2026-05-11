@@ -1,0 +1,130 @@
+{
+  "source": "install.mdx",
+  "relative_source": "faq\\install.mdx",
+  "title": "安装问题",
+  "doc_kind": "install_guide",
+  "is_index_page": false,
+  "section_count": 14,
+  "table_count": 0,
+  "callout_count": 0,
+  "link_count": 0,
+  "image_count": 0,
+  "sections": [
+    {
+      "id": "faq.install.安装问题",
+      "title": "安装问题",
+      "level": 1,
+      "content_md": "",
+      "summary": "",
+      "block_type": "install_step"
+    },
+    {
+      "id": "faq.install.无法安装新版本-python",
+      "title": "无法安装新版本 Python",
+      "level": 3,
+      "content_md": "最新的 Python 3.12 只能安装在 Windows 8.1 及以上版本，已经不再支持 Windows 7 等更低的版本，详情查看 [官方文档 - 在 Windows 上使用 Python](https://docs.python.org/zh-cn/3/using/windows.html)",
+      "summary": "最新的 Python 3.12 只能安装在 Windows 8.1 及以上版本，已经不再支持 Windows 7 等更低的版本，详情查看 [官方文档 - 在 Windows 上使用 Python](https://docs.python.org/zh-cn/3/using/windows.html)",
+      "block_type": "faq"
+    },
+    {
+      "id": "faq.install.电脑上可以安装多个版本的-python-吗",
+      "title": "电脑上可以安装多个版本的 Python 吗",
+      "level": 3,
+      "content_md": "可以，需要会设置环境变量，比如当使用 32 位无限易的时候，则手动把 32 位的 Python 路径放在 `Path` 环境变量第一位",
+      "summary": "可以，需要会设置环境变量，比如当使用 32 位无限易的时候，则手动把 32 位的 Python 路径放在 `Path` 环境变量第一位",
+      "block_type": "faq"
+    },
+    {
+      "id": "faq.install.我可以使用-anaconda-的-python-吗",
+      "title": "我可以使用 Anaconda 的 Python 吗",
+      "level": 3,
+      "content_md": "不可以，只能安装官方版本的 Python",
+      "summary": "不可以，只能安装官方版本的 Python",
+      "block_type": "faq"
+    },
+    {
+      "id": "faq.install.我可以自己下载最新版本的-python-安装吗",
+      "title": "我可以自己下载最新版本的 Python 安装吗",
+      "level": 3,
+      "content_md": "可以，但是前提是不能跨大版本。\n\n比如你可以安装 Python 3.12 中的任意一个小版本，但是不能安装 Python 3.11，因为 11 相比 12，已经跨大版本了",
+      "summary": "可以，但是前提是不能跨大版本。",
+      "block_type": "faq"
+    },
+    {
+      "id": "faq.install.modulenotfounderror-no-module-named",
+      "title": "ModuleNotFoundError: No module named '...'",
+      "level": 3,
+      "content_md": "一般情况是没操作**安装依赖**这一步导致的，这时候只需要执行`安装依赖.exe`文件即可",
+      "summary": "一般情况是没操作**安装依赖**这一步导致的，这时候只需要执行`安装依赖.exe`文件即可",
+      "block_type": "faq"
+    },
+    {
+      "id": "faq.install.no-module-named-numpy-core-_multiarray_umath",
+      "title": "No module named 'numpy.core._multiarray_umath'",
+      "level": 3,
+      "content_md": "* 64 位无限易需要对应 64 位的 Python, 32 位同理\n  * 重装或者升级 numpy",
+      "summary": "* 64 位无限易需要对应 64 位的 Python, 32 位同理\n  * 重装或者升级 numpy",
+      "block_type": "faq"
+    },
+    {
+      "id": "faq.install.安装依赖提示-error-ta-lib-0-4-xxx-whl-is-not-a-supported-wheel-on-this-platform",
+      "title": "安装依赖提示: ERROR: TA-Lib-0.4.xxx.whl is not a supported wheel on this platform",
+      "level": 3,
+      "content_md": "这是 Python 位数和依赖版本不一致导致的，需要重新检查环境，统一版本\n\n* `win32` 需要 32 位 Python\n\n* `win_amd64` 需要 64 位 Python",
+      "summary": "这是 Python 位数和依赖版本不一致导致的，需要重新检查环境，统一版本",
+      "block_type": "faq"
+    },
+    {
+      "id": "faq.install.开启-pythongo-之后无限易启动闪退",
+      "title": "开启 PythonGO 之后无限易启动闪退",
+      "level": 3,
+      "content_md": "可能 `Path` 环境变量中有某个路径中存在 Python 的 DLL, 解决方法：\n\n1. 先检查**系统变量 - Path** 中的路径，是否包含 `python.dll` 文件，如果包含该文件，则需要删除该路径\n\n2. 最后检查**用户变量 - Path**，看看 Python 的安装目录是否排在第一位\n\n* 如果不是，则需要手动把 Python 的安装目录调整到第一位\n\n* 如果没有找到安装路径，则需要重新安装 Python，且严格按照[安装文档](../python_install.mdx)操作\n\n注意：如何修改环境变量可以自行百度",
+      "summary": "可能 `Path` 环境变量中有某个路径中存在 Python 的 DLL, 解决方法：",
+      "block_type": "faq"
+    },
+    {
+      "id": "faq.install.indentationerror",
+      "title": "IndentationError: ...",
+      "level": 3,
+      "content_md": "缩进错误，Python 要求使用四个空格作为缩进，可以使用 [Visual Studio Code](https://code.visualstudio.com/) 编辑器来检查缩进错误",
+      "summary": "缩进错误，Python 要求使用四个空格作为缩进，可以使用 [Visual Studio Code](https://code.visualstudio.com/) 编辑器来检查缩进错误",
+      "block_type": "faq"
+    },
+    {
+      "id": "faq.install.no-qt-bindings-could-be-found",
+      "title": "No Qt bindings could be found",
+      "level": 3,
+      "content_md": "CMD 输入 `pip cache dir`，把返回的目录删除，然后重新[安装依赖](../python_install.mdx#requirements)",
+      "summary": "CMD 输入 `pip cache dir`，把返回的目录删除，然后重新[安装依赖](../python_install.mdx#requirements)",
+      "block_type": "faq"
+    },
+    {
+      "id": "faq.install.this-application-failed-to-start-because-no-qt-platform-plugin-could-be-initialized",
+      "title": "This application failed to start because no Qt platform plugin could be initialized.",
+      "level": 3,
+      "content_md": "未正确设置 QT_QPA_PLATFORM_PLUGIN_PATH 环境变量",
+      "summary": "未正确设置 QT_QPA_PLATFORM_PLUGIN_PATH 环境变量",
+      "block_type": "faq"
+    },
+    {
+      "id": "faq.install.安装-pyqt5-提示没权限-permission-denied",
+      "title": "安装 PyQt5 提示没权限（Permission denied）",
+      "level": 3,
+      "content_md": "关闭或卸载 360，再重新[安装依赖](../python_install.mdx#requirements)",
+      "summary": "关闭或卸载 360，再重新[安装依赖](../python_install.mdx#requirements)",
+      "block_type": "faq"
+    },
+    {
+      "id": "faq.install.importerror-dll-load-failed-while-importing-aggregations-找不到指定的模块",
+      "title": "ImportError: DLL load failed while importing aggregations: 找不到指定的模块",
+      "level": 3,
+      "content_md": "下载并安装微软运行库：[点我下载](https://infinitrader.quantdo.com.cn/docs/tools.html)\n\n*注意：这个报错必须是由于 `pandas` 模块引起的（常见于 Python 3.12 32 位版本），才可以使用此解决方案*",
+      "summary": "下载并安装微软运行库：[点我下载](https://infinitrader.quantdo.com.cn/docs/tools.html)",
+      "block_type": "faq"
+    }
+  ],
+  "tables": [],
+  "callouts": [],
+  "links": [],
+  "images": []
+}

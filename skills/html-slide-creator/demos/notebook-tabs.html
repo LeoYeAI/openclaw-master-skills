@@ -1,0 +1,685 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Notebook Tabs — slide-creator</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@400;500&display=swap">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-snap-type: y mandatory; scroll-behavior: smooth; height: 100%; }
+    body {
+      height: 100%; overflow-x: hidden;
+      background: #2d2d2d;
+      font-family: 'DM Sans', sans-serif;
+    }
+
+    /* Progress bar */
+    #progress-bar {
+      position: fixed; top: 0; left: 0; height: 3px;
+      background: linear-gradient(90deg, #98d4bb, #c7b8ea, #f4b8c5);
+      z-index: 100; transition: width 0.4s ease;
+      width: 0%;
+    }
+
+    /* Slides */
+    .slide {
+      width: 100vw; height: 100vh; height: 100dvh;
+      scroll-snap-align: start; overflow: hidden;
+      position: relative; display: flex;
+      align-items: center; justify-content: center;
+    }
+
+    /* Paper card */
+    .paper {
+      width: 90vw; max-width: 1100px; height: 88vh; max-height: 680px;
+      background: #f8f6f1;
+      border-radius: 8px;
+      box-shadow: 0 8px 48px rgba(0,0,0,0.5), 0 2px 12px rgba(0,0,0,0.3);
+      position: relative; overflow: visible;
+      display: flex; align-items: stretch;
+    }
+
+    /* Ruled lines */
+    .paper::after {
+      content: '';
+      position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+      background-image: repeating-linear-gradient(
+        to bottom,
+        transparent,
+        transparent 27px,
+        rgba(0,0,0,0.05) 27px,
+        rgba(0,0,0,0.05) 28px
+      );
+      background-position: 0 56px;
+      border-radius: 8px;
+      pointer-events: none; z-index: 1;
+    }
+
+    /* Binder holes */
+    .binder-holes {
+      position: absolute; left: -16px; top: 0; bottom: 0;
+      display: flex; flex-direction: column;
+      justify-content: space-evenly; align-items: center;
+      padding: 60px 0; z-index: 10;
+    }
+    .hole {
+      width: 12px; height: 12px; border-radius: 50%;
+      background: #2d2d2d;
+      box-shadow: inset 0 1px 3px rgba(0,0,0,0.5);
+    }
+
+    /* Tabs on right edge */
+    .tabs {
+      position: absolute; right: -52px; top: 0; bottom: 0;
+      display: flex; flex-direction: column;
+      pointer-events: all;
+    }
+    .tab {
+      flex: 1; width: 52px;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer;
+      writing-mode: vertical-rl;
+      text-orientation: mixed;
+      font-family: 'DM Sans', sans-serif; font-weight: 500;
+      font-size: clamp(8px, 0.85vw, 10px); letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: rgba(26,26,26,0.5);
+      transition: all 0.3s ease;
+      border-radius: 0 4px 4px 0;
+    }
+    .tab:first-child { border-radius: 0 4px 0 0; }
+    .tab:last-child  { border-radius: 0 0 4px 0; }
+    .tab[data-color="mint"]     { background: #98d4bb; }
+    .tab[data-color="lavender"] { background: #c7b8ea; }
+    .tab[data-color="pink"]     { background: #f4b8c5; }
+    .tab[data-color="sky"]      { background: #a8d8ea; }
+    .tab[data-color="cream"]    { background: #ffe6a7; }
+    .tab[data-color="peach"]    { background: #f4c4a4; }
+    .tab[data-color="sage"]     { background: #b4d4b4; }
+    .tab[data-color="coral"]    { background: #f4b4a4; }
+    .tab.active {
+      width: 64px; color: rgba(26,26,26,0.9); font-weight: 500;
+      box-shadow: 2px 0 8px rgba(0,0,0,0.15);
+    }
+    .tab:not(.active) { opacity: 0.6; width: 52px; }
+
+    /* Content area */
+    .paper-content {
+      flex: 1; padding: clamp(36px, 5vw, 60px) clamp(32px, 4.5vw, 56px) clamp(36px, 5vw, 56px) 56px;
+      position: relative; z-index: 2; overflow: hidden;
+      display: flex; flex-direction: column; justify-content: center;
+    }
+
+    /* Reveal animations */
+    .reveal { opacity: 0; transform: translateX(-14px); transition: opacity 0.3s ease, transform 0.3s ease; }
+    .slide.visible .reveal { opacity: 1; transform: translateX(0); }
+    .reveal-1 { transition-delay: 0.05s; }
+    .reveal-2 { transition-delay: 0.12s; }
+    .reveal-3 { transition-delay: 0.2s; }
+    .reveal-4 { transition-delay: 0.28s; }
+    .reveal-5 { transition-delay: 0.36s; }
+
+    /* Typography */
+    .slide-label {
+      font-family: 'DM Sans', sans-serif; font-weight: 400;
+      font-size: clamp(10px, 1vw, 12px);
+      letter-spacing: 0.18em; text-transform: uppercase;
+      color: #9a9590; margin-bottom: clamp(10px, 1.5vw, 16px);
+    }
+    h1 {
+      font-family: 'Bodoni Moda', serif; font-weight: 700;
+      font-size: clamp(44px, 6vw, 76px);
+      line-height: 1.0; color: #1a1a1a; letter-spacing: -0.02em;
+    }
+    h2 {
+      font-family: 'Bodoni Moda', serif; font-weight: 700;
+      font-size: clamp(24px, 3.2vw, 42px);
+      line-height: 1.15; color: #1a1a1a; letter-spacing: -0.01em;
+    }
+    .subtitle {
+      font-family: 'Bodoni Moda', serif; font-style: italic;
+      font-size: clamp(14px, 1.6vw, 18px);
+      color: #6a6560; margin-top: clamp(10px, 1.5vw, 16px); line-height: 1.5;
+    }
+    .body-text {
+      font-family: 'DM Sans', sans-serif; font-weight: 400;
+      font-size: clamp(13px, 1.3vw, 15px);
+      line-height: 1.75; color: #444;
+      margin-top: clamp(14px, 2vw, 22px);
+      max-width: 560px;
+    }
+    .ruled-divider {
+      width: 100%; height: 1px;
+      background: rgba(0,0,0,0.08);
+      margin: clamp(16px, 2.5vw, 28px) 0;
+    }
+
+    /* Stat badges */
+    .badges {
+      display: flex; gap: clamp(10px, 1.5vw, 18px); flex-wrap: wrap;
+      margin-top: clamp(18px, 2.5vw, 30px);
+    }
+    .badge {
+      padding: 10px 18px;
+      background: #f0ede6; border: 1px solid #e0ddd6;
+      font-family: 'DM Sans', sans-serif;
+      font-size: clamp(11px, 1.1vw, 13px); color: #6a6560;
+    }
+    .badge strong {
+      display: block; font-family: 'Bodoni Moda', serif; font-weight: 700;
+      font-size: clamp(20px, 2.2vw, 28px); color: #1a1a1a; margin-bottom: 1px;
+    }
+
+    /* Pain list */
+    .pain-list {
+      list-style: none; margin-top: clamp(18px, 2.5vw, 28px);
+      display: flex; flex-direction: column; gap: clamp(12px, 1.8vw, 18px);
+    }
+    .pain-list li {
+      display: flex; align-items: flex-start; gap: 12px;
+      font-family: 'DM Sans', sans-serif; font-weight: 400;
+      font-size: clamp(12px, 1.3vw, 15px); line-height: 1.6; color: #444;
+    }
+    .pain-list li::before {
+      content: ''; width: 8px; height: 8px; border-radius: 50%;
+      flex-shrink: 0; margin-top: 6px;
+    }
+    .pain-list li:nth-child(1)::before { background: #98d4bb; }
+    .pain-list li:nth-child(2)::before { background: #f4b8c5; }
+    .pain-list li:nth-child(3)::before { background: #ffe6a7; }
+    .pain-list li strong { color: #1a1a1a; }
+
+    /* Steps */
+    .steps {
+      display: flex; flex-direction: column; gap: clamp(8px, 1.3vw, 14px);
+      margin-top: clamp(14px, 2.2vw, 26px);
+    }
+    .step {
+      display: flex; align-items: flex-start; gap: 16px;
+      padding: clamp(9px, 1.2vw, 13px) 0;
+      border-bottom: 1px solid rgba(0,0,0,0.06);
+      font-family: 'DM Sans', sans-serif; font-weight: 400;
+      font-size: clamp(12px, 1.3vw, 15px); color: #444; line-height: 1.5;
+    }
+    .step:last-child { border-bottom: none; }
+    .step-num {
+      font-family: 'Bodoni Moda', serif; font-weight: 700;
+      font-size: clamp(18px, 2vw, 24px); color: #c7b8ea;
+      line-height: 1; flex-shrink: 0; width: 28px;
+    }
+    .step strong { color: #1a1a1a; }
+
+    /* Preset grid */
+    .preset-grid {
+      display: flex; flex-wrap: wrap; gap: 6px;
+      margin-top: clamp(14px, 2.2vw, 26px);
+    }
+    .preset-tag {
+      font-family: 'DM Sans', sans-serif; font-weight: 400;
+      font-size: clamp(10px, 1vw, 12px);
+      letter-spacing: 0.04em; color: #6a6560;
+      padding: 5px 11px; background: #f0ede6; border: 1px solid #e0ddd6;
+      transition: all 0.2s ease; cursor: default;
+    }
+    .preset-tag.current { background: #c7b8ea; color: #1a1a1a; border-color: #c7b8ea; font-weight: 500; }
+
+    /* Feature grid */
+    .feature-grid {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: clamp(8px, 1.3vw, 14px);
+      margin-top: clamp(14px, 2.2vw, 26px);
+    }
+    .feature {
+      padding: clamp(11px, 1.4vw, 16px);
+      background: #f0ede6; border: 1px solid #e0ddd6;
+      border-top: 3px solid;
+    }
+    .feature:nth-child(1) { border-top-color: #98d4bb; }
+    .feature:nth-child(2) { border-top-color: #c7b8ea; }
+    .feature:nth-child(3) { border-top-color: #f4b8c5; }
+    .feature:nth-child(4) { border-top-color: #ffe6a7; }
+    .feature-title {
+      font-family: 'Bodoni Moda', serif; font-weight: 700;
+      font-size: clamp(13px, 1.3vw, 16px); color: #1a1a1a; margin-bottom: 5px;
+    }
+    .feature p {
+      font-family: 'DM Sans', sans-serif; font-weight: 400;
+      font-size: clamp(10px, 1vw, 12px); color: #6a6560; line-height: 1.6;
+    }
+
+    /* Code block */
+    .code-block {
+      background: #1a1a1a; padding: clamp(11px, 1.6vw, 16px) clamp(13px, 1.8vw, 20px);
+      margin-top: clamp(8px, 1.2vw, 14px);
+      font-family: 'DM Mono', 'Fira Code', monospace;
+      font-size: clamp(10px, 1.1vw, 13px);
+      color: #98d4bb; line-height: 1.8; border-radius: 3px;
+    }
+    .code-comment { color: #5a6560; }
+    .code-label {
+      font-family: 'DM Sans', sans-serif; font-weight: 500;
+      font-size: clamp(10px, 1.1vw, 12px);
+      color: #9a9590; letter-spacing: 0.08em; text-transform: uppercase;
+      margin-top: clamp(12px, 1.8vw, 18px); margin-bottom: 6px;
+    }
+
+    /* CTA */
+    .cta-command {
+      font-family: 'Bodoni Moda', serif; font-weight: 700;
+      font-size: clamp(34px, 5vw, 60px);
+      color: #1a1a1a; margin-top: clamp(14px, 2.2vw, 26px);
+      padding: clamp(11px, 1.6vw, 18px) clamp(18px, 2.8vw, 32px);
+      background: #f4b8c5; display: inline-block;
+    }
+    .cta-sub {
+      font-family: 'DM Sans', sans-serif; font-weight: 400;
+      font-size: clamp(11px, 1.2vw, 14px); color: #9a9590;
+      margin-top: clamp(10px, 1.5vw, 16px); letter-spacing: 0.04em;
+    }
+
+    /* Edit mode */
+    #edit-hotzone {
+      position: fixed; top: 0; left: 0; width: 80px; height: 80px;
+      z-index: 200; cursor: default;
+    }
+    #edit-indicator {
+      position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
+      background: #1a1a1a; color: #f8f6f1;
+      font-family: 'DM Sans', sans-serif; font-size: 11px; letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 7px 18px; border-radius: 3px;
+      opacity: 0; transition: opacity 0.3s; pointer-events: none; z-index: 200;
+    }
+    #edit-indicator.visible { opacity: 1; }
+    body.edit-mode [contenteditable] { outline: 2px solid #c7b8ea; outline-offset: 2px; }
+  </style>
+</head>
+<body>
+
+<div id="progress-bar"></div>
+<div id="edit-hotzone"></div>
+<div id="edit-indicator">EDIT MODE — Ctrl+S to save</div>
+
+<!-- Slide 1: Cover -->
+<section class="slide" id="slide-0">
+  <div class="paper">
+    <div class="binder-holes">
+      <div class="hole"></div>
+      <div class="hole"></div>
+      <div class="hole"></div>
+    </div>
+    <div class="paper-content">
+      <p class="slide-label reveal reveal-1">A presentation tool</p>
+      <h1 class="reveal reveal-2">slide-creator</h1>
+      <p class="subtitle reveal reveal-3">Zero-dependency HTML presentations<br>for Claude Code &amp; OpenClaw</p>
+      <div class="ruled-divider reveal reveal-4"></div>
+      <div class="badges reveal reveal-5">
+        <div class="badge"><strong>19</strong> Presets</div>
+        <div class="badge"><strong>0</strong> Dependencies</div>
+        <div class="badge"><strong>∞</strong> Slides</div>
+      </div>
+    </div>
+    <div class="tabs">
+      <div class="tab active" data-color="mint" data-index="0">INTRO</div>
+      <div class="tab" data-color="lavender" data-index="1">PROBLEM</div>
+      <div class="tab" data-color="pink" data-index="2">DISCOVERY</div>
+      <div class="tab" data-color="sky" data-index="3">PRESETS</div>
+      <div class="tab" data-color="cream" data-index="4">WORKFLOW</div>
+      <div class="tab" data-color="peach" data-index="5">FEATURES</div>
+      <div class="tab" data-color="sage" data-index="6">INSTALL</div>
+      <div class="tab" data-color="coral" data-index="7">START</div>
+    </div>
+  </div>
+</section>
+
+<!-- Slide 2: The Problem -->
+<section class="slide" id="slide-1">
+  <div class="paper">
+    <div class="binder-holes">
+      <div class="hole"></div><div class="hole"></div><div class="hole"></div>
+    </div>
+    <div class="paper-content">
+      <p class="slide-label reveal reveal-1">The Problem</p>
+      <h2 class="reveal reveal-2">Presentations shouldn't<br>require a build system</h2>
+      <ul class="pain-list">
+        <li class="reveal reveal-3"><span><strong>Complex toolchain:</strong> npm install, webpack config, 300MB of node_modules — before a single slide exists.</span></li>
+        <li class="reveal reveal-4"><span><strong>Generic output:</strong> Every AI deck looks the same — Inter font, purple gradients, predictable nothing.</span></li>
+        <li class="reveal reveal-5"><span><strong>No ownership:</strong> Closed platforms, export locks, monthly fees for work that should be yours.</span></li>
+      </ul>
+    </div>
+    <div class="tabs">
+      <div class="tab" data-color="mint" data-index="0">INTRO</div>
+      <div class="tab active" data-color="lavender" data-index="1">PROBLEM</div>
+      <div class="tab" data-color="pink" data-index="2">DISCOVERY</div>
+      <div class="tab" data-color="sky" data-index="3">PRESETS</div>
+      <div class="tab" data-color="cream" data-index="4">WORKFLOW</div>
+      <div class="tab" data-color="peach" data-index="5">FEATURES</div>
+      <div class="tab" data-color="sage" data-index="6">INSTALL</div>
+      <div class="tab" data-color="coral" data-index="7">START</div>
+    </div>
+  </div>
+</section>
+
+<!-- Slide 3: Show Don't Tell -->
+<section class="slide" id="slide-2">
+  <div class="paper">
+    <div class="binder-holes">
+      <div class="hole"></div><div class="hole"></div><div class="hole"></div>
+    </div>
+    <div class="paper-content">
+      <p class="slide-label reveal reveal-1">Discovery</p>
+      <h2 class="reveal reveal-2">Style discovery that<br>actually works</h2>
+      <p class="body-text reveal reveal-3">You can't describe design preferences in words. slide-creator generates 3 visual previews — you react, not describe. The "wow moment" before a line of content is written.</p>
+      <div class="steps reveal reveal-4">
+        <div class="step"><span class="step-num">1</span><span><strong>Ask mood</strong> — Answer a few simple questions about tone and purpose</span></div>
+        <div class="step"><span class="step-num">2</span><span><strong>Generate 3 mini previews</strong> — Three distinct visual directions, rendered instantly</span></div>
+        <div class="step"><span class="step-num">3</span><span><strong>Pick the one that feels right</strong> — Intuition over vocabulary, always</span></div>
+      </div>
+    </div>
+    <div class="tabs">
+      <div class="tab" data-color="mint" data-index="0">INTRO</div>
+      <div class="tab" data-color="lavender" data-index="1">PROBLEM</div>
+      <div class="tab active" data-color="pink" data-index="2">DISCOVERY</div>
+      <div class="tab" data-color="sky" data-index="3">PRESETS</div>
+      <div class="tab" data-color="cream" data-index="4">WORKFLOW</div>
+      <div class="tab" data-color="peach" data-index="5">FEATURES</div>
+      <div class="tab" data-color="sage" data-index="6">INSTALL</div>
+      <div class="tab" data-color="coral" data-index="7">START</div>
+    </div>
+  </div>
+</section>
+
+<!-- Slide 4: 19 Presets -->
+<section class="slide" id="slide-3">
+  <div class="paper">
+    <div class="binder-holes">
+      <div class="hole"></div><div class="hole"></div><div class="hole"></div>
+    </div>
+    <div class="paper-content">
+      <p class="slide-label reveal reveal-1">Design Presets</p>
+      <h2 class="reveal reveal-2">19 curated styles.<br>No generic AI aesthetics.</h2>
+      <div class="preset-grid reveal reveal-3">
+        <span class="preset-tag">Bold Signal</span>
+        <span class="preset-tag">Electric Studio</span>
+        <span class="preset-tag">Creative Voltage</span>
+        <span class="preset-tag">Dark Botanical</span>
+        <span class="preset-tag">Blue Sky</span>
+        <span class="preset-tag current">Notebook Tabs</span>
+        <span class="preset-tag">Pastel Geometry</span>
+        <span class="preset-tag">Split Pastel</span>
+        <span class="preset-tag">Vintage Editorial</span>
+        <span class="preset-tag">Neon Cyber</span>
+        <span class="preset-tag">Terminal Green</span>
+        <span class="preset-tag">Swiss Modern</span>
+        <span class="preset-tag">Paper &amp; Ink</span>
+        <span class="preset-tag">Aurora Mesh</span>
+        <span class="preset-tag">Enterprise Dark</span>
+        <span class="preset-tag">Glassmorphism</span>
+        <span class="preset-tag">Neo-Brutalism</span>
+        <span class="preset-tag">Japanese Zen</span>
+        <span class="preset-tag">Data Story</span>
+      </div>
+    </div>
+    <div class="tabs">
+      <div class="tab" data-color="mint" data-index="0">INTRO</div>
+      <div class="tab" data-color="lavender" data-index="1">PROBLEM</div>
+      <div class="tab" data-color="pink" data-index="2">DISCOVERY</div>
+      <div class="tab active" data-color="sky" data-index="3">PRESETS</div>
+      <div class="tab" data-color="cream" data-index="4">WORKFLOW</div>
+      <div class="tab" data-color="peach" data-index="5">FEATURES</div>
+      <div class="tab" data-color="sage" data-index="6">INSTALL</div>
+      <div class="tab" data-color="coral" data-index="7">START</div>
+    </div>
+  </div>
+</section>
+
+<!-- Slide 5: How It Works -->
+<section class="slide" id="slide-4">
+  <div class="paper">
+    <div class="binder-holes">
+      <div class="hole"></div><div class="hole"></div><div class="hole"></div>
+    </div>
+    <div class="paper-content">
+      <p class="slide-label reveal reveal-1">Workflow</p>
+      <h2 class="reveal reveal-2">From idea to presentation<br>in minutes</h2>
+      <div class="steps reveal reveal-3">
+        <div class="step"><span class="step-num">1</span><span><strong>/slide-creator</strong> — Answer four questions: purpose, length, content, images</span></div>
+        <div class="step"><span class="step-num">2</span><span><strong>Pick your style</strong> — React to three visual previews; choose the one that resonates</span></div>
+        <div class="step"><span class="step-num">3</span><span><strong>Open your presentation</strong> — Arrow keys · Space · Swipe · Click tabs — navigation built in</span></div>
+      </div>
+    </div>
+    <div class="tabs">
+      <div class="tab" data-color="mint" data-index="0">INTRO</div>
+      <div class="tab" data-color="lavender" data-index="1">PROBLEM</div>
+      <div class="tab" data-color="pink" data-index="2">DISCOVERY</div>
+      <div class="tab" data-color="sky" data-index="3">PRESETS</div>
+      <div class="tab active" data-color="cream" data-index="4">WORKFLOW</div>
+      <div class="tab" data-color="peach" data-index="5">FEATURES</div>
+      <div class="tab" data-color="sage" data-index="6">INSTALL</div>
+      <div class="tab" data-color="coral" data-index="7">START</div>
+    </div>
+  </div>
+</section>
+
+<!-- Slide 6: Key Features -->
+<section class="slide" id="slide-5">
+  <div class="paper">
+    <div class="binder-holes">
+      <div class="hole"></div><div class="hole"></div><div class="hole"></div>
+    </div>
+    <div class="paper-content">
+      <p class="slide-label reveal reveal-1">Features</p>
+      <h2 class="reveal reveal-2">Everything you need,<br>nothing you don't</h2>
+      <div class="feature-grid reveal reveal-3">
+        <div class="feature">
+          <div class="feature-title">Viewport fitting</div>
+          <p>Every slide fits exactly 100vh. No scrolling, no clipping, no reflows.</p>
+        </div>
+        <div class="feature">
+          <div class="feature-title">Inline editing</div>
+          <p>Press E, click any text, Ctrl+S to save. No code editor required.</p>
+        </div>
+        <div class="feature">
+          <div class="feature-title">PPTX export</div>
+          <p>/slide-creator --export pptx via Playwright and your own Chrome instance.</p>
+        </div>
+        <div class="feature">
+          <div class="feature-title">Two-stage workflow</div>
+          <p>--plan creates the outline first. --generate produces the final HTML.</p>
+        </div>
+      </div>
+    </div>
+    <div class="tabs">
+      <div class="tab" data-color="mint" data-index="0">INTRO</div>
+      <div class="tab" data-color="lavender" data-index="1">PROBLEM</div>
+      <div class="tab" data-color="pink" data-index="2">DISCOVERY</div>
+      <div class="tab" data-color="sky" data-index="3">PRESETS</div>
+      <div class="tab" data-color="cream" data-index="4">WORKFLOW</div>
+      <div class="tab active" data-color="peach" data-index="5">FEATURES</div>
+      <div class="tab" data-color="sage" data-index="6">INSTALL</div>
+      <div class="tab" data-color="coral" data-index="7">START</div>
+    </div>
+  </div>
+</section>
+
+<!-- Slide 7: Install -->
+<section class="slide" id="slide-6">
+  <div class="paper">
+    <div class="binder-holes">
+      <div class="hole"></div><div class="hole"></div><div class="hole"></div>
+    </div>
+    <div class="paper-content">
+      <p class="slide-label reveal reveal-1">Installation</p>
+      <h2 class="reveal reveal-2">Up in 30 seconds</h2>
+      <div class="reveal reveal-3">
+        <p class="code-label">Claude Code</p>
+        <div class="code-block">
+          git clone https://github.com/kaisersong/slide-creator \<br>
+          &nbsp;&nbsp;~/.claude/skills/slide-creator<br>
+          <span class="code-comment"># Restart Claude Code, then:</span><br>
+          /slide-creator
+        </div>
+      </div>
+      <div class="reveal reveal-4">
+        <p class="code-label">OpenClaw</p>
+        <div class="code-block">
+          clawhub install html-slide-creator<br>
+          <span class="code-comment"># Auto-installs all dependencies</span>
+        </div>
+      </div>
+    </div>
+    <div class="tabs">
+      <div class="tab" data-color="mint" data-index="0">INTRO</div>
+      <div class="tab" data-color="lavender" data-index="1">PROBLEM</div>
+      <div class="tab" data-color="pink" data-index="2">DISCOVERY</div>
+      <div class="tab" data-color="sky" data-index="3">PRESETS</div>
+      <div class="tab" data-color="cream" data-index="4">WORKFLOW</div>
+      <div class="tab" data-color="peach" data-index="5">FEATURES</div>
+      <div class="tab active" data-color="sage" data-index="6">INSTALL</div>
+      <div class="tab" data-color="coral" data-index="7">START</div>
+    </div>
+  </div>
+</section>
+
+<!-- Slide 8: Get Started -->
+<section class="slide" id="slide-7">
+  <div class="paper">
+    <div class="binder-holes">
+      <div class="hole"></div><div class="hole"></div><div class="hole"></div>
+    </div>
+    <div class="paper-content">
+      <p class="slide-label reveal reveal-1">Begin</p>
+      <h2 class="reveal reveal-2">Your next presentation<br>starts here</h2>
+      <div class="reveal reveal-3">
+        <p class="cta-command">/slide-creator</p>
+      </div>
+      <p class="cta-sub reveal reveal-4">Works with Claude Code and OpenClaw.<br>Runs entirely in your browser.</p>
+    </div>
+    <div class="tabs">
+      <div class="tab" data-color="mint" data-index="0">INTRO</div>
+      <div class="tab" data-color="lavender" data-index="1">PROBLEM</div>
+      <div class="tab" data-color="pink" data-index="2">DISCOVERY</div>
+      <div class="tab" data-color="sky" data-index="3">PRESETS</div>
+      <div class="tab" data-color="cream" data-index="4">WORKFLOW</div>
+      <div class="tab" data-color="peach" data-index="5">FEATURES</div>
+      <div class="tab" data-color="sage" data-index="6">INSTALL</div>
+      <div class="tab active" data-color="coral" data-index="7">START</div>
+    </div>
+  </div>
+</section>
+
+<script>
+  const slides = document.querySelectorAll('.slide');
+  const progressBar = document.getElementById('progress-bar');
+  let cur = 0;
+
+  // IntersectionObserver — adds .visible, updates active tab
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+        const idx = Array.from(slides).indexOf(entry.target);
+        if (idx !== -1) updateNav(idx);
+      }
+    });
+  }, { threshold: 0.5 });
+
+  slides.forEach(slide => observer.observe(slide));
+
+  function updateNav(idx) {
+    cur = idx;
+    progressBar.style.width = ((idx + 1) / slides.length * 100) + '%';
+    document.querySelectorAll('.tab').forEach(tab => {
+      const isActive = parseInt(tab.dataset.index) === idx;
+      tab.classList.toggle('active', isActive);
+    });
+  }
+
+  function goTo(idx) {
+    if (idx < 0 || idx >= slides.length) return;
+    slides[idx].scrollIntoView({ behavior: 'smooth' });
+  }
+
+  // Tab clicks navigate slides
+  document.querySelectorAll('.tab').forEach(tab => {
+    tab.addEventListener('click', () => goTo(parseInt(tab.dataset.index)));
+  });
+
+  // Keyboard nav
+  document.addEventListener('keydown', e => {
+    if (editMode) {
+      if ((e.ctrlKey || e.metaKey) && e.key === 's') { e.preventDefault(); saveFile(); }
+      if (e.key === 'Escape') toggleEditMode();
+      return;
+    }
+    if (e.key === 'ArrowDown' || e.key === 'ArrowRight' || e.key === ' ') { e.preventDefault(); goTo(cur + 1); }
+    if (e.key === 'ArrowUp' || e.key === 'ArrowLeft') { e.preventDefault(); goTo(cur - 1); }
+    if (e.key === 'e' || e.key === 'E') toggleEditMode();
+  });
+
+  // Wheel — debounce-reset pattern
+  let wheelLocked = false, wheelTimer = null;
+  document.addEventListener('wheel', e => {
+    clearTimeout(wheelTimer);
+    if (!wheelLocked) {
+      wheelLocked = true;
+      if (e.deltaY > 0) goTo(cur + 1); else goTo(cur - 1);
+    }
+    wheelTimer = setTimeout(() => { wheelLocked = false; }, 180);
+  }, { passive: true });
+
+  // Touch swipe
+  let touchStartY = 0;
+  document.addEventListener('touchstart', e => { touchStartY = e.touches[0].clientY; }, { passive: true });
+  document.addEventListener('touchend', e => {
+    const delta = touchStartY - e.changedTouches[0].clientY;
+    if (Math.abs(delta) > 50) {
+      if (delta > 0) goTo(cur + 1); else goTo(cur - 1);
+    }
+  }, { passive: true });
+
+  // Edit mode
+  let editMode = false;
+  const editIndicator = document.getElementById('edit-indicator');
+  const editHotzone = document.getElementById('edit-hotzone');
+
+  editHotzone.addEventListener('dblclick', toggleEditMode);
+
+  function toggleEditMode() {
+    editMode = !editMode;
+    document.body.classList.toggle('edit-mode', editMode);
+    editIndicator.classList.toggle('visible', editMode);
+    document.querySelectorAll('h1, h2, p, li, .badge, .preset-tag, .feature-title, .code-block').forEach(el => {
+      el.contentEditable = editMode ? 'true' : 'false';
+    });
+  }
+
+  async function saveFile() {
+    const html = '<!DOCTYPE html>\n' + document.documentElement.outerHTML;
+    if (window.showSaveFilePicker) {
+      try {
+        const handle = await window.showSaveFilePicker({
+          suggestedName: 'notebook-tabs.html',
+          types: [{ accept: { 'text/html': ['.html'] } }]
+        });
+        const writable = await handle.createWritable();
+        await writable.write(html);
+        await writable.close();
+      } catch(e) {
+        if (e.name !== 'AbortError') fallbackSave(html);
+      }
+    } else {
+      fallbackSave(html);
+    }
+  }
+
+  function fallbackSave(html) {
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(new Blob([html], { type: 'text/html' }));
+    a.download = 'notebook-tabs.html';
+    a.click();
+  }
+</script>
+</body>
+</html>

@@ -1,0 +1,62 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "create-git-tag.schema.json",
+  "title": "CreateGitTag Task",
+  "description": "创建Git标签任务配置",
+  "type": "object",
+  "required": ["taskCategory", "jobType", "name"],
+  "properties": {
+    "taskCategory": {
+      "type": "string",
+      "const": "Code"
+    },
+    "jobType": {
+      "type": "string",
+      "const": "CreateGitTag"
+    },
+    "name": {
+      "type": "string",
+      "maxLength": 100,
+      "description": "任务名称"
+    },
+    "workPath": {
+      "type": "string",
+      "description": "工作目录"
+    },
+    "sourceId": {
+      "type": "string",
+      "description": "代码源ID"
+    },
+    "buildImageModel": {
+      "type": "string",
+      "enum": ["default", "custom"],
+      "default": "default"
+    },
+    "executeImageId": {
+      "type": "string"
+    },
+    "tagName": {
+      "type": "string",
+      "default": "v${BUILD_NUMBER}",
+      "description": "标签名称（支持动态参数）"
+    },
+    "tagMessage": {
+      "type": "string",
+      "default": "Release ${BUILD_NUMBER}",
+      "description": "标签消息"
+    },
+    "pushToRemote": {
+      "type": "boolean",
+      "default": true,
+      "description": "推送到远程仓库"
+    },
+    "idInTemplate": {
+      "type": "string"
+    },
+    "dependencies": {
+      "type": "array",
+      "items": { "type": "string" },
+      "default": []
+    }
+  }
+}

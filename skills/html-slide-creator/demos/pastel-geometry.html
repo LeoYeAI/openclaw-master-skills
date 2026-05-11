@@ -1,0 +1,643 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pastel Geometry — slide-creator</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;700;800&display=swap">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-snap-type: y mandatory; scroll-behavior: smooth; height: 100%; }
+    body {
+      height: 100%; overflow-x: hidden;
+      background: #c8d9e6;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+
+    /* Progress bar */
+    #progress-bar {
+      position: fixed; top: 0; left: 0; height: 4px;
+      background: linear-gradient(90deg, #f0b4d4, #a8d4c4, #9b8dc4);
+      z-index: 100; transition: width 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+      width: 0%; border-radius: 0 2px 2px 0;
+    }
+
+    /* Nav pills at bottom */
+    #nav-dots {
+      position: fixed; bottom: 28px; left: 50%; transform: translateX(-50%);
+      z-index: 100; display: flex; gap: 8px; align-items: center;
+    }
+    .dot {
+      height: 8px; border-radius: 4px; cursor: pointer;
+      transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+      width: 8px;
+    }
+    .dot.active { width: 28px; }
+    .dot:nth-child(1) { background: #f0b4d4; }
+    .dot:nth-child(2) { background: #a8d4c4; }
+    .dot:nth-child(3) { background: #8fad9a; }
+    .dot:nth-child(4) { background: #9b8dc4; }
+    .dot:nth-child(5) { background: #7bb8d4; }
+    .dot:nth-child(6) { background: #f0c4a0; }
+    .dot:nth-child(7) { background: #f0b4d4; }
+    .dot:nth-child(8) { background: #a8d4c4; }
+
+    /* Slides */
+    .slide {
+      width: 100vw; height: 100vh; height: 100dvh;
+      scroll-snap-align: start; overflow: hidden;
+      position: relative; display: flex;
+      align-items: center; justify-content: center;
+    }
+
+    /* Content card */
+    .card {
+      width: clamp(320px, 88vw, 1000px);
+      height: clamp(500px, 84vh, 780px);
+      background: #faf9f7;
+      border-radius: 20px;
+      box-shadow: 0 4px 32px rgba(100,120,140,0.18), 0 1px 8px rgba(100,120,140,0.1);
+      position: relative; overflow: hidden;
+      display: flex; align-items: stretch;
+    }
+
+    /* Vertical pills on right edge */
+    .pills {
+      position: absolute; right: 20px; top: 50%; transform: translateY(-50%);
+      display: flex; flex-direction: column; gap: 6px; align-items: center;
+      z-index: 5;
+    }
+    .pill {
+      width: 12px; border-radius: 6px;
+      transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    .pill:nth-child(1) { background: #f0b4d4; height: 40px; }
+    .pill:nth-child(2) { background: #a8d4c4; height: 80px; }
+    .pill:nth-child(3) { background: #8fad9a;  height: 120px; }
+    .pill:nth-child(4) { background: #9b8dc4; height: 80px; }
+    .pill:nth-child(5) { background: #7bb8d4; height: 60px; }
+    .pill:nth-child(6) { background: #f0c4a0; height: 40px; }
+
+    /* Slide number */
+    .slide-num {
+      position: absolute; top: clamp(20px, 2.5vw, 32px); right: clamp(52px, 5vw, 68px);
+      font-weight: 500; font-size: clamp(11px, 1.1vw, 13px);
+      color: #b0bec8; letter-spacing: 0.08em; z-index: 5;
+    }
+
+    /* Geometric accents */
+    .geo-accent {
+      position: absolute; pointer-events: none; z-index: 1;
+      border-radius: 50%; opacity: 0.08;
+    }
+
+    /* Content area */
+    .card-content {
+      flex: 1; padding: clamp(36px, 4.5vw, 60px) clamp(28px, 4vw, 56px);
+      padding-right: clamp(56px, 6vw, 80px);
+      position: relative; z-index: 10;
+      display: flex; flex-direction: column; justify-content: center;
+    }
+
+    /* Reveal animations — bouncy */
+    .reveal {
+      opacity: 0; transform: translateY(16px) scale(0.97);
+      transition: opacity 0.4s cubic-bezier(0.34, 1.56, 0.64, 1),
+                  transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    .slide.visible .reveal { opacity: 1; transform: translateY(0) scale(1); }
+    .reveal-1 { transition-delay: 0.05s; }
+    .reveal-2 { transition-delay: 0.12s; }
+    .reveal-3 { transition-delay: 0.2s; }
+    .reveal-4 { transition-delay: 0.3s; }
+    .reveal-5 { transition-delay: 0.4s; }
+    .reveal-6 { transition-delay: 0.5s; }
+
+    /* Typography */
+    .slide-label {
+      font-weight: 700; font-size: clamp(10px, 1vw, 12px);
+      letter-spacing: 0.15em; text-transform: uppercase;
+      margin-bottom: clamp(10px, 1.5vw, 16px);
+    }
+    h1 {
+      font-weight: 800; font-size: clamp(48px, 7vw, 88px);
+      line-height: 1.0; color: #1a1a1a; letter-spacing: -0.03em;
+    }
+    h2 {
+      font-weight: 800; font-size: clamp(26px, 3.5vw, 44px);
+      line-height: 1.1; color: #1a1a1a; letter-spacing: -0.02em;
+    }
+    .subtitle {
+      font-weight: 400; font-size: clamp(13px, 1.5vw, 17px);
+      color: #5a6b7a; margin-top: clamp(10px, 1.5vw, 16px); line-height: 1.6;
+    }
+    .body-text {
+      font-weight: 400; font-size: clamp(13px, 1.4vw, 16px);
+      line-height: 1.75; color: #5a6b7a;
+      margin-top: clamp(12px, 2vw, 20px); max-width: 520px;
+    }
+    .divider {
+      width: 40px; height: 4px; border-radius: 2px;
+      margin: clamp(16px, 2.5vw, 28px) 0;
+    }
+
+    /* Stat badges */
+    .badges {
+      display: flex; gap: clamp(10px, 1.5vw, 16px); flex-wrap: wrap;
+      margin-top: clamp(20px, 3vw, 32px);
+    }
+    .badge {
+      padding: clamp(10px, 1.5vw, 14px) clamp(14px, 2vw, 22px);
+      border-radius: 12px; text-align: center;
+    }
+    .badge:nth-child(1) { background: #fce8f2; }
+    .badge:nth-child(2) { background: #e8f5ef; }
+    .badge:nth-child(3) { background: #ede8f5; }
+    .badge strong {
+      display: block; font-weight: 800;
+      font-size: clamp(24px, 2.8vw, 34px); color: #1a1a1a; line-height: 1;
+      margin-bottom: 2px;
+    }
+    .badge span { font-weight: 500; font-size: clamp(11px, 1.1vw, 13px); color: #5a6b7a; }
+
+    /* Pain list */
+    .pain-list {
+      list-style: none; margin-top: clamp(16px, 2.5vw, 24px);
+      display: flex; flex-direction: column; gap: clamp(10px, 1.5vw, 16px);
+    }
+    .pain-list li {
+      display: flex; align-items: flex-start; gap: 12px;
+      font-weight: 400; font-size: clamp(12px, 1.3vw, 15px);
+      line-height: 1.6; color: #5a6b7a;
+    }
+    .pill-dot {
+      width: 10px; height: 10px; border-radius: 5px;
+      flex-shrink: 0; margin-top: 5px;
+    }
+    .pain-list li:nth-child(1) .pill-dot { background: #f0b4d4; }
+    .pain-list li:nth-child(2) .pill-dot { background: #a8d4c4; }
+    .pain-list li:nth-child(3) .pill-dot { background: #9b8dc4; }
+    .pain-list li strong { color: #1a1a1a; }
+
+    /* Steps */
+    .steps {
+      display: flex; flex-direction: column; gap: clamp(8px, 1.2vw, 14px);
+      margin-top: clamp(14px, 2vw, 22px);
+    }
+    .step {
+      display: flex; align-items: flex-start; gap: 14px;
+      padding: clamp(10px, 1.3vw, 14px) clamp(14px, 1.8vw, 18px);
+      border-radius: 12px; background: #f5f3ef;
+      font-weight: 400; font-size: clamp(12px, 1.25vw, 14px);
+      color: #5a6b7a; line-height: 1.5;
+    }
+    .step-num {
+      font-weight: 800; font-size: clamp(16px, 1.8vw, 22px);
+      color: #1a1a1a; line-height: 1; flex-shrink: 0;
+      width: 24px; text-align: center;
+    }
+    .step strong { color: #1a1a1a; }
+
+    /* Preset grid */
+    .preset-grid {
+      display: flex; flex-wrap: wrap; gap: 7px;
+      margin-top: clamp(14px, 2vw, 22px);
+    }
+    .preset-tag {
+      font-weight: 500; font-size: clamp(10px, 1vw, 12px);
+      padding: 6px 12px; border-radius: 20px;
+      background: #f0ede8; color: #5a6b7a;
+      transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+      cursor: default;
+    }
+    .preset-tag:hover { transform: scale(1.05); }
+    .preset-tag.current { background: #c8d9e6; color: #1a1a1a; font-weight: 700; }
+
+    /* Feature grid */
+    .feature-grid {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: clamp(8px, 1.2vw, 14px);
+      margin-top: clamp(14px, 2vw, 22px);
+    }
+    .feature {
+      padding: clamp(12px, 1.5vw, 16px);
+      border-radius: 12px; background: #f5f3ef;
+    }
+    .feature-icon {
+      width: 28px; height: 28px; border-radius: 8px;
+      margin-bottom: 8px; display: flex; align-items: center; justify-content: center;
+    }
+    .feature:nth-child(1) .feature-icon { background: #fce8f2; }
+    .feature:nth-child(2) .feature-icon { background: #e8f5ef; }
+    .feature:nth-child(3) .feature-icon { background: #ede8f5; }
+    .feature:nth-child(4) .feature-icon { background: #fef3e2; }
+    .feature-dot {
+      width: 10px; height: 10px; border-radius: 50%;
+    }
+    .feature:nth-child(1) .feature-dot { background: #f0b4d4; }
+    .feature:nth-child(2) .feature-dot { background: #8fad9a; }
+    .feature:nth-child(3) .feature-dot { background: #9b8dc4; }
+    .feature:nth-child(4) .feature-dot { background: #f0c4a0; }
+    .feature-title {
+      font-weight: 700; font-size: clamp(12px, 1.2vw, 14px); color: #1a1a1a; margin-bottom: 4px;
+    }
+    .feature p {
+      font-weight: 400; font-size: clamp(10px, 1vw, 12px); color: #7a8b9a; line-height: 1.6;
+    }
+
+    /* Code block */
+    .code-section {
+      margin-top: clamp(12px, 1.8vw, 18px);
+    }
+    .code-label {
+      font-weight: 700; font-size: clamp(10px, 1.1vw, 12px);
+      letter-spacing: 0.08em; text-transform: uppercase;
+      color: #8a9baa; margin-bottom: 6px;
+    }
+    .code-block {
+      background: #1a2530; border-radius: 12px;
+      padding: clamp(12px, 1.5vw, 16px) clamp(14px, 2vw, 20px);
+      font-family: 'SF Mono', 'Fira Code', monospace;
+      font-size: clamp(10px, 1.1vw, 13px);
+      color: #a8d4c4; line-height: 1.8;
+      margin-bottom: clamp(8px, 1.2vw, 12px);
+    }
+    .code-comment { color: #4a6070; }
+
+    /* CTA */
+    .cta-command {
+      font-weight: 800; font-size: clamp(36px, 5.5vw, 64px);
+      color: #1a1a1a; letter-spacing: -0.02em;
+      margin-top: clamp(16px, 2.5vw, 28px);
+      display: inline-block;
+      padding: clamp(10px, 1.5vw, 16px) clamp(20px, 3vw, 32px);
+      background: linear-gradient(135deg, #f0b4d4, #c8d9e6);
+      border-radius: 16px;
+    }
+    .cta-sub {
+      font-weight: 400; font-size: clamp(12px, 1.2vw, 14px);
+      color: #8a9baa; margin-top: clamp(12px, 1.8vw, 18px); line-height: 1.6;
+    }
+
+    /* Edit mode */
+    #edit-hotzone {
+      position: fixed; top: 0; left: 0; width: 80px; height: 80px;
+      z-index: 200; cursor: default;
+    }
+    #edit-indicator {
+      position: fixed; top: 24px; left: 50%; transform: translateX(-50%);
+      background: #1a1a1a; color: #faf9f7;
+      font-weight: 500; font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase;
+      padding: 7px 18px; border-radius: 20px;
+      opacity: 0; transition: opacity 0.3s; pointer-events: none; z-index: 200;
+    }
+    #edit-indicator.visible { opacity: 1; }
+    body.edit-mode [contenteditable] { outline: 2px solid #9b8dc4; outline-offset: 3px; border-radius: 4px; }
+  </style>
+</head>
+<body>
+
+<div id="progress-bar"></div>
+
+<div id="nav-dots">
+  <div class="dot active" data-index="0"></div>
+  <div class="dot" data-index="1"></div>
+  <div class="dot" data-index="2"></div>
+  <div class="dot" data-index="3"></div>
+  <div class="dot" data-index="4"></div>
+  <div class="dot" data-index="5"></div>
+  <div class="dot" data-index="6"></div>
+  <div class="dot" data-index="7"></div>
+</div>
+
+<div id="edit-hotzone"></div>
+<div id="edit-indicator">Edit mode — Ctrl+S to save</div>
+
+<!-- Slide 1: Cover -->
+<section class="slide" id="slide-0">
+  <div class="card">
+    <div class="geo-accent" style="width:200px;height:200px;background:#f0b4d4;top:-60px;left:-40px;"></div>
+    <div class="geo-accent" style="width:120px;height:120px;background:#9b8dc4;bottom:40px;left:80px;"></div>
+    <div class="card-content">
+      <span class="slide-num reveal reveal-1">01 / 08</span>
+      <p class="slide-label reveal reveal-1" style="color:#f0b4d4;">A presentation tool</p>
+      <h1 class="reveal reveal-2">slide-<br>creator</h1>
+      <p class="subtitle reveal reveal-3">Zero-dependency HTML presentations<br>for Claude Code &amp; OpenClaw</p>
+      <div class="divider reveal reveal-4" style="background:linear-gradient(90deg,#f0b4d4,#9b8dc4);"></div>
+      <div class="badges reveal reveal-5">
+        <div class="badge"><strong>19</strong><span>Presets</span></div>
+        <div class="badge"><strong>0</strong><span>Dependencies</span></div>
+        <div class="badge"><strong>∞</strong><span>Slides</span></div>
+      </div>
+    </div>
+    <div class="pills">
+      <div class="pill"></div><div class="pill"></div><div class="pill"></div>
+      <div class="pill"></div><div class="pill"></div><div class="pill"></div>
+    </div>
+  </div>
+</section>
+
+<!-- Slide 2: The Problem -->
+<section class="slide" id="slide-1">
+  <div class="card">
+    <div class="geo-accent" style="width:160px;height:160px;background:#a8d4c4;top:-30px;right:80px;"></div>
+    <div class="card-content">
+      <span class="slide-num reveal reveal-1">02 / 08</span>
+      <p class="slide-label reveal reveal-1" style="color:#a8d4c4;">The Problem</p>
+      <h2 class="reveal reveal-2">Presentations shouldn't<br>require a build system</h2>
+      <ul class="pain-list">
+        <li class="reveal reveal-3"><div class="pill-dot"></div><span><strong>Complex toolchain:</strong> npm install, webpack config, 300MB of node_modules — before you write slide one.</span></li>
+        <li class="reveal reveal-4"><div class="pill-dot"></div><span><strong>Generic output:</strong> Every AI deck looks the same — Inter font, purple gradients, zero personality.</span></li>
+        <li class="reveal reveal-5"><div class="pill-dot"></div><span><strong>No ownership:</strong> Closed platforms, export locks, monthly fees for content that's yours.</span></li>
+      </ul>
+    </div>
+    <div class="pills">
+      <div class="pill"></div><div class="pill"></div><div class="pill"></div>
+      <div class="pill"></div><div class="pill"></div><div class="pill"></div>
+    </div>
+  </div>
+</section>
+
+<!-- Slide 3: Show Don't Tell -->
+<section class="slide" id="slide-2">
+  <div class="card">
+    <div class="geo-accent" style="width:140px;height:140px;background:#f0c4a0;bottom:-20px;left:60px;"></div>
+    <div class="card-content">
+      <span class="slide-num reveal reveal-1">03 / 08</span>
+      <p class="slide-label reveal reveal-1" style="color:#f0c4a0;">Discovery</p>
+      <h2 class="reveal reveal-2">Style discovery that<br>actually works — for you</h2>
+      <p class="body-text reveal reveal-3">You can't describe design preferences in words. slide-creator generates 3 visual previews — you react, not describe. Your "wow moment" arrives before you write a single line of content.</p>
+      <div class="steps reveal reveal-4">
+        <div class="step"><span class="step-num">1</span><span><strong>Ask mood</strong> — Answer a few simple questions about tone and purpose</span></div>
+        <div class="step"><span class="step-num">2</span><span><strong>Generate 3 mini previews</strong> — Three distinct visual directions, rendered instantly</span></div>
+        <div class="step"><span class="step-num">3</span><span><strong>Pick the one that feels right</strong> — Your intuition over vocabulary, every time</span></div>
+      </div>
+    </div>
+    <div class="pills">
+      <div class="pill"></div><div class="pill"></div><div class="pill"></div>
+      <div class="pill"></div><div class="pill"></div><div class="pill"></div>
+    </div>
+  </div>
+</section>
+
+<!-- Slide 4: 19 Presets -->
+<section class="slide" id="slide-3">
+  <div class="card">
+    <div class="geo-accent" style="width:180px;height:180px;background:#9b8dc4;top:-50px;right:100px;"></div>
+    <div class="card-content">
+      <span class="slide-num reveal reveal-1">04 / 08</span>
+      <p class="slide-label reveal reveal-1" style="color:#9b8dc4;">Design Presets</p>
+      <h2 class="reveal reveal-2">19 curated styles.<br>No generic AI aesthetics.</h2>
+      <div class="preset-grid reveal reveal-3">
+        <span class="preset-tag">Bold Signal</span>
+        <span class="preset-tag">Electric Studio</span>
+        <span class="preset-tag">Creative Voltage</span>
+        <span class="preset-tag">Dark Botanical</span>
+        <span class="preset-tag">Blue Sky</span>
+        <span class="preset-tag">Notebook Tabs</span>
+        <span class="preset-tag current">Pastel Geometry</span>
+        <span class="preset-tag">Split Pastel</span>
+        <span class="preset-tag">Vintage Editorial</span>
+        <span class="preset-tag">Neon Cyber</span>
+        <span class="preset-tag">Terminal Green</span>
+        <span class="preset-tag">Swiss Modern</span>
+        <span class="preset-tag">Paper &amp; Ink</span>
+        <span class="preset-tag">Aurora Mesh</span>
+        <span class="preset-tag">Enterprise Dark</span>
+        <span class="preset-tag">Glassmorphism</span>
+        <span class="preset-tag">Neo-Brutalism</span>
+        <span class="preset-tag">Japanese Zen</span>
+        <span class="preset-tag">Data Story</span>
+      </div>
+    </div>
+    <div class="pills">
+      <div class="pill"></div><div class="pill"></div><div class="pill"></div>
+      <div class="pill"></div><div class="pill"></div><div class="pill"></div>
+    </div>
+  </div>
+</section>
+
+<!-- Slide 5: How It Works -->
+<section class="slide" id="slide-4">
+  <div class="card">
+    <div class="geo-accent" style="width:150px;height:150px;background:#7bb8d4;bottom:-20px;right:80px;"></div>
+    <div class="card-content">
+      <span class="slide-num reveal reveal-1">05 / 08</span>
+      <p class="slide-label reveal reveal-1" style="color:#7bb8d4;">Workflow</p>
+      <h2 class="reveal reveal-2">From your idea to<br>a presentation in minutes</h2>
+      <div class="steps reveal reveal-3">
+        <div class="step"><span class="step-num">1</span><span><strong>/slide-creator</strong> — Answer four questions: purpose, length, content, images</span></div>
+        <div class="step"><span class="step-num">2</span><span><strong>Pick your style</strong> — React to three visual previews, choose the one that clicks for you</span></div>
+        <div class="step"><span class="step-num">3</span><span><strong>Open your presentation</strong> — Arrow keys · Space · Swipe · Dots — all navigation built in</span></div>
+      </div>
+    </div>
+    <div class="pills">
+      <div class="pill"></div><div class="pill"></div><div class="pill"></div>
+      <div class="pill"></div><div class="pill"></div><div class="pill"></div>
+    </div>
+  </div>
+</section>
+
+<!-- Slide 6: Key Features -->
+<section class="slide" id="slide-5">
+  <div class="card">
+    <div class="geo-accent" style="width:130px;height:130px;background:#8fad9a;top:-20px;left:60px;"></div>
+    <div class="card-content">
+      <span class="slide-num reveal reveal-1">06 / 08</span>
+      <p class="slide-label reveal reveal-1" style="color:#8fad9a;">Features</p>
+      <h2 class="reveal reveal-2">Everything you need —<br>nothing you don't</h2>
+      <div class="feature-grid reveal reveal-3">
+        <div class="feature">
+          <div class="feature-icon"><div class="feature-dot"></div></div>
+          <div class="feature-title">Viewport fitting</div>
+          <p>Every slide fits exactly 100vh. No scrolling, ever — for you or your audience.</p>
+        </div>
+        <div class="feature">
+          <div class="feature-icon"><div class="feature-dot"></div></div>
+          <div class="feature-title">Inline editing</div>
+          <p>Press E, click any text, Ctrl+S to save. No code editing needed.</p>
+        </div>
+        <div class="feature">
+          <div class="feature-icon"><div class="feature-dot"></div></div>
+          <div class="feature-title">PPTX export</div>
+          <p>--export pptx via Playwright + your Chrome. Yours to keep.</p>
+        </div>
+        <div class="feature">
+          <div class="feature-icon"><div class="feature-dot"></div></div>
+          <div class="feature-title">Two-stage workflow</div>
+          <p>--plan outlines first. --generate makes the HTML. You review both.</p>
+        </div>
+      </div>
+    </div>
+    <div class="pills">
+      <div class="pill"></div><div class="pill"></div><div class="pill"></div>
+      <div class="pill"></div><div class="pill"></div><div class="pill"></div>
+    </div>
+  </div>
+</section>
+
+<!-- Slide 7: Install -->
+<section class="slide" id="slide-6">
+  <div class="card">
+    <div class="geo-accent" style="width:170px;height:170px;background:#f0b4d4;top:-40px;right:70px;"></div>
+    <div class="card-content">
+      <span class="slide-num reveal reveal-1">07 / 08</span>
+      <p class="slide-label reveal reveal-1" style="color:#f0b4d4;">Installation</p>
+      <h2 class="reveal reveal-2">You're up in 30 seconds</h2>
+      <div class="code-section reveal reveal-3">
+        <p class="code-label">Claude Code</p>
+        <div class="code-block">
+          git clone https://github.com/kaisersong/slide-creator \<br>
+          &nbsp;&nbsp;~/.claude/skills/slide-creator<br>
+          <span class="code-comment"># Restart Claude Code, then:</span><br>
+          /slide-creator
+        </div>
+      </div>
+      <div class="code-section reveal reveal-4">
+        <p class="code-label">OpenClaw</p>
+        <div class="code-block">
+          clawhub install html-slide-creator<br>
+          <span class="code-comment"># Auto-installs all dependencies</span>
+        </div>
+      </div>
+    </div>
+    <div class="pills">
+      <div class="pill"></div><div class="pill"></div><div class="pill"></div>
+      <div class="pill"></div><div class="pill"></div><div class="pill"></div>
+    </div>
+  </div>
+</section>
+
+<!-- Slide 8: Get Started -->
+<section class="slide" id="slide-7">
+  <div class="card">
+    <div class="geo-accent" style="width:200px;height:200px;background:#a8d4c4;bottom:-60px;right:-30px;"></div>
+    <div class="geo-accent" style="width:120px;height:120px;background:#f0b4d4;top:-30px;left:60px;"></div>
+    <div class="card-content">
+      <span class="slide-num reveal reveal-1">08 / 08</span>
+      <p class="slide-label reveal reveal-1" style="color:#f0b4d4;">Get started</p>
+      <h2 class="reveal reveal-2">Your next presentation<br>starts right here</h2>
+      <div class="reveal reveal-3">
+        <p class="cta-command">/slide-creator</p>
+      </div>
+      <p class="cta-sub reveal reveal-4">Works with Claude Code and OpenClaw.<br>Runs entirely in your browser — no build step, no install, no fuss.</p>
+    </div>
+    <div class="pills">
+      <div class="pill"></div><div class="pill"></div><div class="pill"></div>
+      <div class="pill"></div><div class="pill"></div><div class="pill"></div>
+    </div>
+  </div>
+</section>
+
+<script>
+  const slides = document.querySelectorAll('.slide');
+  const dots = document.querySelectorAll('.dot');
+  const progressBar = document.getElementById('progress-bar');
+  let cur = 0;
+
+  // IntersectionObserver — adds .visible + stagger reveal
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+        const idx = Array.from(slides).indexOf(entry.target);
+        if (idx !== -1) updateNav(idx);
+      }
+    });
+  }, { threshold: 0.5 });
+
+  slides.forEach(slide => observer.observe(slide));
+
+  function updateNav(idx) {
+    cur = idx;
+    dots.forEach((d, i) => d.classList.toggle('active', i === idx));
+    progressBar.style.width = ((idx + 1) / slides.length * 100) + '%';
+  }
+
+  function goTo(idx) {
+    if (idx < 0 || idx >= slides.length) return;
+    slides[idx].scrollIntoView({ behavior: 'smooth' });
+  }
+
+  // Dot clicks
+  dots.forEach(dot => {
+    dot.addEventListener('click', () => goTo(parseInt(dot.dataset.index)));
+  });
+
+  // Keyboard nav
+  document.addEventListener('keydown', e => {
+    if (editMode) {
+      if ((e.ctrlKey || e.metaKey) && e.key === 's') { e.preventDefault(); saveFile(); }
+      if (e.key === 'Escape') toggleEditMode();
+      return;
+    }
+    if (e.key === 'ArrowDown' || e.key === 'ArrowRight' || e.key === ' ') { e.preventDefault(); goTo(cur + 1); }
+    if (e.key === 'ArrowUp' || e.key === 'ArrowLeft') { e.preventDefault(); goTo(cur - 1); }
+    if (e.key === 'e' || e.key === 'E') toggleEditMode();
+  });
+
+  // Wheel — debounce-reset pattern (NOT time throttle)
+  let wheelLocked = false, wheelTimer = null;
+  document.addEventListener('wheel', e => {
+    clearTimeout(wheelTimer);
+    if (!wheelLocked) {
+      wheelLocked = true;
+      if (e.deltaY > 0) goTo(cur + 1); else goTo(cur - 1);
+    }
+    wheelTimer = setTimeout(() => { wheelLocked = false; }, 180);
+  }, { passive: true });
+
+  // Touch swipe
+  let touchStartY = 0;
+  document.addEventListener('touchstart', e => { touchStartY = e.touches[0].clientY; }, { passive: true });
+  document.addEventListener('touchend', e => {
+    const delta = touchStartY - e.changedTouches[0].clientY;
+    if (Math.abs(delta) > 50) {
+      if (delta > 0) goTo(cur + 1); else goTo(cur - 1);
+    }
+  }, { passive: true });
+
+  // Edit mode
+  let editMode = false;
+  const editIndicator = document.getElementById('edit-indicator');
+  const editHotzone = document.getElementById('edit-hotzone');
+
+  editHotzone.addEventListener('dblclick', toggleEditMode);
+
+  function toggleEditMode() {
+    editMode = !editMode;
+    document.body.classList.toggle('edit-mode', editMode);
+    editIndicator.classList.toggle('visible', editMode);
+    document.querySelectorAll('h1, h2, p, li, .badge, .preset-tag, .feature-title, .code-block').forEach(el => {
+      el.contentEditable = editMode ? 'true' : 'false';
+    });
+  }
+
+  async function saveFile() {
+    const html = '<!DOCTYPE html>\n' + document.documentElement.outerHTML;
+    if (window.showSaveFilePicker) {
+      try {
+        const handle = await window.showSaveFilePicker({
+          suggestedName: 'pastel-geometry.html',
+          types: [{ accept: { 'text/html': ['.html'] } }]
+        });
+        const writable = await handle.createWritable();
+        await writable.write(html);
+        await writable.close();
+      } catch(e) {
+        if (e.name !== 'AbortError') fallbackSave(html);
+      }
+    } else {
+      fallbackSave(html);
+    }
+  }
+
+  function fallbackSave(html) {
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(new Blob([html], { type: 'text/html' }));
+    a.download = 'pastel-geometry.html';
+    a.click();
+  }
+</script>
+</body>
+</html>

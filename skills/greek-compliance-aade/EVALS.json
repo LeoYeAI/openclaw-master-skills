@@ -1,0 +1,118 @@
+[
+  {
+    "id": 0,
+    "prompt": "Process a Greek restaurant invoice for €125.50 including VAT. The restaurant 'Taverna Mykonos' (VAT: EL123456789) served a business lunch. I need this properly categorized with correct Greek VAT rates, prepared for myDATA submission, and checked for meal deductibility rules.",
+    "expectations": [
+      "Identifies restaurant service as 13% VAT rate category",
+      "Calculates net amount and VAT correctly (€110.62 + €14.88)",
+      "Applies 50% deductibility rule for business meals",
+      "Generates myDATA XML format with required Greek fields",
+      "Includes proper payment method codes for AADE",
+      "Validates Greek VAT number format",
+      "Categorizes as deductible business expense with limitations",
+      "Prepares TAXIS-ready data format"
+    ],
+    "files": [
+      {
+        "name": "taverna_receipt.pdf",
+        "content": "TAVERNA MYKONOS\nΑ.Φ.Μ: 123456789\nΔ.Ο.Υ: Α' ΑΘΔÎΩÎ\nΚων/πόλεως 45, Αθήνα 10682\n\nΑΠΟΔΕΘΞΔ ΛΘΑÎΘΚΔΣ ΠΩΛΔΣΔΣ\nΑÏιθμός: 1245\nΔμεÏομηνία: 15/02/2026\n\n2x Μουσακάς €12,00\n2x Σαλάτα €8,00\n1x ΚÏασί κτήμα €15,00\n\nΚαθαÏή αξία: €110,62\nΦΠΑ 13%: €14,88\nΣÏνολο: €125,50\n\nΤÏόπος πληÏωμής: ΚάÏτα\nΑγοÏαστής: ΕΤΑΘΡΕΘΑ ΑΒΓ ΑΕ\nΑ.Φ.Μ: 987654321"
+      }
+    ]
+  },
+  {
+    "id": 1,
+    "prompt": "Calculate monthly payroll for employee Nikos Papadopoulos who worked 170 regular hours plus 12 overtime hours in February 2026. His hourly rate is €14.50. Process all Greek social security contributions (EFKA), calculate income tax withholding, and prepare the EFKA submission.",
+    "expectations": [
+      "Calculates regular pay correctly (170 × €14.50 = €2,465)",
+      "Applies 25% overtime rate for overtime hours (12 × €14.50 × 1.25 = €217.50)",
+      "Computes total gross pay (€2,682.50)",
+      "Applies correct EFKA rates (6.67% main, 3.0% auxiliary)",
+      "Calculates health insurance (2.95%) and unemployment (0.87%)",
+      "Determines income tax bracket and withholding",
+      "Generates net pay calculation",
+      "Prepares EFKA electronic submission format",
+      "Creates compliant Greek payslip"
+    ],
+    "files": [
+      {
+        "name": "employee_hours.csv",
+        "content": "Employee,Date,Regular_Hours,Overtime_Hours,Notes\nNikos Papadopoulos,2026-02-01,8,0,Regular day\nNikos Papadopoulos,2026-02-02,8,2,Project deadline\nNikos Papadopoulos,2026-02-03,8,0,Regular day\nNikos Papadopoulos,2026-02-04,8,1,Late meeting\nNikos Papadopoulos,2026-02-05,8,0,Regular day\nNikos Papadopoulos,2026-02-08,8,0,Regular day\nNikos Papadopoulos,2026-02-09,8,2,Emergency repair\nNikos Papadopoulos,2026-02-10,8,0,Regular day\nNikos Papadopoulos,2026-02-11,8,1,Client presentation\nNikos Papadopoulos,2026-02-12,8,0,Regular day\nNikos Papadopoulos,2026-02-15,8,0,Regular day\nNikos Papadopoulos,2026-02-16,8,0,Regular day\nNikos Papadopoulos,2026-02-17,8,2,System upgrade\nNikos Papadopoulos,2026-02-18,8,0,Regular day\nNikos Papadopoulos,2026-02-19,8,0,Regular day\nNikos Papadopoulos,2026-02-22,8,0,Regular day\nNikos Papadopoulos,2026-02-23,8,1,Training session\nNikos Papadopoulos,2026-02-24,8,0,Regular day\nNikos Papadopoulos,2026-02-25,8,0,Regular day\nNikos Papadopoulos,2026-02-26,8,1,Equipment setup\nNikos Papadopoulos,2026-02-27,8,2,Month-end closing\nNikos Papadopoulos,2026-02-28,6,0,Half day Friday"
+      }
+    ]
+  },
+  {
+    "id": 2,
+    "prompt": "Prepare March 2026 VAT return for submission to AADE. I have collected €8,450 VAT from sales invoices (€6,200 at 24%, €2,250 at 13%) and paid €1,680 VAT on purchases. Generate the TAXIS XML file and calculate the net VAT position.",
+    "expectations": [
+      "Validates VAT amounts match sales calculations",
+      "Calculates net sales amounts from VAT (€25,833.33 + €17,307.69)",
+      "Determines net VAT due (€8,450 - €1,680 = €6,770)",
+      "Generates proper TAXIS XML format with all required fields",
+      "Includes correct tax period (March 2026)",
+      "Validates VAT registration details",
+      "Calculates payment due date (April 20, 2026)",
+      "Prepares banking details for automatic payment"
+    ],
+    "files": [
+      {
+        "name": "march_vat_transactions.csv",
+        "content": "Date,Type,Invoice_No,Customer,Net_Amount,VAT_Rate,VAT_Amount,Total\n2026-03-01,Sale,INV-001,ΠΕΛΑΤΔΣ Α ΑΕ,500.00,24%,120.00,620.00\n2026-03-02,Sale,INV-002,ΠΕΛΑΤΔΣ Β ΕΠΕ,1200.00,24%,288.00,1488.00\n2026-03-03,Sale,INV-003,ΞΕÎΟΔΟΧΕΘΟ Γ,800.00,13%,104.00,904.00\n2026-03-05,Purchase,PUR-001,ΠΡΟΜΔΘΕΥΤΔΣ Α,400.00,24%,96.00,496.00\n2026-03-08,Sale,INV-004,ΕΣΤΘΑΤΟΡΘΟ Δ,1500.00,13%,195.00,1695.00\n2026-03-10,Sale,INV-005,ΠΕΛΑΤΔΣ Ε ΑΕ,2000.00,24%,480.00,2480.00\n2026-03-12,Purchase,PUR-002,ΠΡΟΜΔΘΕΥΤΔΣ Β,600.00,24%,144.00,744.00\n2026-03-15,Sale,INV-006,ΞΕÎΟΔΟΧΕΘΟ Γ,1200.00,13%,156.00,1356.00\n2026-03-18,Sale,INV-007,ΠΕΛΑΤΔΣ Δ ΑΕ,3000.00,24%,720.00,3720.00\n2026-03-20,Purchase,PUR-003,ΠΡΟΜΔΘΕΥΤΔΣ Γ,800.00,24%,192.00,992.00\n2026-03-22,Sale,INV-008,ΚΑΦΕΤΕΡΘΑ Θ,900.00,13%,117.00,1017.00\n2026-03-25,Sale,INV-009,ΠΕΛΑΤΔΣ Θ ΑΕ,4000.00,24%,960.00,4960.00\n2026-03-28,Purchase,PUR-004,ΠΡΟΜΔΘΕΥΤΔΣ Δ,1200.00,24%,288.00,1488.00\n2026-03-30,Sale,INV-010,ΕΣΤΘΑΤΟΡΘΟ Κ,1500.00,13%,195.00,1695.00"
+      }
+    ]
+  },
+  {
+    "id": 3,
+    "prompt": "Set up automated AADE compliance monitoring for a small Greek consulting firm. I need daily myDATA invoice submission, monthly VAT preparation, quarterly EFKA reporting, and annual property tax (ENFIA) reminders. Configure all Greek regulatory deadlines.",
+    "expectations": [
+      "Configures daily myDATA invoice submission workflow",
+      "Sets up monthly VAT return preparation and submission",
+      "Schedules quarterly EFKA social security reporting",
+      "Creates annual ENFIA property tax reminders",
+      "Establishes deadline alert system with Greek calendar",
+      "Integrates with AADE TAXIS platform connectivity",
+      "Sets up backup and compliance audit trails",
+      "Configures Greek banking integration for payments"
+    ],
+    "files": []
+  },
+  {
+    "id": 4,
+    "prompt": "Process a cross-border EU invoice from Italian supplier for €2,850 software services with reverse charge VAT. The supplier is 'Software Solutions SRL' (VAT: IT12345678901). Generate the proper Greek accounting entries and AADE-compliant documentation.",
+    "expectations": [
+      "Identifies EU reverse charge VAT scenario",
+      "Applies 0% VAT on purchase with reverse charge note",
+      "Creates corresponding 24% output VAT entry for Greek VAT",
+      "Validates Italian VAT number format via VIES",
+      "Generates proper Greek accounting entries (both sides of reverse charge)",
+      "Prepares myDATA-compliant documentation",
+      "Includes proper EU transaction codes",
+      "Creates audit trail for cross-border transaction"
+    ],
+    "files": [
+      {
+        "name": "italian_invoice.pdf",
+        "content": "SOFTWARE SOLUTIONS SRL\nVia Roma 123, Milano, Italy\nPartita IVA: IT12345678901\n\nFATTURA N. SS-2026-0156\nData: 10/02/2026\n\nSpett.le:\nGREEK COMPANY AE\nVAT: EL987654321\nAthens, Greece\n\nDescrizione: Software Development Services\nQuantità: 1\nPrezzo: €2,850.00\nTotale: €2,850.00\n\nIVA: 0% (Reverse Charge - Article 196 EU VAT Directive)\nImporto Totale: €2,850.00\n\nPagamento: Bonifico bancario\nScadenza: 30 giorni"
+      }
+    ]
+  },
+  {
+    "id": 5,
+    "prompt": "Calculate annual ENFIA property tax for a commercial building in Athens. Property details: 450 sqm office space, objective value €850,000, built in 1995, no special exemptions. Generate payment schedule and compliance calendar.",
+    "expectations": [
+      "Calculates ENFIA tax based on objective property value",
+      "Applies correct commercial property tax rates",
+      "Considers building age and location factors",
+      "Determines annual tax amount and installment breakdown",
+      "Creates payment schedule (4 installments: July, September, November, January)",
+      "Sets up automated deadline reminders",
+      "Generates compliance documentation for property records",
+      "Integrates with municipal tax tracking system"
+    ],
+    "files": [
+      {
+        "name": "property_details.json",
+        "content": "{\n  \"property_id\": \"ATH-12345-67890\",\n  \"type\": \"Commercial Office\",\n  \"location\": \"Athens Center\",\n  \"address\": \"Stadiou 15, Athens 10562\",\n  \"area_sqm\": 450,\n  \"floors\": 3,\n  \"construction_year\": 1995,\n  \"objective_value\": 850000,\n  \"zone_coefficient\": 2.5,\n  \"use_type\": \"Office Space\",\n  \"owner\": \"GREEK COMPANY AE\",\n  \"owner_vat\": \"EL987654321\",\n  \"exemptions\": [],\n  \"previous_enfia\": 4250.00\n}"
+      }
+    ]
+  }
+]

@@ -1,0 +1,59 @@
+name: News to Event Poster
+slug: news-event-poster
+version: "0.3.2"
+status: wip
+priority: p0
+platforms:
+  - linkedin
+  - x
+private: true
+owner: null
+
+source_prerequisites:
+  min_sources: 1
+  source_types:
+    - event-news
+
+brand_graph:
+  required: true
+  required_layers:
+    - identity
+    - visual
+
+prerequisites:
+  - name: extract-event-details
+    action: extract-text
+    description: Extract event name, date, location, speakers, and key details from the news source.
+  - name: generate-headline
+    action: generate-title
+    description: Generate a compelling headline for the event poster.
+  - name: extract-key-points
+    action: extract-key-points
+    description: Pull 3-5 key talking points or highlights from the event.
+
+blocks:
+  - name: event-poster
+    format: image
+    sub_format: event-poster
+    agent: poster.md
+    depends_on: null
+    rules:
+      - Include event name, date, and key details prominently
+      - Use brand colors and visual identity
+      - Keep text minimal and scannable
+      - Include brand logo if available
+    examples: []
+
+  - name: post-caption
+    format: text
+    sub_format: post-caption
+    agent: caption.md
+    depends_on:
+      - event-poster
+    rules:
+      - Open with a hook related to the event topic
+      - Include key details (what, when, where)
+      - End with a call to action
+      - Platform-appropriate length and tone
+      - Use relevant hashtags
+    examples: []

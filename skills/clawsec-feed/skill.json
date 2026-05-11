@@ -1,0 +1,57 @@
+{
+  "name": "clawsec-feed",
+  "version": "0.0.5",
+  "description": "Security advisory feed monitoring for AI agents. Subscribe to community-driven threat intelligence.",
+  "author": "prompt-security",
+  "license": "AGPL-3.0-or-later",
+  "homepage": "https://clawsec.prompt.security",
+  "keywords": [
+    "security",
+    "advisory",
+    "feed",
+    "agents",
+    "ai",
+    "threat-intel",
+    "monitoring"
+  ],
+  "sbom": {
+    "files": [
+      {
+        "path": "SKILL.md",
+        "required": true,
+        "description": "Advisory feed skill documentation"
+      },
+      {
+        "path": "CHANGELOG.md",
+        "required": true,
+        "description": "Version history for advisory feed updates"
+      },
+      {
+        "path": "advisories/feed.json",
+        "required": true,
+        "description": "Community security advisory feed"
+      }
+    ]
+  },
+  "openclaw": {
+    "emoji": "📡",
+    "category": "security",
+    "feed_url": "https://api.github.com/repos/prompt-security/ClawSec/releases?skill=clawsec-feed",
+    "requires": {
+      "bins": [
+        "curl",
+        "jq"
+      ]
+    },
+    "triggers": [
+      "security advisories",
+      "check advisories",
+      "clawsec",
+      "threat feed",
+      "security alerts",
+      "vulnerability feed",
+      "advisory feed",
+      "security news"
+    ]
+  }
+}

@@ -1,0 +1,143 @@
+[
+  {
+    "type": "function",
+    "name": "cancelSpin",
+    "inputs": [],
+    "outputs": [],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "type": "function",
+    "name": "spin",
+    "inputs": [
+      {
+        "name": "betAmount",
+        "type": "uint256",
+        "internalType": "uint256"
+      }
+    ],
+    "outputs": [],
+    "stateMutability": "payable"
+  },
+  {
+    "type": "event",
+    "name": "SpinCancelled",
+    "inputs": [
+      {
+        "name": "player",
+        "type": "address",
+        "indexed": true,
+        "internalType": "address"
+      },
+      {
+        "name": "requestId",
+        "type": "uint256",
+        "indexed": true,
+        "internalType": "uint256"
+      },
+      {
+        "name": "betAmount",
+        "type": "uint256",
+        "indexed": false,
+        "internalType": "uint256"
+      }
+    ],
+    "anonymous": false
+  },
+  {
+    "type": "event",
+    "name": "SpinRequested",
+    "inputs": [
+      {
+        "name": "player",
+        "type": "address",
+        "indexed": true,
+        "internalType": "address"
+      },
+      {
+        "name": "requestId",
+        "type": "uint256",
+        "indexed": true,
+        "internalType": "uint256"
+      },
+      {
+        "name": "betAmount",
+        "type": "uint256",
+        "indexed": false,
+        "internalType": "uint256"
+      }
+    ],
+    "anonymous": false
+  },
+  {
+    "type": "error",
+    "name": "BetTooLarge",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "BetTooSmall",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "InsufficientVRFFee",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "NoSpinPending",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "NotEOA",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "Paused",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "PrizePoolInsufficient",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "SafeERC20FailedOperation",
+    "inputs": [
+      {
+        "name": "token",
+        "type": "address",
+        "internalType": "address"
+      }
+    ]
+  },
+  {
+    "type": "error",
+    "name": "SpinAlreadyFulfilled",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "SpinCancelTooEarly",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "SpinPending",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "TokenTransferFailed",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "TransferFailed",
+    "inputs": []
+  }
+]

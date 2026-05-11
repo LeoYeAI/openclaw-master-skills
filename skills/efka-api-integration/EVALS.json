@@ -1,0 +1,92 @@
+[
+  {
+    "id": 0,
+    "prompt": "Process monthly payroll for Greek company with 45 employees, calculate EFKA contributions for all insurance categories, handle salary changes and new hires, and generate submission-ready files for EFKA portal.",
+    "expectations": [
+      "Calculates employer and employee contributions using current Greek rates",
+      "Handles different employee categories and insurance types correctly",
+      "Processes salary changes with recalculation from effective date",
+      "Registers new hires with EFKA and assigns correct insurance category",
+      "Generates APD declaration files",
+      "Produces payslips with Greek-language breakdown of deductions",
+      "Stores payroll data in /data/efka/ and client directories",
+      "Validates all calculations against legal contribution ceilings"
+    ],
+    "files": [
+      {
+        "name": "payroll_input.json",
+        "content": "{\"company_afm\": \"EL100200300\", \"period\": \"2026-01\", \"employees\": [{\"name\": \"Nikos Papadopoulos\", \"ama\": \"123456789012\", \"gross_salary\": 1800.00, \"category\": \"full_time\", \"insurance_class\": \"IKA_STANDARD\"}, {\"name\": \"Maria Georgiou\", \"ama\": \"234567890123\", \"gross_salary\": 2200.00, \"category\": \"full_time\", \"insurance_class\": \"IKA_STANDARD\", \"salary_change\": {\"effective_date\": \"2026-01-15\", \"previous_gross\": 2000.00}}]}"
+      }
+    ]
+  },
+  {
+    "id": 1,
+    "prompt": "A new employee starts at Alpha Trading AE (EL100200300) on January 15, 2026. Register them with EFKA, assign the correct insurance category, and calculate prorated contributions for the partial month.",
+    "expectations": [
+      "Registers new employee with EFKA system using AMA number",
+      "Assigns correct insurance category based on employment type",
+      "Calculates prorated contributions for partial month (Jan 15-31)",
+      "Generates EFKA registration notification",
+      "Updates the company employee roster in /data/efka/",
+      "Includes new employee in next APD declaration"
+    ],
+    "files": [
+      {
+        "name": "new_employee.json",
+        "content": "{\"company_afm\": \"EL100200300\", \"employee\": {\"name\": \"Eleni Konstantinou\", \"ama\": \"345678901234\", \"amka\": \"15019012345\", \"start_date\": \"2026-01-15\", \"gross_salary\": 1500.00, \"category\": \"full_time\", \"insurance_class\": \"IKA_STANDARD\", \"contract_type\": \"indefinite\"}}"
+      }
+    ]
+  },
+  {
+    "id": 2,
+    "prompt": "An employee at Beta Services OE (EL400500600) is terminated on January 20, 2026. Calculate final EFKA contributions including severance-related obligations and generate the termination notification for EFKA.",
+    "expectations": [
+      "Calculates final prorated contributions through termination date",
+      "Includes any severance-related EFKA obligations",
+      "Generates EFKA termination notification (ERGANI termination report)",
+      "Updates employee status to terminated in company roster",
+      "Ensures final payslip reflects correct EFKA deductions",
+      "Archives employee record per Greek data retention requirements"
+    ],
+    "files": [
+      {
+        "name": "termination.json",
+        "content": "{\"company_afm\": \"EL400500600\", \"employee\": {\"name\": \"Giorgos Antoniou\", \"ama\": \"456789012345\", \"termination_date\": \"2026-01-20\", \"termination_type\": \"employer_initiated\", \"years_of_service\": 3.5, \"last_gross_salary\": 2400.00}}"
+      }
+    ]
+  },
+  {
+    "id": 3,
+    "prompt": "Process complex payroll scenario: employee works part-time (4 hours/day), has overtime on 2 Saturdays, received a performance bonus, and has a retroactive salary increase effective from 2 months ago. Calculate all EFKA contributions correctly.",
+    "expectations": [
+      "Calculates part-time contributions proportionally to hours worked",
+      "Applies correct overtime rates (125% weekday, 150% Saturday)",
+      "Treats bonus as pensionable earnings for EFKA contribution calculation",
+      "Calculates retroactive contribution differences for prior 2 months",
+      "Generates adjustment entries for the retroactive period",
+      "Validates all calculations stay within legal contribution ceilings",
+      "Produces detailed breakdown showing regular, overtime, bonus, and retroactive components"
+    ],
+    "files": [
+      {
+        "name": "complex_payroll.json",
+        "content": "{\"company_afm\": \"EL700800900\", \"period\": \"2026-01\", \"employee\": {\"name\": \"Dimitrios Papageorgiou\", \"ama\": \"567890123456\", \"contract_hours\": 4, \"contract_type\": \"part_time\", \"hourly_rate\": 12.00, \"overtime_hours\": [{\"date\": \"2026-01-11\", \"hours\": 4, \"type\": \"saturday\"}, {\"date\": \"2026-01-18\", \"hours\": 4, \"type\": \"saturday\"}], \"bonus\": {\"amount\": 800.00, \"type\": \"performance\"}, \"retroactive_increase\": {\"new_hourly_rate\": 13.00, \"effective_from\": \"2025-11-01\"}}}"
+      }
+    ]
+  },
+  {
+    "id": 4,
+    "prompt": "Configure EFKA integration for a multi-client accounting firm managing 15 clients with 120 employees total. Set up batch processing for monthly declarations.",
+    "expectations": [
+      "Configures batch processing mode for multiple client AFMs",
+      "Sets up scheduling for staggered EFKA declaration submissions",
+      "Creates summary report showing all clients and their employee counts",
+      "Validates EFKA employer IDs for all 15 clients before batch processing",
+      "Handles different contribution rates based on employee categories per client",
+      "Produces consolidated report of total employer and employee contributions",
+      "Stores batch configuration in /data/efka/ for reuse",
+      "Estimates processing time for the full batch"
+    ],
+    "files": []
+  }
+]

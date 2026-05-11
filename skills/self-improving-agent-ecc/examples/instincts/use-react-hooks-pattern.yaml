@@ -1,0 +1,60 @@
+---
+id: use-react-hooks-pattern
+trigger: "when writing React components"
+confidence: 0.8
+domain: "code-style"
+source: "session-observation"
+scope: project
+project_id: "a1b2c3d4e5f6"
+project_name: "my-react-app"
+created_at: "2025-01-12T11:00:00Z"
+updated_at: "2025-01-14T16:30:00Z"
+evidence_count: 15
+---
+
+# Use React Hooks Pattern
+
+## Action
+Prefer functional components with hooks over class components. Use custom hooks for reusable logic.
+
+## Rationale
+This project follows modern React patterns using hooks. Class components are legacy and should be avoided for new code.
+
+## Examples
+
+### Positive
+```typescript
+// Use functional component with hooks
+function UserProfile({ userId }: { userId: string }) {
+  const { data, loading } = useUser(userId)
+  const [isEditing, setIsEditing] = useState(false)
+
+  if (loading) return <Spinner />
+  return <ProfileCard user={data} />
+}
+
+// Custom hook for reusable logic
+function useUser(userId: string) {
+  const [data, setData] = useState(null)
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    fetchUser(userId).then(setData).finally(() => setLoading(false))
+  }, [userId])
+
+  return { data, loading }
+}
+```
+
+### Negative
+```typescript
+// Don't use class components
+class UserProfile extends React.Component {
+  // Legacy pattern - avoid in this project
+}
+```
+
+## Evidence
+- Observed 15 functional components in codebase
+- User prefers hooks pattern (confirmed 2025-01-12)
+- All new components follow this pattern

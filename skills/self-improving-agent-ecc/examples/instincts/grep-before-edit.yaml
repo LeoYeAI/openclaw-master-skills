@@ -1,0 +1,41 @@
+---
+id: grep-before-edit
+trigger: "when about to modify existing code"
+confidence: 0.85
+domain: "workflow"
+source: "pattern-detection"
+scope: global
+created_at: "2025-01-15T10:00:00Z"
+updated_at: "2025-01-15T10:00:00Z"
+evidence_count: 12
+---
+
+# Grep Before Edit
+
+## Action
+Always use Grep to search for the pattern before using Edit. This ensures the pattern is unique and prevents incorrect edits.
+
+## Rationale
+Using Edit without first verifying the pattern's uniqueness can lead to modifying the wrong location. Grep confirms the exact location and context.
+
+## Examples
+
+### Positive
+```typescript
+// First, search to confirm pattern
+Grep pattern: "function calculateTotal"
+// Then edit with confidence
+Edit file_path: "/src/utils.ts"
+```
+
+### Negative
+```typescript
+// Don't edit without searching first
+Edit file_path: "/src/utils.ts"
+// This might match the wrong function if there are duplicates
+```
+
+## Evidence
+- Observed 12 instances of this pattern
+- Incorrect edits occurred 3 times when Grep was skipped
+- Pattern consistently improves accuracy

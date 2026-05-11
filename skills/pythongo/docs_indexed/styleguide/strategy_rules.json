@@ -1,0 +1,130 @@
+{
+  "source": "strategy_rules.mdx",
+  "relative_source": "styleguide\\strategy_rules.mdx",
+  "title": "策略规范",
+  "doc_kind": "doc",
+  "is_index_page": false,
+  "section_count": 14,
+  "table_count": 0,
+  "callout_count": 0,
+  "link_count": 0,
+  "image_count": 0,
+  "sections": [
+    {
+      "id": "styleguide.strategy_rules.策略规范",
+      "title": "策略规范",
+      "level": 1,
+      "content_md": "过去我们的框架没有一个统一的代码规范，导致每个人的代码都长得不一样，现在新版本不仅规范了框架代码，还需要规范策略代码。",
+      "summary": "过去我们的框架没有一个统一的代码规范，导致每个人的代码都长得不一样，现在新版本不仅规范了框架代码，还需要规范策略代码。",
+      "block_type": "section"
+    },
+    {
+      "id": "styleguide.strategy_rules.导入父类-import",
+      "title": "导入父类 [#import]",
+      "level": 2,
+      "content_md": "通过把 K 线图相关代码拆分出去，我们得到了两个基础策略模版类：\n\n* `pythongo.base.BaseStrategy`\n\n* `pythongo.ui.BaseStrategy`",
+      "summary": "通过把 K 线图相关代码拆分出去，我们得到了两个基础策略模版类：",
+      "block_type": "section"
+    },
+    {
+      "id": "styleguide.strategy_rules.pythongo-base",
+      "title": "`pythongo.base`",
+      "level": 3,
+      "content_md": "本模块定义了完整的策略模版，也封装了从无限易取数据的方法\n\n当我们的策略完全不需要用到 K 线图的时候则导入本模块中的 `BaseStrategy`，并继承该类\n\n```python {1}\nfrom pythongo.base import BaseStrategy\n\nclass Demo(BaseStrategy):\n    ...\n```",
+      "summary": "本模块定义了完整的策略模版，也封装了从无限易取数据的方法",
+      "block_type": "section"
+    },
+    {
+      "id": "styleguide.strategy_rules.pythongo-ui",
+      "title": "`pythongo.ui`",
+      "level": 3,
+      "content_md": "本模块继承自上面 `pythongo.base` 中的 `BaseStrategy`，但额外包含了所有的 K 线图代码以及处理逻辑\n\n当我们的策略需要使用到 K 线图的时候则导入本模块中的  `BaseStrategy`，并继承该类\n\n```python {1}\nfrom pythongo.ui import BaseStrategy\n\nclass Demo(BaseStrategy):\n    ...\n```\n\n该类会自动处理 K 线图初始化等相关操作，使得所有的策略代码不再需要手动处理线图的启动、显示、关闭等操作",
+      "summary": "本模块继承自上面 `pythongo.base` 中的 `BaseStrategy`，但额外包含了所有的 K 线图代码以及处理逻辑",
+      "block_type": "section"
+    },
+    {
+      "id": "styleguide.strategy_rules.初始化-init",
+      "title": "初始化 [#init]",
+      "level": 2,
+      "content_md": "",
+      "summary": "",
+      "block_type": "section"
+    },
+    {
+      "id": "styleguide.strategy_rules.自定义变量-custom-var",
+      "title": "自定义变量 [#custom-var]",
+      "level": 3,
+      "content_md": "很多时候我们需要定义一些自定义变量，用来实现策略更复杂的操作，这些变量就是实例变量，我们和正常写代码一样，直接定义在 `self.__init__` 中，对于默认值为 `None{:py}` 或者为对象的变量，应该写上类型注释\n\n```python copy {6-8}\nclass Demo(BaseStrategy):\n    def __init__(self) -> None:\n        super().__init__()\n\n        # 自定义变量\n        self.global_var_name: str | None = None\n        self.global_var_int = 1\n        self.test_string = \"\"\n```",
+      "summary": "很多时候我们需要定义一些自定义变量，用来实现策略更复杂的操作，这些变量就是实例变量，我们和正常写代码一样，直接定义在 `self.__init__` 中，对于默认值为 `None{:py}` 或者为对象的变量，应该写上类型注释",
+      "block_type": "section"
+    },
+    {
+      "id": "styleguide.strategy_rules.线图指标定义-def-ui-indicator",
+      "title": "线图指标定义 [#def-ui-indicator]",
+      "level": 2,
+      "content_md": "当我们使用 K 线图组件时，需要定义线图上显示的指标，现在我们有了更方便的定义方法\n\n`@property{:py}` 装饰器可以把一个类方法装饰成类属性，在我们定义线图显示指标的时候，使用这个装饰器再合适不过了，因为每次调用这个属性，都会去使用最新的指标数据，而不需要自己对这个属性做任何赋值操作\n\n下面定义的两个属性，是以方法来定义的，但可以当做属性调用，所以我们可以实现更进阶的操作",
+      "summary": "当我们使用 K 线图组件时，需要定义线图上显示的指标，现在我们有了更方便的定义方法",
+      "block_type": "section"
+    },
+    {
+      "id": "styleguide.strategy_rules.主图指标-main-indicator",
+      "title": "主图指标 [#main-indicator]",
+      "level": 3,
+      "content_md": "主图指标使用属性名 `main_indicator_data` 定义\n\n```python copy {7-8,10-16}\nfrom pythongo.ui import BaseStrategy\n\nclass Demo(BaseStrategy):\n    def __init__(self) -> None:\n        super().__init__()\n\n        self.fast_ma = 0.0\n        self.slow_ma = 0.0\n\n    @property\n    def main_indicator_data(self) -> dict[str, float]:\n        \"\"\"主图指标\"\"\"\n        return {\n            \"MA0\": self.fast_ma,\n            \"MA1\": self.slow_ma,\n        }\n```",
+      "summary": "主图指标使用属性名 `main_indicator_data` 定义",
+      "block_type": "section"
+    },
+    {
+      "id": "styleguide.strategy_rules.副图指标-sub-indicator",
+      "title": "副图指标 [#sub-indicator]",
+      "level": 3,
+      "content_md": "副图指标使用属性名 `sub_indicator_data` 定义\n\n```python copy {7-9,11-18}\nfrom pythongo.ui import BaseStrategy\n\nclass Demo(BaseStrategy):\n    def __init__(self) -> None:\n        super().__init__()\n\n        self.k = 0.0\n        self.d = 0.0\n        self.j = 0.0\n\n    @property\n    def sub_indicator_data(self) -> dict[str, float]:\n        \"\"\"副图指标\"\"\"\n        return {\n            \"K\": self.k,\n            \"D\": self.d,\n            \"J\": self.j,\n        }\n```",
+      "summary": "副图指标使用属性名 `sub_indicator_data` 定义",
+      "block_type": "section"
+    },
+    {
+      "id": "styleguide.strategy_rules.进阶操作-high-level-code",
+      "title": "进阶操作 [#high-level-code]",
+      "level": 3,
+      "content_md": "在上面定义指标的例子中，`KDJ` 指标还好，如果是 `MA` 指标，我们软件一般都会显示为 `MA10`、 `MA20` 这种带周期的名称，但是在策略中，我们已经把指标名称定义为 `MA0` 和 `MA1`，且不会再更改了\n\n这就导致即使我们更改了指标的周期，线图上显示的指标名字还是不会变，我们不能很清楚的知道现在显示的是什么周期的指标\n\n这个时候装饰器就起作用了，还记得我们之前说的：「装饰器可以把一个类方法装饰成类属性」吗？既然我们定义的不是属性，而是方法，那就可以在方法里实现更新指标名称的操作了\n\n```python copy {7-8,14,16-17,23-24}\nfrom pythongo.base import BaseParams, Field\nfrom pythongo.ui import BaseStrategy\n\nclass Params(BaseParams):\n    \"\"\"参数映射模型\"\"\"\n    fast_period: int = Field(default=5, title=\"快均线周期\", ge=2)\n    slow_period: int = Field(default=20, title=\"慢均线周期\")\n\nclass Demo(BaseStrategy):\n    def __init__(self) -> None:\n        super().__init__()\n        self.params_map = Params()\n\n        self.fast_ma = 0.0\n        self.slow_ma = 0.0\n\n    @property\n    def main_indicator_data(self) -> dict[str, float]:\n        \"\"\"主图指标\"\"\"\n        return {\n            f\"MA{self.params_map.fast_period}\": self.fast_ma,\n            f\"MA{self.params_map.slow_period}\": self.slow_ma,\n        }\n```\n\n这样，从 PythonGO 窗口传进来的快均线周期和慢均线周期就会在 `self.main_indicator_data` 调用后转成一个新的字典：\n\n```json\n{\n    \"MA5\": 0.0,\n    \"MA20\": 0.0\n}\n```\n\n其中 `5` 和 `20` 是取的参数映射模型中 `self.params_map.fast_period` 和 `self.params_map.slow_period` 的值，我们通过 `f-string` 配合 `@property{:py}` 装饰器，实现了在更改指标周期后，线图上显示的指标名是 `MA` + 更改后的指标周期",
+      "summary": "在上面定义指标的例子中，`KDJ` 指标还好，如果是 `MA` 指标，我们软件一般都会显示为 `MA10`、 `MA20` 这种带周期的名称，但是在策略中，我们已经把指标名称定义为 `MA0` 和 `MA1`，且不会再更改了",
+      "block_type": "section"
+    },
+    {
+      "id": "styleguide.strategy_rules.回调函数-callback",
+      "title": "回调函数 [#callback]",
+      "level": 2,
+      "content_md": "在自己编写策略的时候，回调函数应该按照以下顺序定义，使用不到的回调函数允许不定义\n\n```python\nfrom pythongo.base import BaseStrategy\n\nclass Demo(BaseStrategy):\n    def __init__(self) -> None:\n        super().__init__()\n\n    def on_init(self, ...) -> None:\n        super().on_init(...)\n\n    def on_start(self, ...) -> None:\n        super().on_start(...)\n\n    def on_stop(self, ...) -> None:\n        super().on_stop(...)\n\n    def on_tick(self, ...) -> None:\n        super().on_tick(...)\n\n    def on_contract_status(self, ...) -> None:\n        super().on_contract_status(...)\n\n    def on_order(self, ...) -> None:\n        super().on_order(...)\n\n    def on_cancel(self, ...) -> None:\n        super().on_cancel(...)\n\n    def on_order_trade(self, ...) -> None:\n        super().on_order_trade(...)\n\n    def on_trade(self, ...) -> None:\n        super().on_trade(...)\n\n    def on_error(self, ...) -> None:\n        super().on_error(...)\n```\n\n注意：所有回调函数，一定要使用 `super()` 来调用父类的回调函数",
+      "summary": "在自己编写策略的时候，回调函数应该按照以下顺序定义，使用不到的回调函数允许不定义",
+      "block_type": "section"
+    },
+    {
+      "id": "styleguide.strategy_rules.函数调用-call-function",
+      "title": "函数调用 [#call-function]",
+      "level": 2,
+      "content_md": "调用函数时，如果函数的参数超过两个，则需要在入参的时候填写参数名，这点在[代码规范](./style_rules.mdx)中已经强调了\n\n```python\ndef foo(a: int, b: int, c: int) -> int:\n    return a + b + c",
+      "summary": "调用函数时，如果函数的参数超过两个，则需要在入参的时候填写参数名，这点在[代码规范](./style_rules.mdx)中已经强调了",
+      "block_type": "section"
+    },
+    {
+      "id": "styleguide.strategy_rules.正确",
+      "title": "正确",
+      "level": 1,
+      "content_md": "foo(a=1, b=2, c=3)",
+      "summary": "foo(a=1, b=2, c=3)",
+      "block_type": "section"
+    },
+    {
+      "id": "styleguide.strategy_rules.错误",
+      "title": "错误",
+      "level": 1,
+      "content_md": "foo(1, 2, 3)\n```",
+      "summary": "foo(1, 2, 3)\n```",
+      "block_type": "section"
+    }
+  ],
+  "tables": [],
+  "callouts": [],
+  "links": [],
+  "images": []
+}

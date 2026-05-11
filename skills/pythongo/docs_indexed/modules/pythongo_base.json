@@ -1,0 +1,1269 @@
+{
+  "source": "pythongo_base.mdx",
+  "relative_source": "modules\\pythongo_base.mdx",
+  "title": "pythongo.base",
+  "doc_kind": "module_doc",
+  "is_index_page": false,
+  "section_count": 45,
+  "table_count": 32,
+  "callout_count": 14,
+  "link_count": 0,
+  "image_count": 0,
+  "sections": [
+    {
+      "id": "modules.pythongo_base.pythongo-base",
+      "title": "pythongo.base",
+      "level": 1,
+      "content_md": "本模块是最重要的一个模块，定义了一些父类，几乎所有策略都需要继承本模块中的父类。",
+      "summary": "本模块是最重要的一个模块，定义了一些父类，几乎所有策略都需要继承本模块中的父类。",
+      "block_type": "section"
+    },
+    {
+      "id": "modules.pythongo_base.继承简介-inherit",
+      "title": "继承简介 [#inherit]",
+      "level": 2,
+      "content_md": "在 Python 中，子类通过继承语法继承父类后，可以拥有父类的所有属性或方法，这样极大的减少了重复的代码，可以让代码更加简洁高效。\n\n当我们继承父类后，拥有了父类的所有属性和方法，有时候我们需要对该父类的一些方法进行重写，但同时还需要继续使用父类的方法，这个时候就需要使用 `super()` 函数了。\n\n因为我们对该方法重写后，再使用 `self.method_name()` 准备调用父类的方法，会发现其实调用的还是自身类（子类）的方法，也就是你自己重写后的方法，这个时候需要使用 `super().method_name()` 来调用父类的同名方法，就能达到我们想要的效果了。\n\n具体的继承概念可以自行查阅互联网资料。",
+      "summary": "在 Python 中，子类通过继承语法继承父类后，可以拥有父类的所有属性或方法，这样极大的减少了重复的代码，可以让代码更加简洁高效。",
+      "block_type": "section"
+    },
+    {
+      "id": "modules.pythongo_base.baseparams",
+      "title": "`BaseParams`",
+      "level": 2,
+      "content_md": "参数映射模型\n\n定义好的映射关系，会展示在「PythonGO 窗口 - 参数」一栏，这样就可以在界面直接编辑参数\n\n默认定义了 `exchange`（交易所代码） 和 `instrument_id`（合约代码），这两个参数是固定参数，在继承本类后，你可以不再定义这两个参数，但建议还是**显式**的定义这两个参数。",
+      "summary": "参数映射模型",
+      "block_type": "section"
+    },
+    {
+      "id": "modules.pythongo_base.basestate",
+      "title": "`BaseState`",
+      "level": 2,
+      "content_md": "状态映射模型\n\n定义好的映射关系，会展示在「PythonGO 窗口 - 状态」一栏，数据仅供显示，无法编辑",
+      "summary": "状态映射模型",
+      "block_type": "section"
+    },
+    {
+      "id": "modules.pythongo_base.basestrategy",
+      "title": "`BaseStrategy`",
+      "level": 2,
+      "content_md": "策略模板\n\n所有策略的父类，定义好了回调函数，以及一些全局变量，还封装了一些获取数据的方法",
+      "summary": "策略模板",
+      "block_type": "section"
+    },
+    {
+      "id": "modules.pythongo_base.strategy_id",
+      "title": "`strategy_id`",
+      "level": 3,
+      "content_md": "类型：`int`\n\n策略实例 ID\n\n由无限易自动自增赋值，不可自行更改\n\n一个客户端中，每创建一个实例，`ID` 加 `1`",
+      "summary": "类型：`int`",
+      "block_type": "property"
+    },
+    {
+      "id": "modules.pythongo_base.strategy_name",
+      "title": "`strategy_name`",
+      "level": 3,
+      "content_md": "类型：`str`\n\n策略实例名称\n\n「创建实例」时填写的「实例名称」，由无限易自动赋值，不可自行更改",
+      "summary": "类型：`str`",
+      "block_type": "property"
+    },
+    {
+      "id": "modules.pythongo_base.params_map",
+      "title": "`params_map`",
+      "level": 3,
+      "content_md": "类型：`BaseParams`\n\n实例化后的参数映射模型 `BaseParams`，用于父类参数映射",
+      "summary": "类型：`BaseParams`",
+      "block_type": "property"
+    },
+    {
+      "id": "modules.pythongo_base.state_map",
+      "title": "`state_map`",
+      "level": 3,
+      "content_md": "类型：`BaseState`\n\n实例化后的状态映射模型 `BaseState`，用于父类状态映射",
+      "summary": "类型：`BaseState`",
+      "block_type": "property"
+    },
+    {
+      "id": "modules.pythongo_base.limit_time",
+      "title": "`limit_time`",
+      "level": 3,
+      "content_md": "类型：`int`\n\n错单限制时间（单位：秒）\n\n控制错单后 N 秒不报单，防止错单后继续发单",
+      "summary": "类型：`int`",
+      "block_type": "property"
+    },
+    {
+      "id": "modules.pythongo_base.trading",
+      "title": "`trading`",
+      "level": 3,
+      "content_md": "类型：`bool`\n\n是否允许交易\n\n可以控制报单函数是否对外报单，如果设为 `False`，则即使调用报单函数也不会报单。",
+      "summary": "类型：`bool`",
+      "block_type": "property"
+    },
+    {
+      "id": "modules.pythongo_base.class_name",
+      "title": "`class_name`",
+      "level": 3,
+      "content_md": "类型：`str`\n\n策略的类名",
+      "summary": "类型：`str`",
+      "block_type": "property"
+    },
+    {
+      "id": "modules.pythongo_base.exchange_list",
+      "title": "`exchange_list`",
+      "level": 3,
+      "content_md": "类型：`list[str]`\n\n交易所列表\n\n通过分号分割 `params_map` 中的 `exchange` 得到\n\n实现方法为：\n\n```python\nself.params_map.exchange.split(\";\")\n```",
+      "summary": "类型：`list[str]`",
+      "block_type": "property"
+    },
+    {
+      "id": "modules.pythongo_base.instrument_list",
+      "title": "`instrument_list`",
+      "level": 3,
+      "content_md": "类型：`list[str]`\n\n合约列表\n\n通过分号分割 `params_map` 中的 `instrument_id` 得到\n\n实现方法为：\n\n```python\nself.params_map.instrument_id.split(\";\")\n```",
+      "summary": "类型：`list[str]`",
+      "block_type": "property"
+    },
+    {
+      "id": "modules.pythongo_base.instance_file",
+      "title": "`instance_file`",
+      "level": 3,
+      "content_md": "类型：`str`\n\n保存的实例信息文件路径",
+      "summary": "类型：`str`",
+      "block_type": "property"
+    },
+    {
+      "id": "modules.pythongo_base.get_params",
+      "title": "`get_params()`",
+      "level": 3,
+      "content_md": "获取策略参数\n\n> [!INFO]\n> 无限易调用此方法来获取定义好的属性和对应的值，自己无需使用\n\n返回：\n\n| 类型 | 描述 |\n|---|---|\n| `list[dict[str | str |",
+      "summary": "获取策略参数",
+      "block_type": "function"
+    },
+    {
+      "id": "modules.pythongo_base.set_params",
+      "title": "`set_params()`",
+      "level": 3,
+      "content_md": "设置策略参数\n\n> [!INFO]\n> 修改界面参数时无限易主动调用，自己无需使用\n\n参数：\n\n| 参数名 | 类型 | 描述 |\n|---|---|---|\n| `data` | `dict[str | str |\n| ` |\n| 修 | 改 | 后 | 的 | 界 | 面 | 参 | 数 | 数 | 据 |",
+      "summary": "设置策略参数",
+      "block_type": "function"
+    },
+    {
+      "id": "modules.pythongo_base.update_status_bar",
+      "title": "`update_status_bar()`",
+      "level": 3,
+      "content_md": "更新无限易 PythonGO 窗口状态栏显示值",
+      "summary": "更新无限易 PythonGO 窗口状态栏显示值",
+      "block_type": "function"
+    },
+    {
+      "id": "modules.pythongo_base.save_instance_file",
+      "title": "`save_instance_file()`",
+      "level": 3,
+      "content_md": "保存实例信息\n\n暂停策略时会主动调用",
+      "summary": "保存实例信息",
+      "block_type": "function"
+    },
+    {
+      "id": "modules.pythongo_base.load_instance_file",
+      "title": "`load_instance_file()`",
+      "level": 3,
+      "content_md": "加载实例文件并对策略设置对应属性\n\n`on_init` 会主动调用",
+      "summary": "加载实例文件并对策略设置对应属性",
+      "block_type": "function"
+    },
+    {
+      "id": "modules.pythongo_base.on_init",
+      "title": "`on_init()`",
+      "level": 3,
+      "content_md": "创建实例回调\n\n界面创建实例或加载实例会触发此方法",
+      "summary": "创建实例回调",
+      "block_type": "function"
+    },
+    {
+      "id": "modules.pythongo_base.on_start",
+      "title": "`on_start()`",
+      "level": 3,
+      "content_md": "启动策略回调\n\n界面点击运行按钮会触发此方法\n\n> [!INFO]\n> 此方法会将 `self.trading` 设置为 `True`，然后订阅合约行情",
+      "summary": "启动策略回调",
+      "block_type": "function"
+    },
+    {
+      "id": "modules.pythongo_base.on_stop",
+      "title": "`on_stop()`",
+      "level": 3,
+      "content_md": "停止策略回调\n\n界面点击暂停按钮会触发此方法\n\n> [!INFO]\n> 此方法会将 `self.trading` 设置为 `False`，保存实例信息，然后取消订阅合约行情",
+      "summary": "停止策略回调",
+      "block_type": "function"
+    },
+    {
+      "id": "modules.pythongo_base.on_tick",
+      "title": "`on_tick()`",
+      "level": 3,
+      "content_md": "收到行情 tick 推送回调\n\n参数：\n\n| 参数名 | 类型 | 描述 |\n|---|---|---|\n| `tick` | `TickData` | 行情切片数据对象 |",
+      "summary": "收到行情 tick 推送回调",
+      "block_type": "function"
+    },
+    {
+      "id": "modules.pythongo_base.on_contract_status",
+      "title": "`on_contract_status()`",
+      "level": 3,
+      "content_md": "合约状态变化回调\n\n参数：\n\n| 参数名 | 类型 | 描述 |\n|---|---|---|\n| `status` | `InstrumentStatus` | 合约状态对象 |",
+      "summary": "合约状态变化回调",
+      "block_type": "function"
+    },
+    {
+      "id": "modules.pythongo_base.on_cancel",
+      "title": "`on_cancel()`",
+      "level": 3,
+      "content_md": "收到撤单推送回调\n\n> [!INFO]\n> 本函数在 `v2025.0801` 版本新增，新版本请使用本回调，旧版本的 `on_order_cancel` 将在未来被弃用\n\n参数：\n\n| 参数名 | 类型 | 描述 |\n|---|---|---|\n| `order` | `CancelOrderData` | 撤单数据对象 |",
+      "summary": "收到撤单推送回调",
+      "block_type": "function"
+    },
+    {
+      "id": "modules.pythongo_base.on_order_trade",
+      "title": "`on_order_trade()`",
+      "level": 3,
+      "content_md": "收到报单成交推送回调\n\n回调是 `on_order` 主动触发的，等同于 `on_trade`，最好使用 `on_trade`\n\n参数：\n\n| 参数名 | 类型 | 描述 |\n|---|---|---|\n| `order` | `OrderData` | 报单数据对象 |",
+      "summary": "收到报单成交推送回调",
+      "block_type": "function"
+    },
+    {
+      "id": "modules.pythongo_base.on_order",
+      "title": "`on_order()`",
+      "level": 3,
+      "content_md": "报单变化回调\n\n> [!INFO]\n> 报单成功就会进入此回调\n\n参数：\n\n| 参数名 | 类型 | 描述 |\n|---|---|---|\n| `order` | `OrderData` | 报单数据对象 |",
+      "summary": "报单变化回调",
+      "block_type": "function"
+    },
+    {
+      "id": "modules.pythongo_base.on_trade",
+      "title": "`on_trade()`",
+      "level": 3,
+      "content_md": "报单成交推送回调\n\n参数：\n\n| 参数名 | 类型 | 描述 |\n|---|---|---|\n| `trade` | `TradeData` | 成交数据对象 |\n| `log` | `bool` | 是否输出成交日志 |",
+      "summary": "报单成交推送回调",
+      "block_type": "function"
+    },
+    {
+      "id": "modules.pythongo_base.on_error",
+      "title": "`on_error()`",
+      "level": 3,
+      "content_md": "收到报单错误推送回调\n\n参数：\n\n| 参数名 | 类型 | 描述 |\n|---|---|---|\n| `error` | `dict[str | str |\n| ` |\n| 错 | 误 | 信 | 息 |   | 包 | 含 |   | e | r | r | C | o | d | e |   | ( | 错 | 误 | 代 | 码 | ) | , |   | e | r | r | M | s | g |   | ( | 错 | 误 | 信 | 息 | ) | , |   | o | r | d | e | r | I | D |   | ( | 报 | 单 | 编 | 号 | ) |   |\n\n其中有几点需要注意：\n\n* 当 `errCode` 为 `0004` 的时候，是撤单错误，你可以根据该值做一些撤单错误后的处理。\n\n* 函数运行错误和报单错误都会进入此回调，所以 `error` 如果有 `orderID` 键，那就是属于报单错误的回调，反之则是函数运行错误",
+      "summary": "收到报单错误推送回调",
+      "block_type": "function"
+    },
+    {
+      "id": "modules.pythongo_base.pause_strategy",
+      "title": "`pause_strategy()`",
+      "level": 3,
+      "content_md": "暂停策略函数\n\n效果和客户端点击暂停一样\n\n> [!ERROR]\n> 请勿在 `on_start` 和 `on_stop` 中使用本方法，否则会进入死循环",
+      "summary": "暂停策略函数",
+      "block_type": "function"
+    },
+    {
+      "id": "modules.pythongo_base.output",
+      "title": "`output()`",
+      "level": 3,
+      "content_md": "输出信息到控制台\n\n参数：\n\n| 参数名 | 类型 | 描述 | 默认值 |\n|---|---|---|---|\n| `*msg` | `Any` | 准备输出的信息，支持任意类型和任意参数 | 必填 |",
+      "summary": "输出信息到控制台",
+      "block_type": "function"
+    },
+    {
+      "id": "modules.pythongo_base.sub_market_data",
+      "title": "`sub_market_data()`",
+      "level": 3,
+      "content_md": "订阅合约行情函数\n\n> [!INFO]\n> 使用此方法订阅合约时，交易所代码和合约代码可以为空，当两者为空时，会自动取 `self.exchange_list` 和 `self.instrument_list` 中的合约来订阅\n\n参数：\n\n| 参数名 | 类型 | 描述 | 默认值 |\n|---|---|---|---|\n| `exchange` | `str` | 交易所代码 | None |\n| `instrument_id` | `str` | 合约代码 | None |",
+      "summary": "订阅合约行情函数",
+      "block_type": "function"
+    },
+    {
+      "id": "modules.pythongo_base.unsub_market_data",
+      "title": "`unsub_market_data()`",
+      "level": 3,
+      "content_md": "取消订阅合约行情函数\n\n> [!INFO]\n> 同 `sub_market_data` 注意事项\n                                                                                                                                                                                        \n\n参数：\n\n| 参数名 | 类型 | 描述 | 默认值 |\n|---|---|---|---|\n| `exchange` | `str` | 交易所代码 | None |\n| `instrument_id` | `str` | 合约代码 | None |",
+      "summary": "取消订阅合约行情函数",
+      "block_type": "function"
+    },
+    {
+      "id": "modules.pythongo_base.sync_position",
+      "title": "`sync_position()`",
+      "level": 3,
+      "content_md": "同步持仓数据函数\n\n该方法会从无限易获取**所有帐号**的持仓并存储到 `self._position` 中。 使用 `self.get_position()` 函数时，会自动调用该方法，如无特殊情况，自己无需调用。",
+      "summary": "同步持仓数据函数",
+      "block_type": "function"
+    },
+    {
+      "id": "modules.pythongo_base.get_all_position",
+      "title": "`get_all_position()`",
+      "level": 3,
+      "content_md": "获取所有帐号的所有持仓\n\n> [!INFO]\n> 本函数在 `v2025.1112` 版本新增\n\n参数：\n\n| 参数名 | 类型 | 描述 | 默认值 |\n|---|---|---|---|\n| `simple` | `bool` | 简化持仓数据（但持仓是实时的） | False |\n\n返回：\n\n| 类型 | 描述 |\n|---|---|\n| `dict[str | dict[str | dict[str | Position |\n\n> [!INFO]\n> 返回的数据类型为字典，如要取合约双向持仓，顺序为：投资者帐号 -> 合约代码 -> 投机套保标志，参考代码：`position.get(investor, {}).get(instrument_id, {}).get(hedgeflag)`",
+      "summary": "获取所有帐号的所有持仓",
+      "block_type": "function"
+    },
+    {
+      "id": "modules.pythongo_base.get_position",
+      "title": "`get_position()`",
+      "level": 3,
+      "content_md": "获取持仓数据函数\n\n参数：\n\n| 参数名 | 类型 | 描述 | 默认值 |\n|---|---|---|---|\n| `instrument_id` | `str` | 合约代码 | 必填 |\n| `hedgeflag` | `TypeHedgeFlag` | 投机套保标志 | \"1\" |\n| `investor` | `str` | 资金账号（默认使用查询到的第一个帐号） | None |\n| `simple` | `bool` | 简化持仓数据（但持仓是实时的） | False |\n\n> [!INFO]\n> `simple` 字段在 `v2025.0522` 后的版本中新增，当 `simple` 为 `True` 的时候，获取到的持仓是实时的，不会再有延迟的情况，但是以下这些字段没有数据：`position_cost`, `yd_position_cost`, `close_profit`, `position_profit`, `open_avg_price`, `position_avg_price`, `used_margin`，具体字段的中文说明请看：[深入框架 - pythongo.classdef - position](../modules/pythongo_classdef/position.mdx#position_p)\n\n返回：\n\n| 类型 | 描述 |\n|---|---|\n| `Position` | 单合约的双向持仓数据 |",
+      "summary": "获取持仓数据函数",
+      "block_type": "function"
+    },
+    {
+      "id": "modules.pythongo_base.send_order",
+      "title": "`send_order()`",
+      "level": 3,
+      "content_md": "报单函数（开仓）\n\n参数：\n\n| 参数名 | 类型 | 描述 | 默认值 |\n|---|---|---|---|\n| `exchange` | `str` | 交易所代码 | 必填 |\n| `instrument_id` | `str` | 合约代码 | 必填 |\n| `volume` | `int` | 报单手数 | 必填 |\n| `price` | `float | int` | 报单价格 | 必填 |\n| `order_direction` | `TypeOrderDIR` | 报单方向 | 必填 |\n| `order_type` | `TypeOrderFlag` | 报单指令 | \"GFD\" |\n| `investor` | `str` | 报单账号 | \"\" |\n| `hedgeflag` | `TypeHedgeFlag` | 投机套保标志 | \"1\" |\n| `market` | `bool` | True 市价单，False 非市价单 | False |\n| `memo` | `Any` | 报单备注 | None |\n\n返回：\n\n| 类型 | 描述 |\n|---|---|\n| `int | None` | 报单编号（-1 为报单失败） |",
+      "summary": "报单函数（开仓）",
+      "block_type": "function"
+    },
+    {
+      "id": "modules.pythongo_base.auto_close_position",
+      "title": "`auto_close_position()`",
+      "level": 3,
+      "content_md": "自动平仓函数（平今优先）\n\n> [!WARNING]\n> 当平上期所、能源中心仓位的时候，如果既平了昨仓，又平了今仓，只会返回最后一次平仓的报单编号\n\n参数：\n\n| 参数名 | 类型 | 描述 | 默认值 |\n|---|---|---|---|\n| `exchange` | `str` | 交易所代码 | 必填 |\n| `instrument_id` | `str` | 合约代码 | 必填 |\n| `volume` | `int` | 报单手数 | 必填 |\n| `price` | `float | int` | 报单价格 | 必填 |\n| `order_direction` | `TypeOrderDIR` | 报单方向 | 必填 |\n| `order_type` | `TypeOrderFlag` | 报单指令 | \"GFD\" |\n| `investor` | `str` | 报单账号 | \"\" |\n| `hedgeflag` | `TypeHedgeFlag` | 投机套保标志 | \"1\" |\n| `shfe_close_first` | `bool` | 上期平仓（昨仓）优先 | False |\n| `market` | `bool` | True 市价单，False 非市价单 | False |\n| `memo` | `Any` | 报单备注 | None |\n\n返回：\n\n| 类型 | 描述 |\n|---|---|\n| `int | None` | 报单编号（-1 为报单失败） |",
+      "summary": "自动平仓函数（平今优先）",
+      "block_type": "function"
+    },
+    {
+      "id": "modules.pythongo_base.cancel_order",
+      "title": "`cancel_order()`",
+      "level": 3,
+      "content_md": "撤单函数\n\n参数：\n\n| 参数名 | 类型 | 描述 | 默认值 |\n|---|---|---|---|\n| `order_id` | `int` | 报单编号 | 必填 |\n\n返回：\n\n| 类型 | 描述 |\n|---|---|\n| `int` | -1 表示报单编号不存在，0 表示撤单请求发送成功（不代表撤单成功） |",
+      "summary": "撤单函数",
+      "block_type": "function"
+    },
+    {
+      "id": "modules.pythongo_base.make_order_req",
+      "title": "`make_order_req()`",
+      "level": 3,
+      "content_md": "发送报单请求函数\n\n参数：\n\n| 参数名 | 类型 | 描述 | 默认值 |\n|---|---|---|---|\n| `exchange` | `str` | 交易所代码 | 必填 |\n| `instrument_id` | `str` | 合约代码 | 必填 |\n| `volume` | `int` | 报单手数 | 必填 |\n| `price` | `float | int` | 报单价格 | 必填 |\n| `order_direction` | `TypeOrderDIR` | 报单方向（大写） | 必填 |\n| `offset` | `TypeOffsetFlag` | 开平标志 | 必填 |\n| `order_type` | `TypeOrderFlag` | 报单指令 | 必填 |\n| `investor` | `str` | 报单账号 | 必填 |\n| `hedgeflag` | `TypeHedgeFlag` | 投机套保标志 | 必填 |\n| `market` | `bool` | True 市价单，False 非市价单 | False |\n| `memo` | `Any` | 报单备注 | None |\n\n返回：\n\n| 类型 | 描述 |\n|---|---|\n| `int` | 报单编号（-1 为报单失败） |",
+      "summary": "发送报单请求函数",
+      "block_type": "function"
+    },
+    {
+      "id": "modules.pythongo_base.get_account_fund_data",
+      "title": "`get_account_fund_data()`",
+      "level": 3,
+      "content_md": "获取账号资金数据函数\n\n参数：\n\n| 参数名 | 类型 | 描述 | 默认值 |\n|---|---|---|---|\n| `investor` | `str` | 投资者账号 | 必填 |\n\n返回：\n\n| 类型 | 描述 |\n|---|---|\n| `AccountData` | 账号资金数据对象 |",
+      "summary": "获取账号资金数据函数",
+      "block_type": "function"
+    },
+    {
+      "id": "modules.pythongo_base.get_instrument_data",
+      "title": "`get_instrument_data()`",
+      "level": 3,
+      "content_md": "获取合约信息函数\n\n参数：\n\n| 参数名 | 类型 | 描述 | 默认值 |\n|---|---|---|---|\n| `exchange` | `str` | 交易所代码 | 必填 |\n| `instrument_id` | `str` | 合约代码 | 必填 |\n\n返回：\n\n| 类型 | 描述 |\n|---|---|\n| `InstrumentData` | 合约信息数据对象 |",
+      "summary": "获取合约信息函数",
+      "block_type": "function"
+    },
+    {
+      "id": "modules.pythongo_base.get_instruments_by_product",
+      "title": "`get_instruments_by_product()`",
+      "level": 3,
+      "content_md": "查询指定品种的所有合约信息或者仅合约代码函数\n\n> [!INFO]\n> 品种代码可以在无限易的「期权 - T 型报价」窗口查询「交易所」和「品种」字段。ETF 期权品种代码是 `ETF_O`\n\n参数：\n\n| 参数名 | 类型 | 描述 | 默认值 |\n|---|---|---|---|\n| `exchange` | `str` | 交易所代码 | 必填 |\n| `product_id` | `str` | 品种代码 | 必填 |\n| `raw_data` | `bool` | 是否返回原始数据（如果传入 False 则列表中只返回合约代码） | True |\n\n返回：\n\n| 类型 | 描述 |\n|---|---|\n| `TypeInstResult` | 所有合约信息数据对象或者仅合约代码字段 |",
+      "summary": "查询指定品种的所有合约信息或者仅合约代码函数",
+      "block_type": "function"
+    },
+    {
+      "id": "modules.pythongo_base.get_investor_data",
+      "title": "`get_investor_data()`",
+      "level": 3,
+      "content_md": "获取投资者信息函数\n\n参数：\n\n| 参数名 | 类型 | 描述 | 默认值 |\n|---|---|---|---|\n| `index` | `int` | 帐号的顺序（1 表示第一个，以此类推） | 1 |\n\n返回：\n\n| 类型 | 描述 |\n|---|---|\n| `InvestorData` | 投资者信息数据对象 |",
+      "summary": "获取投资者信息函数",
+      "block_type": "function"
+    }
+  ],
+  "tables": [
+    {
+      "title": "`get_params()`",
+      "headers": [
+        "类型",
+        "描述"
+      ],
+      "rows": [
+        [
+          "`list[dict[str",
+          "str"
+        ]
+      ],
+      "source": "pythongo_base.mdx"
+    },
+    {
+      "title": "`set_params()`",
+      "headers": [
+        "参数名",
+        "类型",
+        "描述"
+      ],
+      "rows": [
+        [
+          "`data`",
+          "`dict[str",
+          "str"
+        ],
+        [
+          "`"
+        ],
+        [
+          "修",
+          "改",
+          "后",
+          "的",
+          "界",
+          "面",
+          "参",
+          "数",
+          "数",
+          "据"
+        ]
+      ],
+      "source": "pythongo_base.mdx"
+    },
+    {
+      "title": "`on_tick()`",
+      "headers": [
+        "参数名",
+        "类型",
+        "描述"
+      ],
+      "rows": [
+        [
+          "`tick`",
+          "`TickData`",
+          "行情切片数据对象"
+        ]
+      ],
+      "source": "pythongo_base.mdx"
+    },
+    {
+      "title": "`on_contract_status()`",
+      "headers": [
+        "参数名",
+        "类型",
+        "描述"
+      ],
+      "rows": [
+        [
+          "`status`",
+          "`InstrumentStatus`",
+          "合约状态对象"
+        ]
+      ],
+      "source": "pythongo_base.mdx"
+    },
+    {
+      "title": "`on_cancel()`",
+      "headers": [
+        "参数名",
+        "类型",
+        "描述"
+      ],
+      "rows": [
+        [
+          "`order`",
+          "`CancelOrderData`",
+          "撤单数据对象"
+        ]
+      ],
+      "source": "pythongo_base.mdx"
+    },
+    {
+      "title": "`on_order_trade()`",
+      "headers": [
+        "参数名",
+        "类型",
+        "描述"
+      ],
+      "rows": [
+        [
+          "`order`",
+          "`OrderData`",
+          "报单数据对象"
+        ]
+      ],
+      "source": "pythongo_base.mdx"
+    },
+    {
+      "title": "`on_order()`",
+      "headers": [
+        "参数名",
+        "类型",
+        "描述"
+      ],
+      "rows": [
+        [
+          "`order`",
+          "`OrderData`",
+          "报单数据对象"
+        ]
+      ],
+      "source": "pythongo_base.mdx"
+    },
+    {
+      "title": "`on_trade()`",
+      "headers": [
+        "参数名",
+        "类型",
+        "描述"
+      ],
+      "rows": [
+        [
+          "`trade`",
+          "`TradeData`",
+          "成交数据对象"
+        ],
+        [
+          "`log`",
+          "`bool`",
+          "是否输出成交日志"
+        ]
+      ],
+      "source": "pythongo_base.mdx"
+    },
+    {
+      "title": "`on_error()`",
+      "headers": [
+        "参数名",
+        "类型",
+        "描述"
+      ],
+      "rows": [
+        [
+          "`error`",
+          "`dict[str",
+          "str"
+        ],
+        [
+          "`"
+        ],
+        [
+          "错",
+          "误",
+          "信",
+          "息",
+          " ",
+          "包",
+          "含",
+          " ",
+          "e",
+          "r",
+          "r",
+          "C",
+          "o",
+          "d",
+          "e",
+          " ",
+          "(",
+          "错",
+          "误",
+          "代",
+          "码",
+          ")",
+          ",",
+          " ",
+          "e",
+          "r",
+          "r",
+          "M",
+          "s",
+          "g",
+          " ",
+          "(",
+          "错",
+          "误",
+          "信",
+          "息",
+          ")",
+          ",",
+          " ",
+          "o",
+          "r",
+          "d",
+          "e",
+          "r",
+          "I",
+          "D",
+          " ",
+          "(",
+          "报",
+          "单",
+          "编",
+          "号",
+          ")",
+          " "
+        ]
+      ],
+      "source": "pythongo_base.mdx"
+    },
+    {
+      "title": "`output()`",
+      "headers": [
+        "参数名",
+        "类型",
+        "描述",
+        "默认值"
+      ],
+      "rows": [
+        [
+          "`*msg`",
+          "`Any`",
+          "准备输出的信息，支持任意类型和任意参数",
+          "必填"
+        ]
+      ],
+      "source": "pythongo_base.mdx"
+    },
+    {
+      "title": "`sub_market_data()`",
+      "headers": [
+        "参数名",
+        "类型",
+        "描述",
+        "默认值"
+      ],
+      "rows": [
+        [
+          "`exchange`",
+          "`str`",
+          "交易所代码",
+          "None"
+        ],
+        [
+          "`instrument_id`",
+          "`str`",
+          "合约代码",
+          "None"
+        ]
+      ],
+      "source": "pythongo_base.mdx"
+    },
+    {
+      "title": "`unsub_market_data()`",
+      "headers": [
+        "参数名",
+        "类型",
+        "描述",
+        "默认值"
+      ],
+      "rows": [
+        [
+          "`exchange`",
+          "`str`",
+          "交易所代码",
+          "None"
+        ],
+        [
+          "`instrument_id`",
+          "`str`",
+          "合约代码",
+          "None"
+        ]
+      ],
+      "source": "pythongo_base.mdx"
+    },
+    {
+      "title": "`get_all_position()`",
+      "headers": [
+        "参数名",
+        "类型",
+        "描述",
+        "默认值"
+      ],
+      "rows": [
+        [
+          "`simple`",
+          "`bool`",
+          "简化持仓数据（但持仓是实时的）",
+          "False"
+        ]
+      ],
+      "source": "pythongo_base.mdx"
+    },
+    {
+      "title": "`get_position()`",
+      "headers": [
+        "类型",
+        "描述"
+      ],
+      "rows": [
+        [
+          "`dict[str",
+          "dict[str",
+          "dict[str",
+          "Position"
+        ]
+      ],
+      "source": "pythongo_base.mdx"
+    },
+    {
+      "title": "`send_order()`",
+      "headers": [
+        "参数名",
+        "类型",
+        "描述",
+        "默认值"
+      ],
+      "rows": [
+        [
+          "`instrument_id`",
+          "`str`",
+          "合约代码",
+          "必填"
+        ],
+        [
+          "`hedgeflag`",
+          "`TypeHedgeFlag`",
+          "投机套保标志",
+          "\"1\""
+        ],
+        [
+          "`investor`",
+          "`str`",
+          "资金账号（默认使用查询到的第一个帐号）",
+          "None"
+        ],
+        [
+          "`simple`",
+          "`bool`",
+          "简化持仓数据（但持仓是实时的）",
+          "False"
+        ]
+      ],
+      "source": "pythongo_base.mdx"
+    },
+    {
+      "title": "`auto_close_position()`",
+      "headers": [
+        "类型",
+        "描述"
+      ],
+      "rows": [
+        [
+          "`Position`",
+          "单合约的双向持仓数据"
+        ]
+      ],
+      "source": "pythongo_base.mdx"
+    },
+    {
+      "title": "`cancel_order()`",
+      "headers": [
+        "参数名",
+        "类型",
+        "描述",
+        "默认值"
+      ],
+      "rows": [
+        [
+          "`exchange`",
+          "`str`",
+          "交易所代码",
+          "必填"
+        ],
+        [
+          "`instrument_id`",
+          "`str`",
+          "合约代码",
+          "必填"
+        ],
+        [
+          "`volume`",
+          "`int`",
+          "报单手数",
+          "必填"
+        ],
+        [
+          "`price`",
+          "`float | int`",
+          "报单价格",
+          "必填"
+        ],
+        [
+          "`order_direction`",
+          "`TypeOrderDIR`",
+          "报单方向",
+          "必填"
+        ],
+        [
+          "`order_type`",
+          "`TypeOrderFlag`",
+          "报单指令",
+          "\"GFD\""
+        ],
+        [
+          "`investor`",
+          "`str`",
+          "报单账号",
+          "\"\""
+        ],
+        [
+          "`hedgeflag`",
+          "`TypeHedgeFlag`",
+          "投机套保标志",
+          "\"1\""
+        ],
+        [
+          "`market`",
+          "`bool`",
+          "True 市价单，False 非市价单",
+          "False"
+        ],
+        [
+          "`memo`",
+          "`Any`",
+          "报单备注",
+          "None"
+        ]
+      ],
+      "source": "pythongo_base.mdx"
+    },
+    {
+      "title": "`make_order_req()`",
+      "headers": [
+        "类型",
+        "描述"
+      ],
+      "rows": [
+        [
+          "`int | None`",
+          "报单编号（-1 为报单失败）"
+        ]
+      ],
+      "source": "pythongo_base.mdx"
+    },
+    {
+      "title": "`get_account_fund_data()`",
+      "headers": [
+        "参数名",
+        "类型",
+        "描述",
+        "默认值"
+      ],
+      "rows": [
+        [
+          "`exchange`",
+          "`str`",
+          "交易所代码",
+          "必填"
+        ],
+        [
+          "`instrument_id`",
+          "`str`",
+          "合约代码",
+          "必填"
+        ],
+        [
+          "`volume`",
+          "`int`",
+          "报单手数",
+          "必填"
+        ],
+        [
+          "`price`",
+          "`float | int`",
+          "报单价格",
+          "必填"
+        ],
+        [
+          "`order_direction`",
+          "`TypeOrderDIR`",
+          "报单方向",
+          "必填"
+        ],
+        [
+          "`order_type`",
+          "`TypeOrderFlag`",
+          "报单指令",
+          "\"GFD\""
+        ],
+        [
+          "`investor`",
+          "`str`",
+          "报单账号",
+          "\"\""
+        ],
+        [
+          "`hedgeflag`",
+          "`TypeHedgeFlag`",
+          "投机套保标志",
+          "\"1\""
+        ],
+        [
+          "`shfe_close_first`",
+          "`bool`",
+          "上期平仓（昨仓）优先",
+          "False"
+        ],
+        [
+          "`market`",
+          "`bool`",
+          "True 市价单，False 非市价单",
+          "False"
+        ],
+        [
+          "`memo`",
+          "`Any`",
+          "报单备注",
+          "None"
+        ]
+      ],
+      "source": "pythongo_base.mdx"
+    },
+    {
+      "title": "`get_instrument_data()`",
+      "headers": [
+        "类型",
+        "描述"
+      ],
+      "rows": [
+        [
+          "`int | None`",
+          "报单编号（-1 为报单失败）"
+        ]
+      ],
+      "source": "pythongo_base.mdx"
+    },
+    {
+      "title": "`get_instruments_by_product()`",
+      "headers": [
+        "参数名",
+        "类型",
+        "描述",
+        "默认值"
+      ],
+      "rows": [
+        [
+          "`order_id`",
+          "`int`",
+          "报单编号",
+          "必填"
+        ]
+      ],
+      "source": "pythongo_base.mdx"
+    },
+    {
+      "title": "`get_investor_data()`",
+      "headers": [
+        "类型",
+        "描述"
+      ],
+      "rows": [
+        [
+          "`int`",
+          "-1 表示报单编号不存在，0 表示撤单请求发送成功（不代表撤单成功）"
+        ]
+      ],
+      "source": "pythongo_base.mdx"
+    },
+    {
+      "title": null,
+      "headers": [
+        "参数名",
+        "类型",
+        "描述",
+        "默认值"
+      ],
+      "rows": [
+        [
+          "`exchange`",
+          "`str`",
+          "交易所代码",
+          "必填"
+        ],
+        [
+          "`instrument_id`",
+          "`str`",
+          "合约代码",
+          "必填"
+        ],
+        [
+          "`volume`",
+          "`int`",
+          "报单手数",
+          "必填"
+        ],
+        [
+          "`price`",
+          "`float | int`",
+          "报单价格",
+          "必填"
+        ],
+        [
+          "`order_direction`",
+          "`TypeOrderDIR`",
+          "报单方向（大写）",
+          "必填"
+        ],
+        [
+          "`offset`",
+          "`TypeOffsetFlag`",
+          "开平标志",
+          "必填"
+        ],
+        [
+          "`order_type`",
+          "`TypeOrderFlag`",
+          "报单指令",
+          "必填"
+        ],
+        [
+          "`investor`",
+          "`str`",
+          "报单账号",
+          "必填"
+        ],
+        [
+          "`hedgeflag`",
+          "`TypeHedgeFlag`",
+          "投机套保标志",
+          "必填"
+        ],
+        [
+          "`market`",
+          "`bool`",
+          "True 市价单，False 非市价单",
+          "False"
+        ],
+        [
+          "`memo`",
+          "`Any`",
+          "报单备注",
+          "None"
+        ]
+      ],
+      "source": "pythongo_base.mdx"
+    },
+    {
+      "title": null,
+      "headers": [
+        "类型",
+        "描述"
+      ],
+      "rows": [
+        [
+          "`int`",
+          "报单编号（-1 为报单失败）"
+        ]
+      ],
+      "source": "pythongo_base.mdx"
+    },
+    {
+      "title": null,
+      "headers": [
+        "参数名",
+        "类型",
+        "描述",
+        "默认值"
+      ],
+      "rows": [
+        [
+          "`investor`",
+          "`str`",
+          "投资者账号",
+          "必填"
+        ]
+      ],
+      "source": "pythongo_base.mdx"
+    },
+    {
+      "title": null,
+      "headers": [
+        "类型",
+        "描述"
+      ],
+      "rows": [
+        [
+          "`AccountData`",
+          "账号资金数据对象"
+        ]
+      ],
+      "source": "pythongo_base.mdx"
+    },
+    {
+      "title": null,
+      "headers": [
+        "参数名",
+        "类型",
+        "描述",
+        "默认值"
+      ],
+      "rows": [
+        [
+          "`exchange`",
+          "`str`",
+          "交易所代码",
+          "必填"
+        ],
+        [
+          "`instrument_id`",
+          "`str`",
+          "合约代码",
+          "必填"
+        ]
+      ],
+      "source": "pythongo_base.mdx"
+    },
+    {
+      "title": null,
+      "headers": [
+        "类型",
+        "描述"
+      ],
+      "rows": [
+        [
+          "`InstrumentData`",
+          "合约信息数据对象"
+        ]
+      ],
+      "source": "pythongo_base.mdx"
+    },
+    {
+      "title": null,
+      "headers": [
+        "参数名",
+        "类型",
+        "描述",
+        "默认值"
+      ],
+      "rows": [
+        [
+          "`exchange`",
+          "`str`",
+          "交易所代码",
+          "必填"
+        ],
+        [
+          "`product_id`",
+          "`str`",
+          "品种代码",
+          "必填"
+        ],
+        [
+          "`raw_data`",
+          "`bool`",
+          "是否返回原始数据（如果传入 False 则列表中只返回合约代码）",
+          "True"
+        ]
+      ],
+      "source": "pythongo_base.mdx"
+    },
+    {
+      "title": null,
+      "headers": [
+        "类型",
+        "描述"
+      ],
+      "rows": [
+        [
+          "`TypeInstResult`",
+          "所有合约信息数据对象或者仅合约代码字段"
+        ]
+      ],
+      "source": "pythongo_base.mdx"
+    },
+    {
+      "title": null,
+      "headers": [
+        "参数名",
+        "类型",
+        "描述",
+        "默认值"
+      ],
+      "rows": [
+        [
+          "`index`",
+          "`int`",
+          "帐号的顺序（1 表示第一个，以此类推）",
+          "1"
+        ]
+      ],
+      "source": "pythongo_base.mdx"
+    },
+    {
+      "title": null,
+      "headers": [
+        "类型",
+        "描述"
+      ],
+      "rows": [
+        [
+          "`InvestorData`",
+          "投资者信息数据对象"
+        ]
+      ],
+      "source": "pythongo_base.mdx"
+    }
+  ],
+  "callouts": [
+    {
+      "kind": "info",
+      "text": "无限易调用此方法来获取定义好的属性和对应的值，自己无需使用",
+      "source": "pythongo_base.mdx"
+    },
+    {
+      "kind": "info",
+      "text": "修改界面参数时无限易主动调用，自己无需使用",
+      "source": "pythongo_base.mdx"
+    },
+    {
+      "kind": "info",
+      "text": "此方法会将 `self.trading` 设置为 `True`，然后订阅合约行情",
+      "source": "pythongo_base.mdx"
+    },
+    {
+      "kind": "info",
+      "text": "此方法会将 `self.trading` 设置为 `False`，保存实例信息，然后取消订阅合约行情",
+      "source": "pythongo_base.mdx"
+    },
+    {
+      "kind": "info",
+      "text": "本函数在 `v2025.0801` 版本新增，新版本请使用本回调，旧版本的 `on_order_cancel` 将在未来被弃用",
+      "source": "pythongo_base.mdx"
+    },
+    {
+      "kind": "info",
+      "text": "报单成功就会进入此回调",
+      "source": "pythongo_base.mdx"
+    },
+    {
+      "kind": "error",
+      "text": "请勿在 `on_start` 和 `on_stop` 中使用本方法，否则会进入死循环",
+      "source": "pythongo_base.mdx"
+    },
+    {
+      "kind": "info",
+      "text": "使用此方法订阅合约时，交易所代码和合约代码可以为空，当两者为空时，会自动取 `self.exchange_list` 和 `self.instrument_list` 中的合约来订阅",
+      "source": "pythongo_base.mdx"
+    },
+    {
+      "kind": "info",
+      "text": "同 `sub_market_data` 注意事项",
+      "source": "pythongo_base.mdx"
+    },
+    {
+      "kind": "info",
+      "text": "本函数在 `v2025.1112` 版本新增",
+      "source": "pythongo_base.mdx"
+    },
+    {
+      "kind": "info",
+      "text": "返回的数据类型为字典，如要取合约双向持仓，顺序为：投资者帐号 -> 合约代码 -> 投机套保标志，参考代码：`position.get(investor, {}).get(instrument_id, {}).get(hedgeflag)`",
+      "source": "pythongo_base.mdx"
+    },
+    {
+      "kind": "info",
+      "text": "`simple` 字段在 `v2025.0522` 后的版本中新增，当 `simple` 为 `True` 的时候，获取到的持仓是实时的，不会再有延迟的情况，但是以下这些字段没有数据：`position_cost`, `yd_position_cost`, `close_profit`, `position_profit`, `open_avg_price`, `position_avg_price`, `used_margin`，具体字段的中文说明请看：[深入框架 - pythongo.classdef - position](../modules/pythongo_classdef/position.mdx#position_p)",
+      "source": "pythongo_base.mdx"
+    },
+    {
+      "kind": "warning",
+      "text": "当平上期所、能源中心仓位的时候，如果既平了昨仓，又平了今仓，只会返回最后一次平仓的报单编号",
+      "source": "pythongo_base.mdx"
+    },
+    {
+      "kind": "info",
+      "text": "品种代码可以在无限易的「期权 - T 型报价」窗口查询「交易所」和「品种」字段。ETF 期权品种代码是 `ETF_O`",
+      "source": "pythongo_base.mdx"
+    }
+  ],
+  "links": [],
+  "images": []
+}

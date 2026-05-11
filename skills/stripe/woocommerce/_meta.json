@@ -1,0 +1,19 @@
+{
+  "name": "WooCommerce",
+  "slug": "woocommerce",
+  "detection_signals": [
+    "woocommerce in link href or script src",
+    ".woocommerce CSS class in DOM",
+    "wp-content/plugins/woocommerce in script sources"
+  ],
+  "detection_script": "!!document.querySelector('link[href*=\"woocommerce\"], script[src*=\"woocommerce\"], .woocommerce') || !!document.querySelector('script[src*=\"wp-content/plugins/woocommerce\"]')",
+  "checkout_type": "iframe",
+  "checkout_processor": "stripe",
+  "agent_friendliness": 0.7,
+  "guest_checkout": true,
+  "multi_step": false,
+  "requires_auth": false,
+  "last_verified": "2026-03-18",
+  "maturity": "stable",
+  "notes": null
+}

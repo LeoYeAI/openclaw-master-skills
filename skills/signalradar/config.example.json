@@ -1,0 +1,32 @@
+{
+  "profile": {
+    "timezone": "Asia/Shanghai",
+    "language": ""
+  },
+  "threshold": {
+    "abs_pp": 5.0,
+    "per_category_abs_pp": {
+      "AI": 4.0,
+      "Crypto": 8.0
+    },
+    "per_entry_abs_pp": {}
+  },
+  "delivery": {
+    "primary": {
+      "channel": "webhook",
+      "target": "https://hooks.slack.com/services/YOUR/WEBHOOK/URL"
+    }
+  },
+  "digest": {
+    "frequency": "weekly",
+    "day_of_week": "monday",
+    "time_local": "09:00",
+    "top_n": 10
+  },
+  "baseline": {
+    "cleanup_after_expiry_days": 90
+  },
+  "source": {
+    "retries": 2
+  }
+}

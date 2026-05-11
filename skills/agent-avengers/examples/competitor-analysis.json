@@ -1,0 +1,33 @@
+{
+  "task": "경쟁사 A, B, C 분석해서 비교 리포트 만들기",
+  "subtasks": [
+    {
+      "description": "A사 경쟁 분석: 회사 개요, 주요 제품, 시장 포지션, 강점/약점 조사",
+      "type": "researcher",
+      "expected_output": "A사 분석 리포트 (마크다운)",
+      "dependencies": [],
+      "mode": "spawn"
+    },
+    {
+      "description": "B사 경쟁 분석: 회사 개요, 주요 제품, 시장 포지션, 강점/약점 조사",
+      "type": "researcher",
+      "expected_output": "B사 분석 리포트 (마크다운)",
+      "dependencies": [],
+      "mode": "spawn"
+    },
+    {
+      "description": "C사 경쟁 분석: 회사 개요, 주요 제품, 시장 포지션, 강점/약점 조사",
+      "type": "researcher",
+      "expected_output": "C사 분석 리포트 (마크다운)",
+      "dependencies": [],
+      "mode": "spawn"
+    },
+    {
+      "description": "A, B, C사 분석 결과를 종합하여 비교 리포트 작성",
+      "type": "integrator",
+      "expected_output": "3사 비교 분석 최종 리포트",
+      "dependencies": ["agent_00", "agent_01", "agent_02"],
+      "mode": "spawn"
+    }
+  ]
+}

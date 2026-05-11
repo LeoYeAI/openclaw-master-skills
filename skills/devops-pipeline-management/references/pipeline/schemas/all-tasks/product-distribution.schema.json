@@ -1,0 +1,64 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "product-distribution.schema.json",
+  "title": "ProductDistribution Task",
+  "description": "制品分发任务配置（镜像分发到多个仓库）",
+  "type": "object",
+  "required": ["taskCategory", "jobType", "name"],
+  "properties": {
+    "taskCategory": {
+      "type": "string",
+      "const": "Normal"
+    },
+    "jobType": {
+      "type": "string",
+      "const": "ProductDistribution"
+    },
+    "name": {
+      "type": "string",
+      "maxLength": 100,
+      "description": "任务名称"
+    },
+    "workPath": {
+      "type": "string",
+      "description": "工作目录"
+    },
+    "sourceId": {
+      "type": "string",
+      "description": "代码源ID"
+    },
+    "sourceImage": {
+      "type": "string",
+      "description": "源镜像地址"
+    },
+    "sourceTag": {
+      "type": "string",
+      "description": "源镜像标签"
+    },
+    "preDependTaskId": {
+      "type": "string",
+      "description": "前置镜像构建任务ID"
+    },
+    "targetRegistries": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "registryId": { "type": "string" },
+          "targetImage": { "type": "string" },
+          "targetTag": { "type": "string" }
+        }
+      },
+      "default": [],
+      "description": "目标仓库列表"
+    },
+    "idInTemplate": {
+      "type": "string"
+    },
+    "dependencies": {
+      "type": "array",
+      "items": { "type": "string" },
+      "default": []
+    }
+  }
+}

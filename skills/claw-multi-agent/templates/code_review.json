@@ -1,0 +1,32 @@
+{
+  "name": "多维代码审查",
+  "description": "从安全、性能、可读性三个维度并行审查代码。使用时请将 {file_path} 替换为实际文件路径（仅限项目内文件）。",
+  "_security_note": "file_path should be a relative path within the user's project. Never use absolute paths or paths outside the working directory.",
+  "phases": [
+    {
+      "name": "并行审查",
+      "mode": "parallel",
+      "aggregation": "compare",
+      "agents": [
+        {
+          "task": "请审查以下代码文件的【安全性】问题，包括：注入漏洞、认证缺陷、敏感信息泄露。\n\n代码路径（项目内相对路径）：{file_path}\n\n请逐条列出问题（严重/高/中/低），并给出修复建议。",
+          "model": "opus",
+          "role": "安全专家",
+          "label": "security-review"
+        },
+        {
+          "task": "请审查以下代码文件的【性能】问题，包括：算法复杂度、数据库查询、内存使用、并发问题。\n\n代码路径（项目内相对路径）：{file_path}\n\n请逐条列出性能瓶颈并给出优化建议。",
+          "model": "kimi",
+          "role": "性能工程师",
+          "label": "performance-review"
+        },
+        {
+          "task": "请审查以下代码文件的【代码质量】，包括：命名规范、注释完整性、模块化、可测试性。\n\n代码路径（项目内相对路径）：{file_path}\n\n请逐条给出改进建议。",
+          "model": "claude",
+          "role": "代码审查员",
+          "label": "quality-review"
+        }
+      ]
+    }
+  ]
+}

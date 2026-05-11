@@ -1,0 +1,52 @@
+# InstantDistributionAgreementV1 selectors — computed from @sfpro/sdk ABI
+
+functions:
+  agreementType():                                          0x7730599e
+  approveSubscription(address,address,uint32,bytes):        0xacf4a6c2
+  calculateDistribution(address,address,uint32,uint256):    0x899baaec
+  castrate():                                               0x9903ad38
+  claim(address,address,uint32,address,bytes):              0xacafa1b8
+  createIndex(address,uint32,bytes):                        0xd787840a
+  deleteSubscription(address,address,uint32,address,bytes): 0x2e5e74c6
+  distribute(address,uint32,uint256,bytes):                 0xb96731c2
+  getCodeAddress():                                         0x50d75d25
+  getIndex(address,address,uint32):                         0x23fc23f3
+  getSubscription(address,address,uint32,address):          0x5b534051
+  getSubscriptionByID(address,bytes32):                     0xcd7245c5
+  listSubscriptions(address,address):                       0xb6dacdb8
+  MAX_NUM_SUBSCRIPTIONS():                                  0xa5653ced
+  proxiableUUID():                                          0x52d1902d
+  realtimeBalanceOf(address,address,uint256):               0x9b2e48bc
+  revokeSubscription(address,address,uint32,bytes):         0x6041ae96
+  SLOTS_BITMAP_LIBRARY_ADDRESS():                           0x3fd4176a
+  updateCode(address):                                      0x46951954
+  updateIndex(address,uint32,uint128,bytes):                0x7fbc7639
+  updateSubscription(address,uint32,address,uint128,bytes): 0x232d2b58
+
+events:
+  CodeUpdated(bytes32,address):                               0xe011bc04c286c344a8fcbb8de77f953da762c3e25d8cdea984147fc4168a5dcc
+  IndexCreated(address,address,uint32,bytes):                 0x01ab8663165edfb7390d9e5f75d960a66dacf4f01fa9787e3a731c870d0da921
+  IndexDistributionClaimed(address,address,uint32,address,uint256): 0x467eccd248ef31c8bcef16d94856855799a8783aeef10f3759e43614059a6bb1
+  IndexSubscribed(address,address,uint32,address,bytes):      0x492d2641617cfaf24ac7328f85bc5bdf5113537d78dc7671afa4f49a73f053c2
+  IndexUnitsUpdated(address,address,uint32,address,uint128,bytes): 0x0115987243fd19d615b5ea62a80372a06a2b37fec378b148ee7a507c5c4c0a39
+  IndexUnsubscribed(address,address,uint32,address,bytes):    0xe1f8e9cd8061e5b251769965bda6ca9ef1674bc6541fb9131039fa53f024d142
+  IndexUpdated(address,address,uint32,uint128,uint128,uint128,uint128,bytes): 0x81e37f3d9f16cbf29a62d6a1c21d79b23ef29b54124ec44af43a50fffb9304f3
+  Initialized(uint8):                                         0x7f26b83ff96e1f2b6a682f133852f6798a09c465da95921460cefb3847402498
+  SubscriptionApproved(address,address,address,uint32,bytes): 0xc0b8396b655615cdb85fe462a9a1792480816f909cd46d9517a940b386dfbf6b
+  SubscriptionDistributionClaimed(address,address,address,uint32,uint256): 0x48a3d91d4a07e4982b081260e24f922bd33bb965882772d6de19c922c3eabdea
+  SubscriptionRevoked(address,address,address,uint32,bytes):  0x9e02127550b99adc8cc6ee332a36f31338facdbc396cebefce9a047247cd0455
+  SubscriptionUnitsUpdated(address,address,address,uint32,uint128,bytes): 0xe0707ac7efb8b59c22189af8d004ed17dc9e4379e71b9066119b62c182524977
+
+errors:
+  AGREEMENT_BASE_ONLY_HOST():                    0x1601d91e
+  IDA_INDEX_ALREADY_EXISTS():                    0x5c02a517
+  IDA_INDEX_DOES_NOT_EXIST():                    0xedeaa63b
+  IDA_INDEX_SHOULD_GROW():                       0xcfdca725
+  IDA_INSUFFICIENT_BALANCE():                    0x16e759bb
+  IDA_OPERATION_NOT_ALLOWED():                   0x92da6d17
+  IDA_SUBSCRIPTION_ALREADY_APPROVED():           0x3eb2f849
+  IDA_SUBSCRIPTION_DOES_NOT_EXIST():             0xb6c8c980
+  IDA_SUBSCRIPTION_IS_NOT_APPROVED():            0x37412573
+  IDA_ZERO_ADDRESS_SUBSCRIBER():                 0xc90a4674
+  SafeCastOverflowedUintDowncast(uint8,uint256): 0x6dfcc650
+  SafeCastOverflowedUintToInt(uint256):          0x24775e06

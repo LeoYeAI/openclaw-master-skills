@@ -1,0 +1,54 @@
+# HTTP 请求 + 数据处理工作流
+flow_id: "http_data_pipeline"
+name: "HTTP 数据管道"
+description: "获取公开 API 数据，处理并汇总"
+version: "1.0"
+
+settings:
+  retry: 2
+  retry_delay: 3
+  on_error: skip
+
+steps:
+  # 1. 获取随机笑话
+  - id: fetch_joke
+    name: "获取随机笑话"
+    type: http
+    url: "https://official-joke-api.appspot.com/random_joke"
+    method: GET
+    timeout: 10
+    export: joke_data
+
+  # 2. 处理笑话数据
+  - id: format_joke
+    name: "格式化笑话"
+    type: code
+    python: |
+      joke = joke_data
+      if isinstance(joke, dict) and 'body' in joke:
+        joke = joke['body']
+      if isinstance(joke, dict):
+        result = f"问: {joke.get('setup', 'N/A')}\n答: {joke.get('punchline', 'N/A')}"
+      else:
+        result = str(joke)
+      print(f"笑话内容:\n{result}")
+      ctx_export(result)
+    export: formatted_joke
+
+  # 3. 获取 IP 信息
+  - id: get_ip
+    name: "获取公网IP信息"
+    type: http
+    url: "https://httpbin.org/ip"
+    timeout: 10
+    export: ip_info
+
+  # 4. 汇总
+  - id: summary
+    name: "汇总结果"
+    type: code
+    python: |
+      print("=== 数据管道执行完成 ===")
+      print(f"笑话: {formatted_joke[:100] if isinstance(formatted_joke, str) else formatted_joke}")
+      print(f"IP 信息: {ip_info}")
+      ctx_export({"joke": formatted_joke, "ip": ip_info, "status": "done"})

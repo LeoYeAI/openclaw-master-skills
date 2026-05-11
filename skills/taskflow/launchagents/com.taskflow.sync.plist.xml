@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN"
+  "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!--
+  TaskFlow Periodic Sync — macOS LaunchAgent
+  ==========================================
+  Label:    com.taskflow.sync
+  Action:   Runs task-sync.mjs files-to-db every 60 seconds.
+            Markdown files are canonical; DB is kept in sync automatically.
+
+  INSTALLATION:
+    1. Copy this file to ~/Library/LaunchAgents/com.taskflow.sync.plist
+    2. Replace ALL occurrences of {{workspace}} with the absolute path
+       to your workspace directory (no trailing slash).
+       Example: /Users/you/.openclaw/workspace
+    2b. Replace {{node}} with the path to your node binary.
+        Find it with: which node
+        Example: /opt/homebrew/bin/node
+    3. Load the agent:
+         launchctl load ~/Library/LaunchAgents/com.taskflow.sync.plist
+    4. Verify it is running:
+         launchctl list | grep taskflow
+
+  LOGS:
+    stdout → {{workspace}}/logs/taskflow-sync.stdout.log
+    stderr → {{workspace}}/logs/taskflow-sync.stderr.log
+    Create the logs/ directory if it does not exist:
+         mkdir -p {{workspace}}/logs
+
+  UNINSTALL:
+    launchctl unload ~/Library/LaunchAgents/com.taskflow.sync.plist
+    rm ~/Library/LaunchAgents/com.taskflow.sync.plist
+-->
+<plist version="1.0">
+<dict>
+
+  <!-- Unique label for this agent -->
+  <key>Label</key>
+  <string>com.taskflow.sync</string>
+
+  <!-- Command to run -->
+  <key>ProgramArguments</key>
+  <array>
+    <string>{{node}}</string>
+    <string>{{workspace}}/taskflow/scripts/task-sync.mjs</string>
+    <string>files-to-db</string>
+  </array>
+
+  <!-- Run every 60 seconds -->
+  <key>StartInterval</key>
+  <integer>60</integer>
+
+  <!-- Working directory (workspace root, where PROJECTS.md and tasks/ live) -->
+  <key>WorkingDirectory</key>
+  <string>{{workspace}}</string>
+
+  <!-- Environment variables passed to the script -->
+  <key>EnvironmentVariables</key>
+  <dict>
+    <key>OPENCLAW_WORKSPACE</key>
+    <string>{{workspace}}</string>
+  </dict>
+
+  <!-- Standard output log -->
+  <key>StandardOutPath</key>
+  <string>{{workspace}}/logs/taskflow-sync.stdout.log</string>
+
+  <!-- Standard error log -->
+  <key>StandardErrorPath</key>
+  <string>{{workspace}}/logs/taskflow-sync.stderr.log</string>
+
+  <!-- Start on load (do not wait for first interval) -->
+  <key>RunAtLoad</key>
+  <true/>
+
+</dict>
+</plist>

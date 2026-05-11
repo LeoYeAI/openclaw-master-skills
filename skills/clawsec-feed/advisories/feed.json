@@ -1,0 +1,1260 @@
+{
+  "version": "0.0.3",
+  "updated": "2026-03-01T18:07:41Z",
+  "description": "Community-driven security advisory feed for ClawSec. Automatically updated with OpenClaw-related CVEs from NVD and community-reported security incidents.",
+  "advisories": [
+    {
+      "id": "CVE-2026-28363",
+      "severity": "critical",
+      "type": "unknown_cwe_184",
+      "nvd_category_id": "CWE-184",
+      "title": "In OpenClaw before 2026.2.23, tools.exec.safeBins validation for sort could be bypassed via GNU long...",
+      "description": "In OpenClaw before 2026.2.23, tools.exec.safeBins validation for sort could be bypassed via GNU long-option abbreviations (such as --compress-prog) in allowlist mode, leading to approval-free execution paths that were intended to require approval. Only an exact string such as --compress-program was denied.",
+      "affected": [
+        "cpe:2.3:a:openclaw:openclaw:*:*:*:*:*:node.js:*:*",
+        "openclaw@*"
+      ],
+      "platforms": [
+        "openclaw"
+      ],
+      "action": "Review and update affected components. See NVD for remediation details.",
+      "published": "2026-02-27T04:16:03.227",
+      "references": [
+        "https://github.com/openclaw/openclaw/security/advisories/GHSA-3c6h-g97w-fg78"
+      ],
+      "cvss_score": 9.9,
+      "nvd_url": "https://nvd.nist.gov/vuln/detail/CVE-2026-28363",
+      "exploitability_score": "high",
+      "exploitability_rationale": "Critical CVSS score (9.9); network accessible",
+      "attack_vector_analysis": {
+        "is_network_accessible": true,
+        "requires_authentication": true,
+        "requires_user_interaction": false,
+        "complexity": "low"
+      },
+      "exploit_detection": {
+        "exploit_available": false,
+        "exploit_sources": []
+      }
+    },
+    {
+      "id": "CVE-2026-27576",
+      "severity": "medium",
+      "type": "uncontrolled_resource_consumption",
+      "nvd_category_id": "CWE-400",
+      "title": "OpenClaw is a personal AI assistant. In versions 2026.2.17 and below, the ACP bridge accepts very la...",
+      "description": "OpenClaw is a personal AI assistant. In versions 2026.2.17 and below, the ACP bridge accepts very large prompt text blocks and can assemble oversized prompt payloads before forwarding them to chat.send. Because ACP runs over local stdio, this mainly affects local ACP clients (for example IDE integrations) that send unusually large inputs. This issue has been fixed in version 2026.2.19.",
+      "affected": [
+        "cpe:2.3:a:openclaw:openclaw:*:*:*:*:*:node.js:*:*",
+        "openclaw@*"
+      ],
+      "platforms": [
+        "openclaw"
+      ],
+      "action": "Review and update affected components. See NVD for remediation details.",
+      "published": "2026-02-21T10:16:13.437",
+      "references": [
+        "https://github.com/openclaw/openclaw/commit/63e39d7f57ac4ad4a5e38d17e7394ae7c4dd0b9c",
+        "https://github.com/openclaw/openclaw/commit/8ae2d5110f6ceadef73822aa3db194fb60d2ba68",
+        "https://github.com/openclaw/openclaw/commit/ebcf19746f5c500a41817e03abecadea8655654a"
+      ],
+      "cvss_score": 4.0,
+      "nvd_url": "https://nvd.nist.gov/vuln/detail/CVE-2026-27576",
+      "exploitability_score": "high",
+      "exploitability_rationale": "Medium CVSS score (4.0); requires local access; RCE is critical in agent deployments",
+      "attack_vector_analysis": {
+        "is_network_accessible": false,
+        "requires_authentication": false,
+        "requires_user_interaction": false,
+        "complexity": "low"
+      },
+      "exploit_detection": {
+        "exploit_available": false,
+        "exploit_sources": []
+      }
+    },
+    {
+      "id": "CVE-2026-27488",
+      "severity": "high",
+      "type": "server_side_request_forgery",
+      "nvd_category_id": "CWE-918",
+      "title": "OpenClaw is a personal AI assistant. In versions 2026.2.17 and below, Cron webhook delivery in src/g...",
+      "description": "OpenClaw is a personal AI assistant. In versions 2026.2.17 and below, Cron webhook delivery in src/gateway/server-cron.ts uses fetch() directly, so webhook targets can reach private/metadata/internal endpoints without SSRF policy checks. This issue was fixed in version 2026.2.19.",
+      "affected": [
+        "cpe:2.3:a:openclaw:openclaw:*:*:*:*:*:node.js:*:*",
+        "openclaw@*"
+      ],
+      "platforms": [
+        "openclaw"
+      ],
+      "action": "Review and update affected components. See NVD for remediation details.",
+      "published": "2026-02-21T10:16:13.267",
+      "references": [
+        "https://github.com/openclaw/openclaw/commit/99db4d13e5c139883ef0def9ff963e9273179655",
+        "https://github.com/openclaw/openclaw/releases/tag/v2026.2.19",
+        "https://github.com/openclaw/openclaw/security/advisories/GHSA-w45g-5746-x9fp"
+      ],
+      "cvss_score": 7.3,
+      "nvd_url": "https://nvd.nist.gov/vuln/detail/CVE-2026-27488",
+      "exploitability_score": "high",
+      "exploitability_rationale": "High CVSS score (7.3); remotely exploitable without authentication; SSRF affects agents making external requests",
+      "attack_vector_analysis": {
+        "is_network_accessible": true,
+        "requires_authentication": false,
+        "requires_user_interaction": false,
+        "complexity": "low"
+      },
+      "exploit_detection": {
+        "exploit_available": false,
+        "exploit_sources": []
+      }
+    },
+    {
+      "id": "CVE-2026-27487",
+      "severity": "high",
+      "type": "os_command_injection",
+      "nvd_category_id": "CWE-78",
+      "title": "OpenClaw is a personal AI assistant. In versions 2026.2.13 and below, when using macOS, the Claude C...",
+      "description": "OpenClaw is a personal AI assistant. In versions 2026.2.13 and below, when using macOS, the Claude CLI keychain credential refresh path constructed a shell command to write the updated JSON blob into Keychain via security add-generic-password -w .... Because OAuth tokens are user-controlled data, this created an OS command injection risk. This issue has been fixed in version 2026.2.14.",
+      "affected": [
+        "cpe:2.3:a:openclaw:openclaw:*:*:*:*:*:node.js:*:*",
+        "cpe:2.3:o:apple:macos:-:*:*:*:*:*:*:*",
+        "openclaw@*"
+      ],
+      "platforms": [
+        "openclaw"
+      ],
+      "action": "Review and update affected components. See NVD for remediation details.",
+      "published": "2026-02-21T10:16:13.100",
+      "references": [
+        "https://github.com/openclaw/openclaw/commit/66d7178f2d6f9d60abad35797f97f3e61389b70c",
+        "https://github.com/openclaw/openclaw/commit/9dce3d8bf83f13c067bc3c32291643d2f1f10a06",
+        "https://github.com/openclaw/openclaw/commit/b908388245764fb3586859f44d1dff5372b19caf"
+      ],
+      "cvss_score": 7.6,
+      "nvd_url": "https://nvd.nist.gov/vuln/detail/CVE-2026-27487",
+      "exploitability_score": "high",
+      "exploitability_rationale": "High CVSS score (7.6); network accessible; RCE is critical in agent deployments",
+      "attack_vector_analysis": {
+        "is_network_accessible": true,
+        "requires_authentication": true,
+        "requires_user_interaction": true,
+        "complexity": "low"
+      },
+      "exploit_detection": {
+        "exploit_available": false,
+        "exploit_sources": []
+      }
+    },
+    {
+      "id": "CVE-2026-27486",
+      "severity": "medium",
+      "type": "unknown_cwe_283",
+      "nvd_category_id": "CWE-283",
+      "title": "OpenClaw is a personal AI assistant. In versions 2026.2.13 and below of the OpenClaw CLI, the proces...",
+      "description": "OpenClaw is a personal AI assistant. In versions 2026.2.13 and below of the OpenClaw CLI, the process cleanup uses system-wide process enumeration and pattern matching to terminate processes without verifying if they are owned by the current OpenClaw process. On shared hosts, unrelated processes can be terminated if they match the pattern. The CLI runner cleanup helpers can kill processes matched by command-line patterns without validating process ownership. This issue has been fixed in version 2026.2.14.",
+      "affected": [
+        "cpe:2.3:a:openclaw:openclaw:*:*:*:*:*:node.js:*:*",
+        "openclaw@*"
+      ],
+      "platforms": [
+        "openclaw"
+      ],
+      "action": "Review and update affected components. See NVD for remediation details.",
+      "published": "2026-02-21T10:16:12.903",
+      "references": [
+        "https://github.com/openclaw/openclaw/commit/6084d13b956119e3cf95daaf9a1cae1670ea3557",
+        "https://github.com/openclaw/openclaw/commit/eb60e2e1b213740c3c587a7ba4dbf10da620ca66",
+        "https://github.com/openclaw/openclaw/releases/tag/v2026.2.14"
+      ],
+      "cvss_score": 5.3,
+      "nvd_url": "https://nvd.nist.gov/vuln/detail/CVE-2026-27486",
+      "exploitability_score": "high",
+      "exploitability_rationale": "Medium CVSS score (5.3); remotely exploitable without authentication",
+      "attack_vector_analysis": {
+        "is_network_accessible": true,
+        "requires_authentication": false,
+        "requires_user_interaction": false,
+        "complexity": "low"
+      },
+      "exploit_detection": {
+        "exploit_available": false,
+        "exploit_sources": []
+      }
+    },
+    {
+      "id": "CVE-2026-27485",
+      "severity": "medium",
+      "type": "unknown_cwe_61",
+      "nvd_category_id": "CWE-61",
+      "title": "OpenClaw is a personal AI assistant. In versions 2026.2.17 and below, skills/skill-creator/scripts/p...",
+      "description": "OpenClaw is a personal AI assistant. In versions 2026.2.17 and below, skills/skill-creator/scripts/package_skill.py (a local helper script used when authors package skills) previously followed symlinks while building .skill archives. If an author runs this script on a crafted local skill directory containing symlinks to files outside the skill root, the resulting archive can include unintended file contents. If exploited, this vulnerability can lead to potential unintentional disclosure of local files from the packaging machine into a generated .skill artifact, but requires local execution of the packaging script on attacker-controlled skill contents. This issue has been fixed in version 2026.2.18.",
+      "affected": [
+        "cpe:2.3:a:openclaw:openclaw:*:*:*:*:*:node.js:*:*",
+        "openclaw@*"
+      ],
+      "platforms": [
+        "openclaw"
+      ],
+      "action": "Review and update affected components. See NVD for remediation details.",
+      "published": "2026-02-21T10:16:12.723",
+      "references": [
+        "https://github.com/openclaw/openclaw/commit/c275932aa4230fb7a8212fe1b9d2a18424874b3f",
+        "https://github.com/openclaw/openclaw/commit/ee1d6427b544ccadd73e02b1630ea5c29ba9a9f0",
+        "https://github.com/openclaw/openclaw/pull/20796"
+      ],
+      "cvss_score": 4.4,
+      "nvd_url": "https://nvd.nist.gov/vuln/detail/CVE-2026-27485",
+      "exploitability_score": "medium",
+      "exploitability_rationale": "Medium CVSS score (4.4); requires local access",
+      "attack_vector_analysis": {
+        "is_network_accessible": false,
+        "requires_authentication": true,
+        "requires_user_interaction": false,
+        "complexity": "low"
+      },
+      "exploit_detection": {
+        "exploit_available": false,
+        "exploit_sources": []
+      }
+    },
+    {
+      "id": "CVE-2026-27484",
+      "severity": "medium",
+      "type": "missing_authorization",
+      "nvd_category_id": "CWE-862",
+      "title": "OpenClaw is a personal AI assistant. In versions 2026.2.17 and below, the Discord moderation action ...",
+      "description": "OpenClaw is a personal AI assistant. In versions 2026.2.17 and below, the Discord moderation action handling (timeout, kick, ban) uses sender identity from request parameters in tool-driven flows, instead of trusted runtime sender context. In setups where Discord moderation actions are enabled and the bot has the necessary guild permissions, a non-admin user can request moderation actions by spoofing sender identity fields. This issue has been fixed in version 2026.2.18.",
+      "affected": [
+        "cpe:2.3:a:openclaw:openclaw:*:*:*:*:*:node.js:*:*",
+        "openclaw@*"
+      ],
+      "platforms": [
+        "openclaw"
+      ],
+      "action": "Review and update affected components. See NVD for remediation details.",
+      "published": "2026-02-21T10:16:12.557",
+      "references": [
+        "https://github.com/openclaw/openclaw/commit/775816035ecc6bb243843f8000c9a58ff609e32d",
+        "https://github.com/openclaw/openclaw/releases/tag/v2026.2.19",
+        "https://github.com/openclaw/openclaw/security/advisories/GHSA-wh94-p5m6-mr7j"
+      ],
+      "cvss_score": 4.3,
+      "nvd_url": "https://nvd.nist.gov/vuln/detail/CVE-2026-27484",
+      "exploitability_score": "medium",
+      "exploitability_rationale": "Medium CVSS score (4.3); network accessible",
+      "attack_vector_analysis": {
+        "is_network_accessible": true,
+        "requires_authentication": true,
+        "requires_user_interaction": false,
+        "complexity": "low"
+      },
+      "exploit_detection": {
+        "exploit_available": false,
+        "exploit_sources": []
+      }
+    },
+    {
+      "id": "CVE-2026-27009",
+      "severity": "medium",
+      "type": "cross_site_scripting",
+      "nvd_category_id": "CWE-79",
+      "title": "OpenClaw is a personal AI assistant. Prior to version 2026.2.15, a atored XSS issue in the OpenClaw ...",
+      "description": "OpenClaw is a personal AI assistant. Prior to version 2026.2.15, a atored XSS issue in the OpenClaw Control UI when rendering assistant identity (name/avatar) into an inline `<script>` tag without script-context-safe escaping. A crafted value containing `</script>` could break out of the script tag and execute attacker-controlled JavaScript in the Control UI origin. Version 2026.2.15 removed inline script injection and serve bootstrap config from a JSON endpoint and added a restrictive Content Security Policy for the Control UI (`script-src 'self'`, no inline scripts).",
+      "affected": [
+        "cpe:2.3:a:openclaw:openclaw:*:*:*:*:*:node.js:*:*",
+        "openclaw@*"
+      ],
+      "platforms": [
+        "openclaw"
+      ],
+      "action": "Review and update affected components. See NVD for remediation details.",
+      "published": "2026-02-20T00:16:17.620",
+      "references": [
+        "https://github.com/openclaw/openclaw/commit/3b4096e02e7e335f99f5986ec1bd566e90b14a7e",
+        "https://github.com/openclaw/openclaw/commit/adc818db4a4b3b8d663e7674ef20436947514e1b",
+        "https://github.com/openclaw/openclaw/releases/tag/v2026.2.15"
+      ],
+      "cvss_score": 5.8,
+      "nvd_url": "https://nvd.nist.gov/vuln/detail/CVE-2026-27009",
+      "exploitability_score": "medium",
+      "exploitability_rationale": "Medium CVSS score (5.8); requires local access; XSS has limited impact in headless agents",
+      "attack_vector_analysis": {
+        "is_network_accessible": false,
+        "requires_authentication": true,
+        "requires_user_interaction": true,
+        "complexity": "low"
+      },
+      "exploit_detection": {
+        "exploit_available": false,
+        "exploit_sources": []
+      }
+    },
+    {
+      "id": "CVE-2026-27008",
+      "severity": "medium",
+      "type": "unknown_cwe_73",
+      "nvd_category_id": "CWE-73",
+      "title": "OpenClaw is a personal AI assistant. Prior to version 2026.2.15, a bug in `download` skill installat...",
+      "description": "OpenClaw is a personal AI assistant. Prior to version 2026.2.15, a bug in `download` skill installation allowed `targetDir` values from skill frontmatter to resolve outside the per-skill tools directory if not strictly validated. In the admin-only `skills.install` flow, this could write files outside the intended install sandbox. Version 2026.2.15 contains a fix for the issue.",
+      "affected": [
+        "cpe:2.3:a:openclaw:openclaw:*:*:*:*:*:node.js:*:*",
+        "openclaw@*"
+      ],
+      "platforms": [
+        "openclaw"
+      ],
+      "action": "Review and update affected components. See NVD for remediation details.",
+      "published": "2026-02-20T00:16:17.460",
+      "references": [
+        "https://github.com/openclaw/openclaw/commit/2363e1b0853a028e47f90dcc1066e3e9809d65f1",
+        "https://github.com/openclaw/openclaw/commit/b6305e97256d67e439719faacf5af3de9727d6e1",
+        "https://github.com/openclaw/openclaw/releases/tag/v2026.2.15"
+      ],
+      "cvss_score": 6.7,
+      "nvd_url": "https://nvd.nist.gov/vuln/detail/CVE-2026-27008",
+      "exploitability_score": "medium",
+      "exploitability_rationale": "Medium CVSS score (6.7); requires local access",
+      "attack_vector_analysis": {
+        "is_network_accessible": false,
+        "requires_authentication": true,
+        "requires_user_interaction": false,
+        "complexity": "low"
+      },
+      "exploit_detection": {
+        "exploit_available": false,
+        "exploit_sources": []
+      }
+    },
+    {
+      "id": "CVE-2026-27007",
+      "severity": "low",
+      "type": "unknown_cwe_1254",
+      "nvd_category_id": "CWE-1254",
+      "title": "OpenClaw is a personal AI assistant. Prior to version 2026.2.15, `normalizeForHash` in `src/agents/s...",
+      "description": "OpenClaw is a personal AI assistant. Prior to version 2026.2.15, `normalizeForHash` in `src/agents/sandbox/config-hash.ts` recursively sorted arrays that contained only primitive values. This made order-sensitive sandbox configuration arrays hash to the same value even when order changed. In OpenClaw sandbox flows, this hash is used to decide whether existing sandbox containers should be recreated. As a result, order-only config changes (for example Docker `dns` and `binds` array order) could be treated as unchanged and stale containers could be reused. This is a configuration integrity issue affecting sandbox recreation behavior. Starting in version 2026.2.15, array ordering is preserved during hash normalization; only object key ordering remains normalized for deterministic hashing.",
+      "affected": [
+        "cpe:2.3:a:openclaw:openclaw:*:*:*:*:*:node.js:*:*",
+        "openclaw@*"
+      ],
+      "platforms": [
+        "openclaw"
+      ],
+      "action": "Review and update affected components. See NVD for remediation details.",
+      "published": "2026-02-20T00:16:17.303",
+      "references": [
+        "https://github.com/openclaw/openclaw/commit/41ded303b4f6dae5afa854531ff837c3276ad60b",
+        "https://github.com/openclaw/openclaw/releases/tag/v2026.2.15",
+        "https://github.com/openclaw/openclaw/security/advisories/GHSA-xxvh-5hwj-42pp"
+      ],
+      "cvss_score": 3.3,
+      "nvd_url": "https://nvd.nist.gov/vuln/detail/CVE-2026-27007",
+      "exploitability_score": "low",
+      "exploitability_rationale": "Low CVSS score (3.3); requires local access",
+      "attack_vector_analysis": {
+        "is_network_accessible": false,
+        "requires_authentication": true,
+        "requires_user_interaction": false,
+        "complexity": "low"
+      },
+      "exploit_detection": {
+        "exploit_available": false,
+        "exploit_sources": []
+      }
+    },
+    {
+      "id": "CVE-2026-27004",
+      "severity": "medium",
+      "type": "unknown_cwe_209",
+      "nvd_category_id": "CWE-209",
+      "title": "OpenClaw is a personal AI assistant. Prior to version 2026.2.15, in some shared-agent deployments, O...",
+      "description": "OpenClaw is a personal AI assistant. Prior to version 2026.2.15, in some shared-agent deployments, OpenClaw session tools (`sessions_list`, `sessions_history`, `sessions_send`) allowed broader session targeting than some operators intended. This is primarily a configuration/visibility-scoping issue in multi-user environments where peers are not equally trusted. In Telegram webhook mode, monitor startup also did not fall back to per-account `webhookSecret` when only the account-level secret was configured. In shared-agent, multi-user, less-trusted environments: session-tool access could expose transcript content across peer sessions. In single-agent or trusted environments, practical impact is limited. In Telegram webhook mode, account-level secret wiring could be missed unless an explicit monitor webhook secret override was provided. Version 2026.2.15 fixes the issue.",
+      "affected": [
+        "cpe:2.3:a:openclaw:openclaw:*:*:*:*:*:node.js:*:*",
+        "openclaw@*"
+      ],
+      "platforms": [
+        "openclaw"
+      ],
+      "action": "Review and update affected components. See NVD for remediation details.",
+      "published": "2026-02-20T00:16:17.140",
+      "references": [
+        "https://github.com/openclaw/openclaw/commit/c6c53437f7da033b94a01d492e904974e7bda74c",
+        "https://github.com/openclaw/openclaw/security/advisories/GHSA-6hf3-mhgc-cm65"
+      ],
+      "cvss_score": 5.5,
+      "nvd_url": "https://nvd.nist.gov/vuln/detail/CVE-2026-27004",
+      "exploitability_score": "medium",
+      "exploitability_rationale": "Medium CVSS score (5.5); requires local access",
+      "attack_vector_analysis": {
+        "is_network_accessible": false,
+        "requires_authentication": true,
+        "requires_user_interaction": false,
+        "complexity": "low"
+      },
+      "exploit_detection": {
+        "exploit_available": false,
+        "exploit_sources": []
+      }
+    },
+    {
+      "id": "CVE-2026-27003",
+      "severity": "medium",
+      "type": "unknown_cwe_522",
+      "nvd_category_id": "CWE-522",
+      "title": "OpenClaw is a personal AI assistant. Telegram bot tokens can appear in error messages and stack trac...",
+      "description": "OpenClaw is a personal AI assistant. Telegram bot tokens can appear in error messages and stack traces (for example, when request URLs include `https://api.telegram.org/bot<token>/...`). Prior to version 2026.2.15, OpenClaw logged these strings without redaction, which could leak the bot token into logs, crash reports, CI output, or support bundles. Disclosure of a Telegram bot token allows an attacker to impersonate the bot and take over Bot API access. Users should upgrade to version 2026.2.15 to obtain a fix and rotate the Telegram bot token if it may have been exposed.",
+      "affected": [
+        "cpe:2.3:a:openclaw:openclaw:*:*:*:*:*:node.js:*:*",
+        "openclaw@*"
+      ],
+      "platforms": [
+        "openclaw"
+      ],
+      "action": "Review and update affected components. See NVD for remediation details.",
+      "published": "2026-02-20T00:16:16.983",
+      "references": [
+        "https://github.com/openclaw/openclaw/commit/cf69907015b659e5025efb735ee31bd05c4ee3d5",
+        "https://github.com/openclaw/openclaw/security/advisories/GHSA-chf7-jq6g-qrwv"
+      ],
+      "cvss_score": 5.5,
+      "nvd_url": "https://nvd.nist.gov/vuln/detail/CVE-2026-27003",
+      "exploitability_score": "medium",
+      "exploitability_rationale": "Medium CVSS score (5.5); requires local access",
+      "attack_vector_analysis": {
+        "is_network_accessible": false,
+        "requires_authentication": true,
+        "requires_user_interaction": false,
+        "complexity": "low"
+      },
+      "exploit_detection": {
+        "exploit_available": false,
+        "exploit_sources": []
+      }
+    },
+    {
+      "id": "CVE-2026-27002",
+      "severity": "critical",
+      "type": "execution_with_unnecessary_privileges",
+      "nvd_category_id": "CWE-250",
+      "title": "OpenClaw is a personal AI assistant. Prior to version 2026.2.15, a configuration injection issue in ...",
+      "description": "OpenClaw is a personal AI assistant. Prior to version 2026.2.15, a configuration injection issue in the Docker tool sandbox could allow dangerous Docker options (bind mounts, host networking, unconfined profiles) to be applied, enabling container escape or host data access. OpenClaw 2026.2.15 blocks dangerous sandbox Docker settings and includes runtime enforcement when building `docker create` args; config-schema validation for `network=host`, `seccompProfile=unconfined`, `apparmorProfile=unconfined`; and security audit findings to surface dangerous sandbox docker config. As a workaround, do not configure `agents.*.sandbox.docker.binds` to mount system directories or Docker socket paths, keep `agents.*.sandbox.docker.network` at `none` (default) or `bridge`, and do not use `unconfined` for seccomp/AppArmor profiles.",
+      "affected": [
+        "cpe:2.3:a:openclaw:openclaw:*:*:*:*:*:node.js:*:*",
+        "openclaw@*"
+      ],
+      "platforms": [
+        "openclaw"
+      ],
+      "action": "Review and update affected components. See NVD for remediation details.",
+      "published": "2026-02-20T00:16:16.827",
+      "references": [
+        "https://github.com/openclaw/openclaw/commit/887b209db47f1f9322fead241a1c0b043fd38339",
+        "https://github.com/openclaw/openclaw/releases/tag/v2026.2.15",
+        "https://github.com/openclaw/openclaw/security/advisories/GHSA-w235-x559-36mg"
+      ],
+      "cvss_score": 9.8,
+      "nvd_url": "https://nvd.nist.gov/vuln/detail/CVE-2026-27002",
+      "exploitability_score": "high",
+      "exploitability_rationale": "Critical CVSS score (9.8); remotely exploitable without authentication; RCE is critical in agent deployments",
+      "attack_vector_analysis": {
+        "is_network_accessible": true,
+        "requires_authentication": false,
+        "requires_user_interaction": false,
+        "complexity": "low"
+      },
+      "exploit_detection": {
+        "exploit_available": false,
+        "exploit_sources": []
+      }
+    },
+    {
+      "id": "CVE-2026-27001",
+      "severity": "high",
+      "type": "command_injection",
+      "nvd_category_id": "CWE-77",
+      "title": "OpenClaw is a personal AI assistant. Prior to version 2026.2.15, OpenClaw embedded the current worki...",
+      "description": "OpenClaw is a personal AI assistant. Prior to version 2026.2.15, OpenClaw embedded the current working directory (workspace path) into the agent system prompt without sanitization. If an attacker can cause OpenClaw to run inside a directory whose name contains control/format characters (for example newlines or Unicode bidi/zero-width markers), those characters could break the prompt structure and inject attacker-controlled instructions. Starting in version 2026.2.15, the workspace path is sanitized before it is embedded into any LLM prompt output, stripping Unicode control/format characters and explicit line/paragraph separators. Workspace path resolution also applies the same sanitization as defense-in-depth.",
+      "affected": [
+        "cpe:2.3:a:openclaw:openclaw:*:*:*:*:*:node.js:*:*",
+        "openclaw@*"
+      ],
+      "platforms": [
+        "openclaw"
+      ],
+      "action": "Review and update affected components. See NVD for remediation details.",
+      "published": "2026-02-20T00:16:16.653",
+      "references": [
+        "https://github.com/openclaw/openclaw/commit/6254e96acf16e70ceccc8f9b2abecee44d606f79",
+        "https://github.com/openclaw/openclaw/releases/tag/v2026.2.15",
+        "https://github.com/openclaw/openclaw/security/advisories/GHSA-2qj5-gwg2-xwc4"
+      ],
+      "cvss_score": 7.8,
+      "nvd_url": "https://nvd.nist.gov/vuln/detail/CVE-2026-27001",
+      "exploitability_score": "high",
+      "exploitability_rationale": "High CVSS score (7.8); requires local access; RCE is critical in agent deployments",
+      "attack_vector_analysis": {
+        "is_network_accessible": false,
+        "requires_authentication": true,
+        "requires_user_interaction": false,
+        "complexity": "low"
+      },
+      "exploit_detection": {
+        "exploit_available": false,
+        "exploit_sources": []
+      }
+    },
+    {
+      "id": "CVE-2026-26972",
+      "severity": "medium",
+      "type": "path_traversal",
+      "nvd_category_id": "CWE-22",
+      "title": "OpenClaw is a personal AI assistant. In versions 2026.1.12 through 2026.2.12, OpenClaw browser downl...",
+      "description": "OpenClaw is a personal AI assistant. In versions 2026.1.12 through 2026.2.12, OpenClaw browser download helpers accepted an unsanitized output path. When invoked via the browser control gateway routes, this allowed path traversal to write downloads outside the intended OpenClaw temp downloads directory. This issue is not exposed via the AI agent tool schema (no `download` action). Exploitation requires authenticated CLI access or an authenticated gateway RPC token. Version 2026.2.13 fixes the issue.",
+      "affected": [
+        "cpe:2.3:a:openclaw:openclaw:*:*:*:*:*:node.js:*:*",
+        "openclaw@*"
+      ],
+      "platforms": [
+        "openclaw"
+      ],
+      "action": "Review and update affected components. See NVD for remediation details.",
+      "published": "2026-02-20T00:16:16.500",
+      "references": [
+        "https://github.com/openclaw/openclaw/commit/7f0489e4731c8d965d78d6eac4a60312e46a9426",
+        "https://github.com/openclaw/openclaw/releases/tag/v2026.2.13",
+        "https://github.com/openclaw/openclaw/security/advisories/GHSA-xwjm-j929-xq7c"
+      ],
+      "cvss_score": 6.7,
+      "nvd_url": "https://nvd.nist.gov/vuln/detail/CVE-2026-26972",
+      "exploitability_score": "high",
+      "exploitability_rationale": "Medium CVSS score (6.7); requires local access; path traversal affects agents with file access",
+      "attack_vector_analysis": {
+        "is_network_accessible": false,
+        "requires_authentication": true,
+        "requires_user_interaction": false,
+        "complexity": "low"
+      },
+      "exploit_detection": {
+        "exploit_available": false,
+        "exploit_sources": []
+      }
+    },
+    {
+      "id": "CVE-2026-26329",
+      "severity": "medium",
+      "type": "path_traversal",
+      "nvd_category_id": "CWE-22",
+      "title": "OpenClaw is a personal AI assistant. Prior to version 2026.2.14, authenticated attackers can read ar...",
+      "description": "OpenClaw is a personal AI assistant. Prior to version 2026.2.14, authenticated attackers can read arbitrary files from the Gateway host by supplying absolute paths or path traversal sequences to the browser tool's `upload` action. The server passed these paths to Playwright's `setInputFiles()` APIs without restricting them to a safe root. An attacker must reach the Gateway HTTP surface (or otherwise invoke the same browser control hook endpoints); present valid Gateway auth (bearer token / password), as required by the Gateway configuration (In common default setups, the Gateway binds to loopback and the onboarding wizard generates a gateway token even for loopback); and have the `browser` tool permitted by tool policy for the target session/context (and have browser support enabled). If an operator exposes the Gateway beyond loopback (LAN/tailnet/custom bind, reverse proxy, tunnels, etc.), the impact increases accordingly. Starting in version 2026.2.14, the upload paths are now confined to OpenClaw's temp uploads root (`DEFAULT_UPLOAD_DIR`) and traversal/escape paths are rejected.",
+      "affected": [
+        "cpe:2.3:a:openclaw:openclaw:*:*:*:*:*:node.js:*:*",
+        "openclaw@*"
+      ],
+      "platforms": [
+        "openclaw"
+      ],
+      "action": "Review and update affected components. See NVD for remediation details.",
+      "published": "2026-02-20T00:16:15.687",
+      "references": [
+        "https://github.com/openclaw/openclaw/commit/3aa94afcfd12104c683c9cad81faf434d0dadf87",
+        "https://github.com/openclaw/openclaw/releases/tag/v2026.2.14",
+        "https://github.com/openclaw/openclaw/security/advisories/GHSA-cv7m-c9jx-vg7q"
+      ],
+      "cvss_score": 6.5,
+      "nvd_url": "https://nvd.nist.gov/vuln/detail/CVE-2026-26329",
+      "exploitability_score": "high",
+      "exploitability_rationale": "Medium CVSS score (6.5); network accessible; path traversal affects agents with file access",
+      "attack_vector_analysis": {
+        "is_network_accessible": true,
+        "requires_authentication": true,
+        "requires_user_interaction": false,
+        "complexity": "low"
+      },
+      "exploit_detection": {
+        "exploit_available": false,
+        "exploit_sources": []
+      }
+    },
+    {
+      "id": "CVE-2026-26328",
+      "severity": "medium",
+      "type": "improper_access_control",
+      "nvd_category_id": "CWE-284",
+      "title": "OpenClaw is a personal AI assistant. Prior to version 2026.2.14, under iMessage `groupPolicy=allowli...",
+      "description": "OpenClaw is a personal AI assistant. Prior to version 2026.2.14, under iMessage `groupPolicy=allowlist`, group authorization could be satisfied by sender identities coming from the DM pairing store, broadening DM trust into group contexts. Version 2026.2.14 fixes the issue.",
+      "affected": [
+        "cpe:2.3:a:openclaw:openclaw:*:*:*:*:*:node.js:*:*",
+        "openclaw@*"
+      ],
+      "platforms": [
+        "openclaw"
+      ],
+      "action": "Review and update affected components. See NVD for remediation details.",
+      "published": "2026-02-20T00:16:15.523",
+      "references": [
+        "https://github.com/openclaw/openclaw/commit/872079d42fe105ece2900a1dd6ab321b92da2d59",
+        "https://github.com/openclaw/openclaw/releases/tag/v2026.2.14",
+        "https://github.com/openclaw/openclaw/security/advisories/GHSA-g34w-4xqq-h79m"
+      ],
+      "cvss_score": 6.5,
+      "nvd_url": "https://nvd.nist.gov/vuln/detail/CVE-2026-26328",
+      "exploitability_score": "medium",
+      "exploitability_rationale": "Medium CVSS score (6.5); network accessible",
+      "attack_vector_analysis": {
+        "is_network_accessible": true,
+        "requires_authentication": true,
+        "requires_user_interaction": false,
+        "complexity": "low"
+      },
+      "exploit_detection": {
+        "exploit_available": false,
+        "exploit_sources": []
+      }
+    },
+    {
+      "id": "CVE-2026-26327",
+      "severity": "medium",
+      "type": "unknown_cwe_345",
+      "nvd_category_id": "CWE-345",
+      "title": "OpenClaw is a personal AI assistant. Discovery beacons (Bonjour/mDNS and DNS-SD) include TXT records...",
+      "description": "OpenClaw is a personal AI assistant. Discovery beacons (Bonjour/mDNS and DNS-SD) include TXT records such as `lanHost`, `tailnetDns`, `gatewayPort`, and `gatewayTlsSha256`. TXT records are unauthenticated. Prior to version 2026.2.14, some clients treated TXT values as authoritative routing/pinning inputs. iOS and macOS used TXT-provided host hints (`lanHost`/`tailnetDns`) and ports (`gatewayPort`) to build the connection URL. iOS and Android allowed the discovery-provided TLS fingerprint (`gatewayTlsSha256`) to override a previously stored TLS pin. On a shared/untrusted LAN, an attacker could advertise a rogue `_openclaw-gw._tcp` service. This could cause a client to connect to an attacker-controlled endpoint and/or accept an attacker certificate, potentially exfiltrating Gateway credentials (`auth.token` / `auth.password`) during connection. As of time of publication, the iOS and Android apps are alpha/not broadly shipped (no public App Store / Play Store release). Practical impact is primarily limited to developers/testers running those builds, plus any other shipped clients relying on discovery on a shared/untrusted LAN. Version 2026.2.14 fixes the issue. Clients now prefer the resolved service endpoint (SRV + A/AAAA) over TXT-provided routing hints. Discovery-provided fingerprints no longer override stored TLS pins. In iOS/Android, first-time TLS pins require explicit user confirmation (fingerprint shown; no silent TOFU) and discovery-based direct connects are TLS-only. In Android, hostname verification is no longer globally disabled (only bypassed when pinning).",
+      "affected": [
+        "cpe:2.3:a:openclaw:openclaw:*:*:*:*:*:node.js:*:*",
+        "openclaw@*"
+      ],
+      "platforms": [
+        "openclaw"
+      ],
+      "action": "Review and update affected components. See NVD for remediation details.",
+      "published": "2026-02-19T23:16:26.100",
+      "references": [
+        "https://github.com/openclaw/openclaw/commit/d583782ee322a6faa1fe87ae52455e0d349de586",
+        "https://github.com/openclaw/openclaw/releases/tag/v2026.2.14",
+        "https://github.com/openclaw/openclaw/security/advisories/GHSA-pv58-549p-qh99"
+      ],
+      "cvss_score": 6.5,
+      "nvd_url": "https://nvd.nist.gov/vuln/detail/CVE-2026-26327",
+      "exploitability_score": "high",
+      "exploitability_rationale": "Medium CVSS score (6.5); remotely exploitable without authentication",
+      "attack_vector_analysis": {
+        "is_network_accessible": true,
+        "requires_authentication": false,
+        "requires_user_interaction": false,
+        "complexity": "low"
+      },
+      "exploit_detection": {
+        "exploit_available": false,
+        "exploit_sources": []
+      }
+    },
+    {
+      "id": "CVE-2026-26326",
+      "severity": "medium",
+      "type": "exposure_of_sensitive_information",
+      "nvd_category_id": "CWE-200",
+      "title": "OpenClaw is a personal AI assistant. Prior to version 2026.2.14, `skills.status` could disclose secr...",
+      "description": "OpenClaw is a personal AI assistant. Prior to version 2026.2.14, `skills.status` could disclose secrets to `operator.read` clients by returning raw resolved config values in `configChecks` for skill `requires.config` paths. Version 2026.2.14 stops including raw resolved config values in requirement checks (return only `{ path, satisfied }`) and narrows the Discord skill requirement to the token key. In addition to upgrading, users should rotate any Discord tokens that may have been exposed to read-scoped clients.",
+      "affected": [
+        "cpe:2.3:a:openclaw:openclaw:*:*:*:*:*:node.js:*:*",
+        "openclaw@*"
+      ],
+      "platforms": [
+        "openclaw"
+      ],
+      "action": "Review and update affected components. See NVD for remediation details.",
+      "published": "2026-02-19T23:16:25.950",
+      "references": [
+        "https://github.com/openclaw/openclaw/commit/d3428053d95eefbe10ecf04f92218ffcba55ae5a",
+        "https://github.com/openclaw/openclaw/commit/ebc68861a61067fc37f9298bded3eec9de0ba783",
+        "https://github.com/openclaw/openclaw/releases/tag/v2026.2.14"
+      ],
+      "cvss_score": 4.3,
+      "nvd_url": "https://nvd.nist.gov/vuln/detail/CVE-2026-26326",
+      "exploitability_score": "medium",
+      "exploitability_rationale": "Medium CVSS score (4.3); network accessible",
+      "attack_vector_analysis": {
+        "is_network_accessible": true,
+        "requires_authentication": true,
+        "requires_user_interaction": false,
+        "complexity": "low"
+      },
+      "exploit_detection": {
+        "exploit_available": false,
+        "exploit_sources": []
+      }
+    },
+    {
+      "id": "CVE-2026-26325",
+      "severity": "high",
+      "type": "improper_access_control",
+      "nvd_category_id": "CWE-284",
+      "title": "OpenClaw is a personal AI assistant. Prior to version 2026.2.14, a mismatch between `rawCommand` and...",
+      "description": "OpenClaw is a personal AI assistant. Prior to version 2026.2.14, a mismatch between `rawCommand` and `command[]` in the node host `system.run` handler could cause allowlist/approval evaluation to be performed on one command while executing a different argv. This only impacts deployments that use the node host / companion node execution path (`system.run` on a node), enable allowlist-based exec policy (`security=allowlist`) with approval prompting driven by allowlist misses (for example `ask=on-miss`), allow an attacker to invoke `system.run`. Default/non-node configurations are not affected. Version 2026.2.14 enforces `rawCommand`/`command[]` consistency (gateway fail-fast + node host validation).",
+      "affected": [
+        "cpe:2.3:a:openclaw:openclaw:*:*:*:*:*:node.js:*:*",
+        "openclaw@*"
+      ],
+      "platforms": [
+        "openclaw"
+      ],
+      "action": "Review and update affected components. See NVD for remediation details.",
+      "published": "2026-02-19T23:16:25.800",
+      "references": [
+        "https://github.com/openclaw/openclaw/commit/cb3290fca32593956638f161d9776266b90ab891",
+        "https://github.com/openclaw/openclaw/releases/tag/v2026.2.14",
+        "https://github.com/openclaw/openclaw/security/advisories/GHSA-h3f9-mjwj-w476"
+      ],
+      "cvss_score": 7.2,
+      "nvd_url": "https://nvd.nist.gov/vuln/detail/CVE-2026-26325",
+      "exploitability_score": "high",
+      "exploitability_rationale": "High CVSS score (7.2); network accessible; RCE is critical in agent deployments",
+      "attack_vector_analysis": {
+        "is_network_accessible": true,
+        "requires_authentication": true,
+        "requires_user_interaction": false,
+        "complexity": "low"
+      },
+      "exploit_detection": {
+        "exploit_available": false,
+        "exploit_sources": []
+      }
+    },
+    {
+      "id": "CVE-2026-26324",
+      "severity": "high",
+      "type": "server_side_request_forgery",
+      "nvd_category_id": "CWE-918",
+      "title": "OpenClaw is a personal AI assistant. Prior to version 2026.2.14, OpenClaw's SSRF protection could be...",
+      "description": "OpenClaw is a personal AI assistant. Prior to version 2026.2.14, OpenClaw's SSRF protection could be bypassed using full-form IPv4-mapped IPv6 literals such as `0:0:0:0:0:ffff:7f00:1` (which is `127.0.0.1`). This could allow requests that should be blocked (loopback / private network / link-local metadata) to pass the SSRF guard. Version 2026.2.14 patches the issue.",
+      "affected": [
+        "cpe:2.3:a:openclaw:openclaw:*:*:*:*:*:node.js:*:*",
+        "openclaw@*"
+      ],
+      "platforms": [
+        "openclaw"
+      ],
+      "action": "Review and update affected components. See NVD for remediation details.",
+      "published": "2026-02-19T23:16:25.653",
+      "references": [
+        "https://github.com/openclaw/openclaw/commit/c0c0e0f9aecb913e738742f73e091f2f72d39a19",
+        "https://github.com/openclaw/openclaw/releases/tag/v2026.2.14",
+        "https://github.com/openclaw/openclaw/security/advisories/GHSA-jrvc-8ff5-2f9f"
+      ],
+      "cvss_score": 7.5,
+      "nvd_url": "https://nvd.nist.gov/vuln/detail/CVE-2026-26324",
+      "exploitability_score": "high",
+      "exploitability_rationale": "High CVSS score (7.5); remotely exploitable without authentication; SSRF affects agents making external requests",
+      "attack_vector_analysis": {
+        "is_network_accessible": true,
+        "requires_authentication": false,
+        "requires_user_interaction": false,
+        "complexity": "low"
+      },
+      "exploit_detection": {
+        "exploit_available": false,
+        "exploit_sources": []
+      }
+    },
+    {
+      "id": "CVE-2026-26323",
+      "severity": "high",
+      "type": "os_command_injection",
+      "nvd_category_id": "CWE-78",
+      "title": "OpenClaw is a personal AI assistant. Versions 2026.1.8 through 2026.2.13 have a command injection in...",
+      "description": "OpenClaw is a personal AI assistant. Versions 2026.1.8 through 2026.2.13 have a command injection in the maintainer/dev script `scripts/update-clawtributors.ts`. The issue affects contributors/maintainers (or CI) who run `bun scripts/update-clawtributors.ts` in a source checkout that contains a malicious commit author email (e.g. crafted `@users[.]noreply[.]github[.]com` values). Normal CLI usage is not affected (`npm i -g openclaw`): this script is not part of the shipped CLI and is not executed during routine operation. The script derived a GitHub login from `git log` author metadata and interpolated it into a shell command (via `execSync`). A malicious commit record could inject shell metacharacters and execute arbitrary commands when the script is run. Version 2026.2.14 contains a patch.",
+      "affected": [
+        "cpe:2.3:a:openclaw:openclaw:*:*:*:*:*:node.js:*:*",
+        "openclaw@*"
+      ],
+      "platforms": [
+        "openclaw"
+      ],
+      "action": "Review and update affected components. See NVD for remediation details.",
+      "published": "2026-02-19T23:16:25.500",
+      "references": [
+        "https://github.com/openclaw/openclaw/commit/a429380e337152746031d290432a4b93aa553d55",
+        "https://github.com/openclaw/openclaw/releases/tag/v2026.2.14",
+        "https://github.com/openclaw/openclaw/security/advisories/GHSA-m7x8-2w3w-pr42"
+      ],
+      "cvss_score": 8.8,
+      "nvd_url": "https://nvd.nist.gov/vuln/detail/CVE-2026-26323",
+      "exploitability_score": "high",
+      "exploitability_rationale": "High CVSS score (8.8); network accessible; RCE is critical in agent deployments",
+      "attack_vector_analysis": {
+        "is_network_accessible": true,
+        "requires_authentication": false,
+        "requires_user_interaction": true,
+        "complexity": "low"
+      },
+      "exploit_detection": {
+        "exploit_available": false,
+        "exploit_sources": []
+      }
+    },
+    {
+      "id": "CVE-2026-26322",
+      "severity": "high",
+      "type": "server_side_request_forgery",
+      "nvd_category_id": "CWE-918",
+      "title": "OpenClaw is a personal AI assistant. Prior to OpenClaw version 2026.2.14, the Gateway tool accepted ...",
+      "description": "OpenClaw is a personal AI assistant. Prior to OpenClaw version 2026.2.14, the Gateway tool accepted a tool-supplied `gatewayUrl` without sufficient restrictions, which could cause the OpenClaw host to attempt outbound WebSocket connections to user-specified targets. This requires the ability to invoke tools that accept `gatewayUrl` overrides (directly or indirectly). In typical setups this is limited to authenticated operators, trusted automation, or environments where tool calls are exposed to non-operators. In other words, this is not a drive-by issue for arbitrary internet users unless a deployment explicitly allows untrusted users to trigger these tool calls. Some tool call paths allowed `gatewayUrl` overrides to flow into the Gateway WebSocket client without validation or allowlisting. This meant the host could be instructed to attempt connections to non-gateway endpoints (for example, localhost services, private network addresses, or cloud metadata IPs). In the common case, this results in an outbound connection attempt from the OpenClaw host (and corresponding errors/timeouts). In environments where the tool caller can observe the results, this can also be used for limited network reachability probing. If the target speaks WebSocket and is reachable, further interaction may be possible. Starting in version 2026.2.14, tool-supplied `gatewayUrl` overrides are restricted to loopback (on the configured gateway port) or the configured `gateway.remote.url`. Disallowed protocols, credentials, query/hash, and non-root paths are rejected.",
+      "affected": [
+        "cpe:2.3:a:openclaw:openclaw:*:*:*:*:*:node.js:*:*",
+        "openclaw@*"
+      ],
+      "platforms": [
+        "openclaw"
+      ],
+      "action": "Review and update affected components. See NVD for remediation details.",
+      "published": "2026-02-19T23:16:25.340",
+      "references": [
+        "https://github.com/openclaw/openclaw/commit/c5406e1d2434be2ef6eb4d26d8f1798d718713f4",
+        "https://github.com/openclaw/openclaw/releases/tag/v2026.2.14",
+        "https://github.com/openclaw/openclaw/security/advisories/GHSA-g6q9-8fvw-f7rf"
+      ],
+      "cvss_score": 7.6,
+      "nvd_url": "https://nvd.nist.gov/vuln/detail/CVE-2026-26322",
+      "exploitability_score": "high",
+      "exploitability_rationale": "High CVSS score (7.6); network accessible; SSRF affects agents making external requests",
+      "attack_vector_analysis": {
+        "is_network_accessible": true,
+        "requires_authentication": true,
+        "requires_user_interaction": false,
+        "complexity": "low"
+      },
+      "exploit_detection": {
+        "exploit_available": false,
+        "exploit_sources": []
+      }
+    },
+    {
+      "id": "CVE-2026-26321",
+      "severity": "high",
+      "type": "path_traversal",
+      "nvd_category_id": "CWE-22",
+      "title": "OpenClaw is a personal AI assistant. Prior to OpenClaw version 2026.2.14, the Feishu extension previ...",
+      "description": "OpenClaw is a personal AI assistant. Prior to OpenClaw version 2026.2.14, the Feishu extension previously allowed `sendMediaFeishu` to treat attacker-controlled `mediaUrl` values as local filesystem paths and read them directly. If an attacker can influence tool calls (directly or via prompt injection), they may be able to exfiltrate local files by supplying paths such as `/etc/passwd` as `mediaUrl`. Upgrade to OpenClaw `2026.2.14` or newer to receive a fix. The fix removes direct local file reads from this path and routes media loading through hardened helpers that enforce local-root restrictions.",
+      "affected": [
+        "cpe:2.3:a:openclaw:openclaw:*:*:*:*:*:node.js:*:*",
+        "openclaw@*"
+      ],
+      "platforms": [
+        "openclaw"
+      ],
+      "action": "Review and update affected components. See NVD for remediation details.",
+      "published": "2026-02-19T23:16:25.180",
+      "references": [
+        "https://github.com/openclaw/openclaw/commit/5b4121d6011a48c71e747e3c18197f180b872c5d",
+        "https://github.com/openclaw/openclaw/releases/tag/v2026.2.14",
+        "https://github.com/openclaw/openclaw/security/advisories/GHSA-8jpq-5h99-ff5r"
+      ],
+      "cvss_score": 7.5,
+      "nvd_url": "https://nvd.nist.gov/vuln/detail/CVE-2026-26321",
+      "exploitability_score": "high",
+      "exploitability_rationale": "High CVSS score (7.5); remotely exploitable without authentication; path traversal affects agents with file access",
+      "attack_vector_analysis": {
+        "is_network_accessible": true,
+        "requires_authentication": false,
+        "requires_user_interaction": false,
+        "complexity": "low"
+      },
+      "exploit_detection": {
+        "exploit_available": false,
+        "exploit_sources": []
+      }
+    },
+    {
+      "id": "CVE-2026-26320",
+      "severity": "medium",
+      "type": "unknown_cwe_451",
+      "nvd_category_id": "CWE-451",
+      "title": "OpenClaw is a personal AI assistant. OpenClaw macOS desktop client registers the `openclaw://` URL s...",
+      "description": "OpenClaw is a personal AI assistant. OpenClaw macOS desktop client registers the `openclaw://` URL scheme. For `openclaw://agent` deep links without an unattended `key`, the app shows a confirmation dialog that previously displayed only the first 240 characters of the message, but executed the full message after the user clicked \"Run.\" At the time of writing, the OpenClaw macOS desktop client is still in beta. In versions 2026.2.6 through 2026.2.13, an attacker could pad the message with whitespace to push a malicious payload outside the visible preview, increasing the chance a user approves a different message than the one that is actually executed. If a user runs the deep link, the agent may perform actions that can lead to arbitrary command execution depending on the user's configured tool approvals/allowlists. This is a social-engineering mediated vulnerability: the confirmation prompt could be made to misrepresent the executed message. The issue is fixed in 2026.2.14. Other mitigations include not approve unexpected \"Run OpenClaw agent?\" prompts triggered while browsing untrusted sites and usingunattended deep links only with a valid `key` for trusted personal automations.",
+      "affected": [
+        "cpe:2.3:a:openclaw:openclaw:*:*:*:*:*:node.js:*:*",
+        "cpe:2.3:o:apple:macos:-:*:*:*:*:*:*:*",
+        "openclaw@*"
+      ],
+      "platforms": [
+        "openclaw"
+      ],
+      "action": "Review and update affected components. See NVD for remediation details.",
+      "published": "2026-02-19T23:16:25.017",
+      "references": [
+        "https://github.com/openclaw/openclaw/commit/28d9dd7a772501ccc3f71457b4adfee79084fe6f",
+        "https://github.com/openclaw/openclaw/releases/tag/v2026.2.14",
+        "https://github.com/openclaw/openclaw/security/advisories/GHSA-7q2j-c4q5-rm27"
+      ],
+      "cvss_score": 6.5,
+      "nvd_url": "https://nvd.nist.gov/vuln/detail/CVE-2026-26320",
+      "exploitability_score": "medium",
+      "exploitability_rationale": "Medium CVSS score (6.5); network accessible",
+      "attack_vector_analysis": {
+        "is_network_accessible": true,
+        "requires_authentication": false,
+        "requires_user_interaction": true,
+        "complexity": "low"
+      },
+      "exploit_detection": {
+        "exploit_available": false,
+        "exploit_sources": []
+      }
+    },
+    {
+      "id": "CVE-2026-26319",
+      "severity": "high",
+      "type": "missing_authentication_for_critical_function",
+      "nvd_category_id": "CWE-306",
+      "title": "OpenClaw is a personal AI assistant. Versions 2026.2.13 and below allow the optional @openclaw/voice...",
+      "description": "OpenClaw is a personal AI assistant. Versions 2026.2.13 and below allow the optional @openclaw/voice-call plugin Telnyx webhook handler to accept unsigned inbound webhook requests when telnyx.publicKey is not configured, enabling unauthenticated callers to forge Telnyx events. Telnyx webhooks are expected to be authenticated via Ed25519 signature verification. In affected versions, TelnyxProvider.verifyWebhook() could effectively fail open when no Telnyx public key was configured, allowing arbitrary HTTP POST requests to the voice-call webhook endpoint to be treated as legitimate Telnyx events. This only impacts deployments where the Voice Call plugin is installed, enabled, and the webhook endpoint is reachable from the attacker (for example, publicly exposed via a tunnel/proxy). The issue has been fixed in version 2026.2.14.",
+      "affected": [
+        "cpe:2.3:a:openclaw:openclaw:*:*:*:*:*:node.js:*:*",
+        "openclaw@*"
+      ],
+      "platforms": [
+        "openclaw"
+      ],
+      "action": "Review and update affected components. See NVD for remediation details.",
+      "published": "2026-02-19T23:16:24.857",
+      "references": [
+        "https://github.com/openclaw/openclaw/commit/29b587e73cbdc941caec573facd16e87d52f007b",
+        "https://github.com/openclaw/openclaw/commit/f47584fec86d6d73f2d483043a2ad0e7e3c50411",
+        "https://github.com/openclaw/openclaw/releases/tag/v2026.2.14"
+      ],
+      "cvss_score": 7.5,
+      "nvd_url": "https://nvd.nist.gov/vuln/detail/CVE-2026-26319",
+      "exploitability_score": "high",
+      "exploitability_rationale": "High CVSS score (7.5); remotely exploitable without authentication",
+      "attack_vector_analysis": {
+        "is_network_accessible": true,
+        "requires_authentication": false,
+        "requires_user_interaction": false,
+        "complexity": "low"
+      },
+      "exploit_detection": {
+        "exploit_available": false,
+        "exploit_sources": []
+      }
+    },
+    {
+      "id": "CVE-2026-26317",
+      "severity": "high",
+      "type": "cross_site_request_forgery",
+      "nvd_category_id": "CWE-352",
+      "title": "OpenClaw is a personal AI assistant. Prior to 2026.2.14, browser-facing localhost mutation routes ac...",
+      "description": "OpenClaw is a personal AI assistant. Prior to 2026.2.14, browser-facing localhost mutation routes accepted cross-origin browser requests without explicit Origin/Referer validation. Loopback binding reduces remote exposure but does not prevent browser-initiated requests from malicious origins. A malicious website can trigger unauthorized state changes against a victim's local OpenClaw browser control plane (for example opening tabs, starting/stopping the browser, mutating storage/cookies) if the browser control service is reachable on loopback in the victim's browser context. Starting in version 2026.2.14, mutating HTTP methods (POST/PUT/PATCH/DELETE) are rejected when the request indicates a non-loopback Origin/Referer (or `Sec-Fetch-Site: cross-site`). Other mitigations include enabling browser control auth (token/password) and avoid running with auth disabled.",
+      "affected": [
+        "cpe:2.3:a:openclaw:openclaw:*:*:*:*:*:node.js:*:*",
+        "openclaw@*"
+      ],
+      "platforms": [
+        "openclaw"
+      ],
+      "action": "Review and update affected components. See NVD for remediation details.",
+      "published": "2026-02-19T22:16:47.270",
+      "references": [
+        "https://github.com/openclaw/openclaw/commit/b566b09f81e2b704bf9398d8d97d5f7a90aa94c3",
+        "https://github.com/openclaw/openclaw/releases/tag/v2026.2.14",
+        "https://github.com/openclaw/openclaw/security/advisories/GHSA-3fqr-4cg8-h96q"
+      ],
+      "cvss_score": 7.1,
+      "nvd_url": "https://nvd.nist.gov/vuln/detail/CVE-2026-26317",
+      "exploitability_score": "high",
+      "exploitability_rationale": "High CVSS score (7.1); network accessible",
+      "attack_vector_analysis": {
+        "is_network_accessible": true,
+        "requires_authentication": false,
+        "requires_user_interaction": true,
+        "complexity": "low"
+      },
+      "exploit_detection": {
+        "exploit_available": false,
+        "exploit_sources": []
+      }
+    },
+    {
+      "id": "CVE-2026-26316",
+      "severity": "high",
+      "type": "incorrect_authorization",
+      "nvd_category_id": "CWE-863",
+      "title": "OpenClaw is a personal AI assistant. Prior to 2026.2.13, the optional BlueBubbles iMessage channel p...",
+      "description": "OpenClaw is a personal AI assistant. Prior to 2026.2.13, the optional BlueBubbles iMessage channel plugin could accept webhook requests as authenticated based only on the TCP peer address being loopback (`127.0.0.1`, `::1`, `::ffff:127.0.0.1`) even when the configured webhook secret was missing or incorrect. This does not affect the default iMessage integration unless BlueBubbles is installed and enabled. Version 2026.2.13 contains a patch. Other mitigations include setting a non-empty BlueBubbles webhook password and avoiding deployments where a public-facing reverse proxy forwards to a loopback-bound Gateway without strong upstream authentication.",
+      "affected": [
+        "cpe:2.3:a:openclaw:openclaw:*:*:*:*:*:node.js:*:*",
+        "openclaw@*"
+      ],
+      "platforms": [
+        "openclaw"
+      ],
+      "action": "Review and update affected components. See NVD for remediation details.",
+      "published": "2026-02-19T22:16:47.110",
+      "references": [
+        "https://github.com/openclaw/openclaw/commit/743f4b28495cdeb0d5bf76f6ebf4af01f6a02e5a",
+        "https://github.com/openclaw/openclaw/commit/f836c385ffc746cb954e8ee409f99d079bfdcd2f",
+        "https://github.com/openclaw/openclaw/releases/tag/v2026.2.13"
+      ],
+      "cvss_score": 7.5,
+      "nvd_url": "https://nvd.nist.gov/vuln/detail/CVE-2026-26316",
+      "exploitability_score": "high",
+      "exploitability_rationale": "High CVSS score (7.5); remotely exploitable without authentication",
+      "attack_vector_analysis": {
+        "is_network_accessible": true,
+        "requires_authentication": false,
+        "requires_user_interaction": false,
+        "complexity": "low"
+      },
+      "exploit_detection": {
+        "exploit_available": false,
+        "exploit_sources": []
+      }
+    },
+    {
+      "id": "CVE-2026-25474",
+      "severity": "high",
+      "type": "unknown_cwe_345",
+      "nvd_category_id": "CWE-345",
+      "title": "OpenClaw is a personal AI assistant. In versions 2026.1.30 and below, if channels.telegram.webhookSe...",
+      "description": "OpenClaw is a personal AI assistant. In versions 2026.1.30 and below, if channels.telegram.webhookSecret is not set when in Telegram webhook mode, OpenClaw may accept webhook HTTP requests without verifying Telegram’s secret token header. In deployments where the webhook endpoint is reachable by an attacker, this can allow forged Telegram updates (for example spoofing message.from.id). If an attacker can reach the webhook endpoint, they may be able to send forged updates that are processed as if they came from Telegram. Depending on enabled commands/tools and configuration, this could lead to unintended bot actions. Note: Telegram webhook mode is not enabled by default. It is enabled only when `channels.telegram.webhookUrl` is configured. This issue has been fixed in version 2026.2.1.",
+      "affected": [
+        "cpe:2.3:a:openclaw:openclaw:*:*:*:*:*:node.js:*:*",
+        "openclaw@*"
+      ],
+      "platforms": [
+        "openclaw"
+      ],
+      "action": "Review and update affected components. See NVD for remediation details.",
+      "published": "2026-02-19T07:17:45.847",
+      "references": [
+        "https://github.com/openclaw/openclaw/commit/3cbcba10cf30c2ffb898f0d8c7dfb929f15f8930",
+        "https://github.com/openclaw/openclaw/commit/5643a934799dc523ec2ef18c007e1aa2c386b670",
+        "https://github.com/openclaw/openclaw/commit/633fe8b9c17f02fcc68ecdb5ec212a5ace932f09"
+      ],
+      "cvss_score": 7.5,
+      "nvd_url": "https://nvd.nist.gov/vuln/detail/CVE-2026-25474",
+      "exploitability_score": "high",
+      "exploitability_rationale": "High CVSS score (7.5); remotely exploitable without authentication",
+      "attack_vector_analysis": {
+        "is_network_accessible": true,
+        "requires_authentication": false,
+        "requires_user_interaction": false,
+        "complexity": "low"
+      },
+      "exploit_detection": {
+        "exploit_available": false,
+        "exploit_sources": []
+      }
+    },
+    {
+      "id": "CVE-2026-24764",
+      "severity": "low",
+      "type": "unknown_cwe_74",
+      "nvd_category_id": "CWE-74",
+      "title": "OpenClaw (formerly Clawdbot) is a personal AI assistant users run on their own devices. In versions ...",
+      "description": "OpenClaw (formerly Clawdbot) is a personal AI assistant users run on their own devices. In versions 2026.2.2 and below, when the Slack integration is enabled, channel metadata (topic/description) can be incorporated into the model's system prompt. Prompt injection is a documented risk for LLM-driven systems. This issue increases the injection surface by allowing untrusted Slack channel metadata to be treated as higher-trust system input. This issue has been fixed in version 2026.2.3.",
+      "affected": [
+        "cpe:2.3:a:openclaw:openclaw:*:*:*:*:*:node.js:*:*",
+        "openclaw@*"
+      ],
+      "platforms": [
+        "openclaw"
+      ],
+      "action": "Review and update affected components. See NVD for remediation details.",
+      "published": "2026-02-19T07:17:44.957",
+      "references": [
+        "https://github.com/openclaw/openclaw/commit/35eb40a7000b59085e9c638a80fd03917c7a095e",
+        "https://github.com/openclaw/openclaw/releases/tag/v2026.2.3",
+        "https://github.com/openclaw/openclaw/security/advisories/GHSA-782p-5fr5-7fj8"
+      ],
+      "cvss_score": 3.7,
+      "nvd_url": "https://nvd.nist.gov/vuln/detail/CVE-2026-24764",
+      "exploitability_score": "low",
+      "exploitability_rationale": "Low CVSS score (3.7); network accessible",
+      "attack_vector_analysis": {
+        "is_network_accessible": true,
+        "requires_authentication": true,
+        "requires_user_interaction": true,
+        "complexity": "high"
+      },
+      "exploit_detection": {
+        "exploit_available": false,
+        "exploit_sources": []
+      }
+    },
+    {
+      "id": "CVE-2026-25593",
+      "severity": "high",
+      "type": "missing_authentication_for_critical_function",
+      "nvd_category_id": "CWE-306",
+      "title": "OpenClaw is a personal AI assistant. Prior to 2026.1.20, an unauthenticated local client could use t...",
+      "description": "OpenClaw is a personal AI assistant. Prior to 2026.1.20, an unauthenticated local client could use the Gateway WebSocket API to write config via config.apply and set unsafe cliPath values that were later used for command discovery, enabling command injection as the gateway user. This vulnerability is fixed in 2026.1.20.",
+      "affected": [
+        "cpe:2.3:a:openclaw:openclaw:*:*:*:*:*:node.js:*:*",
+        "openclaw@*"
+      ],
+      "platforms": [
+        "openclaw"
+      ],
+      "action": "Review and update affected components. See NVD for remediation details.",
+      "published": "2026-02-06T21:16:17.790",
+      "references": [
+        "https://github.com/openclaw/openclaw/security/advisories/GHSA-g55j-c2v4-pjcg"
+      ],
+      "cvss_score": 8.4,
+      "nvd_url": "https://nvd.nist.gov/vuln/detail/CVE-2026-25593",
+      "exploitability_score": "high",
+      "exploitability_rationale": "High CVSS score (8.4); requires local access; RCE is critical in agent deployments",
+      "attack_vector_analysis": {
+        "is_network_accessible": false,
+        "requires_authentication": false,
+        "requires_user_interaction": false,
+        "complexity": "low"
+      },
+      "exploit_detection": {
+        "exploit_available": false,
+        "exploit_sources": []
+      }
+    },
+    {
+      "id": "CVE-2026-25475",
+      "severity": "medium",
+      "type": "exposure_of_sensitive_information",
+      "nvd_category_id": "CWE-200",
+      "title": "OpenClaw is a personal AI assistant. Prior to version 2026.1.30, the isValidMedia() function in src/...",
+      "description": "OpenClaw is a personal AI assistant. Prior to version 2026.1.30, the isValidMedia() function in src/media/parse.ts allows arbitrary file paths including absolute paths, home directory paths, and directory traversal sequences. An agent can read any file on the system by outputting MEDIA:/path/to/file, exfiltrating sensitive data to the user/channel. This issue has been patched in version 2026.1.30.",
+      "affected": [
+        "cpe:2.3:a:openclaw:openclaw:*:*:*:*:*:node.js:*:*",
+        "openclaw@*"
+      ],
+      "platforms": [
+        "openclaw"
+      ],
+      "action": "Review and update affected components. See NVD for remediation details.",
+      "published": "2026-02-04T20:16:07.287",
+      "references": [
+        "https://github.com/openclaw/openclaw/security/advisories/GHSA-r8g4-86fx-92mq"
+      ],
+      "cvss_score": 6.5,
+      "nvd_url": "https://nvd.nist.gov/vuln/detail/CVE-2026-25475",
+      "exploitability_score": "high",
+      "exploitability_rationale": "Medium CVSS score (6.5); network accessible; path traversal affects agents with file access",
+      "attack_vector_analysis": {
+        "is_network_accessible": true,
+        "requires_authentication": true,
+        "requires_user_interaction": false,
+        "complexity": "low"
+      },
+      "exploit_detection": {
+        "exploit_available": false,
+        "exploit_sources": []
+      }
+    },
+    {
+      "id": "CVE-2026-25157",
+      "severity": "high",
+      "type": "os_command_injection",
+      "nvd_category_id": "CWE-78",
+      "title": "OpenClaw is a personal AI assistant. Prior to version 2026.1.29, there is an OS command injection vu...",
+      "description": "OpenClaw is a personal AI assistant. Prior to version 2026.1.29, there is an OS command injection vulnerability via the Project Root Path in sshNodeCommand. The sshNodeCommand function constructed a shell script without properly escaping the user-supplied project path in an error message. When the cd command failed, the unescaped path was interpolated directly into an echo statement, allowing arbitrary command execution on the remote SSH host. The parseSSHTarget function did not validate that SSH target strings could not begin with a dash. An attacker-supplied target like -oProxyCommand=... would be interpreted as an SSH configuration flag rather than a hostname, allowing arbitrary command execution on the local machine. This issue has been patched in version 2026.1.29.",
+      "affected": [
+        "cpe:2.3:a:openclaw:openclaw:*:*:*:*:*:node.js:*:*",
+        "cpe:2.3:o:apple:macos:-:*:*:*:*:*:*:*",
+        "openclaw@*"
+      ],
+      "platforms": [
+        "openclaw"
+      ],
+      "action": "Review and update affected components. See NVD for remediation details.",
+      "published": "2026-02-04T20:16:06.577",
+      "references": [
+        "https://github.com/openclaw/openclaw/security/advisories/GHSA-q284-4pvr-m585"
+      ],
+      "cvss_score": 7.7,
+      "nvd_url": "https://nvd.nist.gov/vuln/detail/CVE-2026-25157",
+      "exploitability_score": "high",
+      "exploitability_rationale": "High CVSS score (7.7); requires local access; RCE is critical in agent deployments",
+      "attack_vector_analysis": {
+        "is_network_accessible": false,
+        "requires_authentication": false,
+        "requires_user_interaction": true,
+        "complexity": "high"
+      },
+      "exploit_detection": {
+        "exploit_available": false,
+        "exploit_sources": []
+      }
+    },
+    {
+      "id": "CVE-2026-24763",
+      "severity": "high",
+      "type": "os_command_injection",
+      "nvd_category_id": "CWE-78",
+      "title": "OpenClaw (formerly  Clawdbot) is a personal AI assistant you run on your own devices. Prior to 2026....",
+      "description": "OpenClaw (formerly  Clawdbot) is a personal AI assistant you run on your own devices. Prior to 2026.1.29, a command injection vulnerability existed in OpenClaw’s Docker sandbox execution mechanism due to unsafe handling of the PATH environment variable when constructing shell commands. An authenticated user able to control environment variables could influence command execution within the container context. This vulnerability is fixed in 2026.1.29.",
+      "affected": [
+        "cpe:2.3:a:openclaw:openclaw:*:*:*:*:*:node.js:*:*",
+        "openclaw@*"
+      ],
+      "platforms": [
+        "openclaw"
+      ],
+      "action": "Review and update affected components. See NVD for remediation details.",
+      "published": "2026-02-02T23:16:08.593",
+      "references": [
+        "https://github.com/openclaw/openclaw/commit/771f23d36b95ec2204cc9a0054045f5d8439ea75",
+        "https://github.com/openclaw/openclaw/releases/tag/v2026.1.29",
+        "https://github.com/openclaw/openclaw/security/advisories/GHSA-mc68-q9jw-2h3v"
+      ],
+      "cvss_score": 8.8,
+      "nvd_url": "https://nvd.nist.gov/vuln/detail/CVE-2026-24763",
+      "exploitability_score": "high",
+      "exploitability_rationale": "High CVSS score (8.8); network accessible; RCE is critical in agent deployments",
+      "attack_vector_analysis": {
+        "is_network_accessible": true,
+        "requires_authentication": true,
+        "requires_user_interaction": false,
+        "complexity": "low"
+      },
+      "exploit_detection": {
+        "exploit_available": false,
+        "exploit_sources": []
+      }
+    },
+    {
+      "id": "CVE-2026-25253",
+      "severity": "high",
+      "type": "incorrect_resource_transfer_between_spheres",
+      "nvd_category_id": "CWE-669",
+      "title": "OpenClaw (aka clawdbot or Moltbot) before 2026.1.29 obtains a gatewayUrl value from a query string a...",
+      "description": "OpenClaw (aka clawdbot or Moltbot) before 2026.1.29 obtains a gatewayUrl value from a query string and automatically makes a WebSocket connection without prompting, sending a token value.",
+      "affected": [
+        "cpe:2.3:a:openclaw:openclaw:*:*:*:*:*:node.js:*:*",
+        "openclaw@*"
+      ],
+      "platforms": [
+        "openclaw"
+      ],
+      "action": "Review and update affected components. See NVD for remediation details.",
+      "published": "2026-02-01T23:15:49.717",
+      "references": [
+        "https://depthfirst.com/post/1-click-rce-to-steal-your-moltbot-data-and-keys",
+        "https://ethiack.com/news/blog/one-click-rce-moltbot",
+        "https://github.com/openclaw/openclaw/security/advisories/GHSA-g8p2-7wf7-98mq"
+      ],
+      "cvss_score": 8.8,
+      "nvd_url": "https://nvd.nist.gov/vuln/detail/CVE-2026-25253",
+      "exploitability_score": "high",
+      "exploitability_rationale": "High CVSS score (8.8); network accessible; RCE is critical in agent deployments",
+      "attack_vector_analysis": {
+        "is_network_accessible": true,
+        "requires_authentication": false,
+        "requires_user_interaction": true,
+        "complexity": "low"
+      },
+      "exploit_detection": {
+        "exploit_available": false,
+        "exploit_sources": []
+      }
+    }
+  ]
+}

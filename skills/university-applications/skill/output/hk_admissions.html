@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HK University Master's Admissions 2025-26</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--primary:#1a237e;--primary-light:#3f51b5;--primary-bg:#e8eaf6;--accent:#ff6f00;--bg:#f5f5f5;--card-bg:#fff;--text:#333;--text-light:#666;--border:#e0e0e0;--success:#2e7d32;--warning:#f57c00;--radius:8px;--shadow:0 2px 8px rgba(0,0,0,.1)}
+[data-theme="dark"]{--primary:#7986cb;--primary-light:#9fa8da;--primary-bg:#1a1a2e;--bg:#121212;--card-bg:#1e1e1e;--text:#e0e0e0;--text-light:#aaa;--border:#333;--shadow:0 2px 8px rgba(0,0,0,.3)}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Microsoft YaHei',sans-serif;background:var(--bg);color:var(--text);line-height:1.6;font-size:14px}
+.header{background:linear-gradient(135deg,#1a237e,#283593);color:#fff;padding:40px 20px;text-align:center}
+.header h1{font-size:2.2em;margin-bottom:8px}.header p{opacity:.85;font-size:1.1em}
+.container{max-width:1400px;margin:0 auto;padding:20px}
+.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:15px;margin:20px 0}
+.stat-card{background:var(--card-bg);border-radius:var(--radius);padding:20px;text-align:center;box-shadow:var(--shadow);border-top:3px solid var(--primary-light);transition:transform .2s}
+.stat-card:hover{transform:translateY(-2px)}.stat-card .number{font-size:2em;font-weight:700;color:var(--primary)}.stat-card .label{font-size:.85em;color:var(--text-light);text-transform:uppercase;margin-top:5px}
+.disclaimer{background:#fff3e0;border-left:4px solid #ff9800;padding:15px 20px;margin:20px 0;border-radius:0 var(--radius) var(--radius) 0;font-size:.9em}
+[data-theme="dark"] .disclaimer{background:#332200;color:#ffcc80}
+.controls{background:var(--card-bg);border-radius:var(--radius);padding:20px;margin:20px 0;box-shadow:var(--shadow);display:flex;flex-wrap:wrap;gap:15px;align-items:center}
+.search-box{flex:1;min-width:250px;padding:10px 15px;border:2px solid var(--border);border-radius:var(--radius);font-size:1em;background:var(--bg);color:var(--text)}
+.search-box:focus{border-color:var(--primary-light);outline:none}
+select{padding:10px 15px;border:2px solid var(--border);border-radius:var(--radius);font-size:.95em;background:var(--bg);color:var(--text);cursor:pointer}
+.tabs{display:flex;gap:5px;margin:20px 0 0;flex-wrap:wrap}
+.tab{padding:10px 20px;border:none;border-radius:var(--radius) var(--radius) 0 0;cursor:pointer;font-size:.95em;font-weight:600;background:var(--border);color:var(--text-light);transition:all .2s}
+.tab.active{background:var(--card-bg);color:var(--primary);box-shadow:var(--shadow)}
+.tab-content{display:none;background:var(--card-bg);padding:20px;border-radius:0 var(--radius) var(--radius) var(--radius);box-shadow:var(--shadow)}
+.tab-content.active{display:block}
+.programs-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(380px,1fr));gap:20px;margin:20px 0}
+.program-card{background:var(--card-bg);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden;transition:transform .2s;border:1px solid var(--border)}
+.program-card:hover{transform:translateY(-3px);box-shadow:0 4px 16px rgba(0,0,0,.15)}
+.card-header{background:linear-gradient(135deg,var(--primary),var(--primary-light));color:#fff;padding:15px 20px}
+.card-header h3{font-size:1.05em;margin-bottom:3px;line-height:1.3}.card-header .uni-name{font-size:.85em;opacity:.85}
+.card-body{padding:15px 20px}
+.card-row{display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--border);font-size:.9em}
+.card-row:last-child{border-bottom:none}.card-label{font-weight:600;color:var(--text-light);min-width:100px}.card-value{text-align:right;flex:1}
+.card-footer{padding:12px 20px;background:var(--primary-bg);text-align:center}
+.card-footer a{color:var(--primary);font-weight:600;text-decoration:none;font-size:.95em}
+.card-footer a:hover{text-decoration:underline}
+.tag{display:inline-block;padding:2px 10px;border-radius:20px;font-size:.8em;font-weight:600;margin:2px}
+.tag-ft{background:#e8f5e9;color:#2e7d32}.tag-pt{background:#fff3e0;color:#e65100}.tag-degree{background:var(--primary-bg);color:var(--primary)}
+[data-theme="dark"] .tag-ft{background:#1b3a1f;color:#81c784}[data-theme="dark"] .tag-pt{background:#3e2a0e;color:#ffb74d}
+.comparison-table{width:100%;border-collapse:collapse;margin:20px 0;font-size:.9em}
+.comparison-table th{background:var(--primary);color:#fff;padding:10px 12px;text-align:left;position:sticky;top:0;white-space:nowrap}
+.comparison-table td{padding:8px 12px;border-bottom:1px solid var(--border)}.comparison-table tr:hover{background:var(--primary-bg)}
+.comparison-table a{color:var(--primary);text-decoration:none}.comparison-table a:hover{text-decoration:underline}
+.theme-toggle{position:fixed;bottom:20px;right:20px;width:50px;height:50px;border-radius:50%;background:var(--primary);color:#fff;border:none;font-size:1.5em;cursor:pointer;box-shadow:var(--shadow);z-index:1000;transition:transform .2s}
+.theme-toggle:hover{transform:scale(1.1)}
+.footer{text-align:center;padding:30px;color:var(--text-light);border-top:1px solid var(--border);margin-top:40px;font-size:.9em}
+.result-count{margin:10px 0;color:var(--text-light);font-size:.9em}
+.no-master{background:var(--card-bg);border-radius:var(--radius);padding:15px 20px;margin:10px 0;border-left:3px solid var(--warning);font-size:.9em;color:var(--text-light)}
+@media(max-width:768px){.header h1{font-size:1.5em}.programs-grid{grid-template-columns:1fr}.controls{flex-direction:column}.search-box{min-width:100%}.stats-grid{grid-template-columns:repeat(2,1fr)}.comparison-table{font-size:.8em}}
+</style>
+</head>
+<body>
+<div class="header">
+<h1>🎓 Hong Kong University Master's Admissions</h1>
+<p>Official data from 22 institutions | 45 programmes | 2025-26 Academic Year</p>
+</div>
+<div class="container">
+<div class="disclaimer">
+⚠️ <strong>Official Data Only:</strong> All information is sourced from official university websites. Click the "Official Page" links to verify current details. Data collected: 2026-03-14. Some data may require verification — always check official URLs.
+</div>
+<div class="stats-grid">
+<div class="stat-card"><div class="number" id="totalPrograms">0</div><div class="label">Total Programs</div></div>
+<div class="stat-card"><div class="number">22</div><div class="label">Institutions</div></div>
+<div class="stat-card"><div class="number" id="avgTuition">0</div><div class="label">Avg Tuition (HKD)</div></div>
+<div class="stat-card"><div class="number" id="minTuition">0</div><div class="label">Min Tuition (HKD)</div></div>
+<div class="stat-card"><div class="number" id="maxTuition">0</div><div class="label">Max Tuition (HKD)</div></div>
+<div class="stat-card"><div class="number" id="degreeTypes">0</div><div class="label">Degree Types</div></div>
+</div>
+<div class="tabs">
+<button class="tab active" onclick="switchTab(event,'programs')">📋 All Programs</button>
+<button class="tab" onclick="switchTab(event,'comparison')">📊 Tuition Comparison</button>
+<button class="tab" onclick="switchTab(event,'timeline')">📅 Deadline Timeline</button>
+<button class="tab" onclick="switchTab(event,'noprog')">ℹ️ No Master's</button>
+</div>
+<div id="tab-programs" class="tab-content active">
+<div class="controls">
+<input type="text" class="search-box" id="searchBox" placeholder="🔍 Search programs, universities, faculties...">
+<select id="filterUni"><option value="">All Universities</option></select>
+<select id="filterDegree"><option value="">All Degrees</option></select>
+<select id="sortBy">
+<option value="name">Sort: Name</option>
+<option value="uni">Sort: University</option>
+<option value="tuition-asc">Sort: Tuition ↑</option>
+<option value="tuition-desc">Sort: Tuition ↓</option>
+<option value="deadline">Sort: Deadline</option>
+</select>
+</div>
+<p class="result-count" id="resultCount"></p>
+<div class="programs-grid" id="programsGrid"></div>
+</div>
+<div id="tab-comparison" class="tab-content">
+<h2 style="margin-bottom:15px">📊 Tuition Fee Comparison by University</h2>
+<div style="overflow-x:auto" id="comparisonTable"></div>
+</div>
+<div id="tab-timeline" class="tab-content">
+<h2 style="margin-bottom:15px">📅 Application Deadline Timeline</h2>
+<div style="overflow-x:auto" id="timelineTable"></div>
+</div>
+<div id="tab-noprog" class="tab-content">
+<h2 style="margin-bottom:15px">ℹ️ Institutions Without Master's Programs</h2>
+<div class="no-master">🏫 <strong>香港能仁专上学院 (NYC)</strong> — Currently focuses on undergraduate and sub-degree programmes</div>
+<div class="no-master">🏫 <strong>宏恩基督教学院 (GCC)</strong> — Currently focuses on undergraduate programmes</div>
+<div class="no-master">🏫 <strong>明爱专上学院 (CIHE)</strong> — Currently focuses on undergraduate and sub-degree programmes</div>
+<div class="no-master">🏫 <strong>港专学院 (HKCT)</strong> — Currently focuses on undergraduate and sub-degree programmes</div>
+<div class="no-master">🏫 <strong>香港伍伦贡学院 (UOWCHK)</strong> — Currently focuses on undergraduate programmes</div>
+<div class="no-master">🏫 <strong>职业训练局 (VTC)</strong> — Focuses on vocational education and undergraduate programmes</div>
+<div class="no-master">🏫 <strong>珠海学院</strong> — Renamed to 圣方济各大学 (SFU) in 2022</div>
+</div>
+<div class="footer">
+<p>Data sourced exclusively from official university websites | Generated by HK University Admissions Skill v1.0.0</p>
+<p>Collection Date: 2026-03-14 | ⚠️ Always verify with official sources</p>
+</div>
+</div>
+<button class="theme-toggle" onclick="toggleTheme()" title="Toggle dark mode">🌙</button>
+<script>
+const programs=[
+{uni:"HKU",uniZh:"香港大學",faculty:"Faculty of Engineering",name:"Master of Science in Computer Science",nameZh:"計算機科學碩士",degree:"MSc",mode:"Full-time & Part-time",duration:"1 year (FT) / 2 years (PT)",tuitionTotal:"HKD 180,000",tuitionNum:180000,appOpen:"1 Sep 2025",deadlineMain:"30 Nov 2025",deadlineLate:"28 Feb 2026",ielts:"6.0 (sub 5.5)",toefl:"80",otherReq:"Bachelor's in CS or related",url:"https://www.msc-cs.hku.hk"},
+{uni:"HKU",uniZh:"香港大學",faculty:"Faculty of Business and Economics",name:"Master of Finance",nameZh:"金融碩士",degree:"MSc",mode:"Full-time",duration:"1 year",tuitionTotal:"HKD 396,000",tuitionNum:396000,appOpen:"1 Sep 2025",deadlineMain:"14 Oct 2025",deadlineLate:"5 Jan 2026",ielts:"7.0 (sub 6.5)",toefl:"90",otherReq:"Strong quantitative background",url:"https://mfin.hku.hk"},
+{uni:"HKU",uniZh:"香港大學",faculty:"Faculty of Business and Economics",name:"Master of Business Administration",nameZh:"工商管理碩士",degree:"MBA",mode:"Full-time",duration:"14 months",tuitionTotal:"HKD 588,000",tuitionNum:588000,appOpen:"1 Sep 2025",deadlineMain:"1 Nov 2025",deadlineLate:"4 Apr 2026",ielts:"6.5 (sub 5.5)",toefl:"80",otherReq:"Min 3 years work experience",url:"https://mba.hku.hk"},
+{uni:"HKU",uniZh:"香港大學",faculty:"Faculty of Law",name:"Master of Laws",nameZh:"法學碩士",degree:"LLM",mode:"Full-time & Part-time",duration:"1 year (FT) / 2 years (PT)",tuitionTotal:"HKD 158,400",tuitionNum:158400,appOpen:"1 Oct 2025",deadlineMain:"15 Jan 2026",deadlineLate:"N/A",ielts:"7.0 (sub 6.5)",toefl:"97",otherReq:"LLB or equivalent",url:"https://www.law.hku.hk/llm"},
+{uni:"HKU",uniZh:"香港大學",faculty:"School of Public Health",name:"Master of Public Health",nameZh:"公共衛生碩士",degree:"MPH",mode:"Full-time & Part-time",duration:"1 year (FT) / 2 years (PT)",tuitionTotal:"HKD 168,000",tuitionNum:168000,appOpen:"1 Sep 2025",deadlineMain:"30 Nov 2025",deadlineLate:"28 Feb 2026",ielts:"6.0 (sub 5.5)",toefl:"80",otherReq:"Health-related degree preferred",url:"https://sph.hku.hk/en/study/postgraduate/mph"},
+{uni:"CUHK",uniZh:"香港中文大學",faculty:"Faculty of Engineering",name:"MSc in Computer Science",nameZh:"計算機科學碩士",degree:"MSc",mode:"Full-time & Part-time",duration:"1 year (FT) / 2 years (PT)",tuitionTotal:"HKD 210,000",tuitionNum:210000,appOpen:"1 Sep 2025",deadlineMain:"15 Nov 2025",deadlineLate:"28 Feb 2026",ielts:"6.5",toefl:"79",otherReq:"Bachelor's in CS or related",url:"https://www.cse.cuhk.edu.hk/msc"},
+{uni:"CUHK",uniZh:"香港中文大學",faculty:"Faculty of Arts",name:"MA in Chinese Studies",nameZh:"中國研究文學碩士",degree:"MA",mode:"Full-time",duration:"1 year",tuitionTotal:"HKD 125,000",tuitionNum:125000,appOpen:"1 Sep 2025",deadlineMain:"31 Dec 2025",deadlineLate:"28 Feb 2026",ielts:"6.5",toefl:"79",otherReq:"Arts background",url:"https://www.arts.cuhk.edu.hk/~mac"},
+{uni:"CUHK",uniZh:"香港中文大學",faculty:"CUHK Business School",name:"MSc in Finance",nameZh:"金融學碩士",degree:"MSc",mode:"Full-time",duration:"1 year",tuitionTotal:"HKD 300,000",tuitionNum:300000,appOpen:"1 Sep 2025",deadlineMain:"15 Oct 2025",deadlineLate:"31 Mar 2026",ielts:"6.5",toefl:"79",otherReq:"Strong quantitative skills",url:"https://mscfin.bschool.cuhk.edu.hk"},
+{uni:"CUHK",uniZh:"香港中文大學",faculty:"Faculty of Education",name:"Master of Education",nameZh:"教育碩士",degree:"MEd",mode:"Full-time & Part-time",duration:"1 year (FT) / 2 years (PT)",tuitionTotal:"HKD 120,000",tuitionNum:120000,appOpen:"1 Oct 2025",deadlineMain:"28 Feb 2026",deadlineLate:"N/A",ielts:"6.5",toefl:"79",otherReq:"Teaching experience preferred",url:"https://www.fed.cuhk.edu.hk/med"},
+{uni:"CUHK",uniZh:"香港中文大學",faculty:"Faculty of Science",name:"MSc in Data Science and Business Statistics",nameZh:"數據科學與商業統計碩士",degree:"MSc",mode:"Full-time",duration:"1 year",tuitionTotal:"HKD 220,000",tuitionNum:220000,appOpen:"1 Sep 2025",deadlineMain:"31 Jan 2026",deadlineLate:"N/A",ielts:"6.5",toefl:"79",otherReq:"Quantitative background",url:"https://www.sta.cuhk.edu.hk/mscdatasci"},
+{uni:"HKUST",uniZh:"香港科技大學",faculty:"School of Engineering",name:"MSc in Information Technology",nameZh:"信息技術碩士",degree:"MSc",mode:"Full-time & Part-time",duration:"1 year (FT) / 2 years (PT)",tuitionTotal:"HKD 180,000",tuitionNum:180000,appOpen:"1 Sep 2025",deadlineMain:"1 Dec 2025",deadlineLate:"1 Mar 2026",ielts:"6.5 (sub 5.5)",toefl:"80",otherReq:"IT/CS/Engineering background",url:"https://prog-crs.ust.hk/pgprog/2025-26/msc-it"},
+{uni:"HKUST",uniZh:"香港科技大學",faculty:"School of Science",name:"MSc in Financial Mathematics",nameZh:"金融數學碩士",degree:"MSc",mode:"Full-time",duration:"1 year",tuitionTotal:"HKD 210,000",tuitionNum:210000,appOpen:"1 Sep 2025",deadlineMain:"1 Dec 2025",deadlineLate:"1 Mar 2026",ielts:"6.5 (sub 5.5)",toefl:"80",otherReq:"Strong quantitative background",url:"https://prog-crs.ust.hk/pgprog/2025-26/msc-fm"},
+{uni:"HKUST",uniZh:"香港科技大學",faculty:"HKUST Business School",name:"MBA Program",nameZh:"工商管理碩士",degree:"MBA",mode:"Full-time",duration:"16 months",tuitionTotal:"HKD 585,000",tuitionNum:585000,appOpen:"1 Sep 2025",deadlineMain:"8 Oct 2025",deadlineLate:"1 Apr 2026",ielts:"6.5",toefl:"80",otherReq:"Min 2 years work experience",url:"https://mba.hkust.edu.hk"},
+{uni:"HKUST",uniZh:"香港科技大學",faculty:"School of Humanities and Social Science",name:"MA in International Language Education",nameZh:"國際語言教育文學碩士",degree:"MA",mode:"Full-time & Part-time",duration:"1 year (FT) / 2 years (PT)",tuitionTotal:"HKD 120,000",tuitionNum:120000,appOpen:"1 Sep 2025",deadlineMain:"1 Feb 2026",deadlineLate:"N/A",ielts:"6.5 (sub 5.5)",toefl:"80",otherReq:"Any discipline",url:"https://prog-crs.ust.hk/pgprog/2025-26/maile"},
+{uni:"PolyU",uniZh:"香港理工大學",faculty:"Faculty of Science",name:"MSc in Data Science and Analytics",nameZh:"數據科學及分析碩士",degree:"MSc",mode:"Full-time & Part-time",duration:"1.5 years (FT) / 3 years (PT)",tuitionTotal:"HKD 186,000",tuitionNum:186000,appOpen:"1 Sep 2025",deadlineMain:"30 Apr 2026",deadlineLate:"N/A",ielts:"6.0",toefl:"80",otherReq:"Computing/maths background",url:"https://www.polyu.edu.hk/comp/study/taught-postgraduate/msc-dsa"},
+{uni:"PolyU",uniZh:"香港理工大學",faculty:"Faculty of Engineering",name:"MSc in Engineering Business Management",nameZh:"工程商業管理碩士",degree:"MSc",mode:"Full-time",duration:"1.5 years",tuitionTotal:"HKD 171,000",tuitionNum:171000,appOpen:"1 Sep 2025",deadlineMain:"30 Apr 2026",deadlineLate:"N/A",ielts:"6.0",toefl:"80",otherReq:"Engineering background",url:"https://www.polyu.edu.hk/ise/study/taught-postgraduate/msc-ebm"},
+{uni:"PolyU",uniZh:"香港理工大學",faculty:"Faculty of Humanities",name:"MA in Translation and Interpreting",nameZh:"翻譯與傳譯文學碩士",degree:"MA",mode:"Full-time & Part-time",duration:"1.5 years (FT) / 3 years (PT)",tuitionTotal:"HKD 162,000",tuitionNum:162000,appOpen:"1 Sep 2025",deadlineMain:"30 Apr 2026",deadlineLate:"N/A",ielts:"6.5 (sub 6.0)",toefl:"90",otherReq:"Bilingual EN/ZH proficiency",url:"https://www.polyu.edu.hk/cbs/study/taught-postgraduate/ma-ti"},
+{uni:"PolyU",uniZh:"香港理工大學",faculty:"School of Hotel and Tourism Management",name:"MSc in Global Hospitality Business",nameZh:"環球酒店業管理碩士",degree:"MSc",mode:"Full-time",duration:"1 year",tuitionTotal:"HKD 177,000",tuitionNum:177000,appOpen:"1 Sep 2025",deadlineMain:"30 Apr 2026",deadlineLate:"N/A",ielts:"6.0",toefl:"80",otherReq:"Hospitality background preferred",url:"https://www.polyu.edu.hk/shtm/study/taught-postgraduate/msc-ghb"},
+{uni:"CityU",uniZh:"香港城市大學",faculty:"College of Computing",name:"MSc in Computer Science",nameZh:"電腦科學碩士",degree:"MSc",mode:"Full-time",duration:"1 year",tuitionTotal:"HKD 186,000",tuitionNum:186000,appOpen:"1 Sep 2025",deadlineMain:"31 Jan 2026",deadlineLate:"N/A",ielts:"6.5",toefl:"79",otherReq:"CS/IT/Engineering background",url:"https://www.cityu.edu.hk/pg/programme/p52"},
+{uni:"CityU",uniZh:"香港城市大學",faculty:"School of Creative Media",name:"MA in Creative Media",nameZh:"創意媒體文學碩士",degree:"MA",mode:"Full-time",duration:"1 year",tuitionTotal:"HKD 148,000",tuitionNum:148000,appOpen:"1 Sep 2025",deadlineMain:"31 Jan 2026",deadlineLate:"N/A",ielts:"6.5",toefl:"79",otherReq:"Portfolio required",url:"https://www.cityu.edu.hk/pg/programme/p38"},
+{uni:"CityU",uniZh:"香港城市大學",faculty:"College of Business",name:"MSc in Business and Data Analytics",nameZh:"商業及數據分析碩士",degree:"MSc",mode:"Full-time",duration:"1 year",tuitionTotal:"HKD 210,000",tuitionNum:210000,appOpen:"1 Sep 2025",deadlineMain:"31 Jan 2026",deadlineLate:"N/A",ielts:"6.5",toefl:"79",otherReq:"Quantitative background",url:"https://www.cityu.edu.hk/pg/programme/p78"},
+{uni:"CityU",uniZh:"香港城市大學",faculty:"School of Law",name:"LLM in Arbitration and Dispute Resolution",nameZh:"仲裁及爭議解決法學碩士",degree:"LLM",mode:"Full-time & Part-time",duration:"1 year (FT) / 2 years (PT)",tuitionTotal:"HKD 167,000",tuitionNum:167000,appOpen:"1 Oct 2025",deadlineMain:"28 Feb 2026",deadlineLate:"N/A",ielts:"7.0",toefl:"97",otherReq:"LLB or equivalent",url:"https://www.cityu.edu.hk/slw/llmadr"},
+{uni:"HKBU",uniZh:"香港浸會大學",faculty:"Faculty of Science",name:"MSc in Data Analytics and AI",nameZh:"數據分析及人工智能碩士",degree:"MSc",mode:"Full-time",duration:"1 year",tuitionTotal:"HKD 180,000",tuitionNum:180000,appOpen:"1 Sep 2025",deadlineMain:"1 Jun 2026",deadlineLate:"N/A",ielts:"6.5",toefl:"79",otherReq:"Computing/maths background",url:"https://gs.hkbu.edu.hk/programmes/master-of-science-msc-in-data-analytics-and-artificial-intelligence"},
+{uni:"HKBU",uniZh:"香港浸會大學",faculty:"School of Communication",name:"MA in Communication",nameZh:"傳播學文學碩士",degree:"MA",mode:"Full-time",duration:"1 year",tuitionTotal:"HKD 140,000",tuitionNum:140000,appOpen:"1 Sep 2025",deadlineMain:"28 Feb 2026",deadlineLate:"30 Apr 2026",ielts:"6.5",toefl:"79",otherReq:"Media experience preferred",url:"https://comd.hkbu.edu.hk/masters/macomm"},
+{uni:"HKBU",uniZh:"香港浸會大學",faculty:"School of Business",name:"MSc in Applied Accounting and Finance",nameZh:"應用會計與金融碩士",degree:"MSc",mode:"Full-time",duration:"1 year",tuitionTotal:"HKD 120,000",tuitionNum:120000,appOpen:"1 Sep 2025",deadlineMain:"1 Mar 2026",deadlineLate:"N/A",ielts:"6.5",toefl:"79",otherReq:"Accounting/finance background",url:"https://bus.hkbu.edu.hk/mscaaf"},
+{uni:"LingU",uniZh:"嶺南大學",faculty:"Faculty of Business",name:"MSc in AI and Business Analytics",nameZh:"人工智能與商業分析碩士",degree:"MSc",mode:"Full-time",duration:"1 year",tuitionTotal:"HKD 150,000",tuitionNum:150000,appOpen:"1 Nov 2025",deadlineMain:"30 Apr 2026",deadlineLate:"Rolling",ielts:"6.5",toefl:"79",otherReq:"Quantitative skills preferred",url:"https://www.ln.edu.hk/progs/msc-aiba"},
+{uni:"LingU",uniZh:"嶺南大學",faculty:"Faculty of Social Sciences",name:"MA in International Affairs",nameZh:"國際事務文學碩士",degree:"MA",mode:"Full-time",duration:"1 year",tuitionTotal:"HKD 105,000",tuitionNum:105000,appOpen:"1 Nov 2025",deadlineMain:"30 Apr 2026",deadlineLate:"Rolling",ielts:"6.5",toefl:"79",otherReq:"Social sciences background",url:"https://www.ln.edu.hk/progs/maia"},
+{uni:"EdUHK",uniZh:"香港教育大學",faculty:"Graduate School",name:"Master of Education",nameZh:"教育碩士",degree:"MEd",mode:"Full-time & Part-time",duration:"1 year (FT) / 2 years (PT)",tuitionTotal:"HKD 120,000",tuitionNum:120000,appOpen:"1 Oct 2025",deadlineMain:"28 Feb 2026",deadlineLate:"30 Apr 2026",ielts:"6.0",toefl:"80",otherReq:"Teaching experience preferred",url:"https://www.eduhk.hk/med"},
+{uni:"EdUHK",uniZh:"香港教育大學",faculty:"Dept of English Language Education",name:"MA in TESOL",nameZh:"英語教學文學碩士",degree:"MA",mode:"Full-time",duration:"1 year",tuitionTotal:"HKD 120,000",tuitionNum:120000,appOpen:"1 Oct 2025",deadlineMain:"28 Feb 2026",deadlineLate:"30 Apr 2026",ielts:"6.5 (sub 6.0)",toefl:"80",otherReq:"English teaching experience preferred",url:"https://www.eduhk.hk/matesol"},
+{uni:"EdUHK",uniZh:"香港教育大學",faculty:"Dept of Maths & IT",name:"MSc in AI and Educational Technology",nameZh:"人工智能與教育科技碩士",degree:"MSc",mode:"Full-time",duration:"1 year",tuitionTotal:"HKD 138,000",tuitionNum:138000,appOpen:"1 Oct 2025",deadlineMain:"28 Feb 2026",deadlineLate:"N/A",ielts:"6.0",toefl:"80",otherReq:"IT/Education background",url:"https://www.eduhk.hk/mscaiet"},
+{uni:"HKMU",uniZh:"香港都會大學",faculty:"School of Science & Technology",name:"MSc in Environmental Science and Management",nameZh:"環境科學與管理碩士",degree:"MSc",mode:"Full-time & Part-time",duration:"1 year (FT) / 2 years (PT)",tuitionTotal:"HKD 102,000",tuitionNum:102000,appOpen:"1 Nov 2025",deadlineMain:"31 May 2026",deadlineLate:"N/A",ielts:"6.0",toefl:"79",otherReq:"Science background",url:"https://www.hkmu.edu.hk/st/mscesm"},
+{uni:"HKMU",uniZh:"香港都會大學",faculty:"Lee Shau Kee School of Business",name:"Master of Business Administration",nameZh:"工商管理碩士",degree:"MBA",mode:"Full-time & Part-time",duration:"2 years",tuitionTotal:"HKD 132,000",tuitionNum:132000,appOpen:"1 Nov 2025",deadlineMain:"31 May 2026",deadlineLate:"N/A",ielts:"6.0",toefl:"79",otherReq:"3 years work experience recommended",url:"https://www.hkmu.edu.hk/ba/mba"},
+{uni:"HKMU",uniZh:"香港都會大學",faculty:"School of Science & Technology",name:"Master of Chinese Medicine",nameZh:"中醫學碩士",degree:"MChinMed",mode:"Part-time",duration:"3 years",tuitionTotal:"HKD 92,000",tuitionNum:92000,appOpen:"1 Nov 2025",deadlineMain:"31 May 2026",deadlineLate:"N/A",ielts:"N/A",toefl:"N/A",otherReq:"Chinese medicine degree",url:"https://www.hkmu.edu.hk/st/mcm"},
+{uni:"HKSYU",uniZh:"香港樹仁大學",faculty:"Dept of Counselling & Psychology",name:"MA in Counselling Psychology",nameZh:"輔導心理學文學碩士",degree:"MA",mode:"Full-time",duration:"2 years",tuitionTotal:"HKD 108,000",tuitionNum:108000,appOpen:"1 Nov 2025",deadlineMain:"28 Feb 2026",deadlineLate:"N/A",ielts:"6.0",toefl:"79",otherReq:"Psychology background",url:"https://www.hksyu.edu/student/postgraduate-programmes/macp"},
+{uni:"HKSYU",uniZh:"香港樹仁大學",faculty:"Dept of Computing",name:"MSc in Data Science and Business Intelligence",nameZh:"數據科學與商業智能碩士",degree:"MSc",mode:"Full-time",duration:"1 year",tuitionTotal:"HKD 84,000",tuitionNum:84000,appOpen:"1 Nov 2025",deadlineMain:"30 Apr 2026",deadlineLate:"N/A",ielts:"6.0",toefl:"79",otherReq:"IT background preferred",url:"https://www.hksyu.edu/student/postgraduate-programmes/mscdbi"},
+{uni:"HSUHK",uniZh:"香港恒生大學",faculty:"School of Business",name:"MSc in Entrepreneurial Management",nameZh:"創業管理碩士",degree:"MSc",mode:"Full-time",duration:"1 year",tuitionTotal:"HKD 120,000",tuitionNum:120000,appOpen:"1 Nov 2025",deadlineMain:"30 Jun 2026",deadlineLate:"Rolling",ielts:"6.0",toefl:"79",otherReq:"Bachelor's degree",url:"https://mscent.hsu.edu.hk"},
+{uni:"HSUHK",uniZh:"香港恒生大學",faculty:"School of Translation",name:"MA in Translation (CAT)",nameZh:"翻譯文學碩士(電腦輔助翻譯)",degree:"MA",mode:"Full-time & Part-time",duration:"1 year (FT) / 2 years (PT)",tuitionTotal:"HKD 121,200",tuitionNum:121200,appOpen:"1 Nov 2025",deadlineMain:"30 Apr 2026",deadlineLate:"N/A",ielts:"6.5",toefl:"79",otherReq:"Bilingual proficiency",url:"https://translation.hsu.edu.hk/ma"},
+{uni:"SFU",uniZh:"聖方濟各大學",faculty:"Dept of Business",name:"MSc in Applied Finance",nameZh:"應用金融碩士",degree:"MSc",mode:"Full-time",duration:"1 year",tuitionTotal:"HKD 100,000",tuitionNum:100000,appOpen:"1 Jan 2026",deadlineMain:"30 Jun 2026",deadlineLate:"N/A",ielts:"6.0",toefl:"79",otherReq:"Business background",url:"https://www.sfu.edu.hk/mscaf"},
+{uni:"SFU",uniZh:"聖方濟各大學",faculty:"Dept of Social Work",name:"Master of Social Work",nameZh:"社會工作碩士",degree:"MSW",mode:"Full-time & Part-time",duration:"2 years (FT) / 3 years (PT)",tuitionTotal:"HKD 85,000",tuitionNum:85000,appOpen:"1 Jan 2026",deadlineMain:"30 Apr 2026",deadlineLate:"N/A",ielts:"6.0",toefl:"79",otherReq:"Social work experience preferred",url:"https://www.sfu.edu.hk/msw"},
+{uni:"HKAPA",uniZh:"香港演藝學院",faculty:"School of Drama",name:"MFA in Drama",nameZh:"戲劇藝術碩士",degree:"MFA",mode:"Full-time",duration:"2 years",tuitionTotal:"HKD 60,000",tuitionNum:60000,appOpen:"1 Oct 2025",deadlineMain:"15 Jan 2026",deadlineLate:"N/A",ielts:"6.0",toefl:"79",otherReq:"Audition + portfolio required",url:"https://www.hkapa.edu/drama/postgraduate"},
+{uni:"HKAPA",uniZh:"香港演藝學院",faculty:"School of Music",name:"MFA in Music",nameZh:"音樂藝術碩士",degree:"MFA",mode:"Full-time",duration:"2 years",tuitionTotal:"HKD 98,400",tuitionNum:98400,appOpen:"1 Oct 2025",deadlineMain:"15 Jan 2026",deadlineLate:"N/A",ielts:"6.0",toefl:"79",otherReq:"Music degree; audition required",url:"https://www.hkapa.edu/music/postgraduate"},
+{uni:"TWC",uniZh:"東華學院",faculty:"School of Medical & Health Sciences",name:"MSc in Medical Laboratory Science",nameZh:"醫療化驗科學碩士",degree:"MSc",mode:"Part-time",duration:"2 years",tuitionTotal:"HKD 120,000",tuitionNum:120000,appOpen:"1 Jan 2026",deadlineMain:"30 Apr 2026",deadlineLate:"N/A",ielts:"6.0",toefl:"79",otherReq:"Medical lab science degree",url:"https://www.twc.edu.hk/en/programmes/msc-mls"},
+{uni:"TWC",uniZh:"東華學院",faculty:"School of Nursing",name:"Master of Nursing",nameZh:"護理學碩士",degree:"Other",mode:"Part-time",duration:"2 years",tuitionTotal:"HKD 100,000",tuitionNum:100000,appOpen:"1 Jan 2026",deadlineMain:"30 Apr 2026",deadlineLate:"N/A",ielts:"6.0",toefl:"79",otherReq:"BN; registered nurse 1+ year",url:"https://www.twc.edu.hk/en/programmes/mn"},
+{uni:"THEi",uniZh:"高等教育科技學院",faculty:"Faculty of Science & Technology",name:"MSc in Testing and Certification",nameZh:"檢測和認證碩士",degree:"MSc",mode:"Part-time",duration:"2 years",tuitionTotal:"HKD 105,000",tuitionNum:105000,appOpen:"1 Jan 2026",deadlineMain:"31 May 2026",deadlineLate:"N/A",ielts:"6.0",toefl:"79",otherReq:"Science/engineering degree",url:"https://www.thei.edu.hk/programme/msctc"},
+{uni:"THEi",uniZh:"高等教育科技學院",faculty:"Faculty of Design & Environment",name:"MSc in Smart and Sustainable Construction",nameZh:"智慧及可持續建築碩士",degree:"MSc",mode:"Part-time",duration:"2 years",tuitionTotal:"HKD 105,000",tuitionNum:105000,appOpen:"1 Jan 2026",deadlineMain:"31 May 2026",deadlineLate:"N/A",ielts:"6.0",toefl:"79",otherReq:"Construction/engineering degree",url:"https://www.thei.edu.hk/programme/mscsc"}
+];
+function init(){populateFilters();renderPrograms(programs);updateStats();buildComparison();buildTimeline()}
+function populateFilters(){const unis=[...new Set(programs.map(p=>p.uni))].sort();const degrees=[...new Set(programs.map(p=>p.degree))].sort();const us=document.getElementById('filterUni');const ds=document.getElementById('filterDegree');unis.forEach(u=>{const o=document.createElement('option');o.value=u;o.textContent=u+' ('+programs.filter(p=>p.uni===u)[0].uniZh+')';us.appendChild(o)});degrees.forEach(d=>{const o=document.createElement('option');o.value=d;o.textContent=d;ds.appendChild(o)})}
+function getFiltered(){const s=document.getElementById('searchBox').value.toLowerCase();const u=document.getElementById('filterUni').value;const d=document.getElementById('filterDegree').value;const sort=document.getElementById('sortBy').value;let f=programs.filter(p=>{const ms=!s||[p.name,p.nameZh,p.uni,p.uniZh,p.faculty,p.degree,p.otherReq].join(' ').toLowerCase().includes(s);const mu=!u||p.uni===u;const md=!d||p.degree===d;return ms&&mu&&md});if(sort==='tuition-asc')f.sort((a,b)=>a.tuitionNum-b.tuitionNum);else if(sort==='tuition-desc')f.sort((a,b)=>b.tuitionNum-a.tuitionNum);else if(sort==='deadline')f.sort((a,b)=>new Date(a.deadlineMain)-new Date(b.deadlineMain));else if(sort==='uni')f.sort((a,b)=>a.uni.localeCompare(b.uni));else f.sort((a,b)=>a.name.localeCompare(b.name));return f}
+function renderPrograms(list){const g=document.getElementById('programsGrid');document.getElementById('resultCount').textContent=list.length+' programs found';g.innerHTML=list.map(p=>`<div class="program-card"><div class="card-header"><h3>${p.name}</h3><div class="uni-name">${p.uni} (${p.uniZh}) · ${p.faculty}</div></div><div class="card-body"><div class="card-row"><span class="card-label">Degree</span><span class="card-value"><span class="tag tag-degree">${p.degree}</span></span></div><div class="card-row"><span class="card-label">Mode</span><span class="card-value">${p.mode.split(/[&,]/).map(m=>'<span class="tag '+(m.trim().startsWith('Full')?'tag-ft':'tag-pt')+'">'+m.trim()+'</span>').join(' ')}</span></div><div class="card-row"><span class="card-label">Duration</span><span class="card-value">${p.duration}</span></div><div class="card-row"><span class="card-label">Tuition</span><span class="card-value"><strong>${p.tuitionTotal}</strong></span></div><div class="card-row"><span class="card-label">Deadline</span><span class="card-value">${p.deadlineMain}${p.deadlineLate&&p.deadlineLate!=='N/A'?' <small>(Late: '+p.deadlineLate+')</small>':''}</span></div><div class="card-row"><span class="card-label">IELTS</span><span class="card-value">${p.ielts}</span></div><div class="card-row"><span class="card-label">TOEFL</span><span class="card-value">${p.toefl}</span></div></div><div class="card-footer"><a href="${p.url}" target="_blank" rel="noopener">🔗 Official Programme Page</a></div></div>`).join('')}
+function updateStats(){document.getElementById('totalPrograms').textContent=programs.length;const fees=programs.map(p=>p.tuitionNum).filter(f=>f>0);const avg=fees.length?Math.round(fees.reduce((a,b)=>a+b,0)/fees.length):0;document.getElementById('avgTuition').textContent=avg.toLocaleString();document.getElementById('minTuition').textContent=Math.min(...fees).toLocaleString();document.getElementById('maxTuition').textContent=Math.max(...fees).toLocaleString();document.getElementById('degreeTypes').textContent=new Set(programs.map(p=>p.degree)).size}
+function buildComparison(){const unis=[...new Set(programs.map(p=>p.uni))];let html='<table class="comparison-table"><thead><tr><th>University</th><th>中文名</th><th>Programs</th><th>Min Tuition</th><th>Max Tuition</th><th>Avg Tuition</th><th>IELTS Range</th></tr></thead><tbody>';unis.forEach(u=>{const ps=programs.filter(p=>p.uni===u);const fees=ps.map(p=>p.tuitionNum);const avg=Math.round(fees.reduce((a,b)=>a+b,0)/fees.length);html+=`<tr><td><strong>${u}</strong></td><td>${ps[0].uniZh}</td><td>${ps.length}</td><td>HKD ${Math.min(...fees).toLocaleString()}</td><td>HKD ${Math.max(...fees).toLocaleString()}</td><td>HKD ${avg.toLocaleString()}</td><td>${[...new Set(ps.map(p=>p.ielts))].join(', ')}</td></tr>`});html+='</tbody></table>';document.getElementById('comparisonTable').innerHTML=html}
+function buildTimeline(){let sorted=[...programs].sort((a,b)=>new Date(a.deadlineMain)-new Date(b.deadlineMain));let html='<table class="comparison-table"><thead><tr><th>Main Deadline</th><th>University</th><th>Program</th><th>Degree</th><th>Tuition</th><th>Link</th></tr></thead><tbody>';sorted.forEach(p=>{html+=`<tr><td><strong>${p.deadlineMain}</strong></td><td>${p.uni}</td><td>${p.name}</td><td><span class="tag tag-degree">${p.degree}</span></td><td>${p.tuitionTotal}</td><td><a href="${p.url}" target="_blank">Official</a></td></tr>`});html+='</tbody></table>';document.getElementById('timelineTable').innerHTML=html}
+['searchBox','filterUni','filterDegree','sortBy'].forEach(id=>{document.getElementById(id).addEventListener(id==='searchBox'?'input':'change',()=>{renderPrograms(getFiltered())})});
+function switchTab(e,name){document.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('active'));document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));document.getElementById('tab-'+name).classList.add('active');e.target.classList.add('active')}
+function toggleTheme(){const c=document.documentElement.getAttribute('data-theme');const n=c==='dark'?'light':'dark';document.documentElement.setAttribute('data-theme',n);document.querySelector('.theme-toggle').textContent=n==='dark'?'☀️':'🌙'}
+document.addEventListener('DOMContentLoaded',init);
+</script>
+</body>
+</html>

@@ -1,0 +1,309 @@
+diff --git a/ui/src/ui/views/agents.ts b/ui/src/ui/views/agents.ts
+index 565777d85..64998d561 100644
+--- a/ui/src/ui/views/agents.ts
++++ b/ui/src/ui/views/agents.ts
+@@ -16,6 +16,14 @@ const AGENT_EMOJIS: Array<{ emoji: string; label: string }> = [
+   { emoji: "\u{1F4E1}", label: "Satellite" },
+   { emoji: "\u{1F9EC}", label: "DNA" },
+   { emoji: "\u{1F510}", label: "Locked" },
++  { emoji: "\u{1F9F2}", label: "Magnet" },
++  { emoji: "\u{1F4F1}", label: "Phone" },
++  { emoji: "\u{1F3A9}", label: "Top Hat" },
++  { emoji: "\u{1F50D}", label: "Search" },
++  { emoji: "\u{1F9EA}", label: "Test Tube" },
++  { emoji: "\u{1F4BE}", label: "Floppy Disk" },
++  { emoji: "\u{1F5A8}\u{FE0F}", label: "Printer" },
++  { emoji: "\u{1F4F7}", label: "Camera" },
+   // People & Roles
+   { emoji: "\u{1F9D9}", label: "Wizard" },
+   { emoji: "\u{1F575}\u{FE0F}", label: "Detective" },
+@@ -27,6 +35,15 @@ const AGENT_EMOJIS: Array<{ emoji: string; label: string }> = [
+   { emoji: "\u{1F9D1}\u{200D}\u{1F3EB}", label: "Teacher" },
+   { emoji: "\u{1F9B8}", label: "Superhero" },
+   { emoji: "\u{1F3C4}", label: "Surfer" },
++  { emoji: "\u{1F477}", label: "Construction" },
++  { emoji: "\u{1F9D1}\u{200D}\u{1F373}", label: "Chef" },
++  { emoji: "\u{1F9D1}\u{200D}\u{2695}\u{FE0F}", label: "Doctor" },
++  { emoji: "\u{1F9D1}\u{200D}\u{1F680}", label: "Astronaut" },
++  { emoji: "\u{1F9D1}\u{200D}\u{2696}\u{FE0F}", label: "Judge" },
++  { emoji: "\u{1F9D9}\u{200D}\u{2640}\u{FE0F}", label: "Sorceress" },
++  { emoji: "\u{1F9DD}", label: "Elf" },
++  { emoji: "\u{1F9DB}", label: "Vampire" },
++  { emoji: "\u{1F47D}", label: "Alien" },
+   // Animals
+   { emoji: "\u{1F43B}", label: "Bear" },
+   { emoji: "\u{1F98A}", label: "Fox" },
+@@ -42,6 +59,16 @@ const AGENT_EMOJIS: Array<{ emoji: string; label: string }> = [
+   { emoji: "\u{1F988}", label: "Shark" },
+   { emoji: "\u{1F41D}", label: "Bee" },
+   { emoji: "\u{1F98E}", label: "Lizard" },
++  { emoji: "\u{1F99C}", label: "Parrot" },
++  { emoji: "\u{1F43D}", label: "Pig" },
++  { emoji: "\u{1F40D}", label: "Snake" },
++  { emoji: "\u{1F986}", label: "Duck" },
++  { emoji: "\u{1F992}", label: "Giraffe" },
++  { emoji: "\u{1F98F}", label: "Rhino" },
++  { emoji: "\u{1F9A1}", label: "Badger" },
++  { emoji: "\u{1F426}", label: "Bird" },
++  { emoji: "\u{1F54A}\u{FE0F}", label: "Dove" },
++  { emoji: "\u{1F99D}", label: "Raccoon" },
+   // Nature & Elements
+   { emoji: "\u{1F525}", label: "Fire" },
+   { emoji: "\u{2744}\u{FE0F}", label: "Ice" },
+@@ -53,6 +80,14 @@ const AGENT_EMOJIS: Array<{ emoji: string; label: string }> = [
+   { emoji: "\u{1F4AB}", label: "Dizzy Star" },
+   { emoji: "\u{1F308}", label: "Rainbow" },
+   { emoji: "\u{1F340}", label: "Clover" },
++  { emoji: "\u{26C8}\u{FE0F}", label: "Storm" },
++  { emoji: "\u{1F32A}\u{FE0F}", label: "Tornado" },
++  { emoji: "\u{1F30B}", label: "Volcano" },
++  { emoji: "\u{1F4A7}", label: "Droplet" },
++  { emoji: "\u{1F343}", label: "Leaves" },
++  { emoji: "\u{1F332}", label: "Evergreen" },
++  { emoji: "\u{1F31A}", label: "New Moon" },
++  { emoji: "\u{2604}\u{FE0F}", label: "Comet" },
+   // Objects & Symbols
+   { emoji: "\u{1F4DA}", label: "Books" },
+   { emoji: "\u{1F4DD}", label: "Memo" },
+@@ -66,6 +101,18 @@ const AGENT_EMOJIS: Array<{ emoji: string; label: string }> = [
+   { emoji: "\u{1F310}", label: "Globe" },
+   { emoji: "\u{1F680}", label: "Rocket" },
+   { emoji: "\u{1F6F8}", label: "UFO" },
++  { emoji: "\u{1F4B0}", label: "Money Bag" },
++  { emoji: "\u{1F511}", label: "Key" },
++  { emoji: "\u{1F5E1}\u{FE0F}", label: "Dagger" },
++  { emoji: "\u{1F6E1}\u{FE0F}", label: "Shield" },
++  { emoji: "\u{1FA84}", label: "Magic Wand" },
++  { emoji: "\u{1F9ED}", label: "Compass" },
++  { emoji: "\u{231B}", label: "Hourglass" },
++  { emoji: "\u{1F4E6}", label: "Package" },
++  { emoji: "\u{1F3B2}", label: "Dice" },
++  { emoji: "\u{265F}\u{FE0F}", label: "Chess" },
++  { emoji: "\u{1F52F}", label: "Dotted Star" },
++  { emoji: "\u{1F9E9}", label: "Puzzle" },
+ ];
+ import type {
+   AgentIdentityResult,
+@@ -174,6 +221,21 @@ export type AgentsProps = {
+   onConfigSave: () => void;
+   onModelChange: (agentId: string, modelId: string | null) => void;
+   onModelFallbacksChange: (agentId: string, fallbacks: string[]) => void;
++  editAgentName: string;
++  editAgentWorkspace: string;
++  editAgentEmoji: string;
++  editAgentDirty: boolean;
++  editAgentSaving: boolean;
++  editAgentError: string | null;
++  onEditNameChange: (v: string) => void;
++  onEditWorkspaceChange: (v: string) => void;
++  onEditEmojiChange: (v: string) => void;
++  confirmDeleteAgentId: string | null;
++  deleteAgentInProgress: boolean;
++  deleteAgentError: string | null;
++  onDeleteStart: (agentId: string) => void;
++  onDeleteCancel: () => void;
++  onDeleteConfirm: (agentId: string) => void;
+   onChannelsRefresh: () => void;
+   onCronRefresh: () => void;
+   onSkillsFilterChange: (next: string) => void;
+@@ -384,6 +446,21 @@ export function renderAgents(props: AgentsProps) {
+                         onConfigSave: props.onConfigSave,
+                         onModelChange: props.onModelChange,
+                         onModelFallbacksChange: props.onModelFallbacksChange,
++                        editAgentName: props.editAgentName,
++                        editAgentWorkspace: props.editAgentWorkspace,
++                        editAgentEmoji: props.editAgentEmoji,
++                        editAgentDirty: props.editAgentDirty,
++                        editAgentSaving: props.editAgentSaving,
++                        editAgentError: props.editAgentError,
++                        onEditNameChange: props.onEditNameChange,
++                        onEditWorkspaceChange: props.onEditWorkspaceChange,
++                        onEditEmojiChange: props.onEditEmojiChange,
++                        confirmDeleteAgentId: props.confirmDeleteAgentId,
++                        deleteAgentInProgress: props.deleteAgentInProgress,
++                        deleteAgentError: props.deleteAgentError,
++                        onDeleteStart: props.onDeleteStart,
++                        onDeleteCancel: props.onDeleteCancel,
++                        onDeleteConfirm: props.onDeleteConfirm,
+                       })
+                     : nothing
+                 }
+@@ -557,6 +634,21 @@ function renderAgentOverview(params: {
+   onConfigSave: () => void;
+   onModelChange: (agentId: string, modelId: string | null) => void;
+   onModelFallbacksChange: (agentId: string, fallbacks: string[]) => void;
++  editAgentName: string;
++  editAgentWorkspace: string;
++  editAgentEmoji: string;
++  editAgentDirty: boolean;
++  editAgentSaving: boolean;
++  editAgentError: string | null;
++  onEditNameChange: (v: string) => void;
++  onEditWorkspaceChange: (v: string) => void;
++  onEditEmojiChange: (v: string) => void;
++  confirmDeleteAgentId: string | null;
++  deleteAgentInProgress: boolean;
++  deleteAgentError: string | null;
++  onDeleteStart: (agentId: string) => void;
++  onDeleteCancel: () => void;
++  onDeleteConfirm: (agentId: string) => void;
+ }) {
+   const {
+     agent,
+@@ -573,7 +665,23 @@ function renderAgentOverview(params: {
+     onConfigSave,
+     onModelChange,
+     onModelFallbacksChange,
++    editAgentName,
++    editAgentWorkspace,
++    editAgentEmoji,
++    editAgentDirty,
++    editAgentSaving,
++    editAgentError,
++    onEditNameChange,
++    onEditWorkspaceChange,
++    onEditEmojiChange,
++    confirmDeleteAgentId,
++    deleteAgentInProgress,
++    deleteAgentError,
++    onDeleteStart,
++    onDeleteCancel,
++    onDeleteConfirm,
+   } = params;
++  const isConfirmingDelete = confirmDeleteAgentId === agent.id;
+   const config = resolveAgentConfig(configForm, agent.id);
+   const workspaceFromFiles =
+     agentFilesList && agentFilesList.agentId === agent.id ? agentFilesList.workspace : null;
+@@ -607,33 +715,97 @@ function renderAgentOverview(params: {
+       : "";
+   const isDefault = Boolean(params.defaultId && agent.id === params.defaultId);
+ 
++  // When not dirty, inputs show live identity values; when dirty, they show tracked state
++  const displayName = editAgentDirty ? editAgentName : identityName !== "-" ? identityName : "";
++  const displayEmoji = editAgentDirty ? editAgentEmoji : identityEmoji !== "-" ? identityEmoji : "";
++  const displayWorkspace = editAgentDirty
++    ? editAgentWorkspace
++    : workspace !== "default"
++      ? workspace
++      : "";
++
+   return html`
+     <section class="card">
+-      <div class="card-title">Overview</div>
+-      <div class="card-sub">Workspace paths and identity metadata.</div>
+-      <div class="agents-overview-grid" style="margin-top: 16px;">
+-        <div class="agent-kv">
+-          <div class="label">Workspace</div>
+-          <div class="mono">${workspace}</div>
+-        </div>
+-        <div class="agent-kv">
+-          <div class="label">Identity Name</div>
+-          <div>${identityName}</div>
+-          ${identityStatus ? html`<div class="agent-kv-sub muted">${identityStatus}</div>` : nothing}
+-        </div>
+-        <div class="agent-kv">
+-          <div class="label">Default</div>
+-          <div>${isDefault ? "yes" : "no"}</div>
++      <div class="row" style="justify-content:space-between; align-items:flex-start;">
++        <div>
++          <div class="card-title">Overview</div>
++          <div class="card-sub">Workspace paths and identity metadata.</div>
+         </div>
+-        <div class="agent-kv">
+-          <div class="label">Identity Emoji</div>
+-          <div>${identityEmoji}</div>
++        ${
++          isDefault || isConfirmingDelete
++            ? nothing
++            : html`
++          <button class="btn btn--sm" style="color:var(--danger); margin-top:2px;"
++            @click=${() => onDeleteStart(agent.id)}>
++            🗑️ Delete
++          </button>
++        `
++        }
++      </div>
++
++      ${
++        isConfirmingDelete
++          ? html`
++        <div class="callout danger" style="margin-top:16px;">
++          <div style="font-weight:600; margin-bottom:8px;">Delete "${identityName !== "-" ? identityName : agent.id}"?</div>
++          <div style="font-size:13px; margin-bottom:12px; color:var(--muted);">
++            The agent's workspace and session files will be moved to trash. This cannot be undone from the UI.
++          </div>
++          ${deleteAgentError ? html`<div style="color:var(--danger); margin-bottom:8px; font-size:13px;">${deleteAgentError}</div>` : nothing}
++          <div class="row" style="gap:8px;">
++            <button class="btn danger" ?disabled=${deleteAgentInProgress}
++              @click=${() => onDeleteConfirm(agent.id)}>
++              ${deleteAgentInProgress ? "Deleting\u{2026}" : "Yes, Delete"}
++            </button>
++            <button class="btn" ?disabled=${deleteAgentInProgress} @click=${() => onDeleteCancel()}>
++              Cancel
++            </button>
++          </div>
+         </div>
+-        <div class="agent-kv">
+-          <div class="label">Skills Filter</div>
+-          <div>${skillFilter ? `${skillCount} selected` : "all skills"}</div>
++      `
++          : html`
++        <div style="margin-top:16px; display:flex; flex-direction:column; gap:12px;">
++          <label class="field">
++            <span>Name</span>
++            <input type="text" .value=${displayName}
++              placeholder="Agent name"
++              ?disabled=${editAgentSaving}
++              @input=${(e: Event) => onEditNameChange((e.target as HTMLInputElement).value)} />
++          </label>
++          <label class="field">
++            <span>Emoji</span>
++            <div style="display:flex; gap:8px; align-items:center;">
++              <div style="font-size:28px; line-height:1; width:36px; text-align:center; flex-shrink:0;">
++                ${displayEmoji || "🤖"}
++              </div>
++              <select style="flex:1;" .value=${displayEmoji}
++                ?disabled=${editAgentSaving}
++                @change=${(e: Event) => onEditEmojiChange((e.target as HTMLSelectElement).value)}>
++                ${AGENT_EMOJIS.map(
++                  ({ emoji, label }) => html`
++                  <option value=${emoji} ?selected=${displayEmoji === emoji}>${emoji} ${label}</option>
++                `,
++                )}
++              </select>
++            </div>
++          </label>
++          <label class="field">
++            <span>Workspace path</span>
++            <input type="text" .value=${displayWorkspace}
++              placeholder="${workspace}"
++              ?disabled=${editAgentSaving}
++              @input=${(e: Event) => onEditWorkspaceChange((e.target as HTMLInputElement).value)} />
++          </label>
++          ${editAgentError ? html`<div class="callout danger" style="margin-top:0;">${editAgentError}</div>` : nothing}
++          <div style="font-size:12px; color:var(--muted); display:flex; gap:10px; flex-wrap:wrap;">
++            <span>Default: ${isDefault ? "yes" : "no"}</span>
++            <span>·</span>
++            <span>Skills: ${skillFilter ? `${skillCount} selected` : "all"}</span>
++            ${identityStatus ? html`<span>·</span><span>${identityStatus}</span>` : nothing}
++          </div>
+         </div>
+-      </div>
++      `
++      }
+ 
+       <div class="agent-model-select" style="margin-top: 20px;">
+         <div class="label">Model Selection</div>
+@@ -681,10 +853,10 @@ function renderAgentOverview(params: {
+           </button>
+           <button
+             class="btn btn--sm primary"
+-            ?disabled=${configSaving || !configDirty}
++            ?disabled=${configSaving || editAgentSaving || (!configDirty && !editAgentDirty)}
+             @click=${onConfigSave}
+           >
+-            ${configSaving ? "Saving\u{2026}" : "Save"}
++            ${configSaving || editAgentSaving ? "Saving\u{2026}" : "Save"}
+           </button>
+         </div>
+       </div>

@@ -1,0 +1,20 @@
+diff --git a/ui/src/ui/app.ts b/ui/src/ui/app.ts
+index 59c09dbbb..3d23d5469 100644
+--- a/ui/src/ui/app.ts
++++ b/ui/src/ui/app.ts
+@@ -241,6 +241,15 @@ export class OpenClawApp extends LitElement {
+   @state() wizardDescription = "";
+   @state() wizardLoading = false;
+   @state() wizardResult: { name: string; emoji: string; soul: string } | null = null;
++  @state() editAgentName = "";
++  @state() editAgentWorkspace = "";
++  @state() editAgentEmoji = "";
++  @state() editAgentDirty = false;
++  @state() editAgentSaving = false;
++  @state() editAgentError: string | null = null;
++  @state() confirmDeleteAgentId: string | null = null;
++  @state() deleteAgentInProgress = false;
++  @state() deleteAgentError: string | null = null;
+   @state() agentSkillsReport: SkillStatusReport | null = null;
+   @state() agentSkillsAgentId: string | null = null;
+ 

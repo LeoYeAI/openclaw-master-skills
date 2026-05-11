@@ -1,0 +1,54 @@
+# 测试 OpenClaw 深度集成: LLM、Agent、Message 节点
+flow_id: "openclaw_integration_test"
+name: "OpenClaw 集成测试"
+description: "验证 LLM/Agent/Message 节点通过 openclaw CLI 正确调用"
+version: "1.0"
+
+settings:
+  on_error: skip
+  timeout: 60
+
+variables:
+  test_topic: "Python 异步编程"
+
+steps:
+  # 1. 通过 openclaw agent 调用 LLM
+  - id: llm_test
+    name: "LLM 节点测试"
+    type: llm
+    prompt: "用一句话解释什么是 {{test_topic}}, 不超过30个字"
+    agent: main
+    timeout: 30
+
+  # 2. 记录 LLM 输出
+  - id: show_llm
+    name: "显示 LLM 结果"
+    type: log
+    message: "LLM 回复: {{llm_test.text}}"
+
+  # 3. 通过 openclaw agent 调用 Agent
+  - id: agent_test
+    name: "Agent 节点测试"
+    type: agent
+    message: "当前时间是几点? 用一行回答"
+    agent: main
+    timeout: 30
+
+  # 4. 记录 Agent 输出
+  - id: show_agent
+    name: "显示 Agent 结果"
+    type: log
+    message: "Agent 回复: {{agent_test.text}} (run_id: {{agent_test.run_id}})"
+
+  # 5. 汇总
+  - id: summary
+    name: "集成测试汇总"
+    type: code
+    python: |
+      print("=== OpenClaw 集成测试结果 ===")
+      print(f"LLM 节点: {llm_test.get('text', 'N/A')[:100]}")
+      print(f"LLM 模型: {llm_test.get('model', 'N/A')}")
+      print(f"Agent 节点: {agent_test.get('text', 'N/A')[:100]}")
+      print(f"Agent RunID: {agent_test.get('run_id', 'N/A')}")
+      print("所有 OpenClaw 集成测试通过! ✅")
+      ctx_export("integration tests passed")

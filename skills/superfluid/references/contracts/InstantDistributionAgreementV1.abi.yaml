@@ -1,0 +1,471 @@
+# [DEPRECATED] Superfluid Instant Distribution Agreement (IDA) v1
+# One-shot token distributions to subscribers via publisher-managed indexes.
+# Superseded by GeneralDistributionAgreementV1 (GDA), which supports both
+# instant and streaming distributions through a unified pool model.
+#
+# NOTE: emits/errors mappings are traced from source code — verify against implementation.
+# Proxy/upgradability functions (castrate, updateCode, getCodeAddress, proxiableUUID)
+# are omitted — they belong to the UUPSProxiable / AgreementBase layer.
+
+meta:
+  name: InstantDistributionAgreementV1
+  version: v1
+  deprecated: true                     # use GeneralDistributionAgreementV1 instead
+  source:
+    - https://raw.githubusercontent.com/superfluid-org/protocol-monorepo/refs/heads/dev/packages/ethereum-contracts/contracts/agreements/InstantDistributionAgreementV1.sol
+    - https://raw.githubusercontent.com/superfluid-org/protocol-monorepo/refs/heads/dev/packages/ethereum-contracts/contracts/interfaces/agreements/IInstantDistributionAgreementV1.sol
+    - https://raw.githubusercontent.com/superfluid-org/protocol-monorepo/refs/heads/dev/packages/ethereum-contracts/contracts/agreements/AgreementBase.sol
+  implements: [IInstantDistributionAgreementV1, ISuperAgreement]
+  inherits: [AgreementBase]
+  deployments:
+    mainnet:
+      eth-mainnet: "0xbCF9cfA8Da20B591790dF27DE65C1254Bf91563d"
+      polygon-mainnet: "0xB0aABBA4B2783A72C52956CDEF62d438ecA2d7a1"
+      xdai-mainnet: "0x7888ac96F987Eb10E291F34851ae0266eF912081"
+      base-mainnet: "0x66DF3f8e14CF870361378d8F61356D15d9F425C4"
+      optimism-mainnet: "0xc4ce5118C3B20950ee288f086cb7FC166d222D4c"
+      arbitrum-one: "0x2319C7e07EB063340D2a0E36709B0D65fda75986"
+      bsc-mainnet: "0x594ed9Cd773584B645aC1F5B11020d3b32cDF07d"
+      avalanche-c: "0x1fA9fFe8Db73F701454B195151Db4Abb18423cf2"
+      celo-mainnet: "0x26747Fe93fAC8bF28E1e24A558a2bC7E4d9846cA"
+      scroll-mainnet: "0x4112557F0F228A18654d3C39599421DE9F61144d"
+      degenchain: "0xb19CE3e7DA9FbAf9De2526BD662A82f26421A53E"
+    testnet:
+      avalanche-fuji: "0xA44dEC7A0Dde1a56AeDe4143C1ef89cf5d956782"
+      base-sepolia: "0x9358C7dCCc6B8CA6F526311e8ac266F8C861B7ea"
+      eth-sepolia: "0x9358C7dCCc6B8CA6F526311e8ac266F8C861B7ea"
+      optimism-sepolia: "0x51BDA2C5F627d456E282257710F4A4b6Eb094A52"
+      scroll-sepolia: "0x296556422F44F19E5d216CBf98348A03BDc445E7"
+
+# == Abbreviations ==
+# ctx  — context (Superfluid call context bytes, carries msg.sender and userData)
+# IDA  — Instant Distribution Agreement
+# NFT  — Non-Fungible Token
+
+# == Glossary ==
+# publisher             — the creator and owner of an index; distributes tokens
+# subscriber            — an address holding units in an index; receives distributions
+# index                 — a distribution channel identified by (publisher, indexId) pair
+# indexId               — a uint32 chosen by the publisher to identify an index
+# indexValue            — a uint128 monotonically increasing counter; distributions are encoded as deltas
+# units                 — a subscriber's share weight in an index (uint128)
+# approved subscription — subscriber has approved; receives distributions instantly via balance delta
+# pending subscription  — subscriber has not yet approved; distributions sit in publisher's deposit
+# deposit               — tokens locked by the publisher for pending (unapproved) subscription distributions
+# claim                 — manually transfer pending distributions for an unapproved subscription
+
+# == Index Management ==
+# Publishers create indexes and distribute tokens by advancing the index value.
+# Functions with ctx are called through the Host's batchCall/forwardBatchCall.
+
+createIndex:
+  # Create a new distribution index for the publisher (ctx.msgSender).
+  # Each (token, publisher, indexId) triple is unique.
+  mutability: nonpayable
+  access: publisher
+  inputs:
+    - token: address
+    - indexId: uint32
+    - ctx: bytes
+  outputs:
+    - newCtx: bytes
+  emits: [IndexCreated]
+  errors: [IDA_INDEX_ALREADY_EXISTS]
+
+updateIndex:
+  # Set the index value directly. Must not decrease.
+  # Reverts if the publisher becomes critical after distributing.
+  notes:
+    - "Gotcha: Immediately settles distributions for approved subscribers (adjusts their static balance). For pending subscribers, the delta is added to the publisher's deposit."
+  mutability: nonpayable
+  access: publisher
+  inputs:
+    - token: address
+    - indexId: uint32
+    - indexValue: uint128     # must be >= current indexValue
+    - ctx: bytes
+  outputs:
+    - newCtx: bytes
+  emits: [IndexUpdated]
+  errors: [IDA_INDEX_DOES_NOT_EXIST, IDA_INDEX_SHOULD_GROW, IDA_INSUFFICIENT_BALANCE]
+
+distribute:
+  # Convenience wrapper around updateIndex. Advances indexValue by amount / totalUnits.
+  # Use calculateDistribution to preview the actual amount.
+  # No-ops silently if totalUnits == 0 (no subscribers).
+  notes:
+    - "Gotcha: The actual distributed amount may be less than requested due to integer division rounding (amount / totalUnits * totalUnits <= amount)."
+  mutability: nonpayable
+  access: publisher
+  inputs:
+    - token: address
+    - indexId: uint32
+    - amount: uint256
+    - ctx: bytes
+  outputs:
+    - newCtx: bytes
+  emits: [IndexUpdated]
+  errors: [IDA_INDEX_DOES_NOT_EXIST, IDA_INSUFFICIENT_BALANCE]
+
+# == Subscription Management ==
+# Subscribers approve/revoke subscriptions; publishers set units and can delete subscriptions.
+# Approved subscriptions receive distributions instantly; pending ones accumulate in the
+# publisher's deposit and must be claimed or approved to settle.
+# NOTE: Many subscription operations emit dual events — one indexed by publisher
+# (Index* variants) and one by subscriber (Subscription* variants) — because
+# Ethereum's 3-indexed-field limit prevents indexing both in a single event.
+
+approveSubscription:
+  # Approve an index subscription for ctx.msgSender.
+  # If the subscription does not yet exist, it is created with 0 units.
+  # If it exists but is pending, it settles accumulated distributions to the subscriber
+  # and transfers units from totalUnitsPending to totalUnitsApproved.
+  mutability: nonpayable
+  access: subscriber
+  inputs:
+    - token: address
+    - publisher: address
+    - indexId: uint32
+    - ctx: bytes
+  outputs:
+    - newCtx: bytes
+  emits: [IndexSubscribed, SubscriptionApproved]
+  errors: [IDA_INDEX_DOES_NOT_EXIST, IDA_SUBSCRIPTION_ALREADY_APPROVED]
+
+revokeSubscription:
+  # Revoke (unapprove) a previously approved subscription for ctx.msgSender.
+  # Moves units from totalUnitsApproved back to totalUnitsPending.
+  # Settles pending distributions to the subscriber before revoking.
+  mutability: nonpayable
+  access: subscriber
+  inputs:
+    - token: address
+    - publisher: address
+    - indexId: uint32
+    - ctx: bytes
+  outputs:
+    - newCtx: bytes
+  emits: [IndexUnsubscribed, SubscriptionRevoked]
+  errors: [IDA_INDEX_DOES_NOT_EXIST, IDA_SUBSCRIPTION_DOES_NOT_EXIST, IDA_SUBSCRIPTION_IS_NOT_APPROVED]
+
+updateSubscription:
+  # Set a subscriber's units in the publisher's index. Only the publisher can call this.
+  # If the subscription does not exist, creates it as pending (unapproved) with the given units.
+  notes:
+    - "Gotcha: Also settles any accumulated distributions before updating units."
+  mutability: nonpayable
+  access: publisher
+  inputs:
+    - token: address
+    - indexId: uint32
+    - subscriber: address
+    - units: uint128
+    - ctx: bytes
+  outputs:
+    - newCtx: bytes
+  emits: [IndexUnitsUpdated, SubscriptionUnitsUpdated]
+  errors: [IDA_ZERO_ADDRESS_SUBSCRIBER, IDA_INDEX_DOES_NOT_EXIST]
+
+deleteSubscription:
+  # Delete a subscriber's subscription entirely. Only the publisher can call this.
+  # Settles pending distributions, removes units, and terminates the agreement data.
+  notes:
+    - "Gotcha: Emits 4 events — revoke + units-zeroed for both publisher and subscriber views."
+  mutability: nonpayable
+  access: publisher
+  inputs:
+    - token: address
+    - publisher: address
+    - indexId: uint32
+    - subscriber: address
+    - ctx: bytes
+  outputs:
+    - newCtx: bytes
+  emits: [IndexUnsubscribed, SubscriptionRevoked, IndexUnitsUpdated, SubscriptionUnitsUpdated]
+  errors: [IDA_ZERO_ADDRESS_SUBSCRIBER, IDA_OPERATION_NOT_ALLOWED, IDA_INDEX_DOES_NOT_EXIST, IDA_SUBSCRIPTION_DOES_NOT_EXIST]
+
+claim:
+  # Claim pending distributions for an unapproved subscription.
+  # Can be called by anyone for any subscriber. Does not approve the subscription.
+  # No-ops (without reverting) if pendingDistribution is 0.
+  notes:
+    - "Gotcha: Only works for pending (unapproved) subscriptions. Reverts if already approved."
+  mutability: nonpayable
+  access: anyone
+  inputs:
+    - token: address
+    - publisher: address
+    - indexId: uint32
+    - subscriber: address
+    - ctx: bytes
+  outputs:
+    - newCtx: bytes
+  emits: [IndexDistributionClaimed, SubscriptionDistributionClaimed]
+  errors: [IDA_ZERO_ADDRESS_SUBSCRIBER, IDA_INDEX_DOES_NOT_EXIST, IDA_SUBSCRIPTION_DOES_NOT_EXIST, IDA_SUBSCRIPTION_ALREADY_APPROVED]
+
+# == Index Queries ==
+
+getIndex:
+  # Query the data of a distribution index.
+  # Returns exist=false (without reverting) if the index has not been created.
+  mutability: view
+  inputs:
+    - token: address
+    - publisher: address
+    - indexId: uint32
+  outputs:
+    - exist: bool
+    - indexValue: uint128
+    - totalUnitsApproved: uint128
+    - totalUnitsPending: uint128
+
+calculateDistribution:
+  # Preview the actual distribution amount and resulting new index value
+  # for a given desired amount. Useful to predict rounding before calling distribute.
+  mutability: view
+  inputs:
+    - token: address
+    - publisher: address
+    - indexId: uint32
+    - amount: uint256
+  outputs:
+    - actualAmount: uint256
+    - newIndexValue: uint128
+  errors: [IDA_INDEX_DOES_NOT_EXIST]
+
+# == Subscription Queries ==
+
+getSubscription:
+  # Query a subscription by (publisher, indexId, subscriber).
+  # Returns exist=false (without reverting) if the subscription has not been created.
+  # pendingDistribution is non-zero only for unapproved subscriptions.
+  mutability: view
+  inputs:
+    - token: address
+    - publisher: address
+    - indexId: uint32
+    - subscriber: address
+  outputs:
+    - exist: bool
+    - approved: bool
+    - units: uint128
+    - pendingDistribution: uint256
+
+getSubscriptionByID:
+  # Query a subscription by its agreement ID (keccak256 of subscription data).
+  mutability: view
+  inputs:
+    - token: address
+    - agreementId: bytes32
+  outputs:
+    - publisher: address
+    - indexId: uint32
+    - approved: bool
+    - units: uint128
+    - pendingDistribution: uint256
+  errors: [IDA_SUBSCRIPTION_DOES_NOT_EXIST]
+
+listSubscriptions:
+  # List all approved subscriptions for a subscriber.
+  # Pending (unapproved) subscriptions are not included.
+  notes:
+    - "Gotcha: Only returns approved subscriptions (those with an allocated slot)."
+  mutability: view
+  inputs:
+    - token: address
+    - subscriber: address
+  outputs:
+    - publishers: address[]
+    - indexIds: uint32[]
+    - unitsList: uint128[]
+
+# == Balance Queries ==
+
+realtimeBalanceOf:
+  # Compute the real-time IDA balance for an account.
+  # As a subscriber: sums up (currentIndexValue - snapshotIndexValue) * units
+  # across all approved subscriptions.
+  # As a publisher: returns the deposit held for pending subscriptions (owedDeposit is always 0).
+  # To get an account's actual token balance, use SuperToken.realtimeBalanceOfNow
+  # (or SuperToken.balanceOf for ERC-20 compatible, clamped to zero).
+  notes:
+    - "Gotcha: Returns only the IDA portion of the balance, not the total."
+    - "Gotcha: The time parameter is ignored — IDA distributions are instant, not time-based."
+    - "Gotcha: Gas cost scales linearly with the number of approved subscriptions — each subscription requires reading the index and computing the delta. At high subscription counts (approaching the 256 bitmap limit), balance queries can become expensive."
+  mutability: view
+  inputs:
+    - token: address
+    - account: address
+    - time: uint256             # ignored (IDA is not time-based)
+  outputs:
+    - dynamicBalance: int256    # subscriber's accumulated distribution balance
+    - deposit: uint256          # publisher's deposit for pending subscriptions
+    - owedDeposit: uint256      # always 0 for IDA
+
+# == Protocol Constants ==
+
+agreementType:
+  # Returns keccak256("org.superfluid-finance.agreements.InstantDistributionAgreement.v1")
+  mutability: pure
+  outputs:
+    - bytes32
+
+MAX_NUM_SUBSCRIPTIONS:
+  # Maximum number of approved subscriptions a subscriber can hold (256).
+  # Limited by the slots bitmap implementation (uint256 = 256 bits).
+  # More subscriptions = higher gas cost on balanceOf/realtimeBalanceOf,
+  # which iterates all approved subscriptions.
+  mutability: view
+  outputs:
+    - uint32
+
+SLOTS_BITMAP_LIBRARY_ADDRESS:
+  # Address of the SlotsBitmapLibrary used for subscription slot tracking.
+  mutability: view
+  outputs:
+    - address
+
+# == Events ==
+# NOTE: The IDA emits dual events for most subscription operations — one variant
+# indexed by publisher (Index*) for publisher-centric queries, and one indexed by
+# subscriber (Subscription*) for subscriber-centric queries. This is because
+# Ethereum limits events to 3 indexed fields, preventing both views in one event.
+
+events:
+  # -- Publisher-indexed events (Index* variants) --
+
+  IndexCreated:
+    # Emitted when a publisher creates a new index.
+    indexed:
+      - token: address
+      - publisher: address
+      - indexId: uint32
+    data:
+      - userData: bytes
+
+  IndexUpdated:
+    # Emitted when an index value is updated (via updateIndex or distribute).
+    indexed:
+      - token: address
+      - publisher: address
+      - indexId: uint32
+    data:
+      - oldIndexValue: uint128
+      - newIndexValue: uint128
+      - totalUnitsPending: uint128
+      - totalUnitsApproved: uint128
+      - userData: bytes
+
+  IndexSubscribed:
+    # Emitted when a subscriber approves a subscription. Paired with SubscriptionApproved.
+    indexed:
+      - token: address
+      - publisher: address
+      - indexId: uint32
+    data:
+      - subscriber: address
+      - userData: bytes
+
+  IndexUnsubscribed:
+    # Emitted when a subscription is revoked or deleted. Paired with SubscriptionRevoked.
+    indexed:
+      - token: address
+      - publisher: address
+      - indexId: uint32
+    data:
+      - subscriber: address
+      - userData: bytes
+
+  IndexUnitsUpdated:
+    # Emitted when a subscriber's units change. Paired with SubscriptionUnitsUpdated.
+    indexed:
+      - token: address
+      - publisher: address
+      - indexId: uint32
+    data:
+      - subscriber: address
+      - units: uint128
+      - userData: bytes
+
+  IndexDistributionClaimed:
+    # Emitted when pending distributions are claimed. Paired with SubscriptionDistributionClaimed.
+    indexed:
+      - token: address
+      - publisher: address
+      - indexId: uint32
+    data:
+      - subscriber: address
+      - amount: uint256
+
+  # -- Subscriber-indexed events (Subscription* variants) --
+
+  SubscriptionApproved:
+    # Subscriber-view of IndexSubscribed. Emitted on approveSubscription.
+    indexed:
+      - token: address
+      - subscriber: address
+    data:
+      - publisher: address
+      - indexId: uint32
+      - userData: bytes
+
+  SubscriptionRevoked:
+    # Subscriber-view of IndexUnsubscribed. Emitted on revokeSubscription and deleteSubscription.
+    indexed:
+      - token: address
+      - subscriber: address
+    data:
+      - publisher: address
+      - indexId: uint32
+      - userData: bytes
+
+  SubscriptionUnitsUpdated:
+    # Subscriber-view of IndexUnitsUpdated. Emitted on updateSubscription and deleteSubscription.
+    indexed:
+      - token: address
+      - subscriber: address
+    data:
+      - publisher: address
+      - indexId: uint32
+      - units: uint128
+      - userData: bytes
+
+  SubscriptionDistributionClaimed:
+    # Subscriber-view of IndexDistributionClaimed. Emitted on claim.
+    indexed:
+      - token: address
+      - subscriber: address
+    data:
+      - publisher: address
+      - indexId: uint32
+      - amount: uint256
+
+  # Inherited events (from AgreementBase / UUPSProxiable):
+  # CodeUpdated — emitted on proxy upgrade (uuid, codeAddress)
+  # Initialized — emitted on proxy initialization (version)
+
+# == Errors ==
+
+errors:
+  # Index operations
+  - IDA_INDEX_ALREADY_EXISTS           # index with this (publisher, indexId) already exists
+  - IDA_INDEX_DOES_NOT_EXIST           # no index found for this (publisher, indexId)
+  - IDA_INDEX_SHOULD_GROW              # new indexValue must be >= current value
+  # Distribution
+  - IDA_INSUFFICIENT_BALANCE           # publisher becomes critical after distributing
+  # Subscription operations
+  - IDA_SUBSCRIPTION_DOES_NOT_EXIST
+  - IDA_SUBSCRIPTION_ALREADY_APPROVED  # subscription already approved (or claim on approved sub)
+  - IDA_SUBSCRIPTION_IS_NOT_APPROVED   # cannot revoke a pending subscription
+  - IDA_ZERO_ADDRESS_SUBSCRIBER        # subscriber cannot be address(0)
+  - IDA_OPERATION_NOT_ALLOWED          # only publisher can delete a subscription
+  # Super App / Host
+  - AGREEMENT_BASE_ONLY_HOST           # call not routed through the Host contract
+  # SafeCast (inherited from OpenZeppelin)
+  - SafeCastOverflowedUintDowncast:
+      inputs:
+        - bits: uint8
+        - value: uint256
+  - SafeCastOverflowedUintToInt:
+      inputs:
+        - value: uint256

@@ -1,0 +1,126 @@
+# Literature Reviewer Skill - 安装配置
+# 明确声明依赖和安装要求
+
+name: literature-reviewer-skill
+version: 3.1.0
+description: 系统性学术文献回顾（Literature Survey）Skill
+
+# 必需的依赖技能
+required_skills:
+  - name: browser
+    version: ">=1.0.0"
+    description: 浏览器自动化（Playwright）
+    required: true
+    reason: 用于访问 CNKI、Web of Science 等数据库
+    
+  - name: web_search
+    version: ">=1.0.0"
+    description: 网页搜索
+    required: false
+    reason: 辅助获取文献信息（可选）
+    
+  - name: docx
+    version: ">=1.0.0"
+    description: Word 文档处理
+    required: false
+    reason: 生成 .docx 格式综述（可选）
+
+# 运行时依赖
+runtime_dependencies:
+  system:
+    - python3
+    - nodejs
+    - git
+    
+  python_packages:
+    - name: playwright
+      version: ">=1.40.0"
+      reason: 浏览器自动化控制
+      
+  node_packages:
+    - name: playwright
+      version: ">=1.40.0"
+      reason: 浏览器驱动
+
+# 权限声明
+permissions:
+  filesystem:
+    read:
+      - ./agents/
+      - ./references/
+      - ./scripts/
+      - ./examples/
+    write:
+      - ./sessions/
+      - ./output/
+      
+  network:
+    allowed_hosts:
+      - kns.cnki.net
+      - www.webofscience.com
+      - www.sciencedirect.com
+      - scholar.google.com
+      - pubmed.ncbi.nlm.nih.gov
+      - api.crossref.org
+      - doi.org
+      
+  browser:
+    actions:
+      - navigate
+      - click
+      - fill_form
+      - evaluate
+      - screenshot
+      - download
+    restrictions:
+      - "不允许访问 file:// 协议"
+      - "不允许访问 localhost/127.0.0.1"
+      - "仅允许访问声明的网络域名"
+
+# 安全配置
+security:
+  sandbox:
+    recommended: true
+    docker_support: true
+    
+  network_isolation:
+    recommended: true
+    
+  resource_limits:
+    cpu: "2.0"
+    memory: "4G"
+    max_downloads_per_session: 50
+    max_concurrent_browsers: 1
+
+# 安装步骤
+installation:
+  method: git_clone
+  url: https://github.com/stephenlzc/AI-Powered-Literature-Review-Skills.git
+  target_dir: literature-reviewer-skill
+  
+  pre_install:
+    - "检查 browser skill 是否已安装"
+    - "检查 Playwright 是否已安装"
+    
+  post_install:
+    - "创建 sessions 目录"
+    - "创建 output 目录"
+    - "设置目录权限"
+    
+  verify:
+    - "检查 SKILL.md 是否存在"
+    - "检查 agents/ 目录是否存在"
+    - "测试 browser skill 可用性"
+
+# 更新配置
+updates:
+  auto_check: true
+  channel: stable
+
+# 作者信息
+author:
+  name: stephenlzc
+  github: https://github.com/stephenlzc
+  
+# 许可证
+license: MIT-0

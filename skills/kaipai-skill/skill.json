@@ -1,0 +1,131 @@
+{
+  "name": "openclaw-kaipai-ai",
+  "version": "1.2.2",
+  "description": "Kaipai image/video processing: video files → videoscreenclear or hdvideoallinone via spawn-run-task + sessions_spawn (main session); images → eraser_watermark or image_restoration via blocking run-task only (never spawn-run-task for image tasks). Watermark removal and quality restoration. Paid API. Bypass spawn only if the host forbids sessions_spawn.",
+  "author": "one2x-ai",
+  "license": "MIT",
+  "homepage": "https://github.com/openclaw/openclaw",
+  "repository": "https://github.com/openclaw/openclaw",
+  "keywords": [
+    "image-processing",
+    "watermark-removal",
+    "image-restoration",
+    "video-restoration",
+    "kaipai",
+    "ai-image",
+    "quality-enhancement"
+  ],
+  "sbom": {
+    "files": [
+      {
+        "path": "SKILL.md",
+        "required": true,
+        "description": "Agent instruction manual — how to use the Kaipai skill"
+      },
+      {
+        "path": "README.md",
+        "required": false,
+        "description": "Human-facing install, setup, and CLI examples"
+      },
+      {
+        "path": "scripts/kaipai_ai.py",
+        "required": true,
+        "description": "Agent CLI — preflight, install-deps, run-task, query-task, spawn-run-task, last-task, history, resolve-input"
+      },
+      {
+        "path": "scripts/client.py",
+        "required": false,
+        "description": "SkillClient implementation — loaded by kaipai_ai.py; agents should not need to read"
+      },
+      {
+        "path": "scripts/ai/api.py",
+        "required": false,
+        "description": "AiApi — internal SDK; loaded by client.py"
+      },
+      {
+        "path": "scripts/feishu_send_image.py",
+        "required": false,
+        "description": "Feishu image delivery helper"
+      },
+      {
+        "path": "scripts/feishu_send_video.py",
+        "required": false,
+        "description": "Feishu video delivery helper (native media message)"
+      },
+      {
+        "path": "scripts/telegram_send_image.py",
+        "required": false,
+        "description": "Telegram image delivery helper"
+      },
+      {
+        "path": "scripts/telegram_send_video.py",
+        "required": false,
+        "description": "Telegram video delivery helper (sendVideo)"
+      },
+      {
+        "path": "docs/说明.md",
+        "required": false,
+        "description": "Chinese overview for human readers (scope, env, CLI, doc index)"
+      },
+      {
+        "path": "docs/multi-platform.md",
+        "required": false,
+        "description": "Multi-platform delivery setup (Feishu, Telegram, Discord)"
+      },
+      {
+        "path": "docs/errors-and-polling.md",
+        "required": false,
+        "description": "Polling env vars, stderr progress, timeouts, failure codes"
+      },
+      {
+        "path": "docs/im-attachments.md",
+        "required": false,
+        "description": "IM media sources and resolve-input CLI"
+      },
+      {
+        "path": "docs/feishu-send-video.md",
+        "required": false,
+        "description": "Feishu video send — cover, duration, modes"
+      }
+    ]
+  },
+  "openclaw": {
+    "emoji": "🖼️",
+    "category": "image-processing",
+    "requires": {
+      "bins": ["python3"],
+      "env": {
+        "MT_AK": {
+          "required": true,
+          "description": "Kaipai API Access Key"
+        },
+        "MT_SK": {
+          "required": true,
+          "description": "Kaipai API Secret Key"
+        }
+      }
+    },
+    "triggers": [
+      "kaipai",
+      "kaipai ai",
+      "remove watermark",
+      "eraser watermark",
+      "watermark removal",
+      "image restoration",
+      "video watermark",
+      "video restoration",
+      "super resolution",
+      "image enhancement",
+      "upscale image",
+      "upscale video",
+      "enhance video quality"
+    ],
+    "platforms": [
+      "feishu",
+      "telegram",
+      "discord",
+      "whatsapp",
+      "signal"
+    ]
+  }
+}

@@ -1,0 +1,56 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "yaml-deploy.schema.json",
+  "title": "YamlDeploy Task",
+  "description": "YAML部署任务配置",
+  "type": "object",
+  "required": ["taskCategory", "jobType", "name"],
+  "properties": {
+    "taskCategory": {
+      "type": "string",
+      "const": "Deploy"
+    },
+    "jobType": {
+      "type": "string",
+      "const": "YamlDeploy"
+    },
+    "name": {
+      "type": "string",
+      "maxLength": 100,
+      "description": "任务名称"
+    },
+    "workPath": {
+      "type": "string",
+      "description": "工作目录"
+    },
+    "sourceId": {
+      "type": "string",
+      "description": "代码源ID"
+    },
+    "clusterId": {
+      "type": "string",
+      "description": "集群ID"
+    },
+    "namespace": {
+      "type": "string",
+      "default": "default",
+      "description": "命名空间"
+    },
+    "yamlPath": {
+      "type": "string",
+      "description": "YAML文件路径"
+    },
+    "yamlContent": {
+      "type": "string",
+      "description": "YAML内容"
+    },
+    "idInTemplate": {
+      "type": "string"
+    },
+    "dependencies": {
+      "type": "array",
+      "items": { "type": "string" },
+      "default": []
+    }
+  }
+}

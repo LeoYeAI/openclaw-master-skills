@@ -1,0 +1,75 @@
+# CC_GodMode Skill - ClawHub Manifest
+# This skill is a documentation/orchestration layer only.
+# It guides the agent's workflow but does NOT execute code itself.
+
+name: cc-godmode
+version: 5.11.3
+description: "Self-orchestrating multi-agent development workflows. You say WHAT, the AI decides HOW."
+
+author:
+  name: cubetribe
+  github: https://github.com/cubetribe
+
+license: MIT
+repository: https://github.com/cubetribe/openclaw-godmode-skill
+
+# Skill type: documentation-only orchestrator
+# This package itself is docs-only (no install-time executable payload).
+# At runtime, agents following these workflows can use shell/network tools.
+type: orchestration-docs
+
+# Runtime expectations for FULL workflow usage
+runtime:
+  requires_binaries: true
+  requires_credentials: true
+  requires_network: true
+
+runtime_binaries:
+  required:
+    - bash
+    - git
+    - grep
+  optional:
+    - node
+    - npm
+    - tsc
+    - gh
+    - playwright
+    - lighthouse
+
+runtime_credentials:
+  optional:
+    - GH_TOKEN (for GitHub operations)
+    - Claude/Anthropic auth (if using Claude Code workflows)
+    - MCP server auth/config (if applicable)
+  
+# Tools referenced in documentation (for transparency)
+# These are standard OpenClaw tools, not external dependencies
+documented_tools:
+  - Read        # Standard file reading
+  - Write       # Standard file writing  
+  - Edit        # Standard file editing
+  - Bash        # Standard shell (exec)
+  - Glob        # File pattern matching
+  - Grep        # Text search
+  - WebSearch   # Built-in web search
+  - WebFetch    # Built-in URL fetching
+
+# Agent models mentioned are EXAMPLES
+# Users configure their own models in OpenClaw config
+model_examples:
+  note: "Model names (opus, sonnet, haiku) are illustrative examples. Actual models depend on user's OpenClaw configuration."
+
+# Security notes
+security:
+  install_time_executes_code: false
+  runtime_agent_executes_code: true
+  runtime_agent_network_access: true
+  file_operations: "agent-runtime only; package itself is docs"
+  
+tags:
+  - orchestration
+  - multi-agent
+  - development
+  - workflow
+  - documentation

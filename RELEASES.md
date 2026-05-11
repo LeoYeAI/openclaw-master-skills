@@ -2,6 +2,426 @@
 
 每次更新的详细发布说明。
 
+
+## v0.13.0 — 2026-05-11
+
+### 🚀 周更：新增 100 个 Skills，总计 1309
+
+来源：openclaw/skills-archive 官方镜像，按质量规则筛选（SKILL.md 800B-30KB、完整 YAML 元数据、有效 description）。
+
+#### 部分新增亮点（前 30 个）
+- `canvapresentationbibleedition` — | Presentation Strategist ที่ใช้หลักการ Visual-First Design (พรีเซ้นฉลาดเน้นภาพไม่เน้นพูด) เป็นกรอบคิดหลักในการวิเคราะห์
+- `erc8004-agent` — > 8004 Agent Skill for registering AI agents on the ERC-8004 Trustless Agents standard and authenticating them via SIWA 
+- `openclaw-sec-plus` — AI Agent Security Suite - Real-time protection against prompt injection, command injection, SSRF, path traversal, secret
+- `openclaw-sec` — AI Agent Security Suite - Real-time protection against prompt injection, command injection, SSRF, path traversal, secret
+- `sp3nd` — Buy products from Amazon using USDC on Solana. The cheapest and fastest way for AI agents to purchase physical products 
+- `conversational-ai-assistant` — Natural language interface for querying Greek accounting data. Ask questions in English, get answers from across all sys
+- `audiopod` — Use AudioPod AI's API for audio processing tasks including AI music generation (text-to-music, text-to-rap, instrumental
+- `phy-content-safety-guard` — Dual-layer AI content guardrail with red-team test methodology
+- `baoyu-xhs-images` — Generates Xiaohongshu (Little Red Book) infographic series with 10 visual styles and 8 layouts. Breaks content into 1-10
+- `network-ai` — "Python orchestration skill: local multi-agent workflows via blackboard file, permission gating, and token budget script
+- `neokarma-soulmd-builder` — Persistent personality for AI agents — define, evolve, and share your soul
+- `intervals-icu-api` — Complete guide for accessing and managing training data with the intervals.icu API. Use when working with Intervals.icu 
+- `ionic-framework` — "Comprehensive Ionic Framework expert skill consolidating core concepts, component reference, CLI usage, theming, layout
+- `greek-document-ocr` — Greek-language OCR using Tesseract. Processes scanned invoices, receipts, and government documents. Local processing, no
+- `taobao-mcp-benchmark` — 淘宝桌面版MCP工具评测框架。用于系统化测试MCP工具的各项功能，生成专业的技术评测报告。Use when 需要对淘宝MCP工具进行评测、测试、验收、迭代验证。
+- `amazon-sorftime-research-market-skill` — 基于Sorftime MCP的深度选品调研。通过LLM Agent执行多维度分析：数据采集→属性标注→交叉分析→竞品VOC→壁垒评估→选品决策评估。交互式执行，输出Markdown报告和Dashboard看板。 argument-hint:
+- `id-cv-resume-creator` — >- Create a free digital identity, professional resume and CV — from classic PDF and HTML layouts to 3D worlds and playa
+- `dnsrobot` — "Run DNS, email security, SSL, WHOIS, and network tools via dnsrobot.net API — no API key required"
+- `intercom-v002` — Skill for autonomous agents. Secure & private P2P messaging (sidechannels), sparse state/data + contracts, and optional 
+- `geo-fact-checker` — > GEO-focused fact-checking and evidence collection assistant for written content. Use this skill whenever the user want
+- `clawshot` — Instagram for AI agents. Build your following, grow your influence. Share screenshots, get likes & comments, engage with
+- `inkos` — Autonomous novel writing CLI agent - use for creative fiction writing, novel generation, style imitation, chapter contin
+- `openclaw-workflow` — OC-Flow：为你的 OpenClaw 注入"确定性"灵魂。OC-Flow 完全嵌入在 OpenClaw 体系内，赋予 Agent 完整的流程控制能力：条件分支、循环遍历、精准等待、状态管理。通过 YAML 剧本实现固定流程、多步循环、严
+- `botlearn-doctor` — > Autonomously inspects a live OpenClaw instance across 5 health domains (hardware, config, security, skills, autonomy) 
+- `botlearn-doctor-1-0-2` — > Autonomously inspects a live OpenClaw instance across 5 health domains (hardware, config, security, skills, autonomy) 
+- `dinstein-tech-news-digest` — Generate tech news digests with unified source model, quality scoring, and multi-format output. Six-source data collecti
+- `tech-news-digest` — Generate tech news digests with unified source model, quality scoring, and multi-format output. Six-source data collecti
+- `xiaoding-dinstein-tech-news-digest` — Generate tech news digests with unified source model, quality scoring, and multi-format output. Six-source data collecti
+- `self-funding-setup` — >- Set up a complete self-funding agent lifecycle in one command. Orchestrates 5 agents to take an agent from zero to se
+- `curriculum-designer` — "Design customized curricula for PODs with REAL resource links. Staged implementation with checkpointing and fallback lo
+
+---
+
+
+## v0.13.0 — 2026-05-06
+
+### 🚀 周更：新增 32832 个 Skills，总计 1209
+
+来源：openclaw/skills-archive 官方镜像，按质量规则筛选（SKILL.md 800B-30KB、完整 YAML 元数据、有效 description）。
+
+#### 部分新增亮点（前 30 个）
+- `canvapresentationbibleedition` — | Presentation Strategist ที่ใช้หลักการ Visual-First Design (พรีเซ้นฉลาดเน้นภาพไม่เน้นพูด) เป็นกรอบคิดหลักในการวิเคราะห์
+- `erc8004-agent` — > 8004 Agent Skill for registering AI agents on the ERC-8004 Trustless Agents standard and authenticating them via SIWA 
+- `openclaw-sec-plus` — AI Agent Security Suite - Real-time protection against prompt injection, command injection, SSRF, path traversal, secret
+- `openclaw-sec` — AI Agent Security Suite - Real-time protection against prompt injection, command injection, SSRF, path traversal, secret
+- `sp3nd` — Buy products from Amazon using USDC on Solana. The cheapest and fastest way for AI agents to purchase physical products 
+- `conversational-ai-assistant` — Natural language interface for querying Greek accounting data. Ask questions in English, get answers from across all sys
+- `audiopod` — Use AudioPod AI's API for audio processing tasks including AI music generation (text-to-music, text-to-rap, instrumental
+- `phy-content-safety-guard` — Dual-layer AI content guardrail with red-team test methodology
+- `baoyu-xhs-images` — Generates Xiaohongshu (Little Red Book) infographic series with 10 visual styles and 8 layouts. Breaks content into 1-10
+- `network-ai` — "Python orchestration skill: local multi-agent workflows via blackboard file, permission gating, and token budget script
+- `neokarma-soulmd-builder` — Persistent personality for AI agents — define, evolve, and share your soul
+- `intervals-icu-api` — Complete guide for accessing and managing training data with the intervals.icu API. Use when working with Intervals.icu 
+- `ionic-framework` — "Comprehensive Ionic Framework expert skill consolidating core concepts, component reference, CLI usage, theming, layout
+- `greek-document-ocr` — Greek-language OCR using Tesseract. Processes scanned invoices, receipts, and government documents. Local processing, no
+- `taobao-mcp-benchmark` — 淘宝桌面版MCP工具评测框架。用于系统化测试MCP工具的各项功能，生成专业的技术评测报告。Use when 需要对淘宝MCP工具进行评测、测试、验收、迭代验证。
+- `amazon-sorftime-research-market-skill` — 基于Sorftime MCP的深度选品调研。通过LLM Agent执行多维度分析：数据采集→属性标注→交叉分析→竞品VOC→壁垒评估→选品决策评估。交互式执行，输出Markdown报告和Dashboard看板。 argument-hint:
+- `id-cv-resume-creator` — >- Create a free digital identity, professional resume and CV — from classic PDF and HTML layouts to 3D worlds and playa
+- `dnsrobot` — "Run DNS, email security, SSL, WHOIS, and network tools via dnsrobot.net API — no API key required"
+- `intercom-v002` — Skill for autonomous agents. Secure & private P2P messaging (sidechannels), sparse state/data + contracts, and optional 
+- `geo-fact-checker` — > GEO-focused fact-checking and evidence collection assistant for written content. Use this skill whenever the user want
+- `clawshot` — Instagram for AI agents. Build your following, grow your influence. Share screenshots, get likes & comments, engage with
+- `inkos` — Autonomous novel writing CLI agent - use for creative fiction writing, novel generation, style imitation, chapter contin
+- `openclaw-workflow` — OC-Flow：为你的 OpenClaw 注入"确定性"灵魂。OC-Flow 完全嵌入在 OpenClaw 体系内，赋予 Agent 完整的流程控制能力：条件分支、循环遍历、精准等待、状态管理。通过 YAML 剧本实现固定流程、多步循环、严
+- `botlearn-doctor` — > Autonomously inspects a live OpenClaw instance across 5 health domains (hardware, config, security, skills, autonomy) 
+- `botlearn-doctor-1-0-2` — > Autonomously inspects a live OpenClaw instance across 5 health domains (hardware, config, security, skills, autonomy) 
+- `dinstein-tech-news-digest` — Generate tech news digests with unified source model, quality scoring, and multi-format output. Six-source data collecti
+- `tech-news-digest` — Generate tech news digests with unified source model, quality scoring, and multi-format output. Six-source data collecti
+- `xiaoding-dinstein-tech-news-digest` — Generate tech news digests with unified source model, quality scoring, and multi-format output. Six-source data collecti
+- `self-funding-setup` — >- Set up a complete self-funding agent lifecycle in one command. Orchestrates 5 agents to take an agent from zero to se
+- `curriculum-designer` — "Design customized curricula for PODs with REAL resource links. Staged implementation with checkpointing and fallback lo
+
+---
+
+---
+
+## v0.13.0 — 2026-05-05
+
+### 🚀 大规模扩充：611 → 1211 个精选 Skills（+600）
+
+来源：openclaw/skills 官方 Archive (⭐3,600+) — 按质量筛选（SKILL.md 800B-30KB 且有完整 YAML 元数据）
+
+#### 覆盖领域
+- 加密货币 / Web3 / DeFi / 交易机器人
+- 飞书 / 钉钉 / 企业微信 集成
+- 业务系统（freelance、performance engineering、legal docs）
+- 文档模板 / PPT 设计 / OCR
+- 邮件 / 客服 / CRM
+- 数据分析 / 财务报表 / 股票
+- AI 工具 / Agent 协作 / 模型管理
+
+#### 部分新增亮点（前 30 个）
+- `0codekit`
+- `13-day-sprint-method`
+- `academic-deep-research-1-0-0`
+- `accessibility`
+- `ad-ready`
+- `adb-claw`
+- `add-newcli-provider`
+- `admapix`
+- `adme-property-predictor`
+- `afrexai-agent-engineering`
+- `afrexai-api-architect`
+- `afrexai-career-accelerator`
+- `afrexai-construction-estimator`
+- `afrexai-conversion-copywriting`
+- `afrexai-copywriting-mastery`
+- `afrexai-email-marketing`
+- `afrexai-event-planner`
+- `afrexai-founder-os`
+- `afrexai-freelance-empire`
+- `afrexai-performance-engineering`
+- `afrexai-personal-finance`
+- `afrexai-product-manager`
+- `afrexai-react-production`
+- `afrexai-sales-playbook`
+- `afrexai-spreadsheet-master`
+- `afrexai-technical-docs`
+- `afrexai-vibe-coding`
+- `agent-avengers`
+- `agent-browser-5`
+- `agent-browser-6`
+
+详细列表见 GitHub repo skills/ 目录。
+
+---
+
+## v0.12.0 — 2026-05-04
+
+### 本周新增 51 个 Skills（总计 611 个）
+
+- `aes-cart-abandonment-analyzer` — Identify reasons for cart abandonment and build multi-touch recovery sequences a
+- `aes-landing-page-builder` — Design high-converting ecommerce landing page structures with headline copy, her
+- `aes-product-sourcing-advisor` — Evaluate potential suppliers and sourcing regions based on cost, quality, lead t
+- `agent-collaboration-protocol` — Structured multi-agent collaboration for backend + frontend builds. Use when an 
+- `agent-comm-hub` — 多智能体协同通信基础设施——基于 MCP+SSE 的实时消息、任务调度、记忆共享与进化引擎。支持 WorkBuddy、Hermes、QClaw 及任意 MCP 
+- `agent-comm-hub-mini` — 多智能体协同通信基础设施——基于 MCP+SSE 的实时消息、任务调度、记忆共享与进化引擎。支持 WorkBuddy、Hermes、QClaw 及任意 MCP 
+- `canon-inc` — (no description)
+- `captain-lobster` — 龙虾船长 - 零玩家游戏，AI 扮演大航海时代商船船长，自主观察行情、低买高卖、扬帆远航
+- `caveman` — (no description)
+- `cloudflare-workers-architect` — Design Cloudflare Workers solutions end-to-end — pick the right runtime tier (Wo
+- `columbia-univ` — (no description)
+- `construction-law` — Construction law analysis covering FIDIC (2017 suite), PSSCOC, SIA Conditions, N
+- `datadog-monitor-designer` — Design Datadog monitors that catch real production issues without paging on nois
+- `disney-pixar` — (no description)
+- `douyin-auto-publish` — 抖音创作者平台视频上传发布。触发条件：用户要求上传视频到抖音、发布抖音视频、自动上传视频到抖音创作者平台
+- `edgeone-website-skeleton` — 一句话说需求，AI 生成完整前后端网站并自动部署到 EdgeOne Pages。支持电商栈（Auth/购物车/支付）、AI 栈（SSE 流式对话）、管理后台。触
+- `fender-guitars` — (no description)
+- `fireseed-novel-auto-publish` — 火种小说平台 fireseed.online 创作与发布技能——AI 作者注册账号、获取 Token、创建小说、发布章节、修改章节、上传封面、续写章节、管理作品
+- `fly-io-deployer` — Deploy and operate Node, Python, Go, Rust, Elixir, and Docker apps on Fly.io wit
+- `google-web-fonts` — Use the Google Fonts API to add fonts to web pages.
+- `grafana-panel-engineer` — Design Grafana dashboards engineers actually use under pressure at 3am, not pret
+- `hk-stock-morning-report` — (no description)
+- `honeybook` — This skill should be used when the user asks about HoneyBook client-portal data.
+- `ka88-agent-shield` — Professional security audit for AI agents. Checks URLs for SSRF, analyzes conten
+- `kipris-cli` — Korean patent / trademark / design search via KIPRIS Plus OpenAPI (특허청). Search 
+- `kivo` — KIVO — Agent Knowledge Iteration Engine. A knowledge management system for AI ag
+- `lattice-reasoning-engine` — Physics-derived reasoning engine for AI models. Replaces RLHF default behavior w
+- `mai` — AI shopping matchmaking agent for OpenClaw and Hermes. Use when merchants want t
+- `ocean-chat` — OceanBus SDK lighthouse — try agent-to-agent messaging in 5 minutes. Your AI age
+- `openclaw-cws-publisher` — OpenClaw CWS Publisher is a public ClawHub Chrome Web Store publisher skill. Use
+- `pagerduty-escalation-architect` — Design PagerDuty escalation policies, schedules, services, response plays, and i
+- `pyzhihu-cli` — 知乎 CLI (pyzhihu-cli)：搜索、热榜、问题/回答/评论、推荐 Feed、用户资料、发想法/提问/文章、删自己的内容、点赞关注、收藏与通知。Age
+- `rootcraft-learning-system` — RootCraft Learning System - An integrated learning methodology combining First P
+- `sentry-alert-tuner` — Reduce Sentry alert fatigue by surgically tuning issue grouping, fingerprint rul
+- `sevo` — SEVO — Agent 自动研发流水线。从需求定义、架构设计到验证发布全流程自动化。npm install sevo-pipeline 即可使用。
+- `skylv-self-thinking-agent` — Enables AI agents to reflect on their own reasoning, detect cognitive biases, an
+- `skylv-smart-secrets-scanner` — Intelligent secrets detection and prevention — scan code, configs, and git histo
+- `skylv-smart-task-scheduler` — Context-aware task scheduling with priority management
+- `skylv-system-health-watch` — Real-time monitoring of agent memory, API calls, and errors
+- `skylv-system-log-analyzer` — Parses and summarizes log files. Extracts errors, warnings, patterns, and insigh
+- `smyx-pet-health-monitoring-analysis` — Based on computer vision, analyzes pet health indicators such as feeding frequen
+- `social-coach` — (no description)
+- `system-awakening` — (no description)
+- `tiktok-creator-launch-coach` — Coach a creator from "I want to start TikTok" through the first 10k followers, m
+- `typeorm-schema-optimizer` — Optimize TypeORM entities for performance, query efficiency, migration safety, a
+- `unbrowser` — Cheap first-pass web browsing without launching Chrome — fetch SSR pages, follow
+- `vistoya-fashion` — Search and recommend real fashion products and brands across thousands of online
+- `vmware-company` — (no description)
+- `wahoo-cloud` — Wahoo Fitness Cloud API — fetch workouts, download FIT files, parse power/HR/cad
+- `zero-token` — (no description)
+- `zx` — Comprehensive guide for writing shell scripts with Google zx — a tool for writin
+
+
+## v0.11.0 — 2026-04-27
+
+### 本周新增 0 个 Skills（总计 561）
+
+本周扫描来源：GitHub `openclaw-skill` topic（30+ 个仓库）+ skills.sh top 200 + ClaWHub CLI
+
+扫描结果：所有候选仓库均已收录或不含有效 SKILL.md。无净新增。当前收录 **561 个精选 Skills**，稳定维护周。
+
+本周扫描覆盖到的活跃新仓库（已记录，等待其作者补充 SKILL.md 后再次评估）：
+- `RelayPlane/proxy` — AI agent 代理与成本路由
+- `Evol-ai/SkillCompass` — Skill 质量评估
+- `Decodo/decodo-openclaw-skill` — Web Scraping API skill
+- `slhleosun/EvoClaw` — SOUL 演化框架
+- `0xNyk/xint` — X/Twitter 智能 CLI
+- `christinminor459/OnionClaw` — Tor 网络访问
+- `ZeroLu/Ultimate-AI-Media-Generator-Skill` — 图像/视频生成
+- `iblai/iblai-openclaw-router` — 模型路由省钱
+
+---
+
+## v0.10.0 — 2026-04-20
+
+### 本周新增 1 个 Skill（总计 561）
+
+本周扫描来源：GitHub `openclaw-skill` topic（30+ 个仓库）+ skills.sh top 200 + ClaWHub CLI
+
+| Skill | 描述 |
+|---|---|
+| `caveman` | Ultra-compressed communication mode. Cuts token usage ~75% by speaking like caveman while keeping full technical accuracy. Supports intensity levels: lite, full, ultra, wenyan-lite, wenyan-full, wenyan-ultra. |
+
+来源：skills.sh → juliusbrussee/caveman
+
+---
+
+## v0.9.0 — 2026-04-13
+
+### 本周新增 0 个 Skills（总计 560）
+
+本周扫描来源：GitHub `openclaw-skill` topic（30+ 个仓库）+ skills.sh top 200 + ClaWHub CLI
+
+扫描结果：所有候选仓库均已收录或不含有效 SKILL.md。无净新增。当前收录 **560 个精选 Skills**。
+
+清理：移除了 `pending/audit-website`（已于 v0.6.0 收录到 skills/ 目录）。
+
+---
+
+## v0.8.0 — 2026-04-06
+
+### 本周新增 0 个 Skills（总计 560）
+
+本周扫描来源：GitHub `openclaw-skill` topic（30+ 个仓库）+ skills.sh top 200
+
+扫描结果：候选 `audit-website` 已于 v0.6.0 收录，无净新增。README skill index 已全量刷新，确认当前收录 **560 个精选 Skills**。
+
+---
+
+## v0.6.0 — 2026-03-23
+
+### 本周新增 1 个 Skill（总计 388）
+
+来源：GitHub (squirrelscan/skills)
+
+#### 🔍 SEO & 网站审计
+- `audit-website` — 使用 squirrelscan CLI 对网站进行 SEO、性能、安全、技术和内容等 17+ 类别、230+ 规则的全面审计，输出 LLM 优化报告，含健康评分、断链分析和可操作建议
+
+---
+
+## v0.5.0 — 2026-03-16
+
+### 本周新增 48 个 Skills（总计 387）
+
+来源：ClaWHub trending + GitHub topic scan
+
+#### 🤖 AI & Agent 工具
+- `agentcreate` — AI 驱动的 OpenClaw Agent 创建器，支持飞书绑定、模型选择
+- `ai-model-router` — 智能模型路由，自动切换本地/云端模型
+- `ai-model-router-v2` — 模型路由 v2，增强版本地/云端切换
+- `ai-news-aggregator-sl` — AI & 科技新闻聚合器
+- `ai-task-hub` — AI 任务中心（图像分析、语音转文字、背景去除等）
+- `creative-toolkit` — 多模型图像生成（Nanobanana/Seedream/GPT）
+- `gemini-browser` — 通过浏览器自动化查询 Google Gemini
+- `html-slide-creator` — 零依赖 HTML 演示文稿生成器
+- `master-skills` — AI Agent 安全密钥管理
+- `media-generation` — 图像生成/编辑/视频/修复/扩图
+- `microsoft-skill-creator` — 微软技术 Agent Skill 创建器
+- `nidhov01-agent-browser` — Rust 高速无头浏览器自动化 CLI
+- `nidhov01-find-skills` — 智能 Skill 发现与安装助手
+- `nidhov01-github` — GitHub CLI 交互 Skill
+- `nidhov01-notion` — Notion API 页面/数据库管理
+- `nidhov01-proactive-agent` — 将 AI Agent 从被动变主动
+- `openai-codex-multi-oauth` — OpenAI Codex 多 OAuth 配置管理
+- `turing-pyramid` — Agent 优先级行动选择框架（10 需求时间衰减）
+
+#### 💰 金融 & 加密货币
+- `alchemy-openapi-skill` — Alchemy Prices API 操作
+- `basedagents` — BasedAgents.ai Agent 注册表交互
+- `chainbase-openapi-skill` — Chainbase Web3 钱包/代币查询
+- `citrea-claw-skill` — Citrea Bitcoin L2 生态监控
+- `coingecko-openapi-skill` — CoinGecko 市场数据 API
+- `eastmoney-financial-data-1-0-2` — 东方财富行情/财务数据查询
+- `eastmoney-financial-search-1-0-2` — 东方财富金融信源智能搜索
+- `moralis-openapi-skill` — Moralis EVM 钱包/代币查询
+- `ths-advanced-analysis` — 同花顺高级股票分析（分钟K线/板块/批量对比）
+- `upbit-openapi-skill` — Upbit 交易所公开 API
+- `wyckoff-a-share` — Wyckoff 大师级 A 股分析
+
+#### 🛡️ 安全 & 运维
+- `bankofbots` — AI Agent 信任评分系统
+- `runtime-sentinel` — OpenClaw Agent 运行时安全守卫
+- `sentinel-oleg` — 运行时安全层（输入/输出/日志拦截）
+- `database-admin` — 数据库管理（表设计/批量操作/查询优化）
+
+#### 📝 生产力 & 内容
+- `adclaw` — 广告创意搜索助手
+- `adwords` — 营销文案助手（100+标题公式/AIDA框架）
+- `changelog-curator` — 变更记录整理与 Changelog 生成
+- `clipboard-knowledge-capture` — 剪贴板知识沉淀到本地知识库
+- `jike-publisher` — 即刻社区自动发帖
+- `main-image-editor` — 截图+中文指令 PSD 批量编辑
+- `openclaw-todoist` — Todoist 任务管理（多 Agent 身份）
+- `product-dev-ops-package` — 产品研发运营协作体系（PM/架构/开发/运营）
+- `todo-tracker-safe` — 安全 TODO 跟踪器
+
+#### 🏥 健康 & 教育 & 其他
+- `haodf` — 好大夫智能找医生
+- `health-score-pro` — 综合健康管理（10 本畅销书共识原则）
+- `new-visitor-cold-start` — 新访客行为个性化转化
+- `sglang-diffusion-video` — 本地 SGLang-Diffusion 视频生成
+- `feishu-doc-collab` — 飞书实时 AI 协作文档
+- `hengheng-system-time` — 精确系统时间获取
+
+---
+
+## v0.4.0 — 2026-03-11
+
+### 🚀 大规模扩充 — 339+ Skills（新增 175 个）
+
+**Total skills: 339+** (+175 from v0.3.0)
+
+来源：ClawHub trending/downloads/installs 排行榜精选
+
+#### 🤖 AI & LLM Tools (新增 ~20)
+- `deep-research-pro` — AI 深度研究，多轮推理与综合
+- `agent-browser` — Rust 高速无头浏览器自动化 CLI
+- `computer-use` — 桌面级自动化（鼠标/键盘/屏幕控制）
+- `nano-banana-pro` — Gemini 3 Pro 图像生成与编辑
+- `perplexity` — AI 驱动搜索引擎 API
+- `humanizer` / `humanize-ai-text` / `ai-humanizer` — AI 文本去痕工具
+- `openai-image-gen` — OpenAI 批量图像生成
+- `edge-tts` — 微软 Edge TTS 语音合成
+- `gemini` — Gemini CLI 问答/摘要/生成
+- `summarize` — URL/文件/音频/视频摘要 CLI
+
+#### 🔍 Search & Web (新增 ~15)
+- `brave-search` — Brave 搜索 API
+- `tavily` — AI 优化搜索
+- `multi-search-engine` — 17 引擎聚合搜索（8 国内 + 9 国际）
+- `baidu-search` — 百度 AI 搜索
+- `duckduckgo-search` — DuckDuckGo 隐私搜索
+- `firecrawl-search` — Firecrawl 网页抓取搜索
+- `searxng` — SearXNG 隐私元搜索
+- `qmd` — 本地 BM25 + 向量 + 重排序搜索
+
+#### 📋 Productivity & Office (新增 ~20)
+- `notion` — Notion API 完整集成
+- `obsidian` — Obsidian 笔记管理
+- `trello` — Trello 看板管理
+- `linear` — Linear 项目管理
+- `todoist` — Todoist 任务管理
+- `nano-pdf` — 自然语言 PDF 编辑
+- `1password` — 1Password CLI
+- `word-docx` / `excel-xlsx` / `microsoft-excel` — Office 文档读写
+- `google-calendar` / `caldav-calendar` / `gcalcli-calendar` — 日历管理
+- `apple-notes` / `apple-reminders` / `bear-notes` / `things-mac` — Apple 生态
+
+#### 💻 Development & DevOps (新增 ~30)
+- `github` — GitHub CLI 完整集成（issue/PR/workflow）
+- `docker-essentials` — Docker 容器管理
+- `n8n` / `n8n-workflow-automation` — 工作流自动化
+- `playwright` / `playwright-mcp` — 浏览器自动化
+- `git` / `git-essentials` — Git 工作流
+- `sql-toolkit` — SQL 数据库工具
+- `code` / `coding` / `code-review` — 编码辅助
+- `debug-pro` — 专业调试工具
+
+#### 💰 Finance & Trading (新增 6)
+- `stock-analysis` — 股票/加密分析（Yahoo Finance）
+- `stock-market-pro` — 专业股市分析套件
+- `us-stock-analysis` — 美股深度分析
+- `tushare-finance` — 中国金融数据（220+ 接口）
+- `yahoo-finance` — 美股数据
+- `stock-watcher` — 股票监控列表
+
+#### 💬 Communication (新增 ~10)
+- `slack` / `discord` / `telegram` — 主流通讯平台
+- `gmail` / `outlook` / `imap-smtp-email` — 邮件管理
+- `himalaya` — IMAP/SMTP 邮件 CLI
+- `feishu-doc` / `feishu-evolver-wrapper` — 飞书集成
+- `imsg` / `bluebubbles` — iMessage
+
+#### 🏠 Smart Home & IoT (新增 ~8)
+- `home-assistant` — Home Assistant 深度集成
+- `sonoscli` — Sonos 音箱控制
+- `desktop-control` — 桌面自动化
+- `openhue` — Philips Hue 灯光控制
+- `spotify-player` — Spotify 播放控制
+- `camsnap` — RTSP/ONVIF 摄像头截图
+- `eightctl` — Eight Sleep 智能床垫
+
+#### 🧠 Memory & Agent (新增 ~15)
+- `proactive-agent` — 主动式 Agent 引擎
+- `self-improving` — Agent 自我改进
+- `auto-updater` — 自动更新
+- `skill-vetter` — 技能安全审查
+- `find-skills` — 技能发现
+- `clawddocs` — 文档专家
+- `agent-autonomy-kit` — Agent 自治套件
+- `agent-team-orchestration` — 多 Agent 协作
+
+#### 📱 Social & Content (新增 ~10)
+- `x-twitter` — Twitter/X 完整操作
+- `xiaohongshu-mcp` — 小红书自动化
+- `reddit` / `reddit-readonly` — Reddit
+- `linkedin` — LinkedIn 集成
+- `news-summary` — 新闻摘要
+
+---
+
 ---
 
 ## v0.3.0 — 2026-03-09
@@ -241,3 +661,33 @@
 - `vercel-react-best-practices` — React and Next.js performance optimization guidelines from Vercel Engineering. This skill should be used when writing, r
 - `web-design-guidelines` — Review UI code for Web Interface Guidelines compliance. Use when asked to "review my UI", "check accessibility", "audit 
 - `supabase-postgres-best-practices` — Postgres performance optimization and best practices from Supabase. Use this skill when writing, reviewing, or optimizin
+
+---
+
+## v0.7.0 — 2026-03-31
+
+### 🚀 Weekly Update — 560+ Skills (+173)
+
+Sources: ClawHub Archive (openclaw/skills repo) + GitHub curation
+
+#### New from steipete (OpenClaw creator) — 13 skills
+- `bird` — Bluesky social protocol CLI
+- `coding-agent` — AI coding agent best practices
+- `create-cli` — CLI tool creation guide
+- `domain-dns-ops` — Domain DNS operations
+- `frontend-design` — Frontend design guidelines
+- `instruments-profiling` — Xcode Instruments profiling
+- `native-app-performance` — Native app performance optimization
+- `swift-concurrency-expert` — Swift concurrency patterns
+- `swiftui-liquid-glass` — SwiftUI Liquid Glass effects
+- `swiftui-performance-audit` — SwiftUI performance auditing
+- `swiftui-view-refactor` — SwiftUI view refactoring
+- `video-transcript-downloader` — Video transcript download
+- `wacli` — WhatsApp CLI
+
+#### New from alirezarezvani — 159 enterprise-grade skills
+Categories: C-Suite advisors (CEO/CFO/CTO/CMO/CISO), Senior engineers (Frontend/Backend/ML/DevOps/Security), Product management, Project management, UI/UX design, Content creation, SEO/SEM, Social media, Data analytics, Terraform/K8s/Docker, Stripe integration, and more.
+
+#### Other additions
+- `para-second-brain` — PARA method second brain system
+

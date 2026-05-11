@@ -1,0 +1,61 @@
+# Governance selectors — computed from @sfpro/sdk ABI
+
+functions:
+  authorizeAppFactory(address,address):                       0x8b93b3f5
+  batchChangeSuperTokenAdmin(address,address[],address[]):    0xc9615a98
+  batchUpdateSuperTokenLogic(address,address[]):              0x42148deb
+  batchUpdateSuperTokenLogic(address,address[],address[]):    0x870299c0
+  batchUpdateSuperTokenMinimumDeposit(address,address[],uint256[]): 0x21964473
+  castrate():                                                 0x9903ad38
+  changeSuperTokenAdmin(address,address,address):             0x256b5173
+  clearAppRegistrationKey(address,address,string):            0x948eda5e
+  clearConfig(address,address,bytes32):                       0x640b6cc9
+  clearPPPConfig(address,address):                            0x01a06b97
+  clearRewardAddress(address,address):                        0xe447cc1d
+  clearSuperTokenMinimumDeposit(address,address):             0x8ecbd87b
+  disableTrustedForwarder(address,address,address):           0x7dce4f81
+  enableTrustedForwarder(address,address,address):            0xab846f1a
+  getCodeAddress():                                           0x50d75d25
+  getConfigAsAddress(address,address,bytes32):                0x8369a0f1
+  getConfigAsUint256(address,address,bytes32):                0x80f70cba
+  getPPPConfig(address,address):                              0x45228235
+  getRewardAddress(address,address):                          0x19df62ab
+  getSuperTokenMinimumDeposit(address,address):               0x8a7ff2f7
+  isAuthorizedAppFactory(address,address):                    0x8abe04e9
+  isTrustedForwarder(address,address,address):                0xf047a2d9
+  owner():                                                    0x8da5cb5b
+  proxiableUUID():                                            0x52d1902d
+  registerAgreementClass(address,address):                    0xcadf8f85
+  renounceOwnership():                                        0x715018a6
+  replaceGovernance(address,address):                         0x44864b25
+  setAppRegistrationKey(address,address,string,uint256):      0xd099b6a0
+  setConfig(address,address,bytes32,address):                 0x78707cb8
+  setConfig(address,address,bytes32,uint256):                 0xf79a8e63
+  setPPPConfig(address,address,uint256,uint256):              0x0086d555
+  setRewardAddress(address,address,address):                  0x32552908
+  setSuperTokenMinimumDeposit(address,address,uint256):       0x7f0558e4
+  transferOwnership(address):                                 0xf2fde38b
+  unauthorizeAppFactory(address,address):                     0x25c955c3
+  updateCode(address):                                        0x46951954
+  updateContracts(address,address,address[],address,address): 0x8e12552f
+  verifyAppRegistrationKey(address,address,string):           0x11cf00f1
+
+events:
+  AppFactoryAuthorizationChanged(address,address,bool):       0x8bfde939e79b7e6c603d67aa576e5b75a3f370334b14a9b0e5e263190034d31d
+  AppRegistrationKeyChanged(address,address,string,uint256):  0xa22916b55c84301b9ba61d6494b1860339c075b3518e6db6f496bdf2a13d6ffc
+  CFAv1LiquidationPeriodChanged(address,address,bool,uint256): 0x3cbad89c3bb0ff70e832f6d6fa458ff3f5487e8156ec52e8814c46c59e919289
+  CodeUpdated(bytes32,address):                               0xe011bc04c286c344a8fcbb8de77f953da762c3e25d8cdea984147fc4168a5dcc
+  ConfigChanged(address,address,bytes32,bool,uint256):        0x33afe19ae6902b933890ff48190fabdc4cf7f5ab499be9c4d9d98e3b4562e390
+  Initialized(uint8):                                         0x7f26b83ff96e1f2b6a682f133852f6798a09c465da95921460cefb3847402498
+  OwnershipTransferred(address,address):                      0x8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e0
+  PPPConfigurationChanged(address,address,bool,uint256,uint256): 0x60a59221512cd8cbfb226200f7ba6f20dc4b38a3cf04993d17ea4e56d26aa186
+  RewardAddressChanged(address,address,bool,address):         0x14e12f219a4f9023456dc7832e10119ab768b8ccefc8cb79bc6de0419781eeeb
+  SuperTokenMinimumDepositChanged(address,address,bool,uint256): 0xc055c4a3853372c08a98805545379133f00f7261d956b9197729d67f37a82a53
+  TrustedForwarderChanged(address,address,bool,address,bool): 0x168da2dec91b2e06e30d49955479383e76f71ba185807a8a5b75e2ed563e1d27
+
+errors:
+  OwnableInvalidOwner(address):                     0x1e4fbdf7
+  OwnableUnauthorizedAccount(address):              0x118cdaa7
+  SF_GOV_II_ONLY_OWNER():                           0x8c809f9b
+  SF_GOV_INVALID_LIQUIDATION_OR_PATRICIAN_PERIOD(): 0xe171980a
+  SF_GOV_MUST_BE_CONTRACT():                        0x80dddd73

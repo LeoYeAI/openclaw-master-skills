@@ -1,0 +1,76 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "git-merge.schema.json",
+  "title": "GitMerge Task",
+  "description": "发起Git合并请求任务配置",
+  "type": "object",
+  "required": ["taskCategory", "jobType", "name"],
+  "properties": {
+    "taskCategory": {
+      "type": "string",
+      "const": "Code"
+    },
+    "jobType": {
+      "type": "string",
+      "const": "GitMerge"
+    },
+    "name": {
+      "type": "string",
+      "maxLength": 100,
+      "description": "任务名称"
+    },
+    "workPath": {
+      "type": "string",
+      "description": "工作目录"
+    },
+    "sourceId": {
+      "type": "string",
+      "description": "代码源ID"
+    },
+    "buildImageModel": {
+      "type": "string",
+      "enum": ["default", "custom"],
+      "default": "default"
+    },
+    "executeImageId": {
+      "type": "string"
+    },
+    "sourceBranch": {
+      "type": "string",
+      "default": "${BRANCH}",
+      "description": "源分支"
+    },
+    "targetBranch": {
+      "type": "string",
+      "default": "master",
+      "description": "目标分支"
+    },
+    "mrTitle": {
+      "type": "string",
+      "default": "Merge ${BRANCH} to master",
+      "description": "MR标题"
+    },
+    "mrDescription": {
+      "type": "string",
+      "description": "MR描述"
+    },
+    "autoMerge": {
+      "type": "boolean",
+      "default": false,
+      "description": "自动合并"
+    },
+    "removeSourceBranch": {
+      "type": "boolean",
+      "default": false,
+      "description": "合并后删除源分支"
+    },
+    "idInTemplate": {
+      "type": "string"
+    },
+    "dependencies": {
+      "type": "array",
+      "items": { "type": "string" },
+      "default": []
+    }
+  }
+}

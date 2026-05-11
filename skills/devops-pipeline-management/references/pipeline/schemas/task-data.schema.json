@@ -1,0 +1,63 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "task-data.schema.json",
+  "title": "TaskData",
+  "description": "任务配置数据通用结构",
+  "type": "object",
+  "required": ["id", "data"],
+  "properties": {
+    "id": {
+      "type": "string",
+      "description": "任务ID，对应 ITask.id"
+    },
+    "data": {
+      "type": "object",
+      "required": ["taskCategory", "jobType", "name"],
+      "properties": {
+        "taskCategory": {
+          "type": "string",
+          "enum": ["Build", "DockerBuild", "Deploy", "CodeScanner", "CodeCover", "Code", "Normal"],
+          "description": "任务分类"
+        },
+        "jobType": {
+          "type": "string",
+          "description": "任务类型标识"
+        },
+        "name": {
+          "type": "string",
+          "maxLength": 100,
+          "description": "任务名称"
+        },
+        "workPath": {
+          "type": "string",
+          "description": "工作目录"
+        },
+        "sourceId": {
+          "type": "string",
+          "description": "代码源ID"
+        },
+        "buildImageModel": {
+          "type": "string",
+          "enum": ["default", "custom"],
+          "default": "default",
+          "description": "构建环境类型"
+        },
+        "executeImageId": {
+          "type": "string",
+          "description": "自定义镜像ID"
+        },
+        "dependencies": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "前置依赖任务ID"
+        },
+        "idInTemplate": {
+          "type": "string",
+          "description": "模板中任务ID"
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,60 @@
+{
+  "name": "nstbrowser-ai-agent",
+  "version": "0.0.7",
+  "description": "Browser automation CLI with Nstbrowser integration for AI agents",
+  "author": "NstbrowserIO",
+  "license": "MIT-0",
+  "homepage": "https://github.com/Nstbrowser/nstbrowser-ai-agent",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Nstbrowser/nstbrowser-ai-agent"
+  },
+  "keywords": [
+    "browser-automation",
+    "nstbrowser",
+    "ai-agent",
+    "cli",
+    "fingerprinting",
+    "profile-management"
+  ],
+  "category": "browser-automation",
+  "requires": {
+    "services": [
+      {
+        "name": "Nstbrowser",
+        "url": "https://www.nstbrowser.io/",
+        "description": "Local browser automation service"
+      }
+    ],
+    "credentials": [
+      {
+        "name": "NST_API_KEY",
+        "description": "Nstbrowser API key from dashboard",
+        "storage": "local-config-file"
+      }
+    ]
+  },
+  "security": {
+    "localOnly": true,
+    "noExternalShellExecution": true,
+    "credentialStorage": "local-file",
+    "networkAccess": [
+      "127.0.0.1:8848 (Nstbrowser API)",
+      "registry.npmjs.org (update checks)"
+    ]
+  },
+  "allowedTools": [
+    "Bash(npx nstbrowser-ai-agent:*)",
+    "Bash(nstbrowser-ai-agent:*)"
+  ],
+  "triggers": [
+    "use NST profile",
+    "configure proxy for profile",
+    "manage browser profiles",
+    "batch update profiles",
+    "start multiple browsers",
+    "list profiles with pagination",
+    "browser fingerprinting",
+    "anti-detection"
+  ]
+}

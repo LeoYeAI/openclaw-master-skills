@@ -1,0 +1,17 @@
+{
+  "name": "researcher",
+  "description": "Research-heavy. Haiku for web searches and data gathering, Sonnet for synthesis.",
+  "author": "cost-optimizer",
+  "version": "5.0.0",
+  "created": "2026-03-15T00:00:00Z",
+  "config": {
+    "model": {
+      "primary": "anthropic/claude-haiku-4-5",
+      "fallbacks": ["deepseek/deepseek-v3.2", "google-ai-studio/gemini-flash-latest"]
+    },
+    "heartbeat": { "every": "55m", "model": "deepseek/deepseek-v3.2", "target": "last" },
+    "compaction": { "memoryFlush": { "enabled": true, "softThresholdTokens": 3000 } },
+    "maxConcurrent": 3,
+    "subagentsMaxConcurrent": 3
+  }
+}

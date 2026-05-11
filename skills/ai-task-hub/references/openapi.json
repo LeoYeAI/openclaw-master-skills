@@ -1,0 +1,275 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "AI Task Hub Skill API",
+    "version": "3.1.4",
+    "description": "Public skill contract for execute/poll/presentation via host-managed agent task token."
+  },
+  "servers": [
+    {
+      "url": "https://gateway-api.binaryworks.app"
+    }
+  ],
+  "x-portal-actions": {
+    "portal.skill.execute": {
+      "summary": "Execute capability run via host proxy",
+      "method": "POST",
+      "path": "/agent/skill/execute",
+      "input_schema": {
+        "$ref": "#/components/schemas/PortalSkillExecuteInput"
+      },
+      "output_schema": {
+        "$ref": "#/components/schemas/PortalSkillExecuteOutput"
+      }
+    },
+    "portal.skill.poll": {
+      "summary": "Poll run state via host proxy",
+      "method": "GET",
+      "path": "/agent/skill/runs/{runId}",
+      "input_schema": {
+        "$ref": "#/components/schemas/PortalSkillPollInput"
+      },
+      "output_schema": {
+        "$ref": "#/components/schemas/PortalSkillPollOutput"
+      }
+    },
+    "portal.skill.presentation": {
+      "summary": "Fetch presentation payload via host proxy",
+      "method": "GET",
+      "path": "/agent/skill/runs/{runId}/presentation",
+      "input_schema": {
+        "$ref": "#/components/schemas/PortalSkillPresentationInput"
+      },
+      "output_schema": {
+        "$ref": "#/components/schemas/PortalSkillPresentationOutput"
+      }
+    }
+  },
+  "paths": {
+    "/agent/skill/execute": {
+      "post": {
+        "summary": "portal.skill.execute",
+        "security": [
+          {
+            "AgentTaskToken": []
+          }
+        ]
+      }
+    },
+    "/agent/skill/runs/{runId}": {
+      "get": {
+        "summary": "portal.skill.poll",
+        "security": [
+          {
+            "AgentTaskToken": []
+          }
+        ]
+      }
+    },
+    "/agent/skill/runs/{runId}/presentation": {
+      "get": {
+        "summary": "portal.skill.presentation",
+        "security": [
+          {
+            "AgentTaskToken": []
+          }
+        ]
+      }
+    },
+    "/SKILL.md": {
+      "get": {
+        "summary": "Read skill markdown (English)"
+      }
+    },
+    "/SKILL.zh-CN.md": {
+      "get": {
+        "summary": "Read skill markdown (Chinese)"
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "AgentTaskToken": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "X-Agent-Task-Token",
+        "description": "Host-issued short-lived token. Required claims: sub, agent_uid, conversation_id, scope, exp, jti."
+      }
+    },
+    "schemas": {
+      "PortalSkillExecuteInput": {
+        "type": "object",
+        "required": [
+          "capability",
+          "input"
+        ],
+        "properties": {
+          "capability": {
+            "type": "string"
+          },
+          "input": {
+            "type": "object",
+            "additionalProperties": true
+          },
+          "request_id": {
+            "type": "string",
+            "maxLength": 64
+          }
+        }
+      },
+      "PortalSkillExecuteOutput": {
+        "type": "object",
+        "properties": {
+          "run_id": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "accepted"
+            ]
+          },
+          "capability": {
+            "type": "string"
+          },
+          "service_id": {
+            "type": "string"
+          },
+          "poll_url": {
+            "type": "string"
+          },
+          "queued_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "reused": {
+            "type": "boolean"
+          }
+        }
+      },
+      "PortalSkillPollInput": {
+        "type": "object",
+        "required": [
+          "run_id"
+        ],
+        "properties": {
+          "run_id": {
+            "type": "string"
+          }
+        }
+      },
+      "PortalSkillPollOutput": {
+        "type": "object",
+        "properties": {
+          "run_id": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "queued",
+              "running",
+              "succeeded",
+              "failed"
+            ]
+          },
+          "terminal": {
+            "type": "boolean"
+          },
+          "service_id": {
+            "type": "string"
+          },
+          "output": {
+            "type": "object",
+            "additionalProperties": true
+          },
+          "error": {
+            "type": "object",
+            "properties": {
+              "code": {
+                "type": "string"
+              },
+              "message": {
+                "type": "string"
+              },
+              "details": {
+                "type": "object",
+                "properties": {
+                  "recharge_url": {
+                    "type": "string"
+                  }
+                },
+                "additionalProperties": true
+              }
+            },
+            "additionalProperties": true
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "finished_at": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time"
+          }
+        }
+      },
+      "PortalSkillPresentationInput": {
+        "type": "object",
+        "required": [
+          "run_id"
+        ],
+        "properties": {
+          "run_id": {
+            "type": "string"
+          },
+          "channel": {
+            "type": "string",
+            "enum": [
+              "web",
+              "telegram"
+            ]
+          },
+          "include_files": {
+            "type": "boolean"
+          }
+        }
+      },
+      "PortalSkillPresentationOutput": {
+        "type": "object",
+        "properties": {
+          "run_id": {
+            "type": "string"
+          },
+          "service_id": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          },
+          "terminal": {
+            "type": "boolean"
+          },
+          "visual": {
+            "type": "object",
+            "additionalProperties": true
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "finished_at": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time"
+          }
+        }
+      }
+    }
+  }
+}

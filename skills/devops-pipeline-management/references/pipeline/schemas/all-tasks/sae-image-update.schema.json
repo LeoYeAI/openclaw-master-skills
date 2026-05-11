@@ -1,0 +1,65 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "sae-image-update.schema.json",
+  "title": "SaeImageUpdate Task",
+  "description": "SAE镜像更新任务配置",
+  "type": "object",
+  "required": ["taskCategory", "jobType", "name"],
+  "properties": {
+    "taskCategory": {
+      "type": "string",
+      "const": "Deploy"
+    },
+    "jobType": {
+      "type": "string",
+      "const": "SaeImageUpdate"
+    },
+    "name": {
+      "type": "string",
+      "maxLength": 100,
+      "description": "任务名称"
+    },
+    "workPath": {
+      "type": "string",
+      "description": "工作目录"
+    },
+    "sourceId": {
+      "type": "string",
+      "description": "代码源ID"
+    },
+    "appName": {
+      "type": "string",
+      "description": "SAE应用名称"
+    },
+    "namespace": {
+      "type": "string",
+      "description": "命名空间"
+    },
+    "imageName": {
+      "type": "string",
+      "description": "镜像名称"
+    },
+    "imageTag": {
+      "type": "string",
+      "default": "${BUILD_NUMBER}",
+      "description": "镜像标签"
+    },
+    "preDependTaskId": {
+      "type": "string",
+      "description": "前置镜像构建任务ID"
+    },
+    "batchCount": {
+      "type": "integer",
+      "default": 1,
+      "description": "分批发布数量"
+    },
+    "idInTemplate": {
+      "type": "string"
+    },
+    "dependencies": {
+      "type": "array",
+      "items": { "type": "string" },
+      "default": []
+    }
+  }
+}

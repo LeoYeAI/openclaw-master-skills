@@ -1,0 +1,868 @@
+# SuperTokenV1Library — token-centric Solidity API for Superfluid Protocol
+# Provides ergonomic wrappers around CFA and GDA agreement calls.
+# Usage: `using SuperTokenV1Library for ISuperToken;`
+#
+# This is a Solidity library, NOT a deployed contract. All functions are
+# internal and execute in the context of the contract that uses the library.
+# There is no ABI, no events, and no errors defined by the library itself —
+# it delegates to the underlying agreements via host.callAgreement().
+#
+#
+# NOTE: For underlying agreement errors, events, and access control, see:
+#   ConstantFlowAgreementV1.abi.yaml (CFA)
+#   GeneralDistributionAgreementV1.abi.yaml (GDA)
+#   SuperfluidPool.abi.yaml (pool operations)
+
+meta:
+  name: SuperTokenV1Library
+  notes:
+    - "Gotcha: Foundry testing pitfalls — see meta.note for details."
+  version: v1
+  source:
+    - https://raw.githubusercontent.com/superfluid-org/protocol-monorepo/refs/heads/dev/packages/ethereum-contracts/contracts/apps/SuperTokenV1Library.sol
+  library: true
+  note: >
+    Solidity library — import and attach with:
+      import { SuperTokenV1Library } from
+        "@superfluid-finance/ethereum-contracts/contracts/apps/SuperTokenV1Library.sol";
+      using SuperTokenV1Library for ISuperToken;
+
+    Foundry testing gotchas:
+    1) prank consumed by cache warming — the library caches Host/CFA/GDA
+       addresses in storage on first use. If the cache is cold, prank is
+       consumed by token.getHost(), not the actual agreement call. Fix: use
+       startPrank, or warm the cache first with any library call.
+    2) address(this) not affected by prank — functions like flow, flowX,
+       distribute, distributeFlow, createPool, claimAll, connectPool use
+       address(this) as the implicit sender. prank/startPrank cannot override
+       this. Fix: use overloads with explicit sender/from parameter, or route
+       calls through a helper contract.
+    3) expectRevert may miss library reverts — if the library itself triggers
+       a revert (not via an external call), expectRevert won't see it. Fix:
+       wrap the call in an external helper method invoked with this.helper().
+
+# == Abbreviations ==
+# ACL — Access Control List (flow operator permissions)
+# CFA — Constant Flow Agreement (1:1 streams)
+# GDA — General Distribution Agreement (1:N via pools)
+# ctx — Superfluid call context bytes (for Super App callbacks)
+
+# == Glossary ==
+# agreement abstraction — flowX/transferX auto-detect account vs pool and route to CFA or GDA
+# context threading     — passing ctx through chained operations inside Super App callbacks
+# flow operator         — address authorized to manage CFA flows on behalf of a sender
+# userData              — arbitrary bytes passed through agreement calls, accessible in callbacks
+# WithCtx variant       — version of a function that accepts and returns ctx for callback use
+
+# == Agreement-Abstracted ==
+# Auto-detect whether the target is an account (CFA) or a pool (GDA).
+
+flowX:
+  # Set a flow to an account or pool. Routes to CFA or GDA automatically.
+  # Use CFA/GDA-specific functions with explicit sender for Foundry tests.
+  # Note: if GDA is used, the effective flowRate may differ from requested
+  # due to rounding across pool members.
+  notes:
+    - "Gotcha: Uses address(this) as sender — vm.prank/startPrank cannot override this. For Foundry tests, use CFA/GDA-specific overloads with an explicit sender parameter."
+  mutability: nonpayable
+  visibility: internal
+  inputs:
+    - token: ISuperToken
+    - receiverOrPool: address
+    - flowRate: int96
+  outputs:
+    - newFlowRate: int96
+
+transferX:
+  # Transfer tokens to an account or distribute to pool members.
+  # Routes to token.transfer() for accounts, distribute() for pools.
+  # Note: for pools, the effective amount may be less than requested.
+  notes:
+    - "Gotcha: Uses address(this) as sender — vm.prank/startPrank cannot override this. For Foundry tests, use CFA/GDA-specific overloads with an explicit sender parameter."
+  mutability: nonpayable
+  visibility: internal
+  inputs:
+    - token: ISuperToken
+    - receiverOrPool: address
+    - amount: uint256
+  outputs:
+    - distributedAmount: uint256
+
+# == Agreement-Abstracted Views ==
+# Auto-detect CFA vs GDA based on whether sender/receiver is a pool.
+
+getFlowRate:
+  # Get flow rate between two accounts or pools.
+  # Auto-detects: account->pool = GDA distributor flow,
+  # pool->account = GDA member flow, account->account = CFA flow.
+  mutability: view
+  visibility: internal
+  inputs:
+    - token: ISuperToken
+    - senderOrPool: address
+    - receiverOrPool: address
+  outputs:
+    - flowRate: int96
+
+getFlowInfo:
+  # Get flow info between two accounts or pools.
+  # lastUpdated is not set when sender is a pool (GDA member flow case).
+  mutability: view
+  visibility: internal
+  inputs:
+    - token: ISuperToken
+    - senderOrPool: address
+    - receiverOrPool: address
+  outputs:
+    - lastUpdated: uint256
+    - flowRate: int96
+    - deposit: uint256
+    - owedDeposit: uint256
+
+getNetFlowRate:
+  # Net flow rate for an account (CFA + GDA combined).
+  mutability: view
+  visibility: internal
+  inputs:
+    - token: ISuperToken
+    - account: address
+  outputs:
+    - flowRate: int96
+
+getNetFlowInfo:
+  # Aggregated flow info for an account (CFA + GDA combined).
+  # lastUpdated = max of CFA and GDA timestamps.
+  mutability: view
+  visibility: internal
+  inputs:
+    - token: ISuperToken
+    - account: address
+  outputs:
+    - lastUpdated: uint256
+    - flowRate: int96
+    - deposit: uint256
+    - owedDeposit: uint256
+
+getBufferAmountByFlowRate:
+  # Calculate the buffer (deposit) needed for a flow at the given rate.
+  # Exact for new flows only. For updates, compute buffer at new total
+  # rate and subtract the previous buffer (not linearly proportional).
+  notes:
+    - "Gotcha: Slightly overestimates for GDA flows due to CFA rounding."
+  mutability: view
+  visibility: internal
+  inputs:
+    - token: ISuperToken
+    - flowRate: int96
+  outputs:
+    - bufferAmount: uint256
+
+# == CFA Base ==
+# Create, update, delete 1:1 streams. flow() is a smart wrapper that
+# auto-creates, updates, or deletes based on current state.
+
+flow:
+  # Set CFA flowrate between address(this) and receiver.
+  # - flowRate > 0, no existing flow: creates
+  # - flowRate > 0, existing flow with different rate: updates
+  # - flowRate == 0, existing flow: deletes
+  # - flowRate < 0: reverts CFA_INVALID_FLOW_RATE
+  # - no change needed: no-op
+  # On creation, a buffer deposit is auto-deducted from sender balance.
+  # Also available without userData (omit last parameter).
+  notes:
+    - "Gotcha: Uses address(this) as sender — vm.prank/startPrank cannot override this. For Foundry tests, use CFA/GDA-specific overloads with an explicit sender parameter."
+  mutability: nonpayable
+  visibility: internal
+  inputs:
+    - token: ISuperToken
+    - receiver: address
+    - flowRate: int96
+    - userData: bytes
+  outputs:
+    - bool
+
+createFlow:
+  # Create a new CFA flow. Reverts if a flow already exists.
+  # Also available without userData (omit last parameter).
+  mutability: nonpayable
+  visibility: internal
+  inputs:
+    - token: ISuperToken
+    - receiver: address
+    - flowRate: int96
+    - userData: bytes
+  outputs:
+    - bool
+
+updateFlow:
+  # Update an existing CFA flow rate. Reverts if no flow exists.
+  # Also available without userData (omit last parameter).
+  mutability: nonpayable
+  visibility: internal
+  inputs:
+    - token: ISuperToken
+    - receiver: address
+    - flowRate: int96
+    - userData: bytes
+  outputs:
+    - bool
+
+deleteFlow:
+  # Delete an existing CFA flow. Requires explicit sender parameter.
+  # Also available without userData (omit last parameter).
+  mutability: nonpayable
+  visibility: internal
+  inputs:
+    - token: ISuperToken
+    - sender: address
+    - receiver: address
+    - userData: bytes
+  outputs:
+    - bool
+
+# == CFA ACL ==
+# Operator-based flow management. An operator is an address authorized
+# to manage CFA flows on behalf of a sender. Requires prior permission grants.
+# Permission bitmask: bit 0 = create, bit 1 = update, bit 2 = delete.
+
+flowFrom:
+  # Like flow(), but invoked by an operator on behalf of the sender.
+  # Requires the caller to have flow operator permissions.
+  # Also available without userData (omit last parameter).
+  mutability: nonpayable
+  visibility: internal
+  inputs:
+    - token: ISuperToken
+    - sender: address
+    - receiver: address
+    - flowRate: int96
+    - userData: bytes
+  outputs:
+    - bool
+
+setFlowPermissions:
+  # Set granular flow operator permissions.
+  mutability: nonpayable
+  visibility: internal
+  inputs:
+    - token: ISuperToken
+    - flowOperator: address
+    - allowCreate: bool
+    - allowUpdate: bool
+    - allowDelete: bool
+    - flowRateAllowance: int96
+
+setMaxFlowPermissions:
+  # Grant an operator full control (create/update/delete, unlimited allowance).
+  mutability: nonpayable
+  visibility: internal
+  inputs:
+    - token: ISuperToken
+    - flowOperator: address
+  outputs:
+    - bool
+
+revokeFlowPermissions:
+  # Revoke all permissions from an operator.
+  mutability: nonpayable
+  visibility: internal
+  inputs:
+    - token: ISuperToken
+    - flowOperator: address
+  outputs:
+    - bool
+
+increaseFlowRateAllowance:
+  # Increase the flow rate allowance for an operator.
+  # Also available without userData (omit last parameter).
+  mutability: nonpayable
+  visibility: internal
+  inputs:
+    - token: ISuperToken
+    - flowOperator: address
+    - addedFlowRateAllowance: int96
+    - userData: bytes
+  outputs:
+    - bool
+
+decreaseFlowRateAllowance:
+  # Decrease the flow rate allowance for an operator.
+  # Also available without userData (omit last parameter).
+  mutability: nonpayable
+  visibility: internal
+  inputs:
+    - token: ISuperToken
+    - flowOperator: address
+    - subtractedFlowRateAllowance: int96
+    - userData: bytes
+  outputs:
+    - bool
+
+increaseFlowRateAllowanceWithPermissions:
+  # Increase flow rate allowance AND add permission bits atomically.
+  # Also available without userData (omit last parameter).
+  mutability: nonpayable
+  visibility: internal
+  inputs:
+    - token: ISuperToken
+    - flowOperator: address
+    - permissionsToAdd: uint8      # bitmask: 1=create, 2=update, 4=delete
+    - addedFlowRateAllowance: int96
+    - userData: bytes
+  outputs:
+    - bool
+
+decreaseFlowRateAllowanceWithPermissions:
+  # Decrease flow rate allowance AND remove permission bits atomically.
+  # Also available without userData (omit last parameter).
+  mutability: nonpayable
+  visibility: internal
+  inputs:
+    - token: ISuperToken
+    - flowOperator: address
+    - permissionsToRemove: uint8   # bitmask: 1=create, 2=update, 4=delete
+    - subtractedFlowRateAllowance: int96
+    - userData: bytes
+  outputs:
+    - bool
+
+createFlowFrom:
+  # Create a flow as an operator on behalf of sender.
+  # Also available without userData (omit last parameter).
+  mutability: nonpayable
+  visibility: internal
+  inputs:
+    - token: ISuperToken
+    - sender: address
+    - receiver: address
+    - flowRate: int96
+    - userData: bytes
+  outputs:
+    - bool
+
+updateFlowFrom:
+  # Update a flow as an operator on behalf of sender.
+  # Also available without userData (omit last parameter).
+  mutability: nonpayable
+  visibility: internal
+  inputs:
+    - token: ISuperToken
+    - sender: address
+    - receiver: address
+    - flowRate: int96
+    - userData: bytes
+  outputs:
+    - bool
+
+deleteFlowFrom:
+  # Delete a flow as an operator on behalf of sender.
+  # Also available without userData (omit last parameter).
+  mutability: nonpayable
+  visibility: internal
+  inputs:
+    - token: ISuperToken
+    - sender: address
+    - receiver: address
+    - userData: bytes
+  outputs:
+    - bool
+
+# == CFA Context (Super App Callbacks) ==
+# Same operations as CFA Base and CFA ACL, but accept and return ctx for
+# use inside Super App callbacks. Always use these inside callbacks —
+# using non-ctx versions breaks context propagation and causes reverts.
+
+flowWithCtx:
+  # Like flow(), with context for Super App callbacks.
+  notes:
+    - "Gotcha: Always chain ctx through sequential operations: newCtx = token.flowWithCtx(receiver1, rate1, ctx); newCtx = token.flowWithCtx(receiver2, rate2, newCtx);"
+  mutability: nonpayable
+  visibility: internal
+  inputs:
+    - token: ISuperToken
+    - receiver: address
+    - flowRate: int96
+    - ctx: bytes
+  outputs:
+    - newCtx: bytes
+
+flowFromWithCtx:
+  # Like flowFrom(), with context for Super App callbacks.
+  mutability: nonpayable
+  visibility: internal
+  inputs:
+    - token: ISuperToken
+    - sender: address
+    - receiver: address
+    - flowRate: int96
+    - ctx: bytes
+  outputs:
+    - newCtx: bytes
+
+createFlowWithCtx:
+  mutability: nonpayable
+  visibility: internal
+  inputs:
+    - token: ISuperToken
+    - receiver: address
+    - flowRate: int96
+    - ctx: bytes
+  outputs:
+    - newCtx: bytes
+
+createFlowFromWithCtx:
+  mutability: nonpayable
+  visibility: internal
+  inputs:
+    - token: ISuperToken
+    - sender: address
+    - receiver: address
+    - flowRate: int96
+    - ctx: bytes
+  outputs:
+    - newCtx: bytes
+
+updateFlowWithCtx:
+  mutability: nonpayable
+  visibility: internal
+  inputs:
+    - token: ISuperToken
+    - receiver: address
+    - flowRate: int96
+    - ctx: bytes
+  outputs:
+    - newCtx: bytes
+
+updateFlowFromWithCtx:
+  mutability: nonpayable
+  visibility: internal
+  inputs:
+    - token: ISuperToken
+    - sender: address
+    - receiver: address
+    - flowRate: int96
+    - ctx: bytes
+  outputs:
+    - newCtx: bytes
+
+deleteFlowWithCtx:
+  mutability: nonpayable
+  visibility: internal
+  inputs:
+    - token: ISuperToken
+    - sender: address
+    - receiver: address
+    - ctx: bytes
+  outputs:
+    - newCtx: bytes
+
+deleteFlowFromWithCtx:
+  mutability: nonpayable
+  visibility: internal
+  inputs:
+    - token: ISuperToken
+    - sender: address
+    - receiver: address
+    - ctx: bytes
+  outputs:
+    - newCtx: bytes
+
+setFlowPermissionsWithCtx:
+  mutability: nonpayable
+  visibility: internal
+  inputs:
+    - token: ISuperToken
+    - flowOperator: address
+    - allowCreate: bool
+    - allowUpdate: bool
+    - allowDelete: bool
+    - flowRateAllowance: int96
+    - ctx: bytes
+  outputs:
+    - newCtx: bytes
+
+setMaxFlowPermissionsWithCtx:
+  mutability: nonpayable
+  visibility: internal
+  inputs:
+    - token: ISuperToken
+    - flowOperator: address
+    - ctx: bytes
+  outputs:
+    - newCtx: bytes
+
+revokeFlowPermissionsWithCtx:
+  mutability: nonpayable
+  visibility: internal
+  inputs:
+    - token: ISuperToken
+    - flowOperator: address
+    - ctx: bytes
+  outputs:
+    - newCtx: bytes
+
+# == CFA Views ==
+# CFA-specific queries (excludes GDA flows). Use the agreement-abstracted
+# views above when you want combined CFA+GDA results.
+
+getCFAFlowRate:
+  # CFA flow rate between two accounts.
+  mutability: view
+  visibility: internal
+  inputs:
+    - token: ISuperToken
+    - sender: address
+    - receiver: address
+  outputs:
+    - flowRate: int96
+
+getCFAFlowInfo:
+  # CFA flow info between two accounts.
+  mutability: view
+  visibility: internal
+  inputs:
+    - token: ISuperToken
+    - sender: address
+    - receiver: address
+  outputs:
+    - lastUpdated: uint256
+    - flowRate: int96
+    - deposit: uint256
+    - owedDeposit: uint256
+
+getCFANetFlowRate:
+  # CFA net flow rate for an account (CFA only, excludes GDA).
+  mutability: view
+  visibility: internal
+  inputs:
+    - token: ISuperToken
+    - account: address
+  outputs:
+    - flowRate: int96
+
+getCFANetFlowInfo:
+  # Aggregated CFA flow info for an account (CFA only, excludes GDA).
+  mutability: view
+  visibility: internal
+  inputs:
+    - token: ISuperToken
+    - account: address
+  outputs:
+    - lastUpdated: uint256
+    - flowRate: int96
+    - deposit: uint256
+    - owedDeposit: uint256
+
+getFlowPermissions:
+  # Get existing flow operator permissions.
+  mutability: view
+  visibility: internal
+  inputs:
+    - token: ISuperToken
+    - sender: address
+    - flowOperator: address
+  outputs:
+    - allowCreate: bool
+    - allowUpdate: bool
+    - allowDelete: bool
+    - flowRateAllowance: int96
+
+# == GDA Base ==
+# Pool creation, instant distribution, streaming distribution,
+# pool connection management.
+#
+# PoolConfig has two fields:
+#   transferabilityForUnitsOwner (bool) — can unit holders transfer units
+#   distributionFromAnyAddress (bool) — can anyone distribute, not just admin
+
+createPool:
+  # Create a new Superfluid Pool.
+  # Also available as createPool(token, admin) with default config
+  # (units not transferable, anyone can distribute), and
+  # createPool(token) with default config + address(this) as admin.
+  notes:
+    - "Gotcha: The single-arg overload uses address(this) as admin."
+  mutability: nonpayable
+  visibility: internal
+  inputs:
+    - token: ISuperToken
+    - admin: address
+    - poolConfig: PoolConfig
+  outputs:
+    - pool: ISuperfluidPool
+
+createPoolWithCustomERC20Metadata:
+  # Create a pool with custom ERC20 metadata (name, symbol, decimals).
+  mutability: nonpayable
+  visibility: internal
+  inputs:
+    - token: ISuperToken
+    - admin: address
+    - poolConfig: PoolConfig
+    - poolERC20Metadata: PoolERC20Metadata
+  outputs:
+    - pool: ISuperfluidPool
+
+claimAll:
+  # Claim all pending tokens from a pool for a member.
+  # Also available as claimAll(token, pool) with address(this) as member,
+  # and claimAll(token, pool, memberAddress) without userData.
+  notes:
+    - "Gotcha: The 2-arg overload uses address(this) as memberAddress."
+  mutability: nonpayable
+  visibility: internal
+  inputs:
+    - token: ISuperToken
+    - pool: ISuperfluidPool
+    - memberAddress: address
+    - userData: bytes
+  outputs:
+    - bool
+
+connectPool:
+  # Connect as a pool member. Connected members receive distributions
+  # in real-time; disconnected members must claim manually.
+  # Also available without userData (omit last parameter).
+  mutability: nonpayable
+  visibility: internal
+  inputs:
+    - token: ISuperToken
+    - pool: ISuperfluidPool
+    - userData: bytes
+  outputs:
+    - bool
+
+tryConnectPoolFor:
+  # Auto-connect a member to a pool if fewer than 4 connection slots used.
+  # Returns false (instead of reverting) if the connection limit is reached.
+  mutability: nonpayable
+  visibility: internal
+  inputs:
+    - token: ISuperToken
+    - pool: ISuperfluidPool
+    - memberAddress: address
+  outputs:
+    - success: bool
+
+disconnectPool:
+  # Disconnect from a pool. Distributions accumulate as claimable balance.
+  # Also available without userData (omit last parameter).
+  mutability: nonpayable
+  visibility: internal
+  inputs:
+    - token: ISuperToken
+    - pool: ISuperfluidPool
+    - userData: bytes
+  outputs:
+    - bool
+
+distribute:
+  # Instant distribution: distribute requestedAmount to pool members.
+  # actualAmount may be less than requested due to rounding across units.
+  # Also available as distribute(token, pool, requestedAmount) with
+  # address(this) as sender, and without userData.
+  notes:
+    - "Gotcha: The overload without `from` uses address(this). In Foundry tests you may get GDA_DISTRIBUTE_FOR_OTHERS_NOT_ALLOWED — use the overload with explicit `from` instead."
+  mutability: nonpayable
+  visibility: internal
+  inputs:
+    - token: ISuperToken
+    - from: address
+    - pool: ISuperfluidPool
+    - requestedAmount: uint256
+    - userData: bytes
+  outputs:
+    - actualAmount: uint256
+
+distributeFlow:
+  # Streaming distribution: set a flow rate from a distributor to a pool.
+  # actualFlowRate may be less than requested due to rounding across units.
+  # Also available as distributeFlow(token, pool, requestedFlowRate) with
+  # address(this) as sender, and without userData.
+  notes:
+    - "Gotcha: Same address(this) issue as distribute() — use explicit `from` in Foundry tests."
+  mutability: nonpayable
+  visibility: internal
+  inputs:
+    - token: ISuperToken
+    - from: address
+    - pool: ISuperfluidPool
+    - requestedFlowRate: int96
+    - userData: bytes
+  outputs:
+    - actualFlowRate: int96
+
+# == GDA Context (Super App Callbacks) ==
+# Same operations as GDA Base, but accept and return ctx for use inside
+# Super App callbacks.
+
+claimAllWithCtx:
+  mutability: nonpayable
+  visibility: internal
+  inputs:
+    - token: ISuperToken
+    - pool: ISuperfluidPool
+    - memberAddress: address
+    - ctx: bytes
+  outputs:
+    - newCtx: bytes
+
+connectPoolWithCtx:
+  mutability: nonpayable
+  visibility: internal
+  inputs:
+    - token: ISuperToken
+    - pool: ISuperfluidPool
+    - ctx: bytes
+  outputs:
+    - newCtx: bytes
+
+disconnectPoolWithCtx:
+  mutability: nonpayable
+  visibility: internal
+  inputs:
+    - token: ISuperToken
+    - pool: ISuperfluidPool
+    - ctx: bytes
+  outputs:
+    - newCtx: bytes
+
+distributeWithCtx:
+  mutability: nonpayable
+  visibility: internal
+  inputs:
+    - token: ISuperToken
+    - from: address
+    - pool: ISuperfluidPool
+    - requestedAmount: uint256
+    - ctx: bytes
+  outputs:
+    - newCtx: bytes
+
+distributeFlowWithCtx:
+  mutability: nonpayable
+  visibility: internal
+  inputs:
+    - token: ISuperToken
+    - from: address
+    - pool: ISuperfluidPool
+    - requestedFlowRate: int96
+    - ctx: bytes
+  outputs:
+    - newCtx: bytes
+
+# == GDA Views ==
+
+getGDAFlowRate:
+  # Flow rate from a distributor to a pool.
+  # Alias: getFlowDistributionFlowRate(token, from, to)
+  mutability: view
+  visibility: internal
+  inputs:
+    - token: ISuperToken
+    - distributor: address
+    - pool: ISuperfluidPool
+  outputs:
+    - flowRate: int96
+
+getGDAFlowInfo:
+  # Flow info from a distributor to a pool.
+  # Note: no owedDeposit for GDA flows (only 3 return values).
+  mutability: view
+  visibility: internal
+  inputs:
+    - token: ISuperToken
+    - distributor: address
+    - pool: ISuperfluidPool
+  outputs:
+    - lastUpdated: uint256
+    - flowRate: int96
+    - deposit: uint256
+
+getGDANetFlowRate:
+  # GDA net flow rate for an account (GDA only, excludes CFA).
+  mutability: view
+  visibility: internal
+  inputs:
+    - token: ISuperToken
+    - account: address
+  outputs:
+    - flowRate: int96
+
+getGDANetFlowInfo:
+  # Aggregated GDA flow info for an account.
+  # owedDeposit is always 0 for GDA.
+  mutability: view
+  visibility: internal
+  inputs:
+    - token: ISuperToken
+    - account: address
+  outputs:
+    - lastUpdated: uint256
+    - flowRate: int96
+    - deposit: uint256
+    - owedDeposit: uint256
+
+getPoolAdjustmentFlowRate:
+  # Get the adjustment flow rate for a pool.
+  # The adjustment flow rate compensates for rounding errors in flow
+  # distribution. Reverts if token doesn't match pool.superToken().
+  mutability: view
+  visibility: internal
+  inputs:
+    - token: ISuperToken
+    - pool: ISuperfluidPool
+  outputs:
+    - poolAdjustmentFlowRate: int96
+
+getTotalAmountReceivedByMember:
+  # Total tokens received by a member (instant + streaming distributions).
+  # Reverts if token doesn't match pool.superToken().
+  # Alias: getTotalAmountReceivedFromPool(token, pool, memberAddr)
+  mutability: view
+  visibility: internal
+  inputs:
+    - token: ISuperToken
+    - pool: ISuperfluidPool
+    - memberAddr: address
+  outputs:
+    - totalAmountReceived: uint256
+
+estimateFlowDistributionActualFlowRate:
+  # Preview the actual flow rate and total distribution rate before
+  # calling distributeFlow. Useful to predict rounding effects.
+  mutability: view
+  visibility: internal
+  inputs:
+    - token: ISuperToken
+    - from: address
+    - to: ISuperfluidPool
+    - requestedFlowRate: int96
+  outputs:
+    - actualFlowRate: int96
+    - totalDistributionFlowRate: int96
+
+estimateDistributionActualAmount:
+  # Preview the actual amount distributed before calling distribute.
+  # Useful to predict rounding effects.
+  mutability: view
+  visibility: internal
+  inputs:
+    - token: ISuperToken
+    - from: address
+    - to: ISuperfluidPool
+    - requestedAmount: uint256
+  outputs:
+    - actualAmount: uint256
+
+isMemberConnected:
+  # Check if a member is connected to a pool.
+  mutability: view
+  visibility: internal
+  inputs:
+    - token: ISuperToken
+    - pool: address
+    - member: address
+  outputs:
+    - bool

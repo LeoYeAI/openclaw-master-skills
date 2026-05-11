@@ -1,0 +1,703 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Neon Cyber — slide-creator</title>
+  <link href="https://api.fontshare.com/v2/css?f[]=clash-display@700,800&f[]=satoshi@400,500&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-snap-type: y mandatory; scroll-behavior: smooth; height: 100%; }
+    body { height: 100%; overflow-x: hidden; font-family: 'Satoshi', sans-serif; background: #0a0f1c; color: #ffffff; }
+
+    /* GRID BACKGROUND */
+    body::before {
+      content: '';
+      position: fixed; inset: 0; z-index: 0; pointer-events: none;
+      background-image:
+        linear-gradient(rgba(0,255,204,0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0,255,204,0.03) 1px, transparent 1px);
+      background-size: 50px 50px;
+    }
+
+    /* SCANLINES */
+    body::after {
+      content: '';
+      position: fixed; inset: 0; z-index: 1; pointer-events: none;
+      background: repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 2px,
+        rgba(0,255,204,0.01) 2px,
+        rgba(0,255,204,0.01) 4px
+      );
+    }
+
+    /* PARTICLES */
+    .particle {
+      position: fixed; border-radius: 50%; pointer-events: none; z-index: 0;
+      animation: particleDrift linear infinite;
+    }
+    @keyframes particleDrift {
+      0% { transform: translateY(100vh) scale(0); opacity: 0; }
+      10% { opacity: 1; }
+      90% { opacity: 0.6; }
+      100% { transform: translateY(-20vh) scale(1); opacity: 0; }
+    }
+
+    .slide {
+      width: 100vw; height: 100vh; height: 100dvh;
+      scroll-snap-align: start; overflow: hidden;
+      position: relative; display: flex; flex-direction: column;
+      background: #0a0f1c; z-index: 2;
+    }
+
+    /* NEON GLITCH TITLE */
+    @keyframes glitch-1 {
+      0%, 90%, 100% { clip-path: inset(0 0 100% 0); transform: translate(0); }
+      92% { clip-path: inset(20% 0 60% 0); transform: translate(-4px, 1px); }
+      94% { clip-path: inset(40% 0 40% 0); transform: translate(4px, -1px); }
+      96% { clip-path: inset(70% 0 10% 0); transform: translate(-2px, 0); }
+      98% { clip-path: inset(5% 0 80% 0); transform: translate(3px, 1px); }
+    }
+    @keyframes glitch-2 {
+      0%, 88%, 100% { clip-path: inset(0 0 100% 0); transform: translate(0); opacity: 0; }
+      90% { clip-path: inset(60% 0 20% 0); transform: translate(4px, -2px); opacity: 0.8; }
+      93% { clip-path: inset(10% 0 70% 0); transform: translate(-4px, 1px); opacity: 0.6; }
+      97% { clip-path: inset(80% 0 5% 0); transform: translate(2px, 0); opacity: 0.7; }
+    }
+    @keyframes neonPulse {
+      0%, 100% { text-shadow: 0 0 20px rgba(0,255,204,0.5), 0 0 40px rgba(0,255,204,0.2); }
+      50% { text-shadow: 0 0 30px rgba(0,255,204,0.8), 0 0 60px rgba(0,255,204,0.4), 0 0 80px rgba(0,255,204,0.1); }
+    }
+    @keyframes magentaPulse {
+      0%, 100% { text-shadow: 0 0 20px rgba(255,0,170,0.5), 0 0 40px rgba(255,0,170,0.2); }
+      50% { text-shadow: 0 0 30px rgba(255,0,170,0.8), 0 0 60px rgba(255,0,170,0.4); }
+    }
+    @keyframes borderPulse {
+      0%, 100% { box-shadow: 0 0 0 1px rgba(0,255,204,0.3), 0 0 20px rgba(0,255,204,0.1); }
+      50% { box-shadow: 0 0 0 1px rgba(0,255,204,0.6), 0 0 30px rgba(0,255,204,0.2); }
+    }
+
+    /* TYPOGRAPHY */
+    .cyber-label {
+      font-family: 'Satoshi', sans-serif;
+      font-size: clamp(10px, 1.3vw, 12px); font-weight: 500;
+      letter-spacing: 0.2em; text-transform: uppercase;
+      color: #00ffcc; animation: neonPulse 3s ease-in-out infinite;
+      margin-bottom: 16px;
+    }
+    .cyber-title {
+      font-family: 'Clash Display', sans-serif;
+      font-size: clamp(56px, 10vw, 110px);
+      font-weight: 800; line-height: 0.92;
+      color: #00ffcc; letter-spacing: -0.04em;
+      animation: neonPulse 3s ease-in-out infinite;
+      position: relative;
+    }
+    .cyber-title::before,
+    .cyber-title::after {
+      content: attr(data-text);
+      position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+      font-family: 'Clash Display', sans-serif; font-size: inherit;
+      font-weight: inherit; line-height: inherit; letter-spacing: inherit;
+    }
+    .cyber-title::before { color: #ff00aa; animation: glitch-1 8s ease-in-out infinite; }
+    .cyber-title::after { color: #00aaff; animation: glitch-2 8s ease-in-out infinite; }
+
+    .cyber-heading {
+      font-family: 'Clash Display', sans-serif;
+      font-size: clamp(30px, 5vw, 54px);
+      font-weight: 700; line-height: 1.05; letter-spacing: -0.03em;
+      color: #ffffff; margin-bottom: 16px;
+    }
+    .cyber-heading .accent { color: #00ffcc; animation: neonPulse 3s ease-in-out infinite; }
+    .cyber-heading .magenta { color: #ff00aa; animation: magentaPulse 3s ease-in-out infinite; }
+
+    .body-text {
+      font-family: 'Satoshi', sans-serif;
+      font-size: clamp(14px, 1.8vw, 17px); font-weight: 400;
+      color: rgba(255,255,255,0.5); line-height: 1.7;
+      max-width: 520px;
+    }
+
+    /* LAYOUT */
+    .content-wrapper {
+      flex: 1; display: flex; flex-direction: column; justify-content: center;
+      padding: clamp(32px, 5vh, 64px) clamp(32px, 6vw, 96px);
+      max-width: 920px; margin: 0 auto; width: 100%;
+      position: relative; z-index: 3;
+    }
+
+    /* NEON CARD */
+    .cyber-card {
+      border: 1px solid rgba(0,255,204,0.2);
+      background: rgba(0,255,204,0.03);
+      padding: clamp(16px, 2.5vw, 24px);
+      animation: borderPulse 4s ease-in-out infinite;
+      margin-bottom: 12px;
+      position: relative;
+    }
+    .cyber-card::before {
+      content: ''; position: absolute; top: 0; left: 0;
+      width: 40px; height: 2px; background: #00ffcc;
+    }
+    .cyber-card::after {
+      content: ''; position: absolute; top: 0; left: 0;
+      width: 2px; height: 40px; background: #00ffcc;
+    }
+    .card-tag {
+      font-size: 10px; font-weight: 500; letter-spacing: 0.2em;
+      text-transform: uppercase; color: #00ffcc; margin-bottom: 6px; display: block;
+    }
+    .card-title {
+      font-family: 'Clash Display', sans-serif;
+      font-size: clamp(15px, 2vw, 18px); font-weight: 700; color: #ffffff; margin-bottom: 4px;
+    }
+    .card-body { font-size: clamp(12px, 1.5vw, 14px); color: rgba(255,255,255,0.5); line-height: 1.5; }
+
+    /* CYBER GRID */
+    .cyber-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 8px; margin-top: 16px; }
+    .cyber-grid-item {
+      border: 1px solid rgba(0,255,204,0.15); padding: 9px 11px;
+      font-size: clamp(10px, 1.2vw, 11px); font-weight: 500; color: rgba(255,255,255,0.5);
+      background: rgba(0,255,204,0.02); text-align: center;
+      transition: all 0.2s;
+    }
+    .cyber-grid-item:hover { border-color: rgba(0,255,204,0.5); color: #00ffcc; background: rgba(0,255,204,0.05); }
+    .cyber-grid-item.featured { border-color: #00ffcc; color: #00ffcc; background: rgba(0,255,204,0.08); animation: borderPulse 2s ease-in-out infinite; }
+    .cyber-grid-item.magenta-feat { border-color: #ff00aa; color: #ff00aa; background: rgba(255,0,170,0.05); }
+
+    /* STEPS */
+    .step-cyber {
+      display: flex; gap: 20px; align-items: flex-start; padding: 16px 0;
+      border-bottom: 1px solid rgba(0,255,204,0.08);
+      opacity: 0; transform: translateX(-24px);
+      transition: opacity 0.3s ease, transform 0.3s ease;
+    }
+    .slide.visible .step-cyber:nth-child(1) { opacity: 1; transform: translateX(0); transition-delay: 0.05s; }
+    .slide.visible .step-cyber:nth-child(2) { opacity: 1; transform: translateX(0); transition-delay: 0.12s; }
+    .slide.visible .step-cyber:nth-child(3) { opacity: 1; transform: translateX(0); transition-delay: 0.19s; }
+    .step-cy-num {
+      font-family: 'Clash Display', sans-serif; font-size: 11px; font-weight: 700;
+      color: #00ffcc; letter-spacing: 0.1em; width: 32px; flex-shrink: 0; padding-top: 3px;
+      animation: neonPulse 3s ease-in-out infinite;
+    }
+    .step-cy-title {
+      font-family: 'Clash Display', sans-serif;
+      font-size: clamp(16px, 2.2vw, 20px); font-weight: 700; color: #ffffff; margin-bottom: 4px;
+    }
+    .step-cy-body { font-size: clamp(12px, 1.5vw, 14px); color: rgba(255,255,255,0.5); line-height: 1.5; }
+
+    /* ENTRANCE ANIMATION */
+    .cyber-entrance {
+      opacity: 0; transform: translateY(20px);
+      transition: opacity 0.3s ease, transform 0.3s ease;
+    }
+    .slide.visible .cyber-entrance { opacity: 1; transform: translateY(0); }
+    .slide.visible .cyber-entrance.d1 { transition-delay: 0.05s; }
+    .slide.visible .cyber-entrance.d2 { transition-delay: 0.12s; }
+    .slide.visible .cyber-entrance.d3 { transition-delay: 0.2s; }
+    .slide.visible .cyber-entrance.d4 { transition-delay: 0.28s; }
+
+    /* STAT BLOCKS */
+    .stat-row { display: flex; gap: 24px; flex-wrap: wrap; margin-top: 8px; }
+    .stat-block {
+      border: 1px solid rgba(0,255,204,0.2); padding: 16px 20px; flex: 1; min-width: 100px;
+      animation: borderPulse 4s ease-in-out infinite;
+    }
+    .stat-num {
+      font-family: 'Clash Display', sans-serif; font-size: clamp(28px, 4vw, 42px);
+      font-weight: 800; color: #00ffcc; line-height: 1;
+      animation: neonPulse 3s ease-in-out infinite;
+    }
+    .stat-label { font-size: 10px; font-weight: 500; letter-spacing: 0.15em; text-transform: uppercase; color: rgba(255,255,255,0.4); margin-top: 4px; }
+
+    /* FEATURES */
+    .feature-cyber {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 14px 0; border-bottom: 1px solid rgba(0,255,204,0.08);
+      opacity: 0; transform: translateX(-16px);
+      transition: opacity 0.3s ease, transform 0.3s ease;
+    }
+    .slide.visible .feature-cyber:nth-child(1) { opacity: 1; transform: translateX(0); transition-delay: 0.06s; }
+    .slide.visible .feature-cyber:nth-child(2) { opacity: 1; transform: translateX(0); transition-delay: 0.12s; }
+    .slide.visible .feature-cyber:nth-child(3) { opacity: 1; transform: translateX(0); transition-delay: 0.18s; }
+    .slide.visible .feature-cyber:nth-child(4) { opacity: 1; transform: translateX(0); transition-delay: 0.24s; }
+    .feat-name {
+      font-family: 'Clash Display', sans-serif;
+      font-size: clamp(15px, 2vw, 18px); font-weight: 700; color: #ffffff;
+      display: flex; align-items: center; gap: 10px;
+    }
+    .feat-name::before { content: '\2192'; color: #00ffcc; animation: neonPulse 3s ease-in-out infinite; }
+    .feat-tag {
+      font-size: 10px; font-weight: 500; letter-spacing: 0.15em; text-transform: uppercase;
+      color: #00ffcc; border: 1px solid rgba(0,255,204,0.3); padding: 3px 10px;
+    }
+    .feat-tag.mg { color: #ff00aa; border-color: rgba(255,0,170,0.3); }
+
+    /* CODE */
+    .code-block {
+      background: rgba(0,255,204,0.05); border: 1px solid rgba(0,255,204,0.2);
+      padding: 14px 20px; font-family: 'Courier New', monospace;
+      font-size: clamp(11px, 1.4vw, 13px); color: #00ffcc;
+      line-height: 1.6; margin: 8px 0; word-break: break-all;
+      position: relative;
+    }
+    .code-block::before {
+      content: ''; position: absolute; top: 0; left: 0;
+      width: 3px; height: 100%; background: #00ffcc;
+      animation: neonPulse 2s ease-in-out infinite;
+    }
+
+    /* INSTALL BLOCKS */
+    .install-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 16px; }
+    .install-block {
+      border: 1px solid rgba(0,255,204,0.15); padding: 20px;
+      background: rgba(0,255,204,0.02);
+    }
+    .install-label { font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase; color: rgba(255,255,255,0.4); margin-bottom: 12px; }
+
+    /* CTA */
+    .cta-cyber {
+      display: inline-flex; align-items: center; gap: 10px;
+      padding: 14px 30px; border: 1px solid #00ffcc;
+      background: transparent; color: #00ffcc;
+      font-family: 'Clash Display', sans-serif; font-size: clamp(13px, 1.7vw, 16px); font-weight: 700;
+      letter-spacing: 0.06em; text-decoration: none; cursor: pointer;
+      animation: borderPulse 3s ease-in-out infinite;
+      transition: background 0.2s;
+      margin-top: 20px; margin-right: 12px;
+    }
+    .cta-cyber:hover { background: rgba(0,255,204,0.1); }
+    .cta-cyber.mg { border-color: #ff00aa; color: #ff00aa; animation: none; }
+    .cta-cyber.mg:hover { background: rgba(255,0,170,0.1); }
+
+    /* DIVIDER LINE */
+    .cyber-rule { width: 100%; height: 1px; background: rgba(0,255,204,0.15); margin: 16px 0; }
+
+    /* SLIDE NUMBER */
+    .slide-num {
+      position: absolute; top: 24px; right: 24px; z-index: 10;
+      font-size: 11px; font-weight: 500; letter-spacing: 0.15em;
+      color: rgba(0,255,204,0.5); font-family: 'Satoshi', sans-serif;
+    }
+
+    /* PROGRESS */
+    #progress-bar {
+      position: fixed; top: 0; left: 0; width: 0%; height: 2px;
+      background: linear-gradient(to right, #00ffcc, #ff00aa);
+      z-index: 100; transition: width 0.3s ease;
+      box-shadow: 0 0 8px rgba(0,255,204,0.6);
+    }
+
+    /* NAV DOTS */
+    #nav-dots {
+      position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
+      display: flex; gap: 8px; z-index: 100;
+    }
+    .nav-dot {
+      width: 6px; height: 6px; border-radius: 50%; cursor: pointer; border: none;
+      background: rgba(0,255,204,0.2); transition: all 0.3s ease;
+    }
+    .nav-dot.active {
+      background: #00ffcc;
+      box-shadow: 0 0 8px rgba(0,255,204,0.8);
+    }
+
+    /* EDIT */
+    #edit-zone { position: fixed; top: 0; left: 0; width: 80px; height: 80px; z-index: 200; cursor: pointer; }
+    #edit-indicator {
+      position: fixed; top: 12px; left: 12px; z-index: 201;
+      background: rgba(0,255,204,0.1); border: 1px solid rgba(0,255,204,0.3);
+      color: #00ffcc; padding: 4px 12px;
+      font-size: 10px; font-weight: 500; letter-spacing: 0.15em; text-transform: uppercase;
+      display: none; align-items: center; gap: 6px;
+    }
+    body.edit-mode [contenteditable] { outline: 1px solid rgba(0,255,204,0.3); }
+    body.edit-mode #edit-indicator { display: flex; }
+
+    /* CORNER BRACKET DECORATION */
+    .corner-br {
+      position: absolute; bottom: 20px; right: 20px; z-index: 2;
+      width: 40px; height: 40px;
+      border-right: 1px solid rgba(0,255,204,0.15);
+      border-bottom: 1px solid rgba(0,255,204,0.15);
+    }
+    .corner-tl {
+      position: absolute; top: 20px; left: 20px; z-index: 2;
+      width: 40px; height: 40px;
+      border-left: 1px solid rgba(0,255,204,0.15);
+      border-top: 1px solid rgba(0,255,204,0.15);
+    }
+
+    @media (max-width: 600px) {
+      .install-row { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<div id="progress-bar"></div>
+<div id="edit-zone" title="Click or press E to edit"></div>
+<div id="edit-indicator">&#9656; EDIT MODE &middot; CTRL+S TO SAVE</div>
+<div id="nav-dots"></div>
+
+<!-- SLIDE 1: COVER -->
+<section class="slide" data-slide="0">
+  <div class="corner-tl"></div>
+  <div class="corner-br"></div>
+  <span class="slide-num">01 / 08</span>
+  <div class="content-wrapper">
+    <div class="cyber-label cyber-entrance d1">// INTRODUCING</div>
+    <h1 class="cyber-title cyber-entrance d2" data-text="slide-creator">slide-creator</h1>
+    <div class="cyber-rule cyber-entrance d3"></div>
+    <p class="body-text cyber-entrance d3">
+      Zero-dependency HTML presentations for Claude Code &amp; OpenClaw.<br>
+      No build system. No node_modules. Just results.
+    </p>
+    <div class="stat-row cyber-entrance d4">
+      <div class="stat-block">
+        <div class="stat-num">19</div>
+        <div class="stat-label">Presets</div>
+      </div>
+      <div class="stat-block">
+        <div class="stat-num">0</div>
+        <div class="stat-label">Dependencies</div>
+      </div>
+      <div class="stat-block">
+        <div class="stat-num">&#8734;</div>
+        <div class="stat-label">Slides</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SLIDE 2: THE PROBLEM -->
+<section class="slide" data-slide="1">
+  <div class="corner-tl"></div>
+  <div class="corner-br"></div>
+  <span class="slide-num">02 / 08</span>
+  <div class="content-wrapper">
+    <div class="cyber-label cyber-entrance d1">// THE PROBLEM</div>
+    <h2 class="cyber-heading cyber-entrance d2">Presentations shouldn't require a<br><span class="accent">build system</span></h2>
+    <div class="cyber-rule cyber-entrance d3"></div>
+    <div class="cyber-entrance d3">
+      <div class="cyber-card" style="animation-delay:0s;">
+        <span class="card-tag">&rarr; PAIN POINT 01</span>
+        <div class="card-title">Complex toolchain</div>
+        <div class="card-body">npm install, webpack config, 300MB node_modules. Just to make slides. Unacceptable.</div>
+      </div>
+      <div class="cyber-card" style="animation-delay:1.3s;">
+        <span class="card-tag">&rarr; PAIN POINT 02</span>
+        <div class="card-title">Generic output</div>
+        <div class="card-body">Every AI deck looks the same&mdash;Inter font, purple gradients. Zero signal, maximum noise.</div>
+      </div>
+      <div class="cyber-card" style="animation-delay:2.6s;">
+        <span class="card-tag">&rarr; PAIN POINT 03</span>
+        <div class="card-title">No ownership</div>
+        <div class="card-body">Closed platforms. Export locks. Monthly fees. Your slides are hostages.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SLIDE 3: SHOW DON'T TELL -->
+<section class="slide" data-slide="2">
+  <div class="corner-tl"></div>
+  <div class="corner-br"></div>
+  <span class="slide-num">03 / 08</span>
+  <div class="content-wrapper">
+    <div class="cyber-label cyber-entrance d1">// THE INTERFACE</div>
+    <h2 class="cyber-heading cyber-entrance d2">Style discovery that<br><span class="magenta">actually works</span></h2>
+    <p class="body-text cyber-entrance d3">
+      You can't describe design preferences in words. slide-creator generates 3 visual previews&mdash;you react, not describe.
+    </p>
+    <div class="cyber-rule cyber-entrance d3"></div>
+    <div>
+      <div class="step-cyber">
+        <div class="step-cy-num">01//</div>
+        <div>
+          <div class="step-cy-title">ASK MOOD</div>
+          <div class="step-cy-body">Input the vibe. Warm, sharp, playful, technical. Natural language processed.</div>
+        </div>
+      </div>
+      <div class="step-cyber">
+        <div class="step-cy-num">02//</div>
+        <div>
+          <div class="step-cy-title">GENERATE 3 MINI PREVIEWS</div>
+          <div class="step-cy-body">Three distinct visual systems rendered. Side by side. Zero config.</div>
+        </div>
+      </div>
+      <div class="step-cyber">
+        <div class="step-cy-num">03//</div>
+        <div>
+          <div class="step-cy-title">PICK THE ONE THAT FEELS RIGHT</div>
+          <div class="step-cy-body">Gut feeling wins. That's the whole architecture.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SLIDE 4: 19 PRESETS -->
+<section class="slide" data-slide="3">
+  <div class="corner-tl"></div>
+  <div class="corner-br"></div>
+  <span class="slide-num">04 / 08</span>
+  <div class="content-wrapper">
+    <div class="cyber-label cyber-entrance d1">// DESIGN SYSTEM</div>
+    <h2 class="cyber-heading cyber-entrance d2">19 curated styles.<br><span class="accent">No generic AI aesthetics.</span></h2>
+    <p class="body-text cyber-entrance d3">Every preset engineered for a distinct visual language. From brutalist to botanical. Signal over noise.</p>
+    <div class="cyber-grid cyber-entrance d4">
+      <div class="cyber-grid-item">Bold Signal</div>
+      <div class="cyber-grid-item">Electric Studio</div>
+      <div class="cyber-grid-item">Creative Voltage</div>
+      <div class="cyber-grid-item">Dark Botanical</div>
+      <div class="cyber-grid-item">Blue Sky</div>
+      <div class="cyber-grid-item">Notebook Tabs</div>
+      <div class="cyber-grid-item">Pastel Geometry</div>
+      <div class="cyber-grid-item">Split Pastel</div>
+      <div class="cyber-grid-item">Vintage Editorial</div>
+      <div class="cyber-grid-item featured">Neon Cyber &#10022;</div>
+      <div class="cyber-grid-item">Terminal Green</div>
+      <div class="cyber-grid-item">Swiss Modern</div>
+      <div class="cyber-grid-item">Paper &amp; Ink</div>
+      <div class="cyber-grid-item">Aurora Mesh</div>
+      <div class="cyber-grid-item">Enterprise Dark</div>
+      <div class="cyber-grid-item">Glassmorphism</div>
+      <div class="cyber-grid-item magenta-feat">Neo-Brutalism</div>
+      <div class="cyber-grid-item">Japanese Zen</div>
+      <div class="cyber-grid-item">Data Story</div>
+    </div>
+  </div>
+</section>
+
+<!-- SLIDE 5: HOW IT WORKS -->
+<section class="slide" data-slide="4">
+  <div class="corner-tl"></div>
+  <div class="corner-br"></div>
+  <span class="slide-num">05 / 08</span>
+  <div class="content-wrapper">
+    <div class="cyber-label cyber-entrance d1">// WORKFLOW</div>
+    <h2 class="cyber-heading cyber-entrance d2">From idea to presentation<br><span class="accent">in minutes</span></h2>
+    <div class="cyber-rule cyber-entrance d2"></div>
+    <div>
+      <div class="step-cyber">
+        <div class="step-cy-num">01//</div>
+        <div>
+          <div class="step-cy-title">/SLIDE-CREATOR</div>
+          <div class="step-cy-body">Answer a few questions. Content, mood, audience, tone. Two minutes max.</div>
+        </div>
+      </div>
+      <div class="step-cyber">
+        <div class="step-cy-num">02//</div>
+        <div>
+          <div class="step-cy-title">PICK FROM 3 PREVIEWS</div>
+          <div class="step-cy-body">React to three visual styles rendered side by side. Gut feeling over color theory.</div>
+        </div>
+      </div>
+      <div class="step-cyber">
+        <div class="step-cy-num">03//</div>
+        <div>
+          <div class="step-cy-title">OPEN YOUR HTML</div>
+          <div class="step-cy-body">Arrow keys &rarr; Space &rarr; Swipe. Any browser. Zero installs.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SLIDE 6: FEATURES -->
+<section class="slide" data-slide="5">
+  <div class="corner-tl"></div>
+  <div class="corner-br"></div>
+  <span class="slide-num">06 / 08</span>
+  <div class="content-wrapper">
+    <div class="cyber-label cyber-entrance d1">// CAPABILITIES</div>
+    <h2 class="cyber-heading cyber-entrance d2">Everything you need.<br><span class="accent">Nothing you don't.</span></h2>
+    <div class="cyber-rule cyber-entrance d3"></div>
+    <div>
+      <div class="feature-cyber">
+        <div class="feat-name">Viewport Fitting</div>
+        <div class="feat-tag">ADAPTIVE</div>
+      </div>
+      <div class="feature-cyber">
+        <div class="feat-name">Inline Editing</div>
+        <div class="feat-tag mg">E KEY + CTRL+S</div>
+      </div>
+      <div class="feature-cyber">
+        <div class="feat-name">PPTX Export</div>
+        <div class="feat-tag">ONE CLICK</div>
+      </div>
+      <div class="feature-cyber" style="border-bottom:1px solid rgba(0,255,204,0.08);">
+        <div class="feat-name">Two-Stage Workflow</div>
+        <div class="feat-tag">--PLAN &rarr; --GENERATE</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SLIDE 7: INSTALL -->
+<section class="slide" data-slide="6">
+  <div class="corner-tl"></div>
+  <div class="corner-br"></div>
+  <span class="slide-num">07 / 08</span>
+  <div class="content-wrapper">
+    <div class="cyber-label cyber-entrance d1">// INSTALLATION</div>
+    <h2 class="cyber-heading cyber-entrance d2">Two vectors in.<br><span class="accent">Both take 30 seconds.</span></h2>
+    <div class="install-row cyber-entrance d3">
+      <div class="install-block">
+        <div class="install-label">// Claude Code</div>
+        <div class="code-block">git clone https://github.com/kaisersong/slide-creator ~/.claude/skills/slide-creator</div>
+      </div>
+      <div class="install-block">
+        <div class="install-label">// OpenClaw</div>
+        <div class="code-block">clawhub install html-slide-creator</div>
+      </div>
+    </div>
+    <div class="cyber-rule cyber-entrance d4"></div>
+    <p class="body-text cyber-entrance d4">
+      &rarr; Free. &rarr; Open source. &rarr; MIT license. &rarr; No signup. &rarr; No tracking.
+    </p>
+  </div>
+</section>
+
+<!-- SLIDE 8: GET STARTED -->
+<section class="slide" data-slide="7">
+  <div class="corner-tl"></div>
+  <div class="corner-br"></div>
+  <span class="slide-num">08 / 08</span>
+  <div class="content-wrapper">
+    <div class="cyber-label cyber-entrance d1">// INITIALIZE</div>
+    <h2 class="cyber-heading cyber-entrance d2">Your next deck<br><span class="magenta">starts here</span></h2>
+    <p class="body-text cyber-entrance d3">
+      Works with Claude Code and OpenClaw. Runs entirely in your browser. Zero installs&mdash;maximum output.
+    </p>
+    <div class="cyber-entrance d3" style="margin-top:20px;">
+      <div class="code-block" style="font-size:clamp(18px,3vw,28px); text-align:center; padding:20px 32px; letter-spacing:0.04em;">/slide-creator</div>
+    </div>
+    <div class="cyber-entrance d4">
+      <button class="cta-cyber" onclick="saveFile()">&rarr; SAVE THIS PRESENTATION</button>
+      <a class="cta-cyber mg" href="https://github.com/kaisersong/slide-creator" target="_blank">&rarr; VIEW ON GITHUB</a>
+    </div>
+  </div>
+</section>
+
+<script>
+  // PARTICLES
+  (function() {
+    const colors = ['rgba(0,255,204,0.6)', 'rgba(255,0,170,0.4)', 'rgba(0,170,255,0.3)'];
+    for (let i = 0; i < 18; i++) {
+      const p = document.createElement('div');
+      p.className = 'particle';
+      const size = Math.random() * 3 + 1;
+      p.style.cssText = `
+        width:${size}px; height:${size}px;
+        left:${Math.random()*100}%;
+        background:${colors[Math.floor(Math.random()*colors.length)]};
+        animation-duration:${8 + Math.random()*12}s;
+        animation-delay:${Math.random()*10}s;
+      `;
+      document.body.appendChild(p);
+    }
+  })();
+
+  const slides = document.querySelectorAll('.slide');
+  const totalSlides = slides.length;
+  let cur = 0;
+
+  // Nav dots
+  const navDotsEl = document.getElementById('nav-dots');
+  slides.forEach((_, i) => {
+    const dot = document.createElement('button');
+    dot.className = 'nav-dot' + (i === 0 ? ' active' : '');
+    dot.setAttribute('aria-label', `Slide ${i + 1}`);
+    dot.addEventListener('click', () => goTo(i));
+    navDotsEl.appendChild(dot);
+  });
+
+  function updateNav(index) {
+    document.querySelectorAll('.nav-dot').forEach((d, i) => d.classList.toggle('active', i === index));
+    const pct = totalSlides > 1 ? (index / (totalSlides - 1)) * 100 : 100;
+    document.getElementById('progress-bar').style.width = pct + '%';
+    cur = index;
+  }
+
+  function goTo(index) {
+    const clamped = Math.max(0, Math.min(totalSlides - 1, index));
+    slides[clamped].scrollIntoView({ behavior: 'smooth' });
+  }
+
+  // IntersectionObserver
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+        updateNav(Array.from(slides).indexOf(entry.target));
+      }
+    });
+  }, { threshold: 0.5 });
+  slides.forEach(s => observer.observe(s));
+
+  // Keyboard
+  document.addEventListener('keydown', e => {
+    if (e.ctrlKey || e.metaKey) {
+      if (e.key === 's') { e.preventDefault(); saveFile(); return; }
+    }
+    if (document.body.classList.contains('edit-mode') && !['ArrowUp','ArrowDown','ArrowLeft','ArrowRight',' '].includes(e.key)) return;
+    switch (e.key) {
+      case 'ArrowDown': case 'ArrowRight': case ' ': e.preventDefault(); goTo(cur + 1); break;
+      case 'ArrowUp': case 'ArrowLeft': e.preventDefault(); goTo(cur - 1); break;
+      case 'e': case 'E': if (!document.body.classList.contains('edit-mode')) toggleEditMode(); break;
+    }
+  });
+
+  // Wheel — debounce-reset (NOT time throttle)
+  let wheelLocked = false, wheelTimer = null;
+  document.addEventListener('wheel', e => {
+    clearTimeout(wheelTimer);
+    if (!wheelLocked) { wheelLocked = true; e.deltaY > 0 ? goTo(cur + 1) : goTo(cur - 1); }
+    wheelTimer = setTimeout(() => { wheelLocked = false; }, 180);
+  }, { passive: true });
+
+  // Touch swipe
+  let touchStartY = 0;
+  document.addEventListener('touchstart', e => { touchStartY = e.touches[0].clientY; }, { passive: true });
+  document.addEventListener('touchend', e => {
+    const dy = touchStartY - e.changedTouches[0].clientY;
+    if (Math.abs(dy) > 50) goTo(dy > 0 ? cur + 1 : cur - 1);
+  }, { passive: true });
+
+  // Edit mode
+  function toggleEditMode() {
+    document.body.classList.toggle('edit-mode');
+    const isEdit = document.body.classList.contains('edit-mode');
+    if (isEdit) {
+      document.querySelectorAll('.cyber-heading, .cyber-title, .body-text, .cyber-label, .card-title, .card-body, .step-cy-title, .step-cy-body, .feat-name, .stat-num, .stat-label, .cyber-grid-item, .code-block').forEach(el => {
+        el.setAttribute('contenteditable', 'true');
+      });
+    } else {
+      document.querySelectorAll('[contenteditable]').forEach(el => el.removeAttribute('contenteditable'));
+    }
+  }
+
+  document.getElementById('edit-zone').addEventListener('click', toggleEditMode);
+
+  async function saveFile() {
+    const html = '<!DOCTYPE html>\n' + document.documentElement.outerHTML;
+    if (window.showSaveFilePicker) {
+      try {
+        const h = await window.showSaveFilePicker({ suggestedName: 'neon-cyber.html', types: [{ accept: { 'text/html': ['.html'] } }] });
+        const w = await h.createWritable(); await w.write(html); await w.close();
+      } catch(e) { if (e.name !== 'AbortError') fallbackSave(html); }
+    } else fallbackSave(html);
+  }
+  function fallbackSave(html) {
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(new Blob([html], { type: 'text/html' }));
+    a.download = 'neon-cyber.html'; a.click();
+  }
+</script>
+</body>
+</html>

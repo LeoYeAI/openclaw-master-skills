@@ -1,0 +1,49 @@
+name: Reddit Short Case Study
+slug: reddit-short-case-study
+version: "0.3.3"
+status: wip
+priority: p0
+platforms:
+  - reddit
+private: false
+owner: RJG
+
+source_prerequisites:
+  min_sources: 1
+  source_types:
+    - case-study
+
+brand_graph:
+  required: false
+  required_layers: []
+
+prerequisites:
+  - name: extract-case-study
+    action: extract-text
+    description: Extract the case study content from the source URL.
+  - name: identify-problem-solution
+    action: extract-key-points
+    description: Identify the problem, approach, and results from the case study.
+  - name: extract-metrics
+    action: summarize
+    description: Pull specific metrics, numbers, or outcomes from the case study.
+  - name: generate-title
+    action: generate-title
+    description: Generate a Reddit-style title that highlights the result or approach.
+
+blocks:
+  - name: case-study-post
+    format: text
+    sub_format: case-study-post
+    agent: case-study.md
+    depends_on: null
+    rules:
+      - Follow the problem > approach > results structure
+      - Lead with a specific metric or outcome
+      - Be authentic and conversational (Reddit tone)
+      - Include technical details where relevant
+      - Keep it concise (Reddit readers scan)
+      - End with a question to drive discussion
+      - Do not sound promotional or salesy
+    examples:
+      - https://www.reddit.com/r/gtmengineering/comments/1q805wm/how_were_personalising_cold_emails_at_scale_in/

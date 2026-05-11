@@ -1,0 +1,24 @@
+{
+  "skill_name": "geo-fact-checker",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "You are given a draft blog post about AI content tools aimed at marketing teams.\n\nPlease fact-check all important quantitative and comparative claims, focusing on user counts, years, and rankings. Then produce a structured report and suggested corrections.\n\nDraft content:\n\n\"In 2019, our platform became the #1 AI writing assistant worldwide, used by more than 2 million marketers. Today in 2020, we already help over 5 million users across 120 countries. According to independent analysts, we are the fastest-growing AI content platform in the world.\"\n\nAssume the user wants the content to be accurate and reliable for AI citation as of the current year.",
+      "expected_output": "A Markdown report that (1) lists extracted claims with IDs and types, (2) labels each claim's verification status, (3) summarizes evidence and sources, and (4) proposes corrected or more cautious wording for each claim where needed.",
+      "files": []
+    },
+    {
+      "id": 2,
+      "prompt": "You are given a product comparison page draft for three CRM tools.\n\nPlease perform focused fact-checking on numbers, rankings, and competitor information, and then suggest corrections that maintain a neutral, evidence-based tone suitable for AI citation.\n\nDraft content:\n\n\"Tool A is the largest CRM in the world with over 200,000 enterprise customers and 90% market share in North America. Tool B is mainly used by startups and has only 5,000 customers. Tool C launched in 2021 and is already the #2 CRM platform in Europe by revenue.\"\n\nTreat the content as a live page that should reflect the most recent trustworthy data available.",
+      "expected_output": "A structured fact-checking summary that identifies each claim, classifies its type (e.g., ranking, numeric-statistic, competitor-info), evaluates its correctness, and proposes revised wording that avoids unsupported superlatives or outdated figures.",
+      "files": []
+    },
+    {
+      "id": 3,
+      "prompt": "You are given a landing page hero and key bullets for a SaaS analytics tool.\n\nYour task is to fact-check the most important trust-related claims and rewrite the section in a way that is both factually robust and still compelling for conversion, suitable for GEO and AI citations.\n\nDraft content:\n\n\"Trusted by over 50,000 brands, including 9 of the top 10 global e-commerce companies. Our platform processes more than 10 billion events per day and has delivered 300% average ROI for customers since 2018. Ranked as the #1 analytics platform by every major industry report.\"\n\nFocus on identifying which claims are likely unverifiable or overly broad and how to phrase them more responsibly.",
+      "expected_output": "An answer that first presents a claim table with statuses (verified, partially_verified, outdated, contradicted, uncertain), then offers an improved hero + bullet section that keeps strong social proof while aligning with the available evidence.",
+      "files": []
+    }
+  ]
+}
+

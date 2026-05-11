@@ -1,0 +1,102 @@
+[
+  {
+    "id": 0,
+    "prompt": "Check all current AADE and EFKA deadlines for the next 30 days and alert me if any are approaching within 7 days. I need this information formatted for a Greek accounting firm's morning briefing.",
+    "expectations": [
+      "Connects to AADE API or website to check current deadlines",
+      "Connects to EFKA systems for social security deadlines",
+      "Calculates days remaining for each deadline", 
+      "Identifies deadlines approaching within 7 days",
+      "Formats output appropriately for Greek business context",
+      "Includes system status for TAXIS and myDATA",
+      "Provides Greek holiday-aware business day calculations",
+      "Generates actionable alerts for approaching deadlines"
+    ],
+    "files": [
+      {
+        "name": "current_deadlines.json",
+        "content": "{\n  \"aade_deadlines\": [\n    {\n      \"type\": \"Monthly VAT Return\",\n      \"period\": \"February 2026\",\n      \"due_date\": \"2026-03-20\",\n      \"days_remaining\": 31,\n      \"priority\": \"high\"\n    },\n    {\n      \"type\": \"Individual Tax Return\",\n      \"period\": \"2025 Tax Year\",\n      \"due_date\": \"2026-06-30\",\n      \"days_remaining\": 133,\n      \"priority\": \"medium\"\n    }\n  ],\n  \"efka_deadlines\": [\n    {\n      \"type\": \"Monthly Social Security\",\n      \"period\": \"February 2026\",\n      \"due_date\": \"2026-02-24\",\n      \"days_remaining\": 7,\n      \"priority\": \"critical\"\n    }\n  ],\n  \"system_status\": {\n    \"taxis\": \"online\",\n    \"mydata\": \"online\", \n    \"efka_portal\": \"online\"\n  }\n}"
+      }
+    ]
+  },
+  {
+    "id": 1,
+    "prompt": "Monitor the AADE website for any deadline changes that occurred in the last 24 hours. If any changes are detected, send immediate alerts and update our compliance calendar.",
+    "expectations": [
+      "Scrapes or monitors AADE website for deadline announcements",
+      "Compares current deadlines with previously stored information",
+      "Detects any changes in deadline dates or requirements",
+      "Generates immediate alerts for detected changes",
+      "Calculates impact of deadline changes (days gained/lost)",
+      "Updates local deadline database with new information",
+      "Formats change notifications appropriately",
+      "Provides integration points for calendar updates"
+    ],
+    "files": [
+      {
+        "name": "deadline_changes.json",
+        "content": "{\n  \"changes_detected\": [\n    {\n      \"deadline_type\": \"Monthly VAT Return\",\n      \"period\": \"March 2026\",\n      \"old_date\": \"2026-04-25\",\n      \"new_date\": \"2026-04-20\",\n      \"change_detected_at\": \"2026-02-17T08:30:00Z\",\n      \"days_impact\": -5,\n      \"severity\": \"high\",\n      \"reason\": \"Updated AADE circular 1025/2026\"\n    }\n  ],\n  \"source_announcement\": {\n    \"url\": \"https://www.aade.gr/epiheiriseis/forologikes-ypohreosieis/deltia-typou\",\n    \"title\": \"Αλλαγή πÏοθεσμίας υποβολής πεÏιοδικής δήλωσης ΦΠΑ\",\n    \"date_published\": \"2026-02-17\"\n  }\n}"
+      }
+    ]
+  },
+  {
+    "id": 2,
+    "prompt": "Set up automated daily monitoring that checks AADE and EFKA systems every morning at 9 AM Greek time, and sends email alerts for any upcoming deadlines or system outages.",
+    "expectations": [
+      "Configures scheduled monitoring tasks for Greek timezone (EET/EEST)",
+      "Sets up email notification system with proper templates",
+      "Defines alert criteria for upcoming deadlines",
+      "Includes system health monitoring for AADE and EFKA",
+      "Creates proper cron job or scheduled task configuration",
+      "Tests email delivery and notification systems",
+      "Handles Greek holidays and business day calculations",
+      "Provides configuration for different alert severity levels"
+    ],
+    "files": [
+      {
+        "name": "monitor_config.yaml",
+        "content": "schedule:\n  daily_check:\n    time: \"09:00\"\n    timezone: \"Europe/Athens\"\n    enabled: true\n  \nemail_config:\n  smtp_server: \"smtp.gmail.com\"\n  port: 587\n  recipients:\n    - \"accounting@company.gr\"\n    - \"manager@company.gr\"\n  \nalert_thresholds:\n  critical: 3\n  warning: 7\n  info: 14\n  \nsystems_to_monitor:\n  - \"AADE_TAXIS\"\n  - \"AADE_myDATA\"\n  - \"EFKA_Portal\"\n  \ngreek_holidays:\n  - \"2026-03-18\"  # Clean Monday\n  - \"2026-03-25\"  # Independence Day\n  - \"2026-05-06\"  # Easter Monday"
+      }
+    ]
+  },
+  {
+    "id": 3,
+    "prompt": "Generate a comprehensive weekly compliance report that includes all upcoming deadlines, any system outages, rate changes, and recommendations for the next week's accounting tasks.",
+    "expectations": [
+      "Compiles all deadline information for the coming week",
+      "Analyzes system reliability and uptime statistics",
+      "Identifies any tax rate changes or regulatory updates",
+      "Generates actionable recommendations for accounting tasks",
+      "Formats report professionally for business distribution",
+      "Includes Greek regulatory context and compliance notes",
+      "Provides priority rankings for different tasks",
+      "Integrates historical data for trend analysis"
+    ],
+    "files": [
+      {
+        "name": "weekly_data.json",
+        "content": "{\n  \"week_period\": \"2026-02-17 to 2026-02-23\",\n  \"upcoming_deadlines\": [\n    {\n      \"date\": \"2026-02-20\",\n      \"type\": \"EFKA Monthly Contributions\",\n      \"priority\": \"high\",\n      \"estimated_hours\": 3\n    },\n    {\n      \"date\": \"2026-02-22\",\n      \"type\": \"Client Invoice Submissions\",\n      \"priority\": \"medium\", \n      \"estimated_hours\": 5\n    }\n  ],\n  \"system_uptime\": {\n    \"aade_taxis\": 99.2,\n    \"mydata\": 98.8,\n    \"efka_portal\": 97.5\n  },\n  \"rate_changes\": [],\n  \"regulatory_updates\": [\n    {\n      \"type\": \"VAT Circular Update\",\n      \"reference\": \"POL.1156/2026\",\n      \"effective_date\": \"2026-03-01\",\n      \"impact\": \"Updated myDATA submission requirements\"\n    }\n  ]\n}"
+      }
+    ]
+  },
+  {
+    "id": 4,
+    "prompt": "Check the current VAT rates from AADE and social security contribution rates from EFKA. Alert me if there have been any changes in the rates since last month and calculate the impact on our clients' tax obligations.",
+    "expectations": [
+      "Retrieves current VAT rates from AADE systems",
+      "Fetches current social security contribution rates from EFKA",
+      "Compares rates against historical stored rates",
+      "Identifies any rate changes and effective dates",
+      "Calculates financial impact of rate changes",
+      "Generates alerts for rate modifications",
+      "Provides context about rate change reasons if available",
+      "Suggests client communication about rate impacts"
+    ],
+    "files": [
+      {
+        "name": "rate_comparison.json",
+        "content": "{\n  \"vat_rates\": {\n    \"current\": {\n      \"standard\": 24,\n      \"reduced\": 13,\n      \"super_reduced\": 6,\n      \"effective_date\": \"2024-01-01\"\n    },\n    \"previous\": {\n      \"standard\": 24,\n      \"reduced\": 13,\n      \"super_reduced\": 6,\n      \"effective_date\": \"2024-01-01\"\n    },\n    \"changes\": []\n  },\n  \"social_security_rates\": {\n    \"current\": {\n      \"employee_main\": 6.67,\n      \"employee_auxiliary\": 3.0,\n      \"employer_total\": 22.29,\n      \"effective_date\": \"2026-01-01\"\n    },\n    \"previous\": {\n      \"employee_main\": 6.67,\n      \"employee_auxiliary\": 3.0,\n      \"employer_total\": 22.04,\n      \"effective_date\": \"2025-01-01\"\n    },\n    \"changes\": [\n      {\n        \"type\": \"employer_rate_increase\",\n        \"old_rate\": 22.04,\n        \"new_rate\": 22.29,\n        \"increase\": 0.25,\n        \"effective_date\": \"2026-01-01\"\n      }\n    ]\n  }\n}"
+      }
+    ]
+  }
+]

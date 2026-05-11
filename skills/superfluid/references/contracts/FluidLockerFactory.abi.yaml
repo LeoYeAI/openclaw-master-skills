@@ -1,0 +1,203 @@
+# FluidLockerFactory — beacon proxy factory that deploys one Reserve per user
+# Creates deterministic FluidLocker (Reserve) instances via BeaconProxy so
+# addresses can be computed before deployment. The governor can pause creation
+# and upgrade the beacon implementation.
+#
+# NOTE: Contracts use "FLUID" and "Locker" internally. Public-facing names are
+# "SUP" and "Reserve" respectively. Function/event/error names here match the
+# on-chain Solidity identifiers.
+#
+# NOTE: emits/errors mappings are best-effort — verify against source.
+
+meta:
+  name: FluidLockerFactory
+  version: v1
+  source:
+    - https://raw.githubusercontent.com/superfluid-org/sup-token/refs/heads/dev/packages/contracts/src/FluidLockerFactory.sol
+  deployments:
+    mainnet:
+      base-mainnet: "0xA6694cAB43713287F7735dADc940b555db9d39D9"
+
+# == Abbreviations ==
+# ERC1967 — proxy storage standard used by UpgradeableBeacon
+
+# == Glossary ==
+# FLUID / SUP        — the Superfluid governance token; contracts say FLUID, UI says SUP
+# Locker / Reserve   — the user's lock/stake contract; contracts say Locker, UI says Reserve
+# beacon proxy       — upgradable proxy pointing to a shared implementation via UpgradeableBeacon
+# governor           — privileged account that can pause creation, upgrade, and set a new governor
+
+# == Reserve Creation ==
+
+"createLockerContract(address)":
+  # Deploy a new Reserve (Locker) for a specific user.
+  # Reverts if the factory is paused.
+  notes:
+    - "Gotcha: Deterministic — the same user always maps to the same locker address."
+  mutability: nonpayable
+  access: anyone
+  inputs:
+    - user: address
+  outputs:
+    - lockerInstance: address
+  emits:
+    - LockerCreated
+  errors:
+    - LOCKER_CREATION_PAUSED
+
+"createLockerContract()":
+  # Deploy a new Reserve (Locker) for msg.sender. Convenience overload.
+  # Reverts if the factory is paused.
+  notes:
+    - "Gotcha: Deterministic — the same user always maps to the same locker address."
+  mutability: nonpayable
+  access: anyone
+  outputs:
+    - lockerInstance: address
+  emits:
+    - LockerCreated
+  errors:
+    - LOCKER_CREATION_PAUSED
+
+# == Query ==
+
+getLockerAddress:
+  # Compute the deterministic address for a user's Reserve.
+  # Returns the address regardless of whether the locker has been deployed.
+  mutability: view
+  inputs:
+    - user: address
+  outputs:
+    - lockerAddress: address
+
+getUserLocker:
+  # Check whether a user's Reserve exists and return its address.
+  # isCreated is false if the locker has not been deployed yet.
+  mutability: view
+  inputs:
+    - user: address
+  outputs:
+    - isCreated: bool
+    - lockerAddress: address
+
+getLockerBeaconImplementation:
+  # Current implementation address behind the UpgradeableBeacon.
+  mutability: view
+  outputs:
+    - lockerBeaconImpl: address
+
+# == Constants ==
+
+IS_PAUSED:
+  # Whether Reserve creation is paused (immutable, set at construction).
+  notes:
+    - "Gotcha: If true, both createLockerContract overloads revert."
+  mutability: view
+  outputs:
+    - bool
+
+LOCKER_BEACON:
+  # The UpgradeableBeacon contract that all Reserve proxies point to (immutable).
+  mutability: view
+  outputs:
+    - address
+
+STAKING_REWARD_CONTROLLER:
+  # The staking reward controller contract (immutable).
+  mutability: view
+  outputs:
+    - address
+
+# == Governance ==
+
+governor:
+  # Current governor address.
+  mutability: view
+  outputs:
+    - address
+
+setGovernor:
+  # Transfer the governor role to a new address.
+  mutability: nonpayable
+  access: governor
+  inputs:
+    - newGovernor: address
+  emits:
+    - GovernorUpdated
+  errors:
+    - NOT_GOVERNOR
+
+initialize:
+  # Proxy initializer — sets the initial governor. Called once after deployment.
+  mutability: nonpayable
+  inputs:
+    - _governor: address
+  errors:
+    - InvalidInitialization
+
+# == Upgrade ==
+
+upgradeTo:
+  # Upgrade the beacon implementation to a new FluidLocker logic contract.
+  # Optional data is forwarded as a delegatecall to the new implementation.
+  mutability: nonpayable
+  access: governor
+  inputs:
+    - newImplementation: address
+    - data: bytes
+  emits:
+    - Upgraded
+  errors:
+    - NOT_GOVERNOR
+    - ERC1967InvalidImplementation
+    - AddressEmptyCode
+    - FailedInnerCall
+
+# == Events ==
+
+events:
+
+  LockerCreated:
+    # Emitted when a new Reserve is deployed for a user.
+    data:
+      - lockerOwner: address
+      - lockerAddress: address
+
+  GovernorUpdated:
+    # Emitted when the governor is changed via setGovernor.
+    data:
+      - newGovernor: address
+
+  Upgraded:
+    # Emitted when the beacon implementation is upgraded (ERC1967).
+    indexed:
+      - implementation: address
+
+  Initialized:
+    # OpenZeppelin Initializable — emitted when initialize is called.
+    data:
+      - version: uint64
+
+# == Errors ==
+
+errors:
+
+  # -- Access Control --
+  - NOT_GOVERNOR                   # caller is not the governor
+
+  # -- Creation --
+  - LOCKER_CREATION_PAUSED         # factory IS_PAUSED is true
+
+  # -- Initialization --
+  - InvalidInitialization          # already initialized or not in initializer context
+  - NotInitializing                # modifier onlyInitializing check failed
+
+  # -- Proxy / ERC1967 --
+  - AddressEmptyCode:
+      inputs:
+        - target: address
+  - ERC1967InvalidImplementation:
+      inputs:
+        - implementation: address
+  - ERC1967NonPayable              # implementation received ETH unexpectedly
+  - FailedInnerCall                # delegatecall to new implementation reverted

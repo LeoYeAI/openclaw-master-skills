@@ -1,0 +1,49 @@
+{
+  "name": "humanizer",
+  "version": "2.1.0",
+  "description": "OpenClaw AI Humanizer - detect and remove AI writing patterns. Scans text for 24 common signs of AI-generated writing with statistical analysis (burstiness, TTR, readability) and provides actionable suggestions to make it sound natural and human.",
+  "main": "src/analyzer.js",
+  "bin": {
+    "humanizer": "src/cli.js"
+  },
+  "scripts": {
+    "start": "node src/cli.js",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "lint": "eslint src/ tests/",
+    "lint:fix": "eslint src/ tests/ --fix",
+    "format": "prettier --write 'src/**/*.js' 'tests/**/*.js'",
+    "format:check": "prettier --check 'src/**/*.js' 'tests/**/*.js'",
+    "check": "npm run lint && npm run format:check && npm test",
+    "build": "echo 'No build step needed — pure Node.js'"
+  },
+  "keywords": [
+    "ai",
+    "writing",
+    "humanize",
+    "llm",
+    "detection",
+    "text-analysis",
+    "openclaw",
+    "skill",
+    "burstiness",
+    "type-token-ratio",
+    "flesch-kincaid",
+    "ai-detection"
+  ],
+  "author": "Brandon Wise",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/brandonwise/humanizer"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.39.2",
+    "eslint": "^9.0.0",
+    "prettier": "^3.0.0",
+    "vitest": "^3.0.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

@@ -1,0 +1,71 @@
+# ConstantFlowAgreementV1 selectors — computed from @sfpro/sdk ABI
+
+functions:
+  addPermissions(uint8,uint8):                                0x72976490
+  agreementType():                                            0x7730599e
+  authorizeFlowOperatorWithFullControl(address,address,bytes): 0x54b770e3
+  castrate():                                                 0x9903ad38
+  CFA_HOOK_GAS_LIMIT():                                       0xbf3fbc28
+  createFlow(address,address,int96,bytes):                    0x62fc305e
+  createFlowByOperator(address,address,address,int96,bytes):  0x94229ecb
+  decreaseFlowRateAllowance(address,address,int96,bytes):     0x5f51fb23
+  decreaseFlowRateAllowanceWithPermissions(address,address,uint8,int96,bytes): 0xda6b5f30
+  DEFAULT_MINIMUM_DEPOSIT():                                  0x04aafa49
+  deleteFlow(address,address,address,bytes):                  0xb4b333c6
+  deleteFlowByOperator(address,address,address,bytes):        0x4c8b181f
+  getAccountFlowInfo(address,address):                        0x0f1ac495
+  getCodeAddress():                                           0x50d75d25
+  getDepositRequiredForFlowRate(address,int96):               0x8d997f6e
+  getFlow(address,address,address):                           0xe6a1e888
+  getFlowByID(address,bytes32):                               0xaabd2668
+  getFlowOperatorData(address,address,address):               0x00422bbe
+  getFlowOperatorDataByID(address,bytes32):                   0x09d256ef
+  getMaximumFlowRateFromDeposit(address,uint256):             0x0602f7db
+  getNetFlow(address,address):                                0xe8e7e2d1
+  increaseFlowRateAllowance(address,address,int96,bytes):     0xac5f5d00
+  increaseFlowRateAllowanceWithPermissions(address,address,uint8,int96,bytes): 0xf31f88f0
+  isPatricianPeriod(address,address,uint256):                 0x4b839e0b
+  isPatricianPeriodNow(address,address):                      0x4fe9c291
+  MAXIMUM_DEPOSIT():                                          0x9cb28b72
+  MAXIMUM_FLOW_RATE():                                        0x26b0f536
+  proxiableUUID():                                            0x52d1902d
+  realtimeBalanceOf(address,address,uint256):                 0x9b2e48bc
+  removePermissions(uint8,uint8):                             0x2567f578
+  revokeFlowOperatorWithFullControl(address,address,bytes):   0x062e56ec
+  updateCode(address):                                        0x46951954
+  updateFlow(address,address,int96,bytes):                    0x50209a62
+  updateFlowByOperator(address,address,address,int96,bytes):  0x354b9590
+  updateFlowOperatorPermissions(address,address,uint8,int96,bytes): 0x811b3d40
+
+events:
+  CodeUpdated(bytes32,address):                               0xe011bc04c286c344a8fcbb8de77f953da762c3e25d8cdea984147fc4168a5dcc
+  FlowOperatorUpdated(address,address,address,uint8,int96):   0xc0d5d3a6ac18cc1769788c925e6e7fc89cd47e4270a42884736fa9b3ec09f3a8
+  FlowUpdated(address,address,address,int96,int256,int256,bytes): 0x57269d2ebcccecdcc0d9d2c0a0b80ead95f344e28ec20f50f709811f209d4e0e
+  FlowUpdatedExtension(address,uint256):                      0x71e0c98e270fc3084227b473f176924d5303ece8c639e679998a2d7dc8e70f74
+  Initialized(uint8):                                         0x7f26b83ff96e1f2b6a682f133852f6798a09c465da95921460cefb3847402498
+
+errors:
+  AGREEMENT_BASE_ONLY_HOST():               0x1601d91e
+  APP_RULE(uint256):                        0xa85ba64f
+  CFA_ACL_FLOW_RATE_ALLOWANCE_EXCEEDED():   0xa0645c1f
+  CFA_ACL_NO_NEGATIVE_ALLOWANCE():          0x86e0377d
+  CFA_ACL_NO_SENDER_CREATE():               0x4b993136
+  CFA_ACL_NO_SENDER_FLOW_OPERATOR():        0xb0ed394d
+  CFA_ACL_NO_SENDER_UPDATE():               0xedfa0d3b
+  CFA_ACL_OPERATOR_NO_CREATE_PERMISSIONS(): 0xa3eab6ac
+  CFA_ACL_OPERATOR_NO_DELETE_PERMISSIONS(): 0xe30f1bff
+  CFA_ACL_OPERATOR_NO_UPDATE_PERMISSIONS(): 0xac434b5f
+  CFA_ACL_UNCLEAN_PERMISSIONS():            0x7939d66c
+  CFA_DEPOSIT_TOO_BIG():                    0x752c2b9c
+  CFA_FLOW_ALREADY_EXISTS():                0x801b6863
+  CFA_FLOW_DOES_NOT_EXIST():                0x5a32bf24
+  CFA_FLOW_RATE_TOO_BIG():                  0x0c9c55c1
+  CFA_HOOK_OUT_OF_GAS():                    0x9f76430b
+  CFA_INSUFFICIENT_BALANCE():               0xea76c9b3
+  CFA_INVALID_FLOW_RATE():                  0x91acad16
+  CFA_NO_SELF_FLOW():                       0xa47338ef
+  CFA_NON_CRITICAL_SENDER():                0xce11b5d1
+  CFA_ZERO_ADDRESS_RECEIVER():              0x78e02b2a
+  CFA_ZERO_ADDRESS_SENDER():                0x1ce9b067
+  SafeCastOverflowedIntToUint(int256):      0xa8ce4432
+  SafeCastOverflowedUintToInt(uint256):     0x24775e06

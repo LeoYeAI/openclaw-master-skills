@@ -1,0 +1,77 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "code-cover-collect.schema.json",
+  "title": "CodeCoverCollect Task",
+  "description": "代码覆盖度收集任务配置",
+  "type": "object",
+  "required": ["taskCategory", "jobType", "name"],
+  "properties": {
+    "taskCategory": {
+      "type": "string",
+      "const": "CodeCover"
+    },
+    "jobType": {
+      "type": "string",
+      "const": "CodeCoverCollect"
+    },
+    "name": {
+      "type": "string",
+      "maxLength": 100,
+      "description": "任务名称"
+    },
+    "workPath": {
+      "type": "string",
+      "description": "工作目录"
+    },
+    "sourceId": {
+      "type": "string",
+      "description": "代码源ID"
+    },
+    "buildImageModel": {
+      "type": "string",
+      "enum": ["default", "custom"],
+      "default": "default"
+    },
+    "executeImageId": {
+      "type": "string"
+    },
+    "execDataPath": {
+      "type": "string",
+      "default": "target/jacoco.exec",
+      "description": "执行数据文件路径"
+    },
+    "classPath": {
+      "type": "string",
+      "default": "target/classes",
+      "description": "类文件路径"
+    },
+    "sourcePath": {
+      "type": "string",
+      "default": "src/main/java",
+      "description": "源码路径"
+    },
+    "reportPath": {
+      "type": "string",
+      "default": "target/coverage-report",
+      "description": "报告输出路径"
+    },
+    "threshold": {
+      "type": "number",
+      "default": 0,
+      "description": "覆盖率阈值（百分比）"
+    },
+    "failOnThreshold": {
+      "type": "boolean",
+      "default": false,
+      "description": "低于阈值时失败"
+    },
+    "idInTemplate": {
+      "type": "string"
+    },
+    "dependencies": {
+      "type": "array",
+      "items": { "type": "string" },
+      "default": []
+    }
+  }
+}

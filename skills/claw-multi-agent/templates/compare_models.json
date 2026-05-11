@@ -1,0 +1,37 @@
+{
+  "name": "多模型对比",
+  "description": "向多个模型发送同一问题，对比回答质量",
+  "phases": [
+    {
+      "name": "多模型回答",
+      "mode": "parallel",
+      "aggregation": "compare",
+      "agents": [
+        {
+          "task": "{prompt}",
+          "model": "kimi",
+          "role": "AI助手",
+          "label": "kimi"
+        },
+        {
+          "task": "{prompt}",
+          "model": "claude",
+          "role": "AI助手",
+          "label": "claude-sonnet"
+        },
+        {
+          "task": "{prompt}",
+          "model": "gemini",
+          "role": "AI助手",
+          "label": "gemini-pro"
+        },
+        {
+          "task": "{prompt}",
+          "model": "glm",
+          "role": "AI助手",
+          "label": "glm-5"
+        }
+      ]
+    }
+  ]
+}

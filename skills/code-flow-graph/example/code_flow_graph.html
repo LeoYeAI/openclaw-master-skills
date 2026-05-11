@@ -1,0 +1,1943 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<title>Code Flow Graph</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{width:100%;height:100%;overflow:hidden}
+body{background:#1e1e2e;color:#cdd6f4;font-family:'Segoe UI','Microsoft YaHei',sans-serif;display:flex}
+#sidebar{width:240px;min-width:240px;background:#181825;border-right:1px solid #313244;display:flex;flex-direction:column;z-index:200;user-select:none}
+#sidebar .sidebar-title{padding:14px 16px 10px;font-size:14px;font-weight:bold;color:#89b4fa;border-bottom:1px solid #313244;letter-spacing:.5px}
+#sidebar .nav-list{flex:1;padding:8px 0;overflow-y:auto}
+.nav-item{padding:10px 16px;cursor:pointer;font-size:13px;border-left:3px solid transparent;transition:background .15s,border-color .15s;display:flex;flex-direction:column;gap:2px}
+.nav-item:hover{background:rgba(137,180,250,.08)}
+.nav-item.active{background:rgba(137,180,250,.12);border-left-color:#89b4fa}
+.nav-item .nav-label{font-weight:600;color:#cdd6f4}
+.nav-item .nav-sub{font-size:10px;color:#6c7086}
+.nav-item.active .nav-label{color:#89b4fa}
+#sidebar .sidebar-footer{padding:10px 16px;border-top:1px solid #313244;font-size:10px;color:#585b70;line-height:1.5}
+/* Search box */
+#searchBox{margin:8px 12px;padding:6px 10px;background:#313244;border:1px solid #45475a;border-radius:6px;color:#cdd6f4;font-size:12px;outline:none;width:calc(100% - 24px)}
+#searchBox:focus{border-color:#89b4fa}
+#searchBox::placeholder{color:#585b70}
+.search-results{max-height:200px;overflow-y:auto;border-bottom:1px solid #313244}
+.search-result{padding:6px 16px;cursor:pointer;font-size:11px;font-family:'Consolas',monospace;color:#89dceb;transition:background .12s;display:flex;flex-direction:column;gap:1px}
+.search-result:hover{background:rgba(137,180,250,.1)}
+.search-result .sr-module{font-size:9px;color:#6c7086}
+#main{flex:1;display:flex;flex-direction:column;position:relative;overflow:hidden}
+#header{background:rgba(30,30,46,.92);backdrop-filter:blur(6px);padding:8px 0 6px;text-align:center;border-bottom:1px solid #313244;z-index:100}
+#header h1{color:#89b4fa;font-size:18px;margin-bottom:2px}
+#header .sub{color:#6c7086;font-size:11px}
+.legend{display:flex;gap:8px;justify-content:center;margin-top:4px;flex-wrap:wrap;font-size:13px;align-items:center}
+.legend-item{display:flex;align-items:center;gap:3px}
+.legend-color{width:12px;height:12px;border-radius:2px;border:1px solid #45475a}
+#content-area{flex:1;display:flex;position:relative;overflow:hidden}
+#viewport{flex:1;position:relative;overflow:hidden;cursor:grab}
+#viewport.panning{cursor:grabbing}
+#canvas{position:absolute;transform-origin:0 0}
+svg#svg{position:absolute;top:0;left:0;pointer-events:none;z-index:1;overflow:visible}
+svg#svg path{fill:none;stroke-width:1.6;opacity:.45;transition:opacity .2s,stroke-width .2s}
+svg#svg path.hl{opacity:1;stroke-width:3}
+svg#svg path.dim{opacity:.06}
+
+/* Call chain detail panel */
+#detail-panel{width:0;min-width:0;background:#181825;border-left:1px solid #313244;overflow-y:auto;transition:width .25s ease,min-width .25s ease;z-index:150;display:flex;flex-direction:column}
+#detail-panel.open{width:360px;min-width:360px}
+#detail-panel .dp-header{padding:10px 14px;border-bottom:1px solid #313244;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;background:#181825;z-index:1}
+#detail-panel .dp-title{font-size:13px;font-weight:bold;color:#89b4fa;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#detail-panel .dp-close{width:24px;height:24px;border:none;background:transparent;color:#6c7086;cursor:pointer;font-size:16px;border-radius:4px;display:flex;align-items:center;justify-content:center}
+#detail-panel .dp-close:hover{background:#313244;color:#cdd6f4}
+#detail-panel .dp-body{padding:8px 0;flex:1}
+.call-tree{font-family:'Consolas','Courier New',monospace;font-size:12.5px;line-height:1.7}
+.ct-node{padding:3px 14px 3px;cursor:default;display:flex;align-items:flex-start;gap:5px;transition:background .12s}
+.ct-node:hover{background:rgba(137,180,250,.06)}
+.ct-node.ct-current{background:rgba(250,179,135,.15);border-left:3px solid #fab387}
+.ct-node.ct-external{opacity:.7;font-style:italic}
+.ct-toggle{cursor:pointer;user-select:none;width:16px;min-width:16px;text-align:center;color:#585b70;font-size:11px;line-height:1.7}
+.ct-toggle:hover{color:#89b4fa}
+.ct-icon{width:16px;min-width:16px;text-align:center;font-size:11px;color:#585b70}
+.ct-name{color:#89dceb;font-size:12.5px}
+.ct-module{color:#6c7086;font-size:11px;margin-left:4px}
+.ct-sig{color:#585b70;font-size:11px}
+.ct-desc{color:#a6adc8;font-size:12px;padding:2px 14px 4px 34px;line-height:1.6;border-left:2px solid transparent;font-family:'Segoe UI','Microsoft YaHei',sans-serif}
+.ct-desc-text{display:block;opacity:.88}
+.ct-node.ct-clickable{cursor:pointer}
+.ct-node.ct-clickable:hover{background:rgba(137,180,250,.12)}
+.ct-node.ct-active{background:rgba(137,180,250,.18);border-left:3px solid #89b4fa}
+.ct-children{padding-left:16px;border-left:1px solid #313244;margin-left:6px}
+.ct-children.collapsed{display:none}
+/* Node styles */
+.node{position:absolute;border-radius:6px;border:1.5px solid;z-index:2;box-shadow:0 3px 12px rgba(0,0,0,.4);transition:opacity .2s;min-width:50px}
+.node.dim{opacity:.18}
+.node.dragging{z-index:10;box-shadow:0 8px 30px rgba(0,0,0,.6)}
+.node-header{padding:5px 10px;font-weight:bold;font-size:12px;border-radius:4.5px 4.5px 0 0;border-bottom:1px solid rgba(255,255,255,.1);white-space:nowrap;cursor:move;user-select:none;display:flex;align-items:center;gap:4px}
+.node-badge{font-size:9px;padding:1px 5px;border-radius:3px;font-weight:600;letter-spacing:.3px;text-transform:uppercase}
+.node-badge.on-dark{background:rgba(255,255,255,.18);color:rgba(255,255,255,.85);border:1px solid rgba(255,255,255,.2)}
+.node-badge.on-light{background:rgba(0,0,0,.15);color:rgba(0,0,0,.7);border:1px solid rgba(0,0,0,.12)}
+
+.node-type{font-size:9px;font-weight:normal;opacity:.65;margin-left:4px}
+.node-body{padding:3px 0}
+.attr{padding:1px 8px;font-size:10.5px;font-family:'Consolas','Courier New',monospace;display:flex;justify-content:space-between;align-items:center;cursor:pointer;transition:background .12s;user-select:none;min-height:18px}
+.attr:hover{background:rgba(255,255,255,.07)}
+.attr.hl{background:rgba(250,179,135,.35)!important;outline:1px solid rgba(250,179,135,.5)}
+.attr-name{flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.attr-value{color:#a6adc8;font-size:9.5px;margin-left:6px;white-space:nowrap}
+.attr-section{padding:2px 8px 1px;font-size:9.5px;text-transform:uppercase;letter-spacing:1px;color:#7f849c;border-top:1px solid rgba(255,255,255,.04);margin-top:1px}
+/* Collapsible children */
+.attr-toggle{cursor:pointer;user-select:none;font-size:8px;color:#585b70;margin-right:3px;transition:transform .15s,color .15s;display:inline-block;width:10px;text-align:center}
+.attr-toggle:hover{color:#89b4fa}
+.attr-toggle.expanded{transform:rotate(90deg)}
+.attr-children-group{overflow:hidden;transition:max-height .2s ease}
+.attr-children-group.collapsed{max-height:0!important}
+/* Child attrs */
+.attr-child{padding-left:24px;font-size:9.5px;opacity:.85;border-left-width:2px!important;min-height:16px}
+.attr-child .attr-name{font-size:9.5px}
+.attr-child .attr-value{font-size:8.5px}
+/* Tooltip for function signatures */
+.sig-tooltip{position:fixed;z-index:10000;background:#313244;color:#cdd6f4;border:1px solid #45475a;border-radius:6px;padding:10px 14px;font-family:'Consolas','Courier New',monospace;font-size:11.5px;line-height:1.7;max-width:620px;pointer-events:none;box-shadow:0 4px 16px rgba(0,0,0,.5);white-space:pre-wrap;word-break:break-all}
+.sig-tooltip .sig-params{color:#f9e2af}
+.sig-tooltip .sig-return{color:#a6e3a1}
+.sig-tooltip .sig-name{color:#89b4fa;font-weight:bold}
+.sig-tooltip .sig-type{color:#cba6f7;font-style:italic}
+.sig-tooltip .sig-hint{color:#585b70;font-size:10px;margin-top:4px;display:block}
+.sig-tooltip .sig-desc{color:#bac2de;font-family:'Segoe UI','Microsoft YaHei',sans-serif;font-size:12px;margin-top:5px;padding-top:5px;border-top:1px solid #45475a;display:block;line-height:1.6}
+.sig-tooltip .sig-detail{color:#a6adc8;font-family:'Segoe UI','Microsoft YaHei',sans-serif;font-size:11.5px;margin-top:4px;display:block;line-height:1.6;padding:4px 0}
+.sig-tooltip .sig-io{display:block;margin-top:5px;padding-top:5px;border-top:1px solid #45475a;font-size:11px;line-height:1.6}
+.sig-tooltip .sig-io-label{color:#89b4fa;font-weight:bold;font-family:'Segoe UI','Microsoft YaHei',sans-serif;font-size:10.5px}
+.sig-tooltip .sig-io-input{color:#f9e2af;display:block;padding-left:8px}
+.sig-tooltip .sig-io-output{color:#a6e3a1;display:block;padding-left:8px}
+/* Node color classes — Catppuccin Mocha palette. Auto-assigned by node type */
+/* entry: yellow */
+.c-entry{border-color:#f9e2af;background:#2d2a1e}.c-entry .node-header{background:#f9e2af;color:#1e1e2e}
+/* class: blue */
+.c-class{border-color:#89b4fa;background:#1e222d}.c-class .node-header{background:#89b4fa;color:#1e1e2e}
+/* module: green */
+.c-module{border-color:#a6e3a1;background:#1e2d1e}.c-module .node-header{background:#a6e3a1;color:#1e1e2e}
+/* function/functions: mauve */
+.c-function{border-color:#cba6f7;background:#251e2d}.c-function .node-header{background:#cba6f7;color:#1e1e2e}
+/* external marker — dashed border + italic label */
+.node.is-external{border-style:dashed}.node.is-external .node-header .ext-tag{font-size:9px;opacity:.7;margin-left:4px;font-style:italic}
+/* data: peach */
+.c-data{border-color:#fab387;background:#2d251e}.c-data .node-header{background:#fab387;color:#1e1e2e}
+/* widget/QDialog: sapphire (blue family, distinct from class blue) */
+.c-widget{border-color:#74c7ec;background:#1e2630}.c-widget .node-header{background:#74c7ec;color:#1e1e2e}
+/* slots: pink */
+.c-slots{border-color:#f5c2e7;background:#2d1e28}.c-slots .node-header{background:#f5c2e7;color:#1e1e2e}
+.group-bg{position:absolute;border-radius:12px;border:1.5px dashed;z-index:0;cursor:grab;transition:opacity .2s}
+.group-bg:hover{border-width:2.5px}
+.group-bg.group-dragging{cursor:grabbing;border-width:2.5px;border-style:solid}
+.group-bg.dim{opacity:.06}.group-label.dim{opacity:.06}
+.group-label{position:absolute;font-size:11px;font-weight:bold;letter-spacing:1.5px;text-transform:uppercase;padding:2px 4px;z-index:0;cursor:grab;white-space:nowrap;line-height:1.4;background:transparent!important}
+.code-block{white-space:pre-wrap;font-size:9.5px;padding:3px 8px;line-height:1.4;color:#bac2de;font-family:'Consolas','Courier New',monospace}
+.controls{position:fixed;bottom:12px;right:12px;z-index:100;display:flex;gap:3px;flex-direction:column;align-items:flex-end}
+.controls .row{display:flex;gap:3px}
+.controls button{width:30px;height:30px;border:1px solid #45475a;background:#313244;color:#cdd6f4;border-radius:6px;cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center}
+.controls button:hover{background:#45475a}
+.controls .info{font-size:10px;color:#585b70;text-align:right;margin-top:2px}
+/* Field detail panel styles */
+.fd-container{padding:8px 14px;font-family:'Segoe UI','Microsoft YaHei',sans-serif}
+.fd-header{display:flex;align-items:baseline;gap:8px;margin-bottom:8px;padding-bottom:8px;border-bottom:1px solid #313244}
+.fd-field-name{font-size:15px;font-weight:bold;color:#eba0ac;font-family:'Consolas',monospace}
+.fd-field-type{font-size:12px;color:#6c7086;font-family:'Consolas',monospace}
+.fd-summary{font-size:12.5px;color:#bac2de;line-height:1.6;margin-bottom:12px;padding:8px 10px;background:rgba(235,160,172,0.08);border-radius:6px;border-left:3px solid #eba0ac}
+.fd-mode{margin-bottom:14px;padding:8px 10px;background:rgba(255,255,255,0.02);border-radius:6px;border:1px solid #313244}
+.fd-mode-header{display:flex;align-items:center;gap:8px;margin-bottom:6px}
+.fd-mode-badge{font-size:10px;font-weight:bold;padding:2px 8px;border-radius:4px;text-transform:uppercase;letter-spacing:.5px;background:rgba(137,180,250,0.15);color:#89b4fa;white-space:nowrap}
+.fd-mode-fn{font-size:11px;color:#89dceb;font-family:'Consolas',monospace;word-break:break-all}
+.fd-steps{margin:0;padding-left:20px;font-size:11.5px;color:#cdd6f4;line-height:1.8}
+.fd-step{margin-bottom:3px}
+.fd-step code{background:rgba(203,166,247,0.12);color:#cba6f7;padding:1px 4px;border-radius:3px;font-family:'Consolas',monospace;font-size:10.5px}
+/* Copy toast notification */
+.copy-toast{position:fixed;bottom:60px;left:50%;transform:translateX(-50%) translateY(20px);background:rgba(49,50,68,.85);color:#6c7086;border:1px solid #45475a;border-radius:6px;padding:6px 14px;font-size:11px;font-family:'Consolas',monospace;z-index:20000;opacity:0;transition:opacity .2s,transform .2s;pointer-events:none;white-space:nowrap;box-shadow:0 2px 8px rgba(0,0,0,.3)}
+.copy-toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+/* ═══════════════ UI Layout Viewer Styles ═══════════════ */
+/* Separator in sidebar */
+.nav-separator{padding:6px 16px;font-size:10px;font-weight:bold;color:#585b70;text-transform:uppercase;letter-spacing:1px;border-top:1px solid #313244;margin-top:6px}
+/* UI Layout canvas */
+#ui-layout-area{flex:1;display:none;flex-direction:column;overflow:hidden}
+#ui-layout-area.active{display:flex}
+#ui-layout-header{padding:16px 24px;border-bottom:1px solid #313244;background:#181825}
+#ui-layout-header h1{font-size:18px;font-weight:700;color:#cdd6f4}
+#ui-layout-header p{font-size:12px;color:#6c7086;margin-top:4px}
+#ui-layout-wrap{flex:1;overflow:auto;padding:24px;position:relative}
+#ui-layout-legend{padding:12px 16px;border-top:1px solid #313244;background:#181825;font-size:11px;display:flex;flex-wrap:wrap;gap:12px}
+.ul-legend-item{display:flex;align-items:center;gap:5px}
+.ul-legend-swatch{width:12px;height:12px;border-radius:2px;border:1.5px solid}
+/* Widget box */
+.widget-box{border:1.5px solid;border-radius:6px;position:relative;overflow:visible;transition:box-shadow .15s;background:rgba(30,30,46,0.6);min-width:0;min-height:0;display:flex;flex-direction:column}
+.widget-box:hover{box-shadow:0 0 12px rgba(137,180,250,0.15);z-index:10}
+.widget-box>.wb-header{display:flex;align-items:flex-start;gap:4px;padding:3px 6px;border-radius:5px 5px 0 0;font-size:10px;font-weight:600;min-height:20px;flex-shrink:0;overflow:hidden}
+.wb-badge{display:inline-block;padding:1px 5px;border-radius:3px;font-size:9px;font-weight:700;letter-spacing:.5px;flex-shrink:0}
+.wb-name{overflow:hidden;text-overflow:ellipsis;min-width:0;white-space:pre-line;line-height:1.3}
+.wb-body{padding:4px;display:flex;flex-direction:column;gap:3px;min-width:0;overflow:auto}
+.wb-body.h-layout{flex-direction:row}
+.wb-body.h-layout>*{min-width:0}
+.wb-body.v-layout{flex-direction:column}
+.wb-body.v-layout>*{min-height:0}
+/* Color themes for widget-box */
+.wc-blue{border-color:#89b4fa}.wc-blue>.wb-header{background:rgba(137,180,250,0.15);color:#89b4fa}.wc-blue .wb-badge{background:#89b4fa;color:#1e1e2e}
+.wc-sapphire{border-color:#74c7ec}.wc-sapphire>.wb-header{background:rgba(116,199,236,0.15);color:#74c7ec}.wc-sapphire .wb-badge{background:#74c7ec;color:#1e1e2e}
+.wc-green{border-color:#a6e3a1}.wc-green>.wb-header{background:rgba(166,227,161,0.15);color:#a6e3a1}.wc-green .wb-badge{background:#a6e3a1;color:#1e1e2e}
+.wc-peach{border-color:#fab387}.wc-peach>.wb-header{background:rgba(250,179,135,0.15);color:#fab387}.wc-peach .wb-badge{background:#fab387;color:#1e1e2e}
+.wc-mauve{border-color:#cba6f7}.wc-mauve>.wb-header{background:rgba(203,166,247,0.15);color:#cba6f7}.wc-mauve .wb-badge{background:#cba6f7;color:#1e1e2e}
+.wc-red{border-color:#f38ba8}.wc-red>.wb-header{background:rgba(243,139,168,0.15);color:#f38ba8}.wc-red .wb-badge{background:#f38ba8;color:#1e1e2e}
+.wc-pink{border-color:#f5c2e7}.wc-pink>.wb-header{background:rgba(245,194,231,0.15);color:#f5c2e7}.wc-pink .wb-badge{background:#f5c2e7;color:#1e1e2e}
+.wc-yellow{border-color:#f9e2af}.wc-yellow>.wb-header{background:rgba(249,226,175,0.15);color:#f9e2af}.wc-yellow .wb-badge{background:#f9e2af;color:#1e1e2e}
+.wc-teal{border-color:#94e2d5}.wc-teal>.wb-header{background:rgba(148,226,213,0.15);color:#94e2d5}.wc-teal .wb-badge{background:#94e2d5;color:#1e1e2e}
+.wc-flamingo{border-color:#f2cdcd}.wc-flamingo>.wb-header{background:rgba(242,205,205,0.15);color:#f2cdcd}.wc-flamingo .wb-badge{background:#f2cdcd;color:#1e1e2e}
+.wc-lavender{border-color:#b4befe}.wc-lavender>.wb-header{background:rgba(180,190,254,0.15);color:#b4befe}.wc-lavender .wb-badge{background:#b4befe;color:#1e1e2e}
+.wc-rosewater{border-color:#f5e0dc}.wc-rosewater>.wb-header{background:rgba(245,224,220,0.15);color:#f5e0dc}.wc-rosewater .wb-badge{background:#f5e0dc;color:#1e1e2e}
+.wc-overlay{border-color:#313244}.wc-overlay>.wb-header{background:rgba(49,50,68,0.5);color:#a6adc8}.wc-overlay .wb-badge{background:#313244;color:#cdd6f4}
+/* Stack tabs inside widget-box */
+.ul-stack-tabs{display:flex;gap:2px;padding:2px 4px;flex-wrap:wrap;flex-shrink:0;min-height:24px}
+.ul-stack-tab{padding:2px 8px;border-radius:3px;font-size:10px;cursor:pointer;border:1px solid #313244;background:rgba(49,50,68,0.3);color:#a6adc8;transition:all .15s;white-space:nowrap}
+.ul-stack-tab.active{background:rgba(137,180,250,0.2);border-color:#89b4fa;color:#89b4fa}
+.ul-stack-tab:hover{background:rgba(137,180,250,0.12)}
+.ul-stack-page{display:none;flex:1;min-height:0;min-width:0;overflow:hidden}
+.ul-stack-page.active{display:flex;flex-direction:column;gap:3px}
+/* Other UI layout helpers */
+.ul-placeholder{display:flex;align-items:center;justify-content:center;font-size:11px;color:#a6adc8;font-style:italic;border:1px dashed #313244;border-radius:4px;padding:8px;min-height:32px;background:rgba(49,50,68,0.15)}
+.ul-size-ann{position:absolute;top:2px;right:6px;font-size:9px;color:#a6adc8;opacity:.7}
+.ul-splitter-v{width:8px;min-width:8px;background:repeating-linear-gradient(0deg,transparent,transparent 3px,#313244 3px,#313244 5px);border-radius:2px;flex-shrink:0;cursor:col-resize;opacity:.5}
+.ul-stretch{flex:1;min-height:8px;min-width:8px;background:repeating-linear-gradient(45deg,transparent,transparent 4px,rgba(108,112,134,0.1) 4px,rgba(108,112,134,0.1) 6px);border-radius:3px}
+/* Resize handles */
+.ul-resize{position:absolute;z-index:20;opacity:0;transition:opacity .15s}
+.widget-box:hover>.ul-resize{opacity:1}
+.ul-resize-r{top:0;right:-3px;width:6px;height:100%;cursor:ew-resize}
+.ul-resize-b{bottom:-3px;left:0;width:100%;height:6px;cursor:ns-resize}
+.ul-resize-rb{bottom:-3px;right:-3px;width:12px;height:12px;cursor:nwse-resize}
+.ul-resize-r:hover,.ul-resize-r.active{background:rgba(137,180,250,0.3)}
+.ul-resize-b:hover,.ul-resize-b.active{background:rgba(137,180,250,0.3)}
+.ul-resize-rb:hover,.ul-resize-rb.active{background:rgba(137,180,250,0.5);border-radius:2px}
+/* Tooltip for UI layout */
+.ul-tooltip{position:fixed;background:#2a2a3e;border:1px solid #313244;border-radius:6px;padding:8px 12px;font-size:11px;color:#cdd6f4;max-width:320px;z-index:9999;pointer-events:none;display:none;box-shadow:0 4px 16px rgba(0,0,0,0.4);line-height:1.5}
+.ul-tooltip .tt-type{color:#cba6f7;font-weight:600}
+.ul-tooltip .tt-obj{color:#a6e3a1}
+.ul-tooltip .tt-size{color:#fab387}
+/* Undo toast for UI layout */
+#ul-undo-toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:rgba(42,42,62,0.95);border:1px solid #89b4fa;color:#cdd6f4;padding:8px 16px;border-radius:6px;font-size:12px;z-index:9999;pointer-events:none;opacity:0;transition:opacity .3s}
+#ul-undo-toast.show{opacity:1}
+</style>
+</head>
+<body>
+<div id="sidebar">
+  <div class="sidebar-title" id="sidebarTitle">Code Flow Graph</div>
+  <input type="text" id="searchBox" placeholder="Search functions... (Ctrl+K)" autocomplete="off">
+  <div class="search-results" id="searchResults"></div>
+  <div class="nav-list" id="navList"></div>
+  <div class="sidebar-footer">
+    Drag header to move node<br>Drag group border to move group<br><b>Click</b> function → view call chain + copy name<br>Scroll to zoom / Space+drag to pan<br><b>Hover</b> on function to see signature<br><b>▶</b> to expand/collapse children<br><b>Ctrl+Z</b> to undo move
+  </div>
+</div>
+<div id="main">
+  <div id="header">
+    <h1 id="diagramTitle"></h1>
+    <div class="sub" id="diagramSub"></div>
+    <div class="legend" id="legendContainer">
+      <div class="legend-item" style="color:#6c7086">━ call ┅ signal &nbsp;<span style="display:inline-block;width:40px;height:4px;border-radius:2px;background:linear-gradient(to right,rgba(205,214,244,.2),#cdd6f4);vertical-align:middle"></span> direction</div>
+      <div class="legend-item"><div class="legend-color" style="background:#a6e3a1"></div>call</div>
+      <div class="legend-item"><div class="legend-color" style="background:#89b4fa"></div>data</div>
+      <div class="legend-item"><div class="legend-color" style="background:#fab387"></div>extern</div>
+      <div class="legend-item"><div class="legend-color" style="background:#f5c2e7"></div>signal</div>
+      <div class="legend-item"><a href="#" id="resetLayoutBtn" style="color:#f38ba8;text-decoration:underline;cursor:pointer;font-size:12px">Reset Layout</a></div>
+    </div>
+  </div>
+  <div id="content-area">
+    <div id="viewport">
+      <div id="canvas"><svg id="svg" width="6000" height="4000"></svg></div>
+    </div>
+    <div id="detail-panel">
+      <div class="dp-header">
+        <span class="dp-title" id="dpTitle">Call Chain</span>
+        <button class="dp-close" id="dpClose" title="Close">✕</button>
+      </div>
+      <div class="dp-body" id="dpBody"></div>
+    </div>
+  </div>
+  <!-- UI Layout Area (hidden by default, shown when a UI_LAYOUT_VIEWS entry is selected) -->
+  <div id="ui-layout-area">
+    <div id="ui-layout-header"><h1 id="ulTitle"></h1><p id="ulSub"></p></div>
+    <div id="ui-layout-wrap"></div>
+    <div id="ui-layout-legend"></div>
+  </div>
+</div>
+<div class="ul-tooltip" id="ulTooltip"></div>
+<div id="ul-undo-toast">⌘Z / Ctrl+Z 撤销</div>
+<div class="controls">
+  <div class="row">
+    <button id="zoomIn" title="Zoom In">+</button>
+    <button id="zoomOut" title="Zoom Out">−</button>
+    <button id="zoomFit" title="Fit to View">⊡</button>
+    <button id="zoomReset" title="1:1">1:1</button>
+  </div>
+  <div class="info" id="zoomInfo">100%</div>
+</div>
+<script src="code_flow_graph_data.js"></script>
+<script>
+// ======================== ENGINE ========================
+var canvas = document.getElementById('canvas');
+var svg = document.getElementById('svg');
+var viewport = document.getElementById('viewport');
+var detailPanel = document.getElementById('detail-panel');
+var dpBody = document.getElementById('dpBody');
+var dpTitle = document.getElementById('dpTitle');
+var attrElements = {}, nodeElements = {}, nodePositions = {}, groupElements = {};
+var connData = [], currentDiagramKey = null;
+var NODES, CONNECTIONS, GROUPS;
+var scale = 1, panX = 0, panY = 0;
+var isPanning = false, panStart = {x:0,y:0,px:0,py:0}, spaceHeld = false, panMoved = false;
+var dragState = null, groupDragState = null, selectedAttr = null;
+
+// Undo history for layout moves (Ctrl+Z support)
+var undoStack = []; // each entry: { type: 'node'|'group', positions: { nid: {x, y}, ... } }
+var MAX_UNDO = 50;
+
+// Copy toast element
+var copyToast = document.createElement('div');
+copyToast.className = 'copy-toast';
+document.body.appendChild(copyToast);
+var copyToastTimer = null;
+
+function copyToClipboard(text) {
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(text).catch(function() { fallbackCopy(text); });
+  } else {
+    fallbackCopy(text);
+  }
+  showCopyToast(text);
+}
+
+function fallbackCopy(text) {
+  var ta = document.createElement('textarea');
+  ta.value = text; ta.style.position = 'fixed'; ta.style.left = '-9999px';
+  document.body.appendChild(ta); ta.select();
+  try { document.execCommand('copy'); } catch(e) {}
+  document.body.removeChild(ta);
+}
+
+function showCopyToast(text) {
+  copyToast.textContent = '✓ ' + text;
+  copyToast.classList.add('show');
+  if (copyToastTimer) clearTimeout(copyToastTimer);
+  copyToastTimer = setTimeout(function() { copyToast.classList.remove('show'); }, 1200);
+}
+
+function pushUndo(positions) {
+  // positions: { nid: {x, y}, ... }
+  var snapshot = {};
+  for (var nid in positions) { snapshot[nid] = {x: positions[nid].x, y: positions[nid].y}; }
+  undoStack.push(snapshot);
+  if (undoStack.length > MAX_UNDO) undoStack.shift();
+}
+
+function performUndo() {
+  if (undoStack.length === 0) return;
+  var snapshot = undoStack.pop();
+  for (var nid in snapshot) {
+    nodePositions[nid] = {x: snapshot[nid].x, y: snapshot[nid].y};
+    var el = nodeElements[nid];
+    if (el) { el.style.left = snapshot[nid].x + 'px'; el.style.top = snapshot[nid].y + 'px'; }
+  }
+  redrawConnections(); updateGroupBounds(); savePositions();
+  if (selectedAttr) reHighlight();
+}
+
+// Tooltip element
+var tooltip = document.createElement('div');
+tooltip.className = 'sig-tooltip';
+tooltip.style.display = 'none';
+document.body.appendChild(tooltip);
+var attrSigMap = {}; // aid -> sig html
+var attrDescMap = {}; // aid -> description text (Chinese)
+var attrDetailMap = {}; // aid -> detailed description text (multi-line, more context)
+var attrIOMap = {}; // aid -> {input: '', output: ''} for tooltip IO display
+var attrCallChainMap = {}; // aid -> callChain array
+var attrFieldDetailMap = {}; // aid -> fieldDetail object (for data type fields)
+
+// Node type to CSS class mapping (unified style, color-only differentiation)
+var NODE_TYPE_MAP = {
+  'class': '',
+  'module': '',
+  'function': '',
+  'functions': '',
+  'entry': '',
+  'data': '',
+  'QDialog': '',
+  'widget': '',
+  'slots': ''
+};
+
+var NODE_BADGE_MAP = {
+  'class': 'CLASS',
+  'module': 'MODULE',
+  'function': 'FUNC',
+  'functions': 'FUNC',
+  'entry': 'ENTRY',
+  'data': 'DATA',
+  'QDialog': 'UI CLASS',
+  'widget': 'UI CLASS',
+  'slots': 'SLOTS'
+};
+
+// Type-to-CSS-class mapping — auto-assign color by node type
+var TYPE_CLS_MAP = {
+  'entry': 'c-entry', 'class': 'c-class', 'module': 'c-module',
+  'function': 'c-function', 'functions': 'c-function',
+  'data': 'c-data',
+  'widget': 'c-widget', 'QDialog': 'c-widget', 'slots': 'c-slots'
+};
+
+// Header background colors by type CSS class — used to determine badge contrast
+var HEADER_COLOR_MAP = {
+  'c-entry': '#f9e2af', 'c-class': '#89b4fa', 'c-module': '#a6e3a1',
+  'c-function': '#cba6f7', 'c-data': '#fab387',
+  'c-widget': '#74c7ec', 'c-slots': '#f5c2e7'
+};
+
+function hexLuminance(hex) {
+  var r = parseInt(hex.substr(1,2),16)/255;
+  var g = parseInt(hex.substr(3,2),16)/255;
+  var b = parseInt(hex.substr(5,2),16)/255;
+  return 0.299*r + 0.587*g + 0.114*b;
+}
+
+function getBadgeMode(cls) {
+  var col = HEADER_COLOR_MAP[cls] || '#333333';
+  return hexLuminance(col) > 0.55 ? 'on-light' : 'on-dark';
+}
+
+function getBadgeHtml(type, cls) {
+  var text = NODE_BADGE_MAP[type];
+  if (!text) return '';
+  var mode = getBadgeMode(cls);
+  return '<span class="node-badge ' + mode + '">' + text + '</span>';
+}
+
+
+if (typeof DIAGRAMS !== 'undefined' && DIAGRAMS._projectTitle) {
+  document.getElementById('sidebarTitle').textContent = DIAGRAMS._projectTitle;
+}
+
+function storageKey(key) { return 'code_flow_graph_' + key + '_positions'; }
+function loadSavedPositions(key) {
+  try { var r = localStorage.getItem(storageKey(key)); return r ? JSON.parse(r) : {}; }
+  catch(e) { return {}; }
+}
+function savePositions() {
+  if (!currentDiagramKey) return;
+  try { localStorage.setItem(storageKey(currentDiagramKey), JSON.stringify(nodePositions)); } catch(e) {}
+}
+
+// Build sidebar nav
+var diagKeys = Object.keys(DIAGRAMS).filter(function(k) { return k.charAt(0) !== '_'; });
+var navList = document.getElementById('navList');
+diagKeys.forEach(function(key) {
+  var d = DIAGRAMS[key];
+  var item = document.createElement('div');
+  item.className = 'nav-item';
+  item.dataset.diagram = key;
+  item.innerHTML = '<span class="nav-label">' + d.navLabel + '</span><span class="nav-sub">' + (d.navSub || '') + '</span>';
+  item.addEventListener('click', function() { switchDiagram(key); });
+  navList.appendChild(item);
+});
+
+function renderAttrHtml(a, isChild, parentHasChildren) {
+  var cls = 'attr' + (isChild ? ' attr-child' : '');
+  var valHtml = a.val ? '<span class="attr-value">' + a.val + '</span>' : '';
+  var prefix = isChild ? '<span style="color:#585b70;margin-right:3px;font-size:8px">▸</span>' : '';
+  return '<div class="' + cls + '" data-aid="' + a.id + '">' + prefix + '<span class="attr-name">' + a.name + '</span>' + valHtml + '</div>';
+}
+
+function switchDiagram(key) {
+  if (currentDiagramKey === key) return;
+  currentDiagramKey = key;
+  var d = DIAGRAMS[key];
+  NODES = d.NODES; CONNECTIONS = d.CONNECTIONS; GROUPS = d.GROUPS;
+
+  document.getElementById('diagramTitle').textContent = d.title;
+  document.getElementById('diagramSub').textContent = d.sub || '';
+
+  document.querySelectorAll('.nav-item').forEach(function(el) {
+    el.classList.toggle('active', el.dataset.diagram === key);
+  });
+
+  var children = Array.from(canvas.children);
+  children.forEach(function(ch) { if (ch !== svg) canvas.removeChild(ch); });
+  svg.innerHTML = '';
+  attrElements = {}; nodeElements = {}; nodePositions = {}; groupElements = {};
+  connData = []; selectedAttr = null; dragState = null; groupDragState = null;
+  attrSigMap = {}; attrDescMap = {}; attrDetailMap = {}; attrIOMap = {}; attrCallChainMap = {}; attrFieldDetailMap = {};
+  undoStack = [];
+  closeDetailPanel();
+
+  var savedPos = loadSavedPositions(key);
+  var hasSavedPositions = Object.keys(savedPos).length > 0;
+
+  NODES.forEach(function(n) {
+    var el = document.createElement('div');
+    var typeCls = TYPE_CLS_MAP[n.type] || 'c-class';
+    el.className = 'node ' + typeCls + (n.external ? ' is-external' : '');
+    el.dataset.nodeId = n.id;
+    var pos = savedPos[n.id] || {x: n.x, y: n.y};
+
+    el.style.left = pos.x + 'px';
+    el.style.top = pos.y + 'px';
+    el.style.width = n.w + 'px';
+    var badge = getBadgeHtml(n.type, typeCls);
+    var extTag = n.external ? '<span class="ext-tag">EXT</span>' : '';
+    var html = '<div class="node-header" data-drag="' + n.id + '">' + n.label + ' ' + badge + extTag + '</div><div class="node-body">';
+    (n.sections || []).forEach(function(sec) {
+      if (sec.code) html += '<div class="code-block">' + sec.code + '</div>';
+      if (sec.title) html += '<div class="attr-section">' + sec.title + '</div>';
+      (sec.attrs || []).forEach(function(a) {
+        if (a.sig) attrSigMap[a.id] = a.sig;
+        if (a.desc) attrDescMap[a.id] = a.desc;
+        if (a.detail) attrDetailMap[a.id] = a.detail;
+        if (a.io) attrIOMap[a.id] = a.io;
+        if (a.callChain) attrCallChainMap[a.id] = a.callChain;
+        if (a.fieldDetail) attrFieldDetailMap[a.id] = a.fieldDetail;
+        var hasChildren = a.children && a.children.length > 0;
+        var defaultCollapsed = a.childrenCollapsed !== false; // default collapsed
+
+        if (hasChildren) {
+          // Render toggle button inline with the attr
+          var toggleId = 'toggle-' + a.id.replace(/\./g, '-');
+          var cls = 'attr';
+          var valHtml = a.val ? '<span class="attr-value">' + a.val + '</span>' : '';
+          html += '<div class="' + cls + '" data-aid="' + a.id + '">';
+          html += '<span class="attr-toggle' + (defaultCollapsed ? '' : ' expanded') + '" data-toggle="' + toggleId + '">▶</span>';
+          html += '<span class="attr-name">' + a.name + '</span>' + valHtml + '</div>';
+          // Children group
+          html += '<div class="attr-children-group' + (defaultCollapsed ? ' collapsed' : '') + '" id="' + toggleId + '">';
+          a.children.forEach(function(child) {
+            if (child.sig) attrSigMap[child.id] = child.sig;
+            if (child.desc) attrDescMap[child.id] = child.desc;
+            if (child.detail) attrDetailMap[child.id] = child.detail;
+            if (child.io) attrIOMap[child.id] = child.io;
+            if (child.callChain) attrCallChainMap[child.id] = child.callChain;
+            if (child.fieldDetail) attrFieldDetailMap[child.id] = child.fieldDetail;
+            html += renderAttrHtml(child, true);
+          });
+          html += '</div>';
+        } else {
+          html += renderAttrHtml(a, false);
+        }
+      });
+    });
+    html += '</div>';
+    el.innerHTML = html;
+    canvas.appendChild(el);
+    nodeElements[n.id] = el;
+    nodePositions[n.id] = savedPos[n.id] || {x: n.x, y: n.y};
+    el.querySelectorAll('[data-aid]').forEach(function(ae) { attrElements[ae.dataset.aid] = ae; });
+  });
+
+  var GROUP_PAD = 18;
+  GROUPS.forEach(function(g) {
+    var bg = document.createElement('div');
+    bg.className = 'group-bg'; bg.dataset.groupId = g.id;
+    bg.style.borderColor = g.color; bg.style.background = g.bg;
+    canvas.insertBefore(bg, canvas.firstChild);
+    var lbl = document.createElement('div');
+    lbl.className = 'group-label'; lbl.dataset.groupId = g.id;
+    lbl.style.color = g.color;
+    lbl.textContent = g.label;
+    canvas.insertBefore(lbl, canvas.firstChild);
+    groupElements[g.id] = {bg: bg, lbl: lbl, nodeIds: g.nodes};
+  });
+
+  scale = 1; panX = 0; panY = 0;
+  applyTransform(); // sync canvas transform to scale=1 before measuring
+  requestAnimationFrame(function() {
+    if (!hasSavedPositions) {
+      autoLayoutGroups();
+    }
+    updateGroupBounds(); redrawConnections(); fitToView();
+  });
+}
+
+// ======================== AUTO LAYOUT ========================
+function autoLayoutGroups() {
+  var INTRA_GROUP_GAP = 24; // vertical gap between nodes within a group
+  var INTER_GROUP_GAP = 20; // gap between groups
+  var GROUP_PAD = 18;
+
+  // Step 1: Compact layout within each group — vertical stacking
+  GROUPS.forEach(function(g) {
+    var nodeIds = g.nodes;
+    if (!nodeIds || nodeIds.length === 0) return;
+
+    // Find anchor position: use the first node's position as the top-left reference
+    var anchorX = Infinity, anchorY = Infinity;
+    nodeIds.forEach(function(nid) {
+      var pos = nodePositions[nid];
+      if (pos) {
+        if (pos.x < anchorX) anchorX = pos.x;
+        if (pos.y < anchorY) anchorY = pos.y;
+      }
+    });
+
+    // Sort nodes by their original y position to preserve relative order
+    var sortedIds = nodeIds.slice().sort(function(a, b) {
+      var pa = nodePositions[a], pb = nodePositions[b];
+      return (pa ? pa.y : 0) - (pb ? pb.y : 0);
+    });
+
+    // Stack nodes vertically from anchor position
+    var curY = anchorY;
+    sortedIds.forEach(function(nid) {
+      var el = nodeElements[nid], pos = nodePositions[nid];
+      if (!el || !pos) return;
+      pos.x = anchorX;
+      pos.y = curY;
+      el.style.left = pos.x + 'px';
+      el.style.top = pos.y + 'px';
+      curY += el.offsetHeight + INTRA_GROUP_GAP;
+    });
+  });
+
+  // Collect all grouped node IDs
+  var groupedNodeIds = new Set();
+  GROUPS.forEach(function(g) {
+    (g.nodes || []).forEach(function(nid) { groupedNodeIds.add(nid); });
+  });
+
+  // Build bounding boxes for groups + ungrouped nodes as virtual single-node groups
+  function calcGroupBounds(nodeIds) {
+    var minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+    nodeIds.forEach(function(nid) {
+      var el = nodeElements[nid], pos = nodePositions[nid];
+      if (!el || !pos) return;
+      minX = Math.min(minX, pos.x);
+      minY = Math.min(minY, pos.y);
+      maxX = Math.max(maxX, pos.x + el.offsetWidth);
+      maxY = Math.max(maxY, pos.y + el.offsetHeight);
+    });
+    return { left: minX - GROUP_PAD, top: minY - GROUP_PAD - 22, // 22 for label height
+             right: maxX + GROUP_PAD, bottom: maxY + GROUP_PAD };
+  }
+
+  // Build list of layout boxes (each has nodeIds + bounds)
+  var layoutBoxes = [];
+  GROUPS.forEach(function(g) {
+    if (!g.nodes || g.nodes.length === 0) return;
+    var bounds = calcGroupBounds(g.nodes);
+    if (bounds.left === Infinity) return;
+    layoutBoxes.push({ nodeIds: g.nodes, bounds: bounds });
+  });
+
+  // Add ungrouped nodes as individual boxes
+  NODES.forEach(function(n) {
+    if (groupedNodeIds.has(n.id)) return;
+    var el = nodeElements[n.id], pos = nodePositions[n.id];
+    if (!el || !pos) return;
+    var bounds = { left: pos.x - 4, top: pos.y - 4,
+                   right: pos.x + el.offsetWidth + 4, bottom: pos.y + el.offsetHeight + 4 };
+    layoutBoxes.push({ nodeIds: [n.id], bounds: bounds });
+  });
+
+  // Step 2: Resolve overlaps between layout boxes using iterative push
+  var MAX_ITER = 30;
+  for (var iter = 0; iter < MAX_ITER; iter++) {
+    var anyOverlap = false;
+    for (var i = 0; i < layoutBoxes.length; i++) {
+      for (var j = i + 1; j < layoutBoxes.length; j++) {
+        var a = layoutBoxes[i].bounds, b = layoutBoxes[j].bounds;
+        // Check AABB overlap with gap
+        var overlapX = Math.min(a.right, b.right) - Math.max(a.left, b.left) + INTER_GROUP_GAP;
+        var overlapY = Math.min(a.bottom, b.bottom) - Math.max(a.top, b.top) + INTER_GROUP_GAP;
+        if (overlapX > 0 && overlapY > 0) {
+          anyOverlap = true;
+          // Push apart in the direction of minimum overlap
+          var dx = 0, dy = 0;
+          if (overlapX < overlapY) {
+            // Push horizontally
+            var centerAx = (a.left + a.right) / 2, centerBx = (b.left + b.right) / 2;
+            if (centerAx <= centerBx) {
+              dx = overlapX; // push B to the right
+            } else {
+              dx = -overlapX; // push B to the left
+            }
+          } else {
+            // Push vertically
+            var centerAy = (a.top + a.bottom) / 2, centerBy = (b.top + b.bottom) / 2;
+            if (centerAy <= centerBy) {
+              dy = overlapY; // push B downward
+            } else {
+              dy = -overlapY; // push B upward
+            }
+          }
+          // Move all nodes in box j
+          layoutBoxes[j].nodeIds.forEach(function(nid) {
+            var pos = nodePositions[nid], el = nodeElements[nid];
+            if (!pos || !el) return;
+            pos.x += dx;
+            pos.y += dy;
+            el.style.left = pos.x + 'px';
+            el.style.top = pos.y + 'px';
+          });
+          // Update bounds for j
+          layoutBoxes[j].bounds.left += dx;
+          layoutBoxes[j].bounds.right += dx;
+          layoutBoxes[j].bounds.top += dy;
+          layoutBoxes[j].bounds.bottom += dy;
+        }
+      }
+    }
+    if (!anyOverlap) break;
+  }
+}
+
+// Toggle children collapse
+canvas.addEventListener('click', function(e) {
+  var toggleEl = e.target.closest('.attr-toggle');
+  if (toggleEl) {
+    e.stopPropagation();
+    var targetId = toggleEl.dataset.toggle;
+    var group = document.getElementById(targetId);
+    if (group) {
+      var isCollapsed = group.classList.contains('collapsed');
+      if (isCollapsed) {
+        group.classList.remove('collapsed');
+        group.style.maxHeight = group.scrollHeight + 'px';
+        toggleEl.classList.add('expanded');
+      } else {
+        group.style.maxHeight = group.scrollHeight + 'px';
+        requestAnimationFrame(function() {
+          group.classList.add('collapsed');
+          toggleEl.classList.remove('expanded');
+        });
+      }
+      // Redraw connections after expand/collapse
+      setTimeout(function() { redrawConnections(); updateGroupBounds(); }, 250);
+    }
+    return;
+  }
+});
+
+function updateGroupBounds() {
+  var GROUP_PAD = 18;
+  GROUPS.forEach(function(g) {
+    var ge = groupElements[g.id]; if (!ge) return;
+    var bg = ge.bg, lbl = ge.lbl, nodeIds = ge.nodeIds;
+    var minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+    nodeIds.forEach(function(nid) {
+      var el = nodeElements[nid], pos = nodePositions[nid];
+      if (!el || !pos) return;
+      minX = Math.min(minX, pos.x); minY = Math.min(minY, pos.y);
+      maxX = Math.max(maxX, pos.x + el.offsetWidth); maxY = Math.max(maxY, pos.y + el.offsetHeight);
+    });
+    if (minX === Infinity) return;
+    var groupW = maxX - minX + GROUP_PAD * 2;
+    lbl.style.width = (groupW - 8) + 'px';
+    lbl.style.left = (minX - GROUP_PAD + 4) + 'px';
+    lbl.style.position = 'absolute';
+    // Measure label height after setting width (may wrap)
+    var lblH = lbl.offsetHeight || 18;
+    var topOffset = lblH + 4;
+    bg.style.left = (minX - GROUP_PAD) + 'px'; bg.style.top = (minY - GROUP_PAD - topOffset) + 'px';
+    bg.style.width = groupW + 'px'; bg.style.height = (maxY - minY + GROUP_PAD * 2 + topOffset) + 'px';
+    lbl.style.top = (minY - GROUP_PAD - topOffset + 2) + 'px';
+  });
+}
+
+function getAttrAnchor(aid, side) {
+  var el = attrElements[aid]; if (!el) return null;
+  // Check if parent is collapsed — redirect to parent attr
+  var parentGroup = el.closest('.attr-children-group');
+  if (parentGroup && parentGroup.classList.contains('collapsed')) {
+    // Find parent attr (the element before the children group)
+    var prev = parentGroup.previousElementSibling;
+    if (prev && prev.dataset && prev.dataset.aid) {
+      el = prev; // redirect to parent
+    } else {
+      return null;
+    }
+  }
+  var nodeEl = el.closest('.node');
+  var nid = nodeEl.dataset.nodeId, pos = nodePositions[nid], nodeW = nodeEl.offsetWidth;
+  // Use offsetTop chain instead of getBoundingClientRect to avoid CSS transform scale distortion
+  var relY = el.offsetHeight / 2;
+  var cur = el;
+  while (cur && cur !== nodeEl) {
+    relY += cur.offsetTop;
+    cur = cur.offsetParent;
+  }
+  if (side === 'right') return {x: pos.x + nodeW, y: pos.y + relY};
+  return {x: pos.x, y: pos.y + relY};
+}
+
+function redrawConnections() {
+  svg.innerHTML = ''; connData = [];
+  var defs = document.createElementNS('http://www.w3.org/2000/svg', 'defs');
+  svg.appendChild(defs);
+  var gradCache = {};
+  // Parse hex color to r,g,b
+  function hexToRgb(hex) {
+    var r = parseInt(hex.substr(1,2),16), g = parseInt(hex.substr(3,2),16), b = parseInt(hex.substr(5,2),16);
+    return {r:r, g:g, b:b};
+  }
+  // Create or reuse a gradient for a given color and direction
+  function getGradient(color, x1, y1, x2, y2, idx) {
+    var gradId = 'grad-' + idx;
+    var rgb = hexToRgb(color);
+    var grad = document.createElementNS('http://www.w3.org/2000/svg', 'linearGradient');
+    grad.setAttribute('id', gradId);
+    grad.setAttribute('gradientUnits', 'userSpaceOnUse');
+    grad.setAttribute('x1', x1); grad.setAttribute('y1', y1);
+    grad.setAttribute('x2', x2); grad.setAttribute('y2', y2);
+    var stop0 = document.createElementNS('http://www.w3.org/2000/svg', 'stop');
+    stop0.setAttribute('offset', '0%');
+    stop0.setAttribute('stop-color', 'rgba(' + rgb.r + ',' + rgb.g + ',' + rgb.b + ',0.15)');
+    var stop1 = document.createElementNS('http://www.w3.org/2000/svg', 'stop');
+    stop1.setAttribute('offset', '100%');
+    stop1.setAttribute('stop-color', color);
+    grad.appendChild(stop0);
+    grad.appendChild(stop1);
+    defs.appendChild(grad);
+    return 'url(#' + gradId + ')';
+  }
+  CONNECTIONS.forEach(function(c, idx) {
+    var srcId = c[0], tgtId = c[1], color = c[2], dashed = c[3];
+    var srcEl = attrElements[srcId], tgtEl = attrElements[tgtId];
+    if (!srcEl || !tgtEl) return;
+    var srcNode = srcEl.closest('.node').dataset.nodeId;
+    var tgtNode = tgtEl.closest('.node').dataset.nodeId;
+    var srcPos = nodePositions[srcNode], tgtPos = nodePositions[tgtNode];
+    var srcNW = nodeElements[srcNode].offsetWidth, tgtNW = nodeElements[tgtNode].offsetWidth;
+    var srcCenterX = srcPos.x + srcNW / 2, tgtCenterX = tgtPos.x + tgtNW / 2;
+    var srcSide, tgtSide;
+    if (srcCenterX <= tgtCenterX) { srcSide = 'right'; tgtSide = 'left'; }
+    else { srcSide = 'left'; tgtSide = 'right'; }
+    var p1 = getAttrAnchor(srcId, srcSide), p2 = getAttrAnchor(tgtId, tgtSide);
+    if (!p1 || !p2) return;
+    var dx = Math.abs(p2.x - p1.x), cpOff = Math.max(dx * 0.35, 50);
+    var cp1x = srcSide === 'right' ? p1.x + cpOff : p1.x - cpOff;
+    var cp2x = tgtSide === 'left' ? p2.x - cpOff : p2.x + cpOff;
+    var d = 'M ' + p1.x + ' ' + p1.y + ' C ' + cp1x + ' ' + p1.y + ', ' + cp2x + ' ' + p2.y + ', ' + p2.x + ' ' + p2.y;
+    var path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+    path.setAttribute('d', d);
+    path.setAttribute('stroke', getGradient(color, p1.x, p1.y, p2.x, p2.y, idx));
+    if (dashed) path.setAttribute('stroke-dasharray', '6 4');
+    svg.appendChild(path);
+    connData.push({srcId: srcId, tgtId: tgtId, path: path, idx: idx});
+  });
+}
+
+// TOOLTIP — show function signature + desc + IO on hover
+canvas.addEventListener('mouseover', function(e) {
+  var attrEl = e.target.closest('[data-aid]');
+  if (!attrEl) return;
+  var aid = attrEl.dataset.aid;
+  var sig = attrSigMap[aid];
+  var desc = attrDescMap[aid];
+  var detail = attrDetailMap[aid];
+  var io = attrIOMap[aid];
+  var fd = attrFieldDetailMap[aid];
+  if (!sig && !desc && !detail && !io && !fd) return;
+  var html = '';
+  if (sig) html += sig;
+  if (desc) html += '<span class="sig-desc">' + desc + '</span>';
+  if (!desc && fd) html += '<span class="sig-desc">' + fd.summary + '</span>';
+  if (detail) html += '<span class="sig-detail">' + detail + '</span>';
+  if (io) {
+    html += '<span class="sig-io">';
+    if (io.input) html += '<span class="sig-io-label">输入：</span><span class="sig-io-input">' + io.input + '</span>';
+    if (io.output) html += '<span class="sig-io-label">输出：</span><span class="sig-io-output">' + io.output + '</span>';
+    html += '</span>';
+  }
+  var hint = attrCallChainMap[aid] ? '\n<span class="sig-hint">Click to view call chain →</span>' :
+             attrFieldDetailMap[aid] ? '\n<span class="sig-hint">Click to view computation process →</span>' : '';
+  tooltip.innerHTML = html + hint;
+  tooltip.style.display = 'block';
+  positionTooltip(e);
+});
+canvas.addEventListener('mousemove', function(e) {
+  if (tooltip.style.display === 'block') positionTooltip(e);
+});
+canvas.addEventListener('mouseout', function(e) {
+  var attrEl = e.target.closest('[data-aid]');
+  if (attrEl) {
+    var related = e.relatedTarget;
+    if (related && related.closest && related.closest('[data-aid]') === attrEl) return;
+    tooltip.style.display = 'none';
+  }
+});
+function positionTooltip(e) {
+  var x = e.clientX + 14, y = e.clientY + 14;
+  if (x + tooltip.offsetWidth > window.innerWidth - 10) x = e.clientX - tooltip.offsetWidth - 10;
+  if (y + tooltip.offsetHeight > window.innerHeight - 10) y = e.clientY - tooltip.offsetHeight - 10;
+  tooltip.style.left = x + 'px'; tooltip.style.top = y + 'px';
+}
+
+// DETAIL PANEL — call chain viewer
+function openDetailPanel(aid) {
+  var chain = attrCallChainMap[aid];
+  if (!chain) return;
+  dpTitle.textContent = aid.split('.').pop() + '() — Call Chain';
+  dpBody.innerHTML = '';
+  var tree = document.createElement('div');
+  tree.className = 'call-tree';
+  renderCallTree(tree, chain, aid);
+  dpBody.appendChild(tree);
+  detailPanel.classList.add('open');
+  // Highlight the attr and connections
+  clearHighlight();
+  selectedAttr = aid;
+  reHighlight();
+}
+
+function renderCallTree(container, items, currentAid) {
+  items.forEach(function(item) {
+    var nodeDiv = document.createElement('div');
+    var hasChildren = item.calls && item.calls.length > 0;
+    var isCurrent = item.id === currentAid;
+    var isExternal = item.external;
+    var isClickable = !!item.id;
+
+    // Row
+    var row = document.createElement('div');
+    row.className = 'ct-node' + (isCurrent ? ' ct-current' : '') + (isExternal ? ' ct-external' : '') + (isClickable ? ' ct-clickable' : '');
+    row.dataset.ctAid = item.id || '';
+    row.dataset.ctName = item.name || '';
+
+    if (hasChildren) {
+      var toggle = document.createElement('span');
+      toggle.className = 'ct-toggle';
+      toggle.textContent = '▶';
+      toggle.style.transform = 'rotate(90deg)';
+      toggle.addEventListener('click', function(e) {
+        e.stopPropagation();
+        var childDiv = nodeDiv.querySelector('.ct-children');
+        if (childDiv) {
+          var collapsed = childDiv.classList.toggle('collapsed');
+          toggle.style.transform = collapsed ? 'rotate(0deg)' : 'rotate(90deg)';
+        }
+      });
+      row.appendChild(toggle);
+    } else {
+      var icon = document.createElement('span');
+      icon.className = 'ct-icon';
+      icon.textContent = isExternal ? '◇' : '•';
+      row.appendChild(icon);
+    }
+
+    var nameSpan = document.createElement('span');
+    nameSpan.className = 'ct-name';
+    nameSpan.textContent = item.name || item.id;
+    row.appendChild(nameSpan);
+
+    if (item.module) {
+      var modSpan = document.createElement('span');
+      modSpan.className = 'ct-module';
+      modSpan.textContent = '[' + item.module + ']';
+      row.appendChild(modSpan);
+    }
+
+    // Click to highlight corresponding node in graph AND navigate
+    row.addEventListener('click', function(e) {
+      if (e.target.closest('.ct-toggle')) return;
+      dpBody.querySelectorAll('.ct-node.ct-active').forEach(function(el) { el.classList.remove('ct-active'); });
+      row.classList.add('ct-active');
+      highlightCallTreeItem(item.id, item.name || '', dpBody);
+    });
+
+    nodeDiv.appendChild(row);
+
+    // Description block (desc field — explains what the function does)
+    if (item.desc) {
+      var descDiv = document.createElement('div');
+      descDiv.className = 'ct-desc';
+      var descSpan = document.createElement('span');
+      descSpan.className = 'ct-desc-text';
+      descSpan.textContent = item.desc;
+      descDiv.appendChild(descSpan);
+      nodeDiv.appendChild(descDiv);
+    }
+
+    // Sig line (legacy support)
+    if (item.sig && !item.desc) {
+      var sigDiv = document.createElement('div');
+      sigDiv.className = 'ct-node';
+      sigDiv.style.paddingLeft = '32px';
+      var sigSpan = document.createElement('span');
+      sigSpan.className = 'ct-sig';
+      sigSpan.textContent = item.sig;
+      sigDiv.appendChild(sigSpan);
+      nodeDiv.appendChild(sigDiv);
+    }
+
+    // Children
+    if (hasChildren) {
+      var childrenDiv = document.createElement('div');
+      childrenDiv.className = 'ct-children';
+      renderCallTree(childrenDiv, item.calls, currentAid);
+      nodeDiv.appendChild(childrenDiv);
+    }
+
+    container.appendChild(nodeDiv);
+  });
+}
+
+function scrollToAttr(aid) {
+  var el = attrElements[aid];
+  if (!el) return;
+  var nodeEl = el.closest('.node');
+  var nid = nodeEl.dataset.nodeId;
+  var pos = nodePositions[nid];
+  var vw = viewport.clientWidth, vh = viewport.clientHeight;
+  panX = vw / 2 - (pos.x + nodeEl.offsetWidth / 2) * scale;
+  panY = vh / 2 - (pos.y + nodeEl.offsetHeight / 2) * scale;
+  applyTransform();
+}
+
+function closeDetailPanel() {
+  detailPanel.classList.remove('open');
+  clearHighlight();
+}
+
+// FIELD DETAIL PANEL — show datatype field computation process
+function openFieldDetailPanel(aid) {
+  var detail = attrFieldDetailMap[aid];
+  if (!detail) return;
+  dpTitle.textContent = detail.field + ' — Computation';
+  dpBody.innerHTML = '';
+  var container = document.createElement('div');
+  container.className = 'fd-container';
+  // Header
+  var header = document.createElement('div');
+  header.className = 'fd-header';
+  header.innerHTML = '<span class="fd-field-name">' + detail.field + '</span><span class="fd-field-type">' + detail.type + '</span>';
+  container.appendChild(header);
+  // Summary
+  var summary = document.createElement('div');
+  summary.className = 'fd-summary';
+  summary.textContent = detail.summary;
+  container.appendChild(summary);
+  // Sources (per mode)
+  (detail.sources || []).forEach(function(src) {
+    var modeDiv = document.createElement('div');
+    modeDiv.className = 'fd-mode';
+    var modeHeader = document.createElement('div');
+    modeHeader.className = 'fd-mode-header';
+    modeHeader.innerHTML = '<span class="fd-mode-badge">' + src.mode + '</span><span class="fd-mode-fn">' + src.fn + '</span>';
+    modeDiv.appendChild(modeHeader);
+    var stepsList = document.createElement('ol');
+    stepsList.className = 'fd-steps';
+    (src.steps || []).forEach(function(step) {
+      var li = document.createElement('li');
+      li.className = 'fd-step';
+      // Highlight code-like fragments
+      li.innerHTML = step.replace(/(\w+\([^)]*\))/g, '<code>$1</code>')
+                         .replace(/([\w.]+\[\w+\])/g, '<code>$1</code>');
+      stepsList.appendChild(li);
+    });
+    modeDiv.appendChild(stepsList);
+    container.appendChild(modeDiv);
+  });
+  dpBody.appendChild(container);
+  detailPanel.classList.add('open');
+  // Highlight the attr
+  clearHighlight();
+  selectedAttr = aid;
+  reHighlight();
+}
+
+// Flash highlight animation for an attr element
+function flashAttr(aid) {
+  var el = attrElements[aid];
+  if (!el) return;
+  el.style.transition = 'box-shadow 0.3s ease';
+  el.style.boxShadow = '0 0 12px 3px rgba(137,180,250,0.7)';
+  setTimeout(function() {
+    el.style.boxShadow = '0 0 8px 2px rgba(137,180,250,0.4)';
+    setTimeout(function() {
+      el.style.boxShadow = '';
+      el.style.transition = '';
+    }, 600);
+  }, 400);
+}
+
+// Find an attr ID in any diagram (for cross-diagram navigation)
+function findAttrInDiagrams(aid) {
+  for (var i = 0; i < diagKeys.length; i++) {
+    var key = diagKeys[i];
+    var d = DIAGRAMS[key];
+    var nodes = d.NODES || [];
+    for (var j = 0; j < nodes.length; j++) {
+      var secs = nodes[j].sections || [];
+      for (var s = 0; s < secs.length; s++) {
+        var attrs = secs[s].attrs || [];
+        for (var a = 0; a < attrs.length; a++) {
+          if (attrs[a].id === aid) return { diagram: key, nodeId: nodes[j].id };
+          var children = attrs[a].children || [];
+          for (var c = 0; c < children.length; c++) {
+            if (children[c].id === aid) return { diagram: key, nodeId: nodes[j].id };
+          }
+        }
+      }
+    }
+  }
+  return null;
+}
+
+// Rebind call tree click events after innerHTML replacement
+function rebindCallTreeEvents(container) {
+  container.querySelectorAll('.ct-node.ct-clickable').forEach(function(row) {
+    var aid = row.dataset.ctAid;
+    var funcName = row.dataset.ctName || '';
+    if (!aid) return;
+    row.addEventListener('click', function(e) {
+      if (e.target.closest('.ct-toggle')) return;
+      container.querySelectorAll('.ct-node.ct-active').forEach(function(el) { el.classList.remove('ct-active'); });
+      row.classList.add('ct-active');
+      highlightCallTreeItem(aid, funcName, container);
+    });
+  });
+  // Rebind toggle events
+  container.querySelectorAll('.ct-toggle').forEach(function(toggle) {
+    toggle.addEventListener('click', function(e) {
+      e.stopPropagation();
+      var nodeDiv = toggle.closest('.ct-node').parentElement;
+      var childDiv = nodeDiv ? nodeDiv.querySelector('.ct-children') : null;
+      if (childDiv) {
+        var collapsed = childDiv.classList.toggle('collapsed');
+        toggle.style.transform = collapsed ? 'rotate(0deg)' : 'rotate(90deg)';
+      }
+    });
+  });
+}
+
+document.getElementById('dpClose').addEventListener('click', closeDetailPanel);
+
+// NODE DRAGGING
+canvas.addEventListener('mousedown', function(e) {
+  var header = e.target.closest('[data-drag]');
+  if (!header) return;
+  e.preventDefault(); e.stopPropagation();
+  var nid = header.dataset.drag, el = nodeElements[nid], pos = nodePositions[nid];
+  el.classList.add('dragging');
+  // Save undo snapshot before drag
+  var undoSnap = {};
+  undoSnap[nid] = {x: pos.x, y: pos.y};
+  dragState = {nid: nid, startMouseX: e.clientX, startMouseY: e.clientY, startNodeX: pos.x, startNodeY: pos.y, undoSnap: undoSnap};
+});
+
+// GROUP DRAGGING
+function findGroupByElement(el) {
+  var bgEl = el.closest('.group-bg'), lblEl = el.closest('.group-label');
+  var target = bgEl || lblEl;
+  if (!target) return null;
+  var gid = target.dataset.groupId;
+  return GROUPS.find(function(g) { return g.id === gid; }) || null;
+}
+
+canvas.addEventListener('mousedown', function(e) {
+  if (dragState) return;
+  var group = findGroupByElement(e.target);
+  if (!group) return;
+  if (e.target.closest('.node')) return;
+  e.preventDefault(); e.stopPropagation();
+  var startPositions = {};
+  group.nodes.forEach(function(nid) {
+    var pos = nodePositions[nid];
+    if (pos) startPositions[nid] = {x: pos.x, y: pos.y};
+  });
+  var bg = groupElements[group.id].bg;
+  bg.classList.add('group-dragging');
+  // undoSnap is same as startPositions (snapshot before drag)
+  var undoSnap = {};
+  for (var nid in startPositions) undoSnap[nid] = {x: startPositions[nid].x, y: startPositions[nid].y};
+  groupDragState = {groupId: group.id, nodeIds: group.nodes, startMouseX: e.clientX, startMouseY: e.clientY, startPositions: startPositions, undoSnap: undoSnap};
+});
+
+window.addEventListener('mousemove', function(e) {
+  if (dragState) {
+    var dx = (e.clientX - dragState.startMouseX) / scale, dy = (e.clientY - dragState.startMouseY) / scale;
+    var newX = dragState.startNodeX + dx, newY = dragState.startNodeY + dy;
+    nodePositions[dragState.nid] = {x: newX, y: newY};
+    var el = nodeElements[dragState.nid];
+    el.style.left = newX + 'px'; el.style.top = newY + 'px';
+    redrawConnections(); updateGroupBounds();
+    if (selectedAttr) reHighlight();
+    return;
+  }
+  if (groupDragState) {
+    var dx = (e.clientX - groupDragState.startMouseX) / scale, dy = (e.clientY - groupDragState.startMouseY) / scale;
+    groupDragState.nodeIds.forEach(function(nid) {
+      var sp = groupDragState.startPositions[nid]; if (!sp) return;
+      var newX = sp.x + dx, newY = sp.y + dy;
+      nodePositions[nid] = {x: newX, y: newY};
+      var el = nodeElements[nid];
+      el.style.left = newX + 'px'; el.style.top = newY + 'px';
+    });
+    redrawConnections(); updateGroupBounds();
+    if (selectedAttr) reHighlight();
+    return;
+  }
+});
+
+window.addEventListener('mouseup', function() {
+  if (dragState) {
+    var nid = dragState.nid;
+    var pos = nodePositions[nid];
+    // Only push undo if position actually changed
+    if (pos.x !== dragState.startNodeX || pos.y !== dragState.startNodeY) {
+      pushUndo(dragState.undoSnap);
+    }
+    nodeElements[nid].classList.remove('dragging');
+    dragState = null; savePositions();
+  }
+  if (groupDragState) {
+    // Check if any node actually moved
+    var moved = false;
+    for (var nid in groupDragState.undoSnap) {
+      var cur = nodePositions[nid], prev = groupDragState.undoSnap[nid];
+      if (cur && prev && (cur.x !== prev.x || cur.y !== prev.y)) { moved = true; break; }
+    }
+    if (moved) pushUndo(groupDragState.undoSnap);
+    groupElements[groupDragState.groupId].bg.classList.remove('group-dragging');
+    groupDragState = null; savePositions();
+  }
+});
+
+// ATTR CLICK — open call chain or highlight + copy function name
+canvas.addEventListener('click', function(e) {
+  if (dragState) return;
+  if (e.target.closest('[data-drag]')) return;
+  if (e.target.closest('.attr-toggle')) return;
+  var attrEl = e.target.closest('[data-aid]');
+  if (!attrEl) {
+    clearHighlight();
+    return;
+  }
+  var aid = attrEl.dataset.aid;
+  // Copy function name to clipboard
+  var nameEl = attrEl.querySelector('.attr-name');
+  if (nameEl) {
+    var funcName = nameEl.textContent.replace(/^→\s*/, '').replace(/\(\)$/, '').trim();
+    if (funcName) copyToClipboard(funcName);
+  }
+  // If has call chain data, open detail panel
+  if (attrCallChainMap[aid]) {
+    openDetailPanel(aid);
+    return;
+  }
+  // If has field detail data, open field detail panel
+  if (attrFieldDetailMap[aid]) {
+    openFieldDetailPanel(aid);
+    return;
+  }
+  // Otherwise highlight connections
+  clearHighlight();
+  if (selectedAttr === aid) { selectedAttr = null; return; }
+  selectedAttr = aid; reHighlight();
+});
+
+function reHighlight() {
+  if (!selectedAttr) return;
+  var primaryAids = Array.isArray(selectedAttr) ? selectedAttr : [selectedAttr];
+  var relatedAttrs = new Set(primaryAids), relatedIdxs = new Set(), relatedNodes = new Set();
+  connData.forEach(function(c) {
+    if (relatedAttrs.has(c.srcId) || relatedAttrs.has(c.tgtId)) { relatedIdxs.add(c.idx); relatedAttrs.add(c.srcId); relatedAttrs.add(c.tgtId); }
+  });
+  relatedAttrs.forEach(function(a) {
+    var el = attrElements[a];
+    if (el) { el.classList.add('hl'); var nd = el.closest('.node'); if (nd) relatedNodes.add(nd.dataset.nodeId); }
+  });
+  connData.forEach(function(c) {
+    if (relatedIdxs.has(c.idx)) { c.path.classList.add('hl'); c.path.classList.remove('dim'); }
+    else { c.path.classList.add('dim'); c.path.classList.remove('hl'); }
+  });
+  Object.values(nodeElements).forEach(function(n) { if (!relatedNodes.has(n.dataset.nodeId)) n.classList.add('dim'); });
+  GROUPS.forEach(function(g) {
+    var ge = groupElements[g.id]; if (!ge) return;
+    var hasRelated = ge.nodeIds.some(function(nid) { return relatedNodes.has(nid); });
+    ge.bg.classList.toggle('dim', !hasRelated); ge.lbl.classList.toggle('dim', !hasRelated);
+  });
+}
+
+// Shared logic: highlight a call tree item by id and name, with cross-diagram support
+function highlightCallTreeItem(targetAid, funcName, panelBody) {
+  // Priority 1: exact match by attr id in current diagram
+  if (targetAid && attrElements[targetAid]) {
+    clearHighlight();
+    selectedAttr = targetAid;
+    reHighlight();
+    scrollToAttr(targetAid);
+    flashAttr(targetAid);
+    return;
+  }
+  // Priority 2: fallback to name-based matching in current diagram
+  var nameMatches = findNodeAttrsByFuncName(funcName);
+  if (nameMatches.length > 0) {
+    var allAids = targetAid ? [targetAid] : [];
+    allAids = allAids.concat(nameMatches);
+    var scrollTarget = attrElements[nameMatches[0]] ? nameMatches[0] : (targetAid || nameMatches[0]);
+    clearHighlight();
+    selectedAttr = allAids;
+    reHighlight();
+    scrollToAttr(scrollTarget);
+    flashAttr(scrollTarget);
+    return;
+  }
+  // Priority 3: cross-diagram navigation by exact id
+  if (targetAid) {
+    var found = findAttrInDiagrams(targetAid);
+    if (found) {
+      var savedChain = panelBody.innerHTML;
+      var savedTitle = dpTitle.textContent;
+      switchDiagram(found.diagram);
+      setTimeout(function() {
+        if (attrElements[targetAid]) {
+          clearHighlight();
+          selectedAttr = targetAid;
+          reHighlight();
+          scrollToAttr(targetAid);
+          flashAttr(targetAid);
+        } else {
+          var nm = findNodeAttrsByFuncName(funcName);
+          if (nm.length > 0) {
+            clearHighlight();
+            selectedAttr = [targetAid].concat(nm);
+            reHighlight();
+            scrollToAttr(nm[0]);
+            flashAttr(nm[0]);
+          }
+        }
+        dpTitle.textContent = savedTitle;
+        panelBody.innerHTML = savedChain;
+        detailPanel.classList.add('open');
+        rebindCallTreeEvents(panelBody);
+      }, 150);
+    }
+  }
+}
+
+// Find attrs by function name — STRICT equality only (no substring matching)
+function findNodeAttrsByFuncName(funcName) {
+  var cleanName = funcName.replace(/^→\s*/, '').replace(/^[\w.]+\./, '').replace(/\(\)$/, '').trim();
+  if (!cleanName) return [];
+  var result = [];
+  var matchedNodeIds = new Set();
+  // First pass: match node labels with strict equality
+  NODES.forEach(function(n) {
+    var nodeLabel = (n.label || '').replace(/\(\)$/, '').trim();
+    if (nodeLabel === cleanName) {
+      matchedNodeIds.add(n.id);
+      (n.sections || []).forEach(function(sec) {
+        (sec.attrs || []).forEach(function(a) {
+          result.push(a.id);
+          if (a.children) a.children.forEach(function(ch) { result.push(ch.id); });
+        });
+      });
+    }
+  });
+  // Second pass: match individual attr names with strict equality
+  NODES.forEach(function(n) {
+    if (matchedNodeIds.has(n.id)) return;
+    (n.sections || []).forEach(function(sec) {
+      (sec.attrs || []).forEach(function(a) {
+        var attrName = (a.name || '').replace(/^→\s*/, '').replace(/\(\)$/, '').trim();
+        if (attrName === cleanName) result.push(a.id);
+        if (a.children) {
+          a.children.forEach(function(ch) {
+            var chName = (ch.name || '').replace(/^→\s*/, '').replace(/\(\)$/, '').trim();
+            if (chName === cleanName) result.push(ch.id);
+          });
+        }
+      });
+    });
+  });
+  return result;
+}
+
+function clearHighlight() {
+  selectedAttr = null;
+  document.querySelectorAll('.attr.hl').forEach(function(a) { a.classList.remove('hl'); });
+  document.querySelectorAll('.node.dim').forEach(function(n) { n.classList.remove('dim'); });
+  document.querySelectorAll('.group-bg.dim').forEach(function(g) { g.classList.remove('dim'); });
+  document.querySelectorAll('.group-label.dim').forEach(function(g) { g.classList.remove('dim'); });
+  connData.forEach(function(c) { c.path.classList.remove('hl'); c.path.classList.remove('dim'); });
+}
+
+// PAN & ZOOM
+function applyTransform() {
+  canvas.style.transform = 'translate(' + panX + 'px, ' + panY + 'px) scale(' + scale + ')';
+  document.getElementById('zoomInfo').textContent = Math.round(scale * 100) + '%';
+}
+
+viewport.addEventListener('mousedown', function(e) {
+  if (e.target.closest('[data-drag]') || e.target.closest('[data-aid]')) return;
+  if (e.button === 1 || (e.button === 0 && spaceHeld) || e.button === 0) {
+    if (e.button === 0 && !spaceHeld && e.target.closest('.node')) return;
+    isPanning = true; panMoved = false;
+    panStart = {x: e.clientX, y: e.clientY, px: panX, py: panY};
+    viewport.classList.add('panning'); e.preventDefault();
+  }
+});
+
+window.addEventListener('mousemove', function(e) {
+  if (!isPanning) return;
+  var dx = e.clientX - panStart.x, dy = e.clientY - panStart.y;
+  if (Math.abs(dx) > 3 || Math.abs(dy) > 3) panMoved = true;
+  panX = panStart.px + dx; panY = panStart.py + dy; applyTransform();
+});
+
+window.addEventListener('mouseup', function() {
+  if (isPanning) {
+    isPanning = false; viewport.classList.remove('panning');
+  }
+});
+
+// Click on blank area to clear highlight (but keep detail panel open)
+viewport.addEventListener('click', function(e) {
+  if (panMoved) return; // ignore drag-pan
+  if (e.target.closest('.node') || e.target.closest('.group-bg') || e.target.closest('.group-label')) return;
+  clearHighlight();
+});
+
+window.addEventListener('keydown', function(e) { if (e.code === 'Space') { spaceHeld = true; e.preventDefault(); } });
+window.addEventListener('keyup', function(e) { if (e.code === 'Space') spaceHeld = false; });
+
+viewport.addEventListener('wheel', function(e) {
+  e.preventDefault();
+  var rect = viewport.getBoundingClientRect(), mx = e.clientX - rect.left, my = e.clientY - rect.top;
+  var oldScale = scale, delta = e.deltaY < 0 ? 1.08 : 1 / 1.08;
+  scale = Math.max(0.15, Math.min(3, scale * delta));
+  panX = mx - (mx - panX) * (scale / oldScale); panY = my - (my - panY) * (scale / oldScale);
+  applyTransform();
+}, {passive: false});
+
+document.getElementById('zoomIn').addEventListener('click', function() {
+  var cx = viewport.clientWidth / 2, cy = viewport.clientHeight / 2, oldScale = scale;
+  scale = Math.min(3, scale * 1.2);
+  panX = cx - (cx - panX) * (scale / oldScale); panY = cy - (cy - panY) * (scale / oldScale); applyTransform();
+});
+document.getElementById('zoomOut').addEventListener('click', function() {
+  var cx = viewport.clientWidth / 2, cy = viewport.clientHeight / 2, oldScale = scale;
+  scale = Math.max(0.15, scale / 1.2);
+  panX = cx - (cx - panX) * (scale / oldScale); panY = cy - (cy - panY) * (scale / oldScale); applyTransform();
+});
+document.getElementById('zoomReset').addEventListener('click', function() {
+  scale = 1; panX = 0; panY = 0; applyTransform();
+});
+
+function fitToView() {
+  var minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+  Object.keys(nodeElements).forEach(function(nid) {
+    var p = nodePositions[nid], el = nodeElements[nid];
+    minX = Math.min(minX, p.x); minY = Math.min(minY, p.y);
+    maxX = Math.max(maxX, p.x + el.offsetWidth); maxY = Math.max(maxY, p.y + el.offsetHeight);
+  });
+  var cw = maxX - minX + 80, ch = maxY - minY + 80;
+  var vw = viewport.clientWidth, vh = viewport.clientHeight - 80;
+  scale = Math.min(1, Math.min(vw / cw, vh / ch));
+  panX = (vw - cw * scale) / 2 - minX * scale + 40 * scale;
+  panY = (vh - ch * scale) / 2 - minY * scale + 80 + 40 * scale;
+  applyTransform();
+  svg.setAttribute('width', cw + 200); svg.setAttribute('height', ch + 200);
+}
+
+document.getElementById('zoomFit').addEventListener('click', fitToView);
+document.getElementById('resetLayoutBtn').addEventListener('click', function(e) {
+  e.preventDefault();
+  if (currentDiagramKey) {
+    var key = currentDiagramKey;
+    localStorage.removeItem(storageKey(key));
+    currentDiagramKey = null;
+    switchDiagram(key);
+  }
+});
+viewport.addEventListener('contextmenu', function(e) { if (e.button === 1) e.preventDefault(); });
+
+// Load first diagram
+switchDiagram(diagKeys[0]);
+
+// ======================== SEARCH ========================
+var searchBox = document.getElementById('searchBox');
+var searchResults = document.getElementById('searchResults');
+var allSearchItems = [];
+
+// Build global search index
+function buildSearchIndex() {
+  allSearchItems = [];
+  diagKeys.forEach(function(key) {
+    var d = DIAGRAMS[key];
+    (d.NODES || []).forEach(function(n) {
+      (n.sections || []).forEach(function(sec) {
+        (sec.attrs || []).forEach(function(a) {
+          allSearchItems.push({ id: a.id, name: a.name, diagram: key, diagramLabel: d.navLabel, nodeLabel: n.label });
+          if (a.children) {
+            a.children.forEach(function(ch) {
+              allSearchItems.push({ id: ch.id, name: ch.name, diagram: key, diagramLabel: d.navLabel, nodeLabel: n.label });
+            });
+          }
+        });
+      });
+    });
+  });
+}
+buildSearchIndex();
+
+searchBox.addEventListener('input', function() {
+  var q = searchBox.value.trim().toLowerCase();
+  searchResults.innerHTML = '';
+  if (!q || q.length < 2) { searchResults.style.display = 'none'; return; }
+  var matches = allSearchItems.filter(function(item) {
+    return item.name.toLowerCase().indexOf(q) !== -1 || item.id.toLowerCase().indexOf(q) !== -1;
+  }).slice(0, 15);
+  if (matches.length === 0) { searchResults.style.display = 'none'; return; }
+  searchResults.style.display = 'block';
+  matches.forEach(function(m) {
+    var div = document.createElement('div');
+    div.className = 'search-result';
+    div.innerHTML = '<span>' + m.name + '</span><span class="sr-module">' + m.diagramLabel + ' → ' + m.nodeLabel + '</span>';
+    div.addEventListener('click', function() {
+      searchResults.style.display = 'none';
+      searchBox.value = '';
+      if (currentDiagramKey !== m.diagram) {
+        switchDiagram(m.diagram);
+        setTimeout(function() {
+          clearHighlight();
+          selectedAttr = m.id;
+          reHighlight();
+          scrollToAttr(m.id);
+        }, 100);
+      } else {
+        clearHighlight();
+        selectedAttr = m.id;
+        reHighlight();
+        scrollToAttr(m.id);
+      }
+    });
+    searchResults.appendChild(div);
+  });
+});
+
+searchBox.addEventListener('blur', function() {
+  setTimeout(function() { searchResults.style.display = 'none'; }, 200);
+});
+
+// Ctrl+K / Ctrl+Z shortcuts — use document-level capture for reliability
+document.addEventListener('keydown', function(e) {
+  // Ctrl+Z: undo layout move
+  if ((e.ctrlKey || e.metaKey) && e.key === 'z' && !e.shiftKey) {
+    // Allow native undo only in actual text inputs
+    var tag = document.activeElement && document.activeElement.tagName;
+    if (tag === 'INPUT' || tag === 'TEXTAREA' || (document.activeElement && document.activeElement.isContentEditable)) return;
+    e.preventDefault();
+    e.stopPropagation();
+    // Don't undo while actively dragging (snap not yet committed)
+    if (dragState || groupDragState) return;
+    performUndo();
+    return;
+  }
+  if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+    e.preventDefault();
+    searchBox.focus();
+    searchBox.select();
+  }
+  if (e.key === 'Escape') {
+    searchResults.style.display = 'none';
+    searchBox.blur();
+  }
+}, true); // <-- capture phase ensures we get the event before any inner element
+
+// ======================== UI LAYOUT VIEWER ENGINE ========================
+// Integrated viewer for Qt/UI widget hierarchy visualization.
+// Activated when code_flow_graph_data.js defines UI_LAYOUT_VIEWS.
+
+(function() {
+  if (typeof UI_LAYOUT_VIEWS === 'undefined') return;
+
+  var ulArea = document.getElementById('ui-layout-area');
+  var ulWrap = document.getElementById('ui-layout-wrap');
+  var ulTitle = document.getElementById('ulTitle');
+  var ulSub = document.getElementById('ulSub');
+  var ulLegend = document.getElementById('ui-layout-legend');
+  var ulTooltip = document.getElementById('ulTooltip');
+  var ulUndoToast = document.getElementById('ul-undo-toast');
+  var ulUndoStack = [];
+  var ulToastTimer = null;
+  var currentUlView = null;
+
+  // Add separator + nav items to sidebar
+  var sep = document.createElement('div');
+  sep.className = 'nav-separator';
+  sep.textContent = '🖼️ UI 布局';
+  navList.appendChild(sep);
+
+  var ulViewKeys = Object.keys(UI_LAYOUT_VIEWS);
+  ulViewKeys.forEach(function(key) {
+    var view = UI_LAYOUT_VIEWS[key];
+    var item = document.createElement('div');
+    item.className = 'nav-item';
+    item.dataset.ulView = key;
+    item.innerHTML = '<span class="nav-label">' + view.navLabel + '</span><span class="nav-sub">' + (view.navSub || '') + '</span>';
+    item.addEventListener('click', function() { switchUlView(key); });
+    navList.appendChild(item);
+  });
+
+  function switchUlView(key) {
+    currentUlView = key;
+    var view = UI_LAYOUT_VIEWS[key];
+
+    // Deactivate code flow graph mode
+    currentDiagramKey = null;
+    document.getElementById('header').style.display = 'none';
+    document.getElementById('content-area').style.display = 'none';
+    ulArea.classList.add('active');
+
+    // Update sidebar active
+    document.querySelectorAll('.nav-item').forEach(function(el) {
+      el.classList.toggle('active', el.dataset.ulView === key);
+    });
+
+    // Update header
+    ulTitle.textContent = view.title;
+    ulSub.textContent = view.sub;
+
+    // Clear undo stack
+    ulUndoStack.length = 0;
+
+    // Render
+    ulWrap.innerHTML = '';
+    var el = ulRenderNode(view.root, 0);
+    el.style.width = '100%';
+    el.style.minHeight = '600px';
+    el.style.height = 'auto';
+    ulWrap.appendChild(el);
+
+    // Legend
+    ulRenderLegend(view.legend);
+  }
+
+  // Hook into diagram switching to hide UI layout
+  var origSwitchDiagram = window.switchDiagram || switchDiagram;
+  // We override by wrapping: when a diagram is selected, hide UI layout
+  var origNavClickHandler = null;
+  // Instead, we hook into the nav click for diagram items
+  document.querySelectorAll('.nav-item[data-diagram]').forEach(function(el) {
+    el.addEventListener('click', function() {
+      currentUlView = null;
+      ulArea.classList.remove('active');
+      document.getElementById('header').style.display = '';
+      document.getElementById('content-area').style.display = '';
+      document.querySelectorAll('.nav-item[data-ul-view]').forEach(function(e) { e.classList.remove('active'); });
+    });
+  });
+
+  // ── Render Functions ──
+
+  function ulEscHtml(s, brNewline) {
+    if (!s) return '';
+    var out = s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    out = out.replace(/\\n/g, brNewline ? '<br>' : '\n');
+    return out;
+  }
+
+  function ulRenderNode(node, depth) {
+    if (node.spacer) {
+      var sp = document.createElement('div');
+      sp.className = 'ul-stretch';
+      sp.title = node.name || 'stretch';
+      return sp;
+    }
+
+    var box = document.createElement('div');
+    box.className = 'widget-box wc-' + (node.color || 'overlay');
+
+    if (node.w) { box.style.width = node.w + 'px'; box.style.minWidth = node.w + 'px'; box.style.flexShrink = '0'; }
+    if (node.h) { box.style.height = node.h + 'px'; box.style.minHeight = node.h + 'px'; box.style.flexShrink = '0'; box.style.flexGrow = '0'; }
+    if (node.splitWeight) { box.style.flex = node.splitWeight; }
+    else if (node.flex) { box.style.flex = node.flex; }
+
+    // Tooltip
+    box.addEventListener('mouseenter', function(e) {
+      e.stopPropagation();
+      var html = '<span class="tt-type">' + (node.badge || 'WIDGET') + '</span> <span class="tt-obj">' + ulEscHtml(node.obj || '', true) + '</span>';
+      html += '<br><b>' + ulEscHtml(node.name, true) + '</b>';
+      if (node.note) html += '<br>' + ulEscHtml(node.note, true);
+      if (node.w) html += '<br><span class="tt-size">width: ' + node.w + 'px</span>';
+      if (node.h) html += '<br><span class="tt-size">height: ' + node.h + 'px</span>';
+      if (node.splitWeight) html += '<br><span class="tt-size">split weight: ' + node.splitWeight + '</span>';
+      ulTooltip.innerHTML = html;
+      ulTooltip.style.display = 'block';
+      ulPositionTooltip(e);
+    });
+    box.addEventListener('mousemove', ulPositionTooltip);
+    box.addEventListener('mouseleave', function(e) { e.stopPropagation(); ulTooltip.style.display = 'none'; });
+
+    // Header
+    var hdr = document.createElement('div');
+    hdr.className = 'wb-header';
+    hdr.innerHTML = '<span class="wb-badge">' + (node.badge || 'W') + '</span><span class="wb-name">' + ulEscHtml(node.name) + '</span>';
+    box.appendChild(hdr);
+
+    // Size annotation
+    if (node.w || node.h || node.splitWeight) {
+      var ann = document.createElement('div');
+      ann.className = 'ul-size-ann';
+      var parts = [];
+      if (node.w) parts.push('w:' + node.w);
+      if (node.h) parts.push('h:' + node.h);
+      if (node.splitWeight) parts.push('flex:' + node.splitWeight);
+      ann.textContent = parts.join(' ');
+      box.appendChild(ann);
+    }
+
+    // Placeholder
+    if (node.placeholder && !node.children && !node.stackPages && !node.tabPages) {
+      var pl = document.createElement('div');
+      pl.className = 'ul-placeholder';
+      pl.textContent = node.placeholder;
+      pl.style.flex = '1'; pl.style.margin = '4px';
+      box.appendChild(pl);
+      ulAddResizeHandles(box);
+      return box;
+    }
+
+    // Leaf
+    if (node.leaf) { ulAddResizeHandles(box); return box; }
+
+    // Body
+    var body = document.createElement('div');
+    body.className = 'wb-body';
+    body.style.flex = '1';
+
+    if (node.layout === 'h') { body.classList.add('h-layout'); }
+    else if (node.layout === 'v') { body.classList.add('v-layout'); }
+    else if (node.layout === 'hsplit') { body.classList.add('h-layout'); }
+    else if (node.layout === 'stack' && node.stackTabs && node.stackPages) {
+      ulRenderStack(box, body, node, depth);
+      ulAddResizeHandles(box);
+      return box;
+    } else if (node.layout === 'tab' && node.tabTabs && node.tabPages) {
+      ulRenderTab(box, body, node, depth);
+      ulAddResizeHandles(box);
+      return box;
+    }
+
+    // Render children
+    if (node.children) {
+      node.children.forEach(function(child, i) {
+        if (node.layout === 'hsplit' && i > 0 && !child.spacer) {
+          var handle = document.createElement('div');
+          handle.className = 'ul-splitter-v';
+          handle.title = '⇔ QSplitter handle (8px)';
+          body.appendChild(handle);
+        }
+        body.appendChild(ulRenderNode(child, depth + 1));
+      });
+    }
+
+    box.appendChild(body);
+    ulAddResizeHandles(box);
+    return box;
+  }
+
+  function ulRenderStack(box, body, node, depth) {
+    var tabs = document.createElement('div');
+    tabs.className = 'ul-stack-tabs';
+    var stackId = 'ulstk-' + Math.random().toString(36).slice(2, 8);
+
+    node.stackTabs.forEach(function(tab) {
+      var btn = document.createElement('div');
+      btn.className = 'ul-stack-tab' + (tab.active ? ' active' : '');
+      btn.textContent = tab.label;
+      btn.dataset.key = tab.key;
+      btn.dataset.stack = stackId;
+      btn.onclick = function(e) {
+        e.stopPropagation();
+        document.querySelectorAll('.ul-stack-tab[data-stack="' + stackId + '"]').forEach(function(b) { b.classList.remove('active'); });
+        document.querySelectorAll('.ul-stack-page[data-stack="' + stackId + '"]').forEach(function(p) { p.classList.remove('active'); });
+        btn.classList.add('active');
+        var page = document.querySelector('.ul-stack-page[data-stack="' + stackId + '"][data-key="' + tab.key + '"]');
+        if (page) page.classList.add('active');
+      };
+      tabs.appendChild(btn);
+    });
+    box.appendChild(tabs);
+
+    body.classList.add('v-layout');
+    body.style.position = 'relative';
+
+    if (node.stackPages) {
+      Object.keys(node.stackPages).forEach(function(key) {
+        var page = node.stackPages[key];
+        var pageDiv = document.createElement('div');
+        var isActive = node.stackTabs.some(function(t) { return t.key === key && t.active; });
+        pageDiv.className = 'ul-stack-page' + (isActive ? ' active' : '');
+        pageDiv.dataset.stack = stackId;
+        pageDiv.dataset.key = key;
+        var pageEl = ulRenderNode(page, depth + 1);
+        pageEl.style.flex = '1';
+        pageDiv.appendChild(pageEl);
+        body.appendChild(pageDiv);
+      });
+    }
+
+    if (node.children) {
+      node.children.forEach(function(child) {
+        if (child.stackPages && node.stackPages) return;
+        body.appendChild(ulRenderNode(child, depth + 1));
+      });
+    }
+
+    box.appendChild(body);
+  }
+
+  function ulRenderTab(box, body, node, depth) {
+    var tabs = document.createElement('div');
+    tabs.className = 'ul-stack-tabs';
+    tabs.style.borderBottom = '1px solid #313244';
+    var tabId = 'ultab-' + Math.random().toString(36).slice(2, 8);
+
+    node.tabTabs.forEach(function(tab) {
+      var btn = document.createElement('div');
+      btn.className = 'ul-stack-tab' + (tab.active ? ' active' : '');
+      btn.textContent = tab.label;
+      btn.dataset.key = tab.key;
+      btn.dataset.tab = tabId;
+      btn.onclick = function(e) {
+        e.stopPropagation();
+        document.querySelectorAll('.ul-stack-tab[data-tab="' + tabId + '"]').forEach(function(b) { b.classList.remove('active'); });
+        document.querySelectorAll('.ul-stack-page[data-tab="' + tabId + '"]').forEach(function(p) { p.classList.remove('active'); });
+        btn.classList.add('active');
+        var page = document.querySelector('.ul-stack-page[data-tab="' + tabId + '"][data-key="' + tab.key + '"]');
+        if (page) page.classList.add('active');
+      };
+      tabs.appendChild(btn);
+    });
+    box.appendChild(tabs);
+
+    body.classList.add('v-layout');
+
+    if (node.tabPages) {
+      Object.keys(node.tabPages).forEach(function(key) {
+        var page = node.tabPages[key];
+        var pageDiv = document.createElement('div');
+        var isActive = node.tabTabs.some(function(t) { return t.key === key && t.active; });
+        pageDiv.className = 'ul-stack-page' + (isActive ? ' active' : '');
+        pageDiv.dataset.tab = tabId;
+        pageDiv.dataset.key = key;
+        var pageEl = ulRenderNode(page, depth + 1);
+        pageEl.style.flex = '1';
+        pageDiv.appendChild(pageEl);
+        body.appendChild(pageDiv);
+      });
+    }
+
+    box.appendChild(body);
+  }
+
+  function ulPositionTooltip(e) {
+    var x = e.clientX + 12, y = e.clientY + 12;
+    var rect = ulTooltip.getBoundingClientRect();
+    if (x + 320 > window.innerWidth) x = e.clientX - 320 - 12;
+    if (y + rect.height > window.innerHeight) y = e.clientY - rect.height - 12;
+    ulTooltip.style.left = x + 'px';
+    ulTooltip.style.top = y + 'px';
+  }
+
+  function ulRenderLegend(customLegend) {
+    var items = customLegend || [
+      {color:'blue',label:'容器 / 框架'},{color:'sapphire',label:'Tab Widget'},
+      {color:'green',label:'面部整形'},{color:'peach',label:'身体工坊'},
+      {color:'pink',label:'材质实验室'},{color:'flamingo',label:'毛发工作室'},
+      {color:'mauve',label:'动画剧场'},{color:'yellow',label:'菜单 / 环形控件'},
+      {color:'lavender',label:'QStackedWidget'},{color:'teal',label:'功能 Widget'},
+      {color:'red',label:'浮动覆盖层'},{color:'overlay',label:'基础控件'}
+    ];
+    ulLegend.innerHTML = items.map(function(it) {
+      return '<div class="ul-legend-item"><div class="ul-legend-swatch" style="border-color:' + colorVar(it.color) + '"></div>' + it.label + '</div>';
+    }).join('');
+  }
+
+  function colorVar(c) {
+    var map = {blue:'#89b4fa',sapphire:'#74c7ec',green:'#a6e3a1',peach:'#fab387',mauve:'#cba6f7',red:'#f38ba8',pink:'#f5c2e7',yellow:'#f9e2af',teal:'#94e2d5',flamingo:'#f2cdcd',lavender:'#b4befe',rosewater:'#f5e0dc',overlay:'#313244'};
+    return map[c] || '#313244';
+  }
+
+  // ── Resize & Undo ──
+
+  function ulShowToast(msg) {
+    ulUndoToast.textContent = msg || '⌘Z / Ctrl+Z 撤销';
+    ulUndoToast.classList.add('show');
+    clearTimeout(ulToastTimer);
+    ulToastTimer = setTimeout(function() { ulUndoToast.classList.remove('show'); }, 1800);
+  }
+
+  function ulPushUndo(el, prop, oldValue) {
+    ulUndoStack.push({el: el, prop: prop, oldValue: oldValue});
+  }
+
+  function ulUndo() {
+    if (!ulUndoStack.length) return;
+    var action = ulUndoStack.pop();
+    if (action.prop === 'width') { action.el.style.width = action.oldValue; action.el.style.minWidth = action.oldValue; }
+    else if (action.prop === 'height') { action.el.style.height = action.oldValue; action.el.style.minHeight = action.oldValue; action.el.style.flexGrow = ''; action.el.style.flexShrink = ''; }
+    else if (action.prop === 'flex') { action.el.style.flex = action.oldValue; }
+    ulShowToast('已撤销 (剩余 ' + ulUndoStack.length + ' 步)');
+  }
+
+  document.addEventListener('keydown', function(e) {
+    if (currentUlView && (e.ctrlKey || e.metaKey) && e.key === 'z') {
+      var tag = document.activeElement && document.activeElement.tagName;
+      if (tag === 'INPUT' || tag === 'TEXTAREA') return;
+      e.preventDefault();
+      e.stopPropagation();
+      ulUndo();
+    }
+  }, true);
+
+  function ulAddResizeHandles(box) {
+    var hr = document.createElement('div'); hr.className = 'ul-resize ul-resize-r'; box.appendChild(hr);
+    var hb = document.createElement('div'); hb.className = 'ul-resize ul-resize-b'; box.appendChild(hb);
+    var hrb = document.createElement('div'); hrb.className = 'ul-resize ul-resize-rb'; box.appendChild(hrb);
+
+    var resizing = false, resizeType = null, startX, startY, startW, startH, savedW, savedH, savedFlex;
+
+    function onDown(type, e) {
+      e.preventDefault(); e.stopPropagation();
+      resizing = true; resizeType = type;
+      startX = e.clientX; startY = e.clientY;
+      var rect = box.getBoundingClientRect();
+      startW = rect.width; startH = rect.height;
+      savedW = box.style.width; savedH = box.style.height; savedFlex = box.style.flex;
+      if (type === 'r') hr.classList.add('active');
+      else if (type === 'b') hb.classList.add('active');
+      else { hr.classList.add('active'); hb.classList.add('active'); hrb.classList.add('active'); }
+      document.addEventListener('mousemove', onMove);
+      document.addEventListener('mouseup', onUp);
+    }
+
+    function onMove(e) {
+      if (!resizing) return;
+      var dx = e.clientX - startX, dy = e.clientY - startY;
+      if (resizeType === 'r' || resizeType === 'rb') { var nw = Math.max(30, startW + dx); box.style.width = nw + 'px'; box.style.minWidth = nw + 'px'; box.style.flex = 'none'; }
+      if (resizeType === 'b' || resizeType === 'rb') { var nh = Math.max(20, startH + dy); box.style.height = nh + 'px'; box.style.minHeight = nh + 'px'; box.style.flexGrow = '0'; box.style.flexShrink = '0'; }
+    }
+
+    function onUp() {
+      if (!resizing) return;
+      resizing = false;
+      hr.classList.remove('active'); hb.classList.remove('active'); hrb.classList.remove('active');
+      if (resizeType === 'r' || resizeType === 'rb') { ulPushUndo(box, 'width', savedW); ulPushUndo(box, 'flex', savedFlex); }
+      if (resizeType === 'b' || resizeType === 'rb') { ulPushUndo(box, 'height', savedH); }
+      ulShowToast('已调整大小 — Ctrl+Z 撤销 (' + ulUndoStack.length + ' 步)');
+      document.removeEventListener('mousemove', onMove);
+      document.removeEventListener('mouseup', onUp);
+    }
+
+    hr.addEventListener('mousedown', function(e) { onDown('r', e); });
+    hb.addEventListener('mousedown', function(e) { onDown('b', e); });
+    hrb.addEventListener('mousedown', function(e) { onDown('rb', e); });
+  }
+})();
+</script>
+</body>
+</html>

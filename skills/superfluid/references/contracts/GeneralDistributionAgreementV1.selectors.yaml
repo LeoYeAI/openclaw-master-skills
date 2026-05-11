@@ -1,0 +1,66 @@
+# GeneralDistributionAgreementV1 selectors — computed from @sfpro/sdk ABI
+
+functions:
+  ACL_POOL_CONNECT_EXCLUSIVE_ROLE():                          0x9d8fab1a
+  agreementType():                                            0x7730599e
+  appendIndexUpdateByPool(address,(uint32,int128,int256),uint32): 0xfa48736d
+  castrate():                                                 0x9903ad38
+  claimAll(address,address,bytes):                            0xd2c0d542
+  connectPool(address,bytes):                                 0xf0b7b915
+  createPool(address,address,(bool,bool)):                    0x0779d365
+  createPoolWithCustomERC20Metadata(address,address,(bool,bool),(string,string,uint8)): 0xfe1b96d4
+  disconnectPool(address,bytes):                              0x30925b79
+  distribute(address,address,address,uint256,bytes):          0x6d1007a6
+  distributeFlow(address,address,address,int96,bytes):        0x5a6c6dbc
+  estimateDistributionActualAmount(address,address,address,uint256): 0xeccfc6a5
+  estimateFlowDistributionActualFlowRate(address,address,address,int96): 0x4d5c91ec
+  getAccountFlowInfo(address,address):                        0x0f1ac495
+  getCodeAddress():                                           0x50d75d25
+  getFlow(address,address,address):                           0xe6a1e888
+  getFlowRate(address,address,address):                       0x0735d750
+  getNetFlow(address,address):                                0xe8e7e2d1
+  getPoolAdjustmentFlowInfo(address):                         0x37bd42e0
+  getPoolAdjustmentFlowRate(address):                         0x4e9ced57
+  isMemberConnected(address,address):                         0xc782eb9c
+  isPatricianPeriod(address,address,uint256):                 0x4b839e0b
+  isPatricianPeriodNow(address,address):                      0x4fe9c291
+  isPool(address,address):                                    0x7b2cc0da
+  MAX_POOL_AUTO_CONNECT_SLOTS():                              0xa98faf99
+  poolSettleClaim(address,address,int256):                    0x4543b745
+  proxiableUUID():                                            0x52d1902d
+  realtimeBalanceOf(address,address,uint256):                 0x9b2e48bc
+  realtimeBalanceOfNow(address,address):                      0x5cfd50d7
+  setConnectPermission(bool):                                 0x980ac124
+  SLOTS_BITMAP_LIBRARY_ADDRESS():                             0x3fd4176a
+  SUPERFLUID_POOL_DEPLOYER_ADDRESS():                         0x3c56f090
+  superfluidPoolBeacon():                                     0x5437dd97
+  tryConnectPoolFor(address,address,bytes):                   0x2040fd39
+  updateCode(address):                                        0x46951954
+  updateMemberUnits(address,address,uint128,bytes):           0x398c74e1
+
+events:
+  BufferAdjusted(address,address,address,int256,uint256,uint256): 0x589f74ba61521b98a96e2f65e02028ca5af0c5990e3d9536176b37ee6b620137
+  CodeUpdated(bytes32,address):                               0xe011bc04c286c344a8fcbb8de77f953da762c3e25d8cdea984147fc4168a5dcc
+  FlowDistributionUpdated(address,address,address,address,int96,int96,int96,address,int96,bytes): 0xc4bd0e4bfe3a83cbd5a7a71bb33bcb6bed9e0c24d710f3fb51c85caf1cd3af36
+  Initialized(uint8):                                         0x7f26b83ff96e1f2b6a682f133852f6798a09c465da95921460cefb3847402498
+  InstantDistributionUpdated(address,address,address,address,uint256,uint256,bytes): 0x6e8348961b299f365797c30cd18a91284b046858689eeb6150a5ba432fe6583e
+  PoolConnectionUpdated(address,address,address,bool,bytes):  0xf357a2e6919da4efedb0301baf1caaed2bca70b115b913f9add41bbefc75c9b3
+  PoolCreated(address,address,address):                       0x9c5d829b9b23efc461f9aeef91979ec04bb903feb3bee4f26d22114abfc7335b
+
+errors:
+  AGREEMENT_BASE_ONLY_HOST():                    0x1601d91e
+  GDA_ADMIN_CANNOT_BE_POOL():                    0x9ab88a26
+  GDA_CANNOT_CONNECT_POOL():                     0x83d98e4c
+  GDA_DISTRIBUTE_FOR_OTHERS_NOT_ALLOWED():       0xf67d263e
+  GDA_DISTRIBUTE_FROM_ANY_ADDRESS_NOT_ALLOWED(): 0x7761a5e5
+  GDA_FLOW_DOES_NOT_EXIST():                     0x29f4697e
+  GDA_INSUFFICIENT_BALANCE():                    0x33115c3f
+  GDA_NO_NEGATIVE_FLOW_RATE():                   0x15f25663
+  GDA_NO_ZERO_ADDRESS_ADMIN():                   0x82c5d837
+  GDA_NON_CRITICAL_SENDER():                     0x666f381d
+  GDA_NOT_POOL_ADMIN():                          0x3a87e565
+  GDA_ONLY_SUPER_TOKEN_POOL():                   0x90028c37
+  SafeCastOverflowedIntDowncast(uint8,int256):   0x327269a7
+  SafeCastOverflowedIntToUint(int256):           0xa8ce4432
+  SafeCastOverflowedUintDowncast(uint8,uint256): 0x6dfcc650
+  SafeCastOverflowedUintToInt(uint256):          0x24775e06

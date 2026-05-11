@@ -1,0 +1,26 @@
+{
+  "name": "mai",
+  "version": "1.1.2",
+  "description": "Local-first AI shopping matchmaking agent for OpenClaw and Hermes.",
+  "bin": {
+    "mai": "scripts/mai.py",
+    "mai-registry": "scripts/mai_registry.py"
+  },
+  "scripts": {
+    "install:agents": "bash scripts/install.sh --both",
+    "test": "python3 -m unittest discover -s tests && node --test tests/mai_plugin.test.mjs && bash scripts/verify.sh",
+    "test:plugin": "node --test tests/mai_plugin.test.mjs",
+    "verify": "bash scripts/verify.sh"
+  },
+  "keywords": [
+    "openclaw",
+    "hermes",
+    "skill",
+    "commerce",
+    "shopping",
+    "marketplace",
+    "agent"
+  ],
+  "author": "harrylabsj",
+  "license": "MIT"
+}

@@ -1,0 +1,480 @@
+# Superfluid Pool
+# ERC20-compatible pool that splits distributions among members proportional to their units.
+#
+# NOTE: emits/errors mappings are traced from source code — verify against implementation.
+# Proxy function (proxiableUUID) and lifecycle kill-switch (castrate) are omitted —
+# they belong to the BeaconProxiable layer.
+# Pools are deployed as beacon proxies by the GDA; there are no fixed deployment addresses.
+
+meta:
+  name: SuperfluidPool
+  version: v1
+  source:
+    - https://raw.githubusercontent.com/superfluid-org/protocol-monorepo/refs/heads/dev/packages/ethereum-contracts/contracts/agreements/gdav1/SuperfluidPool.sol
+    - https://raw.githubusercontent.com/superfluid-org/protocol-monorepo/refs/heads/dev/packages/ethereum-contracts/contracts/interfaces/agreements/gdav1/ISuperfluidPool.sol
+  implements: [ISuperfluidPool, IERC20, IERC20Metadata]
+  inherits: [BeaconProxiable]
+  # No fixed deployments — pools are created dynamically via GDA.createPool.
+
+# == Abbreviations ==
+# ERC20 — Ethereum Request for Comments 20 (fungible token standard)
+# GDA   — General Distribution Agreement (the agreement that manages pools)
+# RTB   — Real-Time Balance
+
+# == Glossary ==
+# pool admin            — the creator of the pool; can update member units; receives adjustment flow
+# pool member           — an address holding units; receives proportional distributions
+# units                 — a member's share weight in the pool (uint128); also the ERC20 balance
+# connected member      — receives distributions in real-time to their SuperToken balance
+# disconnected member   — distributions accumulate and must be claimed manually
+# claimable balance     — pending amount a disconnected member can claim
+# unsettled value       — accrued but not-yet-settled distribution value for a member
+# adjustment flow       — rounding remainder flow directed to the pool admin
+# transferability       — whether members can transfer units via ERC20 transfer/transferFrom
+
+# == Member Unit Management ==
+# Only the pool admin or the GDA contract can modify member units.
+# These functions are called directly on the pool (not through the Host).
+
+updateMemberUnits:
+  # Set a member's units to an exact value.
+  # More generally, unit changes can only increase the adjustment flow (sticky), never
+  # decrease it. The distributor must re-call distributeFlow to reset.
+  notes:
+    - "Gotcha: Emits Transfer as mint (from address(0)) or burn (to address(0)) depending on whether units increased or decreased, making unit changes visible to ERC20 indexers."
+    - "Gotcha: Does not recompute the pool's per-unit flow rate. If a previous unit change caused per-unit rate to truncate to 0, reducing units won't restore the distribution."
+  mutability: nonpayable
+  access: admin | GDA
+  inputs:
+    - memberAddr: address
+    - newUnits: uint128
+  outputs:
+    - bool
+  emits: [MemberUnitsUpdated, Transfer]
+  errors: [SUPERFLUID_POOL_NOT_POOL_ADMIN_OR_GDA, SUPERFLUID_POOL_NO_POOL_MEMBERS, SUPERFLUID_POOL_NO_ZERO_ADDRESS]
+
+increaseMemberUnits:
+  # Increase a member's units by a delta.
+  notes:
+    - "Gotcha: Same rounding caveat as updateMemberUnits — does not recompute per-unit flow rate."
+  mutability: nonpayable
+  access: admin | GDA
+  inputs:
+    - memberAddr: address
+    - addedUnits: uint128
+  outputs:
+    - bool
+  emits: [MemberUnitsUpdated, Transfer]
+  errors: [SUPERFLUID_POOL_NOT_POOL_ADMIN_OR_GDA, SUPERFLUID_POOL_NO_POOL_MEMBERS, SUPERFLUID_POOL_NO_ZERO_ADDRESS]
+
+decreaseMemberUnits:
+  # Decrease a member's units by a delta.
+  notes:
+    - "Gotcha: Same rounding caveat as updateMemberUnits — does not recompute per-unit flow rate."
+    - "Reverts with uint128 underflow if subtractedUnits > current units. Use updateMemberUnits(member, 0) if you want to remove all units safely."
+  mutability: nonpayable
+  access: admin | GDA
+  inputs:
+    - memberAddr: address
+    - subtractedUnits: uint128
+  outputs:
+    - bool
+  emits: [MemberUnitsUpdated, Transfer]
+  errors: [SUPERFLUID_POOL_NOT_POOL_ADMIN_OR_GDA, SUPERFLUID_POOL_NO_POOL_MEMBERS, SUPERFLUID_POOL_NO_ZERO_ADDRESS]
+
+# == Claiming ==
+# Claim accumulated distributions for disconnected members.
+# Connected members have nothing to claim (distributions flow in real-time).
+
+claimAll:
+  # Claim all pending distributions for msg.sender.
+  # Overloaded: also available as claimAll(address).
+  mutability: nonpayable
+  access: anyone  # claims for msg.sender
+  outputs:
+    - bool
+  emits: [DistributionClaimed]
+
+claimAll(address):
+  # Claim all pending distributions for a specific member.
+  # Can be called by anyone on behalf of any member.
+  mutability: nonpayable
+  access: anyone
+  inputs:
+    - memberAddr: address
+  outputs:
+    - bool
+  emits: [DistributionClaimed]
+
+# == ERC20 Operations ==
+# Units are represented as ERC20 balances. Transfer of units is gated by
+# the pool's transferabilityForUnitsOwner config flag.
+
+transfer:
+  # Transfer units from msg.sender to another member.
+  notes:
+    - "Gotcha: Internally updates both members' distribution state, emitting two MemberUnitsUpdated events in addition to the ERC20 Transfer event."
+  mutability: nonpayable
+  access: anyone
+  inputs:
+    - to: address
+    - amount: uint256
+  outputs:
+    - bool
+  emits: [MemberUnitsUpdated, Transfer]
+  errors: [SUPERFLUID_POOL_SELF_TRANSFER_NOT_ALLOWED, SUPERFLUID_POOL_TRANSFER_UNITS_NOT_ALLOWED, SUPERFLUID_POOL_NO_POOL_MEMBERS, SUPERFLUID_POOL_NO_ZERO_ADDRESS]
+
+transferFrom:
+  # Transfer units on behalf of `from` using allowance.
+  notes:
+    - "Gotcha: If allowance is type(uint256).max, it is treated as unlimited."
+  mutability: nonpayable
+  access: anyone
+  inputs:
+    - from: address
+    - to: address
+    - amount: uint256
+  outputs:
+    - bool
+  emits: [MemberUnitsUpdated, Transfer]
+  errors: [SUPERFLUID_POOL_SELF_TRANSFER_NOT_ALLOWED, SUPERFLUID_POOL_TRANSFER_UNITS_NOT_ALLOWED, SUPERFLUID_POOL_NO_POOL_MEMBERS, SUPERFLUID_POOL_NO_ZERO_ADDRESS]
+
+approve:
+  # Set ERC20 allowance for unit transfers.
+  mutability: nonpayable
+  access: anyone
+  inputs:
+    - spender: address
+    - amount: uint256
+  outputs:
+    - bool
+  emits: [Approval]
+
+increaseAllowance:
+  # Increase ERC20 allowance by a delta.
+  mutability: nonpayable
+  access: anyone
+  inputs:
+    - spender: address
+    - addedValue: uint256
+  outputs:
+    - bool
+  emits: [Approval]
+
+decreaseAllowance:
+  # Decrease ERC20 allowance by a delta.
+  mutability: nonpayable
+  access: anyone
+  inputs:
+    - spender: address
+    - subtractedValue: uint256
+  outputs:
+    - bool
+  emits: [Approval]
+
+# == Pool State Queries ==
+
+admin:
+  # The pool admin address (creator of the pool, receives adjustment flow).
+  mutability: view
+  outputs:
+    - address
+
+superToken:
+  # The SuperToken this pool distributes.
+  mutability: view
+  outputs:
+    - address
+
+transferabilityForUnitsOwner:
+  # Whether members can transfer units via ERC20 transfer/transferFrom.
+  mutability: view
+  outputs:
+    - bool
+
+distributionFromAnyAddress:
+  # Whether anyone can distribute via this pool, or only the admin.
+  mutability: view
+  outputs:
+    - bool
+
+getTotalUnits:
+  # Total units across all members (connected + disconnected).
+  mutability: view
+  outputs:
+    - uint128
+
+getTotalConnectedUnits:
+  # Units held by connected members.
+  mutability: view
+  outputs:
+    - uint128
+
+getTotalDisconnectedUnits:
+  # Units held by disconnected members.
+  mutability: view
+  outputs:
+    - uint128
+
+getUnits:
+  # Units held by a specific member.
+  mutability: view
+  inputs:
+    - memberAddr: address
+  outputs:
+    - uint128
+
+getTotalFlowRate:
+  # Total flow rate entering the pool from all distributors.
+  mutability: view
+  outputs:
+    - int96
+
+getTotalConnectedFlowRate:
+  # Flow rate portion going to connected members (real-time).
+  mutability: view
+  outputs:
+    - int96
+
+getTotalDisconnectedFlowRate:
+  # Flow rate portion accumulating for disconnected members (must be claimed).
+  mutability: view
+  outputs:
+    - flowRate: int96
+
+getDisconnectedBalance:
+  # Total balance accrued by all disconnected members at a given time.
+  mutability: view
+  inputs:
+    - time: uint32
+  outputs:
+    - balance: int256
+
+getTotalAmountReceivedByMember:
+  # Cumulative total amount a member has received (settled to current time).
+  mutability: view
+  inputs:
+    - memberAddr: address
+  outputs:
+    - uint256
+
+getMemberFlowRate:
+  # Current per-second flow rate a member is receiving.
+  # Returns 0 if the member has no units.
+  mutability: view
+  inputs:
+    - memberAddr: address
+  outputs:
+    - int96
+
+# == Member Balance Queries ==
+
+getClaimable:
+  # Claimable balance for a disconnected member at a specific time.
+  # Returns 0 for connected members (they receive in real-time).
+  mutability: view
+  inputs:
+    - memberAddr: address
+    - time: uint32
+  outputs:
+    - int256
+
+getClaimableNow:
+  # Claimable balance for a disconnected member at block.timestamp.
+  mutability: view
+  inputs:
+    - memberAddr: address
+  outputs:
+    - claimableBalance: int256
+    - timestamp: uint256
+
+getUnsettledValue:
+  # Raw unsettled distribution value for a member (before claiming).
+  # Unlike getClaimable, this returns a value even for connected members.
+  mutability: view
+  inputs:
+    - memberAddr: address
+    - time: uint32
+  outputs:
+    - int256
+
+# == ERC20 Metadata & Queries ==
+
+name:
+  # ERC20 token name. Defaults to "Superfluid Pool" if not set at creation.
+  mutability: view
+  outputs:
+    - string
+
+symbol:
+  # ERC20 token symbol. Defaults to "POOL" if not set at creation.
+  mutability: view
+  outputs:
+    - string
+
+decimals:
+  # ERC20 decimals. Defaults to 0 if not set at creation.
+  mutability: view
+  outputs:
+    - uint8
+
+totalSupply:
+  # Total ERC20 supply (== getTotalUnits).
+  mutability: view
+  outputs:
+    - uint256
+
+balanceOf:
+  # ERC20 balance (== getUnits for the account).
+  mutability: view
+  inputs:
+    - account: address
+  outputs:
+    - uint256
+
+allowance:
+  # ERC20 allowance for unit transfers.
+  mutability: view
+  inputs:
+    - owner: address
+    - spender: address
+  outputs:
+    - uint256
+
+# == GDA-Only Operations ==
+# Internal protocol plumbing — only callable by the GDA contract (msg.sender == GDA).
+
+operatorSetIndex:
+  # Update the pool's index data. Called by GDA during distribution flow operations.
+  mutability: nonpayable
+  access: GDA
+  inputs:
+    - index:
+        type: tuple
+        components:
+          - total_units: int128
+          - _wrapped_particle:
+              type: tuple
+              components:
+                - _settled_at: uint32
+                - _flow_rate: int128
+                - _settled_value: int256
+  outputs:
+    - bool
+  errors: [SUPERFLUID_POOL_NOT_GDA]
+
+operatorConnectMember:
+  # Connect or disconnect a member. Called by GDA during connectPool/disconnectPool.
+  # WARNING: Undefined behavior if member is already in the target state.
+  mutability: nonpayable
+  access: GDA
+  inputs:
+    - memberAddr: address
+    - doConnect: bool
+    - time: uint32
+  outputs:
+    - bool
+  errors: [SUPERFLUID_POOL_NOT_GDA]
+
+poolOperatorGetIndex:
+  # Get the raw pool index data. Intended for GDA internal use.
+  mutability: view
+  outputs:
+    - type: tuple
+      components:
+        - totalUnits: uint128
+        - wrappedSettledAt: uint32
+        - wrappedFlowRate: int96
+        - wrappedSettledValue: int256
+
+# == Lifecycle ==
+
+initialize:
+  # Beacon proxy initializer. Called once by SuperfluidPoolDeployerLibrary during createPool.
+  notes:
+    - "Gotcha: Can only be called once (initializer modifier)."
+  mutability: nonpayable
+  inputs:
+    - admin_: address
+    - superToken_: address
+    - transferabilityForUnitsOwner_: bool
+    - distributionFromAnyAddress_: bool
+    - erc20Name_: string
+    - erc20Symbol_: string
+    - erc20Decimals_: uint8
+
+GDA:
+  # Immutable reference to the GeneralDistributionAgreementV1 contract.
+  mutability: view
+  outputs:
+    - address
+
+# == Events ==
+
+events:
+  MemberUnitsUpdated:
+    # Emitted when a member's units change (via updateMemberUnits, transfer, etc.).
+    indexed:
+      - token: address
+      - member: address
+    data:
+      - oldUnits: uint128
+      - newUnits: uint128
+
+  DistributionClaimed:
+    # Emitted when a member claims accumulated distributions.
+    indexed:
+      - token: address
+      - member: address
+    data:
+      - claimedAmount: int256  # amount claimed in this call
+      - totalClaimed: int256   # cumulative total claimed by this member
+
+  Transfer:
+    # Standard ERC20 Transfer. Also emitted as mint/burn on unit updates.
+    indexed:
+      - from: address
+      - to: address
+    data:
+      - value: uint256
+
+  Approval:
+    # Standard ERC20 Approval.
+    indexed:
+      - owner: address
+      - spender: address
+    data:
+      - value: uint256
+
+  # Inherited events (from BeaconProxiable):
+  # Initialized — emitted on proxy initialization (version)
+
+# == Errors ==
+
+errors:
+  # Access control
+  - SUPERFLUID_POOL_NOT_GDA              # caller is not the GDA contract
+  - SUPERFLUID_POOL_NOT_POOL_ADMIN_OR_GDA  # caller is neither admin nor GDA
+  # Member validation
+  - SUPERFLUID_POOL_NO_POOL_MEMBERS      # memberAddr is a pool (pools can't be members)
+  - SUPERFLUID_POOL_NO_ZERO_ADDRESS       # memberAddr is address(0)
+  # Transfer restrictions
+  - SUPERFLUID_POOL_SELF_TRANSFER_NOT_ALLOWED   # from == to
+  - SUPERFLUID_POOL_TRANSFER_UNITS_NOT_ALLOWED  # transferability disabled in pool config
+  # Time
+  - SUPERFLUID_POOL_INVALID_TIME
+  # SafeCast (inherited from OpenZeppelin)
+  - SafeCastOverflowedIntDowncast:
+      inputs:
+        - bits: uint8
+        - value: int256
+  - SafeCastOverflowedIntToUint:
+      inputs:
+        - value: int256
+  - SafeCastOverflowedUintDowncast:
+      inputs:
+        - bits: uint8
+        - value: uint256
+  - SafeCastOverflowedUintToInt:
+      inputs:
+        - value: uint256

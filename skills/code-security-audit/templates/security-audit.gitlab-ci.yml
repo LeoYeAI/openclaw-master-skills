@@ -1,0 +1,79 @@
+# GitLab CI Security Audit
+# Include this file in your .gitlab-ci.yml
+
+stages:
+  - security
+
+security-audit:
+  stage: security
+  image: node:20
+  before_script:
+    - apt-get update && apt-get install -y python3 python3-pip
+    - pip3 install pip-audit safety --break-system-packages
+    - npm install -g audit-ci
+  script:
+    # Dependency vulnerabilities
+    - npm audit --audit-level=moderate || true
+    - npx audit-ci --moderate || true
+    - |
+      if [ -f requirements.txt ]; then
+        pip-audit -r requirements.txt || true
+        safety check -r requirements.txt || true
+      fi
+
+    # Secret detection
+    - |
+      echo "Checking for exposed secrets..."
+      ! grep -rn 'AKIA[0-9A-Z]\{16\}' --include='*.{js,ts,py,env,yml}' .
+      ! grep -rn 'sk-[A-Za-z0-9]\{20,\}' --include='*.{js,ts,py,env}' .
+      ! grep -rn 'ghp_[A-Za-z0-9]\{36\}' --include='*.*' .
+      ! grep -rn 'BEGIN.*PRIVATE KEY' --include='*.*' .
+
+    # OWASP quick check
+    - |
+      echo "OWASP Quick Check..."
+      grep -rn 'dangerouslySetInnerHTML' --include='*.tsx' --include='*.jsx' . && echo "Warning: XSS risk"
+      grep -rn 'eval(' --include='*.ts' --include='*.js' . | grep -v 'node_modules' && echo "Warning: Code injection risk"
+      grep -rn 'verify.*false\|rejectUnauthorized.*false' --include='*.ts' --include='*.js' . | grep -v 'test' && echo "Warning: SSL verification disabled"
+
+  allow_failure: true
+  artifacts:
+    reports:
+      sast: gl-sast-report.json
+    paths:
+      - npm-audit.json
+      - pip-audit.json
+    expire_in: 1 week
+
+secret-detection:
+  stage: security
+  image: python:3.11
+  script:
+    - pip install detect-secrets
+    - detect-secrets scan --all-files > baseline.json || true
+    - |
+      if [ -f .secrets.baseline ]; then
+        detect-secrets audit baseline.json
+      fi
+  allow_failure: true
+  artifacts:
+    paths:
+      - baseline.json
+    expire_in: 1 week
+
+dependency-scanning:
+  stage: security
+  image: node:20
+  script:
+    - npm audit --json > npm-audit.json || true
+    - |
+      if [ -f requirements.txt ]; then
+        pip install pip-audit
+        pip-audit -r requirements.txt --format json > pip-audit.json || true
+      fi
+  allow_failure: true
+  artifacts:
+    paths:
+      - npm-audit.json
+      - pip-audit.json
+    expire_in: 1 week

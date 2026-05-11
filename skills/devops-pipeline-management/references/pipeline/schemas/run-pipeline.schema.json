@@ -1,0 +1,179 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "run-pipeline.schema.json",
+  "title": "RunPipeline Request",
+  "description": "执行流水线请求数据结构",
+  "type": "object",
+  "required": ["pipelineId"],
+  "properties": {
+    "pipelineId": {
+      "type": "string",
+      "description": "流水线ID"
+    },
+    "runRemark": {
+      "type": "string",
+      "description": "执行备注说明"
+    },
+    "autoFillRunConfig": {
+      "type": "boolean",
+      "default": false,
+      "description": "是否自动填充配置（使用上次执行记录）"
+    },
+    "runSources": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/RunSource"
+      },
+      "description": "源配置列表（代码源+制品源）"
+    },
+    "customParameterRuns": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      },
+      "default": [],
+      "description": "自定义运行参数"
+    },
+    "taskDataList": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      },
+      "default": [],
+      "description": "指定执行的任务列表（为空则执行全部）"
+    }
+  },
+  "definitions": {
+    "RunSource": {
+      "type": "object",
+      "required": ["id", "name", "shortName", "data"],
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "源ID"
+        },
+        "name": {
+          "type": "string",
+          "description": "源名称"
+        },
+        "shortName": {
+          "type": "string",
+          "description": "简短名称"
+        },
+        "refsType": {
+          "type": "string",
+          "enum": ["BRANCH", "TAG"],
+          "description": "引用类型（代码源）"
+        },
+        "refsTypeValue": {
+          "type": "string",
+          "description": "分支名或标签名（代码源）"
+        },
+        "data": {
+          "type": "object",
+          "oneOf": [
+            { "$ref": "#/definitions/CodeSourceData" },
+            { "$ref": "#/definitions/PackageSourceData" }
+          ]
+        }
+      }
+    },
+    "CodeSourceData": {
+      "type": "object",
+      "required": ["sourceType", "repoType", "repoUrl", "branch", "workPath"],
+      "properties": {
+        "sourceType": {
+          "type": "string",
+          "const": "code"
+        },
+        "repoType": {
+          "type": "string",
+          "enum": ["GITEE", "GITLAB", "FLYCODE", "GITHUB", "GIT", "SVN"]
+        },
+        "refsType": {
+          "type": "string",
+          "enum": ["BRANCH", "TAG"],
+          "default": "BRANCH"
+        },
+        "repoUrl": {
+          "type": "string",
+          "description": "仓库地址"
+        },
+        "branch": {
+          "type": "string",
+          "description": "分支/标签名"
+        },
+        "workPath": {
+          "type": "string",
+          "description": "工作目录"
+        },
+        "commitId": {
+          "type": "string",
+          "description": "提交ID"
+        },
+        "commitMessage": {
+          "type": "string",
+          "description": "提交信息"
+        }
+      }
+    },
+    "PackageSourceData": {
+      "type": "object",
+      "required": ["sourceType", "repoType", "packageType", "workPath", "defaultTag"],
+      "properties": {
+        "sourceType": {
+          "type": "string",
+          "const": "package"
+        },
+        "repoType": {
+          "type": "string",
+          "enum": ["IPACKAGE"]
+        },
+        "packageType": {
+          "type": "string",
+          "enum": ["DOCKER", "NORMAL"]
+        },
+        "workPath": {
+          "type": "string",
+          "description": "工作目录"
+        },
+        "defaultTag": {
+          "type": "string",
+          "description": "版本标签"
+        },
+        "imageName": {
+          "type": "string",
+          "description": "镜像名称（DOCKER）"
+        },
+        "imageAddress": {
+          "type": "string",
+          "description": "镜像地址（DOCKER）"
+        },
+        "packageName": {
+          "type": "string",
+          "description": "制品仓名称"
+        },
+        "firstDir": {
+          "type": "string",
+          "description": "一级目录"
+        },
+        "normalArtifactName": {
+          "type": "string",
+          "description": "制品名称（NORMAL）"
+        },
+        "fullPath": {
+          "type": "string",
+          "description": "完整路径（NORMAL）"
+        },
+        "normalAddress": {
+          "type": "string",
+          "description": "制品地址（NORMAL）"
+        },
+        "ipackagePath": {
+          "type": "string",
+          "description": "iPackage路径"
+        }
+      }
+    }
+  }
+}

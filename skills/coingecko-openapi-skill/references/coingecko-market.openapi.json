@@ -1,0 +1,368 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "CoinGecko And GeckoTerminal Curated API",
+    "version": "1.0.0",
+    "description": "Curated read-only CoinGecko and GeckoTerminal market data surface for UXC."
+  },
+  "servers": [
+    {
+      "url": "https://api.coingecko.com/api/v3"
+    }
+  ],
+  "security": [
+    {
+      "coinGeckoDemoApiKey": []
+    },
+    {
+      "coinGeckoProApiKey": []
+    }
+  ],
+  "paths": {
+    "/ping": {
+      "get": {
+        "operationId": "ping",
+        "summary": "Ping the CoinGecko API",
+        "responses": {
+          "200": {
+            "description": "Ping response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/simple/price": {
+      "get": {
+        "operationId": "getSimplePrice",
+        "summary": "Get current prices for one or more assets",
+        "parameters": [
+          {
+            "name": "ids",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Comma-separated CoinGecko asset IDs."
+          },
+          {
+            "name": "vs_currencies",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Comma-separated quote currencies."
+          },
+          {
+            "name": "include_market_cap",
+            "in": "query",
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "include_24hr_vol",
+            "in": "query",
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "include_24hr_change",
+            "in": "query",
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "include_last_updated_at",
+            "in": "query",
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "precision",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Simple price response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/coins/list": {
+      "get": {
+        "operationId": "listCoins",
+        "summary": "List supported asset IDs",
+        "parameters": [
+          {
+            "name": "include_platform",
+            "in": "query",
+            "schema": {
+              "type": "boolean"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Asset list response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "additionalProperties": true
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/coins/markets": {
+      "get": {
+        "operationId": "getCoinMarkets",
+        "summary": "Get market rows for one or more assets",
+        "parameters": [
+          {
+            "name": "vs_currency",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "ids",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "names",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "symbols",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "category",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "order",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "per_page",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 250
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "minimum": 1
+            }
+          },
+          {
+            "name": "sparkline",
+            "in": "query",
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "price_change_percentage",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "locale",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Coin markets response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "additionalProperties": true
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/search/trending": {
+      "get": {
+        "operationId": "getTrendingSearch",
+        "summary": "Get trending search data",
+        "responses": {
+          "200": {
+            "description": "Trending response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/onchain/networks": {
+      "get": {
+        "operationId": "listOnchainNetworks",
+        "summary": "List GeckoTerminal networks",
+        "responses": {
+          "200": {
+            "description": "Onchain networks response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/onchain/simple/networks/{network}/token_price/{addresses}": {
+      "get": {
+        "operationId": "getOnchainSimpleTokenPrice",
+        "summary": "Get onchain token prices by network and address list",
+        "parameters": [
+          {
+            "name": "network",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "addresses",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Comma-separated token contract addresses."
+          },
+          {
+            "name": "mcap_fdv_fallback",
+            "in": "query",
+            "schema": {
+              "type": "boolean"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Onchain token price response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/onchain/networks/trending_pools": {
+      "get": {
+        "operationId": "getTrendingPools",
+        "summary": "Get trending GeckoTerminal pools",
+        "responses": {
+          "200": {
+            "description": "Trending pools response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "coinGeckoDemoApiKey": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "x-cg-demo-api-key"
+      },
+      "coinGeckoProApiKey": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "x-cg-pro-api-key"
+      }
+    }
+  }
+}

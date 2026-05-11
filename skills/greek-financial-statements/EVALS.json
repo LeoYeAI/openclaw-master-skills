@@ -1,0 +1,143 @@
+[
+  {
+    "id": 0,
+    "prompt": "Generate the January 2026 financial statement pack for Alpha Trading AE (EL123456789). Banking reconciliation is complete, VAT return has been prepared, and EFKA contributions are calculated. Produce the P&L, balance sheet, and VAT summary.",
+    "expectations": [
+      "Runs completeness gate check before attempting generation",
+      "Verifies banking reconciliation exists and is complete for January 2026",
+      "Verifies VAT filing data is available for the period",
+      "Confirms EFKA contribution data is present",
+      "Classifies income accounts under EGLS Class 7 (70-79)",
+      "Classifies expense accounts under EGLS Class 6 (60-69)",
+      "Produces P&L with correct Greek label: Αποτελέσματα ΧÏήσεως",
+      "Produces balance sheet with correct Greek label: Θσολογισμός",
+      "Balance sheet assets total equals equity plus liabilities total",
+      "VAT summary references actual submission data not estimated figures",
+      "Assigns version number v1 to the first generation",
+      "Writes machine-readable JSON to /data/clients/EL123456789/financial-statements/",
+      "Writes client-facing PDF to /data/reports/client/",
+      "Logs episode to /data/memory/episodes/"
+    ],
+    "files": [
+      {
+        "name": "reconciliation_EL123456789_2026-01.json",
+        "content": "{\"afm\": \"EL123456789\", \"period\": \"2026-01\", \"status\": \"complete\", \"opening_cash\": 18400.00, \"closing_cash\": 22150.00, \"total_income\": 47320.00, \"total_expenses\": 31840.00, \"bank\": \"alpha\", \"reconciled_at\": \"2026-02-05T10:22:00Z\"}"
+      },
+      {
+        "name": "vat_filing_EL123456789_202601.json",
+        "content": "{\"afm\": \"EL123456789\", \"period\": \"2026-01\", \"status\": \"prepared\", \"output_vat\": 8420.00, \"input_vat\": 5080.00, \"net_vat_payable\": 3340.00, \"submission_ref\": null, \"vat_rate_breakdown\": {\"24pct_sales\": 6200.00, \"13pct_sales\": 2220.00}}"
+      },
+      {
+        "name": "efka_contributions_EL123456789_2026-01.json",
+        "content": "{\"afm\": \"EL123456789\", \"period\": \"2026-01\", \"employees\": 3, \"employer_contributions\": 1840.00, \"employee_deductions\": 920.00, \"total_payroll_gross\": 9200.00, \"status\": \"calculated\"}"
+      }
+    ]
+  },
+  {
+    "id": 1,
+    "prompt": "Try to generate the February 2026 financial statements for Beta Services OE (EL987654321). The banking reconciliation has not been completed yet and there are still 4 invoices pending in the OCR queue.",
+    "expectations": [
+      "Runs completeness gate before attempting any generation",
+      "Detects banking reconciliation is missing for February 2026",
+      "Detects pending OCR items that have not been processed",
+      "Does NOT generate a partial statement — halts with blockers list",
+      "Outputs clear list of what is missing and what commands to run to resolve",
+      "Does not create any statement files for this period",
+      "Logs failure to /data/memory/failures/ with failure_type: completeness_gate_failed",
+      "Suggests openclaw statements blockers --afm EL987654321 --period 2026-02 for details",
+      "Does not use --force-partial without explicit human instruction"
+    ],
+    "files": [
+      {
+        "name": "client_status_EL987654321.json",
+        "content": "{\"afm\": \"EL987654321\", \"name\": \"BETA SERVICES OE\", \"period\": \"2026-02\", \"banking_reconciliation\": \"not_started\", \"vat_filing\": \"prepared\", \"efka\": \"calculated\", \"ocr_pending_count\": 4, \"ocr_items\": [\"invoice_0234.pdf\", \"receipt_0891.pdf\", \"invoice_0235.pdf\", \"bank_charge_0012.pdf\"]}"
+      }
+    ]
+  },
+  {
+    "id": 2,
+    "prompt": "Generate an amendment to the October 2025 P&L for Gamma Constructions AE (EL555444333). A supplier invoice for EUR 2,400 was discovered that was not included in the original statement. The original v1 statement was issued to the client on 15/11/2025.",
+    "expectations": [
+      "Detects that a v1 statement already exists and has been issued",
+      "Does NOT overwrite or modify the v1 statement",
+      "Creates a new v2 amendment with the corrected figures",
+      "Includes amendment notes: reason for change, what changed, original vs amended figures",
+      "Updates the financial-statements/index.json with the new v2 entry",
+      "Recalculates P&L with the additional EUR 2,400 expense correctly classified",
+      "Balance sheet updated to reflect the changed retained earnings figure",
+      "Logs the amendment as an episode with episode_type: amendment_issued",
+      "Both v1 and v2 files remain in /data/clients/EL555444333/financial-statements/",
+      "Produces new Greek PDF clearly marked as ΤÏοποποίηση (Amendment) with reference to original"
+    ],
+    "files": [
+      {
+        "name": "statement_index_EL555444333.json",
+        "content": "{\"afm\": \"EL555444333\", \"statements\": [{\"period\": \"2025-10\", \"type\": \"pl\", \"version\": 1, \"status\": \"issued\", \"issued_at\": \"2025-11-15T09:00:00Z\", \"filename\": \"EL555444333_2025-10_pl_v1.json\"}, {\"period\": \"2025-10\", \"type\": \"balance-sheet\", \"version\": 1, \"status\": \"issued\", \"issued_at\": \"2025-11-15T09:00:00Z\", \"filename\": \"EL555444333_2025-10_balance-sheet_v1.json\"}]}"
+      },
+      {
+        "name": "missed_invoice.json",
+        "content": "{\"invoice_number\": \"INV-2025-0891\", \"supplier\": \"ΠΡΟΜΔΘΕΥΤΔΣ ΑΛΦΑ\", \"supplier_afm\": \"EL444333222\", \"net_amount\": 1935.48, \"vat_amount\": 464.52, \"total\": 2400.00, \"vat_rate\": \"24%\", \"egls_account\": \"62\", \"description\": \"Third-party maintenance services\", \"invoice_date\": \"2025-10-28\", \"received_date\": \"2025-11-20\"}"
+      }
+    ]
+  },
+  {
+    "id": 3,
+    "prompt": "Run the January 2026 readiness report across all active clients to see who is ready for statement generation and who is still blocked.",
+    "expectations": [
+      "Checks completeness gate status for every active client for January 2026",
+      "Lists clients who are READY: all data sources complete",
+      "Lists clients who are BLOCKED: with specific missing data items for each",
+      "Shows which blocking condition applies per client (banking, OCR, EFKA, prior period)",
+      "Provides a count summary: N ready, N blocked, N partial",
+      "Output is in English suitable for an accounting assistant to act on",
+      "Suggests specific openclaw commands to resolve each blocked client",
+      "Does not attempt to generate any statements as part of this command"
+    ],
+    "files": []
+  },
+  {
+    "id": 4,
+    "prompt": "Compare Alpha Trading AE (EL123456789) January 2026 P&L against January 2025 and flag any significant variances.",
+    "expectations": [
+      "Reads v1 P&L for January 2026 from financial-statements directory",
+      "Reads v1 P&L for January 2025 from financial-statements directory",
+      "Calculates variance for each line item: absolute amount and percentage",
+      "Flags variances above threshold (default 15%) as significant",
+      "Groups variances by category: revenue, cost of sales, operating expenses",
+      "Presents in plain English with Greek account labels alongside English labels",
+      "Notes if prior year statement does not exist and handles gracefully",
+      "Output is readable by an accounting assistant without accounting training"
+    ],
+    "files": [
+      {
+        "name": "pl_2026-01_v1.json",
+        "content": "{\"period\": \"2026-01\", \"afm\": \"EL123456789\", \"revenue\": {\"70_goods_sales\": 28400.00, \"73_service_revenue\": 18920.00, \"total\": 47320.00}, \"cost_of_sales\": {\"60_materials\": 14200.00, \"total\": 14200.00}, \"gross_profit\": 33120.00, \"operating_expenses\": {\"62_services\": 4800.00, \"64_staff\": 9200.00, \"66_depreciation\": 1200.00, \"total\": 15200.00}, \"operating_profit\": 17920.00, \"net_profit\": 17920.00}"
+      },
+      {
+        "name": "pl_2025-01_v1.json",
+        "content": "{\"period\": \"2025-01\", \"afm\": \"EL123456789\", \"revenue\": {\"70_goods_sales\": 22100.00, \"73_service_revenue\": 16400.00, \"total\": 38500.00}, \"cost_of_sales\": {\"60_materials\": 11500.00, \"total\": 11500.00}, \"gross_profit\": 27000.00, \"operating_expenses\": {\"62_services\": 3900.00, \"64_staff\": 8400.00, \"66_depreciation\": 1100.00, \"total\": 13400.00}, \"operating_profit\": 13600.00, \"net_profit\": 13600.00}"
+      }
+    ]
+  },
+  {
+    "id": 5,
+    "prompt": "A balance sheet was generated for Delta Services EPE (EL777888999) for December 2025 but when reviewed, total assets are EUR 142,300 and total equity plus liabilities are EUR 139,850. The balance sheet does not balance. What should happen?",
+    "expectations": [
+      "Identifies this as a balance sheet mismatch — assets do not equal equity plus liabilities",
+      "Calculates the difference: EUR 2,450",
+      "Does NOT issue the statement — halts immediately on mismatch detection",
+      "Logs a high-priority failure to /data/memory/failures/ with failure_type: balance_sheet_mismatch",
+      "Alerts the senior accountant through the dashboard",
+      "Does not attempt to auto-correct the difference",
+      "Provides the specific figures: assets EUR 142,300 vs equity+liabilities EUR 139,850, difference EUR 2,450",
+      "Suggests checking for unrecorded liabilities, misclassified accounts, or data entry errors",
+      "Never issues an unbalanced balance sheet even as a draft without explicit force flag"
+    ],
+    "files": [
+      {
+        "name": "balance_sheet_draft_EL777888999_2025-12.json",
+        "content": "{\"afm\": \"EL777888999\", \"period\": \"2025-12\", \"assets\": {\"fixed_assets\": {\"net_book_value\": 68400.00}, \"current_assets\": {\"inventories\": 12300.00, \"trade_debtors\": 38100.00, \"cash\": 23500.00}, \"total_assets\": 142300.00}, \"equity_and_liabilities\": {\"equity\": {\"share_capital\": 50000.00, \"retained_earnings\": 42300.00, \"current_year_profit\": 18200.00}, \"current_liabilities\": {\"suppliers\": 21400.00, \"vat_payable\": 4800.00, \"efka_payable\": 3150.00}, \"total_equity_and_liabilities\": 139850.00}}"
+      }
+    ]
+  }
+]

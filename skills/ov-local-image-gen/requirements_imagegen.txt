@@ -1,0 +1,28 @@
+--extra-index-url https://download.pytorch.org/whl/cpu
+
+# OpenVINO 推理引擎
+openvino>=2025.4
+
+# PyTorch CPU（OVZImagePipeline 内部依赖）
+torch==2.8
+torchvision==0.23.0
+
+# Optimum-Intel 指定版本（含 OVZImagePipeline，Z-Image-Turbo 必须）
+git+https://github.com/openvino-dev-samples/optimum-intel.git@2f62e5aee74b4acba3836e1f26678c0db0a09c00
+
+# Diffusers 指定版本（含 Z-Image-Turbo 调度器支持）
+git+https://github.com/huggingface/diffusers.git@a1f36ee3ef4ae1bf98bd260e539197259aa981c1
+
+# 模型下载
+modelscope
+
+# 图像保存
+Pillow
+
+# 模型加载基础库
+transformers
+accelerate
+huggingface_hub
+
+# 数值计算（Pillow / transformers 约束）
+numpy<2.0

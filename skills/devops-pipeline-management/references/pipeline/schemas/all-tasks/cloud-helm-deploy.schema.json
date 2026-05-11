@@ -1,0 +1,73 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "cloud-helm-deploy.schema.json",
+  "title": "CloudHelmDeploy Task",
+  "description": "Helm应用部署任务配置",
+  "type": "object",
+  "required": ["taskCategory", "jobType", "name"],
+  "properties": {
+    "taskCategory": {
+      "type": "string",
+      "const": "Deploy"
+    },
+    "jobType": {
+      "type": "string",
+      "const": "CloudHelmDeploy"
+    },
+    "name": {
+      "type": "string",
+      "maxLength": 100,
+      "description": "任务名称"
+    },
+    "workPath": {
+      "type": "string",
+      "description": "工作目录"
+    },
+    "sourceId": {
+      "type": "string",
+      "description": "代码源ID"
+    },
+    "clusterId": {
+      "type": "string",
+      "description": "集群ID"
+    },
+    "namespace": {
+      "type": "string",
+      "default": "default",
+      "description": "命名空间"
+    },
+    "releaseName": {
+      "type": "string",
+      "description": "Release名称"
+    },
+    "chartName": {
+      "type": "string",
+      "description": "Chart名称"
+    },
+    "chartVersion": {
+      "type": "string",
+      "description": "Chart版本"
+    },
+    "repoUrl": {
+      "type": "string",
+      "description": "Helm仓库地址"
+    },
+    "valuesYaml": {
+      "type": "string",
+      "description": "自定义values.yaml"
+    },
+    "imageTag": {
+      "type": "string",
+      "default": "${BUILD_NUMBER}",
+      "description": "镜像标签"
+    },
+    "idInTemplate": {
+      "type": "string"
+    },
+    "dependencies": {
+      "type": "array",
+      "items": { "type": "string" },
+      "default": []
+    }
+  }
+}

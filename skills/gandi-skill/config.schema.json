@@ -1,0 +1,261 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Gandi Domain Registrar Skill Configuration",
+  "description": "Configuration for the Gandi domain registrar integration",
+  "type": "object",
+  "properties": {
+    "apiToken": {
+      "type": "string",
+      "title": "API Token",
+      "description": "Gandi Personal Access Token (PAT) for single-organization use. Supports environment variable references like ${GANDI_API_TOKEN}",
+      "sensitive": true,
+      "format": "password",
+      "minLength": 10,
+      "examples": ["${GANDI_API_TOKEN}", "your-personal-access-token-here"]
+    },
+    "apiUrl": {
+      "type": "string",
+      "title": "API URL",
+      "description": "Gandi API base URL (optional, defaults to production). Use https://api.sandbox.gandi.net for testing",
+      "format": "uri",
+      "default": "https://api.gandi.net",
+      "examples": ["https://api.gandi.net", "https://api.sandbox.gandi.net"]
+    },
+    "organizations": {
+      "type": "array",
+      "title": "Organizations",
+      "description": "Multi-organization support. Define multiple Gandi organizations with separate tokens. If present, overrides single apiToken",
+      "items": {
+        "type": "object",
+        "required": ["name", "apiToken", "sharingId"],
+        "properties": {
+          "name": {
+            "type": "string",
+            "title": "Name",
+            "description": "Internal identifier for this organization (e.g., 'personal', 'work')",
+            "pattern": "^[a-z0-9_-]+$",
+            "minLength": 1,
+            "examples": ["personal", "work", "client1"]
+          },
+          "label": {
+            "type": "string",
+            "title": "Label",
+            "description": "Human-readable label for this organization",
+            "minLength": 1,
+            "examples": ["Personal Domains", "Work Organization", "Client - Acme Corp"]
+          },
+          "apiToken": {
+            "type": "string",
+            "title": "API Token",
+            "description": "Gandi Personal Access Token for this organization. Supports environment variables",
+            "sensitive": true,
+            "format": "password",
+            "minLength": 10,
+            "examples": ["${GANDI_TOKEN_PERSONAL}", "${GANDI_TOKEN_WORK}"]
+          },
+          "sharingId": {
+            "type": "string",
+            "title": "Organization ID",
+            "description": "Gandi organization UUID (sharing_id). Found in API response from /v5/organization/organizations",
+            "format": "uuid",
+            "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$",
+            "examples": ["17672a84-e05e-11e7-b536-00163e6dc886"]
+          },
+          "default": {
+            "type": "boolean",
+            "title": "Default",
+            "description": "Use this organization as the default when none is specified",
+            "default": false
+          }
+        }
+      }
+    },
+    "domainChecker": {
+      "type": "object",
+      "title": "Domain Availability Checker",
+      "description": "Configuration for domain availability checking and suggestions",
+      "properties": {
+        "tlds": {
+          "type": "object",
+          "title": "TLD Configuration",
+          "properties": {
+            "mode": {
+              "type": "string",
+              "title": "TLD Mode",
+              "description": "How to handle TLD lists",
+              "enum": ["extend", "replace"],
+              "default": "extend",
+              "enumDescriptions": [
+                "Merge custom TLDs with defaults",
+                "Use only custom TLDs (ignore defaults)"
+              ]
+            },
+            "defaults": {
+              "type": "array",
+              "title": "Default TLDs",
+              "description": "Default TLD list (used when mode is 'extend' or when custom is empty)",
+              "items": {
+                "type": "string",
+                "pattern": "^[a-z0-9-]+$"
+              },
+              "default": ["com", "net", "org", "info", "io", "dev", "app", "ai", "tech", "co", "biz", "me", "us"],
+              "examples": [["com", "net", "org", "io", "dev", "app"]]
+            },
+            "custom": {
+              "type": "array",
+              "title": "Custom TLDs",
+              "description": "Custom TLD list to add or replace defaults",
+              "items": {
+                "type": "string",
+                "pattern": "^[a-z0-9-]+$"
+              },
+              "default": [],
+              "examples": [["co.uk", "co.ua", "eu", "de"]]
+            }
+          }
+        },
+        "variations": {
+          "type": "object",
+          "title": "Name Variations",
+          "description": "Domain name variation generation settings",
+          "properties": {
+            "enabled": {
+              "type": "boolean",
+              "title": "Enabled",
+              "description": "Enable domain name variation generation",
+              "default": true
+            },
+            "patterns": {
+              "type": "array",
+              "title": "Variation Patterns",
+              "description": "Which types of variations to generate",
+              "items": {
+                "type": "string",
+                "enum": ["hyphenated", "abbreviated", "prefix", "suffix", "numbers"]
+              },
+              "default": ["hyphenated", "abbreviated", "prefix", "suffix", "numbers"],
+              "uniqueItems": true
+            },
+            "prefixes": {
+              "type": "array",
+              "title": "Prefixes",
+              "description": "Word prefixes for prefix variations",
+              "items": {
+                "type": "string"
+              },
+              "default": ["get", "my", "the", "try"],
+              "examples": [["get", "my", "the", "try", "use"]]
+            },
+            "suffixes": {
+              "type": "array",
+              "title": "Suffixes",
+              "description": "Word suffixes for suffix variations",
+              "items": {
+                "type": "string"
+              },
+              "default": ["app", "hub", "io", "ly", "ai", "hq"],
+              "examples": [["app", "hub", "io", "ly", "ai", "hq", "dev"]]
+            },
+            "maxNumbers": {
+              "type": "integer",
+              "title": "Max Numbers",
+              "description": "Maximum number suffix to generate (e.g., 3 = domain2, domain3, domain4)",
+              "minimum": 1,
+              "maximum": 10,
+              "default": 3
+            }
+          }
+        },
+        "rateLimit": {
+          "type": "object",
+          "title": "Rate Limiting",
+          "description": "API rate limiting configuration for good citizenship",
+          "properties": {
+            "maxConcurrent": {
+              "type": "integer",
+              "title": "Max Concurrent Requests",
+              "description": "Maximum number of concurrent API requests",
+              "minimum": 1,
+              "maximum": 10,
+              "default": 3
+            },
+            "delayMs": {
+              "type": "integer",
+              "title": "Delay Between Requests (ms)",
+              "description": "Minimum delay between requests in milliseconds",
+              "minimum": 0,
+              "maximum": 5000,
+              "default": 200
+            },
+            "maxRequestsPerMinute": {
+              "type": "integer",
+              "title": "Max Requests Per Minute",
+              "description": "Maximum requests per minute (Gandi allows 1000, we use 10%)",
+              "minimum": 1,
+              "maximum": 1000,
+              "default": 100
+            }
+          }
+        },
+        "limits": {
+          "type": "object",
+          "title": "Result Limits",
+          "description": "Limits on result counts to prevent excessive API usage",
+          "properties": {
+            "maxTlds": {
+              "type": "integer",
+              "title": "Max TLDs to Check",
+              "description": "Maximum number of TLDs to check in suggestions",
+              "minimum": 1,
+              "maximum": 20,
+              "default": 5
+            },
+            "maxVariations": {
+              "type": "integer",
+              "title": "Max Name Variations",
+              "description": "Maximum number of name variations to generate",
+              "minimum": 1,
+              "maximum": 50,
+              "default": 10
+            }
+          }
+        }
+      }
+    }
+  },
+  "examples": [
+    {
+      "apiToken": "${GANDI_API_TOKEN}"
+    },
+    {
+      "apiToken": "${GANDI_API_TOKEN}",
+      "domainChecker": {
+        "tlds": {
+          "mode": "extend",
+          "custom": ["co.uk", "eu"]
+        },
+        "limits": {
+          "maxTlds": 5,
+          "maxVariations": 10
+        }
+      }
+    },
+    {
+      "organizations": [
+        {
+          "name": "personal",
+          "label": "Personal Domains",
+          "apiToken": "${GANDI_TOKEN_PERSONAL}",
+          "sharingId": "17672a84-e05e-11e7-b536-00163e6dc886",
+          "default": true
+        },
+        {
+          "name": "work",
+          "label": "Work Organization",
+          "apiToken": "${GANDI_TOKEN_WORK}",
+          "sharingId": "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+        }
+      ]
+    }
+  ]
+}

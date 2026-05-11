@@ -1,0 +1,985 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Planetoño Style Specimen</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
+
+    :root {
+      --font-family-sans: "Poppins", sans-serif;
+      --font-family-display: "Futura Passata", "Poppins", sans-serif;
+
+      --font-size-1: 12px;
+      --font-size-2: 15px;
+      --font-size-3: 18px;
+      --font-size-4: 24px;
+      --font-size-5: 32px;
+      --font-size-6: 48px;
+      --font-size-7: 54.5px;
+      --font-size-hero: 72px;
+
+      --line-height-tight: 1.1;
+      --line-height-normal: 1.5;
+      --line-height-relaxed: 1.65;
+
+      --space-1: 4px;
+      --space-2: 8px;
+      --space-3: 12px;
+      --space-4: 16px;
+      --space-5: 20px;
+      --space-6: 24px;
+      --space-8: 32px;
+      --space-10: 40px;
+      --space-12: 48px;
+
+      --radius-sm: 8px;
+      --radius-md: 12px;
+      --radius-lg: 16px;
+      --radius-xl: 24px;
+
+      --border-width-1: 1px;
+      --border-width-2: 2px;
+
+      --shadow-xs: none;
+      --shadow-sm: none;
+      --shadow-md: none;
+      --shadow-lg: none;
+
+      --motion-duration-fast: 0.1s;
+      --motion-duration-normal: 0.2s;
+      --motion-ease-standard: ease;
+
+      --container-max: 1440px;
+
+      --noise-opacity: 0;
+      --glow-blur-sm: 20px;
+      --glow-blur-md: 40px;
+      --glow-blur-lg: 60px;
+
+      --color-red: #eb3322;
+      --color-blue: #7721c7;
+      --color-light-blue: #2097cf;
+      --color-yellow: #ffc737;
+      --color-green: #8df947;
+      --color-light: #f7f2e5;
+    }
+
+    * { box-sizing: border-box; }
+    html, body { margin: 0; padding: 0; }
+    html {
+      background: var(--color-red);
+    }
+
+    body {
+      font-family: var(--font-family-sans);
+      font-size: var(--font-size-2);
+      color: rgb(0, 0, 0);
+      line-height: var(--line-height-normal);
+      background: var(--color-red);
+      transition:
+        background var(--motion-duration-normal) var(--motion-ease-standard),
+        color var(--motion-duration-normal) var(--motion-ease-standard);
+    }
+
+    .page {
+      position: relative;
+      max-width: var(--container-max);
+      margin: 0 auto;
+      padding: var(--space-10) var(--space-6) var(--space-12);
+    }
+
+    .section {
+      margin-top: var(--space-12);
+    }
+
+    .section h2 {
+      font-family: var(--font-family-display);
+      font-size: var(--font-size-7);
+      margin: 0 0 var(--space-5);
+    }
+
+    .muted { color: rgba(0, 0, 0, 0.7); }
+
+    .grid {
+      display: grid;
+      gap: var(--space-4);
+    }
+
+    .grid-2 {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .grid-3 {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .grid-4 {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+
+    .card {
+      position: relative;
+      background: var(--color-light);
+      border-radius: var(--radius-md);
+      padding: var(--space-5);
+      box-shadow: var(--shadow-xs);
+      transition:
+        transform var(--motion-duration-fast) var(--motion-ease-standard);
+    }
+
+    .card:hover {
+      transform: translateY(-4px);
+    }
+
+    .card-dark {
+      background: var(--color-red);
+      color: rgb(0, 0, 0);
+    }
+
+    .card-yellow {
+      background: var(--color-yellow);
+      color: rgb(0, 0, 0);
+    }
+
+    .card-blue {
+      background: var(--color-blue);
+      color: var(--color-light);
+    }
+
+    .card-green {
+      background: var(--color-green);
+      color: rgb(0, 0, 0);
+    }
+
+    .card-lightblue {
+      background: var(--color-light-blue);
+      color: var(--color-light);
+    }
+
+    .swatch {
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      background: var(--color-light);
+    }
+
+    .swatch-color {
+      height: 72px;
+    }
+
+    .swatch-meta {
+      padding: var(--space-3);
+      font-size: var(--font-size-1);
+    }
+
+    .btn-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--space-3);
+    }
+
+    .btn {
+      appearance: none;
+      border: 0px solid transparent;
+      border-radius: var(--radius-md);
+      padding: 0 16px;
+      height: 52px;
+      min-width: 120px;
+      font: inherit;
+      font-size: var(--font-size-3);
+      font-family: var(--font-family-display);
+      cursor: pointer;
+      background: transparent;
+      color: rgb(0, 0, 0);
+      transition:
+        transform var(--motion-duration-fast) var(--motion-ease-standard);
+    }
+
+    .btn:hover {
+      transform: scale(1.05);
+    }
+
+    .btn:focus-visible {
+      outline: 2px solid var(--color-yellow);
+      outline-offset: 2px;
+    }
+
+    .btn-primary {
+      background: var(--color-yellow);
+      color: rgb(0, 0, 0);
+    }
+
+    .btn-red {
+      background: var(--color-red);
+      color: rgb(0, 0, 0);
+    }
+
+    .btn-blue {
+      background: var(--color-blue);
+      color: var(--color-light);
+    }
+
+    .btn-green {
+      background: var(--color-green);
+      color: rgb(0, 0, 0);
+    }
+
+    .btn-ghost {
+      background: transparent;
+      color: rgb(0, 0, 0);
+      border: 2px solid rgb(0, 0, 0);
+    }
+
+    .input, .select, .textarea {
+      width: 100%;
+      border: 0px solid transparent;
+      background: var(--color-light);
+      color: rgb(0, 0, 0);
+      border-radius: var(--radius-md);
+      padding: 14px 16px;
+      font: inherit;
+      font-size: var(--font-size-2);
+      transition:
+        transform var(--motion-duration-fast) var(--motion-ease-standard),
+        box-shadow var(--motion-duration-fast) var(--motion-ease-standard);
+    }
+
+    .input:focus-visible,
+    .select:focus-visible,
+    .textarea:focus-visible {
+      outline: none;
+      transform: scale(1.02);
+      box-shadow: 0 0 0 3px var(--color-yellow);
+    }
+
+    .label {
+      display: block;
+      margin-bottom: 8px;
+      font-size: var(--font-size-1);
+      color: rgba(0, 0, 0, 0.7);
+    }
+
+    .form-stack {
+      display: grid;
+      gap: var(--space-4);
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      border-radius: 999px;
+      padding: 6px 12px;
+      background: var(--color-yellow);
+      color: rgb(0, 0, 0);
+      font-size: var(--font-size-1);
+      font-weight: 500;
+    }
+
+    .table {
+      width: 100%;
+      border-collapse: collapse;
+      overflow: hidden;
+      border-radius: var(--radius-md);
+      background: var(--color-light);
+    }
+
+    .table th, .table td {
+      text-align: left;
+      padding: 14px 16px;
+    }
+
+    .table th {
+      background: rgba(0, 0, 0, 0.1);
+      font-weight: 600;
+    }
+
+    .prose {
+      max-width: 72ch;
+      color: var(--color-light);
+    }
+
+    .prose p { color: rgba(0, 0, 0, 0.8); }
+    .prose a { color: var(--color-yellow); text-decoration: none; }
+    .prose a:hover { text-decoration: underline; }
+
+    .code {
+      position: relative;
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      border: 2px solid var(--color-light);
+      background: var(--color-light);
+      color: rgb(0, 0, 0);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .code-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 16px;
+      font-size: var(--font-size-1);
+      background: rgba(0, 0, 0, 0.05);
+      border-bottom: 2px solid var(--color-light);
+    }
+
+    .code pre {
+      margin: 0;
+      padding: 16px;
+      overflow: auto;
+      font-family: var(--font-family-sans);
+      font-size: 14px;
+      line-height: 1.6;
+    }
+
+    .token-keyword { color: var(--color-blue); font-weight: 600; }
+    .token-string { color: var(--color-red); }
+    .token-number { color: var(--color-green); }
+    .token-comment { color: rgba(0, 0, 0, 0.5); }
+
+    .callout {
+      border-radius: var(--radius-md);
+      padding: var(--space-4);
+      background: var(--color-light);
+    }
+
+    .callout.info { border-left: 4px solid var(--color-light-blue); }
+    .callout.success { border-left: 4px solid var(--color-green); }
+    .callout.warning { border-left: 4px solid var(--color-yellow); }
+    .callout.danger { border-left: 4px solid var(--color-red); }
+
+    .hero {
+      position: relative;
+      overflow: hidden;
+      padding: var(--space-8);
+      border-radius: var(--radius-lg);
+      background: var(--color-red);
+      border: 2px solid rgb(0, 0, 0);
+      isolation: isolate;
+    }
+
+    .display-heading {
+      font-family: var(--font-family-display);
+      font-size: var(--font-size-hero);
+      font-weight: 400;
+      line-height: var(--line-height-tight);
+      margin: 0;
+      color: rgb(0, 0, 0);
+    }
+
+    .toolbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: var(--space-4);
+      margin-bottom: var(--space-6);
+    }
+
+    .background-board {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: var(--space-4);
+    }
+
+    .bg-sample {
+      min-height: 160px;
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      position: relative;
+      border: 2px solid rgb(0, 0, 0);
+    }
+
+    .bg-label {
+      position: absolute;
+      left: 12px;
+      bottom: 12px;
+      padding: 6px 10px;
+      font-size: var(--font-size-1);
+      border-radius: 999px;
+      background: var(--color-light);
+      color: rgb(0, 0, 0);
+    }
+
+    .bg-red { background: var(--color-red); }
+    .bg-yellow { background: var(--color-yellow); }
+    .bg-blue { background: var(--color-blue); }
+    .bg-green { background: var(--color-green); }
+    .bg-lightblue { background: var(--color-light-blue); }
+    .bg-light { background: var(--color-light); }
+
+    .atmosphere-scene {
+      position: relative;
+      min-height: 320px;
+      border-radius: calc(var(--radius-lg) + 4px);
+      overflow: hidden;
+      border: 2px solid rgb(0, 0, 0);
+      background: var(--color-red);
+      isolation: isolate;
+    }
+
+    .atmosphere-layer {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+    }
+
+    .atmosphere-base {
+      background: var(--color-red);
+    }
+
+    .atmosphere-shape-1 {
+      position: absolute;
+      width: 200px;
+      height: 200px;
+      right: 10%;
+      top: 10%;
+      background: var(--color-yellow);
+      border-radius: 50%;
+      opacity: 0.8;
+    }
+
+    .atmosphere-shape-2 {
+      position: absolute;
+      width: 150px;
+      height: 150px;
+      left: 8%;
+      bottom: 15%;
+      background: var(--color-blue);
+      border-radius: 50%;
+      opacity: 0.7;
+    }
+
+    .atmosphere-shape-3 {
+      position: absolute;
+      width: 100px;
+      height: 100px;
+      right: 25%;
+      bottom: 20%;
+      background: var(--color-green);
+      border-radius: 30% 70% 70% 30% / 30% 30% 70% 70%;
+      opacity: 0.6;
+    }
+
+    .atmosphere-content {
+      position: relative;
+      z-index: 2;
+      padding: clamp(1.5rem, 3vw, 2.5rem);
+      max-width: 700px;
+    }
+
+    .atmosphere-content h3 {
+      margin: 0 0 10px;
+      font-family: var(--font-family-display);
+      font-size: var(--font-size-6);
+      font-weight: 400;
+    }
+
+    .motif-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: var(--space-4);
+    }
+
+    .motif-card {
+      min-height: 150px;
+      border-radius: var(--radius-md);
+      border: 2px solid rgb(0, 0, 0);
+      position: relative;
+      overflow: hidden;
+      padding: 14px;
+      display: flex;
+      align-items: end;
+      font-size: var(--font-size-2);
+    }
+
+    .motif-card::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+    }
+
+    .motif-yellow { background: var(--color-yellow); color: rgb(0,0,0); }
+    .motif-blue { background: var(--color-blue); color: var(--color-light); }
+    .motif-green { background: var(--color-green); color: rgb(0,0,0); }
+    .motif-red { background: var(--color-red); color: rgb(0,0,0); }
+
+    .nav-demo {
+      display: flex;
+      gap: var(--space-3);
+      flex-wrap: wrap;
+    }
+
+    .nav-pill {
+      padding: 12px 20px;
+      border-radius: var(--radius-md);
+      background: transparent;
+      color: rgb(0, 0, 0);
+      font-size: var(--font-size-2);
+      border: 2px solid rgb(0, 0, 0);
+      cursor: pointer;
+      transition:
+        transform var(--motion-duration-fast) var(--motion-ease-standard),
+        background var(--motion-duration-fast) var(--motion-ease-standard);
+    }
+
+    .nav-pill:hover {
+      transform: scale(1.05);
+    }
+
+    .nav-pill.active {
+      background: var(--color-yellow);
+      border-color: var(--color-yellow);
+    }
+
+    .overlay-demo {
+      display: grid;
+      place-items: center;
+      min-height: 200px;
+      border-radius: var(--radius-lg);
+      border: 2px solid rgb(0, 0, 0);
+      position: relative;
+      overflow: hidden;
+      background: var(--color-light);
+    }
+
+    .modal-card {
+      position: relative;
+      z-index: 2;
+      width: min(420px, calc(100% - 32px));
+      border-radius: var(--radius-lg);
+      border: 2px solid rgb(0, 0, 0);
+      background: var(--color-light);
+      padding: var(--space-5);
+    }
+
+    .color-palette-grid {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: var(--space-3);
+    }
+
+    .color-swatch {
+      aspect-ratio: 1;
+      border-radius: var(--radius-md);
+      border: 2px solid rgb(0, 0, 0);
+    }
+
+    /* ===== Keyframe Animations ===== */
+    @keyframes jelly-af638566 {
+      0% { transform: scaleX(1); }
+      25% { transform: scaleX(1.15); }
+      50% { transform: scaleX(0.98); }
+      75% { transform: scaleX(1.01); }
+      100% { transform: scaleX(1); }
+    }
+
+    @keyframes swiper-preloader-spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(1turn); }
+    }
+
+    /* ===== Animation Demo Classes ===== */
+    .animation-demo {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: var(--space-4);
+    }
+
+    .anim-box {
+      height: 120px;
+      border-radius: var(--radius-md);
+      border: 2px solid rgb(0, 0, 0);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: var(--space-3);
+      font-size: var(--font-size-2);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .anim-box span {
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      opacity: 0.7;
+    }
+
+    .jelly-btn {
+      padding: 10px 24px;
+      border: 2px solid rgb(0, 0, 0);
+      border-radius: var(--radius-md);
+      background: var(--color-yellow);
+      color: rgb(0, 0, 0);
+      font-family: var(--font-family-display);
+      font-size: var(--font-size-3);
+      cursor: pointer;
+      transition: transform 0.1s ease;
+    }
+
+    .jelly-btn:hover {
+      animation: jelly-af638566 0.5s ease;
+    }
+
+    .spinner {
+      width: 32px;
+      height: 32px;
+      border: 3px solid rgb(0, 0, 0);
+      border-top-color: var(--color-yellow);
+      border-radius: 50%;
+    }
+
+    .spin-demo { animation: swiper-preloader-spin 1s linear infinite; }
+
+    @media (max-width: 1000px) {
+      .background-board,
+      .motif-grid,
+      .color-palette-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+      .animation-demo {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
+    @media (max-width: 900px) {
+      .grid-3 { grid-template-columns: 1fr 1fr; }
+    }
+
+    @media (max-width: 700px) {
+      .page { padding: var(--space-6) var(--space-4); }
+      .grid-2, .grid-3,
+      .background-board,
+      .motif-grid {
+        grid-template-columns: 1fr;
+      }
+      .toolbar {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      .display-heading {
+        font-size: var(--font-size-7);
+      }
+      .color-palette-grid {
+        grid-template-columns: repeat(3, 1fr);
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *,
+      *::before,
+      *::after {
+        animation-duration: 1ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 1ms !important;
+        scroll-behavior: auto !important;
+      }
+    }
+  </style>
+
+  <script id="design-manifest" type="application/json">
+  {
+    "meta": {
+      "title": "Planetoño Style System",
+      "source": "https://www.planetono.space/"
+    },
+    "style_character": {
+      "summary": "Vibrant creative studio aesthetic with bold red background, multicolor accents (yellow, blue, green, purple), and playful Futura Passata display font",
+      "mood": "Playful, energetic, creative",
+      "density": "spacious",
+      "contrast": "high"
+    },
+    "primitives": {
+      "fonts": {
+        "sans": "Poppins",
+        "display": "Futura Passata"
+      },
+      "radius": {"default": "12px"},
+      "shadow": "none",
+      "motion": {"duration": "0.1s"}
+    },
+    "semantic": {
+      "colors": {
+        "red": "#eb3322",
+        "yellow": "#ffc737",
+        "blue": "#7721c7",
+        "green": "#8df947"
+      }
+    },
+    "motifs": ["bold-red-field", "multicolor-palette", "rounded-soft"],
+    "themes": {
+      "default": {"background": "#eb3322"}
+    }
+  }
+  </script>
+</head>
+<body>
+  <main class="page">
+    <div class="toolbar">
+      <div>
+        <h1 class="display-heading" style="margin:0;">Planetoño</h1>
+        <p class="muted" style="margin:8px 0 0;font-size:var(--font-size-3);">Style Specimen</p>
+      </div>
+    </div>
+
+    <section class="section hero">
+      <h2 style="margin-top:0;font-family:var(--font-family-display);font-size:var(--font-size-5);">Visual Character</h2>
+      <p class="muted" style="max-width:60ch;margin-bottom:16px;">Vibrant, playful creative studio aesthetic. Bold red dominates, with multicolor accents in yellow, blue, green, and purple. Large 12px rounded corners, energetic feel.</p>
+      <div class="btn-row">
+        <button class="btn btn-primary">Primary</button>
+        <button class="btn btn-red">Red</button>
+        <button class="btn btn-blue">Blue</button>
+        <button class="btn btn-green">Green</button>
+        <button class="btn btn-ghost">Ghost</button>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Color Palette</h2>
+      <div class="color-palette-grid">
+        <div class="color-swatch" style="background:#eb3322;" title="#eb3322 Red">
+          <div class="bg-label" style="position:static;margin-top:8px;">Red</div>
+        </div>
+        <div class="color-swatch" style="background:#ffc737;" title="#ffc737 Yellow">
+          <div class="bg-label" style="position:static;margin-top:8px;">Yellow</div>
+        </div>
+        <div class="color-swatch" style="background:#7721c7;" title="#7721c7 Blue">
+          <div class="bg-label" style="position:static;margin-top:8px;background:var(--color-light);">Blue</div>
+        </div>
+        <div class="color-swatch" style="background:#2097cf;" title="#2097cf Light Blue">
+          <div class="bg-label" style="position:static;margin-top:8px;background:var(--color-light);">Light Blue</div>
+        </div>
+        <div class="color-swatch" style="background:#8df947;" title="#8df947 Green">
+          <div class="bg-label" style="position:static;margin-top:8px;">Green</div>
+        </div>
+        <div class="color-swatch" style="background:#f7f2e5;" title="#f7f2e5 Light">
+          <div class="bg-label" style="position:static;margin-top:8px;">Light</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Background System</h2>
+      <div class="background-board">
+        <div class="bg-sample bg-red">
+          <div class="bg-label">Red Base</div>
+        </div>
+        <div class="bg-sample bg-yellow">
+          <div class="bg-label">Yellow</div>
+        </div>
+        <div class="bg-sample bg-blue">
+          <div class="bg-label" style="background:var(--color-light);">Blue</div>
+        </div>
+        <div class="bg-sample bg-green">
+          <div class="bg-label">Green</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Atmosphere Demo</h2>
+      <div class="atmosphere-scene">
+        <div class="atmosphere-layer atmosphere-base"></div>
+        <div class="atmosphere-layer atmosphere-shape-1"></div>
+        <div class="atmosphere-layer atmosphere-shape-2"></div>
+        <div class="atmosphere-layer atmosphere-shape-3"></div>
+        <div class="atmosphere-content">
+          <h3>Hero atmosphere</h3>
+          <p class="muted">Bold red with colorful floating shapes - yellow, blue, green.</p>
+          <div class="btn-row" style="margin-top:16px;">
+            <button class="btn btn-primary">Launch</button>
+            <button class="btn btn-ghost">Preview</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Motif Library</h2>
+      <div class="motif-grid">
+        <div class="motif-card motif-red">Bold Red</div>
+        <div class="motif-card motif-yellow">Yellow</div>
+        <div class="motif-card motif-blue">Blue</div>
+        <div class="motif-card motif-green">Green</div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Typography</h2>
+      <div class="card card-dark">
+        <div class="display-heading" style="font-size:var(--font-size-7);">Display</div>
+        <div style="font-size:var(--font-size-6);font-family:var(--font-family-display);margin-top:12px;">Heading Large</div>
+        <div style="font-size:var(--font-size-5);font-family:var(--font-family-display);margin-top:12px;">Heading Medium</div>
+        <p style="font-size:var(--font-size-3);margin-top:16px;">Body text sample for reading rhythm.</p>
+        <p style="font-size:var(--font-size-1);opacity:0.7;margin-top:8px;">Caption / muted text sample.</p>
+        <code style="font-size:14px;background:var(--color-light);color:var(--color-red);padding:4px 8px;border-radius:4px;display:inline-block;margin-top:8px;">inline code</code>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Cards</h2>
+      <div class="grid grid-3">
+        <article class="card card-dark">
+          <h3 style="margin-top:0;">Red Card</h3>
+          <p class="muted">Bold background.</p>
+        </article>
+        <article class="card card-yellow">
+          <h3 style="margin-top:0;">Yellow Card</h3>
+          <p class="muted">Playful accent.</p>
+        </article>
+        <article class="card card-blue">
+          <h3 style="margin-top:0;">Blue Card</h3>
+          <p style="color:var(--color-light);opacity:0.8;">Purple-blue accent.</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Forms</h2>
+      <div class="card card-dark">
+        <div class="form-stack">
+          <div>
+            <label class="label">Name</label>
+            <input class="input" placeholder="Enter name" />
+          </div>
+          <div>
+            <label class="label">Category</label>
+            <select class="select">
+              <option>Option A</option>
+              <option>Option B</option>
+            </select>
+          </div>
+          <div>
+            <label class="label">Notes</label>
+            <textarea class="textarea" rows="4" placeholder="Write something"></textarea>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Navigation</h2>
+      <div class="card card-dark">
+        <div class="nav-demo">
+          <span class="nav-pill active">Overview</span>
+          <span class="nav-pill">Work</span>
+          <span class="nav-pill">About</span>
+          <span class="nav-pill">Contact</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Table</h2>
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Column</th>
+            <th>Value</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Typography</td>
+            <td>Poppins + Futura</td>
+            <td>Ready</td>
+          </tr>
+          <tr>
+            <td>Colors</td>
+            <td>Red, Yellow, Blue, Green</td>
+            <td>Ready</td>
+          </tr>
+          <tr>
+            <td>Motion</td>
+            <td>Transform scale</td>
+            <td>Ready</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="section">
+      <h2>Prose</h2>
+      <div class="card card-dark prose">
+        <p>Creative studio content with <a href="#">links in yellow</a>, warm tones, and playful energy.</p>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Code Block</h2>
+      <div class="code">
+        <div class="code-head">
+          <span>example.js</span>
+          <span>JavaScript</span>
+        </div>
+        <pre><code><span class="token-comment">// Planetoño code style</span>
+<span class="token-keyword">const</span> palette = {
+  red: <span class="token-string">"#eb3322"</span>,
+  yellow: <span class="token-string">"#ffc737"</span>,
+  blue: <span class="token-string">"#7721c7"</span>,
+  green: <span class="token-string">"#8df947"</span>
+};
+
+<span class="token-keyword">export</span> { palette };</code></pre>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Callouts</h2>
+      <div class="grid grid-2">
+        <div class="callout info"><strong>Info</strong><br><span class="muted">Light blue accent.</span></div>
+        <div class="callout success"><strong>Success</strong><br><span class="muted">Green accent.</span></div>
+        <div class="callout warning"><strong>Warning</strong><br><span class="muted">Yellow accent.</span></div>
+        <div class="callout danger"><strong>Danger</strong><br><span class="muted">Red accent.</span></div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Overlay</h2>
+      <div class="overlay-demo">
+        <div class="modal-card">
+          <h3 style="margin-top:0;">Modal Surface</h3>
+          <p class="muted">Light card on red background.</p>
+          <div class="btn-row" style="margin-top:16px;">
+            <button class="btn btn-primary">Confirm</button>
+            <button class="btn btn-ghost">Cancel</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Animation System</h2>
+      <p class="muted" style="margin-bottom:16px;">Keyframe animations from planetono.space. Playful jelly effect on buttons, smooth loading spinner.</p>
+      <div class="animation-demo">
+        <div class="anim-box card-yellow">
+          <button class="jelly-btn">JELLY</button>
+          <span>jelly-af638566 (hover)</span>
+        </div>
+        <div class="anim-box card-dark">
+          <div class="spinner spin-demo" style="border-top-color:var(--color-yellow);"></div>
+          <span>swiper-preloader-spin</span>
+        </div>
+        <div class="anim-box card-green">
+          <button class="jelly-btn" style="background:var(--color-green);">JELLY</button>
+          <span>elastic bounce</span>
+        </div>
+        <div class="anim-box card-blue">
+          <button class="jelly-btn" style="background:var(--color-blue);color:var(--color-light);">JELLY</button>
+          <span>playful overshoot</span>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    window.DesignReference = JSON.parse(
+      document.getElementById('design-manifest').textContent
+    );
+  </script>
+</body>
+</html>

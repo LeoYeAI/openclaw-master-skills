@@ -1,0 +1,26 @@
+{
+  "id": "totalreclaw",
+  "name": "TotalReclaw",
+  "kind": "memory",
+  "description": "End-to-end encrypted memory vault for AI agents",
+  "configSchema": {
+    "type": "object",
+    "properties": {
+      "extraction": {
+        "type": "object",
+        "properties": {
+          "model": {
+            "type": "string",
+            "description": "Override the extraction model (e.g., 'glm-4.5-flash', 'gpt-4.1-mini')"
+          },
+          "enabled": {
+            "type": "boolean",
+            "description": "Enable/disable auto-extraction (default: true)"
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "additionalProperties": false
+  }
+}

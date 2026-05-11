@@ -1,0 +1,19 @@
+{
+  "name": "Amazon",
+  "slug": "amazon",
+  "detection_signals": [
+    "ue and AmazonUIPageJS globals",
+    "nav-logo-sprites and twotabsearchtextbox DOM elements",
+    "images-na.ssl-images-amazon.com in script sources"
+  ],
+  "detection_script": "(typeof ue !== 'undefined' && typeof AmazonUIPageJS !== 'undefined') || (!!document.querySelector('#nav-logo-sprites') && !!document.querySelector('#twotabsearchtextbox')) || !!document.querySelector('script[src*=\"images-na.ssl-images-amazon.com\"]')",
+  "checkout_type": "saved-payment",
+  "checkout_processor": "amazon-native",
+  "agent_friendliness": 0.5,
+  "guest_checkout": false,
+  "multi_step": true,
+  "requires_auth": true,
+  "last_verified": "2026-03-18",
+  "maturity": "verified",
+  "notes": null
+}

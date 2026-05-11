@@ -1,0 +1,20 @@
+{
+  "name": "Shopify",
+  "slug": "shopify",
+  "detection_signals": [
+    "window.Shopify global object",
+    "cdn.shopify.com in script sources",
+    "monorail-edge.shopifysvc.com preconnect",
+    "shopify-section DOM IDs"
+  ],
+  "detection_script": "(typeof Shopify !== 'undefined' && !!Shopify.shop) || !!document.querySelector('script[src*=\"cdn.shopify.com\"]') || !!document.querySelector('link[href*=\"monorail-edge.shopifysvc.com\"]') || !!document.querySelector('[id^=\"shopify-section\"]')",
+  "checkout_type": "iframe",
+  "checkout_processor": "shopify-native",
+  "agent_friendliness": 0.8,
+  "guest_checkout": true,
+  "multi_step": false,
+  "requires_auth": false,
+  "last_verified": "2026-03-18",
+  "maturity": "verified",
+  "notes": null
+}

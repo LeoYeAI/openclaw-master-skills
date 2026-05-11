@@ -1,0 +1,21 @@
+diff --git a/ui/src/ui/app-render.helpers.ts b/ui/src/ui/app-render.helpers.ts
+index e647e3a38..36aa91524 100644
+--- a/ui/src/ui/app-render.helpers.ts
++++ b/ui/src/ui/app-render.helpers.ts
+@@ -12,6 +12,7 @@ import { iconForTab, pathForTab, titleForTab, type Tab } from "./navigation.ts";
+ import type { ThemeTransitionContext } from "./theme-transition.ts";
+ import type { ThemeMode } from "./theme.ts";
+ import type { SessionsListResult } from "./types.ts";
++import { resolveAgentEmoji } from "./views/agents-utils.ts";
+ 
+ type SessionDefaultsSnapshot = {
+   mainSessionKey?: string;
+@@ -184,7 +185,7 @@ export function renderChatControls(state: AppViewState) {
+           >
+             ${agents.map((a) => {
+               const name = a.identity?.name?.trim() || a.name?.trim() || a.id;
+-              const emoji = a.identity?.emoji?.trim() ?? "";
++              const emoji = resolveAgentEmoji(a, state.agentIdentityById[a.id] ?? null);
+               return html`<option value=${a.id} ?selected=${a.id === currentAgentId}>${emoji ? `${emoji} ${name}` : name}</option>`;
+             })}
+           </select>

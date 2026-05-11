@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Paper &amp; Ink — slide-creator</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Source+Serif+4:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-snap-type: y mandatory; scroll-behavior: smooth; height: 100%; }
+    body {
+      height: 100%; overflow-x: hidden;
+      background: #faf9f7;
+      font-family: 'Source Serif 4', Georgia, serif;
+      color: #1a1a1a;
+    }
+
+    .slide {
+      width: 100vw; height: 100vh; height: 100dvh;
+      scroll-snap-align: start; overflow: hidden;
+      position: relative; display: flex; flex-direction: column;
+      background: #faf9f7;
+      padding: clamp(3rem, 6vw, 5rem) clamp(3rem, 10vw, 9rem);
+      justify-content: center;
+    }
+
+    /* Progress bar */
+    #progress {
+      position: fixed; top: 0; left: 0; height: 2px;
+      background: #c41e3a; z-index: 1000;
+      transition: width 0.8s ease;
+    }
+
+    /* Nav dots */
+    #nav-dots {
+      position: fixed; right: 1.5rem; top: 50%; transform: translateY(-50%);
+      display: flex; flex-direction: column; gap: 0.7rem; z-index: 1000;
+    }
+    .dot {
+      width: 5px; height: 5px; background: rgba(26,26,26,0.2);
+      border-radius: 50%; cursor: pointer; transition: all 0.3s;
+    }
+    .dot.active { background: #c41e3a; width: 5px; height: 14px; border-radius: 3px; }
+
+    /* Edit indicator */
+    #edit-indicator {
+      position: fixed; bottom: 1.5rem; right: 1.5rem; z-index: 1000;
+      font-family: 'Source Serif 4', serif; font-size: 0.7rem;
+      font-variant: small-caps; letter-spacing: 0.12em;
+      color: #c41e3a; border-bottom: 1px solid #c41e3a;
+      padding-bottom: 0.2rem; display: none;
+    }
+    body.edit-mode #edit-indicator { display: block; }
+    body.edit-mode [contenteditable] { outline: 1px dashed rgba(196,30,58,0.3); }
+    #hotzone { position: fixed; top: 0; left: 0; width: 80px; height: 80px; z-index: 999; cursor: pointer; }
+
+    /* Page number footer */
+    .page-footer {
+      position: absolute; bottom: clamp(1.5rem, 3vh, 2.5rem); left: 0; right: 0;
+      text-align: center;
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(0.7rem, 1.1vw, 0.85rem);
+      font-variant: small-caps; letter-spacing: 0.2em;
+      color: #4a4a4a;
+    }
+
+    /* Animations — slow 0.8s ease cross-fade, no movement */
+    @keyframes crossFade { from { opacity: 0; } to { opacity: 1; } }
+
+    .reveal { opacity: 0; }
+    .slide.visible .reveal { animation: crossFade 0.8s ease forwards; }
+    .slide.visible .reveal:nth-child(1) { animation-delay: 0.1s; }
+    .slide.visible .reveal:nth-child(2) { animation-delay: 0.2s; }
+    .slide.visible .reveal:nth-child(3) { animation-delay: 0.35s; }
+    .slide.visible .reveal:nth-child(4) { animation-delay: 0.5s; }
+    .slide.visible .reveal:nth-child(5) { animation-delay: 0.65s; }
+    .slide.visible .reveal:nth-child(6) { animation-delay: 0.8s; }
+    .slide.visible .reveal:nth-child(7) { animation-delay: 0.95s; }
+    .slide.visible .reveal:nth-child(8) { animation-delay: 1.1s; }
+
+    /* Ornamental horizontal rule with flanking diamonds */
+    .rule {
+      display: flex; align-items: center; gap: 0.8rem;
+      margin: clamp(1.2rem, 2.5vh, 2rem) 0;
+    }
+    .rule::before, .rule::after {
+      content: '◆'; color: #c41e3a;
+      font-size: 0.4rem; flex-shrink: 0;
+    }
+    .rule-line { flex: 1; height: 1px; background: #c41e3a; }
+
+    /* Section labels — small-caps */
+    .eyebrow {
+      font-family: 'Cormorant Garamond', serif;
+      font-variant: small-caps; letter-spacing: 0.2em;
+      font-size: clamp(0.65rem, 1vw, 0.8rem);
+      color: #4a4a4a; margin-bottom: clamp(0.5rem, 1vh, 0.8rem);
+    }
+
+    /* Headings */
+    h1 {
+      font-family: 'Cormorant Garamond', serif; font-weight: 700;
+      font-size: clamp(3.5rem, 9vw, 7rem);
+      color: #1a1a1a; line-height: 0.95; letter-spacing: -0.02em;
+    }
+    h1 .crimson { color: #c41e3a; }
+
+    h2 {
+      font-family: 'Cormorant Garamond', serif; font-weight: 700;
+      font-size: clamp(2rem, 5vw, 3.8rem);
+      color: #1a1a1a; line-height: 1.05; letter-spacing: -0.01em;
+    }
+    h2 .crimson { color: #c41e3a; }
+
+    /* Body text with drop cap on .drop-cap paragraphs */
+    .body-text {
+      font-family: 'Source Serif 4', serif; font-size: clamp(0.9rem, 1.5vw, 1.05rem);
+      line-height: 1.8; color: #1a1a1a; max-width: 58ch;
+    }
+    .body-text.drop-cap::first-letter {
+      font-family: 'Cormorant Garamond', serif; font-weight: 700;
+      font-size: 4em; float: left; line-height: 0.8;
+      margin-right: 0.1em; margin-top: 0.05em;
+      color: #c41e3a;
+    }
+
+    /* Pull quotes */
+    .pull-quote {
+      font-family: 'Cormorant Garamond', serif; font-style: italic;
+      font-size: clamp(1.5rem, 4vw, 3rem); font-weight: 400;
+      color: #c41e3a; text-align: center; line-height: 1.25;
+      max-width: 30ch; margin: 0 auto;
+    }
+
+    /* Stats */
+    .stat-row {
+      display: flex; gap: clamp(2rem, 5vw, 4rem);
+      margin-top: clamp(1.5rem, 3vh, 2.5rem);
+    }
+    .stat-val {
+      font-family: 'Cormorant Garamond', serif; font-weight: 700;
+      font-size: clamp(2rem, 4vw, 3rem); color: #c41e3a;
+      display: block; line-height: 1;
+    }
+    .stat-label {
+      font-family: 'Source Serif 4', serif; font-size: 0.7rem;
+      font-variant: small-caps; letter-spacing: 0.15em;
+      color: #4a4a4a; margin-top: 0.3rem; display: block;
+    }
+
+    /* Pain list */
+    .pain-list { list-style: none; margin-top: clamp(1.5rem, 3vh, 2rem); }
+    .pain-item {
+      display: flex; gap: 1rem; align-items: baseline;
+      padding: clamp(0.7rem, 1.2vh, 1rem) 0;
+      border-bottom: 1px solid rgba(196,30,58,0.25);
+      font-family: 'Source Serif 4', serif;
+      font-size: clamp(0.85rem, 1.4vw, 1rem); line-height: 1.6;
+    }
+    .pain-item:first-child { border-top: 1px solid rgba(196,30,58,0.25); }
+    .pain-marker { color: #c41e3a; flex-shrink: 0; font-style: italic; }
+
+    /* Steps */
+    .steps { margin-top: clamp(1.5rem, 3vh, 2rem); }
+    .step {
+      display: grid; grid-template-columns: 2.5rem 1fr;
+      gap: 1rem; padding: clamp(0.8rem, 1.5vh, 1.2rem) 0;
+      border-bottom: 1px solid rgba(26,26,26,0.12);
+    }
+    .step:first-child { border-top: 1px solid rgba(26,26,26,0.12); }
+    .step-num {
+      font-family: 'Cormorant Garamond', serif; font-weight: 700;
+      font-size: clamp(1.2rem, 2.5vw, 1.8rem); color: #c41e3a; line-height: 1;
+    }
+    .step-text { font-family: 'Source Serif 4', serif; font-size: clamp(0.85rem, 1.4vw, 1rem); line-height: 1.6; }
+    .step-text strong { font-weight: 600; color: #1a1a1a; }
+
+    /* Preset grid — two-column */
+    .preset-wrap {
+      columns: 2; column-gap: 3rem;
+      margin-top: clamp(1.5rem, 3vh, 2rem);
+    }
+    @media (max-width: 600px) { .preset-wrap { columns: 1; } }
+    .preset-item {
+      font-family: 'Source Serif 4', serif; font-size: clamp(0.82rem, 1.3vw, 0.95rem);
+      padding: 0.4rem 0; border-bottom: 1px solid rgba(26,26,26,0.1);
+      color: #1a1a1a; break-inside: avoid;
+    }
+    .preset-item.active { color: #c41e3a; font-style: italic; }
+    .preset-item::before { content: '—\00a0'; color: #c41e3a; }
+
+    /* Features */
+    .feature-list { margin-top: clamp(1.5rem, 3vh, 2rem); }
+    .feature-item {
+      padding: clamp(0.8rem, 1.5vh, 1.2rem) 0;
+      border-bottom: 1px solid rgba(26,26,26,0.12);
+    }
+    .feature-item:first-child { border-top: 1px solid rgba(26,26,26,0.12); }
+    .feature-name {
+      font-family: 'Cormorant Garamond', serif; font-weight: 700;
+      font-size: clamp(0.9rem, 1.5vw, 1.1rem); font-variant: small-caps;
+      letter-spacing: 0.1em; color: #c41e3a; margin-bottom: 0.25rem;
+    }
+    .feature-desc {
+      font-family: 'Source Serif 4', serif; font-size: clamp(0.8rem, 1.3vw, 0.95rem);
+      color: #4a4a4a; line-height: 1.6;
+    }
+
+    /* Install code */
+    .install-block {
+      background: #1a1a1a; color: #faf9f7;
+      font-family: 'Courier New', monospace;
+      font-size: clamp(0.7rem, 1.1vw, 0.85rem);
+      padding: clamp(1rem, 2vw, 1.5rem) clamp(1.2rem, 2.5vw, 2rem);
+      margin: clamp(0.8rem, 1.5vh, 1.2rem) 0; line-height: 1.7;
+      border-left: 3px solid #c41e3a;
+    }
+    .install-block .comment { color: #888; font-style: italic; }
+
+    /* CTA */
+    .cta-cmd {
+      font-family: 'Cormorant Garamond', serif; font-weight: 700;
+      font-size: clamp(3rem, 8vw, 6rem);
+      color: #1a1a1a; letter-spacing: -0.02em; line-height: 1;
+      margin: clamp(1rem, 2vh, 1.5rem) 0;
+    }
+    .cta-cmd .crimson { color: #c41e3a; font-style: italic; }
+
+    /* How it works */
+    .how-items { margin-top: clamp(1.5rem, 3vh, 2rem); }
+    .how-item {
+      display: grid; grid-template-columns: 3rem 1fr;
+      gap: 1.2rem; align-items: start;
+      padding: clamp(0.8rem, 1.5vh, 1.2rem) 0;
+      border-bottom: 1px solid rgba(26,26,26,0.12);
+    }
+    .how-item:first-child { border-top: 1px solid rgba(26,26,26,0.12); }
+    .how-num {
+      font-family: 'Cormorant Garamond', serif; font-weight: 700;
+      font-size: clamp(1.2rem, 2.5vw, 1.8rem); color: #c41e3a; line-height: 1;
+    }
+    .how-body h3 {
+      font-family: 'Cormorant Garamond', serif; font-weight: 700;
+      font-size: clamp(1rem, 1.7vw, 1.2rem); margin-bottom: 0.2rem;
+    }
+    .how-body p { font-family: 'Source Serif 4', serif; font-size: clamp(0.78rem, 1.2vw, 0.9rem); color: #4a4a4a; line-height: 1.6; }
+  </style>
+</head>
+<body>
+
+<div id="progress"></div>
+
+<div id="nav-dots">
+  <div class="dot active" data-idx="0"></div>
+  <div class="dot" data-idx="1"></div>
+  <div class="dot" data-idx="2"></div>
+  <div class="dot" data-idx="3"></div>
+  <div class="dot" data-idx="4"></div>
+  <div class="dot" data-idx="5"></div>
+  <div class="dot" data-idx="6"></div>
+  <div class="dot" data-idx="7"></div>
+</div>
+
+<div id="hotzone"></div>
+<div id="edit-indicator">Edit Mode — Ctrl+S to Save</div>
+
+<!-- SLIDE 01: Cover -->
+<section class="slide" id="slide-0">
+  <div class="eyebrow reveal">A presentation tool for Claude Code &amp; OpenClaw</div>
+  <h1 class="reveal">slide-<span class="crimson">creator</span></h1>
+  <div class="rule reveal"><div class="rule-line"></div></div>
+  <p class="body-text reveal" style="max-width: 44ch;">
+    Zero-dependency HTML presentations, conceived for those who believe the act of presenting ought not require a build system.
+  </p>
+  <div class="stat-row reveal">
+    <div>
+      <span class="stat-val">19</span>
+      <span class="stat-label">Presets</span>
+    </div>
+    <div>
+      <span class="stat-val">0</span>
+      <span class="stat-label">Dependencies</span>
+    </div>
+    <div>
+      <span class="stat-val">∞</span>
+      <span class="stat-label">Slides</span>
+    </div>
+  </div>
+  <div class="page-footer">— 01 —</div>
+</section>
+
+<!-- SLIDE 02: The Problem -->
+<section class="slide" id="slide-1">
+  <div class="eyebrow reveal">The Problem</div>
+  <h2 class="reveal">Presentations shouldn't require<br>a <span class="crimson">build system.</span></h2>
+  <div class="rule reveal"><div class="rule-line"></div></div>
+  <ul class="pain-list">
+    <li class="pain-item reveal">
+      <span class="pain-marker">i.</span>
+      <span>A complex toolchain — npm install, webpack configuration, three hundred megabytes of node_modules — merely to distribute a set of slides; this is the industry's quiet absurdity.</span>
+    </li>
+    <li class="pain-item reveal">
+      <span class="pain-marker">ii.</span>
+      <span>Generic output: every AI-generated deck arrives bearing the same Inter typeface and purple gradients, stripped of all character and distinction.</span>
+    </li>
+    <li class="pain-item reveal">
+      <span class="pain-marker">iii.</span>
+      <span>No ownership; only closed platforms, export locks, and monthly fees exacted for the privilege of accessing one's own content.</span>
+    </li>
+  </ul>
+  <div class="page-footer">— 02 —</div>
+</section>
+
+<!-- SLIDE 03: Show Don't Tell -->
+<section class="slide" id="slide-2">
+  <div class="eyebrow reveal">Discovery</div>
+  <h2 class="reveal">Style discovery<br>that <span class="crimson">actually works.</span></h2>
+  <div class="rule reveal"><div class="rule-line"></div></div>
+  <p class="body-text drop-cap reveal">
+    You cannot describe design preferences in words; language proves insufficient for the task. slide-creator generates three visual previews — you react to them, rather than attempting to articulate your aesthetic intentions in prose.
+  </p>
+  <div class="steps reveal">
+    <div class="step">
+      <span class="step-num">I</span>
+      <span class="step-text"><strong>Ask mood.</strong> Four questions: topic, audience, energy, duration.</span>
+    </div>
+    <div class="step">
+      <span class="step-num">II</span>
+      <span class="step-text"><strong>Generate three previews.</strong> Rendered visually. React, not describe.</span>
+    </div>
+    <div class="step">
+      <span class="step-num">III</span>
+      <span class="step-text"><strong>Choose the one that feels right.</strong> The full presentation follows.</span>
+    </div>
+  </div>
+  <div class="page-footer">— 03 —</div>
+</section>
+
+<!-- SLIDE 04: 19 Presets -->
+<section class="slide" id="slide-3">
+  <div class="eyebrow reveal">The Design System</div>
+  <h2 class="reveal">Nineteen curated styles;<br>no <span class="crimson">generic AI aesthetics.</span></h2>
+  <div class="rule reveal"><div class="rule-line"></div></div>
+  <div class="preset-wrap reveal">
+    <div class="preset-item">Bold Signal</div>
+    <div class="preset-item">Electric Studio</div>
+    <div class="preset-item">Creative Voltage</div>
+    <div class="preset-item">Dark Botanical</div>
+    <div class="preset-item">Blue Sky</div>
+    <div class="preset-item">Notebook Tabs</div>
+    <div class="preset-item">Pastel Geometry</div>
+    <div class="preset-item">Split Pastel</div>
+    <div class="preset-item">Vintage Editorial</div>
+    <div class="preset-item">Neon Cyber</div>
+    <div class="preset-item">Terminal Green</div>
+    <div class="preset-item">Swiss Modern</div>
+    <div class="preset-item active">Paper &amp; Ink</div>
+    <div class="preset-item">Aurora Mesh</div>
+    <div class="preset-item">Enterprise Dark</div>
+    <div class="preset-item">Glassmorphism</div>
+    <div class="preset-item">Neo-Brutalism</div>
+    <div class="preset-item">Japanese Zen</div>
+    <div class="preset-item">Data Story</div>
+  </div>
+  <div class="page-footer">— 04 —</div>
+</section>
+
+<!-- SLIDE 05: How It Works -->
+<section class="slide" id="slide-4">
+  <div class="eyebrow reveal">The Process</div>
+  <h2 class="reveal">Three deliberate steps;<br>one <span class="crimson">finished presentation.</span></h2>
+  <div class="rule reveal"><div class="rule-line"></div></div>
+  <div class="how-items reveal">
+    <div class="how-item">
+      <span class="how-num">I</span>
+      <div class="how-body">
+        <h3>/slide-creator — Answer 4 questions</h3>
+        <p>Topic, audience, mood, duration. The system proceeds from there.</p>
+      </div>
+    </div>
+    <div class="how-item">
+      <span class="how-num">II</span>
+      <div class="how-body">
+        <h3>Pick your style — React to 3 visual previews</h3>
+        <p>No describing aesthetics in language. See, choose, proceed.</p>
+      </div>
+    </div>
+    <div class="how-item">
+      <span class="how-num">III</span>
+      <div class="how-body">
+        <h3>Open your presentation — Arrow keys · Space · Swipe</h3>
+        <p>Pure HTML. Works without a server. Without a runtime. Without ceremony.</p>
+      </div>
+    </div>
+  </div>
+  <div class="page-footer">— 05 —</div>
+</section>
+
+<!-- SLIDE 06: Key Features -->
+<section class="slide" id="slide-5">
+  <div class="eyebrow reveal">Capabilities</div>
+  <h2 class="reveal">Designed for<br><span class="crimson">genuine use.</span></h2>
+  <div class="rule reveal"><div class="rule-line"></div></div>
+  <div class="feature-list">
+    <div class="feature-item reveal">
+      <div class="feature-name">Viewport Fitting</div>
+      <div class="feature-desc">Every slide fits precisely within 100vh. No scrolling, ever. Every layout is conceived for the viewport it inhabits.</div>
+    </div>
+    <div class="feature-item reveal">
+      <div class="feature-name">Inline Editing</div>
+      <div class="feature-desc">Press E, click any text, Ctrl+S to save. An edit mode resides within every presentation, quietly waiting.</div>
+    </div>
+    <div class="feature-item reveal">
+      <div class="feature-name">PPTX Export</div>
+      <div class="feature-desc">/slide-creator --export pptx converts to PowerPoint, for those occasions when the boardroom insists upon it.</div>
+    </div>
+    <div class="feature-item reveal">
+      <div class="feature-name">Two-Stage Workflow</div>
+      <div class="feature-desc">--plan produces the outline; --generate produces the HTML. Review your intentions before committing them to form.</div>
+    </div>
+  </div>
+  <div class="page-footer">— 06 —</div>
+</section>
+
+<!-- SLIDE 07: Install -->
+<section class="slide" id="slide-6">
+  <div class="eyebrow reveal">Installation</div>
+  <h2 class="reveal">Two commands;<br><span class="crimson">zero ceremony.</span></h2>
+  <div class="rule reveal"><div class="rule-line"></div></div>
+  <div class="eyebrow reveal" style="margin-top: clamp(1rem,2vh,1.5rem); margin-bottom: 0.4rem;">Claude Code</div>
+  <div class="install-block reveal">
+    git clone https://github.com/kaisersong/slide-creator \<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;~/.claude/skills/slide-creator<br>
+    <span class="comment"># restart Claude Code — available immediately</span>
+  </div>
+  <div class="eyebrow reveal" style="margin-bottom: 0.4rem;">OpenClaw</div>
+  <div class="install-block reveal">
+    clawhub install html-slide-creator<br>
+    <span class="comment"># one command, one moment, complete</span>
+  </div>
+  <div class="page-footer">— 07 —</div>
+</section>
+
+<!-- SLIDE 08: Get Started -->
+<section class="slide" id="slide-7" style="justify-content: center; text-align: center; align-items: center;">
+  <div class="eyebrow reveal">Begin</div>
+  <div class="pull-quote reveal">
+    "The presentation you need<br>is one command away."
+  </div>
+  <div class="rule reveal" style="max-width: 400px;"><div class="rule-line"></div></div>
+  <div class="cta-cmd reveal">/<span class="crimson">slide-creator</span></div>
+  <p class="body-text reveal" style="text-align: center; max-width: 40ch; margin: 0 auto; color: #4a4a4a; font-size: clamp(0.82rem,1.3vw,0.95rem);">
+    Works with Claude Code and OpenClaw.<br>Nineteen presets. Zero dependencies. Your file, your rules.
+  </p>
+  <div class="page-footer">— 08 —</div>
+</section>
+
+<script>
+  const slides = Array.from(document.querySelectorAll('.slide'));
+  const dots = Array.from(document.querySelectorAll('.dot'));
+  const progress = document.getElementById('progress');
+  let cur = 0;
+  let editMode = false;
+
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+        const idx = slides.indexOf(entry.target);
+        if (idx !== -1) updateNav(idx);
+      }
+    });
+  }, { threshold: 0.6 });
+  slides.forEach(s => observer.observe(s));
+
+  function updateNav(idx) {
+    cur = idx;
+    dots.forEach((d, i) => d.classList.toggle('active', i === idx));
+    progress.style.width = ((idx + 1) / slides.length * 100) + '%';
+  }
+
+  function goTo(idx) {
+    if (idx < 0 || idx >= slides.length) return;
+    slides[idx].scrollIntoView({ behavior: 'smooth' });
+  }
+
+  dots.forEach(d => d.addEventListener('click', () => goTo(+d.dataset.idx)));
+
+  document.addEventListener('keydown', e => {
+    if (editMode && (e.key === 's' || e.key === 'S') && (e.ctrlKey || e.metaKey)) {
+      e.preventDefault(); saveFile(); return;
+    }
+    if (editMode && e.key === 'Escape') { toggleEdit(); return; }
+    if (document.activeElement.isContentEditable) return;
+    if (e.key === 'ArrowDown' || e.key === ' ') { e.preventDefault(); goTo(cur + 1); }
+    if (e.key === 'ArrowUp') { e.preventDefault(); goTo(cur - 1); }
+    if (e.key === 'e' || e.key === 'E') toggleEdit();
+  });
+
+  // Wheel — debounce-reset
+  let wheelLocked = false, wheelTimer = null;
+  document.addEventListener('wheel', e => {
+    clearTimeout(wheelTimer);
+    if (!wheelLocked) { wheelLocked = true; e.deltaY > 0 ? goTo(cur + 1) : goTo(cur - 1); }
+    wheelTimer = setTimeout(() => { wheelLocked = false; }, 180);
+  }, { passive: true });
+
+  let touchStart = null;
+  document.addEventListener('touchstart', e => { touchStart = e.touches[0].clientY; }, { passive: true });
+  document.addEventListener('touchend', e => {
+    if (!touchStart) return;
+    const diff = touchStart - e.changedTouches[0].clientY;
+    if (Math.abs(diff) > 50) { diff > 0 ? goTo(cur + 1) : goTo(cur - 1); }
+    touchStart = null;
+  });
+
+  function toggleEdit() {
+    editMode = !editMode;
+    document.body.classList.toggle('edit-mode', editMode);
+    slides.forEach(s => {
+      s.querySelectorAll('h1,h2,h3,p,.stat-val,.cta-cmd,.feature-desc,.step-text,.how-body h3,.how-body p,.pull-quote,.install-block,.pain-item').forEach(el => {
+        el.contentEditable = editMode ? 'true' : 'false';
+      });
+    });
+  }
+
+  document.getElementById('hotzone').addEventListener('click', toggleEdit);
+
+  async function saveFile() {
+    const html = '<!DOCTYPE html>\n' + document.documentElement.outerHTML;
+    if (window.showSaveFilePicker) {
+      try {
+        const h = await window.showSaveFilePicker({ suggestedName: 'paper-ink.html', types: [{ accept: { 'text/html': ['.html'] } }] });
+        const w = await h.createWritable(); await w.write(html); await w.close();
+      } catch(e) { if (e.name !== 'AbortError') fallbackSave(html); }
+    } else fallbackSave(html);
+  }
+  function fallbackSave(html) {
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(new Blob([html], { type: 'text/html' }));
+    a.download = 'paper-ink.html'; a.click();
+  }
+</script>
+</body>
+</html>

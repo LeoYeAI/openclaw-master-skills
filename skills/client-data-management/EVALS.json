@@ -1,0 +1,114 @@
+[
+  {
+    "id": 0,
+    "prompt": "Register a new client for our accounting firm. The business is 'ΚΑΛΑΜΑΡΑ ΕΜΠΟΡΙΚΗ ΑΕ', Greek VAT number EL800123456, legal form ΑΕ, GEMI number 123456789, registered at Λεωφόρος Αθηνών 120, Αθήνα 10441, tax office Α' ΑΘΗΝΩΝ. They are in the wholesale food sector (ΚΑΔ 4611). Monthly VAT filers. Assign to accountant yannis.k and assistant maria.g.",
+    "expectations": [
+      "Validates AFM format (EL + 9 digits) before creating record",
+      "Creates client directory structure at /data/clients/EL800123456/",
+      "Writes profile.json with all provided fields including Greek address",
+      "Sets legal_form as AE and vat_period as monthly",
+      "Records ΚΑΔ activity code 4611 correctly",
+      "Assigns accountant and assistant fields",
+      "Generates obligation template for AE legal form (monthly VAT, EFKA, myDATA, corporate tax)",
+      "Adds entry to /data/clients/_index.json",
+      "Creates empty filings.json, contacts.json, and documents/registry.json",
+      "Logs creation event to audit trail with timestamp and creating user",
+      "Outputs confirmation with next recommended steps (assign EFKA employer ID, add contacts)"
+    ],
+    "files": []
+  },
+  {
+    "id": 1,
+    "prompt": "I need to register three contacts for client EL800123456. First: Δήμητρα Καλαμαρά, CEO, email dkalama@kalamara.gr, mobile +30 6944 100200. Second: Νίκος Αντωνίου, Financial Director, email nantoniou@kalamara.gr, phone +30 210 5551234. Third: Ελένη Γεωργίου, Accountant Liaison, email egeorgiou@kalamara.gr. Set Δήμητρα as the primary contact.",
+    "expectations": [
+      "Adds all three contacts to /data/clients/EL800123456/contacts.json",
+      "Assigns unique contact IDs (C001, C002, C003) to each",
+      "Stores Greek names correctly with accent characters preserved",
+      "Records all communication channels (email, mobile, phone) per contact",
+      "Sets Δήμητρα Καλαμαρά as primary_contact in the record",
+      "Validates email format for all three addresses",
+      "Validates Greek mobile format (+30 69xx xxxxxx) for mobile numbers",
+      "Logs the contact additions to the client audit trail",
+      "Outputs contact summary table with IDs for reference"
+    ],
+    "files": []
+  },
+  {
+    "id": 2,
+    "prompt": "Log the completed VAT filing for client EL800123456 for the period January 2026. The return was submitted on February 20, 2026, reference number ΑΑΔ-2026-045123, amount declared €12,480.00, paid same day via bank transfer. Also log the EFKA monthly contribution for the same period, submitted February 25, reference ΕΦΚΑ-2026-001234, amount €3,250.00.",
+    "expectations": [
+      "Creates VAT-monthly filing record with all provided fields",
+      "Sets status as submitted and paid for the VAT entry",
+      "Records reference number ΑΑΔ-2026-045123 with Greek characters preserved",
+      "Creates EFKA-monthly filing record for same period",
+      "Sets correct due dates for each filing type (VAT: Feb 28, EFKA: Feb 28)",
+      "Appends both records to /data/clients/EL800123456/compliance/filings.json",
+      "Updates compliance gap tracker to mark Jan 2026 obligations as fulfilled",
+      "Logs both filing actions to audit trail with submitting user",
+      "Outputs compliance summary showing Jan 2026 now complete"
+    ],
+    "files": []
+  },
+  {
+    "id": 3,
+    "prompt": "Run a compliance gap check for all active clients for the period January 2026. I want to see which clients have missing VAT submissions, missing EFKA contributions, and any myDATA obligations that are unresolved. Export the results as a CSV file.",
+    "expectations": [
+      "Reads obligation templates for every active client in the index",
+      "Cross-references filings.json for each client against Jan 2026 requirements",
+      "Identifies missing filing types per client (VAT, EFKA, myDATA)",
+      "Checks whether missing filings are overdue or upcoming",
+      "Groups results by filing type and by assigned accountant",
+      "Exports structured CSV with columns: client_name, afm, filing_type, due_date, status, assigned_accountant",
+      "Writes output to /data/exports/compliance_gaps_2026-01.csv",
+      "Outputs summary count: X clients missing VAT, Y clients missing EFKA, Z total gaps",
+      "Flags any clients with multiple gaps as high risk"
+    ],
+    "files": [
+      {
+        "name": "client_index_sample.json",
+        "content": "{\"clients\": [{\"afm\": \"EL800123456\", \"name\": \"ΚΑΛΑΜΑΡΑ ΕΜΠΟΡΙΚΗ ΑΕ\", \"status\": \"active\", \"legal_form\": \"AE\", \"vat_period\": \"monthly\", \"efka_employer_id\": \"12345678\", \"assigned_accountant\": \"yannis.k\"}, {\"afm\": \"EL700987654\", \"name\": \"ΒΕΤΑ ΥΠΗΡΕΣΙΕΣ ΟΕ\", \"status\": \"active\", \"legal_form\": \"OE\", \"vat_period\": \"quarterly\", \"efka_employer_id\": null, \"assigned_accountant\": \"maria.g\"}, {\"afm\": \"EL600112233\", \"name\": \"ΓΑΜΜΑ ΕΙΣΑΓΩΓΕΣ ΙΚΕ\", \"status\": \"active\", \"legal_form\": \"IKE\", \"vat_period\": \"monthly\", \"efka_employer_id\": \"87654321\", \"assigned_accountant\": \"yannis.k\"}]}"
+      },
+      {
+        "name": "filings_jan2026_sample.json",
+        "content": "{\"EL800123456\": [{\"type\": \"VAT-monthly\", \"period\": \"2026-01\", \"status\": \"submitted\"}, {\"type\": \"EFKA-monthly\", \"period\": \"2026-01\", \"status\": \"submitted\"}], \"EL700987654\": [], \"EL600112233\": [{\"type\": \"VAT-monthly\", \"period\": \"2026-01\", \"status\": \"submitted\"}]}"
+      }
+    ]
+  },
+  {
+    "id": 4,
+    "prompt": "Register a batch of processed invoices from the OCR pipeline against client EL800123456. I have five invoices processed this week that need to be added to the document registry: two supplier invoices, two customer invoices, and one bank statement.",
+    "expectations": [
+      "Registers all five documents to /data/clients/EL800123456/documents/registry.json",
+      "Assigns unique document IDs to each entry",
+      "Distinguishes document types correctly (supplier invoice, customer invoice, bank statement)",
+      "Records file paths, dates, and amounts for each document",
+      "Checks for duplicate file paths before registering",
+      "Updates document count in the client index entry",
+      "Sets processing status for each (processed, awaiting-review as appropriate)",
+      "Logs all five registration events to audit trail in batch",
+      "Outputs registry summary showing total document count for this client"
+    ],
+    "files": [
+      {
+        "name": "ocr_batch_results.json",
+        "content": "{\"batch_id\": \"OCR-20260218-007\", \"client_afm\": \"EL800123456\", \"processed_at\": \"2026-02-18T14:30:00Z\", \"documents\": [{\"file\": \"/data/processed/invoices/EL800123456_supplier_001.pdf\", \"type\": \"supplier_invoice\", \"date\": \"2026-02-10\", \"vendor\": \"ΔΕΛΤΑ SUPPLIES ΑΕ\", \"amount\": 3200.00, \"vat_amount\": 768.00, \"confidence\": 0.97}, {\"file\": \"/data/processed/invoices/EL800123456_supplier_002.pdf\", \"type\": \"supplier_invoice\", \"date\": \"2026-02-14\", \"vendor\": \"ΑΛΦΑ ΤΡΟΦΙΜΑ ΟΕ\", \"amount\": 8750.00, \"vat_amount\": 2100.00, \"confidence\": 0.94}, {\"file\": \"/data/processed/invoices/EL800123456_customer_001.pdf\", \"type\": \"customer_invoice\", \"date\": \"2026-02-05\", \"customer\": \"ΘΕΣΣΑΛΙΚΗ ΑΓΟΡΑ ΑΕ\", \"amount\": 15000.00, \"vat_amount\": 3600.00, \"confidence\": 0.99}, {\"file\": \"/data/processed/invoices/EL800123456_customer_002.pdf\", \"type\": \"customer_invoice\", \"date\": \"2026-02-12\", \"customer\": \"ΚΡΗΤΙΚΟ ΕΜΠΟΡΙΟ ΙΚΕ\", \"amount\": 9200.00, \"vat_amount\": 2208.00, \"confidence\": 0.96}, {\"file\": \"/data/processed/statements/EL800123456_nbg_feb2026.pdf\", \"type\": \"bank_statement\", \"date\": \"2026-02-28\", \"bank\": \"National Bank of Greece\", \"account_last4\": \"0695\", \"confidence\": 0.98}]}"
+      }
+    ]
+  },
+  {
+    "id": 5,
+    "prompt": "Client ΚΑΛΑΜΑΡΑ ΕΜΠΟΡΙΚΗ ΑΕ (EL800123456) has submitted a GDPR data subject access request. They want a complete export of all data we hold on them. Generate the full GDPR export, log the request, and confirm what categories of data are included in the export.",
+    "expectations": [
+      "Collects all data categories: profile, contacts, identifiers, compliance history, document registry, notes, audit log entries",
+      "Decrypts encrypted fields for inclusion in export (requires appropriate role check)",
+      "Structures export as JSON with clear category labels per GDPR Article 15 requirements",
+      "Records the access request itself in the GDPR log with date and requester",
+      "Writes export to /data/gdpr-exports/EL800123456_gdpr_export_{date}.json",
+      "Lists all data categories included in the export output",
+      "Notes data retention periods applicable to each category",
+      "Confirms which data cannot be deleted due to Greek tax law retention requirements",
+      "Logs the export action to the client audit trail with requesting user"
+    ],
+    "files": []
+  }
+]

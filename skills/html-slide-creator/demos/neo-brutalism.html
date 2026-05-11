@@ -1,0 +1,577 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Neo-Brutalism — slide-creator</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;800;900&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-snap-type: y mandatory; scroll-behavior: smooth; height: 100%; }
+    body {
+      height: 100%; overflow-x: hidden;
+      background: #FFEB3B;
+      font-family: 'Space Grotesk', sans-serif;
+      color: #000;
+    }
+
+    .slide {
+      width: 100vw; height: 100vh; height: 100dvh;
+      scroll-snap-align: start; overflow: hidden;
+      position: relative; display: flex; flex-direction: column;
+      background: #FFEB3B;
+      padding: clamp(2.5rem, 6vw, 5rem) clamp(2.5rem, 8vw, 6rem);
+    }
+
+    /* Stripe hatching decoration */
+    .stripe {
+      background: repeating-linear-gradient(-45deg, #000 0, #000 2px, transparent 2px, transparent 10px);
+      opacity: 0.12;
+      position: absolute;
+      pointer-events: none;
+    }
+
+    /* Core brutalist card */
+    .brute-card {
+      background: white;
+      border: 3px solid #000;
+      border-radius: 0;
+      box-shadow: 4px 4px 0 #000;
+      padding: clamp(1rem, 2vw, 1.5rem) clamp(1.2rem, 2.5vw, 2rem);
+    }
+    .brute-card:hover {
+      transform: translate(2px, 2px);
+      box-shadow: 2px 2px 0 #000;
+    }
+
+    /* Button */
+    .brute-btn {
+      background: #000; color: #FFEB3B;
+      border: 3px solid #000; border-radius: 0;
+      box-shadow: 3px 3px 0 #000; padding: 12px 24px;
+      font-weight: 900; text-transform: uppercase;
+      font-size: clamp(0.8rem, 1.2vw, 1rem);
+      font-family: 'Space Grotesk', sans-serif;
+      cursor: pointer; display: inline-block;
+    }
+    .brute-btn:hover { transform: translate(2px, 2px); box-shadow: 1px 1px 0 #000; }
+
+    .rotated { transform: rotate(-1.5deg); }
+
+    /* Progress bar */
+    #progress {
+      position: fixed; top: 0; left: 0; height: 4px;
+      background: #000; z-index: 1000;
+      transition: width 0.3s ease;
+    }
+
+    /* Nav dots — black squares */
+    #nav-dots {
+      position: fixed; right: 1.5rem; top: 50%; transform: translateY(-50%);
+      display: flex; flex-direction: column; gap: 0.5rem; z-index: 1000;
+    }
+    .dot {
+      width: 8px; height: 8px; background: #000; opacity: 0.25;
+      cursor: pointer; border-radius: 0;
+    }
+    .dot.active { opacity: 1; height: 20px; }
+
+    /* Edit indicator */
+    #edit-indicator {
+      position: fixed; bottom: 1.5rem; right: 2rem; z-index: 1000;
+      font-family: 'Space Grotesk', sans-serif; font-size: 0.7rem; font-weight: 900;
+      color: #000; background: #FFEB3B;
+      border: 2px solid #000; box-shadow: 2px 2px 0 #000;
+      padding: 0.3rem 0.8rem; display: none; text-transform: uppercase; letter-spacing: 0.1em;
+    }
+    body.edit-mode #edit-indicator { display: block; }
+    body.edit-mode [contenteditable] { outline: 2px solid rgba(0,0,0,0.4); }
+    #hotzone { position: fixed; top: 0; left: 0; width: 80px; height: 80px; z-index: 999; cursor: pointer; }
+
+    /* Animations */
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+    .reveal { opacity: 0; }
+    .slide.visible .reveal { animation: fadeIn 0.25s ease forwards; }
+    .slide.visible .reveal:nth-child(1) { animation-delay: 0.04s; }
+    .slide.visible .reveal:nth-child(2) { animation-delay: 0.08s; }
+    .slide.visible .reveal:nth-child(3) { animation-delay: 0.12s; }
+    .slide.visible .reveal:nth-child(4) { animation-delay: 0.16s; }
+    .slide.visible .reveal:nth-child(5) { animation-delay: 0.20s; }
+    .slide.visible .reveal:nth-child(6) { animation-delay: 0.24s; }
+    .slide.visible .reveal:nth-child(7) { animation-delay: 0.28s; }
+    .slide.visible .reveal:nth-child(8) { animation-delay: 0.32s; }
+
+    /* Typography */
+    .eyebrow {
+      font-weight: 800; font-size: clamp(0.65rem, 1vw, 0.75rem);
+      letter-spacing: 0.2em; text-transform: uppercase;
+      color: #000; margin-bottom: clamp(0.8rem, 1.5vh, 1.2rem);
+      border-left: 4px solid #000; padding-left: 0.8rem;
+    }
+
+    h1 {
+      font-weight: 900;
+      font-size: clamp(4rem, 12vw, 10rem);
+      letter-spacing: -0.03em; line-height: 0.88;
+      color: #000; text-transform: uppercase;
+    }
+
+    h2 {
+      font-weight: 900;
+      font-size: clamp(2rem, 5vw, 4rem);
+      letter-spacing: -0.03em; line-height: 0.95;
+      color: #000; text-transform: uppercase;
+    }
+
+    p {
+      font-weight: 400;
+      font-size: clamp(0.9rem, 1.5vw, 1.05rem);
+      line-height: 1.6; color: #000; max-width: 58ch;
+    }
+
+    p strong { font-weight: 900; }
+
+    .heavy-rule {
+      border: none; border-top: 3px solid #000;
+      margin: clamp(1.2rem, 2.5vh, 2rem) 0;
+    }
+
+    /* Slide 1 — Cover */
+    .cover-arrow {
+      font-size: clamp(3rem, 8vw, 6rem);
+      font-weight: 900; line-height: 1;
+      display: inline-block; margin-left: 1rem;
+    }
+    .cover-stats {
+      display: flex; gap: clamp(2rem, 5vw, 5rem);
+      margin-top: clamp(2rem, 4vh, 3rem);
+      flex-wrap: wrap;
+    }
+    .cover-stat-val {
+      font-weight: 900; font-size: clamp(2.5rem, 5vw, 4rem);
+      line-height: 1; display: block;
+      border-bottom: 4px solid #000; padding-bottom: 0.2rem;
+    }
+    .cover-stat-label {
+      font-weight: 800; font-size: clamp(0.6rem, 0.9vw, 0.7rem);
+      text-transform: uppercase; letter-spacing: 0.18em;
+      margin-top: 0.4rem; display: block;
+    }
+    .cover-bg-stripe {
+      position: absolute; right: 0; top: 0; width: 35%; height: 100%;
+    }
+    .cover-sub {
+      font-weight: 800; font-size: clamp(0.85rem, 1.5vw, 1rem);
+      text-transform: uppercase; letter-spacing: 0.08em;
+      color: #000; margin-top: clamp(0.8rem, 1.5vh, 1.2rem);
+    }
+
+    /* Slide 2 — Problem */
+    .problem-quote {
+      font-weight: 900; font-size: clamp(1.6rem, 3.5vw, 2.8rem);
+      line-height: 1.1; text-transform: uppercase;
+      letter-spacing: -0.02em; color: #000;
+      margin-top: clamp(1rem, 2vh, 1.5rem);
+    }
+    .pain-list { list-style: none; margin-top: clamp(1.2rem, 2.5vh, 2rem); }
+    .pain-item {
+      border-top: 2px solid #000; padding: 0.75rem 0;
+      display: grid; grid-template-columns: 2.5rem 1fr; gap: 0.75rem;
+      align-items: start;
+    }
+    .pain-item:last-child { border-bottom: 2px solid #000; }
+    .pain-num {
+      font-weight: 900; font-size: 0.7rem; text-transform: uppercase;
+      letter-spacing: 0.1em; padding-top: 0.1rem;
+    }
+    .pain-text { font-size: clamp(0.85rem, 1.4vw, 1rem); font-weight: 400; line-height: 1.5; }
+    .pain-text strong { font-weight: 900; }
+
+    /* Slide 3 — Show Don't Tell */
+    .steps-grid {
+      display: grid; grid-template-columns: repeat(3, 1fr);
+      gap: clamp(1rem, 2.5vw, 2rem);
+      margin-top: clamp(1.5rem, 3vh, 2.5rem);
+    }
+    @media (max-width: 650px) { .steps-grid { grid-template-columns: 1fr; } }
+    .step-card {
+      border: 3px solid #000; background: #fff;
+      box-shadow: 4px 4px 0 #000; padding: clamp(1rem, 2vw, 1.5rem);
+    }
+    .step-card:hover { transform: translate(2px, 2px); box-shadow: 2px 2px 0 #000; }
+    .step-num-lg {
+      font-weight: 900; font-size: clamp(2.5rem, 5vw, 4rem);
+      line-height: 1; display: block; margin-bottom: 0.5rem;
+    }
+    .step-title { font-weight: 900; font-size: clamp(0.9rem, 1.5vw, 1.1rem);
+      text-transform: uppercase; margin-bottom: 0.4rem; }
+    .step-desc { font-size: clamp(0.75rem, 1.1vw, 0.85rem); line-height: 1.55; }
+
+    /* Slide 4 — 19 Presets */
+    .preset-grid {
+      display: flex; flex-wrap: wrap; gap: 0.5rem 0.75rem;
+      margin-top: clamp(1.5rem, 3vh, 2rem);
+    }
+    .preset-tag {
+      font-weight: 800; font-size: clamp(0.65rem, 1vw, 0.78rem);
+      text-transform: uppercase; letter-spacing: 0.06em;
+      padding: 0.4rem 0.8rem;
+      border: 2px solid #000;
+      background: #fff;
+      box-shadow: 2px 2px 0 #000;
+    }
+    .preset-tag.current {
+      background: #000; color: #FFEB3B;
+    }
+
+    /* Slide 5 — How It Works */
+    .how-grid {
+      display: grid; grid-template-columns: repeat(3, 1fr);
+      gap: clamp(1.2rem, 2.5vw, 2.5rem);
+      margin-top: clamp(1.5rem, 3vh, 2.5rem);
+    }
+    @media (max-width: 650px) { .how-grid { grid-template-columns: 1fr; } }
+    .how-card {
+      border: 3px solid #000; background: #fff;
+      box-shadow: 4px 4px 0 #000;
+      padding: clamp(1rem, 2vw, 1.5rem);
+    }
+    .how-card:hover { transform: translate(2px, 2px); box-shadow: 2px 2px 0 #000; }
+    .how-num {
+      font-weight: 900; font-size: clamp(2rem, 4vw, 3rem);
+      line-height: 1; margin-bottom: 0.6rem;
+      border-bottom: 3px solid #000; display: inline-block; padding-bottom: 0.2rem;
+    }
+    .how-title { font-weight: 900; font-size: clamp(0.85rem, 1.4vw, 1rem);
+      text-transform: uppercase; margin-bottom: 0.4rem; }
+    .how-desc { font-size: clamp(0.75rem, 1.1vw, 0.85rem); line-height: 1.55; }
+
+    /* Slide 6 — Features */
+    .feature-table { margin-top: clamp(1.2rem, 2.5vh, 2rem); }
+    .feature-row {
+      border-top: 2px solid #000; padding: 0.75rem 0;
+      display: grid; grid-template-columns: 1fr 2.5fr; gap: 1.5rem;
+      align-items: start;
+    }
+    .feature-row:last-child { border-bottom: 2px solid #000; }
+    .feature-name {
+      font-weight: 900; font-size: clamp(0.75rem, 1.1vw, 0.88rem);
+      text-transform: uppercase; letter-spacing: 0.06em;
+    }
+    .feature-desc { font-size: clamp(0.8rem, 1.2vw, 0.92rem); line-height: 1.5; }
+
+    /* Slide 7 — Install */
+    .code-block {
+      background: #000; color: #FFEB3B;
+      font-family: 'Courier New', monospace;
+      font-size: clamp(0.7rem, 1.2vw, 0.88rem);
+      padding: clamp(1rem, 2vw, 1.5rem) clamp(1.2rem, 2.5vw, 2rem);
+      margin: clamp(0.8rem, 1.5vh, 1.2rem) 0; line-height: 1.75;
+      border: 3px solid #000; box-shadow: 4px 4px 0 #000;
+    }
+    .code-comment { color: rgba(255,235,59,0.5); }
+
+    /* Slide 8 — CTA */
+    .cta-block {
+      margin-top: clamp(1.5rem, 3vh, 2.5rem);
+    }
+    .cta-cmd {
+      font-weight: 900; font-size: clamp(3rem, 9vw, 7rem);
+      text-transform: uppercase; letter-spacing: -0.03em; line-height: 0.9;
+      background: #000; color: #FFEB3B; display: inline-block;
+      padding: 0.15em 0.4em;
+      box-shadow: 6px 6px 0 rgba(0,0,0,0.3);
+    }
+    .cta-sub {
+      font-weight: 800; font-size: clamp(0.85rem, 1.4vw, 1rem);
+      text-transform: uppercase; letter-spacing: 0.06em;
+      color: #000; margin-top: clamp(1.5rem, 3vh, 2rem);
+    }
+    .cta-manifesto {
+      margin-top: clamp(1rem, 2vh, 1.5rem);
+      font-weight: 900; font-size: clamp(0.8rem, 1.3vw, 0.95rem);
+      text-transform: uppercase; letter-spacing: 0.04em; color: #000;
+      border: 2px solid #000; display: inline-block;
+      padding: 0.5rem 1rem; box-shadow: 3px 3px 0 #000;
+    }
+  </style>
+</head>
+<body>
+
+<div id="progress"></div>
+
+<div id="nav-dots">
+  <div class="dot active" data-idx="0"></div>
+  <div class="dot" data-idx="1"></div>
+  <div class="dot" data-idx="2"></div>
+  <div class="dot" data-idx="3"></div>
+  <div class="dot" data-idx="4"></div>
+  <div class="dot" data-idx="5"></div>
+  <div class="dot" data-idx="6"></div>
+  <div class="dot" data-idx="7"></div>
+</div>
+
+<div id="hotzone"></div>
+<div id="edit-indicator">EDIT MODE — CTRL+S TO SAVE</div>
+
+<!-- SLIDE 01: Cover -->
+<section class="slide" id="slide-0">
+  <div class="stripe cover-bg-stripe"></div>
+  <div class="eyebrow reveal">HTML presentations for Claude Code &amp; OpenClaw</div>
+  <h1 class="reveal">slide-<br>creator<span class="cover-arrow">→</span></h1>
+  <div class="cover-sub reveal">ZERO-DEPENDENCY. BROWSER-NATIVE. NO EXCUSES.</div>
+  <div class="cover-stats reveal">
+    <div>
+      <span class="cover-stat-val">19</span>
+      <span class="cover-stat-label">Presets</span>
+    </div>
+    <div>
+      <span class="cover-stat-val">0</span>
+      <span class="cover-stat-label">Dependencies</span>
+    </div>
+    <div>
+      <span class="cover-stat-val">∞</span>
+      <span class="cover-stat-label">Slides</span>
+    </div>
+  </div>
+</section>
+
+<!-- SLIDE 02: Problem -->
+<section class="slide" id="slide-1">
+  <div class="eyebrow reveal">The Problem</div>
+  <div class="problem-quote reveal">"Presentations<br>shouldn't require<br>a build system."</div>
+  <hr class="heavy-rule reveal">
+  <ul class="pain-list">
+    <li class="pain-item reveal">
+      <span class="pain-num">01</span>
+      <span class="pain-text"><strong>Complex toolchain.</strong> npm install, webpack config, 300MB node_modules — just to ship some slides. ABSURD.</span>
+    </li>
+    <li class="pain-item reveal">
+      <span class="pain-num">02</span>
+      <span class="pain-text"><strong>Generic output.</strong> Every AI deck: Inter font, purple gradient, zero identity. YOUR BRAND. ZERO PRESENCE.</span>
+    </li>
+    <li class="pain-item reveal">
+      <span class="pain-num">03</span>
+      <span class="pain-text"><strong>No ownership.</strong> Closed platforms, export locks, monthly fees for YOUR OWN CONTENT. Unacceptable.</span>
+    </li>
+  </ul>
+</section>
+
+<!-- SLIDE 03: Show Don't Tell -->
+<section class="slide" id="slide-2">
+  <div class="eyebrow reveal">Discovery</div>
+  <h2 class="reveal">STYLE DISCOVERY<br>THAT WORKS.</h2>
+  <hr class="heavy-rule reveal">
+  <p class="reveal" style="margin-bottom: clamp(1rem,2vh,1.5rem);">You cannot describe design preferences in words. slide-creator shows. You pick. INSTANT REACTION BEATS ENDLESS DESCRIPTION.</p>
+  <div class="steps-grid reveal">
+    <div class="step-card">
+      <span class="step-num-lg">1</span>
+      <div class="step-title">Ask Mood</div>
+      <div class="step-desc">Four questions. Tone, audience, energy, topic. NO FLUFF.</div>
+    </div>
+    <div class="step-card rotated">
+      <span class="step-num-lg">2</span>
+      <div class="step-title">3 Previews</div>
+      <div class="step-desc">Rendered in-browser. React by instinct. Not words.</div>
+    </div>
+    <div class="step-card">
+      <span class="step-num-lg">3</span>
+      <div class="step-title">Pick. Done.</div>
+      <div class="step-desc">Full presentation. Your chosen direction. Delivered.</div>
+    </div>
+  </div>
+</section>
+
+<!-- SLIDE 04: 19 Presets -->
+<section class="slide" id="slide-3">
+  <div class="eyebrow reveal">Design System</div>
+  <h2 class="reveal">19 STYLES.<br>ZERO GENERIC<br>AI AESTHETICS.</h2>
+  <div class="preset-grid reveal">
+    <span class="preset-tag">Bold Signal</span>
+    <span class="preset-tag">Electric Studio</span>
+    <span class="preset-tag">Creative Voltage</span>
+    <span class="preset-tag">Dark Botanical</span>
+    <span class="preset-tag">Blue Sky</span>
+    <span class="preset-tag">Notebook Tabs</span>
+    <span class="preset-tag">Pastel Geometry</span>
+    <span class="preset-tag">Split Pastel</span>
+    <span class="preset-tag">Vintage Editorial</span>
+    <span class="preset-tag">Neon Cyber</span>
+    <span class="preset-tag">Terminal Green</span>
+    <span class="preset-tag">Swiss Modern</span>
+    <span class="preset-tag">Paper &amp; Ink</span>
+    <span class="preset-tag">Aurora Mesh</span>
+    <span class="preset-tag">Enterprise Dark</span>
+    <span class="preset-tag">Glassmorphism</span>
+    <span class="preset-tag current">Neo-Brutalism</span>
+    <span class="preset-tag">Japanese Zen</span>
+    <span class="preset-tag">Data Story</span>
+  </div>
+</section>
+
+<!-- SLIDE 05: How It Works -->
+<section class="slide" id="slide-4">
+  <div class="eyebrow reveal">Process</div>
+  <h2 class="reveal">THREE STEPS.<br>ONE PRESENTATION.</h2>
+  <hr class="heavy-rule reveal">
+  <div class="how-grid reveal">
+    <div class="how-card">
+      <div class="how-num">01</div>
+      <div class="how-title">/slide-creator</div>
+      <div class="how-desc">Type the command. Answer 4 questions. No configuration file. No setup. NO npm.</div>
+    </div>
+    <div class="how-card rotated">
+      <div class="how-num">02</div>
+      <div class="how-title">Pick Your Style</div>
+      <div class="how-desc">React to 3 visual previews. Your gut knows. Trust it.</div>
+    </div>
+    <div class="how-card">
+      <div class="how-num">03</div>
+      <div class="how-title">Open &amp; Present</div>
+      <div class="how-desc">Arrow keys. Space. Swipe. Pure HTML. ZERO runtime. ZERO cloud.</div>
+    </div>
+  </div>
+</section>
+
+<!-- SLIDE 06: Features -->
+<section class="slide" id="slide-5">
+  <div class="eyebrow reveal">Capabilities</div>
+  <h2 class="reveal">BUILT FOR<br>REAL USE.</h2>
+  <div class="feature-table">
+    <div class="feature-row reveal">
+      <span class="feature-name">Viewport Fit</span>
+      <span class="feature-desc">Every slide: exactly 100vh. No scrolling, ever. Designed for the screen you're presenting on.</span>
+    </div>
+    <div class="feature-row reveal">
+      <span class="feature-name">Inline Edit</span>
+      <span class="feature-desc">Press E. Click any text. Ctrl+S to save. LIVE EDITING. No export round-trip.</span>
+    </div>
+    <div class="feature-row reveal">
+      <span class="feature-name">PPTX Export</span>
+      <span class="feature-desc">/slide-creator --export pptx. PowerPoint when the boardroom demands it.</span>
+    </div>
+    <div class="feature-row reveal">
+      <span class="feature-name">Two-Stage</span>
+      <span class="feature-desc">--plan creates the outline. --generate produces final HTML. Review before you commit. No surprises.</span>
+    </div>
+  </div>
+</section>
+
+<!-- SLIDE 07: Install -->
+<section class="slide" id="slide-6">
+  <div class="eyebrow reveal">Setup</div>
+  <h2 class="reveal">TWO LINES.<br>ZERO SETUP.</h2>
+  <hr class="heavy-rule reveal">
+  <div class="eyebrow reveal" style="margin-top: clamp(1rem,2vh,1.5rem); margin-bottom: 0.5rem;">Claude Code</div>
+  <div class="code-block reveal">
+    git clone https://github.com/kaisersong/slide-creator \<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;~/.claude/skills/slide-creator<br>
+    <span class="code-comment"># restart Claude Code — done</span>
+  </div>
+  <div class="eyebrow reveal" style="margin-bottom: 0.5rem;">OpenClaw</div>
+  <div class="code-block reveal">
+    clawhub install html-slide-creator<br>
+    <span class="code-comment"># available immediately. no restart.</span>
+  </div>
+</section>
+
+<!-- SLIDE 08: Get Started -->
+<section class="slide" id="slide-7">
+  <div class="eyebrow reveal">Start Here</div>
+  <h2 class="reveal" style="font-size: clamp(1.5rem,3vw,2.5rem);">RUN THE COMMAND. GET THE DECK.</h2>
+  <div class="cta-block">
+    <div class="cta-cmd reveal">/slide-creator</div>
+    <div class="cta-sub reveal">NO npm. NO webpack. NO excuses.</div>
+    <div class="cta-manifesto reveal">19 PRESETS · 0 DEPENDENCIES · YOUR FILE · YOUR RULES</div>
+  </div>
+</section>
+
+<script>
+  const slides = Array.from(document.querySelectorAll('.slide'));
+  const dots = Array.from(document.querySelectorAll('.dot'));
+  const progress = document.getElementById('progress');
+  let current = 0;
+  let editMode = false;
+
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+        const idx = slides.indexOf(entry.target);
+        if (idx !== -1) updateNav(idx);
+      }
+    });
+  }, { threshold: 0.6 });
+  slides.forEach(s => observer.observe(s));
+
+  function updateNav(idx) {
+    current = idx;
+    dots.forEach((d, i) => d.classList.toggle('active', i === idx));
+    progress.style.width = ((idx + 1) / slides.length * 100) + '%';
+  }
+
+  function goTo(idx) {
+    if (idx < 0 || idx >= slides.length) return;
+    slides[idx].scrollIntoView({ behavior: 'smooth' });
+  }
+
+  dots.forEach(d => d.addEventListener('click', () => goTo(+d.dataset.idx)));
+
+  document.addEventListener('keydown', e => {
+    if (editMode && (e.key === 's' || e.key === 'S') && (e.ctrlKey || e.metaKey)) {
+      e.preventDefault(); saveFile(); return;
+    }
+    if (editMode && e.key === 'Escape') { toggleEdit(); return; }
+    if (document.activeElement.isContentEditable) return;
+    if (e.key === 'ArrowDown' || e.key === ' ') { e.preventDefault(); goTo(current + 1); }
+    if (e.key === 'ArrowUp') { e.preventDefault(); goTo(current - 1); }
+    if (e.key === 'e' || e.key === 'E') toggleEdit();
+  });
+
+  let wheelLocked = false, wheelTimer = null;
+  document.addEventListener('wheel', e => {
+    clearTimeout(wheelTimer);
+    if (!wheelLocked) { wheelLocked = true; e.deltaY > 0 ? goTo(current + 1) : goTo(current - 1); }
+    wheelTimer = setTimeout(() => { wheelLocked = false; }, 180);
+  }, { passive: true });
+
+  let touchStart = null;
+  document.addEventListener('touchstart', e => { touchStart = e.touches[0].clientY; }, { passive: true });
+  document.addEventListener('touchend', e => {
+    if (!touchStart) return;
+    const diff = touchStart - e.changedTouches[0].clientY;
+    if (Math.abs(diff) > 50) { diff > 0 ? goTo(current + 1) : goTo(current - 1); }
+    touchStart = null;
+  });
+
+  function toggleEdit() {
+    editMode = !editMode;
+    document.body.classList.toggle('edit-mode', editMode);
+    slides.forEach(s => {
+      s.querySelectorAll('h1,h2,h3,p,.cover-stat-val,.cta-cmd,.feature-desc,.step-desc,.how-desc,.pain-text,.code-block,.cta-sub,.cover-sub').forEach(el => {
+        el.contentEditable = editMode ? 'true' : 'false';
+      });
+    });
+  }
+
+  document.getElementById('hotzone').addEventListener('click', toggleEdit);
+
+  async function saveFile() {
+    const html = '<!DOCTYPE html>\n' + document.documentElement.outerHTML;
+    if (window.showSaveFilePicker) {
+      try {
+        const h = await window.showSaveFilePicker({ suggestedName: 'neo-brutalism.html', types: [{ accept: { 'text/html': ['.html'] } }] });
+        const w = await h.createWritable(); await w.write(html); await w.close();
+      } catch(e) { if (e.name !== 'AbortError') fallbackSave(html); }
+    } else fallbackSave(html);
+  }
+  function fallbackSave(html) {
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(new Blob([html], { type: 'text/html' }));
+    a.download = 'neo-brutalism.html'; a.click();
+  }
+</script>
+</body>
+</html>

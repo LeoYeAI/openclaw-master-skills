@@ -1,0 +1,185 @@
+{
+  "task_id": "benchmark_${timestamp}",
+  "created_at": "${datetime}",
+  "status": "pending",
+  "description": "淘宝桌面版MCP评测：5个任务（淘金币签到、商品搜索加购、订单管理、购物车比价、客服咨询对话）",
+  "version": "1.1.0",
+  "tasks": [
+    {
+      "id": "task_1",
+      "name": "淘金币签到",
+      "weight": 0.20,
+      "status": "pending",
+      "steps": [
+        { "step": 1, "action": "navigate", "target": "home", "description": "导航到淘宝首页" },
+        { "step": 2, "action": "scan_page_elements", "filter": "淘金币", "description": "识别淘金币入口" },
+        { "step": 3, "action": "click_element", "description": "进入淘金币页面" },
+        { "step": 4, "action": "read_page_content", "description": "读取金币数量" },
+        { "step": 5, "action": "complete_tasks", "description": "完成签到任务" },
+        { "step": 6, "action": "verify", "description": "验证金币增加" }
+      ],
+      "scoring": {
+        "navigation": 2,
+        "element_recognition": 2,
+        "click_operation": 2,
+        "verification": 2,
+        "smoothness": 2
+      },
+      "result": {
+        "score": null,
+        "coins_before": null,
+        "coins_after": null,
+        "coins_earned": null,
+        "duration": null,
+        "screenshots": [],
+        "issues": []
+      }
+    },
+    {
+      "id": "task_2",
+      "name": "商品搜索+对比+加购",
+      "weight": 0.30,
+      "status": "pending",
+      "steps": [
+        { "step": 1, "action": "search_products", "keyword": "保温杯", "description": "搜索商品" },
+        { "step": 2, "action": "read_page_content", "description": "读取搜索结果" },
+        { "step": 3, "action": "select_products", "count": 3, "description": "筛选前3个商品" },
+        { "step": 4, "action": "click_element", "description": "进入商品详情页" },
+        { "step": 5, "action": "read_page_content", "description": "读取商品信息" },
+        { "step": 6, "action": "add_to_cart", "description": "加入购物车" }
+      ],
+      "scoring": {
+        "search_results": 2,
+        "detail_navigation": 2,
+        "info_extraction": 2,
+        "sku_selection": 2,
+        "add_to_cart": 2
+      },
+      "result": {
+        "score": null,
+        "products_found": null,
+        "products_compared": null,
+        "products_added": null,
+        "duration": null,
+        "screenshots": [],
+        "issues": []
+      }
+    },
+    {
+      "id": "task_3",
+      "name": "订单管理",
+      "weight": 0.15,
+      "status": "pending",
+      "steps": [
+        { "step": 1, "action": "navigate", "target": "order", "description": "导航到订单页面" },
+        { "step": 2, "action": "scan_page_elements", "description": "识别筛选标签" },
+        { "step": 3, "action": "test_filter", "filter": "待付款", "description": "测试待付款筛选" },
+        { "step": 4, "action": "test_filter", "filter": "待发货", "description": "测试待发货筛选" },
+        { "step": 5, "action": "test_filter", "filter": "待收货", "description": "测试待收货筛选" },
+        { "step": 6, "action": "test_filter", "filter": "待评价", "description": "测试待评价筛选" }
+      ],
+      "scoring": {
+        "order_navigation": 2,
+        "filter_recognition": 2,
+        "filter_function": 2,
+        "order_info": 2,
+        "page_switch": 2
+      },
+      "result": {
+        "score": null,
+        "orders_pending_payment": null,
+        "orders_pending_shipment": null,
+        "orders_pending_receive": null,
+        "orders_pending_review": null,
+        "duration": null,
+        "screenshots": [],
+        "issues": []
+      }
+    },
+    {
+      "id": "task_4",
+      "name": "购物车比价",
+      "weight": 0.20,
+      "status": "pending",
+      "steps": [
+        { "step": 1, "action": "navigate", "target": "cart", "description": "导航到购物车" },
+        { "step": 2, "action": "read_page_content", "description": "读取商品列表" },
+        { "step": 3, "action": "analyze_prices", "description": "分析商品价格" },
+        { "step": 4, "action": "check_discounts", "description": "检查优惠信息" },
+        { "step": 5, "action": "detect_offline", "description": "检测下架商品" }
+      ],
+      "scoring": {
+        "cart_navigation": 2,
+        "list_reading": 2,
+        "price_extraction": 2,
+        "discount_recognition": 2,
+        "offline_detection": 2
+      },
+      "result": {
+        "score": null,
+        "total_items": null,
+        "total_price": null,
+        "discount_amount": null,
+        "offline_items": null,
+        "duration": null,
+        "screenshots": [],
+        "issues": []
+      }
+    },
+    {
+      "id": "task_5",
+      "name": "客服咨询对话",
+      "weight": 0.15,
+      "status": "pending",
+      "steps": [
+        { "step": 1, "action": "search_products", "keyword": "随机", "description": "搜索随机商品（鼠标/键盘/台灯等）" },
+        { "step": 2, "action": "open_chat_from_search", "description": "通过搜索进入客服对话" },
+        { "step": 3, "action": "send_chat_message", "message": "你好，请问这个商品今天下单，3天后能到杭州吗？", "description": "发起第一轮咨询" },
+        { "step": 4, "action": "wait_for_reply", "timeout": 60, "description": "等待客服回复" },
+        { "step": 5, "action": "send_chat_message", "message": "好的，那发什么快递呢？可以发顺丰吗？", "description": "发起第二轮对话" },
+        { "step": 6, "action": "wait_for_reply", "timeout": 60, "description": "等待客服回复" },
+        { "step": 7, "action": "record_conversation", "description": "记录对话内容" }
+      ],
+      "scoring": {
+        "product_search": 2,
+        "enter_chat": 2,
+        "first_message": 2,
+        "reply_received": 2,
+        "second_message": 2
+      },
+      "result": {
+        "score": null,
+        "product_keyword": null,
+        "shop_name": null,
+        "conversation_rounds": null,
+        "first_reply": null,
+        "second_reply": null,
+        "duration": null,
+        "screenshots": [],
+        "issues": []
+      }
+    }
+  ],
+  "summary": {
+    "total_score": null,
+    "total_duration": null,
+    "tool_calls": {
+      "navigate": 0,
+      "scan_page_elements": 0,
+      "click_element": 0,
+      "read_page_content": 0,
+      "input_text": 0,
+      "add_to_cart": 0,
+      "search_products": 0,
+      "open_chat_from_search": 0,
+      "send_chat_message": 0
+    },
+    "issues_found": [],
+    "screenshots_total": 0
+  },
+  "artifacts": {
+    "report_md": null,
+    "report_docx": null,
+    "screenshots_dir": null
+  }
+}

@@ -1,0 +1,212 @@
+{
+  "source": "pythongo_ui.mdx",
+  "relative_source": "modules\\pythongo_ui.mdx",
+  "title": "pythongo.ui",
+  "doc_kind": "module_doc",
+  "is_index_page": false,
+  "section_count": 11,
+  "table_count": 4,
+  "callout_count": 2,
+  "link_count": 0,
+  "image_count": 0,
+  "sections": [
+    {
+      "id": "modules.pythongo_ui.pythongo-ui",
+      "title": "pythongo.ui",
+      "level": 1,
+      "content_md": "本模块包含了绘画 K 线图 UI 的代码，鉴于代码复杂且后续可能使用别的方式展示 K 线图，不过多介绍，有需求的话可以自行查阅代码，这里仅挑选部分类说明\n\n> [!ERROR]\n> 注意，如策略需要使用 K 线图 UI，则一定要使用本模块中的 `BaseStrategy`，详情查阅：[策略规范 - 导入父类](/styleguide/strategy_rules#import)",
+      "summary": "本模块包含了绘画 K 线图 UI 的代码，鉴于代码复杂且后续可能使用别的方式展示 K 线图，不过多介绍，有需求的话可以自行查阅代码，这里仅挑选部分类说明",
+      "block_type": "section"
+    },
+    {
+      "id": "modules.pythongo_ui.basestrategy",
+      "title": "`BaseStrategy`",
+      "level": 2,
+      "content_md": "带 UI 的基础策略模版\n\n自动处理 UI 逻辑，比如启动显示，暂停隐藏等",
+      "summary": "带 UI 的基础策略模版",
+      "block_type": "section"
+    },
+    {
+      "id": "modules.pythongo_ui.widget",
+      "title": "`widget`",
+      "level": 3,
+      "content_md": "| 类型 | 描述 |\n|---|---|\n| `KLWidget` | 实例化的 K 线组件 |",
+      "summary": "",
+      "block_type": "section"
+    },
+    {
+      "id": "modules.pythongo_ui.main_indicator_data",
+      "title": "`main_indicator_data`",
+      "level": 3,
+      "content_md": "注意：不能直接对该属性赋值，而应该自行定义该属性\n\n| 类型 | 描述 |\n|---|---|\n| `dict[str | float |\n| ` |\n| 主 | 图 | 指 | 标 | 数 | 据 |",
+      "summary": "注意：不能直接对该属性赋值，而应该自行定义该属性",
+      "block_type": "section"
+    },
+    {
+      "id": "modules.pythongo_ui.sub_indicator_data",
+      "title": "`sub_indicator_data`",
+      "level": 3,
+      "content_md": "注意：不能直接对该属性赋值，而应该自行定义该属性\n\n| 类型 | 描述 |\n|---|---|\n| `dict[str | float |\n| ` |\n| 副 | 图 | 指 | 标 | 数 | 据 |\n\n> [!INFO]\n> 具体关于指标数据的定义，请查阅 [策略规范 - 线图指标定义](/styleguide/strategy_rules#def-ui-indicator)",
+      "summary": "注意：不能直接对该属性赋值，而应该自行定义该属性",
+      "block_type": "section"
+    },
+    {
+      "id": "modules.pythongo_ui.klwidget",
+      "title": "`KLWidget`",
+      "level": 2,
+      "content_md": "K 线组件",
+      "summary": "K 线组件",
+      "block_type": "section"
+    },
+    {
+      "id": "modules.pythongo_ui.recv_kline",
+      "title": "`recv_kline()`",
+      "level": 3,
+      "content_md": "收取 K 线、价格信号、指标数据，并将 K 线更新在线图上\n\n参数：\n\n| 参数名 | 类型 | 描述 | 默认值 |\n|---|---|---|---|\n| `data` | `dict[str | float | KLineData |\n| ` |\n| 数 | 据 | 容 | 器 |\n| 必 | 填 |\n\ndata 包含 K 线数据、价格信号、指标数据\n\n举例：`{\"kline\": kline_data, \"signal_price\": 0.0, \"MA\": 0.0}`",
+      "summary": "收取 K 线、价格信号、指标数据，并将 K 线更新在线图上",
+      "block_type": "function"
+    },
+    {
+      "id": "modules.pythongo_ui.模块说明-modules-description",
+      "title": "模块说明 [#modules-description]",
+      "level": 2,
+      "content_md": "",
+      "summary": "",
+      "block_type": "section"
+    },
+    {
+      "id": "modules.pythongo_ui.crosshair-py",
+      "title": "`crosshair.py`",
+      "level": 3,
+      "content_md": "该模块是十字光标模块，可以显示通过移动鼠标后到达的 K 线坐标对应的 K 线数据",
+      "summary": "该模块是十字光标模块，可以显示通过移动鼠标后到达的 K 线坐标对应的 K 线数据",
+      "block_type": "section"
+    },
+    {
+      "id": "modules.pythongo_ui.drawer-py",
+      "title": "`drawer.py`",
+      "level": 3,
+      "content_md": "绘画 K 线图 UI 的主模块，使用 PyQt 构建了整个线图的 UI",
+      "summary": "绘画 K 线图 UI 的主模块，使用 PyQt 构建了整个线图的 UI",
+      "block_type": "section"
+    },
+    {
+      "id": "modules.pythongo_ui.widget-py",
+      "title": "`widget.py`",
+      "level": 3,
+      "content_md": "连接策略与 `drawer.py` 的桥梁，其中包含了带 UI 功能的基础策略模版，还有 `KLWidget` 简化库，可以将 K 线数据传递给 UI，并更新绘图",
+      "summary": "连接策略与 `drawer.py` 的桥梁，其中包含了带 UI 功能的基础策略模版，还有 `KLWidget` 简化库，可以将 K 线数据传递给 UI，并更新绘图",
+      "block_type": "section"
+    }
+  ],
+  "tables": [
+    {
+      "title": "`widget`",
+      "headers": [
+        "类型",
+        "描述"
+      ],
+      "rows": [
+        [
+          "`KLWidget`",
+          "实例化的 K 线组件"
+        ]
+      ],
+      "source": "pythongo_ui.mdx"
+    },
+    {
+      "title": "`main_indicator_data`",
+      "headers": [
+        "类型",
+        "描述"
+      ],
+      "rows": [
+        [
+          "`dict[str",
+          "float"
+        ],
+        [
+          "`"
+        ],
+        [
+          "主",
+          "图",
+          "指",
+          "标",
+          "数",
+          "据"
+        ]
+      ],
+      "source": "pythongo_ui.mdx"
+    },
+    {
+      "title": "`sub_indicator_data`",
+      "headers": [
+        "类型",
+        "描述"
+      ],
+      "rows": [
+        [
+          "`dict[str",
+          "float"
+        ],
+        [
+          "`"
+        ],
+        [
+          "副",
+          "图",
+          "指",
+          "标",
+          "数",
+          "据"
+        ]
+      ],
+      "source": "pythongo_ui.mdx"
+    },
+    {
+      "title": "`recv_kline()`",
+      "headers": [
+        "参数名",
+        "类型",
+        "描述",
+        "默认值"
+      ],
+      "rows": [
+        [
+          "`data`",
+          "`dict[str",
+          "float | KLineData"
+        ],
+        [
+          "`"
+        ],
+        [
+          "数",
+          "据",
+          "容",
+          "器"
+        ],
+        [
+          "必",
+          "填"
+        ]
+      ],
+      "source": "pythongo_ui.mdx"
+    }
+  ],
+  "callouts": [
+    {
+      "kind": "error",
+      "text": "注意，如策略需要使用 K 线图 UI，则一定要使用本模块中的 `BaseStrategy`，详情查阅：[策略规范 - 导入父类](/styleguide/strategy_rules#import)",
+      "source": "pythongo_ui.mdx"
+    },
+    {
+      "kind": "info",
+      "text": "具体关于指标数据的定义，请查阅 [策略规范 - 线图指标定义](/styleguide/strategy_rules#def-ui-indicator)",
+      "source": "pythongo_ui.mdx"
+    }
+  ],
+  "links": [],
+  "images": []
+}

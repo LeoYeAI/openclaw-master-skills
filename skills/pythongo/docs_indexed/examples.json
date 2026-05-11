@@ -1,0 +1,82 @@
+{
+  "source": "examples.mdx",
+  "relative_source": "examples.mdx",
+  "title": "实用例子",
+  "doc_kind": "doc",
+  "is_index_page": false,
+  "section_count": 8,
+  "table_count": 0,
+  "callout_count": 0,
+  "link_count": 0,
+  "image_count": 0,
+  "sections": [
+    {
+      "id": "examples.实用例子",
+      "title": "实用例子",
+      "level": 1,
+      "content_md": "本章节提供一些实用例子，为了尽可能的缩减代码，这里会把所有代码尽量放在 `on_start` 函数中，格式类似于\n\n```py {4-5}\ndef on_start(self) -> None:\n    super().on_start()\n    \"\"\"示例代码开始\"\"\"\n    xxxx\n    xxxx\n    \"\"\"示例代码结束\"\"\"\n```\n\n这里只是提供一些调用方法的例子（所以可能不能直接复制到策略中运行），是为了防止你看了函数的文档还是不清楚实际中应该怎么写\n\n同样我们不会定义不必要的参数，除非有特殊情况，这需要你有举一反三的能力\n\n示例代码放在 `on_start` 是因为这个入口比较简单易懂，实际上这些代码你可以放在任何一个实例方法中，所以还是需要举一反三\n\n始终记住，你是在写「Python」代码，不是在写「PythonGO」代码",
+      "summary": "本章节提供一些实用例子，为了尽可能的缩减代码，这里会把所有代码尽量放在 `on_start` 函数中，格式类似于",
+      "block_type": "section"
+    },
+    {
+      "id": "examples.获取-k-线-get_k_kline_data",
+      "title": "获取 K 线 [#get_k_kline_data]",
+      "level": 2,
+      "content_md": "利用 `pythongo.core` 获取最近的 10 根 1 分钟 K 线\n\n```py {1,7,12-17}\nfrom pythongo.core import MarketCenter\n\nclass Demo(...):\n    def __init__(self) -> None:\n        super().__init__()\n        self.market_center = MarketCenter()\n\n    def on_start(self) -> None:\n        super().on_start()\n\n        kline_data = self.market_center.get_kline_data(\n            exchange=\"SHFE\",\n            instrument_id=\"ag2406\",\n            style=\"M1\",\n            count=-10\n        )\n```\n\n----\n\n利用 `pythongo.core` 获取 `2024-01-31 14:30` 到 `2024-01-31 15:00` 的 1 分钟 K 线\n\n```py {1,3,9,18-19}\nfrom datetime import datetime\n\nfrom pythongo.core import MarketCenter\n\nclass Demo(...):\n    def __init__(self) -> None:\n        super().__init__()\n        self.market_center = MarketCenter()\n\n    def on_start(self) -> None:\n        super().on_start()\n\n        kline_data = self.market_center.get_kline_data(\n            exchange=\"SHFE\",\n            instrument_id=\"ag2406\",\n            style=\"M1\",\n            start_time=datetime(2024, 1, 31, 14, 30),\n            end_time=datetime(2024, 1, 31, 15)\n        )\n```",
+      "summary": "利用 `pythongo.core` 获取最近的 10 根 1 分钟 K 线",
+      "block_type": "section"
+    },
+    {
+      "id": "examples.订阅行情-sub_market_data",
+      "title": "订阅行情 [#sub_market_data]",
+      "level": 2,
+      "content_md": "订阅 `ag2602` 合约行情，并输出行情信息\n\n```py {5-8,19}\nclass Demo(...):\n    def on_start(self) -> None:\n        super().on_start()\n\n        self.sub_market_data(\n            exchange=\"SHFE\",\n            instrument_id=\"ag2602\"\n        )\n\n    def on_stop(self):\n        super().on_stop()\n\n        self.unsub_market_data(\n            exchange=\"SHFE\",\n            instrument_id=\"ag2602\"\n        )\n\n    def on_tick(self, tick: TickData) -> None:\n        self.output(tick)\n```\n\n----\n\n订阅多个合约行情，并输出行情信息\n\n```py {4,9-13,25}\nclass Demo(...):\n    def __init__(self):\n        ...\n        self.my_instruments = {\"SHFE\": \"ag2602\", \"CZCE\": \"AP601\"}\n\n    def on_start(self) -> None:\n        super().on_start()\n\n        for exchange, instrument_id in self.my_instruments.items():\n            self.sub_market_data(\n                exchange=exchange,\n                instrument_id=instrument_id\n            )\n\n    def on_stop(self):\n        super().on_stop()\n\n        for exchange, instrument_id in self.my_instruments.items():\n            self.unsub_market_data(\n                exchange=exchange,\n                instrument_id=instrument_id\n            )\n\n    def on_tick(self, tick: TickData) -> None:\n        self.output(tick)\n```",
+      "summary": "订阅 `ag2602` 合约行情，并输出行情信息",
+      "block_type": "section"
+    },
+    {
+      "id": "examples.定时器-scheduler",
+      "title": "定时器 [#scheduler]",
+      "level": 2,
+      "content_md": "参考 [深入框架 - pythongo.utils - Scheduler](./modules/pythongo_utils.mdx#scheduler-add_job)",
+      "summary": "参考 [深入框架 - pythongo.utils - Scheduler](./modules/pythongo_utils.mdx#scheduler-add_job)",
+      "block_type": "section"
+    },
+    {
+      "id": "examples.k-线合成器-kline_generator",
+      "title": "K 线合成器 [#kline_generator]",
+      "level": 2,
+      "content_md": "需要合成 K 线，但是不需要历史数据\n\n```py {10}\nclass Demo(...):\n    def on_start(self) -> None:\n        self.kline_generator = KLineGenerator(\n            real_time_callback=...,\n            callback=...,\n            exchange=...,\n            instrument_id=...,\n            style=...\n        )\n        # 不执行 `self.kline_generator.push_history_data()`\n        super().on_start()\n```\n\n----\n\n不需要合成 K 线，只需要 `KLineProducer`，然后计算历史数据指标\n\n```py {3-12}\nclass Demo(...):\n    def on_start(self) -> None:\n        self.kline_producer = KLineProducer(\n            exchange=...,\n            instrument_id=...,\n            style=...,\n            callback=...,\n        )\n        self.kline_producer.worker()\n\n        ma10 = self.kline_producer.sma(10)\n        k, d, j = self.kline_producer.kdj()\n\n        super().on_start()\n```\n\n---\n\n合成标准套利合约 K 线\n\n用法和 `KLineGenerator` 一致，只是需要手动订阅单腿合约\n\n```py {1,23-28,33-38}\nfrom pythongo.utils import KLineGeneratorArb\n\nclass Demo(...):\n    def on_tick(self, tick: TickData) -> None:\n        \"\"\"收到行情 tick 推送\"\"\"\n        super().on_tick(tick)\n\n        self.kline_generator.tick_to_kline(tick)\n\n    def on_start(self) -> None:\n        self.kline_generator = KLineGeneratorArb(\n            callback=...,\n            exchange=\"CZCE\",\n            instrument_id=\"IPS AP405&SA405\",\n            style=...,\n            real_time_callback=...\n        )\n        self.kline_generator.push_history_data()\n\n        super().on_start()\n\n        for instrument_id in self.kline_generator.instruments:\n            \"\"\"订阅单腿合约\"\"\"\n            self.sub_market_data(\n                exchange=\"CZCE\",\n                instrument_id=instrument_id\n            )\n\n    def on_stop(self) -> None:\n        super().on_stop()\n\n        for instrument_id in self.kline_generator.instruments:\n            \"\"\"取消订阅单腿合约\"\"\"\n            self.unsub_market_data(\n                exchange=\"CZCE\",\n                instrument_id=instrument_id\n            )\n```\n\n----\n\n从 K 线合成器中的 `KLineProducer` 中获取 K 线数据\n\n```py {6,9}\nclass Demo(...):\n    def on_start(self) -> None:\n        super().on_start()\n\n        # 获取最后 1 个收盘价\n        last_close_price = self.kline_generator.producer.close[-1]\n\n        # 获取最后 10 个开盘价\n        last_open_price = self.kline_generator.producer.open[-10:]\n```\n\n---\n\n多合约同周期\n\n注意填写交易所和合约代码时候需要按照以下格式（必须按顺序依次对应，且使用英文分号 `;` 分隔）：\n\n交易所：`SHFE;SHFE;CZCE`\n\n合约代码：`ag2406;ag2405;AP405`\n\n注意计算指标的时候使用正确的 `kline_generator`\n\n```py {7,11-18,20,22,29-30,32,38,42}\nfrom pythongo.classdef import TickData\nfrom pythongo.utils import KLineGenerator\n\nclass Demo(...):\n    def __init__(self) -> None:\n        self.kline_generators: dict[str, KLineGenerator] = {}\n        \"\"\"K 线合成器容器\"\"\"\n\n    def on_start(self) -> None:\n        for exchange, instrument_id in zip(self.exchange_list, self.instrument_list):\n            kline_generator = KLineGenerator(\n                real_time_callback=self.real_time_callback,\n                callback=self.callback,\n                exchange=exchange,\n                instrument_id=instrument_id,\n                style=self.params_map.kline_style\n            )\n\n            kline_generator.push_history_data()\n\n            self.kline_generators[instrument_id] = kline_generator\n\n        super().on_start()\n\n    def on_tick(self, tick: TickData) -> None:\n        \"\"\"收到行情 tick 推送\"\"\"\n        super().on_tick(tick)\n        if tick.instrument_id not in self.kline_generators:\n            return\n\n        self.kline_generators[tick.instrument_id].tick_to_kline(tick)\n\n    def calc_indicator(self) -> None:\n        \"\"\"计算指标数据\"\"\"\n\n        # 指定合约计算指标\n        self.kline_generators[\"ag2406\"].producer.sma()\n\n        # 也可以根据合约顺序获取合成器来计算指标\n        # 0 代表第一个合约\n        self.kline_generators[self.instrument_list[0]].producer.sma()\n```\n\n---\n\n多合约不同周期\n\n注意填写交易所、合约代码、K 线周期时候需要按照以下格式（必须按顺序依次对应，且使用英文分号 `;` 分隔）：\n\n交易所：`SHFE;SHFE;CZCE`\n\n合约代码：`ag2406;ag2405;AP405`\n\nK 线周期：`M1;M5;M10`\n\n```python {8,11-14,17-24,26,28,35-36,38,40-41,47,51-52,54}\nfrom pythongo.classdef import TickData\nfrom pythongo.core import KLineStyleType\nfrom pythongo.utils import KLineGenerator\n\nclass Demo(...):\n    def __init__(self) -> None:\n        self.kline_generators: dict[str, dict[KLineStyleType, KLineGenerator]] = {}\n        \"\"\"K 线合成器容器\"\"\"\n\n    @property\n    def style_list(self) -> list[KLineStyleType]:\n        \"\"\"手动拆分 K 线周期\"\"\"\n        return self.params_map.kline_style.split(\";\")\n\n    def on_start(self) -> None:\n        for exchange, instrument_id, style in zip(self.exchange_list, self.instrument_list, self.style_list):\n            kline_generator = KLineGenerator(\n                real_time_callback=self.real_time_callback,\n                callback=self.callback,\n                exchange=exchange,\n                instrument_id=instrument_id,\n                style=style\n            )\n\n            kline_generator.push_history_data()\n\n            self.kline_generators[instrument_id] = {style: kline_generator}\n\n        super().on_start()\n\n    def on_tick(self, tick: TickData) -> None:\n        \"\"\"收到行情 tick 推送\"\"\"\n        super().on_tick(tick)\n        if tick.instrument_id not in self.kline_generators:\n            return\n\n        style_container = self.kline_generators[tick.instrument_id]\n\n        for kline_generator in style_container.values():\n            kline_generator.tick_to_kline(tick)\n\n    def calc_indicator(self) -> None:\n        \"\"\"计算指标数据\"\"\"\n\n        # 指定合约和周期计算指标\n        self.kline_generators[\"ag2406\"][\"M1\"].producer.sma()\n\n        # 也可以根据合约顺序获取合成器来计算指标\n        # 0 代表第一个\n        instrument_id = self.instrument_list[0]\n        style = self.style_list[0]\n\n        self.kline_generators[instrument_id][style].producer.sma()\n```",
+      "summary": "需要合成 K 线，但是不需要历史数据",
+      "block_type": "section"
+    },
+    {
+      "id": "examples.线图-ui-kline_ui",
+      "title": "线图 UI [#kline_ui]",
+      "level": 2,
+      "content_md": "自定义副图显示指标\n\n定义 `sub_indicator_data`，然后传参给 `self.widget.recv_kline`\n\n```py {2-9,15}\nclass Demo(...):\n    @property\n    def sub_indicator_data(self) -> dict[str, float]:\n        \"\"\"副图指标\"\"\"\n        return {\n            \"K\": ...,\n            \"D\": ...,\n            \"J\": ...,\n        }\n\n    def callback(self, kline: KLineData) -> None:\n        \"\"\"接受 K 线回调\"\"\"\n        self.widget.recv_kline({\n            \"kline\": ...,\n            **self.sub_indicator_data\n        })\n```",
+      "summary": "自定义副图显示指标",
+      "block_type": "section"
+    },
+    {
+      "id": "examples.查询持仓-get_position",
+      "title": "查询持仓 [#get_position]",
+      "level": 2,
+      "content_md": "查询 `ag2602` 的持仓\n\n```py\nclass Demo(...):\n    def on_start(self) -> None:\n        super().on_start()\n\n        position = self.get_position(\"ag2602\")\n\n        # 总持仓\n        position.position\n\n        # 净持仓\n        position.net_position\n\n        # 多头总持仓\n        position.long.position\n\n        # 空头今持仓\n        position.short.td_position_close\n\n        # 空头昨持仓\n        position.short.yd_position_close\n\n        # 今日买开数量\n        position.long.open_volume\n\n        # 今日买平数量\n        position.long.close_volume\n\n        # 使用字符串仅获取空头持仓\n        short_position = self.get_position(\"ag2602\").get_single_position(\"short\")\n        short_position.position # 空头总持仓\n\n        # 获取套保持仓\n        position = self.get_position(\"ag2602\", hedgeflag=\"3\")\n        position.long.position # 套保多头总持仓\n\n        # 获取指定帐号持仓\n        position = self.get_position(\"ag2602\", investor=\"888888\")\n        position.position # 指定帐号总持仓\n\n        # 获取实时的持仓\n        position = self.get_position(\"ag2602\", simple=True)\n        position.position # 该持仓会在报单成交后立刻更新\n```\n\n----\n\n获取全部持仓（仅 `v2025.1112` 之后版本可用）\n\n```py {5-9}\nclass Demo(...):\n    def on_start(self) -> None:\n        super().on_start()\n\n        position = self.get_all_position()  # 所有帐号所有合约的所有持仓\n        position[\"888888\"]  # 888888 帐号的全部持仓数据\n        position[\"888888\"][\"ag2602\"]  # 888888 帐号下 ag2602 的全部持仓数据\n        position[\"888888\"][\"ag2602\"][\"3\"]  # 888888 帐号下 ag2602 的套保持仓数据\n        position[\"888888\"][\"ag2602\"][\"1\"].long  # 888888 帐号下 ag2602 的多头持仓数据\n```",
+      "summary": "查询 `ag2602` 的持仓",
+      "block_type": "section"
+    },
+    {
+      "id": "examples.外部指标-external_indicator",
+      "title": "外部指标 [#external_indicator]",
+      "level": 2,
+      "content_md": "使用**麦语言**，**通达信**和**同花顺**中常见的指标\n\n先下载 [转换指标库文件](https://infinitrader-file.quantdo.com.cn/pythongo/strategy/MyTT.py)，然后把文件放在和无限易安装目录中的 `pyStrategy` 目录中\n\n```text\nInfiniTrader_Simulation/\n  pyStrategy/\n    pythongo/\n    MyTT.py\n```\n\n```py {1,8-9}\nfrom MyTT import MA\n\nclass Demo(...):\n    def on_start(self) -> None:\n        super().on_start()\n\n        ma5 = MA(self.kline_generator.producer.close, 5) # 获取 5 日均线序列\n        ma10 = MA(self.kline_generator.producer.close, 10) # 获取 10 日均线序列\n```\n\n别的函数使用方法，请打开该文件自行查看（该指标转换算法来源于开源项目：[MyTT](https://github.com/mpquant/MyTT)，无限易和 PythonGO 不对指标计算差异所导致的任何损失负责！）\n\n持续更新中...",
+      "summary": "使用**麦语言**，**通达信**和**同花顺**中常见的指标",
+      "block_type": "section"
+    }
+  ],
+  "tables": [],
+  "callouts": [],
+  "links": [],
+  "images": []
+}

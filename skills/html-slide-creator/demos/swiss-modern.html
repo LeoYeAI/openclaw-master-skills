@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Swiss Modern — slide-creator</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;600;800;900&family=Nunito:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-snap-type: y mandatory; scroll-behavior: smooth; height: 100%; }
+    body {
+      height: 100%; overflow-x: hidden;
+      background: #ffffff;
+      font-family: 'Nunito', sans-serif;
+      color: #000000;
+    }
+
+    /* CSS grid lines background */
+    body::before {
+      content: '';
+      position: fixed; inset: 0; z-index: 0; pointer-events: none;
+      background-image:
+        linear-gradient(rgba(0,0,0,0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0,0,0,0.03) 1px, transparent 1px);
+      background-size: 40px 40px;
+    }
+
+    .slide {
+      width: 100vw; height: 100vh; height: 100dvh;
+      scroll-snap-align: start; overflow: hidden;
+      position: relative; display: flex; flex-direction: column;
+      background: #ffffff;
+      padding: clamp(2.5rem, 6vw, 5rem) clamp(2.5rem, 8vw, 7rem);
+      z-index: 1;
+    }
+
+    /* Background slide number */
+    .bg-num {
+      position: absolute; right: clamp(2rem, 5vw, 5rem); top: 0;
+      font-family: 'Archivo', sans-serif; font-weight: 900;
+      font-size: 25vw; color: #f0f0f0; line-height: 0.85;
+      pointer-events: none; user-select: none;
+      z-index: 0;
+    }
+
+    /* Content layer above bg-num */
+    .content { position: relative; z-index: 1; flex: 1; display: flex; flex-direction: column; }
+
+    /* Progress bar */
+    #progress {
+      position: fixed; top: 0; left: 0; height: 3px;
+      background: #ff3300; z-index: 1000;
+      transition: width 0.3s ease;
+    }
+
+    /* Nav dots */
+    #nav-dots {
+      position: fixed; right: 2rem; top: 50%; transform: translateY(-50%);
+      display: flex; flex-direction: column; gap: 0.5rem; z-index: 1000;
+    }
+    .dot {
+      width: 6px; height: 6px; background: #000; opacity: 0.2;
+      cursor: pointer; transition: all 0.2s; border-radius: 0;
+    }
+    .dot.active { opacity: 1; background: #ff3300; width: 6px; height: 18px; }
+
+    /* Edit indicator */
+    #edit-indicator {
+      position: fixed; bottom: 1.5rem; right: 1.5rem; z-index: 1000;
+      font-family: 'Nunito', sans-serif; font-size: 0.7rem; font-weight: 600;
+      color: #ff3300; border-bottom: 2px solid #ff3300;
+      padding-bottom: 0.2rem; display: none; text-transform: uppercase; letter-spacing: 0.1em;
+    }
+    body.edit-mode #edit-indicator { display: block; }
+    body.edit-mode [contenteditable] { outline: 1px solid rgba(255,51,0,0.3); }
+    #hotzone { position: fixed; top: 0; left: 0; width: 80px; height: 80px; z-index: 999; cursor: pointer; }
+
+    /* Animations — instant structural reveals, 0.3s precision fade for content */
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+    .reveal { opacity: 0; }
+    .slide.visible .reveal { animation: fadeIn 0.3s ease forwards; }
+    .slide.visible .reveal:nth-child(1) { animation-delay: 0.05s; }
+    .slide.visible .reveal:nth-child(2) { animation-delay: 0.1s; }
+    .slide.visible .reveal:nth-child(3) { animation-delay: 0.15s; }
+    .slide.visible .reveal:nth-child(4) { animation-delay: 0.2s; }
+    .slide.visible .reveal:nth-child(5) { animation-delay: 0.25s; }
+    .slide.visible .reveal:nth-child(6) { animation-delay: 0.3s; }
+    .slide.visible .reveal:nth-child(7) { animation-delay: 0.35s; }
+    .slide.visible .reveal:nth-child(8) { animation-delay: 0.4s; }
+
+    /* Typography */
+    .eyebrow {
+      font-family: 'Nunito', sans-serif; font-weight: 600;
+      font-size: clamp(0.65rem, 1vw, 0.75rem);
+      letter-spacing: 0.2em; text-transform: uppercase;
+      color: #000; margin-bottom: clamp(1rem, 2vh, 1.5rem);
+    }
+
+    /* Red accent bar — 60px × 8px, no text */
+    .red-bar {
+      width: 60px; height: 8px; background: #ff3300;
+      margin-bottom: clamp(1rem, 2vh, 1.5rem);
+    }
+
+    h1 {
+      font-family: 'Archivo', sans-serif; font-weight: 900;
+      font-size: clamp(4rem, 10vw, 8rem);
+      letter-spacing: -0.04em; line-height: 0.9;
+      color: #000;
+    }
+    h1 .red { color: #ff3300; }
+
+    h2 {
+      font-family: 'Archivo', sans-serif; font-weight: 800;
+      font-size: clamp(2rem, 5vw, 4rem);
+      letter-spacing: -0.03em; line-height: 1;
+      color: #000;
+    }
+    h2 .red { color: #ff3300; }
+
+    .rule-heavy { border: none; border-top: 2px solid #000; margin: clamp(1.5rem, 3vh, 2.5rem) 0; }
+    .rule-hair { border: none; border-top: 1px solid #000; margin: clamp(1rem, 2vh, 1.5rem) 0; }
+
+    p {
+      font-family: 'Nunito', sans-serif; font-weight: 400;
+      font-size: clamp(0.9rem, 1.6vw, 1.1rem);
+      line-height: 1.65; color: #000; max-width: 56ch;
+    }
+
+    /* Stats */
+    .stat-row {
+      display: flex; gap: clamp(2rem, 5vw, 4rem);
+      margin-top: clamp(2rem, 4vh, 3rem);
+    }
+    .stat-val {
+      font-family: 'Archivo', sans-serif; font-weight: 900;
+      font-size: clamp(2rem, 4vw, 3rem);
+      color: #000; display: block; line-height: 1;
+    }
+    .stat-label {
+      font-family: 'Nunito', sans-serif; font-weight: 600;
+      font-size: 0.65rem; letter-spacing: 0.18em;
+      text-transform: uppercase; color: #9a9a9a; margin-top: 0.3rem; display: block;
+    }
+
+    /* Pain points */
+    .pain-list { list-style: none; margin-top: clamp(1.5rem, 3vh, 2rem); }
+    .pain-item {
+      display: grid; grid-template-columns: 2rem 1fr;
+      gap: 0.5rem; align-items: start;
+      padding: clamp(0.8rem, 1.5vh, 1.2rem) 0;
+      border-bottom: 1px solid #000;
+    }
+    .pain-item:first-child { border-top: 1px solid #000; }
+    .pain-counter {
+      font-family: 'Archivo', sans-serif; font-weight: 800;
+      font-size: 0.75rem; color: #ff3300; padding-top: 0.15rem;
+    }
+    .pain-text {
+      font-family: 'Nunito', sans-serif; font-size: clamp(0.85rem, 1.4vw, 1rem);
+      color: #000; line-height: 1.5;
+    }
+    .pain-text strong { font-weight: 600; }
+
+    /* Steps — slide 3 */
+    .step-row {
+      display: grid; grid-template-columns: 3rem 1fr;
+      gap: 1.5rem; align-items: start;
+      margin-top: clamp(1rem, 2vh, 1.5rem);
+    }
+    .step-num-big {
+      font-family: 'Archivo', sans-serif; font-weight: 900;
+      font-size: clamp(1.5rem, 3vw, 2.5rem); color: #ff3300; line-height: 1;
+    }
+    .step-body h3 {
+      font-family: 'Archivo', sans-serif; font-weight: 800;
+      font-size: clamp(1rem, 1.8vw, 1.3rem); margin-bottom: 0.25rem;
+    }
+    .step-body p { font-size: clamp(0.8rem, 1.2vw, 0.9rem); color: #555; }
+
+    /* Preset tags */
+    .preset-wrap {
+      display: flex; flex-wrap: wrap; gap: 0.5rem 0.75rem;
+      margin-top: clamp(1.5rem, 3vh, 2rem);
+    }
+    .preset-item {
+      font-family: 'Nunito', sans-serif; font-weight: 600;
+      font-size: clamp(0.7rem, 1.1vw, 0.85rem);
+      text-transform: uppercase; letter-spacing: 0.08em;
+      padding: 0.3rem 0; border-bottom: 2px solid transparent;
+    }
+    .preset-item.active { border-bottom-color: #ff3300; color: #ff3300; }
+
+    /* Feature table — slide 6 */
+    .feature-list { margin-top: clamp(1.5rem, 3vh, 2rem); }
+    .feature-item {
+      display: grid; grid-template-columns: 1fr 3fr;
+      gap: clamp(1rem, 2vw, 2rem);
+      padding: clamp(0.8rem, 1.5vh, 1.2rem) 0;
+      border-bottom: 1px solid #000;
+      align-items: baseline;
+    }
+    .feature-item:first-child { border-top: 2px solid #000; }
+    .feature-name {
+      font-family: 'Archivo', sans-serif; font-weight: 800;
+      font-size: clamp(0.75rem, 1.2vw, 0.9rem);
+      text-transform: uppercase; letter-spacing: 0.05em;
+    }
+    .feature-name.red { color: #ff3300; }
+    .feature-desc {
+      font-family: 'Nunito', sans-serif; font-size: clamp(0.8rem, 1.3vw, 0.95rem);
+      color: #333; line-height: 1.5;
+    }
+
+    /* Install code blocks */
+    .code-block {
+      background: #000; color: #fff;
+      font-family: 'Courier New', monospace;
+      font-size: clamp(0.7rem, 1.2vw, 0.9rem);
+      padding: clamp(1rem, 2vw, 1.5rem) clamp(1.2rem, 2.5vw, 2rem);
+      margin: clamp(0.8rem, 1.5vh, 1.2rem) 0; line-height: 1.7;
+    }
+    .code-block .comment { color: #888; }
+
+    /* CTA */
+    .cta-large {
+      font-family: 'Archivo', sans-serif; font-weight: 900;
+      font-size: clamp(3rem, 8vw, 7rem);
+      color: #000; letter-spacing: -0.04em; line-height: 0.9;
+      margin-top: clamp(1.5rem, 3vh, 2.5rem);
+    }
+    .cta-sub {
+      font-family: 'Nunito', sans-serif; font-size: clamp(0.85rem, 1.4vw, 1rem);
+      color: #555; margin-top: clamp(0.8rem, 1.5vh, 1.2rem);
+    }
+
+    /* How it works — 3-column grid */
+    .how-grid {
+      display: grid; grid-template-columns: repeat(3, 1fr);
+      gap: clamp(1.5rem, 3vw, 3rem);
+      margin-top: clamp(1.5rem, 3vh, 2.5rem);
+    }
+    @media (max-width: 700px) { .how-grid { grid-template-columns: 1fr; } }
+    .how-card { border-top: 4px solid #000; padding-top: clamp(1rem, 2vh, 1.5rem); }
+    .how-card.red-top { border-top-color: #ff3300; }
+    .how-num {
+      font-family: 'Archivo', sans-serif; font-weight: 900;
+      font-size: clamp(1.5rem, 3vw, 2.5rem); color: #000; line-height: 1;
+      margin-bottom: 0.5rem;
+    }
+    .how-title {
+      font-family: 'Archivo', sans-serif; font-weight: 800;
+      font-size: clamp(0.85rem, 1.4vw, 1rem); margin-bottom: 0.4rem;
+    }
+    .how-desc { font-family: 'Nunito', sans-serif; font-size: clamp(0.75rem, 1.1vw, 0.88rem); color: #555; line-height: 1.55; }
+  </style>
+</head>
+<body>
+
+<div id="progress"></div>
+
+<div id="nav-dots">
+  <div class="dot active" data-idx="0"></div>
+  <div class="dot" data-idx="1"></div>
+  <div class="dot" data-idx="2"></div>
+  <div class="dot" data-idx="3"></div>
+  <div class="dot" data-idx="4"></div>
+  <div class="dot" data-idx="5"></div>
+  <div class="dot" data-idx="6"></div>
+  <div class="dot" data-idx="7"></div>
+</div>
+
+<div id="hotzone"></div>
+<div id="edit-indicator">Edit Mode — Ctrl+S to Save</div>
+
+<!-- SLIDE 01: Cover -->
+<section class="slide" id="slide-0">
+  <div class="bg-num">01</div>
+  <div class="content">
+    <div class="red-bar reveal"></div>
+    <div class="eyebrow reveal">HTML presentations for Claude Code &amp; OpenClaw</div>
+    <h1 class="reveal">slide-<span class="red">creator</span></h1>
+    <hr class="rule-heavy reveal">
+    <div class="stat-row reveal">
+      <div>
+        <span class="stat-val">19</span>
+        <span class="stat-label">Presets</span>
+      </div>
+      <div>
+        <span class="stat-val">0</span>
+        <span class="stat-label">Dependencies</span>
+      </div>
+      <div>
+        <span class="stat-val">∞</span>
+        <span class="stat-label">Slides</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SLIDE 02: The Problem -->
+<section class="slide" id="slide-1">
+  <div class="bg-num">02</div>
+  <div class="content">
+    <div class="eyebrow reveal">The Problem</div>
+    <div class="red-bar reveal"></div>
+    <h2 class="reveal">Presentations shouldn't require<br>a <span class="red">build system.</span></h2>
+    <hr class="rule-heavy reveal">
+    <ul class="pain-list" style="margin-top: clamp(1rem,2vh,1.5rem);">
+      <li class="pain-item reveal">
+        <span class="pain-counter">01</span>
+        <span class="pain-text"><strong>Complex toolchain.</strong> npm install, webpack config, 300MB node_modules — to ship some slides.</span>
+      </li>
+      <li class="pain-item reveal">
+        <span class="pain-counter">02</span>
+        <span class="pain-text"><strong>Generic output.</strong> Every AI deck looks identical — Inter font, purple gradients, zero identity.</span>
+      </li>
+      <li class="pain-item reveal">
+        <span class="pain-counter">03</span>
+        <span class="pain-text"><strong>No ownership.</strong> Closed platforms, export locks, monthly fees for your own content.</span>
+      </li>
+    </ul>
+  </div>
+</section>
+
+<!-- SLIDE 03: Show Don't Tell -->
+<section class="slide" id="slide-2">
+  <div class="bg-num">03</div>
+  <div class="content">
+    <div class="eyebrow reveal">Discovery</div>
+    <div class="red-bar reveal"></div>
+    <h2 class="reveal">Style discovery<br>that <span class="red">works.</span></h2>
+    <hr class="rule-heavy reveal">
+    <p class="reveal" style="margin-bottom: clamp(1rem,2vh,1.5rem);">
+      You cannot describe design preferences in words. slide-creator generates 3 visual previews. You react — not describe.
+    </p>
+    <div class="step-row reveal">
+      <span class="step-num-big">1</span>
+      <div class="step-body">
+        <h3>Ask mood</h3>
+        <p>Four questions. Tone, audience, energy, topic.</p>
+      </div>
+    </div>
+    <div class="step-row reveal">
+      <span class="step-num-big">2</span>
+      <div class="step-body">
+        <h3>Generate 3 visual previews</h3>
+        <p>Rendered in-browser. Pick by instinct, not description.</p>
+      </div>
+    </div>
+    <div class="step-row reveal">
+      <span class="step-num-big" style="color:#000;">3</span>
+      <div class="step-body">
+        <h3>Pick. Done.</h3>
+        <p>Full presentation generated from your chosen direction.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SLIDE 04: 19 Presets -->
+<section class="slide" id="slide-3">
+  <div class="bg-num">04</div>
+  <div class="content">
+    <div class="eyebrow reveal">Design System</div>
+    <div class="red-bar reveal"></div>
+    <h2 class="reveal">19 curated styles.<br><span class="red">No generic AI aesthetics.</span></h2>
+    <hr class="rule-heavy reveal">
+    <div class="preset-wrap reveal">
+      <span class="preset-item">Bold Signal</span>
+      <span class="preset-item">Electric Studio</span>
+      <span class="preset-item">Creative Voltage</span>
+      <span class="preset-item">Dark Botanical</span>
+      <span class="preset-item">Blue Sky</span>
+      <span class="preset-item">Notebook Tabs</span>
+      <span class="preset-item">Pastel Geometry</span>
+      <span class="preset-item">Split Pastel</span>
+      <span class="preset-item">Vintage Editorial</span>
+      <span class="preset-item">Neon Cyber</span>
+      <span class="preset-item">Terminal Green</span>
+      <span class="preset-item active">Swiss Modern</span>
+      <span class="preset-item">Paper &amp; Ink</span>
+      <span class="preset-item">Aurora Mesh</span>
+      <span class="preset-item">Enterprise Dark</span>
+      <span class="preset-item">Glassmorphism</span>
+      <span class="preset-item">Neo-Brutalism</span>
+      <span class="preset-item">Japanese Zen</span>
+      <span class="preset-item">Data Story</span>
+    </div>
+    <p class="reveal" style="margin-top: clamp(1.5rem,3vh,2rem); color: #555;">
+      Each preset is a complete visual system — typography, layout, color, motion. No mixing, no compromise.
+    </p>
+  </div>
+</section>
+
+<!-- SLIDE 05: How It Works -->
+<section class="slide" id="slide-4">
+  <div class="bg-num">05</div>
+  <div class="content">
+    <div class="eyebrow reveal">Process</div>
+    <div class="red-bar reveal"></div>
+    <h2 class="reveal">Three steps.<br>One <span class="red">presentation.</span></h2>
+    <hr class="rule-heavy reveal">
+    <div class="how-grid reveal">
+      <div class="how-card red-top">
+        <div class="how-num">01</div>
+        <div class="how-title">/slide-creator</div>
+        <div class="how-desc">Answer 4 questions. Topic, audience, mood, duration.</div>
+      </div>
+      <div class="how-card">
+        <div class="how-num">02</div>
+        <div class="how-title">Pick Your Style</div>
+        <div class="how-desc">React to 3 visual previews. No describing aesthetics in text.</div>
+      </div>
+      <div class="how-card">
+        <div class="how-num">03</div>
+        <div class="how-title">Open &amp; Present</div>
+        <div class="how-desc">Arrow keys · Space · Swipe. Pure HTML. No runtime.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SLIDE 06: Key Features -->
+<section class="slide" id="slide-5">
+  <div class="bg-num">06</div>
+  <div class="content">
+    <div class="eyebrow reveal">Capabilities</div>
+    <div class="red-bar reveal"></div>
+    <h2 class="reveal">Built for<br><span class="red">real use.</span></h2>
+    <div class="feature-list">
+      <div class="feature-item reveal">
+        <span class="feature-name red">Viewport Fit</span>
+        <span class="feature-desc">Every slide fits exactly 100vh. No scrolling, ever. Every layout is designed for the viewport.</span>
+      </div>
+      <div class="feature-item reveal">
+        <span class="feature-name">Inline Edit</span>
+        <span class="feature-desc">Press E, click any text, Ctrl+S to save. Edit mode built into every presentation.</span>
+      </div>
+      <div class="feature-item reveal">
+        <span class="feature-name">PPTX Export</span>
+        <span class="feature-desc">/slide-creator --export pptx converts to PowerPoint when the boardroom demands it.</span>
+      </div>
+      <div class="feature-item reveal">
+        <span class="feature-name">Two-Stage</span>
+        <span class="feature-desc">--plan creates the outline. --generate produces final HTML. Review before committing.</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SLIDE 07: Install -->
+<section class="slide" id="slide-6">
+  <div class="bg-num">07</div>
+  <div class="content">
+    <div class="eyebrow reveal">Setup</div>
+    <div class="red-bar reveal"></div>
+    <h2 class="reveal">Two lines.<br><span class="red">Zero setup.</span></h2>
+    <hr class="rule-heavy reveal">
+    <div class="eyebrow reveal" style="margin-top: clamp(1rem,2vh,1.5rem); margin-bottom: 0.4rem;">Claude Code</div>
+    <div class="code-block reveal">
+      <span>git clone https://github.com/kaisersong/slide-creator \</span><br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span>~/.claude/skills/slide-creator</span><br>
+      <span class="comment"># restart Claude Code to activate</span>
+    </div>
+    <div class="eyebrow reveal" style="margin-bottom: 0.4rem;">OpenClaw</div>
+    <div class="code-block reveal">
+      <span>clawhub install html-slide-creator</span><br>
+      <span class="comment"># available immediately</span>
+    </div>
+  </div>
+</section>
+
+<!-- SLIDE 08: Get Started -->
+<section class="slide" id="slide-7">
+  <div class="bg-num">08</div>
+  <div class="content">
+    <div class="eyebrow reveal">Start Here</div>
+    <div class="red-bar reveal"></div>
+    <h2 class="reveal" style="font-size: clamp(1.5rem,3.5vw,2.5rem);">Run the command.</h2>
+    <div class="cta-large reveal">/slide-<span style="color:#ff3300;">creator</span></div>
+    <hr class="rule-heavy reveal">
+    <p class="cta-sub reveal">Works with Claude Code and OpenClaw. 19 presets. 0 dependencies. Your file, your rules.</p>
+  </div>
+</section>
+
+<script>
+  const slides = Array.from(document.querySelectorAll('.slide'));
+  const dots = Array.from(document.querySelectorAll('.dot'));
+  const progress = document.getElementById('progress');
+  let cur = 0;
+  let editMode = false;
+
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+        const idx = slides.indexOf(entry.target);
+        if (idx !== -1) updateNav(idx);
+      }
+    });
+  }, { threshold: 0.6 });
+  slides.forEach(s => observer.observe(s));
+
+  function updateNav(idx) {
+    cur = idx;
+    dots.forEach((d, i) => d.classList.toggle('active', i === idx));
+    progress.style.width = ((idx + 1) / slides.length * 100) + '%';
+  }
+
+  function goTo(idx) {
+    if (idx < 0 || idx >= slides.length) return;
+    slides[idx].scrollIntoView({ behavior: 'smooth' });
+  }
+
+  dots.forEach(d => d.addEventListener('click', () => goTo(+d.dataset.idx)));
+
+  document.addEventListener('keydown', e => {
+    if (editMode && (e.key === 's' || e.key === 'S') && (e.ctrlKey || e.metaKey)) {
+      e.preventDefault(); saveFile(); return;
+    }
+    if (editMode && e.key === 'Escape') { toggleEdit(); return; }
+    if (document.activeElement.isContentEditable) return;
+    if (e.key === 'ArrowDown' || e.key === ' ') { e.preventDefault(); goTo(cur + 1); }
+    if (e.key === 'ArrowUp') { e.preventDefault(); goTo(cur - 1); }
+    if (e.key === 'e' || e.key === 'E') toggleEdit();
+  });
+
+  // Wheel — debounce-reset
+  let wheelLocked = false, wheelTimer = null;
+  document.addEventListener('wheel', e => {
+    clearTimeout(wheelTimer);
+    if (!wheelLocked) { wheelLocked = true; e.deltaY > 0 ? goTo(cur + 1) : goTo(cur - 1); }
+    wheelTimer = setTimeout(() => { wheelLocked = false; }, 180);
+  }, { passive: true });
+
+  let touchStart = null;
+  document.addEventListener('touchstart', e => { touchStart = e.touches[0].clientY; }, { passive: true });
+  document.addEventListener('touchend', e => {
+    if (!touchStart) return;
+    const diff = touchStart - e.changedTouches[0].clientY;
+    if (Math.abs(diff) > 50) { diff > 0 ? goTo(cur + 1) : goTo(cur - 1); }
+    touchStart = null;
+  });
+
+  function toggleEdit() {
+    editMode = !editMode;
+    document.body.classList.toggle('edit-mode', editMode);
+    slides.forEach(s => {
+      s.querySelectorAll('h1,h2,h3,p,.stat-val,.cta-large,.feature-desc,.step-body h3,.step-body p,.how-desc,.pain-text,.code-block').forEach(el => {
+        el.contentEditable = editMode ? 'true' : 'false';
+      });
+    });
+  }
+
+  document.getElementById('hotzone').addEventListener('click', toggleEdit);
+
+  async function saveFile() {
+    const html = '<!DOCTYPE html>\n' + document.documentElement.outerHTML;
+    if (window.showSaveFilePicker) {
+      try {
+        const h = await window.showSaveFilePicker({ suggestedName: 'swiss-modern.html', types: [{ accept: { 'text/html': ['.html'] } }] });
+        const w = await h.createWritable(); await w.write(html); await w.close();
+      } catch(e) { if (e.name !== 'AbortError') fallbackSave(html); }
+    } else fallbackSave(html);
+  }
+  function fallbackSave(html) {
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(new Blob([html], { type: 'text/html' }));
+    a.download = 'swiss-modern.html'; a.click();
+  }
+</script>
+</body>
+</html>

@@ -1,0 +1,16 @@
+Error_ID,Category,Error_Name,Description,Incorrect_Pattern,Correct_Pattern,Severity,Context
+AI_ERR_001,Tailwind,Dynamic Class Interpolation,Tailwind JIT compiler cannot scan interpolated strings.,className={`bg-${color}-500`},"const maps = {red: 'bg-red-500'}; className={maps[color]}",Critical,React Components
+AI_ERR_002,Visual,Z-Index Stacking War,Blindly increasing z-index without regarding stacking context.,"z- on child of transformed parent","Use Portals or remove transform from parent",High,Modals/Tooltips
+AI_ERR_003,Logic,Race Condition Fetch,Data fetching in useEffect without cleanup/abort.,useEffect(() => { fetch().then(set) }, [url]),"useEffect(() => { const ab = new AbortController();... return () => ab.abort(); }, [url])",Medium,Data Fetching
+AI_ERR_004,Accessibility,Clickable Div,Div with onClick missing semantic roles.,"<div onClick={fn}>Btn</div>","<button type=""button"" onClick={fn}>Btn</button>",Critical,Interactive Elements
+AI_ERR_005,Tailwind,Non-Existent Utility,Hallucinating utilities that don't exist in config.,"text-shadow-md (in v3 context)","class=""drop-shadow-md"" or custom plugin",Low,Styling
+AI_ERR_006,Layout,Double Scrollbar,Applying overflow to multiple nested containers.,"html { overflow-y: scroll } body { overflow-y: scroll }","Apply overflow only to the root scroller",Medium,Global CSS
+AI_ERR_007,Logic,Uncontrolled Form Thrashing,Binding state to every keystroke on large forms.,"onChange={e => setState(e.target.value)} (on 50+ inputs)","Use react-hook-form or useRef for uncontrolled inputs",Performance,Forms
+AI_ERR_008,Visual,Pseudo-Transparency Contrast,Using opacity on text backgrounds without checking image contrast.,"bg-black bg-opacity-50","backdrop-filter: blur(4px) brightness(0.5)",Accessibility,Hero Sections
+AI_ERR_009,Accessibility,Focus Outline Removal,Removing focus ring without replacement.,"outline-none","outline-none focus-visible:ring-2",Critical,Navigation
+AI_ERR_010,Tailwind,Arbitrary Value Spacing,Missing underscore for spaces in calc().,"w-[calc(100%-20px)]","w-[calc(100%_-_20px)]",High,Layout
+AI_ERR_011,React,Missing Dependency,Omitting variables used in useEffect from dependency array.,"useEffect(() => { log(prop) },)","useEffect(() => { log(prop) }, [prop])",Medium,Hooks
+AI_ERR_012,DOM,Invalid Nesting,Nesting interactive elements illegally.,"<a href=""...""><button>...</button></a>","Use styled span or adjust hierarchy",High,HTML Semantics
+AI_ERR_013,Layout,VH Mobile Bug,Using vh units for full height on mobile.,"h-screen (defaulting to 100vh)","h-[100dvh] (dynamic viewport height)",Medium,Mobile Layout
+AI_ERR_014,State,Mutating State Directly,Modifying state object properties directly.,"state.value = 1; setState(state)","setState({...state, value: 1})",Critical,React State
+AI_ERR_015,Security,Target Blank Vulnerability,Opening new tab without rel=noopener.,"target=""_blank""","target=""_blank"" rel=""noopener noreferrer""",Medium,Links

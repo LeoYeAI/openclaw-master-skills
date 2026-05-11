@@ -1,0 +1,48 @@
+{
+  "skill_name": "fiesta-agents",
+  "status": "complete",
+  "current_experiment": 3,
+  "baseline_score": 76.0,
+  "best_score": 100.0,
+  "experiments": [
+    {
+      "id": 0,
+      "score": 19,
+      "max_score": 25,
+      "pass_rate": 76.0,
+      "status": "baseline",
+      "description": "original skill — no changes"
+    },
+    {
+      "id": 1,
+      "score": 22,
+      "max_score": 25,
+      "pass_rate": 88.0,
+      "status": "keep",
+      "description": "added Proactive Execution — NEVER-ask rule with anti-patterns"
+    },
+    {
+      "id": 2,
+      "score": 23,
+      "max_score": 25,
+      "pass_rate": 92.0,
+      "status": "keep",
+      "description": "mandated Recommendations: 3+ numbered actionable steps with verbs"
+    },
+    {
+      "id": 3,
+      "score": 25,
+      "max_score": 25,
+      "pass_rate": 100.0,
+      "status": "keep",
+      "description": "unified both output templates — Deliverables first, removed contradiction"
+    }
+  ],
+  "eval_breakdown": [
+    {"name": "E1 Autograph compliance", "pass_count": 5, "total": 5},
+    {"name": "E2 Deliverable-first", "pass_count": 5, "total": 5},
+    {"name": "E3 No clarification requests", "pass_count": 5, "total": 5},
+    {"name": "E4 Self-verify (Quality Check)", "pass_count": 5, "total": 5},
+    {"name": "E5 Actionable next steps", "pass_count": 5, "total": 5}
+  ]
+}

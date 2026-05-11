@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{USER_NAME}}'s Laylatul Qadr Dua Book - Ramadan {{YEAR}}</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Inter:wght@300;400;600;700&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        :root {
+            --primary-green: #0D7C66;
+            --gold-accent: #D4AF37;
+            --dark-text: #1A1A1A;
+            --light-bg: #F8F6F1;
+            --white: #FFFFFF;
+            --arabic-font: 'Amiri', serif;
+            --english-font: 'Inter', sans-serif;
+        }
+        
+        body {
+            font-family: var(--english-font);
+            line-height: 1.8;
+            color: var(--dark-text);
+            background: var(--light-bg);
+            padding: 2rem;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: var(--white);
+            padding: 3rem;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+            border-radius: 12px;
+        }
+        
+        /* Cover Page */
+        .cover {
+            text-align: center;
+            padding: 4rem 2rem;
+            border-bottom: 3px solid var(--gold-accent);
+            margin-bottom: 3rem;
+            page-break-after: always;
+        }
+        
+        .cover h1 {
+            font-size: 2.5rem;
+            color: var(--primary-green);
+            margin-bottom: 1rem;
+            font-weight: 700;
+        }
+        
+        .cover .subtitle {
+            font-size: 1.2rem;
+            color: var(--dark-text);
+            margin-bottom: 2rem;
+            font-weight: 300;
+        }
+        
+        .cover .ayah {
+            font-family: var(--arabic-font);
+            font-size: 1.8rem;
+            color: var(--primary-green);
+            margin: 2rem 0;
+            line-height: 2.5;
+            direction: rtl;
+        }
+        
+        .cover .ayah-translation {
+            font-size: 1rem;
+            font-style: italic;
+            color: #666;
+            margin-top: 1rem;
+        }
+        
+        .cover .personalization {
+            margin-top: 3rem;
+            padding: 1.5rem;
+            background: var(--light-bg);
+            border-radius: 8px;
+            font-size: 0.95rem;
+        }
+        
+        /* Table of Contents */
+        .toc {
+            margin: 2rem 0;
+            page-break-after: always;
+        }
+        
+        .toc h2 {
+            font-size: 2rem;
+            color: var(--primary-green);
+            margin-bottom: 1.5rem;
+            border-bottom: 2px solid var(--gold-accent);
+            padding-bottom: 0.5rem;
+        }
+        
+        .toc ul {
+            list-style: none;
+        }
+        
+        .toc li {
+            padding: 0.75rem 0;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+        }
+        
+        .toc li:hover {
+            background: var(--light-bg);
+            padding-left: 1rem;
+            transition: all 0.3s;
+        }
+        
+        .toc .page-number {
+            color: var(--gold-accent);
+            font-weight: 600;
+        }
+        
+        /* Section Headers */
+        .section {
+            margin: 3rem 0;
+            page-break-before: always;
+        }
+        
+        .section-header {
+            background: linear-gradient(135deg, var(--primary-green), #0a5c4d);
+            color: var(--white);
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin-bottom: 2rem;
+        }
+        
+        .section-header h2 {
+            font-size: 1.8rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .section-header p {
+            font-size: 0.95rem;
+            opacity: 0.9;
+        }
+        
+        /* Individual Dua Cards */
+        .dua-card {
+            margin: 2rem 0;
+            padding: 2rem;
+            background: var(--white);
+            border: 2px solid var(--light-bg);
+            border-radius: 12px;
+            transition: all 0.3s;
+            page-break-inside: avoid;
+        }
+        
+        .dua-card:hover {
+            border-color: var(--gold-accent);
+            box-shadow: 0 5px 20px rgba(13, 124, 102, 0.1);
+        }
+        
+        .dua-number {
+            display: inline-block;
+            background: var(--primary-green);
+            color: var(--white);
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 35px;
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+        
+        .dua-title {
+            font-size: 1.3rem;
+            color: var(--primary-green);
+            margin-bottom: 1rem;
+            font-weight: 600;
+        }
+        
+        .dua-arabic {
+            font-family: var(--arabic-font);
+            font-size: 1.8rem;
+            line-height: 2.5;
+            text-align: right;
+            direction: rtl;
+            color: var(--dark-text);
+            margin: 1.5rem 0;
+            padding: 1.5rem;
+            background: var(--light-bg);
+            border-right: 4px solid var(--gold-accent);
+            border-radius: 4px;
+        }
+        
+        .dua-transliteration {
+            font-size: 1.05rem;
+            font-style: italic;
+            color: #555;
+            margin: 1rem 0;
+            padding: 1rem;
+            background: #f9f9f9;
+            border-radius: 4px;
+        }
+        
+        .dua-translation {
+            font-size: 1.1rem;
+            color: var(--dark-text);
+            margin: 1rem 0;
+            line-height: 1.8;
+        }
+        
+        .dua-source {
+            display: inline-block;
+            background: var(--gold-accent);
+            color: var(--white);
+            padding: 0.4rem 1rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            margin: 1rem 0;
+            font-weight: 600;
+        }
+        
+        .dua-note {
+            background: #fff9e6;
+            border-left: 4px solid var(--gold-accent);
+            padding: 1rem;
+            margin-top: 1rem;
+            border-radius: 4px;
+            font-size: 0.95rem;
+        }
+        
+        .dua-note strong {
+            color: var(--primary-green);
+        }
+        
+        /* Personal Dua Section */
+        .personal-dua {
+            background: linear-gradient(135deg, #f5f5f5, #e8e8e8);
+            padding: 2rem;
+            border-radius: 12px;
+            margin: 2rem 0;
+            border: 2px dashed var(--primary-green);
+        }
+        
+        .personal-dua h3 {
+            color: var(--primary-green);
+            margin-bottom: 1rem;
+        }
+        
+        .personal-dua textarea {
+            width: 100%;
+            min-height: 150px;
+            padding: 1rem;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-family: var(--english-font);
+            font-size: 1rem;
+            line-height: 1.6;
+        }
+        
+        /* Checkbox Lists */
+        .checklist {
+            margin: 1.5rem 0;
+        }
+        
+        .checklist-item {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem;
+            margin: 0.5rem 0;
+            background: var(--white);
+            border-radius: 8px;
+            border: 1px solid #eee;
+            transition: all 0.3s;
+        }
+        
+        .checklist-item:hover {
+            background: var(--light-bg);
+        }
+        
+        .checklist-item input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            margin-right: 1rem;
+            cursor: pointer;
+        }
+        
+        /* Night-Specific Markers */
+        .night-marker {
+            display: inline-block;
+            background: var(--primary-green);
+            color: var(--white);
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            margin: 0.5rem 0.5rem 0.5rem 0;
+            font-weight: 600;
+        }
+        
+        .night-marker.odd {
+            background: var(--gold-accent);
+        }
+        
+        /* Print Styles */
+        @media print {
+            body {
+                padding: 0;
+                background: white;
+            }
+            
+            .container {
+                box-shadow: none;
+                padding: 1rem;
+            }
+            
+            .section {
+                page-break-before: always;
+            }
+            
+            .dua-card {
+                page-break-inside: avoid;
+                border: 1px solid #ddd;
+            }
+            
+            .no-print {
+                display: none;
+            }
+        }
+        
+        /* Utility Classes */
+        .text-center { text-align: center; }
+        .mt-2 { margin-top: 2rem; }
+        .mb-2 { margin-bottom: 2rem; }
+        .p-1 { padding: 1rem; }
+        
+        .bismillah {
+            font-family: var(--arabic-font);
+            font-size: 2rem;
+            text-align: center;
+            color: var(--primary-green);
+            margin: 2rem 0;
+            direction: rtl;
+        }
+        
+        .footer {
+            text-align: center;
+            padding: 2rem;
+            margin-top: 3rem;
+            border-top: 2px solid var(--gold-accent);
+            color: #666;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Cover Page -->
+        <div class="cover">
+            <div class="bismillah">بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ</div>
+            <h1>Laylatul Qadr</h1>
+            <div class="subtitle">Your Personal Dua Companion</div>
+            <div class="subtitle">for the Blessed Last Ten Nights</div>
+            
+            <div class="ayah">
+                إِنَّا أَنزَلْنَاهُ فِي لَيْلَةِ الْقَدْرِ<br>
+                وَمَا أَدْرَاكَ مَا لَيْلَةُ الْقَدْرِ<br>
+                لَيْلَةُ الْقَدْرِ خَيْرٌ مِّنْ أَلْفِ شَهْرٍ
+            </div>
+            <div class="ayah-translation">
+                "Indeed, We sent it down during the Night of Decree.<br>
+                And what can make you know what is the Night of Decree?<br>
+                The Night of Decree is better than a thousand months."<br>
+                <em>(Quran 97:1-3)</em>
+            </div>
+            
+            <div class="personalization">
+                <strong>Prepared for:</strong> {{USER_NAME}}<br>
+                <strong>Ramadan:</strong> {{HIJRI_YEAR}} / {{GREGORIAN_YEAR}}<br>
+                <strong>Location:</strong> {{USER_LOCATION}}<br>
+                <strong>Created:</strong> {{CREATION_DATE}}
+            </div>
+        </div>
+        
+        <!-- Table of Contents -->
+        <div class="toc">
+            <h2>Table of Contents</h2>
+            <ul>
+                <li><span>The Core Laylatul Qadr Dua</span> <span class="page-number">3</span></li>
+                <li><span>Opening Duas (Praising Allah)</span> <span class="page-number">4</span></li>
+                <li><span>Duas for Forgiveness</span> <span class="page-number">6</span></li>
+                <li><span>Prophetic Night Prayers</span> <span class="page-number">8</span></li>
+                <li><span>Duas from the Quran</span> <span class="page-number">10</span></li>
+                <li><span>Your Personal Duas</span> <span class="page-number">13</span></li>
+                <li><span>Closing Duas</span> <span class="page-number">15</span></li>
+                <li><span>Nightly Dua Checklist</span> <span class="page-number">16</span></li>
+            </ul>
+        </div>
+        
+        <!-- Section 1: Core Dua -->
+        <div class="section">
+            <div class="section-header">
+                <h2>The Core Laylatul Qadr Dua</h2>
+                <p>Taught by the Prophet ﷺ specifically for this blessed night</p>
+            </div>
+            
+            <div class="dua-card">
+                <div class="dua-number">1</div>
+                <div class="dua-title">The Dua of 'Afw (Pardon)</div>
+                
+                <div class="dua-arabic">
+                    اللَّهُمَّ إِنَّكَ عَفُوٌّ كَرِيمٌ تُحِبُّ الْعَفْوَ فَاعْفُ عَنِّي
+                </div>
+                
+                <div class="dua-transliteration">
+                    Allahumma innaka 'afuwwun kareemun tuhibbul 'afwa fa'fu 'anni
+                </div>
+                
+                <div class="dua-translation">
+                    O Allah, You are Pardoning and Generous. You love to pardon, so pardon me.
+                </div>
+                
+                <div class="dua-source">Tirmidhi 3513 - Sahih</div>
+                
+                <div class="dua-note">
+                    <strong>When to say:</strong> Repeat 100+ times during tahajjud, especially in sujud (prostration)<br>
+                    <strong>Context:</strong> 'Aisha RA asked the Prophet ﷺ: "If I know which night is Laylatul Qadr, what should I say?" This was his response.<br>
+                    <strong>Personalize it:</strong> Add "wa 'an walidayya" (and my parents) or "wa 'an jami'il muslimeen" (and all Muslims)
+                </div>
+                
+                <div class="night-marker odd">Say on ALL Nights</div>
+                <div class="night-marker odd">Especially Nights 21, 23, 25, 27, 29</div>
+            </div>
+        </div>
+        
+        <!-- Section 2: Opening Duas -->
+        <div class="section">
+            <div class="section-header">
+                <h2>Opening Duas</h2>
+                <p>Begin your dua session with praising and glorifying Allah ﷻ</p>
+            </div>
+            
+            <!-- Dua 2 -->
+            <div class="dua-card">
+                <div class="dua-number">2</div>
+                <div class="dua-title">Al-Hamd (The Praise)</div>
+                
+                <div class="dua-arabic">
+                    الْحَمْدُ لِلَّهِ رَبِّ الْعَالَمِينَ<br>
+                    الرَّحْمَٰنِ الرَّحِيمِ<br>
+                    مَالِكِ يَوْمِ الدِّينِ
+                </div>
+                
+                <div class="dua-transliteration">
+                    Alhamdu lillahi rabbil 'alamin<br>
+                    Ar-Rahman ar-Raheem<br>
+                    Maliki yawmid-deen
+                </div>
+                
+                <div class="dua-translation">
+                    All praise is due to Allah, Lord of all the worlds,<br>
+                    The Most Compassionate, the Most Merciful,<br>
+                    Master of the Day of Judgment.
+                </div>
+                
+                <div class="dua-source">Quran 1:2-4</div>
+            </div>
+            
+            <!-- Continue with more duas... -->
+            {{ADDITIONAL_DUAS}}
+        </div>
+        
+        <!-- Personal Duas Section -->
+        <div class="section">
+            <div class="section-header">
+                <h2>Your Personal Duas</h2>
+                <p>Make dua in your own words - Allah understands all languages</p>
+            </div>
+            
+            <div class="personal-dua">
+                <h3>For My Iman (Faith)</h3>
+                <p>{{PERSONAL_FAITH_DUA}}</p>
+            </div>
+            
+            <div class="personal-dua">
+                <h3>For My Family</h3>
+                <p>{{PERSONAL_FAMILY_DUA}}</p>
+            </div>
+            
+            <div class="personal-dua">
+                <h3>For My Career/Studies</h3>
+                <p>{{PERSONAL_CAREER_DUA}}</p>
+            </div>
+            
+            <div class="personal-dua">
+                <h3>For the Ummah</h3>
+                <p>{{PERSONAL_UMMAH_DUA}}</p>
+            </div>
+            
+            <div class="personal-dua">
+                <h3>My Deepest Hope</h3>
+                <textarea placeholder="Write your most sincere dua here..."></textarea>
+            </div>
+        </div>
+        
+        <!-- Nightly Checklist -->
+        <div class="section">
+            <div class="section-header">
+                <h2>Nightly Dua Checklist</h2>
+                <p>Track your progress each night</p>
+            </div>
+            
+            <div class="checklist">
+                <h3>Night 21</h3>
+                <div class="checklist-item">
+                    <input type="checkbox" id="n21-core">
+                    <label for="n21-core">Said core Laylatul Qadr dua (100x)</label>
+                </div>
+                <div class="checklist-item">
+                    <input type="checkbox" id="n21-sayyid">
+                    <label for="n21-sayyid">Sayyidul Istighfar (morning & night)</label>
+                </div>
+                <div class="checklist-item">
+                    <input type="checkbox" id="n21-personal">
+                    <label for="n21-personal">Completed personal duas section</label>
+                </div>
+                <div class="checklist-item">
+                    <input type="checkbox" id="n21-parents">
+                    <label for="n21-parents">Made dua for parents</label>
+                </div>
+                <div class="checklist-item">
+                    <input type="checkbox" id="n21-ummah">
+                    <label for="n21-ummah">Made dua for ummah</label>
+                </div>
+            </div>
+            
+            <!-- Repeat for other nights -->
+            <div class="checklist mt-2">
+                <h3>Night 23</h3>
+                <!-- Similar structure -->
+            </div>
+            
+            {{ADDITIONAL_NIGHT_CHECKLISTS}}
+        </div>
+        
+        <!-- Footer -->
+        <div class="footer">
+            <p><em>"And when My servants ask you concerning Me, indeed I am near. I respond to the invocation of the supplicant when he calls upon Me."</em></p>
+            <p><strong>(Quran 2:186)</strong></p>
+            <p class="mt-2">May Allah accept your duas and grant you the full blessing of Laylatul Qadr. Ameen.</p>
+        </div>
+    </div>
+    
+    <script>
+        // Save checkbox states to localStorage
+        document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
+            checkbox.addEventListener('change', function() {
+                localStorage.setItem(this.id, this.checked);
+            });
+            
+            // Load saved state
+            const saved = localStorage.getItem(checkbox.id);
+            if (saved === 'true') checkbox.checked = true;
+        });
+        
+        // Print button functionality
+        function printDuaBook() {
+            window.print();
+        }
+    </script>
+</body>
+</html>

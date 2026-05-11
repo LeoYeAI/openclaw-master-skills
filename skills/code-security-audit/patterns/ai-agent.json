@@ -1,0 +1,320 @@
+{
+  "ai_agent_security": {
+    "version": "1.0.0",
+    "description": "Security patterns for AI Agent applications, inspired by Lobstar Wilde incident (Feb 2026)"
+  },
+  "numeric_risks": {
+    "precision_loss": {
+      "patterns": [
+        "parseFloat\\s*\\([^)]+\\)\\s*[+\\-*/]",
+        "parseInt\\s*\\([^)]+\\)\\s*[+\\-*/]",
+        "Number\\s*\\([^)]+\\)\\s*[+\\-*/]",
+        "parseFloat\\s*\\(.*amount",
+        "parseFloat\\s*\\(.*balance",
+        "parseFloat\\s*\\(.*price",
+        "parseInt\\s*\\(.*amount",
+        "Number\\s*\\(.*amount"
+      ],
+      "severity": "high",
+      "description": "Potential floating-point precision loss in numeric operations",
+      "recommendation": "Use BigInt, BigNumber, or integer-based calculations for financial values"
+    },
+    "unit_confusion": {
+      "patterns": [
+        "wei\\s*\\*\\s*1e18",
+        "lamports\\s*\\*\\s*1e9",
+        "eth\\s*\\*\\s*1e18",
+        "sol\\s*\\*\\s*1e9",
+        "\\*\\s*10\\s*\\*\\s*\\*\\s*18",
+        "\\*\\s*1000000000000000000",
+        "LAMPORTS_PER_SOL\\s*\\*",
+        "WEI_PER_ETH\\s*\\*"
+      ],
+      "severity": "high",
+      "description": "Manual unit conversion - potential precision loss or confusion",
+      "recommendation": "Use library functions (toWei, parseEther) instead of manual multiplication"
+    },
+    "hardcoded_large_amounts": {
+      "patterns": [
+        "amount\\s*[:=]\\s*[0-9]{7,}",
+        "value\\s*[:=]\\s*[0-9]{7,}",
+        "quantity\\s*[:=]\\s*[0-9]{7,}",
+        "transfer\\s*\\([^,]+,\\s*[0-9]{7,}",
+        "send\\s*\\([^,]+,\\s*[0-9]{7,}"
+      ],
+      "severity": "medium",
+      "description": "Hardcoded large amounts in code - potential error or attack vector",
+      "recommendation": "Never hardcode amounts; use configuration or validated input"
+    },
+    "missing_amount_validation": {
+      "patterns": [
+        "function\\s+transfer\\s*\\([^)]*\\)\\s*\\{(?![^}]*require|[^}]*if\\s*\\(\\s*amount)",
+        "function\\s+withdraw\\s*\\([^)]*\\)\\s*\\{(?![^}]*require|[^}]*if\\s*\\(\\s*amount)",
+        "function\\s+send\\s*\\([^)]*\\)\\s*\\{(?![^}]*require|[^}]*if\\s*\\(\\s*amount)",
+        "\\.transfer\\s*\\([^)]+\\)\\s*;",
+        "\\.send\\s*\\([^)]+\\)\\s*;",
+        "\\.withdraw\\s*\\([^)]+\\)\\s*;"
+      ],
+      "severity": "critical",
+      "description": "Transfer/withdraw/send without visible amount validation",
+      "recommendation": "Always validate amount > 0, amount <= max_limit, amount <= balance"
+    }
+  },
+  "prompt_injection": {
+    "ignore_instructions": {
+      "patterns": [
+        "ignore.{0,30}(previous|all|above|prior).{0,30}(instruction|prompt|rule|directive)",
+        "disregard.{0,30}(all|any|previous|prior).{0,30}(instruction|rule|directive)",
+        "forget.{0,30}(everything|all|previous|prior).{0,30}(instruction|rule)",
+        "skip.{0,30}(all|any|previous).{0,30}(instruction|rule)",
+        "override.{0,30}(previous|all|default).{0,30}(instruction|rule|setting)",
+        "\\[SYSTEM\\].*ignore",
+        "忽略.{0,20}(之前|所有|上述|全部).{0,20}(指令|规则|提示)",
+        "忘记.{0,20}(之前|所有|上述)"
+      ],
+      "severity": "critical",
+      "description": "Prompt injection pattern - attempting to bypass instructions",
+      "recommendation": "Implement input sanitization and instruction isolation"
+    },
+    "role_manipulation": {
+      "patterns": [
+        "you\\s+are\\s+now\\s+(a|an)\\s+",
+        "act\\s+as\\s+(if|though|a|an)\\s+",
+        "pretend\\s+(to\\s+be|that)\\s+",
+        "roleplay\\s+as\\s+",
+        "simulate\\s+being\\s+",
+        "从现在开始.{0,20}你是",
+        "假装.{0,20}你是",
+        "扮演.{0,20}角色"
+      ],
+      "severity": "high",
+      "description": "Role manipulation attempt in prompt",
+      "recommendation": "Use system prompt isolation and role boundaries"
+    },
+    "financial_manipulation": {
+      "patterns": [
+        "transfer.{0,50}(all|everything|entire|maximum|max)",
+        "send.{0,50}(all|everything|maximum|max)",
+        "withdraw.{0,50}(all|everything|maximum|max)",
+        "move.{0,50}(all|everything).{0,30}(to|into)",
+        "empty.{0,30}(wallet|account|balance)",
+        "转(出|移).{0,20}(所有|全部|一切)",
+        "提取.{0,20}(所有|全部)",
+        "清空.{0,20}(钱包|账户|余额)"
+      ],
+      "severity": "critical",
+      "description": "Financial manipulation via prompt - attempting to drain funds",
+      "recommendation": "Never allow AI to transfer 'all' without explicit human confirmation"
+    },
+    "data_exfiltration": {
+      "patterns": [
+        "print.{0,30}(private|secret|key|password|token)",
+        "show.{0,30}(private|secret|key|password|token)",
+        "reveal.{0,30}(private|secret|key|password|token)",
+        "display.{0,30}(private|secret|key|password|token)",
+        "output.{0,30}(private|secret|key|password|token)",
+        "显示.{0,20}(私钥|密钥|密码|秘密)",
+        "输出.{0,20}(私钥|密钥|密码)"
+      ],
+      "severity": "critical",
+      "description": "Attempt to extract sensitive data via prompt",
+      "recommendation": "Never output secrets in AI responses; use secure storage"
+    }
+  },
+  "crypto_wallet": {
+    "mnemonic_exposure": {
+      "patterns": [
+        "(mnemonic|seed|recovery).{0,100}\\b(\\w+\\s+){11}\\w+\\b",
+        "word\\s*[:=]\\s*['\"](abandon|ability|able|about|above)[^'\"]*['\"]",
+        "12\\s*words?",
+        "24\\s*words?",
+        "助记词\\s*[:=]",
+        "seed phrase\\s*[:=]",
+        "mnemonic\\s*[:=]\\s*['\"]"
+      ],
+      "severity": "critical",
+      "description": "Potential mnemonic/seed phrase exposure",
+      "recommendation": "Never store mnemonics in code; use secure key management"
+    },
+    "private_key_handling": {
+      "patterns": [
+        "privateKey\\s*[:=]",
+        "secretKey\\s*[:=]",
+        "PRIVATE_KEY\\s*=",
+        "SECRET_KEY\\s*=",
+        "keypair\\s*[:=]",
+        "fromPrivateKey\\s*\\(",
+        "private_key\\s*[:=]",
+        "\\[\\s*[0-9]{1,3}(,\\s*[0-9]{1,3}){31,}\\s*\\]"
+      ],
+      "severity": "critical",
+      "description": "Private key handling in code",
+      "recommendation": "Use environment variables or secure vault; never hardcode private keys"
+    },
+    "ethereum_private_key": {
+      "pattern": "[a-fA-F0-9]{64}",
+      "context_patterns": [
+        "private",
+        "key",
+        "wallet",
+        "eth",
+        "ethereum"
+      ],
+      "severity": "critical",
+      "description": "Potential Ethereum private key (64 hex characters)",
+      "recommendation": "This looks like a private key; verify it's not a real key"
+    },
+    "wallet_address_in_code": {
+      "patterns": [
+        "recipient\\s*[:=]\\s*['\"]0x[a-fA-F0-9]{40}['\"]",
+        "to\\s*[:=]\\s*['\"]0x[a-fA-F0-9]{40}['\"]",
+        "address\\s*[:=]\\s*['\"]0x[a-fA-F0-9]{40}['\"]",
+        "destination\\s*[:=]\\s*['\"]0x[a-fA-F0-9]{40}['\"]"
+      ],
+      "exclude_patterns": [
+        "0x0000000000000000000000000000000000000000",
+        "0xdead",
+        "constant",
+        "CONSTANT",
+        "test",
+        "TEST"
+      ],
+      "severity": "medium",
+      "description": "Hardcoded recipient wallet address - potential risk",
+      "recommendation": "Avoid hardcoding recipient addresses; use configuration or whitelist"
+    },
+    "unsafe_signing": {
+      "patterns": [
+        "signTransaction\\s*\\(\\s*\\{[^}]*\\}\\s*\\)\\s*;(?!.*verify\|.*validate\|.*confirm)",
+        "await\\s+wallet\\.signTransaction\\s*\\(\\s*\\{",
+        "await\\s+signer\\.sendTransaction\\s*\\(\\s*\\{",
+        "wallet\\.sign\\s*\\(\\s*\\{[^}]*(amount|value|to)[^}]*\\}",
+        "signer\\.sign\\s*\\(\\s*\\{[^}]*(amount|value|to)[^}]*\\}"
+      ],
+      "exclude_patterns": [
+        "verify",
+        "validate",
+        "confirm",
+        "check",
+        "require"
+      ],
+      "severity": "high",
+      "description": "Transaction signing without visible validation",
+      "recommendation": "Always validate transaction details (to, amount, data) before signing"
+    }
+  },
+  "permission_control": {
+    "excessive_permissions": {
+      "patterns": [
+        "approve\\s*\\(\\s*[^,]+,\\s*MAX_UINT",
+        "approve\\s*\\(\\s*[^,]+,\\s*115792089237316195423570985008687907853269984665640564039457",
+        "setApprovalForAll\\s*\\(\\s*[^,]+,\\s*true",
+        "permit\\s*\\(\\s*[^)]*\\)\\s*;",
+        "grantPermissions\\s*\\(\\s*[^)]*\\)\\s*;"
+      ],
+      "severity": "critical",
+      "description": "Excessive permissions granted - potential security risk",
+      "recommendation": "Use minimal approval amounts; avoid approve(MAX_UINT)"
+    },
+    "unlimited_allowance": {
+      "patterns": [
+        "allowance\\s*[:=]\\s*[-]?1",
+        "amount\\s*[:=]\\s*Infinity",
+        "limit\\s*[:=]\\s*Infinity",
+        "maxAmount\\s*[:=]\\s*Infinity",
+        "unlimited\\s*[:=]\\s*true"
+      ],
+      "severity": "high",
+      "description": "Unlimited allowance or amount - risk of draining funds",
+      "recommendation": "Set explicit limits on all financial operations"
+    },
+    "missing_approval_mechanism": {
+      "patterns": [
+        "function\\s+executeTransfer",
+        "function\\s+processPayment",
+        "function\\s+sendFunds",
+        "function\\s+withdrawFunds"
+      ],
+      "exclude_patterns": [
+        "requireApproval",
+        "needApproval",
+        "checkApproval",
+        "getApproval",
+        "confirm",
+        "verify"
+      ],
+      "severity": "high",
+      "description": "Financial function without visible approval mechanism",
+      "recommendation": "Implement human-in-the-loop for high-value operations"
+    }
+  },
+  "api_security": {
+    "unvalidated_api_response": {
+      "patterns": [
+        "response\\.(data|result)\\s*\\.",
+        "await\\s+response\\.json\\(\\)\\s*[;\\n]",
+        "JSON\\.parse\\s*\\([^)]+\\)\\s*[;\\n]",
+        "data\\.(amount|balance|value|price)"
+      ],
+      "exclude_patterns": [
+        "validate",
+        "check",
+        "verify",
+        "schema",
+        "zod",
+        "joi",
+        "yup"
+      ],
+      "severity": "medium",
+      "description": "API response used without visible validation",
+      "recommendation": "Always validate API responses with schema before use"
+    },
+    "missing_error_handling": {
+      "patterns": [
+        "fetch\\s*\\([^)]+\\)\\s*\\.then\\s*\\(\\s*\\(",
+        "axios\\.[a-z]+\\s*\\([^)]+\\)\\s*$",
+        "await\\s+fetch\\s*\\([^)]+\\)[^;]*$"
+      ],
+      "severity": "medium",
+      "description": "API call without visible error handling",
+      "recommendation": "Always handle API errors and edge cases"
+    }
+  },
+  "exclusions": {
+    "paths": [
+      "node_modules",
+      ".git",
+      "__pycache__",
+      "vendor",
+      "dist",
+      "build",
+      ".next",
+      "coverage"
+    ],
+    "file_patterns": [
+      "*.test.*",
+      "*.spec.*",
+      "*.mock.*",
+      "*_test.*",
+      "*_spec.*",
+      "test/*",
+      "tests/*",
+      "__tests__/*",
+      "*.stories.*"
+    ],
+    "content_patterns": [
+      "placeholder",
+      "example",
+      "your_",
+      "YOUR_",
+      "xxxx",
+      "XXXX",
+      "changeme",
+      "dummy",
+      "sample",
+      "test_only",
+      "mock",
+      "fake"
+    ]
+  }
+}

@@ -1,0 +1,67 @@
+{
+  "name": "saas-admin",
+  "label": "SaaS 管理后台",
+  "labelEn": "SaaS Admin",
+  "description": "多租户 SaaS 管理后台：用户管理、RBAC 权限、运营统计、审计日志",
+  "modules": ["auth", "admin"],
+  "stackModules": ["admin"],
+  "layer1": {
+    "auth": true,
+    "admin": true,
+    "cart": false,
+    "payment": false,
+    "orders": false,
+    "aiChat": false
+  },
+  "layer2": {
+    "notification": true,
+    "seo": false,
+    "analytics": true,
+    "i18n": false
+  },
+  "dependencies": {
+    "npm": ["bcryptjs", "jsonwebtoken", "mysql2"],
+    "edgeone": {
+      "kv": true,
+      "cloudFunctions": true
+    }
+  },
+  "envVars": [
+    "JWT_PRIVATE_KEY",
+    "JWT_PUBLIC_KEY",
+    "JWT_SECRET",
+    "DATABASE_URL",
+    "EDGE_BASE"
+  ],
+  "features": [
+    "多角色 RBAC（admin / manager / user）",
+    "用户 CRUD",
+    "权限管理",
+    "运营统计面板",
+    "审计日志",
+    "多租户隔离（租户前缀 KV key）"
+  ],
+  "pages": [
+    "/login",
+    "/admin/dashboard",
+    "/admin/users",
+    "/admin/roles",
+    "/admin/audit",
+    "/admin/settings"
+  ],
+  "rbacMatrix": {
+    "admin": ["users:read", "users:write", "users:delete", "roles:manage", "audit:read", "stats:read", "settings:manage"],
+    "manager": ["users:read", "stats:read"],
+    "user": ["profile:read", "profile:write"]
+  },
+  "securityChecks": [
+    "bcrypt cost=12",
+    "JWT RS256 + 30天 HS256 兼容窗口",
+    "JWT 15min AT + RT 7d 轮换",
+    "Cookie HttpOnly + Secure + SameSite=Strict",
+    "RBAC 中间件校验",
+    "审计日志写入",
+    "CSP Header",
+    "多租户 KV key 隔离"
+  ]
+}

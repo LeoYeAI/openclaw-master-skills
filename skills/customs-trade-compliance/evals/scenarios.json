@@ -1,0 +1,1570 @@
+{
+  "capability": "customs-trade-compliance",
+  "version": "1.0.0",
+  "scenarios": [
+    {
+      "id": "CTC-001",
+      "name": "Standard tariff classification of a consumer electronics product",
+      "difficulty": "easy",
+      "category": "tariff-classification",
+      "context": {
+        "situation": "Your company is importing 5,000 units of a portable Bluetooth speaker (model SoundWave 360) from a manufacturer in Shenzhen, China. The speaker weighs 450g, has a built-in rechargeable lithium battery, connects via Bluetooth 5.3, includes a 3.5mm aux input, and has a waterproof rating of IPX7. It has no other function — no voice assistant, no radio, no speakerphone capability. The unit cost is $18.50 FOB Shenzhen. Your customs broker has asked for classification instructions.",
+        "available_data": {
+          "product": "Portable Bluetooth speaker (SoundWave 360)",
+          "manufacturer": "Shenzhen AudioTech Co., Ltd",
+          "country_of_origin": "China",
+          "unit_cost_fob": 18.50,
+          "currency": "USD",
+          "quantity": 5000,
+          "total_value_fob": 92500,
+          "weight_per_unit_g": 450,
+          "material_composition": "ABS plastic housing (60%), speaker driver (25%), lithium battery (10%), PCB/electronics (5%)",
+          "primary_function": "Sound reproduction via wireless Bluetooth connection",
+          "secondary_functions": "None — single-function speaker",
+          "destination_port": "Los Angeles/Long Beach",
+          "incoterm": "FOB Shenzhen"
+        }
+      },
+      "task": "Classify this product under the US Harmonized Tariff Schedule, explain your GRI analysis, and provide the duty rate. Also identify any additional duties (e.g., Section 301) that may apply given the country of origin.",
+      "evaluation_criteria": [
+        {
+          "criterion": "correct_classification",
+          "weight": 0.35,
+          "rubric": {
+            "pass": "Classifies under heading 8518 (loudspeakers) — specifically HTS 8518.22 (multiple loudspeakers mounted in the same enclosure) or 8518.29 (other loudspeakers). Explains that GRI 1 resolves classification because heading 8518 specifically covers loudspeakers, and the Bluetooth connectivity is the means of signal transmission, not a separate function. Notes that this is NOT an ADP machine (8471) because it fails the four criteria in Section XVI Note 5(A).",
+            "fail": "Classifies under 8527 (reception apparatus for radio) or 8471 (ADP machines) or 8519 (sound recording/reproducing). Does not apply GRI 1 first. Fails to distinguish between a speaker (8518) and a radio receiver (8527)."
+          }
+        },
+        {
+          "criterion": "duty_rate_and_additional_duties",
+          "weight": 0.30,
+          "rubric": {
+            "pass": "Identifies the MFN duty rate for the specific subheading (typically 4.9% for 8518.22 or free for 8518.29). Correctly identifies that Chinese-origin goods under heading 8518 are subject to Section 301 List 3 additional tariff of 25%. Calculates total effective duty rate. Notes that the duty base is the transaction value adjusted from FOB to include freight and insurance to the US port.",
+            "fail": "States only the MFN rate without mentioning Section 301. Gets the duty rate wrong. Does not mention that the customs value must be adjusted from FOB to include ocean freight and insurance for US entry."
+          }
+        },
+        {
+          "criterion": "classification_rationale",
+          "weight": 0.35,
+          "rubric": {
+            "pass": "Walks through GRI 1 systematically: identifies Chapter 85 as the relevant chapter, checks Section XVI notes (particularly Note 3 for composite machines — not applicable here because the speaker has a single function), confirms heading 8518 covers the product. Notes that the lithium battery and Bluetooth module are integral components, not separate articles. Mentions checking the CBP CROSS database for prior rulings on Bluetooth speakers.",
+            "fail": "Provides classification without explanation. Does not reference GRI. Does not check Section XVI notes. Treats the Bluetooth module or battery as creating a multi-function device requiring essential character analysis."
+          }
+        }
+      ]
+    },
+    {
+      "id": "CTC-002",
+      "name": "Selecting the correct Incoterm for a containerised ocean shipment",
+      "difficulty": "easy",
+      "category": "incoterms",
+      "context": {
+        "situation": "Your company is negotiating a purchase of industrial valves from a supplier in Hamburg, Germany. The shipment will move by ocean container (1×40' HC) from Hamburg to the Port of Houston. The supplier has proposed FOB Hamburg. Your logistics team has asked the trade compliance team to review the Incoterm selection. The total order value is €85,000. You need to advise on whether FOB is appropriate and what the customs valuation implications are.",
+        "available_data": {
+          "product": "Industrial stainless steel valves (various sizes)",
+          "supplier": "Hamburg Valve GmbH",
+          "origin": "Germany",
+          "destination": "Houston, TX warehouse",
+          "transport_mode": "Ocean container (1×40' HC)",
+          "proposed_incoterm": "FOB Hamburg",
+          "order_value_eur": 85000,
+          "ocean_freight_estimate_usd": 3200,
+          "marine_insurance_estimate_usd": 425,
+          "inland_freight_houston_to_warehouse_usd": 850,
+          "us_duty_rate": "2.0%",
+          "exchange_rate_eur_usd": 1.09
+        }
+      },
+      "task": "Advise on the Incoterm selection, explain why FOB may not be the best choice for containerised cargo, and calculate the US customs value under the proposed terms.",
+      "evaluation_criteria": [
+        {
+          "criterion": "incoterm_analysis",
+          "weight": 0.40,
+          "rubric": {
+            "pass": "Identifies that FOB is technically incorrect for containerised ocean freight under Incoterms 2020. Explains that FOB transfers risk at the ship's rail, but for containers, the goods are delivered to the container terminal before loading — the relevant risk transfer point is the container yard, not the ship's rail. Recommends FCA Hamburg (seller's obligation ends when goods are handed to the carrier at the named place) or CIF/CIP Houston depending on who should arrange freight and insurance.",
+            "fail": "Accepts FOB for containerised cargo without comment. Does not mention the Incoterms 2020 guidance that FOB, CFR, and CIF are intended for bulk/break-bulk cargo, not containers. Confuses risk transfer with cost transfer."
+          }
+        },
+        {
+          "criterion": "customs_valuation",
+          "weight": 0.35,
+          "rubric": {
+            "pass": "Correctly calculates the US customs value. Under FOB/FCA terms, the US customs value must include ocean freight and insurance (the US values on a CIF-equivalent basis — 19 CFR § 152.103). Calculation: €85,000 × 1.09 = $92,650 + $3,200 freight + $425 insurance = $96,275 customs value. Duty: $96,275 × 2.0% = $1,925.50. Notes that inland freight from Houston port to the warehouse is NOT included in customs value.",
+            "fail": "Uses the invoice value (€85,000 or $92,650) as the customs value without adding freight and insurance. Does not know that US customs values on a CIF-equivalent basis. Includes inland freight in the customs value."
+          }
+        },
+        {
+          "criterion": "practical_recommendation",
+          "weight": 0.25,
+          "rubric": {
+            "pass": "Provides a practical recommendation considering the business context. Notes that FCA with the buyer arranging freight gives the buyer more control over the shipping line, routing, and insurance coverage. Alternatively, CIP Houston shifts the freight arrangement to the seller — appropriate if the German supplier has better ocean freight rates. Mentions that CIP 2020 requires ICC(A) all-risks coverage, which may be more expensive than what the buyer would arrange independently.",
+            "fail": "Provides no practical recommendation. Does not consider who has better freight rates or more logistics capability. Does not mention the insurance requirements difference between CIF (ICC C minimum) and CIP (ICC A minimum) under Incoterms 2020."
+          }
+        }
+      ]
+    },
+    {
+      "id": "CTC-003",
+      "name": "Basic import documentation checklist for a first-time importer",
+      "difficulty": "easy",
+      "category": "documentation",
+      "context": {
+        "situation": "A small US company is importing goods for the first time — 200 cartons of ceramic dinnerware sets from a factory in Jingdezhen, China, valued at $28,000 CIF Los Angeles. The company has obtained an importer of record number but has never filed an entry before. They have engaged a customs broker and need to know what documents to provide. The shipment is arriving by ocean in 10 days.",
+        "available_data": {
+          "product": "Ceramic dinnerware sets (plates, bowls, mugs)",
+          "hs_code_expected": "6912.00 (ceramic tableware)",
+          "origin": "China",
+          "destination_port": "Los Angeles",
+          "incoterm": "CIF Los Angeles",
+          "declared_value_cif": 28000,
+          "cartons": 200,
+          "total_weight_kg": 4800,
+          "transport_mode": "Ocean FCL (1×20')",
+          "vessel_eta": "10 days from today",
+          "ior_number": "Obtained",
+          "customs_broker": "Engaged",
+          "first_time_importer": true,
+          "duty_rate": "9.8%",
+          "section_301_applicable": true,
+          "section_301_rate": "7.5%"
+        }
+      },
+      "task": "Provide a complete list of required documents for this import entry, explain the ISF filing requirement and its timeline, and identify any PGA (Partner Government Agency) requirements for ceramic dinnerware.",
+      "evaluation_criteria": [
+        {
+          "criterion": "document_list",
+          "weight": 0.35,
+          "rubric": {
+            "pass": "Lists all required documents: commercial invoice (conforming to 19 CFR § 141.86), packing list (carton count, weight, dimensions, marks/numbers), ocean bill of lading, entry summary (CBP 7501 — broker will prepare), customs bond (continuous or single-entry — first-time importers often need a single-entry bond until volume justifies a continuous bond), and arrival notice from the shipping line. Notes that the broker will need a power of attorney from the importer.",
+            "fail": "Misses critical documents (no mention of customs bond, no mention of ISF, no mention of power of attorney). Lists documents that are not required (e.g., export licence for uncontrolled consumer goods). Does not mention the commercial invoice requirements under 19 CFR § 141.86."
+          }
+        },
+        {
+          "criterion": "isf_requirements",
+          "weight": 0.30,
+          "rubric": {
+            "pass": "Explains the ISF 10+2 requirement: must be filed 24 hours BEFORE vessel loading at the foreign port (not 24 hours before arrival). Lists the 10 importer data elements (manufacturer name/address, seller, buyer, ship-to, country of origin, HS-6, container stuffing location, consolidator, IOR number, consignee number). Notes that late or inaccurate ISF triggers $5,000 liquidated damages per violation. With ETA in 10 days, the ISF may already need to be filed or filed very soon depending on when the vessel loads.",
+            "fail": "Says ISF is filed 24 hours before arrival (wrong — it's before loading at origin). Lists fewer than 5 of the 10 data elements. Does not mention the $5,000 penalty for late filing. Does not flag the urgency given the 10-day ETA."
+          }
+        },
+        {
+          "criterion": "pga_requirements",
+          "weight": 0.35,
+          "rubric": {
+            "pass": "Identifies FDA as the relevant PGA for ceramic tableware. Ceramicware is subject to FDA's lead and cadmium testing requirements (CPSC regulates children's products; FDA regulates food-contact ceramicware under 21 CFR § 109.16). Notes that FDA may detain ceramicware from China for testing — Chinese-origin ceramics have a higher detention rate. Advises obtaining a test report from an FDA-recognised lab showing compliance with lead/cadmium leaching limits before shipment arrives. Mentions that FDA prior notice may be required if the ceramicware is considered a 'food-contact surface.'",
+            "fail": "Does not mention FDA at all. Says 'no PGA requirements' for ceramicware. Confuses CPSC with FDA jurisdiction for food-contact ceramics. Does not mention lead/cadmium testing requirements."
+          }
+        }
+      ]
+    },
+    {
+      "id": "CTC-004",
+      "name": "Straightforward restricted party screening false positive adjudication",
+      "difficulty": "easy",
+      "category": "restricted-party-screening",
+      "context": {
+        "situation": "Your screening software has flagged a new customer order. The customer is 'Al-Hassan Trading Company, 47 Industrial Zone Road, Amman, Jordan.' The screening tool returned a 78% name match against 'AL-HASSAN, Ahmed Ibrahim,' an individual on the OFAC SDN list with a listed address in Damascus, Syria. The order is for $12,000 worth of industrial water filtration equipment (EAR99 — no export control classification). The customer has been in business since 2004, has a Jordanian commercial registration, and has purchased from your company twice before (2021, 2023) without issue.",
+        "available_data": {
+          "customer_name": "Al-Hassan Trading Company",
+          "customer_address": "47 Industrial Zone Road, Amman, Jordan",
+          "customer_type": "Established trading company, incorporated 2004",
+          "customer_registration": "Jordanian Ministry of Industry and Trade — Reg# JO-IND-2004-3847",
+          "prior_orders": ["2021-06: $8,500 (shipped without issue)", "2023-03: $11,200 (shipped without issue)"],
+          "screening_hit": {
+            "list": "OFAC SDN",
+            "listed_name": "AL-HASSAN, Ahmed Ibrahim",
+            "listed_address": "Damascus, Syria",
+            "listed_type": "Individual",
+            "match_score_percent": 78,
+            "match_type": "Partial name — surname match",
+            "listed_dob": "1972-03-15",
+            "listed_nationality": "Syrian"
+          },
+          "product": "Industrial water filtration equipment",
+          "eccn": "EAR99",
+          "order_value_usd": 12000
+        }
+      },
+      "task": "Adjudicate this screening hit. Determine whether it is a false positive or requires further investigation. Document your reasoning and disposition.",
+      "evaluation_criteria": [
+        {
+          "criterion": "adjudication_analysis",
+          "weight": 0.40,
+          "rubric": {
+            "pass": "Correctly identifies this as a likely false positive based on multiple distinguishing factors: (1) the screened entity is a company, the listed entity is an individual, (2) the address is Jordan vs Syria — different countries, (3) only a surname match at 78% — 'Al-Hassan' is an extremely common Arabic name, (4) the customer has a verifiable Jordanian business registration, (5) two prior clean transactions. Notes that 78% is below the typical threshold for serious concern (85%+). Documents all factors systematically.",
+            "fail": "Blocks the transaction based on the 78% match alone without analysing the distinguishing factors. Clears the transaction without documenting any analysis. Does not note the entity-type mismatch (company vs individual). Does not recognise that 'Al-Hassan' is an extremely common name in Arabic-speaking countries."
+          }
+        },
+        {
+          "criterion": "documentation_and_process",
+          "weight": 0.30,
+          "rubric": {
+            "pass": "Documents the adjudication with: screening tool and date, all parties screened, hit details, each distinguishing factor analysed, conclusion (false positive), and name/date of the adjudicator. Notes that the adjudication record must be retained for 5 years. Mentions that the disposition should be approved by a compliance officer or manager (not just the analyst who ran the screening).",
+            "fail": "Provides a verbal 'it's fine, proceed' without documentation. Does not mention record retention. Does not require supervisory approval of the false positive determination."
+          }
+        },
+        {
+          "criterion": "risk_awareness",
+          "weight": 0.30,
+          "rubric": {
+            "pass": "Despite concluding false positive, notes residual risk factors to monitor: Jordan borders Syria (geographic proximity), and the customer is a trading company (trading companies can be intermediaries for diversion). Recommends: verify the end use/end user if the product has any dual-use potential (water filtration equipment is generally benign but certain membrane technologies are controlled). Confirms EAR99 classification means no export licence requirement for Jordan.",
+            "fail": "Does not consider any residual risk. Does not mention Jordan's proximity to Syria as a factor worth noting. Does not verify the EAR99 classification. Over-reacts by blocking a clearly distinguishable false positive."
+          }
+        }
+      ]
+    },
+    {
+      "id": "CTC-005",
+      "name": "Calculating FTA duty savings under USMCA for an automotive component",
+      "difficulty": "easy",
+      "category": "fta-qualification",
+      "context": {
+        "situation": "Your company imports aluminium wheel rims from a Mexican manufacturer. The rims are cast and machined in Monterrey, Mexico. The aluminium alloy ingots used in production are sourced from a Canadian smelter (60% of material cost) and a Russian smelter (40% of material cost). The rims are classified under HTS 8708.70 (wheel parts and accessories for motor vehicles). You want to determine if these rims qualify for USMCA preferential treatment (duty-free) versus the MFN rate of 2.5%.",
+        "available_data": {
+          "product": "Cast aluminium wheel rims for passenger vehicles",
+          "hts_code": "8708.70",
+          "manufacturer": "Monterrey Wheels S.A. de C.V.",
+          "country_of_manufacture": "Mexico",
+          "unit_fob_price_usd": 95.00,
+          "annual_import_volume": 120000,
+          "annual_import_value_usd": 11400000,
+          "mfn_duty_rate": "2.5%",
+          "usmca_duty_rate": "0%",
+          "annual_duty_at_mfn": 285000,
+          "bill_of_materials": {
+            "aluminium_alloy_ingots_canadian": {"cost_per_unit": 32.00, "origin": "Canada", "hs_code": "7601.20"},
+            "aluminium_alloy_ingots_russian": {"cost_per_unit": 21.00, "origin": "Russia", "hs_code": "7601.20"},
+            "machining_inserts_japan": {"cost_per_unit": 1.50, "origin": "Japan", "hs_code": "8207.70"},
+            "paint_and_coating_usa": {"cost_per_unit": 3.00, "origin": "USA", "hs_code": "3208.20"},
+            "valve_stems_china": {"cost_per_unit": 0.50, "origin": "China", "hs_code": "8481.80"},
+            "direct_labour_mexico": {"cost_per_unit": 12.00},
+            "manufacturing_overhead_mexico": {"cost_per_unit": 18.00},
+            "profit_margin": {"cost_per_unit": 7.00}
+          }
+        }
+      },
+      "task": "Determine whether these wheel rims qualify for USMCA preferential treatment. Identify the applicable rule of origin, perform the qualification analysis, and calculate the duty savings.",
+      "evaluation_criteria": [
+        {
+          "criterion": "rule_of_origin_identification",
+          "weight": 0.30,
+          "rubric": {
+            "pass": "Identifies the USMCA product-specific rule for heading 8708 (or specifically 8708.70) from Annex 4-B. Notes that automotive parts under USMCA have specific rules — heading 8708 typically requires a regional value content (RVC) of 70-75% using the net cost method, or a tariff shift from any other heading. Correctly identifies both the tariff shift and RVC methods as options.",
+            "fail": "Cannot identify the applicable rule of origin. Uses a generic 'change in tariff heading' without checking the USMCA Annex. Does not mention the specific RVC requirements for automotive parts under USMCA."
+          }
+        },
+        {
+          "criterion": "qualification_analysis",
+          "weight": 0.40,
+          "rubric": {
+            "pass": "Performs both analyses. Tariff shift: the aluminium ingots (7601) shift to wheel rims (8708) — different chapter, so CTH is satisfied. The Japanese machining inserts (8207), Chinese valve stems (8481), and US paint (3208) all shift from different headings. Non-originating materials: Russian aluminium ($21.00) + Japanese inserts ($1.50) + Chinese valve stems ($0.50) = $23.00. RVC calculation (transaction value method): RVC = ((95 - 23) / 95) × 100 = 75.8%. Notes that Canadian aluminium is originating under USMCA cumulation and is excluded from VNM. Concludes the rims qualify under both methods.",
+            "fail": "Treats Canadian materials as non-originating (fails to apply USMCA cumulation). Includes labour and overhead in the non-originating material value. Makes mathematical errors in the RVC calculation. Does not perform the actual calculation."
+          }
+        },
+        {
+          "criterion": "savings_and_recommendation",
+          "weight": 0.30,
+          "rubric": {
+            "pass": "Calculates annual duty savings: $11,400,000 × 2.5% = $285,000 annual savings. Recommends proceeding with USMCA claims. Notes documentation requirements: the importer can self-certify under USMCA (no prescribed form, but must include nine data elements). Advises obtaining the bill of materials and cost data from the Mexican producer and retaining for 5 years. Mentions that the Mexican producer should be prepared for a potential verification by CBP or Mexican customs.",
+            "fail": "Does not calculate the savings. Does not mention the certification requirements. Does not advise on documentation retention. Does not mention the risk of verification."
+          }
+        }
+      ]
+    },
+    {
+      "id": "CTC-006",
+      "name": "Handling a CBP CF-28 Request for Information on a routine entry",
+      "difficulty": "easy",
+      "category": "documentation",
+      "context": {
+        "situation": "Your customs broker forwarded a CBP CF-28 (Request for Information) received for an entry of stainless steel kitchen sinks from India. CBP is requesting: (1) the manufacturer's name and address, (2) a detailed product description including gauge of steel, dimensions, and mounting type, (3) the country of origin and whether the steel was melted and poured in India, and (4) documentation supporting the declared transaction value of $42 per unit (your supplier is a related party — a subsidiary of your parent company). The entry was filed 45 days ago. The CF-28 gives 30 days to respond.",
+        "available_data": {
+          "product": "Stainless steel kitchen sinks (18-gauge, undermount, single bowl)",
+          "hts_code": "7324.10.0000",
+          "origin": "India",
+          "supplier": "IndoSteel Home Products Pvt. Ltd. (subsidiary of parent company)",
+          "related_party": true,
+          "declared_value_per_unit": 42.00,
+          "quantity": 3000,
+          "total_declared_value": 126000,
+          "duty_rate": "3.4%",
+          "entry_date": "45 days ago",
+          "cf28_response_deadline": "30 days from receipt",
+          "steel_origin": "India — melted and poured at Tata Steel Jamshedpur",
+          "transfer_pricing_method": "Comparable Uncontrolled Price (CUP)",
+          "comparable_market_price_range": "$38-$48 per unit"
+        }
+      },
+      "task": "Draft the response to the CF-28 and explain the significance of each item CBP is requesting. Flag any compliance risks this CF-28 may signal.",
+      "evaluation_criteria": [
+        {
+          "criterion": "cf28_response_quality",
+          "weight": 0.35,
+          "rubric": {
+            "pass": "Drafts a complete, professional response addressing all four CBP requests with specificity: (1) manufacturer details, (2) full product specs (18-gauge 304 stainless steel, specific dimensions, undermount installation), (3) country of origin with steel production details (melted and poured at Tata Steel Jamshedpur — this is relevant for steel-specific origin requirements), (4) related-party valuation support including the CUP analysis showing the $42 price falls within the $38-$48 market range. Response is factual, not defensive.",
+            "fail": "Provides vague or incomplete answers. Says 'made in India' without addressing the melted-and-poured question. Does not address the related-party valuation with supporting data. Treats the CF-28 as adversarial rather than informational."
+          }
+        },
+        {
+          "criterion": "significance_analysis",
+          "weight": 0.35,
+          "rubric": {
+            "pass": "Explains what the CF-28 signals: CBP is likely verifying (1) whether the sinks are subject to AD/CVD duties (stainless steel sinks from China are under AD/CVD order — CBP is checking that Indian-origin is genuine and not transshipped), (2) whether the related-party price is arm's-length (related-party transactions are standard audit targets), (3) steel origin for potential Section 232 tariff implications. Notes that a CF-28 is informational, not accusatory — but failure to respond completely triggers a CF-29 (Notice of Action) which can change the classification, value, or origin unilaterally.",
+            "fail": "Does not explain why CBP asked these specific questions. Does not connect the steel origin question to AD/CVD or Section 232. Does not mention the consequence of inadequate response (CF-29)."
+          }
+        },
+        {
+          "criterion": "risk_identification",
+          "weight": 0.30,
+          "rubric": {
+            "pass": "Identifies key risks: (1) if the steel was NOT melted and poured in India, the country of origin for the steel may differ from the country of origin for the finished sink — this affects AD/CVD and Section 232 applicability, (2) the related-party transaction may be scrutinised further if the CUP analysis is weak, (3) this CF-28 may be a precursor to a Focused Assessment if CBP is reviewing the company's import programme broadly. Recommends: respond thoroughly and on time, proactively review other entries of the same product for consistency, and notify legal counsel of the CF-28.",
+            "fail": "Does not identify any risks. Treats the CF-28 as routine paperwork. Does not recommend any proactive steps beyond responding to the specific questions."
+          }
+        }
+      ]
+    },
+    {
+      "id": "CTC-007",
+      "name": "Simple customs valuation with assists provided to foreign manufacturer",
+      "difficulty": "easy",
+      "category": "valuation",
+      "context": {
+        "situation": "Your company imports custom-designed plastic storage containers from a factory in Vietnam. You provided the factory with engineering drawings and a custom mould at no charge. The engineering drawings cost $15,000 to produce (US engineering firm). The mould cost $45,000 (fabricated in Taiwan and shipped directly to the Vietnam factory). The factory's price per container is $2.80 FOB Ho Chi Minh City. You are importing 500,000 containers this year across approximately 20 shipments. Your customs broker has been entering the goods at $2.80 per unit without adding the assist values.",
+        "available_data": {
+          "product": "Custom-designed plastic storage containers",
+          "hts_code": "3924.90.5650",
+          "manufacturer": "Vietnam Plastics Co., Ltd",
+          "origin": "Vietnam",
+          "unit_price_fob": 2.80,
+          "annual_volume": 500000,
+          "annual_shipments": 20,
+          "total_annual_fob_value": 1400000,
+          "assists": {
+            "engineering_drawings": {"cost": 15000, "produced_in": "USA", "type": "Engineering and design work"},
+            "custom_mould": {"cost": 45000, "produced_in": "Taiwan", "shipped_to": "Vietnam factory", "type": "Tool/die/mould"}
+          },
+          "total_assist_value": 60000,
+          "duty_rate": "3.4%",
+          "current_annual_duty_paid": 47600,
+          "production_life_of_mould": "500,000 units (this year's full order)"
+        }
+      },
+      "task": "Identify the customs valuation error, calculate the correct dutiable value with assists properly allocated, determine the duty underpayment, and recommend corrective action.",
+      "evaluation_criteria": [
+        {
+          "criterion": "assist_identification",
+          "weight": 0.30,
+          "rubric": {
+            "pass": "Correctly identifies both the engineering drawings and the custom mould as dutiable assists under 19 USC § 1401a(h) / 19 CFR § 152.103(d). Explains that the engineering drawings are an assist because they were provided free to the manufacturer for use in producing the imported goods. The mould is an assist of the 'tools, dies, moulds' category. Both must be added to the transaction value. Notes that the engineering work done in the US is still a dutiable assist (unlike the EU, which exempts assists produced in the importing country, the US does not).",
+            "fail": "Does not identify both items as assists. Says engineering drawings produced in the US are exempt from US customs valuation (this is an EU rule, not a US rule). Does not recognise that assists must be added to the transaction value."
+          }
+        },
+        {
+          "criterion": "correct_calculation",
+          "weight": 0.35,
+          "rubric": {
+            "pass": "Calculates the correct dutiable value: Total assists = $60,000. Prorated across 500,000 units = $0.12 per unit. Adjusted unit value = $2.80 + $0.12 = $2.92. Annual dutiable value = $2.92 × 500,000 = $1,460,000 (plus freight/insurance adjustments). Duty underpayment: ($1,460,000 - $1,400,000) × 3.4% = $2,040. Notes that the mould's $45,000 cost is prorated across its production life (500,000 units), and the engineering cost of $15,000 is similarly prorated across all units produced using those drawings.",
+            "fail": "Adds the full $60,000 to the first shipment only (incorrect — assists must be prorated). Makes mathematical errors. Does not prorate the assists across the total production volume."
+          }
+        },
+        {
+          "criterion": "corrective_action",
+          "weight": 0.35,
+          "rubric": {
+            "pass": "Recommends: (1) file Post Summary Corrections (PSCs) for all entries within the liquidation period to add the assist value, (2) tender the underpaid duties (~$2,040) with the PSCs, (3) consider a prior disclosure if the number of affected entries or the pattern suggests CBP may view this as more than a minor error, (4) update broker instructions to include assist values on all future entries, (5) implement an internal SOP requiring trade compliance review whenever tooling, moulds, or engineering are provided to a foreign supplier. Notes that assist failures are one of the top findings in CBP Focused Assessments.",
+            "fail": "Does not recommend filing PSCs. Suggests ignoring the issue because the amount is small ($2,040). Does not update future entry procedures. Does not mention prior disclosure as an option."
+          }
+        }
+      ]
+    },
+    {
+      "id": "CTC-008",
+      "name": "Incoterms DDP with circular duty valuation problem",
+      "difficulty": "easy",
+      "category": "incoterms",
+      "context": {
+        "situation": "A European supplier has quoted your company DDP New York for a shipment of laboratory instruments. The DDP price is $250,000, which the supplier states 'includes all duties and taxes.' Your finance team wants to use the $250,000 invoice value as the customs value for the entry. The applicable duty rate is 3.2%. You need to advise whether this approach is correct.",
+        "available_data": {
+          "product": "Laboratory analytical instruments",
+          "supplier": "EuroLab Instruments AG, Switzerland",
+          "origin": "Switzerland",
+          "incoterm": "DDP New York",
+          "ddp_price_usd": 250000,
+          "duty_rate": "3.2%",
+          "estimated_ocean_freight": 4500,
+          "estimated_insurance": 375,
+          "estimated_inland_freight_ny": 1200,
+          "hmf_rate": "0.3464%",
+          "mpf_estimate": 575
+        }
+      },
+      "task": "Explain the customs valuation problem with using a DDP price as the declared value, determine the correct approach to establishing the customs value, and provide guidance to the broker.",
+      "evaluation_criteria": [
+        {
+          "criterion": "circular_valuation_problem",
+          "weight": 0.40,
+          "rubric": {
+            "pass": "Identifies the circular valuation problem: under DDP, the invoice price INCLUDES duties. But customs duty is calculated as a percentage of the customs value. If you use the DDP price as the customs value, you are paying duty on the duty — a circular calculation that overstates the value. The correct approach is to 'back out' the duties and post-importation costs to arrive at the CIF-equivalent value. Calculation: $250,000 - inland freight ($1,200) - estimated duty ($X) - MPF ($575) - HMF = CIF value. But duty depends on value, creating a circular equation.",
+            "fail": "Uses $250,000 as the customs value without recognising the circularity. Says DDP price is the transaction value — full stop. Does not recognise that duties are never part of the customs value under any valuation method."
+          }
+        },
+        {
+          "criterion": "correct_methodology",
+          "weight": 0.35,
+          "rubric": {
+            "pass": "Explains the correct methodology: solve for the CIF value algebraically. If CIF = X, then duty = 0.032X, and DDP = X + 0.032X + MPF + HMF + inland freight. Therefore: $250,000 = X + 0.032X + $575 + 0.003464X + $1,200 → $248,225 = 1.035464X → X ≈ $239,727 (CIF customs value). Duty = $239,727 × 3.2% ≈ $7,671. Alternatively, if the supplier can provide a CIF or FOB invoice separately, use that as the basis and avoid the algebraic decomposition entirely.",
+            "fail": "Cannot explain the methodology. Suggests simply subtracting a flat percentage. Does not recognise that HMF and MPF are also part of the DDP price that must be backed out."
+          }
+        },
+        {
+          "criterion": "practical_guidance",
+          "weight": 0.25,
+          "rubric": {
+            "pass": "Recommends requesting a separate CIF or FOB invoice from the supplier for customs purposes. Many DDP sellers can provide a commercial invoice showing the FOB or CIF value plus a separate line for estimated duties — this simplifies customs entry. Advises the broker to use Method 1 (transaction value) based on the price excluding duties and post-importation costs. Notes that if the supplier refuses to provide a breakdown, the broker may need to use reasonable deductions to arrive at the CIF equivalent.",
+            "fail": "Provides no practical guidance. Does not suggest requesting a CIF invoice. Does not instruct the broker on how to handle the entry."
+          }
+        }
+      ]
+    },
+    {
+      "id": "CTC-009",
+      "name": "Multi-function device classification requiring GRI 3(b) essential character analysis",
+      "difficulty": "medium",
+      "category": "tariff-classification",
+      "context": {
+        "situation": "Your company is importing a new product: a combination smart home hub and security camera (model 'HomeGuard Pro'). The device is a wall-mounted unit that includes: a 1080p security camera with motion detection and night vision, a Zigbee/Z-Wave smart home controller that manages up to 200 connected devices, a built-in 4-inch touchscreen display for device management, a speaker and microphone for two-way communication, and 32GB of local storage for video recording. The retail price breakdown is: camera module (35% of COGS), smart home controller (40% of COGS), display (15% of COGS), speaker/mic (5% of COGS), storage (5% of COGS).",
+        "available_data": {
+          "product": "HomeGuard Pro — combination smart home hub and security camera",
+          "manufacturer": "Suzhou Smart Systems Co., Ltd",
+          "origin": "China",
+          "unit_cost_fob": 68.00,
+          "quantity": 10000,
+          "total_value_fob": 680000,
+          "candidate_classifications": {
+            "heading_8525": "Television cameras, digital cameras, and video camera recorders",
+            "heading_8517": "Telephone sets and other apparatus for transmission/reception of voice, images, or data (includes networking equipment)",
+            "heading_8471": "Automatic data processing machines and units thereof",
+            "heading_8528": "Monitors and projectors (for the display component)"
+          },
+          "cogs_breakdown": {
+            "camera_module_pct": 35,
+            "smart_home_controller_pct": 40,
+            "display_pct": 15,
+            "speaker_mic_pct": 5,
+            "storage_pct": 5
+          },
+          "marketing_primary_use": "Smart home management and home security",
+          "section_301_list": "List 3 (25%)"
+        }
+      },
+      "task": "Classify this multi-function device under the HTS. Apply the GRIs systematically, determine essential character, and provide the classification with full rationale.",
+      "evaluation_criteria": [
+        {
+          "criterion": "gri_application",
+          "weight": 0.35,
+          "rubric": {
+            "pass": "Applies GRIs in correct order. GRI 1: checks each candidate heading against the heading text and Section/Chapter notes. Notes that Section XVI Note 3 applies to composite machines performing two or more complementary or alternative functions — classify by the principal function. Evaluates whether the camera and smart home controller functions are 'complementary' (working together for home monitoring) or 'alternative' (independent functions in one housing). Proceeds to GRI 3 (via Section XVI Note 3) because the device performs multiple functions.",
+            "fail": "Jumps directly to GRI 3 without applying GRI 1 first. Does not mention Section XVI Note 3 for composite machines. Does not check Chapter notes."
+          }
+        },
+        {
+          "criterion": "essential_character_analysis",
+          "weight": 0.40,
+          "rubric": {
+            "pass": "Under GRI 3(b) / Section XVI Note 3, analyses essential character by function, value (COGS), and marketing emphasis. The smart home controller is 40% of COGS and manages up to 200 devices — it is the device's central function. The camera at 35% is significant but serves as one of the controlled devices. Marketing emphasises 'smart home management and home security' — both functions are foregrounded. Reaches a reasoned conclusion — likely heading 8517 (smart home controller as primary function — apparatus for transmission/reception of data) rather than 8525 (camera). Acknowledges the classification is close and a binding ruling should be requested.",
+            "fail": "Classifies based on the most expensive single component without analysing function and marketing. Does not consider Section XVI Note 3 'principal function' test. Provides a definitive classification without acknowledging the ambiguity and recommending a ruling request."
+          }
+        },
+        {
+          "criterion": "duty_impact_and_risk",
+          "weight": 0.25,
+          "rubric": {
+            "pass": "Identifies the duty rate difference between classifications (heading 8525 and 8517 have different rates). Notes that Section 301 List 3 at 25% applies regardless of which heading within Chapter 85 is selected (all are Chinese-origin electronics). Calculates the total duty exposure. Recommends requesting a CBP binding ruling BEFORE the first shipment given the ambiguity and volume ($680,000). Notes that if CBP reclassifies post-importation, the duty difference could be significant and retroactive.",
+            "fail": "Does not mention the duty rate difference between candidate headings. Does not recommend a binding ruling for an ambiguous classification. Does not mention Section 301."
+          }
+        }
+      ]
+    },
+    {
+      "id": "CTC-010",
+      "name": "USMCA qualification failure due to non-originating material from outside the zone",
+      "difficulty": "medium",
+      "category": "fta-qualification",
+      "context": {
+        "situation": "Your company imports leather handbags from a Mexican manufacturer. The handbags are assembled in León, Mexico from the following materials: Italian-tanned cowhide leather (55% of material cost), Chinese-origin zippers and hardware (15%), Mexican-origin thread and lining fabric (10%), and US-origin buckles and clasps (20%). The handbags are classified under HTS 4202.21 (handbags with outer surface of leather). You have been claiming USMCA preferential treatment and receiving duty-free treatment for the past 8 months. An internal audit has raised a question about whether the handbags actually qualify.",
+        "available_data": {
+          "product": "Women's leather handbags",
+          "hts_code": "4202.21.60",
+          "manufacturer": "Cuero Artesanal S.A. de C.V., León, Mexico",
+          "origin_claimed": "Mexico (USMCA)",
+          "unit_fob_price": 85.00,
+          "annual_volume": 25000,
+          "annual_value": 2125000,
+          "mfn_duty_rate": "8.0%",
+          "usmca_claimed_rate": "0%",
+          "duty_savings_claimed_ytd": 127500,
+          "bill_of_materials": {
+            "italian_leather": {"cost_pct": 55, "origin": "Italy", "hs_code": "4107.12"},
+            "chinese_zippers_hardware": {"cost_pct": 15, "origin": "China", "hs_code": "9607.11 / 8308.90"},
+            "mexican_thread_lining": {"cost_pct": 10, "origin": "Mexico", "hs_code": "5204.20 / 5407.61"},
+            "us_buckles_clasps": {"cost_pct": 20, "origin": "USA", "hs_code": "8308.10"}
+          },
+          "usmca_rule_for_4202": "A change to heading 4202 from any other heading except from heading 4104-4107 (tanned leather)",
+          "months_claiming_preference": 8,
+          "entries_affected": "approximately 35 entries"
+        }
+      },
+      "task": "Evaluate whether the USMCA claim is valid. If not, determine the exposure, recommend corrective action, and draft the key points for a prior disclosure if one is warranted.",
+      "evaluation_criteria": [
+        {
+          "criterion": "qualification_analysis",
+          "weight": 0.35,
+          "rubric": {
+            "pass": "Correctly determines the handbags do NOT qualify for USMCA. The product-specific rule requires 'a change to heading 4202 from any other heading EXCEPT from heading 4104-4107.' The Italian leather is classified under 4107 (tanned leather) — this heading is specifically EXCLUDED from the tariff shift rule. Because the Italian leather does not undergo the required tariff shift, and Italy is not a USMCA party, the leather cannot satisfy the rule through cumulation. The Chinese zippers (9607) and hardware (8308) DO shift, as do the US and Mexican materials, but the leather exception is fatal.",
+            "fail": "Concludes the handbags qualify because 'most materials shift headings.' Misses the specific exclusion of headings 4104-4107. Does not check the exceptions list in the product-specific rule. Counts Italian materials as originating."
+          }
+        },
+        {
+          "criterion": "exposure_calculation",
+          "weight": 0.30,
+          "rubric": {
+            "pass": "Calculates the exposure: 8 months of invalid USMCA claims × approximately $170,000/month in duty savings = approximately $127,500 in underpaid duties. Plus interest (currently ~6% federal rate). Penalty exposure under 19 USC § 1592: negligence = $127,500 × 2 = $255,000 maximum; with prior disclosure, capped at interest only (~$5,100). Identifies approximately 35 entries that need correction. Notes that the duty savings must be repaid regardless of penalty outcome.",
+            "fail": "Does not calculate the specific duty exposure. Does not mention penalty potential. Does not distinguish between the duty owed and the penalty amount."
+          }
+        },
+        {
+          "criterion": "corrective_action",
+          "weight": 0.35,
+          "rubric": {
+            "pass": "Recommends: (1) immediately stop claiming USMCA on future entries of this product, (2) file a prior disclosure with CBP covering all 35 affected entries — this caps the penalty at interest (~$5,100 vs potential $255,000), (3) tender the $127,500 in underpaid duties plus interest with the disclosure, (4) investigate whether the leather can be sourced from a USMCA country (US or Canadian tanneries) to restore qualification, (5) review ALL other USMCA claims for similar qualification errors. Drafts key points for the prior disclosure: identify each entry, state that USMCA preference was erroneously claimed because the Italian leather did not satisfy the tariff shift exclusion, and describe the corrective measures.",
+            "fail": "Does not recommend prior disclosure. Suggests 'quietly stopping' the USMCA claim without correcting past entries. Does not tender the underpaid duties. Does not investigate alternative sourcing to restore qualification."
+          }
+        }
+      ]
+    },
+    {
+      "id": "CTC-011",
+      "name": "Related-party customs valuation with transfer pricing conflict",
+      "difficulty": "medium",
+      "category": "valuation",
+      "context": {
+        "situation": "Your company's tax department has set the transfer price for pharmaceutical intermediates imported from a related factory in India at $180/kg using the Transactional Net Margin Method (TNMM). However, the market price for identical intermediates from unrelated Indian manufacturers is $220-$240/kg. The customs broker has been declaring $180/kg as the transaction value. A competitor has filed an EAPA allegation suggesting your company is undervaluing imports. CBP has not yet contacted you directly, but you have learned of the allegation through industry contacts. Annual import value at $180/kg: $8.1M (45,000 kg). The duty rate is 6.5%.",
+        "available_data": {
+          "product": "Pharmaceutical intermediates (API precursors)",
+          "hts_code": "2933.59.9500",
+          "origin": "India",
+          "related_party": true,
+          "transfer_price_per_kg": 180.00,
+          "market_price_range_per_kg": [220, 240],
+          "annual_volume_kg": 45000,
+          "annual_declared_value": 8100000,
+          "duty_rate_pct": 6.5,
+          "annual_duty_paid": 526500,
+          "market_value_annual_low": 9900000,
+          "market_value_annual_high": 10800000,
+          "duty_at_market_low": 643500,
+          "duty_at_market_high": 702000,
+          "potential_duty_shortfall_range": [117000, 175500],
+          "transfer_pricing_method": "TNMM",
+          "eapa_allegation": "Filed by competitor — undervaluation of related-party imports",
+          "cbp_contact": "None yet"
+        }
+      },
+      "task": "Assess the customs valuation risk, determine whether the transfer price is defensible as the transaction value, and recommend a course of action given the EAPA allegation.",
+      "evaluation_criteria": [
+        {
+          "criterion": "valuation_analysis",
+          "weight": 0.35,
+          "rubric": {
+            "pass": "Identifies the core issue: the transfer price ($180/kg) is significantly below the market range ($220-$240/kg), which creates a presumption that the related-party relationship influenced the price. Under CBP's 'circumstances of sale' test, the importer must demonstrate that the price approximates arm's-length. The $180/kg price does NOT approximate the transaction value of identical goods from unrelated sellers ($220-$240/kg) — it falls outside the range. TNMM may be acceptable for tax purposes but does not necessarily satisfy customs valuation requirements, which focus on the price of the specific goods, not the overall profitability of the entity.",
+            "fail": "Accepts the transfer price as valid because it was set by the tax department. Does not recognise the conflict between transfer pricing for tax and customs valuation. Does not apply the 'circumstances of sale' test or 'test values' analysis."
+          }
+        },
+        {
+          "criterion": "eapa_response",
+          "weight": 0.30,
+          "rubric": {
+            "pass": "Recognises that EAPA is typically used for AD/CVD evasion through transshipment, not pure valuation disputes — but CBP may investigate undervaluation as a form of duty evasion. Recommends: (1) retain trade counsel immediately given the allegation, (2) prepare a defensive valuation package demonstrating the circumstances of sale support the transfer price (or if they don't, prepare for a prior disclosure), (3) do NOT wait for CBP to contact you — proactive engagement demonstrates good faith, (4) if the $180 price cannot be defended, consider filing a prior disclosure covering the duty shortfall before CBP commences a formal investigation.",
+            "fail": "Waits passively for CBP to initiate contact. Does not retain counsel. Does not consider prior disclosure. Treats the EAPA allegation as 'probably nothing.'"
+          }
+        },
+        {
+          "criterion": "strategic_recommendation",
+          "weight": 0.35,
+          "rubric": {
+            "pass": "Recommends a multi-track approach: (1) Short-term: work with the tax and legal departments to prepare a 'circumstances of sale' memorandum. If the price cannot be defended, increase the declared value to a defensible level immediately for future entries. (2) Medium-term: if prior entries are undervalued, file a prior disclosure covering the duty shortfall ($117K-$175K). Prior disclosure caps the penalty at interest. Without it, penalty exposure is 2× the shortfall (negligence) = $234K-$351K. (3) Long-term: coordinate transfer pricing and customs valuation — many multinationals use a 'dual pricing' approach where the customs value and the tax transfer price are reconciled through adjustments. Consider applying to CBP's reconciliation programme for future entries where the final price may change.",
+            "fail": "Recommends only one course of action. Does not address the immediate EAPA threat. Does not calculate penalty exposure. Does not address the structural tax-customs valuation conflict."
+          }
+        }
+      ]
+    },
+    {
+      "id": "CTC-012",
+      "name": "Restricted party screening true positive — Entity List match",
+      "difficulty": "medium",
+      "category": "restricted-party-screening",
+      "context": {
+        "situation": "Your company manufactures advanced semiconductor manufacturing equipment. A new purchase order has been received from 'Huawei Cloud Computing Technologies Co., Ltd' in Guiyang, China, for 2 units of your plasma etching systems valued at $1.2M each. Your restricted party screening tool returns a 99% match against 'Huawei Cloud Computing Technologies Co., Ltd' on the BIS Entity List (added August 2020, Supplement No. 4 to Part 744 of the EAR). The equipment is classified under ECCN 3B001 (equipment for the manufacture of semiconductor devices). The Entity List entry specifies a licence requirement for all items subject to the EAR with a licence review policy of 'presumption of denial.'",
+        "available_data": {
+          "customer_name": "Huawei Cloud Computing Technologies Co., Ltd",
+          "customer_address": "No. 2, Changxing South Road, Gui'an New Area, Guiyang, Guizhou, China",
+          "order": "2 × plasma etching systems",
+          "order_value_usd": 2400000,
+          "screening_hit": {
+            "list": "BIS Entity List",
+            "listed_name": "Huawei Cloud Computing Technologies Co., Ltd",
+            "listed_address": "Guiyang, China",
+            "match_score_percent": 99,
+            "listing_date": "2020-08-17",
+            "licence_requirement": "For all items subject to the EAR",
+            "licence_review_policy": "Presumption of denial",
+            "federal_register_citation": "85 FR 51596"
+          },
+          "equipment_eccn": "3B001",
+          "equipment_description": "Plasma etching systems for semiconductor manufacturing",
+          "ear_controlled": true,
+          "fdpr_applicable": "Yes — Foreign Direct Product Rule applies to Entity List entities"
+        }
+      },
+      "task": "Adjudicate this screening hit, determine the correct course of action, and explain the compliance implications including the Foreign Direct Product Rule.",
+      "evaluation_criteria": [
+        {
+          "criterion": "hit_adjudication",
+          "weight": 0.25,
+          "rubric": {
+            "pass": "Correctly identifies this as a TRUE POSITIVE. 99% name match with exact address correlation to the Entity List entry. No reasonable basis for false positive adjudication. The transaction must be BLOCKED immediately — no shipment, no transfer of technical data, no further negotiations until and unless a BIS licence is obtained.",
+            "fail": "Attempts to find reasons to clear the hit. Suggests proceeding with the transaction while 'investigating further.' Does not immediately block the transaction."
+          }
+        },
+        {
+          "criterion": "compliance_actions",
+          "weight": 0.40,
+          "rubric": {
+            "pass": "Details the required actions: (1) Block the transaction immediately — no exports, re-exports, or in-country transfers, (2) the equipment (ECCN 3B001) is controlled and requires a licence to ANY destination, but the Entity List adds a separate layer — even EAR99 items require a licence for Entity List entities, (3) the licence review policy is 'presumption of denial' — while the company CAN apply for a licence, approval is extremely unlikely, (4) notify all internal teams (sales, engineering, logistics) that no technical data, specifications, or equipment can be shared with this customer without a licence, (5) check whether any technical data has already been shared during the sales process — if so, this may constitute an unauthorised deemed export. (6) If manufactured outside the US, analyse whether the Foreign Direct Product Rule (FDPR) applies.",
+            "fail": "Recommends applying for a BIS licence as the primary strategy without noting the presumption of denial. Does not mention deemed export implications for technical data already shared. Does not address the FDPR. Does not notify internal teams to cease all engagement."
+          }
+        },
+        {
+          "criterion": "fdpr_analysis",
+          "weight": 0.35,
+          "rubric": {
+            "pass": "Explains the Foreign Direct Product Rule: even if the plasma etching systems were manufactured OUTSIDE the US, they may still be subject to the EAR under the FDPR (§ 734.9) if (a) the equipment is a direct product of US-origin technology or software, or (b) the equipment was produced by a plant that is a direct product of US-origin technology or software. For semiconductor manufacturing equipment, this is almost certainly the case given the pervasive use of US design software (EDA tools), US-origin components, and US-origin process technology. Notes that the Entity List-specific FDPR (footnote 1 to Entity List) applies to Huawei entities specifically. Concludes that even non-US manufactured equipment cannot be shipped to this customer without a BIS licence.",
+            "fail": "Does not mention the FDPR. Says 'if the equipment is made outside the US, the EAR doesn't apply.' Does not understand that the FDPR extends US export control jurisdiction to non-US manufactured items in specific circumstances."
+          }
+        }
+      ]
+    },
+    {
+      "id": "CTC-013",
+      "name": "Prior disclosure decision after discovering systematic classification error",
+      "difficulty": "medium",
+      "category": "penalties",
+      "context": {
+        "situation": "During a routine internal audit, your trade compliance team discovers that your company has been classifying imported carbon fibre bicycle frames under HTS 8714.91 (frames and forks for bicycles — duty rate 3.3%) when the correct classification is HTS 8714.99 (other parts and accessories for bicycles — duty rate 10%). The error has been consistent across all entries for 14 months (approximately 85 entries). The total declared value of affected entries is $3.2M. Your customs broker made the initial classification and it was never independently verified.",
+        "available_data": {
+          "product": "Carbon fibre bicycle frames",
+          "incorrect_hts": "8714.91.3000",
+          "incorrect_duty_rate": "3.3%",
+          "correct_hts": "8714.99.8000",
+          "correct_duty_rate": "10.0%",
+          "duration_of_error": "14 months",
+          "entries_affected": 85,
+          "total_declared_value": 3200000,
+          "duty_paid_at_3_3_pct": 105600,
+          "duty_owed_at_10_pct": 320000,
+          "duty_shortfall": 214400,
+          "origin": "Taiwan",
+          "section_301": "Not applicable (Taiwan not on Section 301 lists)",
+          "broker_responsible": true,
+          "internal_audit_discovery": true,
+          "cbp_investigation": "None known"
+        }
+      },
+      "task": "Evaluate whether to file a prior disclosure, calculate the financial exposure with and without disclosure, and outline the filing steps.",
+      "evaluation_criteria": [
+        {
+          "criterion": "disclosure_decision",
+          "weight": 0.30,
+          "rubric": {
+            "pass": "Recommends filing a prior disclosure. Rationale: the duty shortfall is $214,400 — material enough that CBP would impose significant penalties if discovered independently. The error is systematic (14 months, 85 entries), which CBP may characterize as gross negligence (failure to implement internal classification verification). Prior disclosure caps the penalty at interest for negligence or 1× duties for gross negligence — either is dramatically better than the full penalty exposure. The error was discovered through internal audit (not a CBP inquiry), so prior disclosure is available. Notes that NOT filing creates the risk of future discovery during a Focused Assessment or random audit, with full penalty exposure.",
+            "fail": "Recommends against disclosure. Says the amount is 'not significant enough.' Does not calculate the penalty differential. Recommends waiting to see if CBP discovers the error."
+          }
+        },
+        {
+          "criterion": "exposure_calculation",
+          "weight": 0.35,
+          "rubric": {
+            "pass": "Calculates exposure for both scenarios: WITHOUT prior disclosure: negligence penalty = 2 × $214,400 = $428,800 maximum, or 20% of dutiable value = $640,000 — CBP applies whichever is lower = $428,800 + $214,400 duty owed = $643,200 total. Gross negligence: 4 × $214,400 = $857,600 or 40% of dutiable value = $1,280,000 — lower = $857,600 + $214,400 = $1,072,000 total. WITH prior disclosure: negligence = interest only on $214,400 (~$8,600 at federal rate) + $214,400 duty = $223,000 total. Gross negligence = 1 × $214,400 + $214,400 duty = $428,800 total. The savings from prior disclosure: $420,200 to $643,200.",
+            "fail": "Does not calculate both scenarios. Gets the penalty formulas wrong. Does not distinguish between duty owed (always payable) and the penalty amount. Does not consider that CBP could characterize this as gross negligence due to the systematic nature."
+          }
+        },
+        {
+          "criterion": "filing_steps",
+          "weight": 0.35,
+          "rubric": {
+            "pass": "Outlines the prior disclosure filing: (1) engage trade counsel to review the disclosure before filing, (2) prepare a spreadsheet of all 85 affected entries with entry numbers, dates, incorrect and correct classifications, and duty differential for each, (3) draft the disclosure letter identifying the violation (misclassification), providing the correct classification with GRI rationale, explaining how the error occurred (broker's initial classification not independently verified), and describing corrective actions, (4) tender the $214,400 in underpaid duties plus estimated interest, (5) file with the FP&F office at the port of entry, (6) immediately correct future entries to 8714.99. Also recommends: review the broker's other classifications for similar errors, and implement an independent classification verification SOP.",
+            "fail": "Does not outline specific filing steps. Omits the duty tender (a valid prior disclosure requires tendering the owed amount). Does not recommend correcting future entries immediately. Does not recommend reviewing the broker's other classifications."
+          }
+        }
+      ]
+    },
+    {
+      "id": "CTC-014",
+      "name": "Evaluating an FTZ admission strategy for inverted tariff relief",
+      "difficulty": "medium",
+      "category": "duty-optimisation",
+      "context": {
+        "situation": "Your company manufactures consumer electronics in the US. You import display panels (HTS 9013.80, duty 3.3%), processors (HTS 8542.31, duty free), memory chips (HTS 8542.32, duty free), battery cells (HTS 8507.60, duty 3.4%), and aluminium housings (HTS 7616.99, duty 5.0%) from various countries. These components are assembled into finished tablets (HTS 8471.30, duty free). Your supply chain team has suggested establishing operations in a Foreign Trade Zone to reduce duty costs. Annual import value of all components: $45M.",
+        "available_data": {
+          "finished_product": "Consumer tablets",
+          "finished_product_hts": "8471.30.0100",
+          "finished_product_duty_rate": "0% (duty free)",
+          "components": [
+            {"name": "Display panels", "hts": "9013.80", "duty_rate": "3.3%", "annual_value": 15000000, "annual_duty": 495000},
+            {"name": "Processors", "hts": "8542.31", "duty_rate": "0%", "annual_value": 12000000, "annual_duty": 0},
+            {"name": "Memory chips", "hts": "8542.32", "duty_rate": "0%", "annual_value": 8000000, "annual_duty": 0},
+            {"name": "Battery cells", "hts": "8507.60", "duty_rate": "3.4%", "annual_value": 6000000, "annual_duty": 204000},
+            {"name": "Aluminium housings", "hts": "7616.99", "duty_rate": "5.0%", "annual_value": 4000000, "annual_duty": 200000}
+          ],
+          "total_annual_component_value": 45000000,
+          "total_annual_duty_on_components": 899000,
+          "production_volume": "500,000 tablets per year",
+          "export_percentage": "20% of production exported",
+          "scrap_rate": "3% of component value"
+        }
+      },
+      "task": "Evaluate the FTZ strategy, calculate the potential duty savings, and identify the operational requirements and risks.",
+      "evaluation_criteria": [
+        {
+          "criterion": "ftz_benefit_analysis",
+          "weight": 0.40,
+          "rubric": {
+            "pass": "Identifies the three FTZ benefits applicable here: (1) Inverted tariff relief: components have duty rates of 3.3-5.0% but the finished tablet is duty-free. By admitting components to the FTZ under 'privileged foreign status' and electing to enter the finished product into US commerce, duty is assessed at the FINISHED PRODUCT rate (0%) rather than the component rates. Annual savings: $899,000. (2) Duty elimination on exports: 20% of production is exported, meaning 20% of component value never enters US commerce. Savings: 20% × $899,000 = $179,800. (3) Duty elimination on scrap/waste: 3% of components become scrap — no duty on waste/scrap in the FTZ. Savings: 3% × $899,000 = $26,970. Total potential savings: approximately $899,000 + $179,800 + $26,970 = $1,105,770.",
+            "fail": "Only identifies one benefit (e.g., inverted tariff but not exports or scrap). Calculates the inverted tariff savings incorrectly. Does not recognise that the finished product rate of 0% means ALL component duties are eliminated, not just reduced."
+          }
+        },
+        {
+          "criterion": "operational_requirements",
+          "weight": 0.30,
+          "rubric": {
+            "pass": "Identifies the operational requirements: (1) apply to the FTZ Board for a subzone or usage-driven site (typically 6-12 months for approval), (2) CBP must approve the 'manufacturing and production authority' — need to demonstrate that the activity results in a 'substantial transformation' and qualifies for the inverted tariff benefit, (3) inventory control system must track all foreign-status and domestic-status merchandise separately, (4) annual reconciliation with CBP, (5) FTZ operator agreement and CBP oversight costs. Estimates setup costs and ongoing compliance burden.",
+            "fail": "Does not mention FTZ Board approval. Does not mention the manufacturing authority requirement. Does not address inventory tracking requirements."
+          }
+        },
+        {
+          "criterion": "risk_assessment",
+          "weight": 0.30,
+          "rubric": {
+            "pass": "Identifies risks: (1) FTZ Board may deny manufacturing authority if they determine the assembly does not constitute 'public interest' manufacturing, (2) CBP audit risk — FTZ operations are subject to regular CBP oversight and the inventory control system must be robust, (3) if tariff rates change (e.g., trade negotiations reduce component duties to 0%), the FTZ benefit disappears and the operational costs become a net drag, (4) Section 301 tariffs on Chinese-origin components apply even in an FTZ unless the goods are exported — check whether any components are from Section 301 countries. (5) FTZ does not provide relief from AD/CVD duties.",
+            "fail": "Presents FTZ as risk-free. Does not mention the regulatory approval process. Does not consider that tariff changes could eliminate the benefit. Does not mention Section 301 or AD/CVD limitations."
+          }
+        }
+      ]
+    },
+    {
+      "id": "CTC-015",
+      "name": "EU-UK TCA origin determination for manufactured goods post-Brexit",
+      "difficulty": "medium",
+      "category": "fta-qualification",
+      "context": {
+        "situation": "A UK manufacturer of electric bicycles exports to the EU. The e-bikes are assembled in Birmingham, UK from the following components: Chinese-origin battery packs (35% of ex-works price, HS 8507.60), Taiwanese-origin electric motors (20% of ex-works price, HS 8501.31), German-origin aluminium frames (15%, HS 8714.91), UK-sourced brakes and gears (15%, HS 8714.93/94), and Japanese-origin electronic controllers (15%, HS 9032.89). The finished e-bike is classified under HS 8711.60. The EU customer wants to know if the e-bikes qualify for zero-tariff treatment under the EU-UK TCA.",
+        "available_data": {
+          "product": "Electric bicycles (e-bikes)",
+          "finished_hs": "8711.60",
+          "manufacturer": "BritBike Ltd, Birmingham, UK",
+          "destination": "EU (Germany)",
+          "ex_works_price_gbp": 1800,
+          "components": {
+            "chinese_battery": {"hs": "8507.60", "pct_exworks": 35, "origin": "China"},
+            "taiwanese_motor": {"hs": "8501.31", "pct_exworks": 20, "origin": "Taiwan"},
+            "german_frame": {"hs": "8714.91", "pct_exworks": 15, "origin": "Germany (EU)"},
+            "uk_brakes_gears": {"hs": "8714.93", "pct_exworks": 15, "origin": "UK"},
+            "japanese_controller": {"hs": "9032.89", "pct_exworks": 15, "origin": "Japan"}
+          },
+          "mfn_eu_duty_rate": "6.0%",
+          "tca_preferential_rate": "0%",
+          "annual_export_volume": 5000,
+          "annual_export_value_gbp": 9000000,
+          "annual_duty_at_mfn": 540000
+        }
+      },
+      "task": "Determine whether the e-bikes qualify for EU-UK TCA preferential treatment. Apply the TCA rules of origin, check the insufficient processing rules, and advise on the origin declaration requirements.",
+      "evaluation_criteria": [
+        {
+          "criterion": "tca_rule_application",
+          "weight": 0.40,
+          "rubric": {
+            "pass": "Looks up the product-specific rule in TCA Annex ORIG-2 for heading 8711. The rule typically requires a change from any heading (CTH) AND a maximum percentage of non-originating materials (e.g., 40-50% of ex-works price). Applies bilateral cumulation: the German frame (15%) is EU-origin and counts as originating under the TCA. Therefore, originating content = UK brakes/gears (15%) + German frame (15%) + UK value-added (assembly labour, overhead, profit) = 30% + UK assembly value. Non-originating = Chinese battery (35%) + Taiwanese motor (20%) + Japanese controller (15%) = 70%. Assesses whether the non-originating content exceeds the threshold. Acknowledges that qualification depends on the specific percentage threshold in the rule AND the value of UK assembly.",
+            "fail": "Does not check the TCA's product-specific rule annex. Treats German-origin components as non-originating (misses bilateral cumulation). Applies USMCA rules to an EU-UK TCA analysis."
+          }
+        },
+        {
+          "criterion": "insufficient_processing_check",
+          "weight": 0.30,
+          "rubric": {
+            "pass": "Checks the TCA's insufficient processing list (Article ORIG.7). Simple assembly is listed as an operation that NEVER confers origin regardless of tariff shift. Analyses whether the UK manufacturing constitutes more than 'simple assembly' — welding frames, installing motors, wiring electrical systems, quality testing, and final finishing likely exceeds 'simple assembly.' But if the UK factory merely bolts together pre-assembled modules without significant manufacturing, it may fail the insufficient processing test. Recommends documenting the manufacturing process in detail to defend against an EU customs challenge.",
+            "fail": "Does not mention insufficient processing. Does not check Article ORIG.7. Assumes any assembly in the UK automatically confers origin."
+          }
+        },
+        {
+          "criterion": "declaration_and_documentation",
+          "weight": 0.30,
+          "rubric": {
+            "pass": "Explains the TCA origin declaration requirements: for consignments under €6,000, any exporter can make an origin declaration on the invoice. For consignments above €6,000, the exporter must be registered in the REX (Registered Exporter) system. At £1,800 × 5,000 units = £9M (~€10.5M), BritBike must be REX-registered. The origin declaration must include the specific text prescribed in Annex ORIG-4 of the TCA. Documents must be retained for 4 years from the date of the origin declaration. Notes that EU customs can request verification — the UK exporter must be able to provide the bill of materials, production records, and supplier origin evidence within the verification timeframe.",
+            "fail": "Does not mention REX registration. Says a EUR.1 movement certificate is required (the TCA uses origin declarations, not EUR.1). Does not mention the prescribed text requirement."
+          }
+        }
+      ]
+    },
+    {
+      "id": "CTC-016",
+      "name": "Duty drawback claim for re-exported imported components",
+      "difficulty": "medium",
+      "category": "duty-optimisation",
+      "context": {
+        "situation": "Your company imports specialised industrial bearings from Germany (HTS 8482.10, duty rate 9.0%) and uses them in the manufacture of wind turbine gearboxes. Approximately 30% of the finished gearboxes are exported to customers in Brazil and India. Your trade compliance team has identified this as a potential duty drawback opportunity. Over the past 3 years, you have imported $12M in bearings annually ($1.08M in duty paid per year). The bearings are consumed in manufacturing — they are not re-exported in their original form.",
+        "available_data": {
+          "imported_component": "Industrial roller bearings",
+          "hts_code": "8482.10.5044",
+          "duty_rate": "9.0%",
+          "origin": "Germany",
+          "annual_import_value": 12000000,
+          "annual_duty_paid": 1080000,
+          "finished_product": "Wind turbine gearboxes",
+          "export_percentage": "30%",
+          "export_destinations": ["Brazil", "India"],
+          "export_value_annual": 28000000,
+          "drawback_type": "Manufacturing drawback (19 USC § 1313(a))",
+          "bearings_consumed_in_manufacturing": true,
+          "years_of_import_data": 3,
+          "filing_deadline": "5 years from date of importation"
+        }
+      },
+      "task": "Evaluate the duty drawback opportunity, calculate the potential recovery, identify the type of drawback applicable, and outline the filing requirements.",
+      "evaluation_criteria": [
+        {
+          "criterion": "drawback_type_identification",
+          "weight": 0.30,
+          "rubric": {
+            "pass": "Correctly identifies this as manufacturing drawback under 19 USC § 1313(a). The imported bearings are used in the manufacture of a different article (gearboxes) that is subsequently exported. Notes that since TFTEA (2018), substitution manufacturing drawback under § 1313(b) may also be available if commercially interchangeable domestic bearings are used in some production — but the scenario indicates the German bearings themselves are consumed, so § 1313(a) direct manufacturing drawback applies. The drawback rate is 99% of duties paid.",
+            "fail": "Misidentifies the drawback type. Says 'unused merchandise drawback' (§ 1313(j)) — incorrect because the bearings are consumed in manufacturing, not re-exported unused. Does not mention the 99% recovery rate."
+          }
+        },
+        {
+          "criterion": "recovery_calculation",
+          "weight": 0.35,
+          "rubric": {
+            "pass": "Calculates the annual drawback recovery: 30% of imports are consumed in exported gearboxes. Annual duty on exported portion: $1,080,000 × 30% = $324,000. Drawback at 99%: $324,000 × 99% = $320,760 per year. Over 3 years of available import data: up to $962,280 in recoverable drawback (subject to the 5-year filing deadline and matching import entries to export entries). Notes that the actual recovery depends on the ability to match specific import entries to specific export shipments — TFTEA simplified this with substitution provisions, but documentation must still demonstrate the bearing was used in the exported gearbox.",
+            "fail": "Calculates drawback on 100% of imports (not just the exported portion). Gets the 99% rate wrong. Does not mention the 5-year filing deadline."
+          }
+        },
+        {
+          "criterion": "filing_requirements",
+          "weight": 0.35,
+          "rubric": {
+            "pass": "Outlines filing requirements: (1) file a drawback entry (CBP 7551) within 5 years of the date of importation, (2) must demonstrate that the imported bearings were used in the manufacture of the exported gearboxes — maintain production records linking import entries to production lots to export shipments, (3) export documentation (Shipper's Export Declaration / EEI filed in AES) must be provided, (4) the 'relative value' calculation allocates the bearing's import value as a proportion of the gearbox's total material cost, (5) since TFTEA, the drawback claim no longer needs to match specific import entry to specific export — substitution is allowed for commercially interchangeable bearings. Recommends: engage a licensed customs broker specialising in drawback, as the filing is complex and errors result in claim denial.",
+            "fail": "Does not outline the filing requirements. Does not mention production records linking imports to exports. Does not mention the TFTEA simplification. Does not recommend specialised broker assistance."
+          }
+        }
+      ]
+    },
+    {
+      "id": "CTC-017",
+      "name": "Dual-use goods classification — EAR jurisdiction and ECCN determination",
+      "difficulty": "medium",
+      "category": "restricted-party-screening",
+      "context": {
+        "situation": "Your company manufactures industrial-grade thermal imaging cameras used for building energy audits and predictive maintenance. A distributor in the UAE has placed an order for 50 units. The cameras have a resolution of 640×480 pixels, can detect temperature differences of 0.03°C (NETD), and have a spectral range of 8-14 micrometres. Your export compliance officer needs to determine the ECCN classification and whether a BIS export licence is required for the UAE.",
+        "available_data": {
+          "product": "Industrial thermal imaging camera (Model ThermaView 640)",
+          "specifications": {
+            "resolution": "640×480 pixels",
+            "netd": "0.03°C at 30°C",
+            "spectral_range": "8-14 micrometres",
+            "frame_rate": "60 Hz",
+            "lens": "25mm fixed germanium",
+            "operating_temp": "-20°C to 50°C",
+            "primary_use": "Building energy audits, predictive maintenance"
+          },
+          "customer": "Gulf Industrial Solutions LLC, Dubai, UAE",
+          "customer_type": "Established industrial distributor, in business since 2008",
+          "order_quantity": 50,
+          "order_value_usd": 375000,
+          "us_origin": true,
+          "potential_eccn_candidates": ["6A003", "6A993", "EAR99"],
+          "uae_is_country_group": "B (for NS/RS controls), not in Country Group D"
+        }
+      },
+      "task": "Determine the correct ECCN for this thermal imaging camera, assess whether an export licence is required for the UAE, and identify any red flags that require additional due diligence.",
+      "evaluation_criteria": [
+        {
+          "criterion": "eccn_classification",
+          "weight": 0.40,
+          "rubric": {
+            "pass": "Analyses the camera against ECCN 6A003 (imaging cameras): the key controlled parameters are resolution, NETD, and frame rate. 6A003.b.4 controls infrared imaging cameras with specific performance thresholds. At 640×480 resolution and 0.03°C NETD, this camera likely exceeds the thresholds for 6A003.b.4.b (cameras with NETD < 0.05K and resolution > 111,000 elements). Classifies under 6A003. Notes that if the parameters fell below the controlled thresholds, it would be 6A993 (lower-performance cameras controlled for AT only). Confirms it is NOT EAR99 due to the high performance specifications.",
+            "fail": "Classifies as EAR99 without checking 6A003 thresholds. Does not check the specific performance parameters against the ECCN control criteria. Confuses 6A003 (controlled) with 6A993 (less controlled)."
+          }
+        },
+        {
+          "criterion": "licence_determination",
+          "weight": 0.35,
+          "rubric": {
+            "pass": "Determines licence requirement: 6A003 is controlled for NS (National Security) and RS (Regional Stability) reasons. UAE is in Country Group B for NS controls — check the Commerce Country Chart (Supplement No. 1 to Part 738). An 'X' in the NS column for UAE means a licence is required. Evaluates whether any licence exception applies — NLR is not available, but License Exception TMP (temporary exports) or TSR (technology and software under restriction) likely don't apply to a permanent sale. License Exception STA (Strategic Trade Authorization) may be available for Country Group A:5 destinations but the UAE must be checked. Concludes a BIS export licence application is likely required.",
+            "fail": "Says no licence is needed because the UAE is a 'friendly country.' Does not check the Commerce Country Chart. Does not evaluate licence exceptions. Does not reference the correct regulatory sections."
+          }
+        },
+        {
+          "criterion": "due_diligence",
+          "weight": 0.25,
+          "rubric": {
+            "pass": "Identifies due diligence requirements: (1) screen Gulf Industrial Solutions LLC against all restricted party lists (SDN, Entity List, DPL, UAE-specific sanctions), (2) verify the end use — thermal cameras can be used for military surveillance and border security applications; the stated 'building energy audit' use must be verified, (3) 50 units to a distributor raises the question of who the end users are — request an end-user statement or customer list, (4) the UAE's proximity to Iran (a comprehensively sanctioned country) creates diversion risk — include a diversion risk clause in the contract, (5) frame rate of 60 Hz may be relevant — certain frame rates are specifically controlled under 6A003.",
+            "fail": "Does not screen the customer. Does not question the end use. Does not consider diversion risk to sanctioned neighbors. Does not request end-user information for a distributor sale."
+          }
+        }
+      ]
+    },
+    {
+      "id": "CTC-018",
+      "name": "Handling a CBP penalty assessment for negligent misclassification",
+      "difficulty": "medium",
+      "category": "penalties",
+      "context": {
+        "situation": "Your company has received a CBP pre-penalty notice assessing a penalty of $180,000 under 19 USC § 1592(c) for negligent misclassification. CBP alleges that your company imported industrial LED light fixtures under HTS 9405.42 (luminaires designed for use with LED light sources — duty 3.9%) when the correct classification is 8543.70 (other electrical machines and apparatus — duty 2.6%). The affected entries span 18 months and total $2.7M in declared value. The pre-penalty notice gives 30 days to respond. Your actual duty OVERPAYMENT due to the misclassification (3.9% vs correct 2.6%) is $35,100.",
+        "available_data": {
+          "penalty_notice_type": "Pre-penalty notice under 19 USC § 1592(c)",
+          "alleged_violation": "Negligent misclassification",
+          "penalty_amount": 180000,
+          "incorrect_hts": "9405.42 (luminaires for LED sources)",
+          "incorrect_duty_rate": "3.9%",
+          "correct_hts_per_cbp": "8543.70 (other electrical machines)",
+          "correct_duty_rate_per_cbp": "2.6%",
+          "total_declared_value": 2700000,
+          "duty_paid_at_3_9_pct": 105300,
+          "duty_owed_at_2_6_pct": 70200,
+          "duty_difference": -35100,
+          "entries_affected": 62,
+          "duration": "18 months",
+          "response_deadline": "30 days from receipt",
+          "company_compliance_history": "Clean — no prior violations in 12 years of importing"
+        }
+      },
+      "task": "Evaluate the pre-penalty notice, determine whether CBP's reclassification is correct, develop a response strategy, and draft the key elements of the response.",
+      "evaluation_criteria": [
+        {
+          "criterion": "classification_evaluation",
+          "weight": 0.30,
+          "rubric": {
+            "pass": "Recognises the unusual situation: CBP's reclassification results in a LOWER duty rate (2.6% vs 3.9%). The company actually OVERPAID duties. Yet CBP is still assessing a penalty because 19 USC § 1592 penalises any material misstatement, regardless of whether it resulted in a revenue loss. Evaluates CBP's proposed classification (8543.70) on the merits — LED light fixtures are an active area of classification disputes. Notes that the company's position (9405) may be defensible: heading 9405 specifically covers luminaires, and Chapter 94 Note governs the classification of lighting equipment. Recommends independent classification analysis before conceding or contesting.",
+            "fail": "Assumes CBP must be correct. Does not recognise that the reclassification results in lower duty. Does not evaluate the merits of the company's original classification. Does not know that penalties can be assessed even when the government loses no revenue."
+          }
+        },
+        {
+          "criterion": "response_strategy",
+          "weight": 0.40,
+          "rubric": {
+            "pass": "Develops a two-track strategy: Track 1 (if the company's classification is defensible): respond within 30 days contesting the reclassification. Provide a detailed GRI analysis supporting heading 9405. Cite relevant CBP rulings and WCO Explanatory Notes. If the company prevails, the penalty is cancelled because there was no misstatement. Track 2 (if CBP's classification is correct): concede the classification but argue for cancellation or maximum mitigation of the penalty because (a) there was no revenue loss (the company overpaid), (b) 12-year clean compliance history, (c) the LED lighting classification area is genuinely ambiguous (CBP has issued conflicting rulings), (d) the classification was consistent with the company's good-faith interpretation. Request that CBP cancel the penalty under its authority per 19 USC § 1592(d).",
+            "fail": "Has only one strategy (concede or contest, not both). Does not recognise that 'no revenue loss' is a powerful mitigation argument. Does not mention the 30-day response deadline. Does not cite specific mitigation factors."
+          }
+        },
+        {
+          "criterion": "response_drafting",
+          "weight": 0.30,
+          "rubric": {
+            "pass": "Drafts key response elements: (1) acknowledgement of the notice with case number and entry references, (2) factual background, (3) classification analysis (if contesting) or concession (if accepting), (4) mitigation argument: no revenue loss, clean 12-year record, classification ambiguity in the LED lighting space, immediate corrective action, active compliance programme. (5) Specific request: cancel the penalty in full, or reduce to a nominal amount given the zero revenue impact. Notes that the response should be reviewed by trade counsel before filing.",
+            "fail": "Does not draft a response. Provides only generic advice ('hire a lawyer'). Does not address the no-revenue-loss argument, which is the strongest mitigation factor in this scenario."
+          }
+        }
+      ]
+    },
+    {
+      "id": "CTC-019",
+      "name": "Transshipment circumvention — AD/CVD evasion investigation on steel products",
+      "difficulty": "hard",
+      "category": "penalties",
+      "context": {
+        "situation": "Your company imports cold-rolled steel coils that you use in automotive stamping operations. For the past 2 years, you have sourced from a Vietnamese steel mill at $680/metric ton CIF Houston. You have just received an EAPA (Enforce and Protect Act) allegation notice from CBP. A domestic steel producer alleges that the Vietnamese mill is purchasing Chinese-origin hot-rolled steel coils (which are subject to AD/CVD duties totalling 265.79% under orders A-570-930/C-570-931), performing minimal cold-rolling in Vietnam, and exporting the cold-rolled product as 'Vietnamese origin' to circumvent the AD/CVD orders. CBP has imposed interim measures requiring you to post a cash deposit of 265.79% on all entries pending investigation. Your annual import volume is 8,000 metric tons ($5.44M annually).",
+        "available_data": {
+          "product": "Cold-rolled steel coils",
+          "hts_code": "7209.16.0060",
+          "alleged_origin": "Vietnam (claimed), China (alleged actual)",
+          "supplier": "Viet Steel Processing JSC, Hai Phong, Vietnam",
+          "unit_price_cif": 680,
+          "annual_volume_mt": 8000,
+          "annual_value": 5440000,
+          "ad_cvd_rate_china": "265.79% combined",
+          "interim_deposit_required": true,
+          "interim_deposit_rate": "265.79%",
+          "domestic_producer_allegation": "Minimal processing of Chinese hot-rolled into cold-rolled",
+          "eapa_investigation_number": "EAPA-2025-XXX",
+          "response_deadline": "30 days for interim measures challenge",
+          "final_determination_timeline": "Within 300 days",
+          "potential_annual_ad_cvd_liability": 14467000,
+          "cash_deposit_per_shipment_estimate": 1806000
+        }
+      },
+      "task": "Develop a comprehensive response to the EAPA investigation, assess the substantial transformation question, and advise on immediate operational and financial actions.",
+      "evaluation_criteria": [
+        {
+          "criterion": "eapa_process_knowledge",
+          "weight": 0.25,
+          "rubric": {
+            "pass": "Demonstrates detailed knowledge of the EAPA process: (1) CBP must make an interim determination within 90 days, (2) interim measures can include cash deposits, suspension of liquidation, or both, (3) the respondent (your company) has 30 days to submit arguments against interim measures, (4) final determination within 300 days (extendable to 360), (5) if the final determination is affirmative, AD/CVD duties apply retroactively to all entries during the investigation period, (6) CBP has subpoena authority under EAPA — they can compel the Vietnamese mill to produce records. Notes that EAPA investigations have a high affirmative rate (~70%+).",
+            "fail": "Does not know the EAPA timeline. Confuses EAPA with a standard AD/CVD investigation. Does not mention the retroactive application of duties. Does not know that CBP has subpoena authority."
+          }
+        },
+        {
+          "criterion": "substantial_transformation_analysis",
+          "weight": 0.35,
+          "rubric": {
+            "pass": "Analyses the substantial transformation question for steel: converting hot-rolled steel to cold-rolled steel involves cold reduction (reducing thickness by 25-90%), annealing, and temper rolling. CBP's position on steel processing has evolved — in early cases, cold-rolling was considered substantial transformation. But in recent EAPA cases (particularly involving Vietnam and other Southeast Asian countries), CBP has taken a narrower view, especially when: the only processing is cold-rolling without further manufacturing, the processing is performed on semi-finished steel specifically to avoid AD/CVD duties, and the processing country has no significant steel-making capacity. The $680/MT price is suspicious — it's below most legitimate Vietnamese cold-rolled production costs, suggesting the Chinese input steel is cheap (because it would otherwise face 265% duties) and the Vietnamese processing margin is minimal.",
+            "fail": "Simplistically states 'cold-rolling is substantial transformation' without analysing the EAPA context. Does not consider the price analysis. Does not reference CBP's evolving position on steel processing cases."
+          }
+        },
+        {
+          "criterion": "operational_and_financial_actions",
+          "weight": 0.40,
+          "rubric": {
+            "pass": "Recommends immediate actions: (1) Retain trade counsel specialising in AD/CVD — this is a $14.5M annual exposure, (2) Cash deposit impact: at 265.79%, each $680K shipment requires a $1.8M cash deposit — assess whether the company can sustain this financially, (3) Challenge the interim measures within 30 days — argue that the company is a good-faith purchaser, had no knowledge of the origin of the input steel, and the cash deposit creates undue hardship, (4) Immediately investigate the supply chain: request from Viet Steel the origin of ALL input steel, production records showing the cold-rolling process, and cost of production data, (5) Diversify supply chain immediately — identify alternative non-Chinese, non-subject sources (India, Korea, Japan, Brazil) that can supply within 60-90 days, (6) If the Vietnamese mill cannot demonstrate non-Chinese input steel, assume the worst and plan for full AD/CVD liability, (7) Consider whether prior disclosure is appropriate if the company had any reason to know the origin was Chinese.",
+            "fail": "Does not address the cash deposit financial impact. Does not recommend supply chain diversification. Does not investigate the supplier. Waits passively for the investigation to conclude."
+          }
+        }
+      ]
+    },
+    {
+      "id": "CTC-020",
+      "name": "Complex classification of a multi-material composite product crossing chapter boundaries",
+      "difficulty": "hard",
+      "category": "tariff-classification",
+      "context": {
+        "situation": "Your company imports a product marketed as a 'Smart Yoga Mat.' It is a composite product consisting of: a natural rubber base (70% by weight, providing the primary surface for yoga practice), embedded pressure sensors (10% by weight, detecting body position and weight distribution), a thin flexible PCB with Bluetooth transmitter (5% by weight, sending data to a companion app), a rechargeable lithium polymer battery (8% by weight, powering the electronics), and a textile top layer of microfibre (7% by weight, providing comfort and grip). The unit FOB price is $120. The product is marketed and sold as a yoga/fitness mat that provides real-time posture feedback through the companion app. The electronics cannot function independently — they only work when integrated into the mat.",
+        "available_data": {
+          "product": "Smart Yoga Mat with embedded sensors and Bluetooth",
+          "manufacturer": "Hangzhou Fitness Innovation Co., Ltd",
+          "origin": "China",
+          "unit_fob_price": 120.00,
+          "quantity": 15000,
+          "total_value_fob": 1800000,
+          "candidate_headings": {
+            "heading_9506": "Articles for gymnastics, athletics, or sports (including yoga mats)",
+            "heading_8543": "Electrical machines and apparatus having individual functions",
+            "heading_4016": "Articles of vulcanised rubber (other than hard rubber)",
+            "heading_8471": "ADP machines (if the sensor + Bluetooth constitutes data processing)",
+            "heading_6307": "Other made-up textile articles"
+          },
+          "weight_breakdown": {
+            "natural_rubber_base_pct": 70,
+            "pressure_sensors_pct": 10,
+            "pcb_bluetooth_pct": 5,
+            "battery_pct": 8,
+            "textile_layer_pct": 7
+          },
+          "value_breakdown_estimate": {
+            "rubber_base": 25,
+            "sensors": 40,
+            "pcb_bluetooth": 20,
+            "battery": 10,
+            "textile": 5
+          },
+          "marketing": "Sold as a fitness/yoga product, not as an electronic device",
+          "section_301": "List 4A (7.5%)"
+        }
+      },
+      "task": "Classify this product under the HTS using the full GRI methodology. Address the conflict between physical composition (mostly rubber) and value composition (mostly electronics). Recommend whether to seek a binding ruling.",
+      "evaluation_criteria": [
+        {
+          "criterion": "systematic_gri_application",
+          "weight": 0.35,
+          "rubric": {
+            "pass": "Applies GRIs in strict order. GRI 1: Heading 9506 covers 'articles and equipment for general physical exercise, gymnastics, athletics, other sports, or outdoor games.' A yoga mat is squarely within this heading per the Explanatory Notes. BUT the embedded electronics potentially make this a composite good classifiable under multiple headings. GRI 2(b): The rubber mat combined with electronic components creates a mixture/composite — multiple headings may apply. GRI 3(a): Heading 9506 is arguably more specific than 4016 or 8543 for this product because the product is specifically designed for yoga. But 8543 is specifically for electrical apparatus with individual functions — the sensor/feedback system has an individual function. GRI 3(a) may not resolve. GRI 3(b): Essential character analysis required.",
+            "fail": "Classifies based on weight alone (rubber = 70%, therefore rubber article). Does not apply the GRIs in order. Does not recognise the composite nature of the product. Jumps to a conclusion without analysing multiple candidate headings."
+          }
+        },
+        {
+          "criterion": "essential_character_determination",
+          "weight": 0.40,
+          "rubric": {
+            "pass": "Analyses essential character using all relevant factors: (1) Function: as a yoga mat (floor surface for practice) — the rubber base. As a posture feedback device — the sensors. Both functions are integral to the product concept. (2) Value: sensors and electronics represent ~60% of unit cost; rubber represents ~21%. By value, the electronics dominate. (3) Bulk/weight: rubber is 70% by weight. By bulk, the rubber dominates. (4) Consumer perception and marketing: sold as a yoga mat (fitness product), not as an electronic device. Consumers buy it to practice yoga with posture feedback as an enhancement. Weighs these factors and reaches a REASONED conclusion — likely heading 9506 (the mat function defines the product in consumer perception and marketing, and the product is specifically designed for a sport activity). Alternatively, if the electronics are deemed to give essential character by value, 8543 is defensible. Acknowledges the genuine ambiguity.",
+            "fail": "Resolves essential character based on a single factor without considering others. Does not consider consumer perception. Does not acknowledge the genuine classification dispute. Does not weigh conflicting indicators (weight vs value)."
+          }
+        },
+        {
+          "criterion": "binding_ruling_recommendation",
+          "weight": 0.25,
+          "rubric": {
+            "pass": "Strongly recommends seeking a CBP binding ruling BEFORE importing. Rationale: the classification is genuinely ambiguous, the volume is significant ($1.8M), and the duty rate difference between headings (9506 is typically 4.0%, 8543 is 2.6%, 4016 is 2.5%) is compounded by different Section 301 rates and potential FTA implications. An incorrect classification creates penalty risk. Notes that CBP has been issuing rulings on 'smart' fitness products and the rulings have been inconsistent — some classified by the athletic function, others by the electronic function. Recommends submitting a sample with the ruling request.",
+            "fail": "Does not recommend a ruling. Says 'just pick the lowest duty rate.' Does not consider the penalty risk of an incorrect classification on $1.8M in imports."
+          }
+        }
+      ]
+    },
+    {
+      "id": "CTC-021",
+      "name": "First sale valuation challenge with related-party middleman",
+      "difficulty": "hard",
+      "category": "valuation",
+      "context": {
+        "situation": "Your company imports consumer appliances (stand mixers) through a Hong Kong trading company. The supply chain is: Chinese factory → Hong Kong trading company (your parent company's wholly-owned subsidiary) → your US company. The factory sells to the HK subsidiary at $65/unit. The HK subsidiary sells to you at $95/unit. The goods ship directly from China to the US — never touching Hong Kong. Your predecessor in trade compliance implemented a 'first sale' programme 3 years ago, declaring $65/unit as the customs value instead of $95/unit. The duty rate is 3.4%. Annual volume: 200,000 units. You have recently been appointed as the new VP of Trade Compliance and are reviewing the programme.",
+        "available_data": {
+          "product": "Stand mixers (consumer kitchen appliances)",
+          "hts_code": "8509.40.0025",
+          "first_sale_price": 65.00,
+          "last_sale_price": 95.00,
+          "annual_volume": 200000,
+          "duty_rate": "3.4%",
+          "annual_duty_at_first_sale": 442000,
+          "annual_duty_at_last_sale": 646000,
+          "annual_duty_savings_claimed": 204000,
+          "three_year_total_savings": 612000,
+          "supply_chain": "Chinese factory → HK subsidiary (related to importer's parent) → US importer",
+          "hk_subsidiary_relationship": "Wholly-owned subsidiary of US importer's parent company",
+          "factory_to_hk_relationship": "Unrelated (factory is independent)",
+          "hk_subsidiary_activities": "Invoicing, payment processing, quality inspection (1 inspector visits factory quarterly)",
+          "goods_routing": "Direct from China to US — never physically in Hong Kong",
+          "documentation_status": "Factory-to-HK invoices exist but payment records are parent company intercompany transfers",
+          "assists_provided": "US company provides product designs and specifications directly to the Chinese factory"
+        }
+      },
+      "task": "Evaluate the validity of this first sale programme, identify the compliance risks, and recommend a course of action.",
+      "evaluation_criteria": [
+        {
+          "criterion": "first_sale_validity",
+          "weight": 0.40,
+          "rubric": {
+            "pass": "Identifies multiple fatal problems with this first sale programme: (1) The HK subsidiary is RELATED to the US importer (both owned by the same parent). While the factory-to-HK sale is between unrelated parties, the HK subsidiary is a conduit within the corporate family — CBP will scrutinise whether it bears genuine commercial risk. (2) The HK subsidiary's activities are minimal (invoicing + quarterly QI visits) — it does not bear inventory risk, does not independently source products, and cannot independently choose suppliers. This fails CBP's test for a 'bona fide middleman.' (3) Payment flows through intercompany transfers, not independent bank payments — this undermines the 'separate sale' argument. (4) Assists (designs/specs) flow directly from the US to the Chinese factory, bypassing the HK subsidiary entirely — this suggests the true transaction is between the US company and the factory, with the HK entity as a pass-through. Concludes the first sale programme is NOT defensible.",
+            "fail": "Accepts the programme because 'the factory and HK company are unrelated.' Does not analyse the HK subsidiary's role and risk. Does not consider the assist flow. Does not recognise the related-party issue between HK and the US importer."
+          }
+        },
+        {
+          "criterion": "exposure_assessment",
+          "weight": 0.30,
+          "rubric": {
+            "pass": "Calculates the exposure: 3 years × $204,000/year = $612,000 in underpaid duties. Penalty exposure: negligence (2× lost revenue) = $1,224,000, or 20% of dutiable value = ~$1.28M. Gross negligence possible given that a competent compliance programme should have identified the related-party issue. With prior disclosure: capped at interest (~$24,000) for negligence or 1× ($612,000) for gross negligence. Additionally: the assists (designs/specs provided to the factory) should have been added to the customs value but were not — this is a separate valuation violation that increases the exposure further. Quantifies the assist undervaluation if possible.",
+            "fail": "Does not calculate the multi-year exposure. Does not mention the assist valuation issue (a second, independent violation). Does not recognise the penalty risk."
+          }
+        },
+        {
+          "criterion": "recommended_action",
+          "weight": 0.30,
+          "rubric": {
+            "pass": "Recommends: (1) Immediately cease the first sale programme — all future entries should be declared at $95/unit (the last sale price) PLUS the prorated value of assists. (2) Engage trade counsel to evaluate a prior disclosure covering 3 years of entries. Prior disclosure is strongly recommended given the $612K+ exposure. (3) Restructure the supply chain if first sale savings are desired: the HK subsidiary must take genuine commercial risk — hold title, maintain a letter of credit with the factory, independently manage logistics, and bear inventory risk. This is a significant operational change, not just a documentation exercise. (4) Alternatively, eliminate the HK middleman and buy directly from the factory — the $95 price would then be the only transaction value and no first sale question arises. (5) Conduct a broader review of all import programmes established by the predecessor.",
+            "fail": "Recommends continuing the programme with 'better documentation.' Does not recommend prior disclosure. Does not address the structural problems with the HK subsidiary's role. Does not address the assist issue."
+          }
+        }
+      ]
+    },
+    {
+      "id": "CTC-022",
+      "name": "UFLPA detention — tracing cotton supply chain through multiple tiers",
+      "difficulty": "hard",
+      "category": "documentation",
+      "context": {
+        "situation": "CBP has detained a container of 24,000 cotton polo shirts (FOB value $192,000) at the Port of Los Angeles under the Uyghur Forced Labor Prevention Act (UFLPA). The polo shirts were manufactured in Bangladesh by Dhaka Garments Ltd. CBP's Withhold Release Order (WRO) is based on intelligence that Bangladeshi garment manufacturers frequently source yarn from spinners who use Xinjiang cotton. Your company has 30 days to respond with evidence rebutting the presumption. The shipment represents a major retail client's spring collection launch — delay beyond 45 days will cause $1.2M in lost sales for the client.",
+        "available_data": {
+          "product": "Men's and women's cotton polo shirts",
+          "hts_code": "6105.10 / 6106.10",
+          "origin": "Bangladesh",
+          "manufacturer": "Dhaka Garments Ltd, Dhaka, Bangladesh",
+          "fob_value": 192000,
+          "quantity": 24000,
+          "port_of_detention": "Los Angeles",
+          "detention_basis": "UFLPA rebuttable presumption",
+          "response_deadline": "30 days from detention notice",
+          "supply_chain_known": {
+            "tier_1_garment": "Dhaka Garments Ltd, Bangladesh",
+            "tier_2_fabric": "Unknown — Dhaka sources from multiple fabric mills",
+            "tier_3_yarn": "Unknown",
+            "tier_4_cotton": "Unknown"
+          },
+          "retail_client_deadline": "45 days maximum before collection launch is cancelled",
+          "lost_sales_if_delayed": 1200000,
+          "isotopic_testing_available": true,
+          "isotopic_testing_turnaround": "7-10 business days"
+        }
+      },
+      "task": "Develop a response strategy to CBP's UFLPA detention. Outline the evidence required, the supply chain tracing methodology, and contingency plans if the rebuttable presumption cannot be overcome.",
+      "evaluation_criteria": [
+        {
+          "criterion": "evidence_requirements",
+          "weight": 0.35,
+          "rubric": {
+            "pass": "Details the evidence CBP requires to overcome the UFLPA rebuttable presumption by 'clear and convincing evidence': (1) complete supply chain map from garment factory → fabric mill → yarn spinner → cotton gin → cotton farm, (2) purchase orders and invoices at each tier with lot/batch traceability, (3) production records linking specific cotton purchases to specific yarn lots to specific fabric batches to specific garments, (4) third-party audit reports on labour conditions at each facility (not just the garment factory), (5) isotopic testing results from a CBP-recognised lab (Oritain or Applied DNA Sciences) confirming the cotton is NOT of Xinjiang origin. Emphasises that self-certifications and supplier declarations alone are insufficient — CBP has explicitly rejected these.",
+            "fail": "Says a supplier letter certifying no Xinjiang cotton is sufficient. Does not know the 'clear and convincing evidence' standard. Does not mention isotopic testing. Does not require multi-tier tracing."
+          }
+        },
+        {
+          "criterion": "supply_chain_tracing",
+          "weight": 0.35,
+          "rubric": {
+            "pass": "Outlines a systematic tracing methodology: (1) Day 1-3: Contact Dhaka Garments — identify the fabric supplier(s) for this specific production run (not their general suppliers, the SPECIFIC mill that supplied fabric for these polo shirts). Get batch/lot numbers. (2) Day 3-7: Contact the fabric mill — identify the yarn supplier and get lot numbers. Request production records linking the fabric batch to specific yarn lots. (3) Day 7-12: Contact the yarn spinner — identify the cotton source by lot. Request ginning certificates, cotton bale tags, and shipping records from the cotton origin. (4) Day 7-10 (parallel): Submit garment samples for isotopic testing — results in 7-10 business days. (5) Day 12-20: Compile the complete traceability package. (6) Day 20-25: Legal review. (7) Day 25-30: Submit to CBP. Notes that if ANY tier cannot provide traceability, the chain breaks and the presumption likely cannot be rebutted.",
+            "fail": "Does not provide a systematic timeline. Asks only the garment factory where the cotton came from (they may not know — it's 3 tiers removed). Does not pursue isotopic testing as a parallel track. Does not account for the 30-day deadline in the tracing plan."
+          }
+        },
+        {
+          "criterion": "contingency_planning",
+          "weight": 0.30,
+          "rubric": {
+            "pass": "Addresses contingencies: (1) If the tracing reveals ANY Xinjiang cotton link: the goods CANNOT be admitted. Options are re-export to a non-US destination or abandon/destroy. Calculate the financial impact and notify the retail client immediately. (2) If tracing is inconclusive (supply chain gaps): request a 30-day extension from CBP (routinely granted). Use the extension to pursue additional evidence including isotopic testing results. (3) If the 45-day client deadline is at risk: discuss with the retail client about sourcing replacement inventory from a US or non-detained source as a backup. Absorb the cost of air-freighting replacement goods if the client relationship justifies it. (4) Long-term: implement a UFLPA compliance programme — pre-clear supply chains before production begins, not after detention. Require all cotton garment suppliers to maintain chain-of-custody documentation from farm to finished garment. Consider switching to traceable cotton programmes (US Supima, Australian cotton, BCI-certified).",
+            "fail": "Has no contingency plan. Assumes the tracing will succeed. Does not address the client's deadline. Does not consider re-export or destruction options. Does not recommend long-term UFLPA compliance measures."
+          }
+        }
+      ]
+    },
+    {
+      "id": "CTC-023",
+      "name": "Optimising duty exposure across multiple FTAs for a multi-origin product",
+      "difficulty": "hard",
+      "category": "duty-optimisation",
+      "context": {
+        "situation": "Your company sells industrial automation equipment globally and sources components from 8 countries. You need to optimise the duty structure for a robotic arm assembly (HTS 8479.50) being sold to customers in the US, EU, UK, and Japan. The assembly is currently manufactured in your Malaysian plant. You want to evaluate whether the product qualifies for preferential treatment under multiple FTAs simultaneously, and whether relocating certain manufacturing steps could improve qualification.",
+        "available_data": {
+          "finished_product": "Robotic arm assembly for industrial automation",
+          "finished_hts": "8479.50",
+          "manufacturing_location": "Malaysia",
+          "unit_fob_price_usd": 4200,
+          "annual_volume_per_market": {
+            "us": 2000,
+            "eu": 1500,
+            "uk": 800,
+            "japan": 1200
+          },
+          "bill_of_materials": {
+            "japanese_servo_motors": {"cost": 1100, "pct": 26.2, "hs": "8501.52", "origin": "Japan"},
+            "german_precision_gears": {"cost": 680, "pct": 16.2, "hs": "8483.40", "origin": "Germany"},
+            "chinese_aluminium_housing": {"cost": 320, "pct": 7.6, "hs": "7616.99", "origin": "China"},
+            "korean_sensors": {"cost": 450, "pct": 10.7, "hs": "9031.80", "origin": "South Korea"},
+            "taiwanese_pcb_controllers": {"cost": 380, "pct": 9.0, "hs": "8537.10", "origin": "Taiwan"},
+            "malaysian_cable_harnesses": {"cost": 160, "pct": 3.8, "hs": "8544.42", "origin": "Malaysia"},
+            "malaysian_assembly_labour": {"cost": 520, "pct": 12.4},
+            "malaysian_overhead_profit": {"cost": 590, "pct": 14.1}
+          },
+          "applicable_ftas": {
+            "us_market": "No US-Malaysia FTA; check RCEP pathway via Japan",
+            "eu_market": "EU-Vietnam FTA (no EU-Malaysia FTA yet; EUSFTA negotiations stalled)",
+            "uk_market": "UK-CPTPP (Malaysia is a CPTPP member)",
+            "japan_market": "RCEP (both Malaysia and Japan are members)"
+          },
+          "mfn_rates": {
+            "us": "2.5%",
+            "eu": "1.7%",
+            "uk": "2.5%",
+            "japan": "0% (already duty-free MFN)"
+          }
+        }
+      },
+      "task": "Analyse FTA qualification for each destination market, identify the optimal duty strategy, and recommend any supply chain restructuring that could improve qualification.",
+      "evaluation_criteria": [
+        {
+          "criterion": "multi_fta_analysis",
+          "weight": 0.40,
+          "rubric": {
+            "pass": "Analyses each market systematically: (1) US: No bilateral FTA with Malaysia. RCEP does not include the US. No preferential option — MFN 2.5% applies. However, duty is low enough that FTZ or drawback strategies may not justify the cost. (2) EU: No EU-Malaysia FTA (negotiations stalled since 2012). EU MFN rate of 1.7% applies. The savings from a future FTA would be minimal given the low MFN rate. (3) UK: Malaysia is a CPTPP member, and the UK acceded to CPTPP in 2023. Analyse CPTPP rules of origin for heading 8479 — typically requires CTH or 40% RVC. Calculate: non-originating content from CPTPP-non-members (China 7.6% + Taiwan 9.0% = 16.6%). Originating under CPTPP cumulation: Japan (26.2%) + Malaysia (30.3%) = 56.5%. Potentially qualifies if German and Korean content qualifies through CPTPP cumulation (Korea is NOT a CPTPP member but Germany is not either — need to check). (4) Japan: RCEP applies. Both Malaysia and Japan are RCEP members. RCEP allows diagonal cumulation — Japanese motors (26.2%), Korean sensors (10.7%), and Malaysian content (30.3%) are all originating under RCEP = 67.2%. Chinese content (7.6%) and Taiwanese/German content need analysis.",
+            "fail": "Analyses only one market. Does not check CPTPP for the UK market. Does not apply cumulation rules correctly. Does not recognise that Japan is already duty-free MFN, making RCEP qualification unnecessary for that market."
+          }
+        },
+        {
+          "criterion": "supply_chain_optimisation",
+          "weight": 0.35,
+          "rubric": {
+            "pass": "Identifies supply chain restructuring opportunities: (1) Replace the Chinese aluminium housing with a Malaysian or ASEAN-sourced housing to improve RCEP and CPTPP qualification margins. At 7.6% of value, this is the easiest swap to improve originating percentages. (2) The Taiwanese PCB controllers (9.0%) are non-originating under both CPTPP and RCEP (Taiwan is not a member of either). Sourcing from a CPTPP or RCEP member (Japan, Korea, Malaysia) would convert this 9% to originating. (3) For the UK market specifically: Germany is not a CPTPP member, so the German precision gears (16.2%) are non-originating under CPTPP — but they ARE originating under any future EU-UK or EU-Malaysia agreement. (4) Notes that Japan is duty-free MFN, so RCEP qualification for that market has no duty benefit — it may have value for certificate of origin purposes or cumulation with other RCEP parties.",
+            "fail": "Does not identify any supply chain restructuring. Accepts the current BOM without considering alternatives. Does not analyse which specific material substitutions would improve qualification."
+          }
+        },
+        {
+          "criterion": "financial_impact_assessment",
+          "weight": 0.25,
+          "rubric": {
+            "pass": "Calculates the financial impact of each strategy: (1) UK CPTPP savings (if qualified): 800 units × $4,200 × 2.5% = $84,000/year. (2) Cost of restructuring (e.g., sourcing Malaysian aluminium housing instead of Chinese): estimate the unit cost difference and compare to duty savings. (3) Japan RCEP: $0 savings (already duty-free). (4) US: $0 savings (no FTA). (5) EU: $0 savings (no FTA, and MFN rate of 1.7% may not justify programme cost). Total addressable savings: approximately $84,000/year (UK only). Concludes: the UK CPTPP opportunity is worth pursuing, but the overall duty savings are modest given the low MFN rates. The company should focus on CPTPP qualification for the UK market and monitor EU-Malaysia FTA negotiations for future savings.",
+            "fail": "Does not calculate financial savings for each market. Does not compare the cost of supply chain restructuring to the duty savings. Recommends complex restructuring without demonstrating positive ROI."
+          }
+        }
+      ]
+    },
+    {
+      "id": "CTC-024",
+      "name": "Responding to a retroactive Section 301 exclusion expiration",
+      "difficulty": "hard",
+      "category": "duty-optimisation",
+      "context": {
+        "situation": "Your company has been importing industrial 3D printers from China under a Section 301 tariff exclusion that was granted in 2023. The exclusion covered your specific HTS subheading and reduced the Section 301 additional tariff from 25% to 0%. The exclusion expires in 60 days and USTR has announced it will NOT be renewed. Your annual import value is $8.4M, and the reinstatement of the 25% tariff will add $2.1M in annual costs. Your CEO wants a comprehensive duty mitigation strategy within 2 weeks.",
+        "available_data": {
+          "product": "Industrial 3D printers (selective laser sintering)",
+          "hts_code": "8485.80.0040",
+          "origin": "China",
+          "annual_import_value": 8400000,
+          "current_section_301_rate": "0% (exclusion)",
+          "future_section_301_rate": "25%",
+          "exclusion_expiry": "60 days",
+          "annual_cost_increase": 2100000,
+          "mfn_duty_rate": "Free",
+          "current_supplier": "ShenPrint Technology Co., Ltd, Shenzhen, China",
+          "alternative_suppliers_identified": {
+            "germany": {"company": "EOS GmbH", "price_premium": "35%", "lead_time": "4-6 months"},
+            "israel": {"company": "Stratasys Ltd", "price_premium": "28%", "lead_time": "3-4 months"},
+            "us_domestic": {"company": "3D Systems Corp", "price_premium": "40%", "lead_time": "2-3 months"}
+          },
+          "customer_price_elasticity": "Moderate — some customers will accept 10-15% price increase, others will defer purchases",
+          "inventory_capacity": "Can stockpile approximately 3 months of demand before exclusion expires"
+        }
+      },
+      "task": "Develop a comprehensive duty mitigation strategy addressing the Section 301 tariff reinstatement. Evaluate all available options including stockpiling, supply chain restructuring, FTZ, tariff engineering, and price pass-through.",
+      "evaluation_criteria": [
+        {
+          "criterion": "immediate_actions",
+          "weight": 0.30,
+          "rubric": {
+            "pass": "Identifies immediate actions within the 60-day window: (1) Accelerate imports — stockpile 3 months of inventory before the exclusion expires. This defers the tariff impact by 3 months and saves $525,000 (one quarter of the annual cost increase). Calculate the carrying cost of excess inventory (approximately $50K-$100K in warehousing and financing) against the $525K savings. (2) File a new exclusion request with USTR — while unlikely to succeed since USTR announced non-renewal, preserving the right to request reinstatement is worth the filing cost. (3) Engage government affairs and industry associations to advocate for extension. (4) Immediately begin supplier diversification due diligence (see medium-term).",
+            "fail": "Does not recommend stockpiling before the deadline. Suggests only one course of action. Does not calculate the financial impact of each immediate option."
+          }
+        },
+        {
+          "criterion": "medium_term_strategies",
+          "weight": 0.40,
+          "rubric": {
+            "pass": "Evaluates multiple medium-term strategies with financial analysis: (1) Supplier diversification: Germany (+35% cost = $2.94M premium on $8.4M, but no Section 301), Israel (+28% = $2.35M premium), US domestic (+40% = $3.36M premium). Compare: the 25% tariff costs $2.1M, so only the Israeli option ($2.35M) is close — and it eliminates Section 301 risk entirely. The German option at $2.94M costs $840K MORE than paying the tariff. US domestic at $3.36M costs $1.26M more. Conclusion: unless there are non-financial factors (supply chain resilience, IP protection), paying the 25% tariff on Chinese goods is cheaper than switching to German or US suppliers. Israeli sourcing is worth evaluating. (2) FTZ strategy: the MFN rate is Free, so there's no inverted tariff benefit. But Section 301 tariffs apply IN the FTZ when goods enter US commerce — FTZ provides no relief from Section 301. (3) Tariff engineering: analyse whether any sub-components could be classified differently to reduce the tariff base. (4) Duty drawback: if any 3D printers are re-exported, drawback of the Section 301 tariff may be available (post-TFTEA, Section 301 duties are drawback-eligible under certain conditions).",
+            "fail": "Recommends switching to a more expensive supplier without calculating whether it's actually cheaper than paying the tariff. Says FTZ eliminates Section 301 (it does not). Does not evaluate multiple strategies comparatively."
+          }
+        },
+        {
+          "criterion": "strategic_framework",
+          "weight": 0.30,
+          "rubric": {
+            "pass": "Presents a comprehensive strategic framework for the CEO: (1) Short-term (0-60 days): stockpile + file new exclusion request. (2) Medium-term (60-180 days): absorb 25% tariff while pursuing dual sourcing from Israel as partial hedge. Pass through 10-15% price increase to customers with moderate elasticity. (3) Long-term (180+ days): evaluate relocating Chinese supplier's production to a non-List country (Vietnam, Thailand, Malaysia) — this requires a genuine substantial transformation to avoid EAPA risk. (4) Financial model: total annual cost of $2.1M in tariffs, offset by $525K stockpiling savings, $X customer price pass-through, $Y from dual-sourcing Israeli units for price-insensitive customers. Net annual impact after mitigation: $Z. (5) Risk factors: further tariff escalation (List rates could increase), EAPA risk if supply chain is restructured, customer attrition from price increases.",
+            "fail": "Presents a single strategy without alternatives. Does not provide a financial model for the CEO. Does not consider the risk of supply chain restructuring triggering an EAPA investigation. Does not address customer pricing strategy."
+          }
+        }
+      ]
+    },
+    {
+      "id": "CTC-025",
+      "name": "Complex prior disclosure involving multiple violation types across related entities",
+      "difficulty": "hard",
+      "category": "penalties",
+      "context": {
+        "situation": "As the newly hired Chief Compliance Officer, you have conducted a 90-day assessment of your company's import operations and discovered THREE distinct violations: (1) Classification error: industrial robots (correct HTS 8479.50, duty 2.5%) were classified under 8428.90 (other lifting/handling machinery, duty free) for 2 years — affecting $18M in entries, duty shortfall $450K. (2) Assist undervaluation: CAD designs valued at $1.2M were provided to the Chinese manufacturer but never declared as assists — affecting 3 years of entries, estimated additional duty $156K. (3) FTA over-claim: Mexican-origin components claimed USMCA preference on assemblies that contain non-qualifying Chinese sub-components — affecting 18 months, estimated duty shortfall $280K. Total estimated duty shortfall: $886K. CBP has not contacted the company, but a competitor has been subject to a Focused Assessment and your company is in the same industry and CEE.",
+        "available_data": {
+          "violations": [
+            {
+              "type": "Classification error",
+              "product": "Industrial robots",
+              "incorrect_hts": "8428.90 (duty free)",
+              "correct_hts": "8479.50 (2.5%)",
+              "duration": "2 years",
+              "affected_entries": "approximately 120",
+              "total_declared_value": 18000000,
+              "duty_shortfall": 450000
+            },
+            {
+              "type": "Assist undervaluation",
+              "assist_description": "CAD designs provided to Chinese manufacturer",
+              "assist_value": 1200000,
+              "duration": "3 years",
+              "affected_entries": "approximately 200",
+              "additional_duty_owed": 156000
+            },
+            {
+              "type": "FTA over-claim",
+              "fta": "USMCA",
+              "issue": "Non-qualifying Chinese sub-components in Mexican assemblies",
+              "duration": "18 months",
+              "affected_entries": "approximately 65",
+              "duty_shortfall": 280000
+            }
+          ],
+          "total_duty_shortfall": 886000,
+          "cbp_status": "No contact from CBP yet",
+          "industry_context": "Competitor recently subject to Focused Assessment",
+          "company_compliance_history": "No formal compliance programme existed before CCO was hired",
+          "entries_at_risk": "approximately 385 total",
+          "years_of_violations": "Overlapping 18 months to 3 years"
+        }
+      },
+      "task": "Develop a comprehensive compliance remediation strategy. Address: the prior disclosure decision for multiple concurrent violations, penalty exposure calculations, and the implementation of a compliance programme to prevent recurrence.",
+      "evaluation_criteria": [
+        {
+          "criterion": "prior_disclosure_strategy",
+          "weight": 0.35,
+          "rubric": {
+            "pass": "Recommends filing a single comprehensive prior disclosure covering ALL THREE violations simultaneously. Rationale: (1) discovering multiple violations suggests systematic compliance failures that CBP would characterize as gross negligence if discovered independently, (2) the competitor's Focused Assessment means CBP may soon audit companies in the same industry/CEE — timing is critical, (3) a comprehensive disclosure demonstrates the new CCO's commitment to remediation. Addresses the filing logistics: file with the port/CEE having jurisdiction, identify all ~385 entries by number and date, describe each violation separately with correct information, calculate the combined duty shortfall ($886K), and tender the full amount plus interest (~$55K). Notes that filing a prior disclosure is an admission — consult trade counsel first. The disclosure should emphasize the new CCO's appointment and the systematic compliance review as context.",
+            "fail": "Recommends disclosing only the largest violation and 'fixing' the others quietly. Recommends against prior disclosure because 'CBP hasn't found anything yet.' Does not recognise the urgency created by the competitor's Focused Assessment."
+          }
+        },
+        {
+          "criterion": "penalty_exposure_analysis",
+          "weight": 0.30,
+          "rubric": {
+            "pass": "Calculates exposure for both scenarios: WITHOUT prior disclosure: if CBP characterises as gross negligence (likely given systematic failures and no compliance programme): penalty = 4 × $886K = $3.544M or 40% of dutiable value — whichever is lower. PLUS the $886K in duty owed. Total worst-case: $4.43M. If characterised as negligence: 2 × $886K = $1.772M + $886K = $2.658M. WITH prior disclosure: if accepted as negligence: interest only on $886K (~$55K) + $886K duty = $941K total. If characterised as gross negligence despite disclosure: 1 × $886K + $886K = $1.772M total. Savings from prior disclosure: between $717K and $2.658M. The prior disclosure decision is a $1-2M+ decision. Notes that the LACK of a compliance programme hurts the mitigation argument under both scenarios — which is why implementing one immediately is critical.",
+            "fail": "Does not calculate both scenarios. Gets the penalty formulas wrong. Does not distinguish between the three types of violations (each may be assessed independently). Does not recognise that the absence of a compliance programme increases the culpability characterisation."
+          }
+        },
+        {
+          "criterion": "compliance_programme_implementation",
+          "weight": 0.35,
+          "rubric": {
+            "pass": "Outlines a compliance programme addressing all three violation types: (1) Classification: implement mandatory independent classification review for all new HTS codes, annual re-classification audit of the top 20 products by value, retain a classification specialist or consultant. (2) Assists: create an SOP requiring trade compliance sign-off on any tooling, engineering, designs, or other items provided to foreign suppliers — must be declared as assists. Quarterly review with procurement. (3) FTA: require documented qualification analysis (BOM tracing, tariff shift or RVC calculation) for every FTA claim. Annual re-verification of supplier origin certifications. (4) Cross-cutting: hire or designate a trade compliance manager, implement automated restricted party screening, establish an internal audit cycle (quarterly spot-checks, annual comprehensive review), develop a compliance manual with SOPs for each area, train all relevant personnel (import operations, procurement, engineering, sales). (5) Timeline: 30 days for prior disclosure filing, 90 days for immediate process changes, 180 days for full programme implementation. References CBP's Informed Compliance framework and suggests the company target C-TPAT membership within 18 months as a credibility signal.",
+            "fail": "Recommends only 'getting a compliance programme' without specifics. Does not address all three violation types. Does not provide a timeline. Does not reference CBP's Informed Compliance framework or C-TPAT."
+          }
+        }
+      ]
+    },
+    {
+      "id": "CTC-026",
+      "name": "Multi-jurisdictional origin dispute with conflicting classification across EU, UK, and US",
+      "difficulty": "hard",
+      "category": "tariff-classification",
+      "context": {
+        "situation": "Your company manufactures a medical diagnostic device in Ireland. The device is a portable blood analyser that combines optical sensing (spectroscopy), microfluidics, and AI-driven diagnostic software. You sell globally, including to the US, UK, and within the EU. The device has received different tariff classifications in each jurisdiction: the EU classifies it under 9027.80 (instruments for physical or chemical analysis) at 0% duty, CBP classified it under 9018.19 (electro-diagnostic apparatus for medical use) at 0% duty but with different regulatory implications, and UK HMRC classified it under 8543.70 (other electrical machines and apparatus) at 2.2% duty. You believe the EU classification is correct and want to align all jurisdictions.",
+        "available_data": {
+          "product": "Portable AI-powered blood analyser (Model DxScan Pro)",
+          "manufacturer": "MedTech Diagnostics Ltd, Galway, Ireland",
+          "classifications": {
+            "eu_taric": {"code": "9027.80.17", "duty": "0%", "basis": "BTI ruling (valid 3 years)"},
+            "us_hts": {"code": "9018.19.95", "duty": "0%", "basis": "CBP ruling HQ H301XXX (2024)"},
+            "uk_commodity": {"code": "8543.70.90", "duty": "2.2%", "basis": "HMRC advice letter (not binding)"}
+          },
+          "annual_sales_by_market": {
+            "eu": {"units": 5000, "value_eur": 12500000},
+            "us": {"units": 3000, "value_usd": 9000000},
+            "uk": {"units": 1500, "value_gbp": 3750000}
+          },
+          "uk_annual_duty_at_2_2_pct": 82500,
+          "device_description": "Optical spectroscopy analysis of blood samples using microfluidic cartridges, with AI-driven interpretation and diagnostic output. Used in clinical settings for point-of-care diagnostics.",
+          "fda_classification": "Class II medical device (510(k) cleared)",
+          "eu_mdr_classification": "Class IIa in-vitro diagnostic medical device"
+        }
+      },
+      "task": "Analyse the classification dispute, determine which jurisdiction's classification is most defensible, and develop a strategy to harmonise classification across all three markets — particularly to obtain the 0% rate in the UK.",
+      "evaluation_criteria": [
+        {
+          "criterion": "classification_analysis",
+          "weight": 0.35,
+          "rubric": {
+            "pass": "Analyses the device against all three proposed classifications: (1) Heading 9027 (instruments for physical/chemical analysis): the device performs spectroscopic analysis of blood — this is physical/chemical analysis. Heading 9027 is specific to analytical instruments. Chapter 90 Note 3 excludes parts and accessories of general use. The AI component does not change the fundamental classification — the instrument's function is analysis. (2) Heading 9018 (electro-diagnostic apparatus): this heading covers instruments used IN diagnostic medicine. The distinction from 9027 is that 9018 is for instruments used on or with the patient, while 9027 is for laboratory/analytical instruments regardless of application. A point-of-care blood analyser is arguably both. (3) Heading 8543 (other electrical machines): this is a residual heading — items classify here only when no more specific heading applies. Since headings 9027 and 9018 both provide more specific coverage, 8543 should not apply. The UK classification appears weakest. Concludes that 9027 (EU) or 9018 (US) are both defensible; 8543 (UK) is not.",
+            "fail": "Accepts all three classifications as equally valid. Does not analyse the heading texts and chapter notes. Does not recognise that 8543 is a residual heading that should not apply when a more specific heading exists."
+          }
+        },
+        {
+          "criterion": "uk_harmonisation_strategy",
+          "weight": 0.40,
+          "rubric": {
+            "pass": "Develops a strategy to change the UK classification: (1) The HMRC advice letter is NOT a binding ruling — it can be challenged. Apply for a Binding Tariff Information (BTI) ruling from HMRC, presenting the classification analysis supporting heading 9027.80 (consistent with the EU BTI). (2) Cite the EU BTI ruling as persuasive authority — while not binding on UK HMRC post-Brexit, the UK and EU share the same HS nomenclature at the 6-digit level, and the WCO classification principles are identical. (3) Cite the US CBP ruling for heading 9018 as additional evidence that the device is a Chapter 90 instrument, not a Chapter 85 electrical machine. (4) Include technical documentation demonstrating the spectroscopic analysis function, the medical diagnostic application, and the device's regulatory classification (Class IIa IVD). (5) If the BTI application is denied, appeal through the HMRC reconsideration process, then to the First-tier Tribunal (Tax Chamber). Calculate the savings: £82,500/year in duty if reclassified to 0%. Over 3 years (BTI validity), this is £247,500 — easily justifies the legal costs of an appeal.",
+            "fail": "Accepts the UK classification. Does not know that the HMRC advice letter is non-binding. Does not apply for a BTI. Does not cite the EU or US rulings as persuasive authority."
+          }
+        },
+        {
+          "criterion": "cross_jurisdictional_awareness",
+          "weight": 0.25,
+          "rubric": {
+            "pass": "Demonstrates awareness of the broader implications: (1) Different classifications affect not only duty rates but PGA/regulatory requirements — heading 9018 in the US triggers FDA medical device import procedures, while heading 9027 does not (though the device is FDA-cleared regardless). In the UK, heading 8543 does not carry the same MHRA regulatory pathway as a Chapter 90 device. (2) WCO classification opinions and the HS Explanatory Notes are the common reference for all three jurisdictions — anchor the argument in WCO materials. (3) The WCO Harmonized System Committee can issue classification opinions that influence all member countries — consider whether raising the issue at WCO level would be beneficial (typically only for novel products with significant trade volume). (4) Notes that a consistent 9027 classification across all jurisdictions would simplify compliance, reduce broker errors, and create a defensible global position.",
+            "fail": "Treats each jurisdiction in isolation. Does not recognise the WCO as the common framework. Does not consider the regulatory implications of different classifications beyond duty rates."
+          }
+        }
+      ]
+    },
+    {
+      "id": "CTC-027",
+      "name": "Voluntary self-disclosure for potential ITAR violation involving deemed exports",
+      "difficulty": "hard",
+      "category": "restricted-party-screening",
+      "context": {
+        "situation": "Your company designs and manufactures satellite communication equipment controlled under USML Category XI (Military Electronics). During an internal compliance review, you discover that a Chinese-national engineer (on an H-1B visa working at your US facility) was given access to ITAR-controlled technical data (detailed schematics and source code for the satellite transceiver) without the required DDTC licence. The engineer has been working on the project for 8 months. No physical exports occurred — the technical data access happened entirely within the US. The engineer has no known connections to the Chinese government or military, and was hired through a standard process. Your facility security officer (FSO) discovered the issue during a routine access audit.",
+        "available_data": {
+          "product": "Satellite communication transceiver",
+          "usml_category": "Category XI — Military Electronics",
+          "itar_controlled_data": "Detailed schematics and source code for satellite transceiver module",
+          "foreign_national": {
+            "nationality": "Chinese",
+            "visa_status": "H-1B",
+            "employment_duration": "8 months with ITAR data access",
+            "security_clearance": "None (not required for position)",
+            "connections_to_government": "None known"
+          },
+          "licence_status": "No DDTC licence obtained for deemed export",
+          "discovery_method": "Routine FSO access audit",
+          "company_size": "450 employees, 35 foreign nationals",
+          "annual_itar_revenue": 28000000,
+          "prior_itar_violations": "None in 15-year history",
+          "ddtc_registration": "Current and active"
+        }
+      },
+      "task": "Assess the violation, determine whether a voluntary self-disclosure to DDTC is appropriate, and outline the remediation steps.",
+      "evaluation_criteria": [
+        {
+          "criterion": "violation_assessment",
+          "weight": 0.30,
+          "rubric": {
+            "pass": "Correctly identifies this as a deemed export violation under ITAR § 120.54 and § 127.1. A 'deemed export' occurs when ITAR-controlled technical data is disclosed to a foreign person within the US — it is treated as an export to that person's country of nationality (China). China is a proscribed destination under ITAR § 126.1(d)(1) — exports of USML Category XI technical data to China require a licence (which is almost certainly denied under the policy of denial for China). The violation is: unauthorised export of defence articles (technical data) to a Chinese national without a DDTC licence. This is a per se violation regardless of the engineer's intent or connections — ITAR is a strict liability regime for deemed exports. Notes that 8 months of access makes this a significant violation, not a one-time inadvertent disclosure.",
+            "fail": "Does not recognise this as a deemed export. Says 'no export occurred because nothing left the building.' Does not know that ITAR treats disclosure to foreign nationals within the US as an export. Does not identify China as a proscribed destination."
+          }
+        },
+        {
+          "criterion": "vsd_analysis",
+          "weight": 0.35,
+          "rubric": {
+            "pass": "Strongly recommends filing a Voluntary Self-Disclosure (VSD) with DDTC's Office of Defense Trade Controls Compliance. Rationale: (1) VSDs are viewed favourably by DDTC as demonstrating commitment to compliance, (2) DDTC's penalty guidelines provide for 'great weight' to be given to VSDs as a mitigating factor, (3) without a VSD, if DDTC discovers the violation independently (e.g., through the engineer's future employer, immigration records, or a tip), penalties escalate dramatically — civil penalties up to $1,301,256 per violation, criminal penalties up to $1M and 20 years, and potential debarment from all ITAR-controlled exports. (4) A VSD does not guarantee no penalty, but it almost always results in a significantly reduced outcome — typically a consent agreement with administrative requirements rather than a maximum civil penalty. Outlines the VSD requirements: submit to DDTC within 60 days of discovery, include a full description of the violation, affected technical data, the foreign national's identity and access timeline, and remedial actions taken.",
+            "fail": "Recommends against VSD because 'no one knows about this.' Does not understand the VSD process or DDTC's penalty guidelines. Suggests simply removing the engineer's access and moving on."
+          }
+        },
+        {
+          "criterion": "remediation_plan",
+          "weight": 0.35,
+          "rubric": {
+            "pass": "Outlines comprehensive remediation: (1) Immediate: restrict the engineer's access to ITAR data (do NOT terminate — this creates the appearance of witness tampering and EEOC risk; reassign to non-ITAR projects). (2) Apply for a retroactive DDTC licence for the deemed export (DDTC may grant a licence for continued access under controlled conditions, though approval for China is unlikely). (3) Audit ALL 35 foreign nationals' access to ITAR-controlled information — determine if any others have unauthorised access. (4) Implement a Technology Control Plan (TCP) that includes: physical access controls (badge readers on ITAR work areas), IT access controls (role-based access to classified data repositories), mandatory foreign national screening before ITAR project assignment, annual ITAR training for all employees, and FSO quarterly access reviews. (5) Document everything — the VSD must demonstrate that the company has taken the violation seriously and implemented structural remediation. (6) Engage ITAR-specialised counsel to manage the VSD filing and any subsequent DDTC inquiry.",
+            "fail": "Recommends only terminating the engineer. Does not audit other foreign nationals. Does not implement a TCP. Does not address the broader compliance programme failures that allowed 8 months of unauthorised access."
+          }
+        }
+      ]
+    },
+    {
+      "id": "CTC-028",
+      "name": "Post-Brexit Northern Ireland Protocol goods classification and dual status",
+      "difficulty": "hard",
+      "category": "documentation",
+      "context": {
+        "situation": "Your company is a UK-based manufacturer of food processing equipment. You need to ship 4 industrial mixers (value £120,000 each, £480,000 total) from your factory in Manchester to a food production facility in Belfast, Northern Ireland. Under the Windsor Framework, goods moving from Great Britain to Northern Ireland are subject to the 'green lane / red lane' system. Your customer in Belfast will use the mixers exclusively in their Belfast facility and will not move them to the Republic of Ireland or elsewhere in the EU. You need to determine the correct customs procedure and documentation.",
+        "available_data": {
+          "product": "Industrial food processing mixers",
+          "hs_code": "8438.80",
+          "manufacturer_location": "Manchester, England (Great Britain)",
+          "destination": "Belfast, Northern Ireland",
+          "total_value_gbp": 480000,
+          "quantity": 4,
+          "customer": "Belfast Food Processing Ltd",
+          "customer_status": "UK-registered company, all operations in Northern Ireland",
+          "goods_destination": "Belfast facility only — not for onward movement to Ireland/EU",
+          "windsor_framework": true,
+          "ukims_registration": "Customer IS registered in the UK Internal Market Scheme (UKIMS)",
+          "green_lane_eligible": "To be determined",
+          "eu_ccc_requirements": "Industrial food processing equipment — no CCC, but EU CE marking may be required",
+          "uk_ukca_marking": "UKCA marked"
+        }
+      },
+      "task": "Determine the correct customs procedure under the Windsor Framework, advise on documentation requirements, and address the UKCA vs CE marking implications for Northern Ireland.",
+      "evaluation_criteria": [
+        {
+          "criterion": "windsor_framework_application",
+          "weight": 0.40,
+          "rubric": {
+            "pass": "Correctly applies the Windsor Framework / Northern Ireland Protocol: (1) Since the Belfast customer is registered in UKIMS and the goods will remain in Northern Ireland ('not at risk' of entering the EU single market), the shipment qualifies for the green lane (UK Internal Market lane). (2) Green lane goods are NOT subject to EU customs duties, EU customs declarations, or EU regulatory checks — they move as if within the UK internal market. (3) The shipper must complete a simplified internal market movement declaration (not a full customs declaration). (4) The customer's UKIMS registration is the key prerequisite — without it, the goods would go through the red lane and face full EU customs procedures. (5) Notes that 'not at risk' status means the goods must not be subsequently moved into the Republic of Ireland or elsewhere in the EU — if they are, retrospective EU customs duties would apply.",
+            "fail": "Does not distinguish between green and red lanes. Applies full EU customs procedures to an internal UK movement. Does not check UKIMS registration. Does not understand the 'not at risk' concept."
+          }
+        },
+        {
+          "criterion": "documentation_requirements",
+          "weight": 0.30,
+          "rubric": {
+            "pass": "Details the documentation: (1) Green lane simplified declaration via the Trader Support Service (TSS) — free to use, mandatory for GB-NI movements. (2) Commercial invoice showing the goods are 'not at risk' (remaining in NI). (3) UKIMS registration number for the Belfast customer. (4) The goods must carry appropriate commodity codes — heading 8438.80 is not subject to any EU-specific restrictions that would prevent green lane treatment. (5) No customs duty is payable on green lane goods. (6) No Rules of Origin documentation is required (unlike goods moving from NI to the EU, which would need to demonstrate UK origin for EU-UK TCA preference).",
+            "fail": "Requires a full customs declaration for a green lane movement. Does not mention TSS. Does not mention UKIMS. Requires rules of origin documentation for an internal UK movement."
+          }
+        },
+        {
+          "criterion": "marking_and_regulatory",
+          "weight": 0.30,
+          "rubric": {
+            "pass": "Addresses the UKCA vs CE marking issue for Northern Ireland: (1) Under the Windsor Framework, UKCA marking is accepted in Northern Ireland for goods from Great Britain — the mixers can be placed on the NI market with UKCA marking. (2) However, if the goods were to be onward-sold into the Republic of Ireland or the EU, CE marking would be required. (3) For food processing equipment, EU Machinery Directive (now Machinery Regulation 2023/1230 effective January 2027) may require CE marking for equipment placed on the EU/NI market. Verify whether the current UKCA certification covers the equivalent EU requirements. (4) Recommends the customer obtain dual UKCA + CE marking if there is any possibility of future resale or relocation to the EU. (5) Notes that Northern Ireland has a unique dual-market access — goods from NI can enter both the UK market (UKCA) and the EU single market (CE) without additional barriers.",
+            "fail": "Does not address the marking question. Says UKCA is not accepted in Northern Ireland. Does not mention the dual-market access advantage of NI."
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,114 @@
+diff --git a/src/gateway/server-methods/agents.ts b/src/gateway/server-methods/agents.ts
+index e230c33c4..ceb311d1a 100644
+--- a/src/gateway/server-methods/agents.ts
++++ b/src/gateway/server-methods/agents.ts
+@@ -327,6 +327,7 @@ export const agentsHandlers: GatewayRequestHandlers = {
+ 
+     const model = resolveOptionalStringParam(params.model);
+     const avatar = resolveOptionalStringParam(params.avatar);
++    const emoji = resolveOptionalStringParam(params.emoji);
+ 
+     const nextConfig = applyAgentConfig(cfg, {
+       agentId,
+@@ -344,11 +345,28 @@ export const agentsHandlers: GatewayRequestHandlers = {
+       await ensureAgentWorkspace({ dir: workspaceDir, ensureBootstrapFiles: !skipBootstrap });
+     }
+ 
+-    if (avatar) {
++    // Write name, emoji, and/or avatar to IDENTITY.md so the loaded identity reflects the change.
++    // Parsing uses last-wins, so appending overrides existing values cleanly.
++    // IMPORTANT: emoji must be written as "- Emoji:" (not "- Avatar:") so it overrides the
++    // original "- Emoji:" line set at creation time. agentIdentity.emoji takes higher priority
++    // than agentIdentity.avatar in resolveAgentEmoji(), so using Avatar would never override.
++    const identityName =
++      typeof params.name === "string" && params.name.trim() ? params.name.trim() : null;
++    if (identityName || emoji || avatar) {
+       const workspace = workspaceDir ?? resolveAgentWorkspaceDir(nextConfig, agentId);
+       await fs.mkdir(workspace, { recursive: true });
+       const identityPath = path.join(workspace, DEFAULT_IDENTITY_FILENAME);
+-      await fs.appendFile(identityPath, `\n- Avatar: ${sanitizeIdentityLine(avatar)}\n`, "utf-8");
++      const lines: string[] = [];
++      if (identityName) {
++        lines.push(`- Name: ${sanitizeIdentityLine(identityName)}`);
++      }
++      if (emoji) {
++        lines.push(`- Emoji: ${sanitizeIdentityLine(emoji)}`);
++      }
++      if (avatar) {
++        lines.push(`- Avatar: ${sanitizeIdentityLine(avatar)}`);
++      }
++      await fs.appendFile(identityPath, `\n${lines.join("\n")}\n`, "utf-8");
+     }
+ 
+     respond(true, { ok: true, agentId }, undefined);
+@@ -654,18 +672,66 @@ The SOUL.md should be thoughtful and specific to the agent's purpose. Include se
+         text = choices[0]?.message?.content ?? "";
+       }
+ 
+-      // Parse JSON from response (strip any markdown fences)
++      // Parse and validate JSON from response (strip any markdown fences first)
+       const cleaned = text
+         .replace(/```json?\s*/g, "")
+         .replace(/```\s*/g, "")
+         .trim();
+-      const result = JSON.parse(cleaned) as { name: string; emoji: string; soul: string };
++      if (!cleaned) {
++        respond(
++          false,
++          undefined,
++          errorShape(ErrorCodes.INTERNAL_ERROR, "Model returned empty response"),
++        );
++        return;
++      }
++      let parsed: unknown;
++      try {
++        parsed = JSON.parse(cleaned);
++      } catch {
++        wizLog.error("Failed to parse model JSON", { raw: cleaned.slice(0, 200) });
++        respond(
++          false,
++          undefined,
++          errorShape(ErrorCodes.INTERNAL_ERROR, "Model returned non-JSON output"),
++        );
++        return;
++      }
++      // Structural validation — reject if required fields are missing or wrong type
++      if (
++        typeof parsed !== "object" ||
++        parsed === null ||
++        typeof (parsed as Record<string, unknown>).name !== "string" ||
++        typeof (parsed as Record<string, unknown>).emoji !== "string" ||
++        typeof (parsed as Record<string, unknown>).soul !== "string"
++      ) {
++        wizLog.error("Model JSON missing required fields", { parsed });
++        respond(
++          false,
++          undefined,
++          errorShape(
++            ErrorCodes.INTERNAL_ERROR,
++            "Model output missing required fields (name, emoji, soul)",
++          ),
++        );
++        return;
++      }
++      const result = parsed as { name: string; emoji: string; soul: string };
++      // Sanity-check field lengths to catch truncated or empty output
++      if (!result.name.trim() || !result.emoji.trim() || result.soul.length < 20) {
++        respond(
++          false,
++          undefined,
++          errorShape(ErrorCodes.INTERNAL_ERROR, "Model output fields appear empty or truncated"),
++        );
++        return;
++      }
+ 
+       respond(
+         true,
+         {
+-          name: result.name,
+-          emoji: result.emoji,
++          name: result.name.trim().slice(0, 100),
++          emoji: result.emoji.trim().slice(0, 10),
+           soul: result.soul,
+         },
+         undefined,

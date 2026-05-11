@@ -1,0 +1,56 @@
+# 错误处理与重试示例
+flow_id: "error_handling_demo"
+name: "错误处理演示"
+description: "演示重试、跳过、停止等错误处理策略"
+version: "1.0"
+
+settings:
+  retry: 1
+  retry_delay: 2
+  on_error: skip
+
+steps:
+  - id: start
+    name: "开始"
+    type: log
+    message: "错误处理演示开始"
+
+  # 会成功的步骤
+  - id: success_step
+    name: "成功的步骤"
+    type: script
+    command: "echo '这个步骤会成功'"
+
+  # 会失败的步骤 (on_error: skip)
+  - id: fail_skip
+    name: "失败但跳过"
+    type: script
+    command: "exit 1"
+    on_error: skip
+    retry: 2
+    retry_delay: 1
+
+  # 这个步骤应该正常执行 (因为上面是 skip)
+  - id: after_skip
+    name: "跳过后继续"
+    type: log
+    message: "前一步失败被跳过了，这里继续执行 ✅"
+
+  # 条件判断示例
+  - id: check
+    name: "条件判断"
+    type: condition
+    if: "1 + 1 == 2"
+    then:
+      - id: math_ok
+        type: log
+        message: "数学没有问题 ✅"
+    else:
+      - id: math_bad
+        type: log
+        message: "数学有问题 ❌"
+
+  - id: done
+    name: "完成"
+    type: log
+    message: "错误处理演示完成 🎉"

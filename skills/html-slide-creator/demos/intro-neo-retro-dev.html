@@ -1,0 +1,837 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Slide Creator — Neo-Retro Dev Deck</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;700;800;900&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #f5f2e8;
+            --grid: rgba(80,100,170,0.10);
+            --text: #111111;
+            --pink: #FF3C7E;
+            --yellow: #FFE14D;
+            --cyan: #00C8FF;
+            --border: #111111;
+            --block-bg: #ffffff;
+            --block-dark: #1a1a1a;
+            --slide-padding: clamp(2rem,4vw,4rem);
+        }
+
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+        html {
+            scroll-behavior: smooth;
+            scroll-snap-type: y mandatory;
+            height: 100%;
+        }
+
+        body {
+            background-color: var(--bg);
+            background-image:
+                linear-gradient(var(--grid) 1px, transparent 1px),
+                linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+            background-size: 24px 24px;
+            color: var(--text);
+            height: 100%;
+            font-family: 'IBM Plex Sans', sans-serif;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .slide {
+            width: 100vw;
+            height: 100vh;
+            height: 100dvh;
+            scroll-snap-align: start;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: var(--slide-padding);
+        }
+
+        /* ── TYPOGRAPHY ── */
+        .bc { font-family: 'Barlow Condensed', sans-serif; }
+        .mono { font-family: 'IBM Plex Mono', monospace; }
+
+        .headline {
+            font-family: 'Barlow Condensed', sans-serif;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: -0.01em;
+            line-height: 1.0;
+            color: var(--text);
+        }
+        .h-xl { font-size: clamp(3rem,9vw,7.5rem); }
+        .h-lg { font-size: clamp(2rem,6vw,5rem); }
+        .h-md { font-size: clamp(1.4rem,3.5vw,3rem); }
+        .h-sm { font-size: clamp(1rem,2.5vw,1.8rem); }
+
+        .body-text {
+            font-family: 'IBM Plex Sans', sans-serif;
+            font-size: clamp(0.8rem,1.4vw,1rem);
+            line-height: 1.6;
+            color: #444;
+        }
+
+        .comment {
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: clamp(0.65rem,1.1vw,0.85rem);
+            color: #666;
+            line-height: 1.5;
+        }
+        .comment::before { content: '// '; color: #999; }
+
+        /* ── BLOCKS ── */
+        .block {
+            background: var(--block-bg);
+            border: 3px solid var(--border);
+            box-shadow: 4px 4px 0 var(--border);
+            padding: clamp(0.8rem,2vw,1.5rem);
+            transition: box-shadow 0.1s, transform 0.1s;
+        }
+        .block:hover { box-shadow: 2px 2px 0 var(--border); transform: translate(2px,2px); }
+        .block-dark {
+            background: var(--block-dark);
+            color: #f7f5f0;
+            border: 3px solid var(--border);
+            box-shadow: 4px 4px 0 var(--border);
+            padding: clamp(0.8rem,2vw,1.5rem);
+        }
+
+        /* Color accent top borders */
+        .accent-pink { border-top: 5px solid var(--pink); }
+        .accent-yellow { border-top: 5px solid var(--yellow); }
+        .accent-cyan { border-top: 5px solid var(--cyan); }
+
+        /* ── BADGES ── */
+        .badge {
+            display: inline-block;
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: clamp(0.6rem,1vw,0.75rem);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            padding: 4px 10px;
+            border: 2px solid var(--border);
+            background: var(--yellow);
+            color: var(--text);
+        }
+        .badge-pink { background: var(--pink); color: #fff; }
+        .badge-cyan { background: var(--cyan); color: var(--text); }
+
+        /* ── HIGHLIGHT ── */
+        .hl {
+            background: var(--yellow);
+            padding: 0 4px;
+            border: 1.5px solid var(--border);
+        }
+        .hl-pink { background: var(--pink); color: #fff; border-color: var(--pink); }
+        .hl-cyan { background: var(--cyan); border-color: var(--cyan); }
+
+        /* ── ANIMATIONS ── */
+        .reveal {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.5s cubic-bezier(0.16,1,0.3,1),
+                        transform 0.5s cubic-bezier(0.16,1,0.3,1);
+        }
+        .slide.visible .reveal { opacity: 1; transform: translateY(0); }
+        .reveal:nth-child(1) { transition-delay: 0.05s; }
+        .reveal:nth-child(2) { transition-delay: 0.12s; }
+        .reveal:nth-child(3) { transition-delay: 0.19s; }
+        .reveal:nth-child(4) { transition-delay: 0.26s; }
+        .reveal:nth-child(5) { transition-delay: 0.33s; }
+        .reveal:nth-child(6) { transition-delay: 0.40s; }
+        .reveal:nth-child(7) { transition-delay: 0.47s; }
+
+        /* ── NAV DOTS ── */
+        .nav-dots {
+            position: fixed; right: 1.5rem; top: 50%;
+            transform: translateY(-50%);
+            display: flex; flex-direction: column; gap: 8px; z-index: 100;
+        }
+        .nav-dots button {
+            width: 10px; height: 10px;
+            border: 2px solid var(--border);
+            background: transparent;
+            cursor: pointer;
+            transition: all 0.2s;
+            padding: 0;
+        }
+        .nav-dots button.active {
+            background: var(--yellow);
+            box-shadow: 2px 2px 0 var(--border);
+        }
+
+        /* ── PROGRESS BAR ── */
+        .progress-bar {
+            position: fixed; top: 0; left: 0;
+            height: 5px; background: var(--pink);
+            border-right: 2px solid var(--border);
+            width: 0%; z-index: 200; transition: width 0.3s;
+        }
+
+        /* ── EDIT BUTTON ── */
+        .edit-hotzone {
+            position: fixed; top: 0; left: 0;
+            width: 80px; height: 80px;
+            z-index: 10000; cursor: pointer;
+        }
+        .edit-toggle {
+            position: fixed; top: 16px; left: 16px;
+            opacity: 0; pointer-events: none;
+            transition: opacity 0.3s; z-index: 10001;
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 0.65rem; letter-spacing: 0.08em;
+            text-transform: uppercase;
+            background: var(--block-bg); color: var(--text);
+            border: 2px solid var(--border);
+            box-shadow: 2px 2px 0 var(--border);
+            padding: 6px 12px; cursor: pointer;
+        }
+        .edit-toggle.show { opacity: 1; pointer-events: auto; }
+        .edit-toggle.active {
+            opacity: 1; pointer-events: auto;
+            background: var(--yellow);
+            box-shadow: none; transform: translate(2px,2px);
+        }
+
+        #notes-panel {
+            display: none; position: fixed; bottom: 0; left: 0; right: 0;
+            z-index: 9998;
+            background: rgba(8,8,8,0.95);
+            border-top: 3px solid var(--border);
+        }
+        #notes-panel.active { display: flex; flex-direction: column; }
+        #notes-panel-header {
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 0.45rem 1.4rem; cursor: pointer; user-select: none;
+        }
+        #notes-panel-label {
+            flex: 1; font-family: 'IBM Plex Mono', monospace;
+            font-size: 0.58rem; letter-spacing: 0.16em;
+            text-transform: uppercase; color: rgba(255,255,255,0.3);
+        }
+        #notes-drag-hint { flex: 1; display: flex; justify-content: center; }
+        #notes-drag-hint::after {
+            content: ''; display: block; width: 36px; height: 3px;
+            background: rgba(255,255,255,0.25);
+        }
+        #notes-collapse-btn {
+            flex: 1; text-align: right; font-size: 1rem;
+            color: rgba(255,255,255,0.4); background: none; border: none; cursor: pointer;
+            transition: color 0.15s, transform 0.2s;
+        }
+        #notes-panel.collapsed #notes-body { display: none; }
+        #notes-panel.collapsed #notes-collapse-btn { transform: rotate(180deg); }
+        #notes-body { padding: 0 1.4rem 0.75rem; }
+        #notes-textarea {
+            width: 100%; height: 72px; min-height: 48px; max-height: 200px;
+            resize: vertical; background: transparent; border: none; outline: none;
+            color: rgba(255,255,255,0.75); font-size: 0.88rem; line-height: 1.65;
+            font-family: system-ui, sans-serif; caret-color: var(--yellow);
+        }
+        #notes-textarea::placeholder { color: rgba(255,255,255,0.18); }
+
+        @media (max-height: 700px) { :root { --slide-padding: 1.5rem; } }
+        @media (max-height: 600px) { .nav-dots { display: none; } }
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.2s !important; }
+            html { scroll-behavior: auto; }
+        }
+
+        /* ═══════════════════════════════════════════
+           SLIDE LAYOUTS
+           ═══════════════════════════════════════════ */
+
+        /* SLIDE 1 — Title */
+        #s1 { justify-content: center; }
+        #s1 .title-block {
+            position: relative;
+            max-width: 780px;
+        }
+
+        /* SLIDE 2 — System Architecture */
+        #s2 { justify-content: center; }
+        .arch-layer {
+            display: flex; align-items: center; justify-content: space-between;
+            padding: clamp(0.7rem,1.5vh,1.2rem) clamp(1rem,2vw,1.8rem);
+            border: 3px solid var(--border);
+            position: relative;
+        }
+        .arch-layer + .arch-layer { margin-top: -3px; }
+        .arch-layer .layer-label {
+            font-family: 'Barlow Condensed', sans-serif;
+            font-weight: 800; font-size: clamp(1rem,2.5vw,1.8rem);
+            text-transform: uppercase; letter-spacing: -0.01em;
+        }
+        .arch-layer .layer-comment { }
+        .arch-arrow {
+            display: flex; justify-content: center;
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: clamp(1.2rem,2.5vw,2rem);
+            color: var(--text); margin: 0; line-height: 1;
+            padding: 4px 0;
+        }
+
+        /* SLIDE 3 — Feature Cards */
+        #s3 { justify-content: center; }
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+        }
+        .feat-card {
+            background: var(--block-bg);
+            border: 3px solid var(--border);
+            box-shadow: 4px 4px 0 var(--border);
+            padding: clamp(1rem,2vw,1.5rem);
+            display: flex; flex-direction: column; gap: 0.5rem;
+        }
+        .feat-icon {
+            width: 36px; height: 36px;
+            border: 2px solid var(--border);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.1rem;
+            flex-shrink: 0;
+        }
+        @media (max-width: 700px) { .cards-grid { grid-template-columns: 1fr; } }
+
+        /* SLIDE 4 — Before / After */
+        #s4 { flex-direction: row; padding: 0; }
+        .ba-panel {
+            flex: 1;
+            padding: var(--slide-padding);
+            display: flex; flex-direction: column; justify-content: center;
+            position: relative;
+        }
+        .ba-panel + .ba-panel { border-left: 4px solid var(--border); }
+        .ba-header {
+            font-family: 'IBM Plex Mono', monospace;
+            font-weight: 600;
+            font-size: clamp(0.65rem,1.1vw,0.85rem);
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            margin-bottom: clamp(1rem,2.5vh,2rem);
+        }
+        .ba-header.bad { color: #999; }
+        .ba-header.good { color: #22c55e; }
+        .ba-list { list-style: none; display: flex; flex-direction: column; gap: 0.6rem; }
+        .ba-list li {
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: clamp(0.7rem,1.2vw,0.9rem);
+            padding: 0.5rem 0.8rem;
+            border: 2px solid var(--border);
+            background: var(--block-bg);
+            box-shadow: 2px 2px 0 var(--border);
+        }
+        .ba-list li.plus { border-left: 4px solid #22c55e; }
+        .ba-list li.minus { border-left: 4px solid #999; text-decoration: line-through; color: #888; }
+
+        /* SLIDE 5 — Manifesto */
+        #s5 { justify-content: center; align-items: flex-start; }
+        #s5 .manifesto-block {
+            background: var(--block-dark);
+            border: 3px solid var(--border);
+            box-shadow: 6px 6px 0 var(--border);
+            padding: clamp(1.5rem,4vw,3.5rem);
+            max-width: 780px;
+        }
+        #s5 .points-list { list-style: none; display: flex; flex-direction: column; gap: 0.4rem; margin-top: 1.5rem; }
+        #s5 .points-list li { color: rgba(247,245,240,0.7); }
+
+        /* SLIDE 6 — Commands */
+        #s6 { justify-content: center; }
+        .cmd-table { width: 100%; border-collapse: collapse; }
+        .cmd-table tr { border-bottom: 2px solid var(--border); }
+        .cmd-table tr:first-child { border-top: 2px solid var(--border); }
+        .cmd-table td {
+            padding: clamp(0.7rem,1.5vh,1.2rem) clamp(0.8rem,1.5vw,1.2rem);
+            vertical-align: top;
+        }
+        .cmd-table td:first-child {
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: clamp(0.7rem,1.2vw,0.9rem);
+            font-weight: 600;
+            white-space: nowrap;
+            background: var(--block-bg);
+            border-right: 2px solid var(--border);
+            width: 35%;
+        }
+        .cmd-table td:last-child { width: 65%; }
+        .cmd-table tr:nth-child(odd) td { background: var(--bg); }
+        .cmd-table tr:nth-child(even) td { background: rgba(255,255,255,0.5); }
+        .cmd-table tr:nth-child(odd) td:first-child { background: var(--block-bg); }
+
+        /* SLIDE 7 — Metrics */
+        #s7 { justify-content: center; }
+        .metrics-grid {
+            display: grid; grid-template-columns: repeat(3, 1fr);
+            gap: 1.5rem;
+        }
+        .metric-block {
+            background: var(--block-bg);
+            border: 3px solid var(--border);
+            box-shadow: 4px 4px 0 var(--border);
+            padding: clamp(1rem,2vw,1.5rem);
+            display: flex; flex-direction: column; gap: 0.5rem;
+        }
+        .metric-num {
+            font-family: 'Barlow Condensed', sans-serif;
+            font-weight: 900;
+            font-size: clamp(3.5rem,8vw,6.5rem);
+            line-height: 1;
+            text-transform: uppercase;
+        }
+        .px-bar-wrap { display: flex; flex-direction: column; gap: 4px; margin-top: 0.5rem; }
+        .px-bar-row { display: flex; align-items: center; gap: 8px; }
+        .px-bar {
+            height: 18px;
+            border: 2px solid var(--border);
+            background: var(--yellow);
+        }
+        .px-label {
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: clamp(0.55rem,0.9vw,0.72rem);
+            white-space: nowrap;
+        }
+
+        /* SLIDE 8 — Closing */
+        #s8 { justify-content: center; align-items: flex-start; }
+        #s8 .close-block {
+            background: var(--block-dark);
+            border: 3px solid var(--border);
+            box-shadow: 6px 6px 0 var(--border);
+            padding: clamp(1.5rem,3vw,2.5rem);
+            max-width: 680px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="progress-bar" id="progressBar"></div>
+<nav class="nav-dots" id="navDots" aria-label="Slide navigation"></nav>
+<div class="edit-hotzone"></div>
+<button class="edit-toggle" id="editToggle">✏ Edit</button>
+<div id="notes-panel">
+    <div id="notes-panel-header">
+        <div id="notes-panel-label">SPEAKER NOTES — SLIDE 1</div>
+        <div id="notes-drag-hint"></div>
+        <button id="notes-collapse-btn">▾</button>
+    </div>
+    <div id="notes-body">
+        <textarea id="notes-textarea" placeholder="Add speaker notes…"></textarea>
+    </div>
+</div>
+
+<!-- ══ SLIDE 1: TITLE ══ -->
+<section class="slide" id="s1"
+    data-notes="Slide Creator: a skill for Claude Code that generates polished, zero-dependency HTML presentations. Pick a style, describe your content, get a deck that looks designed — not generated."
+    aria-label="Title">
+    <div class="title-block">
+        <div class="reveal" style="margin-bottom:1rem;">
+            <span class="badge">Claude Code Skill</span>
+            <span class="badge badge-pink" style="margin-left:0.5rem;">v1.8</span>
+        </div>
+        <div class="block reveal" style="margin-bottom:1rem;">
+            <div class="headline h-xl">SLIDE-CREATOR</div>
+        </div>
+        <div class="reveal">
+            <span class="comment" style="font-size:clamp(0.75rem,1.4vw,1rem);">zero-dependency HTML presentations for Claude Code</span>
+        </div>
+        <div style="display:flex;gap:1rem;margin-top:1.2rem;flex-wrap:wrap;" class="reveal">
+            <div class="block" style="padding:0.6rem 1rem;">
+                <span class="headline" style="font-size:clamp(0.8rem,1.5vw,1.1rem);">21 <span class="hl">STYLES</span></span>
+            </div>
+            <div class="block" style="padding:0.6rem 1rem;">
+                <span class="headline" style="font-size:clamp(0.8rem,1.5vw,1.1rem);">ZERO <span class="hl-pink" style="background:var(--pink);color:#fff;padding:0 3px;border:1px solid var(--pink);">DEPS</span></span>
+            </div>
+            <div class="block" style="padding:0.6rem 1rem;">
+                <span class="headline" style="font-size:clamp(0.8rem,1.5vw,1.1rem);">1 <span class="hl-cyan" style="background:var(--cyan);padding:0 3px;border:1px solid var(--border);">HTML FILE</span></span>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ══ SLIDE 2: SYSTEM ARCHITECTURE ══ -->
+<section class="slide" id="s2"
+    data-notes="Slide Creator is a three-step pipeline: raw content goes in, the skill analyzes and styles it, one HTML file comes out. The HTML has zero external dependencies — it runs anywhere."
+    aria-label="Architecture">
+    <div class="reveal" style="margin-bottom:1.2rem;">
+        <span class="badge">System Architecture</span>
+    </div>
+    <div class="headline h-md reveal" style="margin-bottom:1.5rem;">HOW IT WORKS</div>
+    <div style="max-width:720px;" class="reveal">
+        <div class="arch-layer" style="background:rgba(255,225,77,0.15);">
+            <div>
+                <div class="arch-layer .layer-label headline h-sm">YOUR CONTENT</div>
+                <div class="comment" style="margin-top:0.3rem;">notes, docs, PLANNING.md, images, PPTX</div>
+            </div>
+            <span class="badge">INPUT</span>
+        </div>
+        <div class="arch-arrow reveal">↓</div>
+        <div class="arch-layer" style="background:rgba(255,60,126,0.1);">
+            <div>
+                <div class="headline h-sm">/SLIDE-CREATOR</div>
+                <div class="comment" style="margin-top:0.3rem;">style discovery → layout generation → code quality checks</div>
+            </div>
+            <span class="badge badge-pink">SKILL</span>
+        </div>
+        <div class="arch-arrow reveal">↓</div>
+        <div class="arch-layer" style="background:rgba(0,200,255,0.1);">
+            <div>
+                <div class="headline h-sm">PRESENTATION.HTML</div>
+                <div class="comment" style="margin-top:0.3rem;">inline CSS + JS · inline editing · presenter mode · PPTX export</div>
+            </div>
+            <span class="badge badge-cyan">OUTPUT</span>
+        </div>
+    </div>
+</section>
+
+<!-- ══ SLIDE 3: FEATURE CARDS ══ -->
+<section class="slide" id="s3"
+    data-notes="Three headline features: 21 curated design presets with named layout variations. Built-in inline editing — click any text to change it. Presenter mode with notes and timer via BroadcastChannel."
+    aria-label="Features">
+    <div class="reveal" style="margin-bottom:1rem;"><span class="badge">Key Features</span></div>
+    <div class="headline h-md reveal" style="margin-bottom:1.2rem;">WHAT YOU GET</div>
+    <div class="cards-grid reveal">
+        <div class="feat-card accent-yellow">
+            <div style="display:flex;justify-content:space-between;align-items:flex-start;">
+                <div class="headline h-sm">21 STYLES</div>
+                <div class="feat-icon">🎨</div>
+            </div>
+            <div class="comment">curated design presets</div>
+            <p class="body-text" style="font-size:clamp(0.7rem,1.2vw,0.88rem);margin-top:0.3rem;">Bold Signal, Swiss Modern, Terminal Green, Chinese Chan, Neo-Retro Dev Deck + 16 more. Each with named layout variations.</p>
+        </div>
+        <div class="feat-card accent-pink">
+            <div style="display:flex;justify-content:space-between;align-items:flex-start;">
+                <div class="headline h-sm">INLINE EDIT</div>
+                <div class="feat-icon">✏️</div>
+            </div>
+            <div class="comment">press E to edit in browser</div>
+            <p class="body-text" style="font-size:clamp(0.7rem,1.2vw,0.88rem);margin-top:0.3rem;">Click any text. Edit in place. Ctrl+S saves back to the HTML file. No external editor needed.</p>
+        </div>
+        <div class="feat-card accent-cyan">
+            <div style="display:flex;justify-content:space-between;align-items:flex-start;">
+                <div class="headline h-sm">PRESENTER MODE</div>
+                <div class="feat-icon">🎤</div>
+            </div>
+            <div class="comment">press P to open presenter</div>
+            <p class="body-text" style="font-size:clamp(0.7rem,1.2vw,0.88rem);margin-top:0.3rem;">Speaker notes + elapsed timer + navigation. Syncs via BroadcastChannel API. Offline-capable.</p>
+        </div>
+    </div>
+</section>
+
+<!-- ══ SLIDE 4: BEFORE / AFTER ══ -->
+<section class="slide" id="s4"
+    data-notes="Before: five different tools, none talking to each other, fragile CDN dependencies, a re-rolling loop hoping for better AI output. After: one command, one file, done."
+    aria-label="Before and after">
+    <div class="ba-panel reveal">
+        <div class="ba-header bad">// BEFORE — without slide-creator</div>
+        <ul class="ba-list">
+            <li class="minus">Pick a tool (Canva? Keynote? Miro?)</li>
+            <li class="minus">npm install reveal.js or impress.js</li>
+            <li class="minus">Depend on 3 CDN libraries per slide</li>
+            <li class="minus">Re-roll AI prompts until output looks OK</li>
+            <li class="minus">Export → broken fonts, missing images</li>
+        </ul>
+    </div>
+    <div class="ba-panel reveal">
+        <div class="ba-header good">// AFTER — with slide-creator</div>
+        <ul class="ba-list">
+            <li class="plus"><span class="mono" style="font-size:0.9em;">/slide-creator</span></li>
+            <li class="plus">Pick a style from 21 presets</li>
+            <li class="plus">Get <strong>presentation.html</strong></li>
+            <li class="plus">Zero dependencies · runs offline</li>
+            <li class="plus">Edit inline · export to PPTX · done</li>
+        </ul>
+    </div>
+</section>
+
+<!-- ══ SLIDE 5: MANIFESTO ══ -->
+<section class="slide" id="s5"
+    data-notes="The core philosophy: a presentation shouldn't require a build pipeline. One file, any browser, anywhere. Show-don't-tell style discovery: see 3 visual previews before committing to a style."
+    aria-label="Philosophy">
+    <div class="manifesto-block reveal">
+        <div class="headline h-xl" style="color:#f7f5f0;">ONE COMMAND.<br>ONE <span style="background:var(--yellow);color:var(--text);padding:0 6px;">FILE</span>.<br>ZERO EXCUSES.</div>
+        <ul class="points-list">
+            <li class="comment" style="color:rgba(247,245,240,0.6);">no npm install, no CDN, no build pipeline</li>
+            <li class="comment" style="color:rgba(247,245,240,0.6);">show 3 visual style previews before committing</li>
+            <li class="comment" style="color:rgba(247,245,240,0.6);">every slide fits exactly one viewport — no scrolling</li>
+            <li class="comment" style="color:rgba(247,245,240,0.6);">works offline · edit in browser · export to PPTX</li>
+        </ul>
+    </div>
+</section>
+
+<!-- ══ SLIDE 6: COMMANDS ══ -->
+<section class="slide" id="s6"
+    data-notes="Four commands. No flag is fully interactive: it asks what you want, shows style previews, and generates. --plan separates outline from code. --generate skips the questions when you have a plan."
+    aria-label="Commands">
+    <div class="reveal" style="margin-bottom:1rem;"><span class="badge">Reference</span></div>
+    <div class="headline h-md reveal" style="margin-bottom:1.2rem;">COMMANDS</div>
+    <div class="block reveal" style="padding:0;overflow:hidden;">
+        <table class="cmd-table">
+            <tr class="reveal">
+                <td><span style="color:var(--pink);">/slide-creator</span></td>
+                <td><span class="body-text">Interactive: style discovery → content → generate. Best for starting fresh.</span></td>
+            </tr>
+            <tr class="reveal">
+                <td><span style="color:var(--text);">/slide-creator</span> <span style="color:var(--pink);">--plan</span></td>
+                <td><span class="body-text">Scan resources/, create PLANNING.md outline. Stops before generating HTML. Think before you code.</span></td>
+            </tr>
+            <tr class="reveal">
+                <td><span style="color:var(--text);">/slide-creator</span> <span style="color:var(--cyan);">--generate</span></td>
+                <td><span class="body-text">Read PLANNING.md, skip questions, generate HTML. Fast path from plan to deck.</span></td>
+            </tr>
+            <tr class="reveal">
+                <td><span style="color:var(--text);">/slide-creator</span> <span style="color:#22c55e;">--export pptx</span></td>
+                <td><span class="body-text">Screenshot every slide via system Chrome → assemble .pptx. No Node.js, no Chromium download.</span></td>
+            </tr>
+        </table>
+    </div>
+</section>
+
+<!-- ══ SLIDE 7: METRICS ══ -->
+<section class="slide" id="s7"
+    data-notes="The numbers: 21 design presets each with named layout variations. 1 output file with zero runtime dependencies. 0 npm packages required. The whole skill is a SKILL.md that Claude reads."
+    aria-label="Metrics">
+    <div class="reveal" style="margin-bottom:1rem;"><span class="badge">By The Numbers</span></div>
+    <div class="headline h-md reveal" style="margin-bottom:1.2rem;">THE STATS</div>
+    <div class="metrics-grid reveal">
+        <div class="metric-block accent-yellow">
+            <div class="metric-num" style="color:var(--text);">21</div>
+            <div class="headline h-sm">STYLES</div>
+            <div class="comment">curated presets</div>
+            <div class="px-bar-wrap" style="margin-top:0.8rem;">
+                <div class="px-bar-row"><div class="px-bar" style="width:100%;background:var(--yellow);"></div><span class="px-label">dark themes</span></div>
+                <div class="px-bar-row"><div class="px-bar" style="width:76%;background:var(--yellow);opacity:0.7;"></div><span class="px-label">light themes</span></div>
+                <div class="px-bar-row"><div class="px-bar" style="width:48%;background:var(--yellow);opacity:0.4;"></div><span class="px-label">specialty</span></div>
+            </div>
+        </div>
+        <div class="metric-block accent-pink">
+            <div class="metric-num" style="color:var(--pink);">1</div>
+            <div class="headline h-sm">HTML FILE</div>
+            <div class="comment">output format</div>
+            <div style="margin-top:0.8rem;">
+                <div class="comment">inline CSS ✓</div>
+                <div class="comment">inline JS ✓</div>
+                <div class="comment">no CDN calls ✓</div>
+                <div class="comment">runs offline ✓</div>
+            </div>
+        </div>
+        <div class="metric-block accent-cyan">
+            <div class="metric-num" style="color:var(--text);">0</div>
+            <div class="headline h-sm">NPM DEPS</div>
+            <div class="comment">runtime requirements</div>
+            <div style="margin-top:0.8rem;">
+                <div class="comment">no node_modules</div>
+                <div class="comment">no package.json</div>
+                <div class="comment">no build step</div>
+                <div class="comment">just html</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ══ SLIDE 8: CLOSING ══ -->
+<section class="slide" id="s8"
+    data-notes="Install in under 30 seconds. Clone into the skills directory and you're running. Start with /slide-creator — it handles everything interactively."
+    aria-label="Get started">
+    <div class="close-block reveal">
+        <div style="margin-bottom:1rem;"><span class="badge badge-pink">Install</span></div>
+        <div class="headline h-lg" style="color:#f7f5f0;margin-bottom:1.2rem;">GET STARTED<br><span style="color:var(--yellow);">IN 30 SECONDS</span></div>
+        <div style="border: 2px solid rgba(255,255,255,0.15); padding: 0.8rem 1.2rem; margin-bottom:1rem; background:rgba(0,0,0,0.3);">
+            <span class="mono" style="font-size:clamp(0.6rem,1.1vw,0.82rem); color:rgba(247,245,240,0.85); word-break:break-all;">git clone https://github.com/kaisersong/slide-creator ~/.claude/skills/slide-creator</span>
+        </div>
+        <div style="display:flex;gap:0.5rem;flex-wrap:wrap;margin-bottom:1rem;">
+            <span class="badge" style="background:var(--cyan);">Step 1: Clone</span>
+            <span style="font-family:'IBM Plex Mono';font-size:0.8rem;align-self:center;">→</span>
+            <span class="badge" style="background:var(--yellow);">Step 2: /slide-creator</span>
+            <span style="font-family:'IBM Plex Mono';font-size:0.8rem;align-self:center;">→</span>
+            <span class="badge badge-pink">Step 3: Ship it</span>
+        </div>
+        <div class="comment" style="color:rgba(247,245,240,0.5);">no build step · no config · just run</div>
+    </div>
+</section>
+
+<script>
+if (new URLSearchParams(location.search).has('presenter')) {
+    document.title = 'Presenter — ' + document.title;
+    document.body.innerHTML = `<style>*{box-sizing:border-box;margin:0}body{background:#111;color:#fff;font-family:system-ui,sans-serif}#pv{display:grid;grid-template-columns:1fr 220px;gap:1rem;padding:1.25rem;align-items:start}.pv-panel{background:#1e1e1e;border-radius:12px;padding:1.25rem}#pv-label{font-size:.6rem;letter-spacing:.18em;text-transform:uppercase;color:#555;margin-bottom:.6rem}#pv-notes{font-size:1.05rem;line-height:1.85;color:#d0d0d0}#pv-right{display:flex;flex-direction:column;gap:1rem}#pv-nav{display:flex;align-items:center;justify-content:space-between;gap:.5rem}.pv-arrow{width:32px;height:32px;border-radius:6px;border:1px solid #333;background:#2a2a2a;color:#aaa;font-size:1rem;cursor:pointer;display:flex;align-items:center;justify-content:center}.pv-arrow:hover{background:#383838;color:#fff}#pv-counter{text-align:center;flex:1}#pv-num{font-size:1.6rem;font-weight:700;font-variant-numeric:tabular-nums;line-height:1}#pv-of{color:#555;font-size:.75rem;margin-top:.2rem}#pv-timer-box{text-align:center}#pv-timer-label{font-size:.6rem;letter-spacing:.18em;text-transform:uppercase;color:#555;margin-bottom:.3rem}#pv-timer{font-size:1.5rem;font-weight:700;font-family:monospace;font-variant-numeric:tabular-nums}</style><div id="pv"><div class="pv-panel"><div id="pv-label">Speaker Notes</div><div id="pv-notes">Waiting for main window…</div></div><div id="pv-right"><div class="pv-panel"><div id="pv-nav"><button class="pv-arrow" id="pv-prev">←</button><div id="pv-counter"><div id="pv-num">—</div><div id="pv-of">/ —</div></div><button class="pv-arrow" id="pv-next">→</button></div></div><div class="pv-panel" id="pv-timer-box"><div id="pv-timer-label">Elapsed</div><div id="pv-timer">0:00</div></div></div></div>`;
+    const ch = new BroadcastChannel('slide-creator-presenter');
+    let t0 = null;
+    ch.addEventListener('message', e => {
+        if (e.data.type !== 'state') return;
+        if (!t0) t0 = Date.now();
+        document.getElementById('pv-notes').textContent = e.data.notes || '(no notes)';
+        document.getElementById('pv-num').textContent = e.data.index + 1;
+        document.getElementById('pv-of').textContent = `/ ${e.data.total}`;
+    });
+    ch.postMessage({ type: 'request-state' });
+    setInterval(() => {
+        if (!t0) return;
+        const s = Math.floor((Date.now() - t0) / 1000);
+        document.getElementById('pv-timer').textContent = `${Math.floor(s/60)}:${String(s%60).padStart(2,'0')}`;
+    }, 1000);
+    document.getElementById('pv-prev').addEventListener('click', () => ch.postMessage({ type: 'nav-prev' }));
+    document.getElementById('pv-next').addEventListener('click', () => ch.postMessage({ type: 'nav-next' }));
+    document.addEventListener('keydown', e => {
+        if (e.key === 'ArrowRight' || e.key === ' ') ch.postMessage({ type: 'nav-next' });
+        else if (e.key === 'ArrowLeft') ch.postMessage({ type: 'nav-prev' });
+    });
+} else {
+    class SlidePresentation {
+        constructor() {
+            this.slides = document.querySelectorAll('.slide');
+            this.currentSlide = 0;
+            this.channel = new BroadcastChannel('slide-creator-presenter');
+            this.setupNavDots();
+            this.setupObserver();
+            this.setupKeyboard();
+            this.setupTouch();
+            this.setupWheel();
+            this.setupPresenter();
+            this.setupEditor();
+            this.updateProgress();
+        }
+        setupNavDots() {
+            const nav = document.getElementById('navDots');
+            this.slides.forEach((_, i) => {
+                const btn = document.createElement('button');
+                btn.setAttribute('aria-label', `Slide ${i+1}`);
+                btn.addEventListener('click', () => this.goTo(i));
+                nav.appendChild(btn);
+            });
+        }
+        setupObserver() {
+            const obs = new IntersectionObserver(entries => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('visible');
+                        this.currentSlide = [...this.slides].indexOf(entry.target);
+                        this.updateProgress();
+                        this.updateDots();
+                        this.broadcastState();
+                        this.updateNotesPanel();
+                    }
+                });
+            }, { threshold: 0.5 });
+            this.slides.forEach(s => obs.observe(s));
+        }
+        setupKeyboard() {
+            document.addEventListener('keydown', e => {
+                if (e.target.getAttribute('contenteditable') || e.target.tagName === 'TEXTAREA') return;
+                if (e.key === 'ArrowDown' || e.key === 'ArrowRight' || e.key === ' ') { e.preventDefault(); this.next(); }
+                else if (e.key === 'ArrowUp' || e.key === 'ArrowLeft') { e.preventDefault(); this.prev(); }
+                else if (e.key === 'p' || e.key === 'P') {
+                    window.open(location.href.split('?')[0]+'?presenter','pres-'+Date.now(),'width=1100,menubar=no,toolbar=no,location=no');
+                } else if (e.key === 'e' || e.key === 'E') {
+                    this.editor.toggle();
+                }
+            });
+        }
+        setupTouch() {
+            let sy = 0;
+            document.addEventListener('touchstart', e => { sy = e.touches[0].clientY; }, { passive: true });
+            document.addEventListener('touchend', e => {
+                const d = sy - e.changedTouches[0].clientY;
+                if (Math.abs(d) > 50) d > 0 ? this.next() : this.prev();
+            });
+        }
+        setupWheel() {
+            let locked = false, timer = null;
+            document.addEventListener('wheel', e => {
+                clearTimeout(timer);
+                if (!locked) { locked = true; e.deltaY > 0 ? this.next() : this.prev(); }
+                timer = setTimeout(() => { locked = false; }, 180);
+            }, { passive: true });
+        }
+        setupPresenter() {
+            this.channel.addEventListener('message', e => {
+                if (e.data.type === 'nav-next') this.next();
+                else if (e.data.type === 'nav-prev') this.prev();
+                else if (e.data.type === 'request-state') this.broadcastState();
+            });
+        }
+        setupEditor() {
+            const panel = document.getElementById('notes-panel');
+            const label = document.getElementById('notes-panel-label');
+            const textarea = document.getElementById('notes-textarea');
+            const toggle = document.getElementById('editToggle');
+            const hotzone = document.querySelector('.edit-hotzone');
+            let hideTimeout = null;
+            hotzone.addEventListener('mouseenter', () => { clearTimeout(hideTimeout); toggle.classList.add('show'); });
+            hotzone.addEventListener('mouseleave', () => { hideTimeout = setTimeout(() => { if (!this.editor.active) toggle.classList.remove('show'); }, 400); });
+            toggle.addEventListener('mouseenter', () => clearTimeout(hideTimeout));
+            toggle.addEventListener('mouseleave', () => { hideTimeout = setTimeout(() => { if (!this.editor.active) toggle.classList.remove('show'); }, 400); });
+            hotzone.addEventListener('click', () => this.editor.toggle());
+            toggle.addEventListener('click', () => this.editor.toggle());
+            document.getElementById('notes-panel-header').addEventListener('click', () => panel.classList.toggle('collapsed'));
+            textarea.addEventListener('input', () => {
+                const slide = this.slides[this.currentSlide];
+                if (slide) { slide.dataset.notes = textarea.value; this.broadcastState(); }
+            });
+            document.addEventListener('keydown', e => {
+                if ((e.ctrlKey || e.metaKey) && e.key === 's') { e.preventDefault(); this.saveFile(); }
+            });
+            this.editor = {
+                active: false,
+                toggle: () => this.editor.active ? this.editor.exit() : this.editor.enter(),
+                enter: () => {
+                    this.editor.active = true;
+                    toggle.classList.add('active'); toggle.textContent = '✓ Done';
+                    this.slides.forEach(s => s.querySelectorAll('h1,h2,h3,p,li,span,div.headline,div.body-text,div.comment').forEach(el => { el.setAttribute('contenteditable','true'); el.style.outline='none'; }));
+                    panel.classList.add('active'); this.updateNotesPanel();
+                },
+                exit: () => {
+                    this.editor.active = false;
+                    toggle.classList.remove('active'); toggle.textContent = '✏ Edit';
+                    this.slides.forEach(s => s.querySelectorAll('[contenteditable]').forEach(el => { el.removeAttribute('contenteditable'); el.style.outline=''; }));
+                    panel.classList.remove('active');
+                }
+            };
+            this._notesLabel = label; this._notesTextarea = textarea;
+        }
+        updateNotesPanel() {
+            if (!this.editor?.active) return;
+            const slide = this.slides[this.currentSlide];
+            this._notesLabel.textContent = `SPEAKER NOTES — SLIDE ${this.currentSlide+1} / ${this.slides.length}`;
+            this._notesTextarea.value = slide?.dataset.notes || '';
+        }
+        saveFile() {
+            const html = '<!DOCTYPE html>\n' + document.documentElement.outerHTML;
+            fetch(location.pathname, { method:'PUT', body: new TextEncoder().encode(html), headers:{'Content-Type':'text/html'} })
+                .catch(() => {
+                    const a = Object.assign(document.createElement('a'), {
+                        href: URL.createObjectURL(new Blob([html],{type:'text/html'})),
+                        download: location.pathname.split('/').pop() || 'presentation.html'
+                    });
+                    a.click(); URL.revokeObjectURL(a.href);
+                });
+        }
+        broadcastState() {
+            const slide = this.slides[this.currentSlide];
+            this.channel.postMessage({ type:'state', index:this.currentSlide, total:this.slides.length, notes:slide?.dataset.notes||'' });
+        }
+        goTo(i) { this.slides[i]?.scrollIntoView({ behavior:'smooth' }); }
+        next() { this.goTo(Math.min(this.currentSlide+1, this.slides.length-1)); }
+        prev() { this.goTo(Math.max(this.currentSlide-1, 0)); }
+        updateProgress() {
+            const pct = (this.currentSlide / (this.slides.length-1)) * 100;
+            document.getElementById('progressBar').style.width = pct + '%';
+        }
+        updateDots() {
+            document.querySelectorAll('#navDots button').forEach((btn, i) => {
+                btn.classList.toggle('active', i === this.currentSlide);
+            });
+        }
+    }
+    new SlidePresentation();
+}
+</script>
+</body>
+</html>

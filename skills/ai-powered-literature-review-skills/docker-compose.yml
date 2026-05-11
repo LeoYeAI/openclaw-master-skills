@@ -1,0 +1,113 @@
+# Literature Reviewer Skill - Docker Compose 配置
+# 提供一键启动的隔离运行环境
+
+version: '3.8'
+
+services:
+  literature-reviewer:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: literature-reviewer-skill
+    
+    # 挂载目录
+    volumes:
+      # 挂载 Skill 代码（只读，除 sessions 和 output 外）
+      - ./SKILL.md:/app/skills/literature-reviewer-skill/SKILL.md:ro
+      - ./AGENTS.md:/app/skills/literature-reviewer-skill/AGENTS.md:ro
+      - ./README.md:/app/skills/literature-reviewer-skill/README.md:ro
+      - ./SECURITY.md:/app/skills/literature-reviewer-skill/SECURITY.md:ro
+      - ./agents:/app/skills/literature-reviewer-skill/agents:ro
+      - ./references:/app/skills/literature-reviewer-skill/references:ro
+      - ./scripts:/app/skills/literature-reviewer-skill/scripts:ro
+      - ./examples:/app/skills/literature-reviewer-skill/examples:ro
+      
+      # 可写目录（会话数据和输出）
+      - ./sessions:/app/skills/literature-reviewer-skill/sessions
+      - ./output:/app/skills/literature-reviewer-skill/output
+      
+      # 浏览器数据（可选，用于持久化登录状态）
+      - browser-data:/home/researcher/.cache/ms-playwright
+    
+    # 环境变量
+    environment:
+      - DISPLAY=:99
+      - PLAYWRIGHT_BROWSERS_PATH=/home/researcher/.cache/ms-playwright
+      - PYTHONUNBUFFERED=1
+    
+    # 网络配置
+    networks:
+      - literature-net
+    
+    # 资源限制（安全）
+    deploy:
+      resources:
+        limits:
+          cpus: '2.0'
+          memory: 4G
+        reservations:
+          cpus: '0.5'
+          memory: 1G
+    
+    # 安全选项
+    security_opt:
+      - no-new-privileges:true
+    
+    # 只读根文件系统（除挂载的可写目录外）
+    read_only: true
+    
+    # 命令
+    command: >
+      bash -c "
+        echo '========================================' &&
+        echo 'Literature Reviewer Skill 已启动' &&
+        echo '========================================' &&
+        echo '' &&
+        echo '容器 ID: $$(hostname)' &&
+        echo '工作目录: /app/skills/literature-reviewer-skill' &&
+        echo '' &&
+        echo '可用的 Skills:' &&
+        ls -la /app/skills/literature-reviewer-skill/*.md &&
+        echo '' &&
+        echo '提示: 请在主机上的 AI 工具中配置使用本 Skill' &&
+        echo 'Sessions 将保存在 ./sessions 目录' &&
+        echo 'Output 将保存在 ./output 目录' &&
+        echo '========================================' &&
+        tail -f /dev/null
+      "
+    
+    # 健康检查
+    healthcheck:
+      test: ["CMD", "test", "-f", "/app/skills/literature-reviewer-skill/SKILL.md"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 5s
+
+  # 可选：X11 转发服务（用于查看浏览器界面）
+  # 取消注释以下部分以启用图形界面
+  # novnc:
+  #   image: jlesage/novnc:latest
+  #   container_name: literature-reviewer-vnc
+  #   ports:
+  #     - "5800:5800"
+  #   environment:
+  #     - DISPLAY_WIDTH=1920
+  #     - DISPLAY_HEIGHT=1080
+  #   volumes:
+  #     - /tmp/.X11-unix:/tmp/.X11-unix:ro
+  #   networks:
+  #     - literature-net
+  #   depends_on:
+  #     - literature-reviewer
+
+volumes:
+  browser-data:
+    driver: local
+
+networks:
+  literature-net:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.28.0.0/16

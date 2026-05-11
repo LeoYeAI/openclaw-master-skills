@@ -1,0 +1,84 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "channel-build.schema.json",
+  "title": "ChannelBuild Task",
+  "description": "渠道构建任务配置（安卓多渠道包批量构建）",
+  "type": "object",
+  "required": ["taskCategory", "jobType", "name"],
+  "properties": {
+    "taskCategory": {
+      "type": "string",
+      "const": "Build"
+    },
+    "jobType": {
+      "type": "string",
+      "const": "ChannelBuild"
+    },
+    "name": {
+      "type": "string",
+      "maxLength": 100,
+      "description": "任务名称"
+    },
+    "workPath": {
+      "type": "string",
+      "description": "工作目录"
+    },
+    "sourceId": {
+      "type": "string",
+      "description": "代码源ID"
+    },
+    "buildImageModel": {
+      "type": "string",
+      "enum": ["default", "custom"],
+      "default": "default"
+    },
+    "executeImageId": {
+      "type": "string"
+    },
+    "gradleVersion": {
+      "type": "string",
+      "default": "Gradle7.6.3"
+    },
+    "script": {
+      "type": "string",
+      "default": "./gradlew assembleRelease",
+      "description": "构建命令"
+    },
+    "channels": {
+      "type": "array",
+      "items": { "type": "string" },
+      "default": [],
+      "description": "渠道列表"
+    },
+    "apkPath": {
+      "type": "string",
+      "default": "app/build/outputs/apk/",
+      "description": "APK输出路径"
+    },
+    "uploadArtifact": {
+      "type": "boolean",
+      "default": true
+    },
+    "artifactCompress": {
+      "type": "boolean",
+      "default": true
+    },
+    "compressType": {
+      "type": "string",
+      "enum": ["TAR(.tgz)", "TAR(.tar.gz)", "ZIP"],
+      "default": "ZIP"
+    },
+    "packagedName": {
+      "type": "string",
+      "default": "APK_${PIPELINE_LOG_ID}"
+    },
+    "idInTemplate": {
+      "type": "string"
+    },
+    "dependencies": {
+      "type": "array",
+      "items": { "type": "string" },
+      "default": []
+    }
+  }
+}

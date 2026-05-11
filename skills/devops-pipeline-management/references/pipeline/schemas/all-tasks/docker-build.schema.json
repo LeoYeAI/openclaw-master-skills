@@ -1,0 +1,89 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "docker-build.schema.json",
+  "title": "DockerBuildAndUpload Task",
+  "description": "Docker构建上传任务配置",
+  "type": "object",
+  "required": ["taskCategory", "jobType", "name"],
+  "properties": {
+    "taskCategory": {
+      "type": "string",
+      "const": "DockerBuild"
+    },
+    "jobType": {
+      "type": "string",
+      "const": "DockerBuildAndUpload"
+    },
+    "name": {
+      "type": "string",
+      "maxLength": 100,
+      "description": "任务名称"
+    },
+    "workPath": {
+      "type": "string",
+      "description": "工作目录"
+    },
+    "sourceId": {
+      "type": "string",
+      "description": "代码源ID"
+    },
+    "dockerfilePath": {
+      "type": "string",
+      "default": "Dockerfile",
+      "description": "Dockerfile路径"
+    },
+    "contextPath": {
+      "type": "string",
+      "default": "",
+      "description": "构建上下文路径"
+    },
+    "imageName": {
+      "type": "string",
+      "description": "镜像名称（支持 ${PIPELINE_NAME}）"
+    },
+    "tag": {
+      "type": "string",
+      "default": "${BUILD_NUMBER}",
+      "description": "镜像标签（支持动态参数）"
+    },
+    "buildArgs": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "key": { "type": "string" },
+          "value": { "type": "string" }
+        }
+      },
+      "default": [],
+      "description": "构建参数"
+    },
+    "multiPlatform": {
+      "type": "string",
+      "enum": ["", "linux/amd64", "linux/arm64"],
+      "default": "",
+      "description": "多平台构建"
+    },
+    "pushToRegistry": {
+      "type": "boolean",
+      "default": true,
+      "description": "推送到仓库"
+    },
+    "registryId": {
+      "type": "string",
+      "description": "镜像仓库ID"
+    },
+    "preDependTaskId": {
+      "type": "string",
+      "description": "前置依赖任务（获取制品）"
+    },
+    "idInTemplate": {
+      "type": "string"
+    },
+    "dependencies": {
+      "type": "array",
+      "items": { "type": "string" },
+      "default": []
+    }
+  }
+}

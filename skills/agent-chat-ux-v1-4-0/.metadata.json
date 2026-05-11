@@ -1,0 +1,83 @@
+{
+  "name": "agent-chat-ux",
+  "version": "1.4.0",
+  "author": "Charles Sears",
+  "description": "Multi-agent UX for OpenClaw Control UI — agent selector, per-agent sessions, session history viewer with search, agent-filtered Sessions tab with friendly names and CSS grid layout, Create Agent wizard, emoji picker, and backend agent CRUD.",
+  "tags": ["ui", "agents", "chat", "sessions", "webchat", "models", "wizard", "history"],
+  "openclaw_version": ">=2026.2.18",
+  "requires_rebuild": true,
+  "rebuild_targets": ["ui", "gateway"],
+  "patches": [
+    "references/schema-agents.txt",
+    "references/agents-view.txt",
+    "references/agents-utils.txt",
+    "references/agents-panels-cron.txt",
+    "references/app-render-helpers.txt",
+    "references/app-render.txt",
+    "references/app-main.txt",
+    "references/server-agents.txt",
+    "references/v1.4.0/patch-01-sessions-history-rpc.txt",
+    "references/v1.4.0/patch-02-sessions-tab-overhaul.txt",
+    "references/v1.4.0/patch-03-app-wiring.txt",
+    "references/v1.4.0/patch-04-sessions-history-modal.ts",
+    "references/v1.4.0/patch-05-chat-sessions-all.txt"
+  ],
+  "openclaw": {
+    "emoji": "🤖",
+    "category": "ui",
+    "requires": {
+      "openclaw": ">=2026.2.18",
+      "env": {
+        "ANTHROPIC_API_KEY": {
+          "description": "Used by agents.wizard as last-resort fallback when no api_key auth profile is configured. The wizard first tries config-resolved auth, then an api_key profile in the auth store, and only falls back to this env var if both are absent. Not required if the default auth profile already resolves to an api-key credential.",
+          "required": false
+        },
+        "OPENAI_API_KEY": {
+          "description": "Same as ANTHROPIC_API_KEY but for OpenAI-compatible providers. Only used when the configured default model provider is not Anthropic and no api_key profile is found.",
+          "required": false
+        }
+      }
+    },
+    "capabilities": {
+      "auth_profile_read": {
+        "description": "agents.wizard reads the auth profile store to find an api_key-type credential for the configured model provider. It accesses only the provider field and type field of each profile entry to find a matching profile — it does not enumerate or log full credential values.",
+        "files": ["references/server-agents.txt"],
+        "scope": "read-only, provider-filtered",
+        "mitigation": "If you prefer the wizard not access the auth store, set ANTHROPIC_API_KEY (or equivalent) in your environment and the store lookup is skipped when the default auth resolves to api-key mode."
+      },
+      "external_api_calls": {
+        "description": "agents.wizard makes a single HTTP POST to the configured model provider API (api.anthropic.com or api.openai.com) with the user-supplied description as input. No other external calls are made.",
+        "files": ["references/server-agents.txt"],
+        "endpoints": ["https://api.anthropic.com/v1/messages", "https://api.openai.com/v1/chat/completions"],
+        "mitigation": "The wizard only calls the provider matching the configured default model. Review server-agents.txt before patching."
+      },
+      "source_code_patch": {
+        "description": "This skill patches OpenClaw source files and requires rebuilding UI and gateway. Changes are persistent and alter runtime behavior by adding new RPC handlers.",
+        "files": ["references/*.txt"],
+        "mitigation": "Backup ~/openclaw before applying. Review each patch file before running git apply."
+      }
+    },
+    "securityNotes": {
+      "auth_resolution_order": "agents.wizard resolves credentials in this order: (1) default config auth if api-key mode, (2) first api_key profile in auth store for the provider, (3) env var (ANTHROPIC_API_KEY or OPENAI_API_KEY). It does not log or return any credential values.",
+      "output_validation": "Model output is parsed as JSON and structurally validated before use — name/emoji/soul must be strings, name ≤100 chars, emoji ≤10 chars, soul ≥20 chars. Non-JSON or structurally invalid responses are rejected with an error.",
+      "prompt_injection": "The system prompt instructs the model to return strict JSON. User-supplied description is passed as user content only. Model output is parsed as data, not executed.",
+      "scope": "Patches apply only to: agents-models-skills.ts (schema), agents.ts (backend), agents-panels-status-files.ts (cron tab), app.ts (state), app-render.ts, app-render.helpers.ts, views/agents.ts UI, agents-utils.ts."
+    }
+  },
+  "created_at": "2026-02-18",
+  "updated_at": "2026-02-23",
+  "clawhub_ready": true,
+  "fixes": [
+    "AI Wizard 401 OAuth auth error",
+    "Agent not found in config after creation",
+    "Removed out-of-scope state fields from app-main.txt patch",
+    "Removed out-of-scope props and handlers from app-render.txt patch",
+    "Hardened LLM output parsing with structural validation and field length caps",
+    "Agent emoji reverting after save — agents.update now writes - Emoji: (not - Avatar:) so last-wins IDENTITY.md parsing correctly overrides creation-time emoji",
+    "Cron Jobs tab showed global gateway job count/next-wake for every agent — now shows agent-specific stats only",
+    "v1.4.0: Session history viewer modal with full-text search, role filtering, and pagination",
+    "v1.4.0: Sessions tab overhauled — friendly display names instead of raw keys, agent name+emoji column, agent filter dropdown",
+    "v1.4.0: New sessions.history RPC for reading full JSONL transcripts with search/pagination",
+    "v1.4.0: Removed Verbose column from Sessions tab (replaced by Agent column for better multi-agent UX)"
+  ]
+}

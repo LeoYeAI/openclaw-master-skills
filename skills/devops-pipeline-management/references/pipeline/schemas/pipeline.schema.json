@@ -1,0 +1,48 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "pipeline.schema.json",
+  "title": "Pipeline",
+  "description": "流水线数据结构",
+  "type": "object",
+  "required": ["name", "spaceId"],
+  "properties": {
+    "pipelineId": {
+      "type": ["string", "null"],
+      "description": "流水线ID，新建时为null"
+    },
+    "spaceId": {
+      "type": "string",
+      "description": "空间ID"
+    },
+    "name": {
+      "type": "string",
+      "maxLength": 100,
+      "description": "流水线名称"
+    },
+    "aliasId": {
+      "type": "string",
+      "description": "流水线别名"
+    },
+    "label": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "标签列表"
+    },
+    "sources": {
+      "type": "array",
+      "items": {
+        "$ref": "source.schema.json"
+      },
+      "description": "代码源列表"
+    },
+    "stages": {
+      "type": "array",
+      "items": {
+        "$ref": "stage.schema.json"
+      },
+      "description": "阶段列表"
+    }
+  }
+}

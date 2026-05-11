@@ -1,0 +1,60 @@
+# claw-diplomat relay — docker-compose.yml
+# Self-hosted relay for claw-diplomat peer sessions.
+# Usage:
+#   cp .env.example .env   # then fill in RELAY_SECRET
+#   docker compose up -d
+
+services:
+  relay:
+    build: .
+    image: claw-diplomat-relay:latest
+    container_name: claw-diplomat-relay
+    restart: unless-stopped
+
+    ports:
+      # Map host port to container relay port.
+      # Change left side (host) to use a different external port.
+      - "${RELAY_PORT:-8080}:${RELAY_PORT:-8080}"
+
+    environment:
+      RELAY_HOST:     "0.0.0.0"
+      RELAY_PORT:     "${RELAY_PORT:-8080}"
+      RELAY_SECRET:   "${RELAY_SECRET}"          # required — set in .env
+      RELAY_LOG_LEVEL: "${RELAY_LOG_LEVEL:-INFO}"
+
+    # Hard resource limits — relay is stateless so small footprint is fine
+    deploy:
+      resources:
+        limits:
+          cpus:   "0.50"
+          memory: "256M"
+        reservations:
+          memory: "64M"
+
+    # Read-only root FS; relay has no disk I/O needs
+    read_only: true
+    tmpfs:
+      - /tmp
+
+    # Drop all capabilities; relay needs none
+    cap_drop:
+      - ALL
+
+    # No privilege escalation
+    security_opt:
+      - no-new-privileges:true
+
+    healthcheck:
+      test: >
+        python3 -c "import urllib.request;
+        urllib.request.urlopen('http://localhost:${RELAY_PORT:-8080}/myip')"
+      interval: 30s
+      timeout:  5s
+      retries:  3
+      start_period: 10s
+
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"

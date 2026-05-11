@@ -1,0 +1,54 @@
+# OpenClaw Security Hook Configuration Example
+#
+# This is an example configuration optimized for hooks.
+# Copy this to .openclaw-sec.yaml and customize for your needs.
+
+openclaw_security:
+  enabled: true
+  sensitivity: medium
+
+  # Modules - all enabled for comprehensive protection
+  modules:
+    prompt_injection:
+      enabled: true
+      sensitivity: strict
+
+    command_validator:
+      enabled: true
+      sensitivity: paranoid  # Be very strict with commands
+
+    url_validator:
+      enabled: true
+      sensitivity: strict
+
+    path_validator:
+      enabled: true
+      sensitivity: strict
+
+    secret_detector:
+      enabled: true
+
+    content_scanner:
+      enabled: true
+
+  # Actions - hooks should block on HIGH threats
+  actions:
+    SAFE: allow
+    LOW: log
+    MEDIUM: warn
+    HIGH: block
+    CRITICAL: block_notify
+
+  # Database
+  database:
+    path: ~/.openclaw/security-events.db
+    analytics_enabled: true
+    retention_days: 90
+
+  # Logging
+  logging:
+    enabled: true
+    level: info
+    file: ~/.openclaw/logs/hook-events.log
+    rotation: daily
+    retention_days: 30

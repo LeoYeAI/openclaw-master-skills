@@ -1,0 +1,754 @@
+# Superfluid Host — the central protocol router
+# All agreement calls (CFA, IDA, GDA) are routed through the Host, which manages
+# the Superfluid call context, Super App callbacks, app credit, and governance.
+# The Host is also the entry point for batch calls and meta-transactions.
+#
+# NOTE: emits/errors mappings are traced from source code — verify against implementation.
+# Proxy/upgradability functions (castrate, updateCode, getCodeAddress, proxiableUUID, initialize)
+# are omitted — they belong to the UUPSProxiable layer.
+
+meta:
+  name: Superfluid
+  version: v1
+  source:
+    - https://raw.githubusercontent.com/superfluid-org/protocol-monorepo/refs/heads/dev/packages/ethereum-contracts/contracts/superfluid/Superfluid.sol
+    - https://raw.githubusercontent.com/superfluid-org/protocol-monorepo/refs/heads/dev/packages/ethereum-contracts/contracts/interfaces/superfluid/ISuperfluid.sol
+  implements: [ISuperfluid]
+  inherits: [UUPSProxiable, BaseRelayRecipient]
+  deployments:
+    mainnet:
+      eth-mainnet: "0x4E583d9390082B65Bef884b629DFA426114CED6d"
+      polygon-mainnet: "0x3E14dC1b13c488a8d5D310918780c983bD5982E7"
+      xdai-mainnet: "0x2dFe937cD98Ab92e59cF3139138f18c823a4efE7"
+      base-mainnet: "0x4C073B3baB6d8826b8C5b229f3cfdC1eC6E47E74"
+      optimism-mainnet: "0x567c4B141ED61923967cA25Ef4906C8781069a10"
+      arbitrum-one: "0xCf8Acb4eF033efF16E8080aed4c7D5B9285D2192"
+      bsc-mainnet: "0xd1e2cFb6441680002Eb7A44223160aB9B67d7E6E"
+      avalanche-c: "0x60377C7016E4cdB03C87EF474896C11cB560752C"
+      celo-mainnet: "0xA4Ff07cF81C02CFD356184879D953970cA957585"
+      scroll-mainnet: "0x0F86a21F6216c061B222c224e315d9FC34520bb7"
+      degenchain: "0xc1314EdcD7e478C831a7a24169F7dEADB2646eD2"
+    testnet:
+      avalanche-fuji: "0x85Fe79b998509B77BF10A8BD4001D58475D29386"
+      base-sepolia: "0x109412E3C84f0539b43d39dB691B08c90f58dC7c"
+      eth-sepolia: "0x109412E3C84f0539b43d39dB691B08c90f58dC7c"
+      optimism-sepolia: "0xd399e2Fb5f4cf3722a11F65b88FAB6B2B8621005"
+      scroll-sepolia: "0x42b05a6016B9eED232E13fd56a8F0725693DBF8e"
+
+# == Abbreviations ==
+# ctx  — context (Superfluid call context bytes)
+# ACL  — Access Control List
+# ERC  — Ethereum Request for Comments
+
+# == Glossary ==
+# Host                  — central Superfluid contract routing agreement/app calls
+# agreement class       — a registered agreement contract (CFA, IDA, GDA)
+# Super App             — a smart contract registered with the Host that receives callbacks
+# callback              — beforeAgreement* / afterAgreement* hooks called on Super Apps
+# context (ctx)         — encoded call metadata: msgSender, timestamp, userData, app credit
+# app credit            — temporary token allowance granted to a Super App during a callback
+# jailed                — a Super App that violated protocol rules; its callbacks are bypassed
+# configWord            — bitmask encoding a Super App's app level and callback noop flags.
+#                          App level: APP_LEVEL_FINAL (1 << 1) or APP_LEVEL_SECOND (1 << 0).
+#                          Noop flags disable specific before/after callbacks per agreement type.
+# batch operation       — a single step in a batchCall array (see BatchOperation in Definitions.sol)
+# trusted forwarder     — a contract allowed to call forwardBatchCall for meta-transactions
+
+# == Batch Call ==
+# Primary entry point for interacting with the protocol. Users compose arrays of
+# typed operations (ERC-20 approvals, SuperToken wrapping, agreement calls, etc.).
+#
+# == Batch Operation Types ==
+# Used in the operationType field of batchCall/forwardBatchCall operations.
+# Data encoding varies by category — see notes on each type.
+#
+# Category 1–5: ERC-20/ERC-777 token ops
+#   target: must be a SuperToken (routes through SuperToken.operation* methods,
+#           NOT arbitrary ERC-20 contracts — use a separate tx for underlying approvals)
+#   data:   abi-encoded parameters only (strip the 4-byte function selector)
+#
+# Category 101–102: SuperToken wrap/unwrap
+#   target: the SuperToken
+#   data:   abi-encoded parameters only (strip the 4-byte function selector)
+#
+# Category 201: agreement call
+#   target: the agreement contract (e.g. CFA, GDA)
+#   data:   abi.encode(callData, userData) where callData is full
+#           encodeFunctionData (selector included, with empty ctx placeholder "0x")
+#
+# Category 202: app action
+#   target: the Super App
+#   data:   abi.encode(callData) where callData is full encodeFunctionData
+#           (selector included, with empty ctx placeholder "0x")
+#
+# Category 301: simple forward
+#   target: any contract
+#   data:   full encodeFunctionData (selector included), or "0x" for pure value transfers
+#
+# Category 302: ERC-2771 forward
+#   target: any contract (must be an ERC-2771 recipient to extract the real sender)
+#   data:   full encodeFunctionData (selector included)
+#   The ERC2771Forwarder appends the original msg.sender to calldata per ERC-2771.
+#   Use when the target contract needs to know who initiated the batch.
+
+batch_operation_types:
+  ERC20_APPROVE: 1
+  ERC20_TRANSFER_FROM: 2
+  ERC777_SEND: 3                    # deprecated — ERC-777 is being phased out
+  ERC20_INCREASE_ALLOWANCE: 4
+  ERC20_DECREASE_ALLOWANCE: 5
+  SUPERTOKEN_UPGRADE: 101
+  SUPERTOKEN_DOWNGRADE: 102
+  SUPERFLUID_CALL_AGREEMENT: 201
+  CALL_APP_ACTION: 202
+  SIMPLE_FORWARD_CALL: 301
+  ERC2771_FORWARD_CALL: 302
+
+batchCall:
+  # Execute an array of operations in a single transaction as msg.sender.
+  notes:
+    - "Gotcha: For SIMPLE_FORWARD_CALL (type 301), target sees msg.sender as the SimpleForwarder contract, NOT the original caller. Use only when the target doesn't need to identify the sender."
+    - "Gotcha: ERC-20 ops (types 1-5) route through SuperToken.operation* methods, NOT arbitrary ERC-20 contracts. The target must be a SuperToken address. To approve an underlying ERC-20 (e.g. for wrapping), use a separate transaction."
+    - "Gotcha: If msg.value > 0, the entire amount is forwarded to the first CALL_APP_ACTION, SIMPLE_FORWARD, or ERC2771_FORWARD operation. If none exist, the native tokens are returned to the sender."
+  mutability: payable
+  access: anyone
+  inputs:
+    - operations: tuple[]
+      components:
+        - operationType: uint32   # see batch_operation_types above
+        - target: address
+        - data: bytes             # encoding varies by operationType — see above
+  errors: [HOST_UNKNOWN_BATCH_CALL_OPERATION_TYPE]
+
+forwardBatchCall:
+  # Same as batchCall but uses EIP-2771 to extract msgSender from calldata.
+  # Can only be called by contracts registered as trusted forwarders in governance.
+  # If native tokens are left over, they are refunded to the EIP-2771 sender.
+  mutability: payable
+  access: trusted-forwarder
+  inputs:
+    - operations: tuple[]
+      components:
+        - operationType: uint32   # see batch_operation_types above
+        - target: address
+        - data: bytes             # encoding varies by operationType — see above
+  errors: [HOST_UNKNOWN_BATCH_CALL_OPERATION_TYPE]
+
+# == Contextless Call Proxies ==
+# Entry points for EOAs and non-app contracts to interact with agreements or apps.
+# These create a fresh Superfluid context with msg.sender, inject it into the call,
+# and route through to the target agreement/app.
+
+callAgreement:
+  # Call an agreement function. The Host creates a context with msg.sender and replaces
+  # the placeholder ctx bytes in callData. This is how EOAs interact with CFA/IDA/GDA.
+  mutability: nonpayable
+  access: anyone  # context set to msg.sender
+  inputs:
+    - agreementClass: address   # must be a registered agreement
+    - callData: bytes           # abi-encoded agreement call with placeholder ctx
+    - userData: bytes           # extra data forwarded to Super App callbacks
+  outputs:
+    - returnedData: bytes
+  errors: [APP_RULE, HOST_ONLY_LISTED_AGREEMENT]
+
+callAppAction:
+  # Call an app action function on a Super App. The Host creates a context and routes
+  # the call. The action must not be an agreement callback selector.
+  mutability: nonpayable
+  access: anyone  # context set to msg.sender
+  inputs:
+    - app: address              # must be a registered, non-jailed Super App
+    - callData: bytes           # abi-encoded app action call with placeholder ctx
+  outputs:
+    - returnedData: bytes
+  errors: [APP_RULE, HOST_NOT_A_SUPER_APP, HOST_SUPER_APP_IS_JAILED, HOST_AGREEMENT_CALLBACK_IS_NOT_ACTION]
+
+# == Contextual Call Proxies ==
+# For Super Apps to chain calls during callbacks. The app must pass the ctx it received.
+# Only callable by the app currently executing a callback (ctx.appAddress == msg.sender).
+
+callAgreementWithContext:
+  # Chain an agreement call from within a Super App callback.
+  # The ctx must be valid and msg.sender must be the current callback app.
+  mutability: nonpayable
+  access: super-app
+  inputs:
+    - agreementClass: address
+    - callData: bytes
+    - userData: bytes
+    - ctx: bytes
+  outputs:
+    - newCtx: bytes
+    - returnedData: bytes
+  errors: [APP_RULE, HOST_ONLY_LISTED_AGREEMENT, HOST_CALL_AGREEMENT_WITH_CTX_FROM_WRONG_ADDRESS]
+
+callAppActionWithContext:
+  # Chain an app action call from within a Super App callback.
+  mutability: nonpayable
+  access: super-app
+  inputs:
+    - app: address
+    - callData: bytes
+    - ctx: bytes
+  outputs:
+    - newCtx: bytes
+  errors: [APP_RULE, HOST_NOT_A_SUPER_APP, HOST_SUPER_APP_IS_JAILED, HOST_AGREEMENT_CALLBACK_IS_NOT_ACTION, HOST_CALL_APP_ACTION_WITH_CTX_FROM_WRONG_ADDRESS]
+
+# == Context Utilities ==
+
+decodeCtx:
+  # Decode a raw context bytes blob into the structured Context fields.
+  mutability: pure
+  inputs:
+    - ctx: bytes
+  outputs:
+    - context:
+        type: tuple
+        components:
+          - appCallbackLevel: uint8
+          - callType: uint8
+          - timestamp: uint256
+          - msgSender: address
+          - agreementSelector: bytes4
+          - userData: bytes
+          - appCreditGranted: uint256
+          - appCreditWantedDeprecated: uint256
+          - appCreditUsed: int256
+          - appAddress: address
+          - appCreditToken: address
+
+isCtxValid:
+  # Check if a context blob matches the current transaction's context stamp.
+  mutability: view
+  inputs:
+    - ctx: bytes
+  outputs:
+    - bool
+
+# == App Registry ==
+# Super App registration. On some deployments, governance permission (via SimpleACL
+# or legacy governance config) is required before an app can register.
+
+registerApp:
+  # Register msg.sender as a Super App with the given config word.
+  # On whitelisting-enabled deployments, tx.origin must have the
+  # ACL_SUPERAPP_REGISTRATION_ROLE or a valid legacy governance key.
+  mutability: nonpayable
+  access: self
+  inputs:
+    - configWord: uint256       # Super App manifest flags (see SuperAppDefinitions)
+  emits: [AppRegistered]
+  errors: [HOST_NO_APP_REGISTRATION_PERMISSION, HOST_INVALID_CONFIG_WORD, HOST_SUPER_APP_ALREADY_REGISTERED]
+
+registerApp(address,uint256):
+  # Register an external contract as a Super App.
+  # Useful for factory patterns where the deployer registers the app.
+  mutability: nonpayable
+  access: anyone
+  inputs:
+    - app: address              # must be a contract
+    - configWord: uint256
+  emits: [AppRegistered]
+  errors: [HOST_MUST_BE_CONTRACT, HOST_NO_APP_REGISTRATION_PERMISSION, HOST_INVALID_CONFIG_WORD, HOST_SUPER_APP_ALREADY_REGISTERED]
+
+registerAppWithKey:
+  # DEPRECATED — use registerApp(uint256) instead.
+  # Legacy registration using a governance-provided registration key string.
+  mutability: nonpayable
+  access: self
+  inputs:
+    - configWord: uint256
+    - registrationKey: string
+  emits: [AppRegistered]
+  errors: [HOST_NO_APP_REGISTRATION_PERMISSION, HOST_INVALID_CONFIG_WORD, HOST_SUPER_APP_ALREADY_REGISTERED]
+
+registerAppByFactory:
+  # DEPRECATED — use registerApp(address, uint256) instead.
+  # Legacy factory-based registration using governance-authorized factory addresses.
+  mutability: nonpayable
+  access: factory
+  inputs:
+    - app: address
+    - configWord: uint256
+  emits: [AppRegistered]
+  errors: [HOST_MUST_BE_CONTRACT, HOST_NO_APP_REGISTRATION_PERMISSION, HOST_INVALID_CONFIG_WORD, HOST_SUPER_APP_ALREADY_REGISTERED]
+
+# == App Queries ==
+
+isApp:
+  mutability: view
+  inputs:
+    - app: address
+  outputs:
+    - bool
+
+getAppCallbackLevel:
+  mutability: view
+  inputs:
+    - appAddr: address
+  outputs:
+    - uint8
+
+getAppManifest:
+  # Returns the full manifest of a Super App.
+  # isSuperApp is false if the address was never registered.
+  mutability: view
+  inputs:
+    - app: address
+  outputs:
+    - isSuperApp: bool
+    - isJailed: bool
+    - noopMask: uint256         # bitmask of noop'd agreement callback selectors
+
+isAppJailed:
+  mutability: view
+  inputs:
+    - app: address
+  outputs:
+    - isJail: bool
+
+# == App Composition ==
+# Source apps can whitelist target apps for composability (calling downstream).
+# Currently limited to MAX_APP_CALLBACK_LEVEL = 1 (one level of nesting).
+
+allowCompositeApp:
+  # Whitelist a target Super App for composition. msg.sender must be a Super App
+  # with a higher callback level than the target.
+  mutability: nonpayable
+  access: super-app
+  inputs:
+    - targetApp: address
+  errors: [HOST_SENDER_IS_NOT_SUPER_APP, HOST_RECEIVER_IS_NOT_SUPER_APP, HOST_SOURCE_APP_NEEDS_HIGHER_APP_LEVEL]
+
+isCompositeAppAllowed:
+  mutability: view
+  inputs:
+    - app: address
+    - targetApp: address
+  outputs:
+    - isAppAllowed: bool
+
+# == Agreement Framework ==
+# Internal protocol functions called by registered agreement contracts (CFA, IDA, GDA)
+# to manage Super App callbacks and app credit. Only callable by agreements.
+#
+# Callback lifecycle (called by agreement during flow operations):
+#   1. appCallbackPush       — set up credit, push callback frame
+#   2. callAppBeforeCallback — staticcall app's before hook (read-only)
+#   3. (agreement executes core logic)
+#   4. callAppAfterCallback  — call app's after hook (state changes OK)
+#   5. appCallbackPop        — finalize credit accounting, pop frame
+
+callAppBeforeCallback:
+  # StaticCall a Super App's before-callback. Returns the callback data.
+  # If the callback reverts during a termination, the app is jailed instead of reverting.
+  mutability: nonpayable
+  access: agreement
+  inputs:
+    - app: address
+    - callData: bytes
+    - isTermination: bool
+    - ctx: bytes
+  outputs:
+    - cbdata: bytes
+  errors: [HOST_ONLY_LISTED_AGREEMENT, HOST_NEED_MORE_GAS, APP_RULE]
+
+callAppAfterCallback:
+  # Call a Super App's after-callback. Returns the (potentially modified) context.
+  # If the app returns an invalid ctx, it is jailed on termination or reverts otherwise.
+  mutability: nonpayable
+  access: agreement
+  inputs:
+    - app: address
+    - callData: bytes
+    - isTermination: bool
+    - ctx: bytes
+  outputs:
+    - newCtx: bytes
+  errors: [HOST_ONLY_LISTED_AGREEMENT, HOST_NEED_MORE_GAS, APP_RULE]
+
+appCallbackPush:
+  # Push a new callback frame onto the context stack before invoking a Super App.
+  # Sets up app credit and tracks the callback nesting level.
+  notes:
+    - "Gotcha: The appCreditGranted is backed by the flow sender's deposit as \"owed deposit\". If the Super App opens outgoing streams using this credit, the sender's total locked capital increases accordingly (roughly doubles for 1:1 relay, more for fan-out patterns)."
+  mutability: nonpayable
+  access: agreement
+  inputs:
+    - ctx: bytes
+    - app: address
+    - appCreditGranted: uint256
+    - appCreditUsed: int256
+    - appCreditToken: address
+  outputs:
+    - appCtx: bytes
+  errors: [HOST_ONLY_LISTED_AGREEMENT, APP_RULE]
+
+appCallbackPop:
+  # Pop the callback frame after a Super App callback completes.
+  # Adjusts appCreditUsed by the delta from the callback.
+  mutability: nonpayable
+  access: agreement
+  inputs:
+    - ctx: bytes
+    - appCreditUsedDelta: int256
+  outputs:
+    - newCtx: bytes
+  errors: [HOST_ONLY_LISTED_AGREEMENT]
+
+ctxUseCredit:
+  # Record additional app credit usage during an agreement operation.
+  mutability: nonpayable
+  access: agreement
+  inputs:
+    - ctx: bytes
+    - appCreditUsedMore: int256
+  outputs:
+    - newCtx: bytes
+  errors: [HOST_ONLY_LISTED_AGREEMENT]
+
+jailApp:
+  # Jail a Super App from within an agreement. Jailed apps have their callbacks bypassed.
+  mutability: nonpayable
+  access: agreement
+  inputs:
+    - ctx: bytes
+    - app: address
+    - reason: uint256           # see SuperAppDefinitions for jail reason codes
+  outputs:
+    - newCtx: bytes
+  emits: [Jail]
+  errors: [HOST_ONLY_LISTED_AGREEMENT]
+
+# == Governance ==
+
+getGovernance:
+  mutability: view
+  outputs:
+    - governance: address
+
+replaceGovernance:
+  mutability: nonpayable
+  access: governance
+  inputs:
+    - newGov: address
+  emits: [GovernanceReplaced]
+  errors: [HOST_ONLY_GOVERNANCE]
+
+# == Agreement Whitelisting ==
+# Governance registers and upgrades agreement classes (CFA, IDA, GDA).
+
+registerAgreementClass:
+  # Register a new agreement class. Creates a UUPS proxy in upgradable deployments.
+  mutability: nonpayable
+  access: governance
+  inputs:
+    - agreementClassLogic: address
+  emits: [AgreementClassRegistered]
+  errors: [HOST_ONLY_GOVERNANCE, HOST_AGREEMENT_ALREADY_REGISTERED, HOST_MAX_256_AGREEMENTS]
+
+updateAgreementClass:
+  # Upgrade an existing agreement class to a new implementation.
+  mutability: nonpayable
+  access: governance
+  inputs:
+    - agreementClassLogic: address
+  emits: [AgreementClassUpdated]
+  errors: [HOST_ONLY_GOVERNANCE, HOST_NON_UPGRADEABLE, HOST_AGREEMENT_IS_NOT_REGISTERED]
+
+isAgreementTypeListed:
+  mutability: view
+  inputs:
+    - agreementType: bytes32    # keccak256 of agreement name string
+  outputs:
+    - yes: bool
+
+isAgreementClassListed:
+  mutability: view
+  inputs:
+    - agreementClass: address
+  outputs:
+    - yes: bool
+
+getAgreementClass:
+  mutability: view
+  inputs:
+    - agreementType: bytes32
+  outputs:
+    - agreementClass: address
+  errors: [HOST_AGREEMENT_IS_NOT_REGISTERED]
+
+mapAgreementClasses:
+  # Decode a bitmap into an array of agreement class addresses.
+  mutability: view
+  inputs:
+    - bitmap: uint256
+  outputs:
+    - agreementClasses: address[]
+
+addToAgreementClassesBitmap:
+  mutability: view
+  inputs:
+    - bitmap: uint256
+    - agreementType: bytes32
+  outputs:
+    - newBitmap: uint256
+  errors: [HOST_AGREEMENT_IS_NOT_REGISTERED]
+
+removeFromAgreementClassesBitmap:
+  mutability: view
+  inputs:
+    - bitmap: uint256
+    - agreementType: bytes32
+  outputs:
+    - newBitmap: uint256
+  errors: [HOST_AGREEMENT_IS_NOT_REGISTERED]
+
+# == Super Token Factory ==
+
+getSuperTokenFactory:
+  mutability: view
+  outputs:
+    - factory: address
+
+getSuperTokenFactoryLogic:
+  # Returns the logic address behind the factory proxy. For non-upgradable
+  # deployments, returns the factory address itself.
+  mutability: view
+  outputs:
+    - logic: address
+
+updateSuperTokenFactory:
+  # Deploy or upgrade the SuperTokenFactory. On first call, creates a UUPS proxy.
+  mutability: nonpayable
+  access: governance
+  inputs:
+    - newFactory: address
+  emits: [SuperTokenFactoryUpdated]
+  errors: [HOST_ONLY_GOVERNANCE, HOST_NON_UPGRADEABLE]
+
+updateSuperTokenLogic:
+  # Upgrade a SuperToken proxy to new logic. If newLogicOverride is address(0),
+  # uses the canonical logic from the SuperTokenFactory.
+  mutability: nonpayable
+  access: governance
+  inputs:
+    - token: address
+    - newLogicOverride: address   # address(0) means use canonical logic
+  emits: [SuperTokenLogicUpdated]
+  errors: [HOST_ONLY_GOVERNANCE]
+
+changeSuperTokenAdmin:
+  # Change the admin of a SuperToken. The admin is the only account allowed to
+  # upgrade the token logic. Default admin is the Host itself.
+  mutability: nonpayable
+  access: governance
+  inputs:
+    - token: address
+    - newAdmin: address
+  errors: [HOST_ONLY_GOVERNANCE]
+
+# == Pool Beacon ==
+
+updatePoolBeaconLogic:
+  # Upgrade the SuperfluidPool beacon to new logic. Affects all GDA pool proxies.
+  mutability: nonpayable
+  access: governance
+  inputs:
+    - newLogic: address
+  emits: [PoolBeaconLogicUpdated]
+  errors: [HOST_ONLY_GOVERNANCE]
+
+# == ERC2771 / Forwarder ==
+
+isTrustedForwarder:
+  # Check if an address is a governance-approved trusted forwarder for meta-transactions.
+  mutability: view
+  inputs:
+    - forwarder: address
+  outputs:
+    - bool
+
+versionRecipient:
+  # ERC2771 relay recipient version string. Returns "v1".
+  mutability: pure
+  outputs:
+    - string
+
+getERC2771Forwarder:
+  # Returns the ERC2771Forwarder contract used for ERC2771_FORWARD_CALL batch operations.
+  mutability: view
+  outputs:
+    - address
+
+getSimpleACL:
+  # Returns the SimpleACL contract used for Super App registration permissioning.
+  mutability: view
+  outputs:
+    - address
+
+# == Time ==
+
+getNow:
+  # Returns block.timestamp. Useful for off-chain tooling and testing.
+  mutability: view
+  outputs:
+    - uint256
+
+# == Protocol Constants ==
+
+NON_UPGRADABLE_DEPLOYMENT:
+  # True if the Host was deployed in non-upgradable mode.
+  mutability: view
+  outputs:
+    - bool
+
+APP_WHITE_LISTING_ENABLED:
+  # True if Super App registration requires governance permission.
+  mutability: view
+  outputs:
+    - bool
+
+CALLBACK_GAS_LIMIT:
+  # Maximum gas forwarded to Super App callbacks.
+  mutability: view
+  outputs:
+    - uint64
+
+MAX_APP_CALLBACK_LEVEL:
+  # Maximum callback nesting depth for composed Super Apps. Currently 1.
+  mutability: view
+  outputs:
+    - uint256
+
+MAX_NUM_AGREEMENTS:
+  # Maximum number of agreement classes that can be registered. 256.
+  mutability: view
+  outputs:
+    - uint32
+
+ACL_SUPERAPP_REGISTRATION_ROLE:
+  # keccak256("ACL_SUPERAPP_REGISTRATION_ROLE") — the SimpleACL role for app registration.
+  mutability: view
+  outputs:
+    - bytes32
+
+SIMPLE_FORWARDER:
+  # Address of the SimpleForwarder used for SIMPLE_FORWARD_CALL batch operations.
+  mutability: view
+  outputs:
+    - address
+
+# == Events ==
+
+events:
+  GovernanceReplaced:
+    data:
+      - oldGov: address
+      - newGov: address
+
+  AgreementClassRegistered:
+    # agreementType is keccak256("org.superfluid-finance.agreements.<NAME>.<VERSION>")
+    data:
+      - agreementType: bytes32
+      - code: address
+
+  AgreementClassUpdated:
+    data:
+      - agreementType: bytes32
+      - code: address
+
+  SuperTokenFactoryUpdated:
+    data:
+      - newFactory: address
+
+  SuperTokenLogicUpdated:
+    indexed:
+      - token: address
+    data:
+      - code: address
+
+  PoolBeaconLogicUpdated:
+    indexed:
+      - beaconProxy: address
+    data:
+      - newBeaconLogic: address
+
+  AppRegistered:
+    indexed:
+      - app: address
+
+  Jail:
+    # Emitted when a Super App is jailed for violating protocol rules.
+    # See APP_RULE error below for reason code values.
+    indexed:
+      - app: address
+    data:
+      - reason: uint256
+
+  # Inherited events (from UUPSProxiable):
+  # CodeUpdated — emitted on proxy upgrade (uuid, codeAddress)
+  # Initialized — emitted on proxy initialization (version)
+
+# == Errors ==
+
+errors:
+  # Governance
+  - HOST_ONLY_GOVERNANCE               # caller is not the governance contract
+
+  # Agreement whitelisting
+  - HOST_AGREEMENT_ALREADY_REGISTERED
+  - HOST_AGREEMENT_IS_NOT_REGISTERED
+  - HOST_MAX_256_AGREEMENTS            # maximum agreement slots exhausted
+  - HOST_ONLY_LISTED_AGREEMENT         # caller is not a registered agreement
+
+  # Upgradability
+  - HOST_NON_UPGRADEABLE              # deployment is non-upgradable
+  - HOST_CANNOT_DOWNGRADE_TO_NON_UPGRADEABLE
+
+  # App registration
+  - HOST_MUST_BE_CONTRACT              # app address has no code
+  - HOST_NO_APP_REGISTRATION_PERMISSION
+  - HOST_INVALID_CONFIG_WORD           # invalid Super App manifest flags
+  - HOST_SUPER_APP_ALREADY_REGISTERED
+  - HOST_NOT_A_SUPER_APP              # target is not a registered Super App
+  - HOST_SUPER_APP_IS_JAILED
+
+  # App composition
+  - HOST_SENDER_IS_NOT_SUPER_APP
+  - HOST_RECEIVER_IS_NOT_SUPER_APP
+  - HOST_SOURCE_APP_NEEDS_HIGHER_APP_LEVEL
+
+  # Context & call proxies
+  - HOST_NON_ZERO_LENGTH_PLACEHOLDER_CTX      # placeholder ctx must be empty
+  - HOST_CALL_AGREEMENT_WITH_CTX_FROM_WRONG_ADDRESS   # msg.sender != ctx.appAddress
+  - HOST_CALL_APP_ACTION_WITH_CTX_FROM_WRONG_ADDRESS  # msg.sender != ctx.appAddress
+  - HOST_AGREEMENT_CALLBACK_IS_NOT_ACTION             # app action selector matches a callback
+
+  # Batch call
+  - HOST_UNKNOWN_BATCH_CALL_OPERATION_TYPE
+
+  # Callback execution
+  - HOST_NEED_MORE_GAS                # insufficient gas for Super App callback
+
+  # Super App rule violations (generic, carries a reason code)
+  # Reason codes (from SuperAppDefinitions.sol):
+  #   10 — NO_REVERT_ON_TERMINATION_CALLBACK (delete callback reverted)
+  #   11 — NO_CRITICAL_SENDER_ACCOUNT (callback made sender critical)
+  #   12 — NO_CRITICAL_RECEIVER_ACCOUNT (callback made receiver critical)
+  #   20 — CTX_IS_READONLY (state change in before-callback staticcall)
+  #   21 — CTX_IS_NOT_CLEAN (context not properly returned)
+  #   22 — CTX_IS_MALFORMATED (context bytes corrupted/fabricated)
+  #   30 — COMPOSITE_APP_IS_NOT_WHITELISTED (no allowCompositeApp)
+  #   31 — COMPOSITE_APP_IS_JAILED (downstream app is jailed)
+  #   40 — MAX_APP_LEVEL_REACHED (callback nesting exceeded limit)
+  - APP_RULE:
+      inputs:
+        - _code: uint256
+
+  # SafeCast (inherited from OpenZeppelin)
+  - SafeCastOverflowedUintDowncast:
+      inputs:
+        - bits: uint8
+        - value: uint256

@@ -1,0 +1,556 @@
+# FluidEPProgramManager — SUP Emission Program Manager
+# Orchestrates SUP emission programs for token distribution via Superfluid GDA pools.
+# Each program has a distribution pool; the manager handles creation, funding, stopping, and cancellation.
+# Unit updates use signed messages — an off-chain signer authorizes pool units per user.
+# Implements IUserDefinedMacro for MacroForwarder integration.
+#
+# NOTE: Contracts use "FLUID" and "Locker" internally. In all public-facing communication
+# these are renamed to "SUP" and "Reserve" respectively. Function/event/error names in this
+# file match the on-chain Solidity identifiers (FLUID/Locker).
+#
+# NOTE: emits/errors mappings are best-effort — verify against source.
+
+meta:
+  name: FluidEPProgramManager
+  version: v1
+  source:
+    - https://raw.githubusercontent.com/superfluid-org/sup-token/refs/heads/dev/packages/contracts/src/FluidEPProgramManager.sol
+    - https://raw.githubusercontent.com/superfluid-org/sup-token/refs/heads/dev/packages/contracts/src/EPProgramManager.sol
+  implements: [IEPProgramManager, IUserDefinedMacro]
+  inherits: [Initializable, OwnableUpgradeable, EPProgramManager]
+  note: >
+    Manages SUP emission programs. Owner creates programs and starts/cancels funding.
+    Off-chain signers authorize unit updates via EIP-712-style signatures.
+    Integrates with MacroForwarder for atomic ERC-20 approval + ACL permission granting.
+  deployments:
+    base-mainnet: "0x1e32cf099992E9D3b17eDdDFFfeb2D07AED95C6a"
+
+# == Abbreviations ==
+# CFA — Constant Flow Agreement
+# EP  — Emission Program
+# GDA — General Distribution Agreement
+# SUP — Superfluid Token (contract name: FLUID)
+
+# == Glossary ==
+# FLUID / SUP          — the Superfluid Token; contracts say FLUID, UI says SUP
+# Locker / Reserve     — the user's lock/stake contract; contracts say Locker, UI says Reserve
+# emission program     — a token distribution campaign; SUP streams from treasury through a GDA pool
+# program admin        — the account that can do manual pool updates and change the signer
+# stack signer         — off-chain address authorized to sign unit update messages (legacy name from prior points system)
+# stack signature      — EIP-712-style signed message from the program's off-chain signer authorizing a unit update
+# nonce                — per-user-per-program monotonic counter preventing signature replay
+# subsidy rate         — basis-point fraction of the funding flow rate redirected from the tax distribution pool
+# funding flow rate    — SUP per second flowing into the program pool from the treasury
+# tax distribution pool — shared GDA pool that receives a subsidy flow for each funded program
+
+# == Constants ==
+
+EARLY_PROGRAM_END:
+  # Immutable. Time window before program end when stopFunding becomes callable (3 days).
+  mutability: view
+  outputs:
+    - uint256
+
+TAX_DISTRIBUTION_POOL:
+  # Immutable. The shared GDA pool that receives subsidy flows from all funded programs.
+  mutability: view
+  outputs:
+    - address
+
+subsidyFundingRate:
+  # Basis-point rate applied to each program's funding flow to compute the subsidy flow.
+  mutability: view
+  outputs:
+    - uint96
+
+# == Program Lifecycle ==
+
+createProgram:
+  # Creates a new emission program with a dedicated GDA distribution pool.
+  # The pool is created with custom ERC-20 metadata (name/symbol).
+  mutability: nonpayable
+  access: owner
+  inputs:
+    - programId: uint256           # must be > 0
+    - programAdmin: address
+    - signer: address              # off-chain signer for unit update authorization
+    - token: address               # ISuperToken used for distribution
+    - poolName: string
+    - poolSymbol: string
+  outputs:
+    - distributionPool: address
+  emits: [ProgramCreated]
+  errors:
+    - INVALID_PARAMETER
+    - PROGRAM_ALREADY_CREATED
+
+startFunding:
+  # Starts a CFA flow from the treasury into the program's distribution pool.
+  # Also starts a subsidy GDA flow from the tax distribution pool.
+  notes:
+    - "Gotcha: Requires the program admin to have pre-approved SUP ERC-20 allowance and Superfluid ACL flow rate permissions. Use calculateAllowances to compute the exact amounts, or use MacroForwarder with paramsGivePermission."
+    - "Gotcha: The pool must have at least one member with units > 0 before funding."
+  mutability: nonpayable
+  access: owner
+  inputs:
+    - programId: uint256
+    - totalAmount: uint256         # total SUP to distribute over the program duration
+    - programDuration: uint32      # duration in seconds
+  emits: [ProgramFunded]
+  errors:
+    - PROGRAM_NOT_FOUND
+    - POOL_HAS_NO_UNITS
+
+stopFunding:
+  # Stops funding by deleting the treasury flow and subsidy flow.
+  # Compensates for unused funds by transferring remaining amounts back.
+  # Anyone can call this — no access restriction.
+  notes:
+    - "Gotcha: Can only be called within the EARLY_PROGRAM_END window before the end date."
+  mutability: nonpayable
+  access: anyone
+  inputs:
+    - programId: uint256
+  emits: [ProgramStopped]
+  errors:
+    - INVALID_PARAMETER
+    - TOO_EARLY_TO_END_PROGRAM
+
+cancelProgram:
+  # Cancels a program, returning the deposit. Differs from stopFunding —
+  # cancel returns the full deposit; stop compensates for unused funds.
+  mutability: nonpayable
+  access: owner
+  inputs:
+    - programId: uint256
+  emits: [ProgramCancelled]
+  errors:
+    - INVALID_PARAMETER
+
+# == Unit Updates ==
+# Signed-message-based pool unit updates. An off-chain signer authorizes how many
+# pool units each user receives based on their accumulated points.
+
+updateUnits:
+  # Updates the caller's units in a program's distribution pool.
+  # Delegates to updateUserUnits with msg.sender as the user.
+  notes:
+    - "Gotcha: Requires a valid signature from the program's off-chain signer."
+    - "Gotcha: The nonce must be strictly greater than the last used nonce (use getNextValidNonce)."
+  mutability: nonpayable
+  access: anyone
+  inputs:
+    - programId: uint256
+    - newUnits: uint256
+    - nonce: uint256
+    - stackSignature: bytes
+  emits: [UserUnitsUpdated]
+  errors:
+    - PROGRAM_NOT_FOUND
+    - INVALID_SIGNATURE
+    - LOCKER_NOT_FOUND
+
+updateUserUnits:
+  # Updates a specific user's units in a program's distribution pool.
+  # The actual pool member is the user's Locker (Reserve) contract, looked up via fluidLockerFactory.
+  mutability: nonpayable
+  access: anyone
+  inputs:
+    - user: address
+    - programId: uint256
+    - newUnits: uint256
+    - nonce: uint256
+    - stackSignature: bytes
+  emits: [UserUnitsUpdated]
+  errors:
+    - PROGRAM_NOT_FOUND
+    - INVALID_PARAMETER
+    - INVALID_SIGNATURE
+    - LOCKER_NOT_FOUND
+
+batchUpdateUnits:
+  # Updates the caller's units across multiple programs in one transaction.
+  # Delegates to batchUpdateUserUnits with msg.sender as the user.
+  notes:
+    - "Gotcha: programIds and newUnits arrays must have equal length."
+    - "Gotcha: All programs in the batch must share the same signer."
+  mutability: nonpayable
+  access: anyone
+  inputs:
+    - programIds: uint256[]
+    - newUnits: uint256[]
+    - nonce: uint256               # single nonce validated per-program
+    - stackSignature: bytes
+  emits: [UserUnitsUpdated]
+  errors:
+    - INVALID_PARAMETER
+    - INVALID_SIGNATURE
+    - PROGRAM_NOT_FOUND
+    - LOCKER_NOT_FOUND
+
+batchUpdateUserUnits:
+  # Updates a specific user's units across multiple programs in one transaction.
+  notes:
+    - "Gotcha: All programs in the batch must share the same signer."
+    - "Gotcha: programIds and newUnits arrays must have equal length and be non-empty."
+  mutability: nonpayable
+  access: anyone
+  inputs:
+    - user: address
+    - programIds: uint256[]
+    - newUnits: uint256[]
+    - nonce: uint256
+    - stackSignature: bytes
+  emits: [UserUnitsUpdated]
+  errors:
+    - INVALID_PARAMETER
+    - INVALID_SIGNATURE
+    - PROGRAM_NOT_FOUND
+    - LOCKER_NOT_FOUND
+
+# == Manual Updates ==
+# Admin fallback for updating pool units without signatures.
+
+"manualPoolUpdate(uint256,uint256,address)":
+  # Updates a single user's pool units directly (no signature needed).
+  # The actual pool member is the user's Locker (Reserve), looked up via fluidLockerFactory.
+  mutability: nonpayable
+  access: program-admin
+  inputs:
+    - programId: uint256
+    - stackPoints: uint256
+    - user: address
+  errors:
+    - NOT_PROGRAM_ADMIN
+    - PROGRAM_NOT_FOUND
+    - LOCKER_NOT_FOUND
+
+"manualPoolUpdate(uint256,uint256[],address[])":
+  # Batch version — updates pool units for multiple users directly.
+  notes:
+    - "Gotcha: stackPoints and users arrays must have equal length and be non-empty."
+  mutability: nonpayable
+  access: program-admin
+  inputs:
+    - programId: uint256
+    - stackPoints: uint256[]
+    - users: address[]
+  errors:
+    - NOT_PROGRAM_ADMIN
+    - PROGRAM_NOT_FOUND
+    - INVALID_PARAMETER
+    - LOCKER_NOT_FOUND
+
+# == Query ==
+
+programs:
+  # Mapping getter — returns core program data.
+  mutability: view
+  inputs:
+    - programId: uint256
+  outputs:
+    - programAdmin: address
+    - stackSigner: address
+    - token: address               # ISuperToken
+    - distributionPool: address    # ISuperfluidPool
+
+getProgramDetails:
+  # Returns funding and timing details for a program.
+  mutability: view
+  inputs:
+    - programId: uint256
+  outputs:
+    - details:
+        type: tuple
+        components:
+          - fundingFlowRate: int96
+          - subsidyFlowRate: int96
+          - fundingStartDate: uint32
+          - duration: uint32
+
+getProgramPool:
+  # Returns the GDA distribution pool address for a program.
+  mutability: view
+  inputs:
+    - programId: uint256
+  outputs:
+    - programPool: address
+
+getNextValidNonce:
+  # Returns the next valid nonce for a user in a program.
+  # Nonces are per-user-per-program and must be strictly monotonically increasing.
+  mutability: view
+  inputs:
+    - programId: uint256
+    - user: address
+  outputs:
+    - validNonce: uint256
+
+calculateAllowances:
+  # Computes the exact ERC-20 deposit allowance and CFA flow rate allowance
+  # the program admin needs to grant before calling startFunding.
+  # Deposit covers the CFA buffer + early-end compensation.
+  mutability: view
+  inputs:
+    - programId: uint256
+    - plannedFundingAmount: uint256
+    - plannedProgramDuration: uint32
+  outputs:
+    - depositAllowance: uint256
+    - flowRateAllowance: int96
+
+# == MacroForwarder Integration ==
+# IUserDefinedMacro functions for atomic ERC-20 approval + ACL permission granting
+# via MacroForwarder.runMacro().
+
+buildBatchOperations:
+  # Builds batch operations for MacroForwarder: ERC-20 approve + CFA flow rate allowance.
+  # Called by MacroForwarder.runMacro() to construct the batch.
+  mutability: view
+  inputs:
+    - host: address                # ISuperfluid host
+    - params: bytes                # encoded (programId, depositAllowance, flowRateAllowance, token)
+    - address                      # unused (msgSender placeholder)
+  outputs:
+    - operations:
+        type: tuple[]
+        components:
+          - operationType: uint32
+          - target: address
+          - data: bytes
+
+paramsGivePermission:
+  # Encodes parameters for MacroForwarder.runMacro().
+  # Computes allowances via calculateAllowances and packs them with the program token.
+  mutability: view
+  inputs:
+    - programId: uint256
+    - amount: uint256              # planned funding amount
+    - duration: uint32             # planned program duration
+  outputs:
+    - bytes
+
+postCheck:
+  # IUserDefinedMacro post-execution hook. No-op in this contract.
+  mutability: view
+  inputs:
+    - host: address
+    - params: bytes
+    - msgSender: address
+
+# == Admin ==
+
+initialize:
+  # UUPS initializer. Sets owner and treasury address.
+  mutability: nonpayable
+  inputs:
+    - owner: address
+    - treasury: address
+
+setLockerFactory:
+  # Sets the Locker (Reserve) factory contract address.
+  mutability: nonpayable
+  access: owner
+  inputs:
+    - lockerFactoryAddress: address
+  errors:
+    - INVALID_PARAMETER
+
+setTreasury:
+  # Sets the treasury address that funds emission programs.
+  mutability: nonpayable
+  access: owner
+  inputs:
+    - treasuryAddress: address
+  errors:
+    - INVALID_PARAMETER
+
+setSubsidyRate:
+  # Sets the basis-point rate for subsidy flow computation.
+  mutability: nonpayable
+  access: owner
+  inputs:
+    - subsidyRate: uint96          # must be <= basis point denominator
+  errors:
+    - INVALID_PARAMETER
+
+updateProgramSigner:
+  # Changes the off-chain signer for a program.
+  mutability: nonpayable
+  access: program-admin
+  inputs:
+    - programId: uint256
+    - newSigner: address
+  emits: [ProgramSignerUpdated]
+  errors:
+    - PROGRAM_NOT_FOUND
+    - NOT_PROGRAM_ADMIN
+    - INVALID_PARAMETER
+
+emergencyWithdraw:
+  # Transfers the entire balance of a Super Token from this contract to the treasury.
+  mutability: nonpayable
+  access: owner
+  inputs:
+    - token: address
+
+transferOwnership:
+  # Transfers contract ownership (inherited from OwnableUpgradeable).
+  mutability: nonpayable
+  access: owner
+  inputs:
+    - newOwner: address
+  emits: [OwnershipTransferred]
+  errors:
+    - OwnableInvalidOwner
+
+renounceOwnership:
+  # Renounces contract ownership (inherited from OwnableUpgradeable).
+  mutability: nonpayable
+  access: owner
+  emits: [OwnershipTransferred]
+
+# == State Queries ==
+
+fluidLockerFactory:
+  # Returns the Locker (Reserve) factory contract address.
+  # NOTE: "Locker" = "Reserve" in public-facing naming.
+  mutability: view
+  outputs:
+    - address
+
+fluidTreasury:
+  # Returns the treasury address.
+  mutability: view
+  outputs:
+    - address
+
+owner:
+  # Returns the current contract owner (inherited from OwnableUpgradeable).
+  mutability: view
+  outputs:
+    - address
+
+# == Upgrade ==
+
+upgradeTo:
+  # UUPS upgrade — replaces the implementation and optionally calls an initializer.
+  mutability: nonpayable
+  access: owner
+  inputs:
+    - newImplementation: address
+    - data: bytes                  # calldata for optional re-initialization
+  emits: [Upgraded]
+  errors:
+    - ERC1967InvalidImplementation
+
+# == Events ==
+
+events:
+
+  ProgramCreated:
+    # Emitted when a new emission program is created.
+    data:
+      - programId: uint256
+      - programAdmin: address
+      - signer: address
+      - token: address
+      - distributionPool: address
+
+  ProgramFunded:
+    # Emitted when funding starts for a program.
+    indexed:
+      - programId: uint256
+      - fundingAmount: uint256
+      - subsidyAmount: uint256
+    data:
+      - earlyEndDate: uint256
+      - endDate: uint256
+
+  ProgramStopped:
+    # Emitted when funding is stopped (within the EARLY_PROGRAM_END window).
+    indexed:
+      - programId: uint256
+      - fundingCompensationAmount: uint256
+      - subsidyCompensationAmount: uint256
+
+  ProgramCancelled:
+    # Emitted when a program is cancelled and deposit is returned.
+    indexed:
+      - programId: uint256
+      - returnedDeposit: uint256
+
+  ProgramSignerUpdated:
+    # Emitted when a program's off-chain signer is changed.
+    data:
+      - programId: uint256
+      - newSigner: address
+
+  UserUnitsUpdated:
+    # Emitted for each user whose pool units are updated (via signed or batch updates).
+    data:
+      - user: address
+      - programId: uint256
+      - newUnits: uint256
+
+  OwnershipTransferred:
+    indexed:
+      - previousOwner: address
+      - newOwner: address
+
+  Upgraded:
+    indexed:
+      - implementation: address
+
+  Initialized:
+    data:
+      - version: uint64
+
+# == Errors ==
+
+errors:
+
+  # -- Program Lifecycle --
+  - PROGRAM_ALREADY_CREATED
+  - PROGRAM_NOT_FOUND
+  - POOL_HAS_NO_UNITS
+  - TOO_EARLY_TO_END_PROGRAM
+
+  # -- Validation --
+  - CFA_INVALID_FLOW_RATE
+  - INVALID_PARAMETER
+  - NOT_PROGRAM_ADMIN
+
+  # -- Signature --
+  - INVALID_SIGNATURE:
+      inputs:
+        - reason: string
+
+  # -- Locker --
+  - LOCKER_NOT_FOUND
+
+  # -- Ownable (inherited) --
+  - OwnableInvalidOwner:
+      inputs:
+        - owner: address
+  - OwnableUnauthorizedAccount:
+      inputs:
+        - account: address
+
+  # -- Proxy / Upgrade (inherited) --
+  - AddressEmptyCode:
+      inputs:
+        - target: address
+  - ERC1967InvalidImplementation:
+      inputs:
+        - implementation: address
+  - ERC1967NonPayable
+  - FailedInnerCall
+  - InvalidInitialization
+  - NotInitializing
+
+  # -- SafeCast (inherited) --
+  - SafeCastOverflowedIntDowncast:
+      inputs:
+        - bits: uint8
+        - value: int256

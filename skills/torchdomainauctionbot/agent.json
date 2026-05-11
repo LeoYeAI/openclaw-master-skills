@@ -1,0 +1,178 @@
+{
+  "name": "Torch Domain Auction Bot",
+  "description": "Domain lending protocol on Solana. Domains become tokens. Tokens become collateral. Top holder controls the domain. Borrow SOL against your position -- but get liquidated and you lose the domain. The bot discovers domains, launches them as Torch Market tokens, monitors lending positions, and auto-liquidates underwater loans through a Torch Vault. When a borrower is liquidated, their collateral changes hands and the domain lease rotates to the new top holder. The agent keypair is disposable. All value routes through the vault. Built on torchsdk v3.7.23.",
+  "version": "2.0.1",
+  "type": "protocol",
+  "disable-model-invocation": true,
+  "website": "https://torch.market",
+  "socials": {
+    "twitter": "https://twitter.com/torch_market"
+  },
+  "distribution": {
+    "clawhub": "https://clawhub.ai/mrsirg97-rgb/torch-domain-auction-bot",
+    "kit": "https://github.com/mrsirg97-rgb/torch-domain-auction-bot",
+    "npm_bot": "torch-domain-auction-bot",
+    "npm_sdk": "torchsdk"
+  },
+  "requires": {
+    "env": [
+      {
+        "name": "SOLANA_RPC_URL",
+        "description": "Solana RPC endpoint (HTTPS). Fallback: BOT_RPC_URL",
+        "sensitive": false,
+        "required": true
+      },
+      {
+        "name": "VAULT_CREATOR",
+        "description": "Vault creator pubkey -- identifies which Torch Vault the bot operates through. Required.",
+        "sensitive": false,
+        "required": true
+      },
+      {
+        "name": "SOLANA_PRIVATE_KEY",
+        "description": "Disposable controller keypair (base58 or byte array JSON). Optional -- the bot generates a fresh keypair in-process if not provided (recommended).",
+        "sensitive": true,
+        "required": false
+      }
+    ],
+    "install": [
+      {
+        "id": "npm-torch-domain-auction-bot",
+        "kind": "npm",
+        "package": "torch-domain-auction-bot@^2.0.1",
+        "flags": [],
+        "label": "Install Torch Domain Auction Bot (npm, optional -- SDK is bundled in lib/torchsdk/, kit (bot + scraper) is in lib/kit/)"
+      }
+    ]
+  },
+  "capabilities": [
+    "vault-full-custody",
+    "vault-escrow",
+    "authority-separation",
+    "domain-discovery",
+    "domain-evaluation",
+    "domain-token-launch",
+    "domain-lease-rotation",
+    "lending-market-scanner",
+    "liquidation-keeper",
+    "autonomous-scan-loop",
+    "in-process-keypair",
+    "said-verification"
+  ],
+  "chain": "solana",
+  "network": "mainnet",
+  "program_id": "8hbUkonssSEEtkqzwM7ZcZrD9evacM92TcWSooVF4BeT",
+  "endpoints": {
+    "skill": "https://torch.market/skill.md",
+    "llms_txt": "https://torch.market/llms.txt",
+    "docs": "https://torch-market-docs.vercel.app"
+  },
+  "actions": [
+    {
+      "name": "TORCH_DISCOVER_DOMAINS",
+      "description": "Scrape expiring and available domains, evaluate resale potential, generate ticker symbols"
+    },
+    {
+      "name": "TORCH_LAUNCH_DOMAIN_TOKEN",
+      "description": "Launch a domain as a Torch Market token -- bonding curve creates the initial market, migration links the domain to the token permanently"
+    },
+    {
+      "name": "TORCH_SCAN_LENDING_MARKETS",
+      "description": "Discover all domain tokens with active lending and check for underwater positions"
+    },
+    {
+      "name": "TORCH_SCORE_POSITION",
+      "description": "Score a borrower's loan risk across four factors: LTV proximity, price momentum, wallet reputation, interest burden"
+    },
+    {
+      "name": "TORCH_LIQUIDATE",
+      "description": "Liquidate an underwater domain loan (LTV > 65%) via vault -- collateral tokens change hands, domain lease rotates to new top holder"
+    },
+    {
+      "name": "TORCH_ROTATE_LEASE",
+      "description": "Check top holder of a domain token and rotate the domain lease if holder changed (e.g. after liquidation or large purchase)"
+    },
+    {
+      "name": "TORCH_GET_VAULT",
+      "description": "Get vault state -- SOL balance, linked wallets, authority"
+    },
+    {
+      "name": "TORCH_GET_VAULT_FOR_WALLET",
+      "description": "Reverse lookup -- find which vault a controller wallet is linked to"
+    },
+    {
+      "name": "TORCH_GET_LENDING_INFO",
+      "description": "Get lending configuration for a domain token (rates, caps, active loans)"
+    },
+    {
+      "name": "TORCH_GET_LOAN",
+      "description": "Get loan position for a wallet -- collateral, debt, LTV, health status"
+    }
+  ],
+  "constants": {
+    "lending_max_ltv_percent": 50,
+    "lending_liquidation_threshold_percent": 65,
+    "lending_interest_rate_per_epoch_percent": 2,
+    "lending_liquidation_bonus_percent": 10,
+    "lending_utilization_cap_percent": 50,
+    "min_borrow_sol": 0.1,
+    "default_scan_interval_ms": 60000,
+    "min_scan_interval_ms": 5000,
+    "default_lease_duration_days": 7
+  },
+  "safety": {
+    "vault_full_custody": true,
+    "controller_holds_no_value": true,
+    "private_key_optional": true,
+    "in_process_keypair_generation": true,
+    "local_transaction_building": true,
+    "no_api_dependency_for_core": true,
+    "external_api_read_only": true,
+    "external_api_no_credentials": true,
+    "keys_never_transmitted": true,
+    "signing_is_local_only": true,
+    "vault_closed_economic_loop": true,
+    "vault_authority_only_withdrawals": true,
+    "vault_instant_revocation": true,
+    "transaction_expiry_seconds": 60,
+    "open_source": true,
+    "sdk_audited": true
+  },
+  "tags": [
+    "solana",
+    "defi",
+    "domains",
+    "domain-lending",
+    "domain-collateral",
+    "domain-lease",
+    "liquidation",
+    "liquidation-keeper",
+    "collateral-lending",
+    "vault-custody",
+    "ai-agents",
+    "agent-wallet",
+    "agent-safety",
+    "bonding-curve",
+    "fair-launch",
+    "token-2022",
+    "raydium",
+    "community-treasury",
+    "solana-agent-kit",
+    "escrow",
+    "anchor",
+    "pda",
+    "on-chain",
+    "autonomous-agent",
+    "keeper-bot",
+    "torch-market"
+  ],
+  "verification": {
+    "said": {
+      "wallet": "8cpWmV4kGdvxVYYNBEMPNwsJSRVQw5MQ9NXn4t293nMa",
+      "pda": "2rNknLxB7nWYJRgr2tZrNoc7PNDy3PKwKZa9YStbLMmb",
+      "verified": true,
+      "trust_tier": "medium",
+      "badge": "https://api.saidprotocol.com/api/badge/8cpWmV4kGdvxVYYNBEMPNwsJSRVQw5MQ9NXn4t293nMa.svg"
+    }
+  }
+}

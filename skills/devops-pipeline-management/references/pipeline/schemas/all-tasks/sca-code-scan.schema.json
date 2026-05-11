@@ -1,0 +1,74 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "sca-code-scan.schema.json",
+  "title": "ScaCodeScan Task",
+  "description": "源码扫描任务配置（SCA组件依赖漏洞扫描）",
+  "type": "object",
+  "required": ["taskCategory", "jobType", "name"],
+  "properties": {
+    "taskCategory": {
+      "type": "string",
+      "const": "CodeScanner"
+    },
+    "jobType": {
+      "type": "string",
+      "const": "ScaCodeScan"
+    },
+    "name": {
+      "type": "string",
+      "maxLength": 100,
+      "description": "任务名称"
+    },
+    "workPath": {
+      "type": "string",
+      "description": "工作目录"
+    },
+    "sourceId": {
+      "type": "string",
+      "description": "代码源ID"
+    },
+    "buildImageModel": {
+      "type": "string",
+      "enum": ["default", "custom"],
+      "default": "default"
+    },
+    "executeImageId": {
+      "type": "string"
+    },
+    "scanType": {
+      "type": "string",
+      "enum": ["java", "nodejs", "python", "go"],
+      "description": "扫描语言类型"
+    },
+    "scanPath": {
+      "type": "string",
+      "default": "./",
+      "description": "扫描路径"
+    },
+    "excludePath": {
+      "type": "array",
+      "items": { "type": "string" },
+      "default": [],
+      "description": "排除路径"
+    },
+    "failOnVulnerability": {
+      "type": "boolean",
+      "default": false,
+      "description": "发现漏洞时失败"
+    },
+    "severityLevel": {
+      "type": "string",
+      "enum": ["critical", "high", "medium", "low"],
+      "default": "high",
+      "description": "严重级别阈值"
+    },
+    "idInTemplate": {
+      "type": "string"
+    },
+    "dependencies": {
+      "type": "array",
+      "items": { "type": "string" },
+      "default": []
+    }
+  }
+}

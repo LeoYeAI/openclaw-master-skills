@@ -1,0 +1,115 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "source.schema.json",
+  "title": "Source",
+  "description": "代码源/制品源数据结构",
+  "type": "object",
+  "required": ["id", "name", "nodeType", "data"],
+  "properties": {
+    "id": {
+      "type": "string",
+      "description": "源唯一标识"
+    },
+    "name": {
+      "type": "string",
+      "description": "源名称"
+    },
+    "nodeType": {
+      "type": "string",
+      "const": "custom-source-node",
+      "description": "节点类型"
+    },
+    "defaultBranch": {
+      "type": "string",
+      "description": "默认分支"
+    },
+    "data": {
+      "type": "object",
+      "required": ["workPath", "sourceType", "repoType"],
+      "properties": {
+        "workPath": {
+          "type": "string",
+          "description": "工作目录"
+        },
+        "sourceType": {
+          "type": "string",
+          "enum": ["code", "package"],
+          "description": "源类型"
+        },
+        "repoType": {
+          "type": "string",
+          "enum": ["GITEE", "GITLAB", "FLYCODE", "IPACKAGE"],
+          "description": "仓库类型"
+        },
+        "refsType": {
+          "type": "string",
+          "enum": ["BRANCH", "TAG", "COMMIT"],
+          "default": "BRANCH",
+          "description": "引用类型（代码源）"
+        },
+        "repoUrl": {
+          "type": "string",
+          "description": "仓库URL"
+        },
+        "branch": {
+          "type": "string",
+          "description": "分支名称"
+        },
+        "commitId": {
+          "type": "string",
+          "description": "提交ID"
+        },
+        "credentialsId": {
+          "type": "string",
+          "description": "凭证ID"
+        },
+        "packageType": {
+          "type": "string",
+          "enum": ["docker", "normal"],
+          "description": "制品类型"
+        },
+        "firstDir": {
+          "type": "string",
+          "description": "一级目录（制品源）"
+        },
+        "imageName": {
+          "type": "string",
+          "description": "镜像名称"
+        },
+        "defaultTag": {
+          "type": "string",
+          "description": "默认版本"
+        },
+        "webhook": {
+          "type": "object",
+          "properties": {
+            "enable": {
+              "type": "boolean",
+              "default": false
+            },
+            "event": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "branchEnable": {
+              "type": "boolean",
+              "default": false
+            },
+            "branch": {
+              "type": "string"
+            },
+            "tagEnable": {
+              "type": "boolean",
+              "default": false
+            },
+            "tag": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    }
+  }
+}

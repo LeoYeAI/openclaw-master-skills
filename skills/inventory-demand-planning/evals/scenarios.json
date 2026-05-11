@@ -1,0 +1,1395 @@
+{
+  "capability": "inventory-demand-planning",
+  "version": "1.0.0",
+  "scenarios": [
+    {
+      "id": "IDP-001",
+      "name": "Basic reorder point calculation for stable-demand staple item",
+      "difficulty": "easy",
+      "category": "replenishment",
+      "context": {
+        "situation": "You are the demand planner for a regional grocery chain with 60 stores. One of your top-selling items is a 64 oz bottle of store-brand orange juice (SKU OJ-6401), classified as an A-item. Average weekly demand is 720 units across all stores with a standard deviation of 95 units. The vendor (SunFresh Beverages) has a consistent lead time of 5 days. Your review period is weekly (every Monday). Your target service level for A-items is 95%. Current on-hand at the DC is 1,400 units with 800 units on order arriving in 3 days. You have no backorders or committed allocations.",
+        "available_data": {
+          "sku": "OJ-6401",
+          "product": "Store-brand orange juice 64 oz",
+          "abc_class": "A",
+          "weekly_demand_avg": 720,
+          "weekly_demand_std": 95,
+          "lead_time_days": 5,
+          "review_period_days": 7,
+          "service_level_target": 0.95,
+          "z_score": 1.65,
+          "on_hand_units": 1400,
+          "on_order_units": 800,
+          "on_order_eta_days": 3,
+          "backorders": 0,
+          "committed": 0,
+          "store_count": 60,
+          "vendor": "SunFresh Beverages"
+        }
+      },
+      "task": "Calculate the safety stock, reorder point, and current inventory position. Determine if an order needs to be placed now, and if so, what quantity.",
+      "evaluation_criteria": [
+        {
+          "criterion": "safety_stock_calculation",
+          "weight": 0.30,
+          "rubric": {
+            "pass": "Correctly computes safety stock using SS = Z × σ_d × √(LT + R) with the review period included: SS = 1.65 × 95 × √(5/7 + 1) ≈ 1.65 × 95 × √1.71 ≈ 205 units (approximately 195–215 is acceptable given rounding). Recognizes that the review period must be included because this is a periodic review system.",
+            "fail": "Omits the review period from the safety stock calculation (using only lead time). Uses the wrong z-score. Confuses daily and weekly demand figures without converting. Gets a safety stock value below 130 or above 300."
+          }
+        },
+        {
+          "criterion": "reorder_point_calculation",
+          "weight": 0.25,
+          "rubric": {
+            "pass": "Correctly computes ROP = average demand during (LT + R) + SS. Converting: demand during (LT + R) = 720/7 × (5 + 7) = ~1,234 units. ROP = 1,234 + 205 ≈ 1,439 units. Alternatively uses weekly figures: demand during 1.71 weeks = 720 × 1.71 ≈ 1,231; ROP ≈ 1,436. Range of 1,350–1,500 is acceptable.",
+            "fail": "Computes ROP using only lead time demand without review period. Confuses ROP with order-up-to level. Gets a result outside the 1,200–1,600 range."
+          }
+        },
+        {
+          "criterion": "inventory_position_and_decision",
+          "weight": 0.30,
+          "rubric": {
+            "pass": "Correctly computes inventory position: IP = On-Hand + On-Order − Backorders − Committed = 1,400 + 800 − 0 − 0 = 2,200 units. Notes that IP (2,200) is above the ROP (~1,440), therefore no order is needed at this time. May also note the next review date and projected IP at that time.",
+            "fail": "Uses on-hand alone (1,400) instead of inventory position. Ignores the on-order quantity. Recommends placing an order when IP is well above ROP."
+          }
+        },
+        {
+          "criterion": "practical_judgment",
+          "weight": 0.15,
+          "rubric": {
+            "pass": "Notes that this is a perishable product (orange juice) and that weeks of supply should be monitored to avoid spoilage. May note that the 2,200 IP represents ~3 weeks of supply at the current demand rate, which is appropriate for a perishable with typical 3–4 week refrigerated shelf life.",
+            "fail": "Treats the product as non-perishable. Recommends ordering excessive quantities without considering spoilage risk."
+          }
+        }
+      ]
+    },
+    {
+      "id": "IDP-002",
+      "name": "ABC/XYZ classification and policy assignment for a product assortment",
+      "difficulty": "easy",
+      "category": "abc-analysis",
+      "context": {
+        "situation": "You have been asked to classify 5 items in the snack category and recommend differentiated planning policies. The trailing 52-week data (de-seasonalized, de-promoted) is as follows:\n\nItem A: Premium trail mix — Annual margin $42,000, weekly demand CV 0.35, average 180 units/week.\nItem B: Store-brand potato chips — Annual margin $78,000, weekly demand CV 0.28, average 450 units/week.\nItem C: Imported rice crackers — Annual margin $3,200, weekly demand CV 1.45, average 8 units/week.\nItem D: Organic granola bars — Annual margin $18,500, weekly demand CV 0.72, average 95 units/week.\nItem E: Seasonal candy corn — Annual margin $5,100, weekly demand CV 0.85 (de-seasonalized), average 40 units/week.\n\nTotal category margin: $146,800.",
+        "available_data": {
+          "items": [
+            {"name": "Premium trail mix", "annual_margin": 42000, "cv": 0.35, "weekly_demand": 180},
+            {"name": "Store-brand potato chips", "annual_margin": 78000, "cv": 0.28, "weekly_demand": 450},
+            {"name": "Imported rice crackers", "annual_margin": 3200, "cv": 1.45, "weekly_demand": 8},
+            {"name": "Organic granola bars", "annual_margin": 18500, "cv": 0.72, "weekly_demand": 95},
+            {"name": "Seasonal candy corn", "annual_margin": 5100, "cv": 0.85, "weekly_demand": 40}
+          ],
+          "total_category_margin": 146800
+        }
+      },
+      "task": "Classify each item using the ABC/XYZ framework. For each item, recommend the appropriate forecasting method, safety stock service level, review frequency, and replenishment approach.",
+      "evaluation_criteria": [
+        {
+          "criterion": "abc_classification",
+          "weight": 0.25,
+          "rubric": {
+            "pass": "Correctly classifies based on cumulative margin contribution. Items B ($78K, 53%) and A ($42K, 82% cumulative) are A-class. Item D ($18.5K, 94% cumulative) is B-class. Items E ($5.1K, 98%) and C ($3.2K, 100%) are C-class. Uses margin (not revenue or units) as the value metric.",
+            "fail": "Classifies based on unit volume rather than margin. Gets the A/B/C boundaries wrong. Classifies more than 3 items as A."
+          }
+        },
+        {
+          "criterion": "xyz_classification",
+          "weight": 0.25,
+          "rubric": {
+            "pass": "Correctly classifies based on CV thresholds: Items B (CV 0.28) and A (CV 0.35) are X (CV < 0.5). Item D (CV 0.72) and E (CV 0.85) are Y (CV 0.5–1.0). Item C (CV 1.45) is Z (CV > 1.0). Notes that Item C's low volume and high CV indicate intermittent demand.",
+            "fail": "Uses the wrong CV thresholds. Confuses variability with volume. Classifies the high-CV items as X."
+          }
+        },
+        {
+          "criterion": "policy_recommendations",
+          "weight": 0.35,
+          "rubric": {
+            "pass": "Assigns differentiated policies: AX items (B, A) get automated replenishment, 95–97.5% service level, weekly review, exponential smoothing or moving average. BY item (D) gets 95% SL, bi-weekly review. CY item (E) gets 90% SL, monthly review, notes seasonal pattern needs attention. CZ item (C) gets 85% SL, monthly review, flags as discontinuation candidate or suggests Croston's method for intermittent demand.",
+            "fail": "Applies the same policy to all items. Does not differentiate service levels by segment. Does not flag the CZ item as a special case."
+          }
+        },
+        {
+          "criterion": "practical_insights",
+          "weight": 0.15,
+          "rubric": {
+            "pass": "Notes that Item C (imported rice crackers, CZ) should be evaluated for discontinuation given its minimal margin contribution and erratic demand. Notes that Item E's CV was computed on de-seasonalized data so the actual demand pattern may be predictable within its season even though the CV is 0.85.",
+            "fail": "Does not recognize the discontinuation question for the CZ item. Does not acknowledge that de-seasonalized CV may overstate unpredictability for genuinely seasonal items."
+          }
+        }
+      ]
+    },
+    {
+      "id": "IDP-003",
+      "name": "Selecting the right forecasting method for a trending product",
+      "difficulty": "easy",
+      "category": "forecasting",
+      "context": {
+        "situation": "A new plant-based milk brand (Oatly Barista Edition, 32 oz) was added to your assortment 26 weeks ago. It has shown consistent upward trend with the following weekly sales trajectory across your 75-store chain:\n\nWeeks 1–4: avg 180 units/week\nWeeks 5–8: avg 240 units/week\nWeeks 9–13: avg 310 units/week\nWeeks 14–18: avg 380 units/week\nWeeks 19–22: avg 420 units/week\nWeeks 23–26: avg 450 units/week\n\nThere is no obvious seasonal pattern. CV on the de-trended residuals is 0.32. Your current forecasting method for this item is a 4-week simple moving average, which has been consistently under-forecasting by 15–25% (negative bias). The vendor lead time is 10 days.",
+        "available_data": {
+          "sku": "OATLY-BA-32",
+          "product": "Oatly Barista Edition 32 oz",
+          "weeks_of_history": 26,
+          "trend": "Consistent upward, approximately +15 units/week",
+          "seasonal_pattern": "None detected",
+          "cv_detrended": 0.32,
+          "current_method": "4-week simple moving average",
+          "current_bias": "-15 to -25% (systematic under-forecast)",
+          "lead_time_days": 10,
+          "store_count": 75,
+          "recent_weekly_demand": [430, 445, 460, 455]
+        }
+      },
+      "task": "Diagnose why the current method is failing, recommend a replacement forecasting method with specific parameters, and explain how you would transition.",
+      "evaluation_criteria": [
+        {
+          "criterion": "diagnosis",
+          "weight": 0.30,
+          "rubric": {
+            "pass": "Correctly identifies that a simple moving average cannot track a trending demand pattern — it always lags behind by approximately half the window length. The 4-week SMA is centered on 2 weeks ago, so it systematically under-forecasts growing demand. The negative bias of 15–25% is a direct consequence of this lag.",
+            "fail": "Does not identify the fundamental mismatch between a moving average and trending demand. Attributes the bias to noise or insufficient history."
+          }
+        },
+        {
+          "criterion": "method_recommendation",
+          "weight": 0.40,
+          "rubric": {
+            "pass": "Recommends Holt's double exponential smoothing (or equivalent trend-capturing method). Specifies reasonable parameters: α in the 0.2–0.4 range (to be responsive to the trend) and β in the 0.05–0.15 range (to smooth the trend component). Notes that the product is still in a growth phase and may transition to stabilization, so the method should be reassessed at the 52-week mark. May also suggest a damped trend variant (φ = 0.85–0.95) to prevent overshoot if growth decelerates.",
+            "fail": "Recommends continuing with a moving average (just longer window). Recommends Holt-Winters seasonal when no seasonal pattern exists. Recommends a complex ML model when 26 weeks of data is insufficient. Does not specify parameters."
+          }
+        },
+        {
+          "criterion": "transition_plan",
+          "weight": 0.30,
+          "rubric": {
+            "pass": "Recommends running the new method in parallel with the current method for 4–8 weeks, comparing WMAPE and bias on each week's forecast. Uses the first 20 weeks of data to fit parameters and weeks 21–26 as a holdout test. Plans to cut over when the new method demonstrates lower WMAPE and reduced bias on the holdout period.",
+            "fail": "Suggests switching immediately with no parallel test. Does not mention holdout validation. Proposes an unreasonably long transition period (>12 weeks) for what is a straightforward method change."
+          }
+        }
+      ]
+    },
+    {
+      "id": "IDP-004",
+      "name": "Interpreting and acting on a tracking signal alert",
+      "difficulty": "easy",
+      "category": "forecasting",
+      "context": {
+        "situation": "Your forecast monitoring system has flagged SKU CP-2201 (craft paper towels, 6-roll pack) with a tracking signal of +5.2. The tracking signal has been climbing for the past 4 weeks: +2.1, +3.0, +3.8, +5.2. The item uses single exponential smoothing with α = 0.15. Weekly demand has been: Forecast 520, Actual 480; Forecast 515, Actual 465; Forecast 510, Actual 450; Forecast 505, Actual 435. The item is classified as BX. There have been no promotional changes, no shelf reset, and no known competitive activity.",
+        "available_data": {
+          "sku": "CP-2201",
+          "product": "Craft paper towels 6-roll pack",
+          "abc_xyz": "BX",
+          "forecast_method": "Single exponential smoothing, alpha = 0.15",
+          "tracking_signal_history": [2.1, 3.0, 3.8, 5.2],
+          "recent_forecasts": [520, 515, 510, 505],
+          "recent_actuals": [480, 465, 450, 435],
+          "cumulative_error": 220,
+          "mad": 42.5
+        }
+      },
+      "task": "Interpret what the tracking signal is telling you, diagnose the likely cause, and recommend corrective action.",
+      "evaluation_criteria": [
+        {
+          "criterion": "tracking_signal_interpretation",
+          "weight": 0.30,
+          "rubric": {
+            "pass": "Correctly identifies that a positive tracking signal of +5.2 (exceeding the ±4 threshold) indicates persistent positive bias — the forecast is systematically higher than actuals. The consistent upward trend in the tracking signal over 4 weeks indicates this is not random noise but a structural issue. Notes that the cumulative error (220 units over 4 weeks) divided by MAD (42.5) yields the ~5.2 tracking signal.",
+            "fail": "Misinterprets the tracking signal direction (e.g., says demand is exceeding forecast). Does not recognize that +5.2 exceeds the intervention threshold. Dismisses the signal as noise."
+          }
+        },
+        {
+          "criterion": "diagnosis",
+          "weight": 0.35,
+          "rubric": {
+            "pass": "Identifies a downward demand level shift: actual demand has dropped from ~520 to ~435 over 4 weeks (a ~16% decline) while the model with α = 0.15 adjusts too slowly. At α = 0.15, the model only incorporates 15% of each error — it will take 10+ more weeks to self-correct. Correctly considers possible causes: competitive product introduction, consumer brand switching, price sensitivity, or distribution loss.",
+            "fail": "Does not recognize this as a demand level shift. Attributes the declining demand to normal variability. Does not explain why the low alpha is causing slow adjustment."
+          }
+        },
+        {
+          "criterion": "corrective_action",
+          "weight": 0.35,
+          "rubric": {
+            "pass": "Recommends: (1) investigate the root cause before changing the model (check for competitive entry, shelf changes, pricing), (2) temporarily increase α to 0.25–0.30 to allow faster adaptation, or apply a one-time level adjustment to reset the model to the current demand level (~435–450), (3) recalculate safety stock using the updated demand parameters, (4) reduce open POs to avoid building excess at the inflated forecast level.",
+            "fail": "Recommends only re-running the model with no parameter change. Recommends switching to a completely different method without diagnosing the cause. Does not mention adjusting POs or safety stock."
+          }
+        }
+      ]
+    },
+    {
+      "id": "IDP-005",
+      "name": "Standard safety stock recalculation after lead time increase",
+      "difficulty": "easy",
+      "category": "safety-stock",
+      "context": {
+        "situation": "Your vendor for a popular BBQ sauce (Sweet Ray's Original, 18 oz, A-item) has informed you that their lead time is increasing from 7 days to 14 days due to a factory relocation. Average weekly demand is 350 units with a standard deviation of 55 units. Your review period is weekly. Target service level is 95% (Z = 1.65). Current safety stock was calculated at the old 7-day lead time.",
+        "available_data": {
+          "sku": "SR-1801",
+          "product": "Sweet Ray's BBQ Sauce 18 oz",
+          "abc_class": "A",
+          "weekly_demand_avg": 350,
+          "weekly_demand_std": 55,
+          "old_lead_time_days": 7,
+          "new_lead_time_days": 14,
+          "review_period_days": 7,
+          "service_level": 0.95,
+          "z_score": 1.65,
+          "current_on_hand": 950,
+          "on_order": 500,
+          "on_order_eta_days": 12
+        }
+      },
+      "task": "Calculate the old and new safety stock, the new reorder point, assess the current inventory position against the new parameters, and recommend immediate actions.",
+      "evaluation_criteria": [
+        {
+          "criterion": "safety_stock_comparison",
+          "weight": 0.35,
+          "rubric": {
+            "pass": "Correctly computes old SS = 1.65 × 55 × √(1+1) = 1.65 × 55 × 1.414 ≈ 128 units. New SS = 1.65 × 55 × √(2+1) = 1.65 × 55 × 1.732 ≈ 157 units. Notes the ~23% increase in safety stock from doubling lead time. Calculations within ±10% are acceptable.",
+            "fail": "Omits review period. Uses wrong z-score. Gets old SS below 90 or above 170. Gets new SS below 120 or above 210."
+          }
+        },
+        {
+          "criterion": "reorder_point_and_position",
+          "weight": 0.35,
+          "rubric": {
+            "pass": "Computes new ROP: demand during (LT + R) + SS = 350/7 × (14+7) + 157 = 50 × 21 + 157 = 1,207 (approx). IP = 950 + 500 = 1,450. IP (1,450) > new ROP (~1,207), so no immediate emergency order is needed, but the buffer is thin — only 243 units above ROP.",
+            "fail": "Does not compute inventory position correctly. Uses on-hand alone. Gets ROP below 900 or above 1,500."
+          }
+        },
+        {
+          "criterion": "action_recommendations",
+          "weight": 0.30,
+          "rubric": {
+            "pass": "Recommends updating the safety stock parameter in the system, notes that the next regular order should be sized to rebuild to the new target, and flags that the current buffer is thin — if demand spikes or the on-order delivery is late, a stockout is possible. Suggests monitoring this SKU weekly during the transition.",
+            "fail": "Takes no action because IP > ROP without noting the thin buffer. Does not mention updating system parameters. Does not consider the delivery risk on the in-transit order."
+          }
+        }
+      ]
+    },
+    {
+      "id": "IDP-006",
+      "name": "Seasonal Holt-Winters forecast for sunscreen category with trend",
+      "difficulty": "medium",
+      "category": "forecasting",
+      "context": {
+        "situation": "You manage the sunscreen category (12 SKUs, aggregate A-class) for a chain with 90 stores across the Southeast US. Total category weekly demand follows a strong seasonal pattern with a slight upward trend (5–8% YoY growth driven by health awareness). Last year's peak demand was 4,200 units/week in mid-June; the trough was 380 units/week in January. You have 3 full years of weekly history. Your current model is a simple 4-week moving average applied to the total category, which produces large forecast errors during seasonal transitions (spring ramp-up and fall decline). The category buyer needs your 26-week forward forecast to commit pre-season buys with the vendor. Vendor lead time is 8 weeks.",
+        "available_data": {
+          "category": "Sunscreen",
+          "sku_count": 12,
+          "abc_class": "A (aggregate)",
+          "store_count": 90,
+          "history_years": 3,
+          "peak_weekly_demand": 4200,
+          "trough_weekly_demand": 380,
+          "yoy_growth": "5-8%",
+          "current_method": "4-week simple moving average",
+          "current_wmape": "42% (high due to seasonal transitions)",
+          "vendor_lead_time_weeks": 8,
+          "current_date": "2025-02-15"
+        }
+      },
+      "task": "Recommend a forecasting approach for this category, explain why the current method fails, specify the model type and parameters, describe how to handle the pre-season buy decision, and identify the key risks.",
+      "evaluation_criteria": [
+        {
+          "criterion": "method_diagnosis_and_selection",
+          "weight": 0.30,
+          "rubric": {
+            "pass": "Correctly identifies that a SMA fails for seasonal demand because it cannot anticipate seasonal ramp-ups or declines — it only reacts after the change has occurred, causing chronic under-forecast during spring and over-forecast during fall. Recommends Holt-Winters multiplicative seasonal (not additive) because the seasonal amplitude grows with the trend (peak is increasing YoY). Specifies 52-week seasonal period.",
+            "fail": "Recommends a non-seasonal method. Chooses additive Holt-Winters without justifying the choice or noting the growing amplitude. Does not explain why the SMA fails during transitions."
+          }
+        },
+        {
+          "criterion": "parameterization",
+          "weight": 0.25,
+          "rubric": {
+            "pass": "Specifies reasonable parameter ranges: α = 0.1–0.3 (level), β = 0.02–0.10 (trend — kept low to avoid overshoot), γ = 0.1–0.3 (seasonal). Recommends optimizing via cross-validation on the 3-year history with rolling-origin evaluation. Notes that multiplicative seasonal indices should be initialized from the first 2 years and validated on the third year.",
+            "fail": "Does not specify parameters or ranges. Uses very high β (>0.2) which would cause trend overshoot. Does not mention cross-validation or holdout testing."
+          }
+        },
+        {
+          "criterion": "pre_season_buy_strategy",
+          "weight": 0.25,
+          "rubric": {
+            "pass": "Addresses the 26-week forward forecast for the buyer. Notes that with 8-week vendor lead time, the pre-season buy for peak summer must be committed by early April (8 weeks before mid-June peak). Recommends committing 60–70% of the forecasted season demand in the initial buy and reserving 30–40% for in-season reorders based on early sell-through. Identifies that the 26-week forecast horizon means the model must project through the peak and into the post-peak decline.",
+            "fail": "Does not connect the forecast to the buying decision. Ignores the 8-week lead time constraint. Recommends committing 100% of forecasted demand upfront."
+          }
+        },
+        {
+          "criterion": "risk_identification",
+          "weight": 0.20,
+          "rubric": {
+            "pass": "Identifies key risks: (1) weather dependency — an unusually cool or rainy summer depresses demand below the seasonal forecast, (2) the trend component may decelerate (5–8% growth may not continue), (3) new competitive products or channel shifts (e.g., Amazon capturing more sunscreen sales) could reduce store-level demand. Recommends monitoring early-season sell-through as the primary risk indicator.",
+            "fail": "Does not identify any risks. Lists only generic forecasting risks without connecting to the sunscreen category specifically."
+          }
+        }
+      ]
+    },
+    {
+      "id": "IDP-007",
+      "name": "Promotional lift estimation for a product with limited promo history",
+      "difficulty": "medium",
+      "category": "promotional-planning",
+      "context": {
+        "situation": "You are planning a 2-week promotion for a premium Greek yogurt (Fage Total 0%, 32 oz, SKU FAGE-32-0) starting in 6 weeks. The promotion is TPR 20% off ($4.79 → $3.83) with a circular feature on page 2. This SKU has only been promoted once before (8 months ago, TPR 15% off only, no circular), which produced a lift of 1.35× baseline. The category (premium yogurt) has been promoted 12 times in the past 2 years across 4 SKUs, with the following lift data:\n\n- TPR only (15–20% off): average lift 1.40× (range 1.25–1.60)\n- TPR + circular: average lift 2.20× (range 1.80–2.80)\n\nBaseline weekly demand for FAGE-32-0 is 280 units. The product has a 21-day shelf life. The vendor requires 3-week order lead time for promotional quantities.",
+        "available_data": {
+          "sku": "FAGE-32-0",
+          "product": "Fage Total 0% Greek Yogurt 32 oz",
+          "baseline_weekly": 280,
+          "promo_type": "TPR 20% off + circular page 2",
+          "promo_duration_weeks": 2,
+          "promo_start": "6 weeks from now",
+          "own_promo_history": "1 event (TPR 15% off only, lift 1.35x)",
+          "category_lift_tpr_only": {"avg": 1.40, "range": [1.25, 1.60]},
+          "category_lift_tpr_circular": {"avg": 2.20, "range": [1.80, 2.80]},
+          "shelf_life_days": 21,
+          "vendor_lead_time_weeks": 3,
+          "store_count": 75,
+          "current_on_hand": 1200,
+          "regular_price": 4.79,
+          "promo_price": 3.83
+        }
+      },
+      "task": "Estimate the promotional lift and total demand for the 2-week promotion, plan the inventory requirements including the post-promo dip, and identify the key risks given the perishable nature of the product.",
+      "evaluation_criteria": [
+        {
+          "criterion": "lift_estimation",
+          "weight": 0.30,
+          "rubric": {
+            "pass": "Uses the category-level TPR + circular lift data (avg 2.20×) rather than the own-item TPR-only data (1.35×), because the promotional mechanism is different (circular adds significant lift). May adjust the 2.20× downward slightly because the own-item's only promo at a similar depth produced a below-category-average lift (1.35× vs category TPR avg of 1.40×), suggesting this SKU may be slightly below average in responsiveness. Final lift estimate in the 1.90–2.30× range is expert-level.",
+            "fail": "Uses the own-item 1.35× lift directly despite the different promo mechanism. Ignores the category data. Applies the 2.20× without adjusting for the item's apparently lower responsiveness. Estimates a lift below 1.5× or above 3.0×."
+          }
+        },
+        {
+          "criterion": "inventory_planning",
+          "weight": 0.30,
+          "rubric": {
+            "pass": "Computes total promo demand: ~2.10× × 280 × 2 weeks ≈ 1,176 units (range 1,008–1,568 based on lift range). Subtracts current on-hand (1,200) and accounts for baseline consumption in the 6 weeks before promo start (280 × 6 = 1,680 baseline). Notes that the 1,200 current units are mostly consumed by baseline demand before the promo starts; need to order promo-specific quantity. PO must be placed within 3 weeks (3-week lead time for delivery before promo start).",
+            "fail": "Does not account for baseline demand consuming on-hand before the promo. Computes the PO quantity only for promo demand without considering on-hand depletion. Misses the 3-week lead time ordering deadline."
+          }
+        },
+        {
+          "criterion": "post_promo_dip",
+          "weight": 0.20,
+          "rubric": {
+            "pass": "Models the post-promo dip. For a perishable product (21-day shelf life), the forward-buy factor is very low (0.05–0.15) because customers can't stockpile yogurt. Predicts a minimal dip — perhaps 10–20% below baseline for 1 week, then full recovery. Notes that the perishable nature limits pantry loading, which is actually favorable for post-promo planning.",
+            "fail": "Applies a large post-promo dip (>30%) appropriate for shelf-stable goods to a perishable product. Ignores the shelf life constraint entirely. Does not model any post-promo period."
+          }
+        },
+        {
+          "criterion": "risk_assessment",
+          "weight": 0.20,
+          "rubric": {
+            "pass": "Identifies the spoilage risk: if the lift is at the low end of the range, excess yogurt with 21-day shelf life becomes a waste issue. Recommends ordering conservatively (closer to the low-end lift estimate) and accepting a possible stockout during the promo rather than risking spoilage. Notes that with 3-week lead time, there's no in-promo replenishment option.",
+            "fail": "Does not mention spoilage risk for a perishable. Orders for the high-end lift estimate without acknowledging the waste risk. Does not connect the 3-week lead time to the inability to react mid-promotion."
+          }
+        }
+      ]
+    },
+    {
+      "id": "IDP-008",
+      "name": "Calculating cannibalization effects for a multi-SKU promotion",
+      "difficulty": "medium",
+      "category": "promotional-planning",
+      "context": {
+        "situation": "Your merchandising team wants to run a BOGO promotion on Coca-Cola 12-packs (SKU COKE-12PK, baseline 800 units/week) for 2 weeks. You need to forecast the impact on the entire carbonated soft drink (CSD) category, which includes:\n\n- Coca-Cola 12-pack: 800 units/week (being promoted)\n- Pepsi 12-pack: 500 units/week (direct competitor)\n- Store-brand cola 12-pack: 300 units/week (close substitute)\n- Coca-Cola 2-liter: 450 units/week (same brand, different format)\n- Sprite 12-pack: 350 units/week\n- Dr Pepper 12-pack: 280 units/week\n\nHistorical BOGO lift for Coke 12-pack: 3.5×. No other items are on promotion simultaneously.",
+        "available_data": {
+          "promoted_sku": "COKE-12PK",
+          "promo_type": "BOGO",
+          "promo_weeks": 2,
+          "baseline_weekly": 800,
+          "historical_bogo_lift": 3.5,
+          "category_skus": [
+            {"sku": "COKE-12PK", "weekly": 800, "substitutability": "promoted"},
+            {"sku": "PEPSI-12PK", "weekly": 500, "substitutability": "direct_competitor"},
+            {"sku": "STORE-COLA-12", "weekly": 300, "substitutability": "close_substitute"},
+            {"sku": "COKE-2L", "weekly": 450, "substitutability": "same_brand_diff_format"},
+            {"sku": "SPRITE-12PK", "weekly": 350, "substitutability": "moderate_substitute"},
+            {"sku": "DRPEPPER-12PK", "weekly": 280, "substitutability": "moderate_substitute"}
+          ]
+        }
+      },
+      "task": "Forecast the promotional demand for Coca-Cola 12-pack, estimate the cannibalization impact on each other SKU in the category, compute the net category-level lift, and recommend the total category inventory adjustment.",
+      "evaluation_criteria": [
+        {
+          "criterion": "item_level_lift",
+          "weight": 0.20,
+          "rubric": {
+            "pass": "Correctly applies the 3.5× lift: promo demand = 800 × 3.5 = 2,800 units/week for Coke 12-pack. Incremental = 2,000 units/week. Notes that BOGO creates heavy forward-buying — this lift includes significant pantry loading.",
+            "fail": "Gets the lift calculation wrong. Does not mention forward-buying with BOGO."
+          }
+        },
+        {
+          "criterion": "cannibalization_estimates",
+          "weight": 0.35,
+          "rubric": {
+            "pass": "Estimates cannibalization by substitutability tier: Pepsi 12-pack (direct competitor) loses 25–35% of Coke's incremental lift ≈ 500–700 units/week loss (net Pepsi: ~150–300). Store-brand cola (close substitute) loses 15–25% ≈ 300–500 units (net could go near zero or negative). Coke 2-liter (same brand, different format) loses 10–20% ≈ 200–400 units. Sprite and Dr Pepper (moderate substitutes) each lose 5–10% ≈ 100–200 units. Total cannibalization: 1,100–1,800 units across the category.",
+            "fail": "Ignores cannibalization entirely. Only considers one competing SKU. Estimates cannibalization rates wildly out of range (e.g., 50%+ for moderate substitutes)."
+          }
+        },
+        {
+          "criterion": "net_category_lift",
+          "weight": 0.25,
+          "rubric": {
+            "pass": "Computes net category lift: Coke incremental (+2,000) minus total cannibalization (−1,100 to −1,800) = net category increase of +200 to +900 units/week. Notes that the net category lift is far less than the item-level lift, which is typical for CSD BOGO promotions. The category efficiency (net lift / item incremental) is 10–45%, which is within the expected range for deep promotions on major brands.",
+            "fail": "Presents the Coke item-level lift as the category lift. Does not subtract cannibalization to compute net impact. Claims net lift > 1,500."
+          }
+        },
+        {
+          "criterion": "inventory_recommendations",
+          "weight": 0.20,
+          "rubric": {
+            "pass": "Recommends increasing Coke 12-pack inventory by the full incremental amount (+4,000 units for 2 weeks). Recommends REDUCING orders for Pepsi and store-brand cola proportional to cannibalization estimates to avoid excess. Notes the post-promo dip on Coke will be severe (BOGO forward-buy factor 50–80%) lasting 3–4 weeks.",
+            "fail": "Only adjusts Coke inventory without reducing cannibalized items. Ignores the post-BOGO dip entirely."
+          }
+        }
+      ]
+    },
+    {
+      "id": "IDP-009",
+      "name": "New product forecast using analogous items for a premium pet food launch",
+      "difficulty": "medium",
+      "category": "new-product",
+      "context": {
+        "situation": "Your retailer is launching a new premium grain-free dog food (brand: 'Wild Harvest', 24 lb bag, $49.99 retail, $28.50 cost) in 4 weeks across 100 stores. This is a new brand exclusive to your chain — no direct sales history exists. The vendor (Pacific Natural Foods) has a minimum initial order of 5,000 units and a 6-week reorder lead time. The product will receive endcap display for the first 4 weeks, then transition to inline shelf.\n\nYour pet food category includes these potential analogs:\n- Blue Buffalo Life Protection 24 lb ($47.99): launched 2 years ago, week 1–4 avg 2.8 units/store/week, stabilized at 1.6 units/store/week by week 13\n- Merrick Grain-Free 25 lb ($52.99): launched 18 months ago, week 1–4 avg 2.2 units/store/week, stabilized at 1.1 units/store/week by week 13\n- Rachael Ray Nutrish 26 lb ($39.99): launched 14 months ago, week 1–4 avg 3.5 units/store/week, stabilized at 2.3 units/store/week by week 13\n- Taste of the Wild 28 lb ($44.99): launched 3 years ago, week 1–4 avg 2.5 units/store/week, stabilized at 1.8 units/store/week by week 13",
+        "available_data": {
+          "new_product": "Wild Harvest Grain-Free Dog Food 24 lb",
+          "retail_price": 49.99,
+          "unit_cost": 28.50,
+          "store_count": 100,
+          "launch_date": "4 weeks from now",
+          "vendor_moq": 5000,
+          "vendor_reorder_lead_time_weeks": 6,
+          "display_support": "Endcap for first 4 weeks, then inline",
+          "analogs": [
+            {"name": "Blue Buffalo 24 lb", "price": 47.99, "launch_velocity_wk1_4": 2.8, "stable_velocity_wk13": 1.6},
+            {"name": "Merrick Grain-Free 25 lb", "price": 52.99, "launch_velocity_wk1_4": 2.2, "stable_velocity_wk13": 1.1},
+            {"name": "Rachael Ray Nutrish 26 lb", "price": 39.99, "launch_velocity_wk1_4": 3.5, "stable_velocity_wk13": 2.3},
+            {"name": "Taste of the Wild 28 lb", "price": 44.99, "launch_velocity_wk1_4": 2.5, "stable_velocity_wk13": 1.8}
+          ]
+        }
+      },
+      "task": "Select and score the best analogs, build a phased forecast for the first 13 weeks, size the initial buy, and create a monitoring plan with decision triggers.",
+      "evaluation_criteria": [
+        {
+          "criterion": "analog_selection",
+          "weight": 0.25,
+          "rubric": {
+            "pass": "Scores analogs on relevant criteria (category match, price point, format, brand tier). Identifies Blue Buffalo ($47.99) and Taste of the Wild ($44.99) as the strongest analogs due to closest price point and similar premium/grain-free positioning. Notes that Rachael Ray ($39.99) is less comparable due to 20%+ price gap and more mainstream positioning. Merrick ($52.99) is reasonable but higher-priced. Weights the two best analogs more heavily.",
+            "fail": "Treats all analogs equally without scoring. Selects Rachael Ray as the primary analog despite the price and positioning mismatch. Does not explain the selection rationale."
+          }
+        },
+        {
+          "criterion": "phased_forecast",
+          "weight": 0.30,
+          "rubric": {
+            "pass": "Builds a lifecycle forecast using the weighted analog velocities. Weeks 1–4 (introduction with endcap): ~2.5–2.8 units/store/week × 100 stores = 250–280 units/week. Notes the endcap display provides a lift in weeks 1–4 that won't persist after transitioning to inline. Weeks 5–8 (transition): decay from intro velocity toward stable (e.g., 2.0–2.2 units/store/week = 200–220). Weeks 9–13 (stabilization): ~1.4–1.7 units/store/week = 140–170. Total 13-week demand estimate: approximately 2,600–3,100 units.",
+            "fail": "Applies a flat forecast for all 13 weeks. Does not account for the display-to-inline transition. Uses the launch velocity as the steady-state forecast."
+          }
+        },
+        {
+          "criterion": "initial_buy_sizing",
+          "weight": 0.25,
+          "rubric": {
+            "pass": "Notes the vendor MOQ is 5,000 units. The 13-week forecast is ~2,600–3,100 units. The MOQ forces an over-buy — 5,000 units covers ~20–25 weeks at the stabilized rate. Evaluates whether this is acceptable: at $28.50 cost, the 5,000 units tie up $142,500. If the product fails (stabilizes well below analog rates), excess risk is significant. Recommends negotiating a lower MOQ or accepting the 5,000 only if the product has long shelf life (dry pet food = 12–18 months, so the MOQ overage is manageable).",
+            "fail": "Accepts the 5,000 MOQ without evaluating the overage risk. Recommends ordering significantly more than the MOQ without justification. Does not mention the financial exposure."
+          }
+        },
+        {
+          "criterion": "monitoring_plan",
+          "weight": 0.20,
+          "rubric": {
+            "pass": "Sets specific triggers: Week 2 checkpoint — if velocity > 3.0 units/store/week, signal success and plan reorder at week 4. If velocity < 1.5 units/store/week, flag underperformance and alert merchandising. Week 6 checkpoint — evaluate post-endcap velocity decline; if inline velocity < 1.0 units/store/week, initiate slow-mover review. Week 8 — reorder decision based on actual sell-through vs. 13-week forecast.",
+            "fail": "Does not set quantitative triggers. Suggests 'monitoring' without specifying what to look for or when to act."
+          }
+        }
+      ]
+    },
+    {
+      "id": "IDP-010",
+      "name": "Vendor scorecard review with lead time deterioration and action plan",
+      "difficulty": "medium",
+      "category": "vendor-management",
+      "context": {
+        "situation": "You manage the relationship with GreenLeaf Organics, a preferred vendor supplying 8 organic produce and grocery items (3 A-items, 3 B-items, 2 C-items). Annual spend is $420,000. Their quarterly scorecard data shows a concerning trend:\n\nQ1: On-time delivery 96%, Fill rate 98%, Lead time CV 0.12, Quality 99.5%, Response time 8 hrs. Score: 93\nQ2: On-time delivery 91%, Fill rate 95%, Lead time CV 0.18, Quality 99.2%, Response time 14 hrs. Score: 81\nQ3: On-time delivery 84%, Fill rate 91%, Lead time CV 0.28, Quality 99.0%, Response time 22 hrs. Score: 67\n\nThe stated lead time is 10 days but actual Q3 average was 14.2 days with a range of 8–21 days. Two of your A-items from this vendor had stockout events in Q3. Your safety stock calculations are based on the stated 10-day lead time.",
+        "available_data": {
+          "vendor": "GreenLeaf Organics",
+          "vendor_tier": "Preferred",
+          "annual_spend": 420000,
+          "items_supplied": 8,
+          "item_classification": "3A, 3B, 2C",
+          "scorecard_q1": {"otd": 96, "fill": 98, "lt_cv": 0.12, "quality": 99.5, "response_hrs": 8, "score": 93},
+          "scorecard_q2": {"otd": 91, "fill": 95, "lt_cv": 0.18, "quality": 99.2, "response_hrs": 14, "score": 81},
+          "scorecard_q3": {"otd": 84, "fill": 91, "lt_cv": 0.28, "quality": 99.0, "response_hrs": 22, "score": 67},
+          "stated_lead_time_days": 10,
+          "actual_lt_q3_avg": 14.2,
+          "actual_lt_q3_range": [8, 21],
+          "q3_stockouts": 2,
+          "stockout_estimated_lost_sales": 18500
+        }
+      },
+      "task": "Analyze the vendor's performance trajectory, assess whether the vendor should be moved to probationary status, calculate the financial impact of their deterioration, recalculate safety stock using actual lead time data, and draft an action plan.",
+      "evaluation_criteria": [
+        {
+          "criterion": "performance_analysis",
+          "weight": 0.25,
+          "rubric": {
+            "pass": "Identifies the declining trend across all metrics over 3 quarters. Notes that the Q3 composite score of 67 falls in the 60–74 'Needs Improvement' range, triggering a corrective action plan. Highlights that lead time CV of 0.28 is approaching the 0.30 critical threshold. Notes the 84% OTD is well below the 95% target.",
+            "fail": "Looks at Q3 in isolation without noting the trend. Does not reference the scoring thresholds. Misses the lead time variability problem."
+          }
+        },
+        {
+          "criterion": "financial_impact",
+          "weight": 0.25,
+          "rubric": {
+            "pass": "Quantifies the cost: $18,500 in lost sales from stockouts, plus the incremental safety stock cost needed to buffer against the actual (vs. stated) lead time. Computes the SS increase: using LT = 14.2 days (2.03 weeks) with CV 0.28 (σ_LT ≈ 0.57 weeks) vs. the old 10 days (1.43 weeks) with CV 0.12. The total holding cost increase for the additional SS across 8 items, plus the lost sales, quantifies the vendor's deterioration as a dollar impact.",
+            "fail": "Does not compute a financial impact. Mentions the stockouts but doesn't quantify them. Ignores the safety stock holding cost increase."
+          }
+        },
+        {
+          "criterion": "safety_stock_recalculation",
+          "weight": 0.25,
+          "rubric": {
+            "pass": "Recalculates safety stock for the A-items using the actual Q3 lead time data (mean 14.2 days, σ_LT per the 0.28 CV) instead of the stated 10-day lead time. Uses the demand + lead time variability formula. Notes that the safety stock needs to increase significantly (likely 40–60%) to maintain the target service level given both the longer average lead time and the high variability.",
+            "fail": "Recalculates using only the new average lead time without incorporating the variability. Does not update the safety stock at all. Gets the direction right but uses the wrong formula."
+          }
+        },
+        {
+          "criterion": "action_plan",
+          "weight": 0.25,
+          "rubric": {
+            "pass": "Recommends: (1) issue a formal corrective action plan to GreenLeaf with 90-day improvement targets, (2) update safety stock parameters immediately using actual lead time data, (3) begin qualifying a secondary supplier for the 3 A-items to reduce single-source risk, (4) schedule a QBR with GreenLeaf within 2 weeks to discuss, (5) set a Q4 review date — if Q4 score doesn't improve to >75, escalate to procurement for vendor reclassification. Distinguishes between immediate system adjustments (SS) and relationship management (QBR, corrective action).",
+            "fail": "Recommends only one action (e.g., just talk to the vendor). Does not update safety stock. Does not mention secondary supplier qualification. Does not set improvement targets or timelines."
+          }
+        }
+      ]
+    },
+    {
+      "id": "IDP-011",
+      "name": "Markdown timing decision for underperforming seasonal patio furniture",
+      "difficulty": "medium",
+      "category": "seasonal-transition",
+      "context": {
+        "situation": "You manage outdoor/patio furniture, a seasonal category with a selling season from April through August. It is now June 15 (approximate season midpoint). You bought 2,400 units of a wicker patio set (SKU PATIO-WK-4PC, retail $399, cost $195) for the season based on a forecast of 480 units/month sell-through. Actual results:\n\nApril: 145 units sold\nMay: 168 units sold\nJune 1–15: 72 units sold (annualized: 144/month)\n\nTotal sold: 385 units. Remaining inventory: 2,015 units. At the current rate (~150 units/month), you have 13.4 months of supply with only 2.5 months of selling season remaining. There is no reorder; this was a one-time seasonal buy. Warehouse carrying cost is approximately $2.50/unit/month. The next season's product line arrives in September and needs the warehouse space.",
+        "available_data": {
+          "sku": "PATIO-WK-4PC",
+          "product": "Wicker 4-piece patio set",
+          "retail_price": 399,
+          "unit_cost": 195,
+          "season": "April–August",
+          "current_date": "June 15",
+          "initial_buy": 2400,
+          "monthly_forecast": 480,
+          "actual_april": 145,
+          "actual_may": 168,
+          "actual_june_half": 72,
+          "total_sold": 385,
+          "remaining_inventory": 2015,
+          "current_monthly_rate": 150,
+          "carrying_cost_per_unit_month": 2.50,
+          "next_season_arrival": "September"
+        }
+      },
+      "task": "Assess the sell-through performance, determine the markdown strategy with specific timing and depth, calculate the margin impact of different scenarios, and recommend whether to hold any inventory for next season.",
+      "evaluation_criteria": [
+        {
+          "criterion": "situation_assessment",
+          "weight": 0.20,
+          "rubric": {
+            "pass": "Computes sell-through rate: 385 sold / 2,400 bought = 16% at the season midpoint. Plan was ~1,200 units sold by midpoint (480 × 2.5 months) = 50% sell-through. Actual is 16% — dramatically below plan (<40% threshold). Correctly classifies this as requiring immediate aggressive markdown per the markdown timing framework.",
+            "fail": "Does not compute sell-through as a percentage of the buy. Underestimates the severity. Recommends waiting."
+          }
+        },
+        {
+          "criterion": "markdown_strategy",
+          "weight": 0.35,
+          "rubric": {
+            "pass": "Recommends immediate deep markdown given the severity. With sell-through at 16% at midpoint, the framework calls for 50%+ off and liquidation exploration. Proposes a staged approach: 40% off immediately ($399 → $239) for 3 weeks, reassess velocity. If still not moving by July 7, deepen to 50% ($199) for the remainder of July. By August 1, anything remaining goes to liquidation. Notes that the July 4th holiday weekend is the single biggest patio furniture selling opportunity remaining — the markdown must be in place before then.",
+            "fail": "Recommends a shallow markdown (15–20%) that is insufficient given the depth of the problem. Does not mention the July 4th timing opportunity. Waits until August to start markdowns."
+          }
+        },
+        {
+          "criterion": "financial_analysis",
+          "weight": 0.30,
+          "rubric": {
+            "pass": "Models multiple scenarios with margin impact: (A) 40% off for all remaining: sell ~800 units at $239 = $191,200 revenue on 800 units. (B) Hold price: sell ~375 more at $399 = $149,625 but carry the remaining ~1,640 into off-season. Carrying cost on 1,640 units × $2.50/month × 9 months off-season = $36,900. Notes that scenario A recovers more cash despite lower per-unit margin because it moves more volume. The cost of inaction (holding cost + space cost) makes aggressive markdown the clear winner.",
+            "fail": "Does not model multiple scenarios. Ignores carrying costs. Does not compute the financial impact of the different markdown depths."
+          }
+        },
+        {
+          "criterion": "hold_vs_liquidate_decision",
+          "weight": 0.15,
+          "rubric": {
+            "pass": "Addresses the hold-to-next-season question. Notes that patio furniture is somewhat style-dependent — next year's trends may differ. Holding 2,000 units for 9 months costs $45,000+ in carrying costs and ties up warehouse space needed for the incoming line. Unless the product is a classic design with high confidence of carrying over, liquidation is preferred. Recommends liquidation for any units remaining after the August selling window.",
+            "fail": "Does not address the hold-for-next-season question at all. Recommends holding without calculating the carrying cost."
+          }
+        }
+      ]
+    },
+    {
+      "id": "IDP-012",
+      "name": "Safety stock for intermittent demand item using non-normal distribution",
+      "difficulty": "medium",
+      "category": "safety-stock",
+      "context": {
+        "situation": "You manage a specialty tool category. One item — a professional-grade tile saw blade (SKU TSB-PRO-10, $89.99 retail, $42 cost) — has highly intermittent demand. Over the past 52 weeks, it sold in only 18 of those weeks. When it sells, it typically sells 3–8 units, but there was one week where it sold 22 units (a contractor bought a bulk quantity). Weekly demand data: 38 weeks with 0 units, 10 weeks with 3–5 units, 5 weeks with 6–8 units, 2 weeks with 10–12 units, 1 week with 22 units. Total annual sales: 142 units. Vendor lead time: 3 weeks. Review period: monthly. Current safety stock (computed using normal distribution): 28 units. Current on-hand: 15 units. The item is classified BZ.",
+        "available_data": {
+          "sku": "TSB-PRO-10",
+          "product": "Professional tile saw blade 10-inch",
+          "retail": 89.99,
+          "cost": 42.00,
+          "annual_sales": 142,
+          "weeks_with_demand": 18,
+          "weeks_without_demand": 34,
+          "zero_demand_ratio": 0.65,
+          "demand_distribution": "Highly right-skewed; mode is 0, occasional large orders",
+          "weekly_avg": 2.73,
+          "weekly_std": 4.51,
+          "cv": 1.65,
+          "lead_time_weeks": 3,
+          "review_period_weeks": 4,
+          "abc_xyz": "BZ",
+          "current_ss": 28,
+          "current_on_hand": 15,
+          "outlier_week": "22 units (single contractor order)"
+        }
+      },
+      "task": "Explain why the normal-distribution safety stock is inappropriate for this item, recommend an alternative approach, calculate a more appropriate safety stock, and advise on the overall inventory strategy.",
+      "evaluation_criteria": [
+        {
+          "criterion": "normal_distribution_critique",
+          "weight": 0.25,
+          "rubric": {
+            "pass": "Explains that the normal distribution assumption fails because: (1) 65% of weeks have zero demand — the distribution is zero-inflated, not bell-shaped, (2) the distribution is heavily right-skewed (long tail from the 22-unit outlier), (3) the CV of 1.65 far exceeds the threshold where normal approximation is reliable (generally CV > 1.0 invalidates it). The normal-based SS of 28 may be too high for typical demand patterns but too low to protect against the occasional large order.",
+            "fail": "Does not identify the zero-inflation problem. Applies the same normal-distribution critique generically without connecting it to this specific demand pattern."
+          }
+        },
+        {
+          "criterion": "alternative_method",
+          "weight": 0.35,
+          "rubric": {
+            "pass": "Recommends Croston's method or SBA for forecasting the intermittent demand (separate models for demand interval and demand size). For safety stock, recommends empirical/bootstrap approach: sample with replacement from the 52-week demand history, generate 10,000 simulations of demand during (LT + RP) = 7 weeks, and set SS at the service-level percentile minus the mean. Notes that the 22-unit outlier should be evaluated — if it's a one-time event unlikely to repeat, consider capping it at the 95th percentile of demand size to prevent it from inflating SS.",
+            "fail": "Recommends staying with normal distribution but changing the z-score. Does not mention Croston's, SBA, or bootstrap methods. Suggests a min/max approach without analytical basis."
+          }
+        },
+        {
+          "criterion": "practical_recommendations",
+          "weight": 0.25,
+          "rubric": {
+            "pass": "Notes that with only 15 units on hand and a 3-week lead time + 4-week review period, a reorder should be triggered. Recommends keeping the safety stock moderate (15–20 units rather than 28) because the cost of stockout on a BZ item is lower than the holding cost. The 22-unit outlier suggests offering the contractor a special-order option rather than stocking for bulk purchases.",
+            "fail": "Recommends holding 50+ units of safety stock for a BZ item. Does not address the current on-hand vs. reorder situation. Ignores the holding cost implications."
+          }
+        },
+        {
+          "criterion": "overall_strategy",
+          "weight": 0.15,
+          "rubric": {
+            "pass": "Discusses whether this item should remain in regular inventory at all: BZ classification makes it a candidate for special-order or vendor drop-ship. If it stays in inventory, suggests monthly review with min/max (min = 10, max = 30 or similar) to limit exposure while maintaining availability for walk-in demand.",
+            "fail": "Does not question whether the item should be stocked. Applies an A-item strategy to a BZ item."
+          }
+        }
+      ]
+    },
+    {
+      "id": "IDP-013",
+      "name": "Phantom inventory detection and correction across multiple locations",
+      "difficulty": "medium",
+      "category": "replenishment",
+      "context": {
+        "situation": "You're investigating a persistent service level problem on a top-selling laundry detergent (Tide Pods 42-count, SKU TIDE-P42, A-item). The system shows a chain-wide in-stock rate of 96.2%, but customer complaints and mystery shopper reports indicate the product is frequently unavailable at many locations. Your analysis reveals:\n\n- System on-hand across 80 stores: 4,800 units (avg 60/store)\n- DC on-hand: 2,200 units\n- 12 stores show on-hand of 40–80 units but POS shows zero sales for 5+ consecutive days\n- Weekly demand: 1,600 units chain-wide (avg 20/store/week)\n- Last physical count (6 months ago) found a 22% variance on this SKU category\n- The replenishment system is not triggering orders because it sees adequate on-hand",
+        "available_data": {
+          "sku": "TIDE-P42",
+          "product": "Tide Pods 42-count",
+          "abc_class": "A",
+          "store_count": 80,
+          "system_on_hand_stores": 4800,
+          "system_on_hand_dc": 2200,
+          "weekly_demand": 1600,
+          "suspect_stores": 12,
+          "suspect_store_on_hand_range": [40, 80],
+          "suspect_store_sales_gap_days": 5,
+          "last_physical_count_months_ago": 6,
+          "last_count_variance_pct": 22,
+          "system_in_stock_rate": 96.2,
+          "customer_complaint_trend": "3x increase in past month"
+        }
+      },
+      "task": "Diagnose the phantom inventory problem, quantify the likely impact, recommend immediate corrective actions and systemic fixes, and recalibrate the replenishment parameters.",
+      "evaluation_criteria": [
+        {
+          "criterion": "diagnosis",
+          "weight": 0.30,
+          "rubric": {
+            "pass": "Identifies the core signal: 12 stores showing 40–80 units on-hand with 5+ days of zero sales is a strong phantom inventory indicator. At 20 units/store/week, zero sales for 5+ days is statistically near-impossible unless the product is not actually on the shelf. The system thinks it has inventory, so it's not ordering. Estimates phantom inventory at those 12 stores: if they're showing avg 60 units but actual is likely near zero, that's ~720 units of phantom inventory. Chain-wide (with 22% variance on last count), the problem extends beyond these 12 stores.",
+            "fail": "Does not connect the zero-sales-despite-on-hand pattern to phantom inventory. Attributes the customer complaints to a perception problem rather than an inventory problem. Ignores the historical 22% count variance."
+          }
+        },
+        {
+          "criterion": "impact_quantification",
+          "weight": 0.25,
+          "rubric": {
+            "pass": "Estimates: at minimum 12 stores are out-of-stock (not 0 as the system reports). Each store losing ~20 units/week at ~$12 retail = $240/store/week. 12 stores × $240 = ~$2,880/week in known lost sales. If the 22% variance applies across more stores, the problem could be 2–3× larger. Projects that the true in-stock rate is probably 82–88%, not 96.2%. Also notes the replenishment cascade: phantom inventory prevents reorder triggers, making the problem self-reinforcing.",
+            "fail": "Does not compute a financial impact. Does not note the self-reinforcing nature of phantom inventory on the replenishment system."
+          }
+        },
+        {
+          "criterion": "immediate_actions",
+          "weight": 0.25,
+          "rubric": {
+            "pass": "Recommends: (1) immediate physical count at the 12 suspect stores and at the DC, (2) adjust system inventory to match physical counts, (3) force-trigger replenishment orders for the corrected stores, (4) expand the suspect analysis to all A-items using the same 'zero-sales-with-on-hand' detection query, (5) implement a weekly automated phantom inventory screen across all A-items.",
+            "fail": "Recommends only a physical count without forcing replenishment. Does not expand the investigation beyond this one SKU. Does not suggest an automated detection mechanism."
+          }
+        },
+        {
+          "criterion": "systemic_fixes",
+          "weight": 0.20,
+          "rubric": {
+            "pass": "Recommends systemic changes: cycle count program for A-items (monthly counts at minimum), implement a POS-based phantom inventory alert (flag any SKU with on-hand > 0 but zero POS for >3 days at a location where the weekly velocity should produce daily sales), investigate root causes (receiving errors, shrinkage, display quantity vs. backroom discrepancy), and temporarily increase safety stock by 15% on this SKU until the phantom inventory problem is resolved.",
+            "fail": "Treats this as a one-time event. Does not recommend a cycle count program or automated detection. Does not address the root cause."
+          }
+        }
+      ]
+    },
+    {
+      "id": "IDP-014",
+      "name": "Easter holiday shift disrupts seasonal candy forecast",
+      "difficulty": "hard",
+      "category": "seasonal-transition",
+      "context": {
+        "situation": "You are the demand planner for confections. Last year Easter was March 30. This year Easter is April 20 — a 3-week calendar shift. Your Holt-Winters model uses 52-week seasonal indices fitted on 3 years of history. The model is currently generating the following 8-week forecast for Easter candy (aggregate category, ~45 SKUs, A-class category with $380K in seasonal revenue):\n\nWeek 9 (Feb 24): 2,100 units — model says this is the seasonal build start\nWeek 10 (Mar 3): 3,400 units\nWeek 11 (Mar 10): 5,800 units\nWeek 12 (Mar 17): 8,200 units — model's predicted peak\nWeek 13 (Mar 24): 7,500 units — pre-Easter week (based on last year)\nWeek 14 (Mar 31): 1,200 units — post-Easter drop (based on last year)\nWeek 15 (Apr 7): 400 units\nWeek 16 (Apr 14): 350 units\n\nBut this year Easter is April 20, so the actual peak should be around Week 16, not Week 12. Pre-season vendor orders for 65% of the seasonal buy were already placed in January based on an earlier forecast. Remaining 35% open-to-buy has not been ordered yet.",
+        "available_data": {
+          "category": "Easter Candy",
+          "sku_count": 45,
+          "seasonal_revenue": 380000,
+          "last_year_easter": "March 30",
+          "this_year_easter": "April 20",
+          "calendar_shift_weeks": 3,
+          "model_type": "Holt-Winters, 52-week seasonal indices, 3 years history",
+          "pre_ordered_pct": 65,
+          "open_to_buy_pct": 35,
+          "current_date": "February 24 (Week 9)",
+          "model_forecast": {
+            "week_9": 2100, "week_10": 3400, "week_11": 5800, "week_12": 8200,
+            "week_13": 7500, "week_14": 1200, "week_15": 400, "week_16": 350
+          }
+        }
+      },
+      "task": "Identify the problem with the model's forecast, propose a corrected forecast, determine what to do about the pre-ordered 65% that arrives based on the wrong peak timing, and build a contingency plan.",
+      "evaluation_criteria": [
+        {
+          "criterion": "problem_identification",
+          "weight": 0.20,
+          "rubric": {
+            "pass": "Immediately identifies that the Holt-Winters seasonal indices are aligned to calendar weeks, not to the Easter date. The model's peak (Week 12) corresponds to last year's Easter timing. With Easter 3 weeks later this year, the seasonal pattern needs to be shifted: actual build should start Week 12, peak in Week 15–16, and post-Easter drop in Week 17. The model is forecasting high demand 3 weeks too early and low demand during what will actually be the peak.",
+            "fail": "Does not identify the holiday shift as the cause of the misalignment. Suggests the model is simply wrong without explaining why."
+          }
+        },
+        {
+          "criterion": "corrected_forecast",
+          "weight": 0.30,
+          "rubric": {
+            "pass": "Shifts the seasonal indices by +3 weeks. Corrected forecast: Week 9–11: low-level pre-season (350–2,100). Week 12: build starts (2,100→3,400). Week 13: ramp (5,800). Week 14: approaching peak (8,200). Week 15: peak week (7,500). Week 16: Easter week — strong (adjust for actual Easter April 20). Week 17: post-Easter drop. Also adjusts for YoY trend. Notes the 'gap' period (Weeks 9–11) where the model forecasts high but actual will be low, and the 'miss' period (Weeks 14–16) where the model forecasts low but actual will be high.",
+            "fail": "Does not shift the seasonal indices. Applies a flat correction factor instead of shifting the pattern. Gets the direction of the shift wrong."
+          }
+        },
+        {
+          "criterion": "pre_order_management",
+          "weight": 0.30,
+          "rubric": {
+            "pass": "Addresses the 65% pre-order problem: if the pre-orders were placed based on the old (wrong) forecast, they may arrive too early — peaking in Weeks 10–12 when demand is still low. Recommends: (1) contact vendors immediately to push delivery dates back by 3 weeks where possible, (2) for shipments that cannot be delayed, hold at DC and release to stores according to the corrected timing, (3) use the 35% open-to-buy for the actual peak weeks (14–16), timing those POs to arrive in weeks 13–14. Notes that Easter candy has short seasonal life — product arriving too early sits on shelves earning nothing while tying up space.",
+            "fail": "Ignores the pre-order timing problem. Assumes pre-orders will naturally align. Does not attempt to shift vendor delivery dates."
+          }
+        },
+        {
+          "criterion": "contingency_planning",
+          "weight": 0.20,
+          "rubric": {
+            "pass": "Builds a contingency: if vendors can't shift delivery dates, the 65% arrives 3 weeks early, creating a temporary overstock during Weeks 10–13 that naturally sells down as the shifted season progresses. The risk is shelf-life on fresh candy (chocolate) during a warm April — more spoilage risk than a March Easter. Also plans the markdown timing shift: post-Easter clearance must happen in Week 17, not Week 14. Any automated markdown triggers must be re-dated.",
+            "fail": "Does not address what happens if vendor dates can't be shifted. Ignores the markdown timing adjustment."
+          }
+        }
+      ]
+    },
+    {
+      "id": "IDP-015",
+      "name": "Viral TikTok spike on a C-item with 8-week import lead time",
+      "difficulty": "hard",
+      "category": "replenishment",
+      "context": {
+        "situation": "A mini waffle maker (SKU WM-MINI-RD, $14.99 retail, $6.20 cost, C-item) that averages 12 units/week across your 65 stores suddenly goes viral after a TikTok cooking influencer features it in a chaffle recipe video. The video has 12M views and counting. Starting Monday morning, POS data shows:\n\nMonday: 340 units sold (vs. avg 1.7/day)\nTuesday: 520 units\nWednesday morning (so far): 280 units by noon\n\nYour DC has 890 units remaining. Stores collectively have ~200 units. The vendor is a small housewares importer sourcing from Guangdong, China, with an 8-week ocean freight lead time. Air freight is possible at $4.80/unit (vs. $0.90 ocean). The vendor's minimum production run is 3,000 units. You've never ordered more than 500 units at a time from this vendor.",
+        "available_data": {
+          "sku": "WM-MINI-RD",
+          "product": "Mini waffle maker (red)",
+          "retail": 14.99,
+          "cost_ocean": 6.20,
+          "cost_air_premium": 4.80,
+          "pre_viral_weekly": 12,
+          "daily_sales_monday": 340,
+          "daily_sales_tuesday": 520,
+          "daily_sales_wed_half": 280,
+          "dc_on_hand": 890,
+          "store_on_hand": 200,
+          "total_on_hand": 1090,
+          "vendor_lead_time_ocean_weeks": 8,
+          "vendor_air_freight_possible": true,
+          "vendor_moq": 3000,
+          "historical_max_order": 500,
+          "tiktok_views": "12M and growing",
+          "store_count": 65
+        }
+      },
+      "task": "Develop a response strategy addressing allocation, ordering, financial risk assessment, and forecast revision. The response must balance capturing the opportunity against the risk of overstocking when the spike fades.",
+      "evaluation_criteria": [
+        {
+          "criterion": "demand_trajectory_analysis",
+          "weight": 0.25,
+          "rubric": {
+            "pass": "Models the viral spike decay curve: peak demand is 400–600 units/day (current trajectory), expect 50% decay by day 10–14, 80% decay by day 21. New baseline likely settles at 2–5× pre-viral (24–60 units/week) by day 30–45. Notes that the TikTok algorithm typically cycles content off the 'For You' page within 7–14 days. With 1,090 total units and ~500 units/day demand, stockout occurs in approximately 2 days.",
+            "fail": "Assumes demand will sustain at peak levels. Does not model the decay curve. Does not calculate time to stockout."
+          }
+        },
+        {
+          "criterion": "allocation_strategy",
+          "weight": 0.20,
+          "rubric": {
+            "pass": "Implements immediate allocation rules: cap per-store daily allocation to prevent high-traffic stores from draining inventory. Suggests 3–5 units/store max per replenishment cycle. Prioritize stores with highest absolute foot traffic (not highest % increase) to maximize unit revenue capture. Consider pulling inventory from very low-traffic stores back to DC for reallocation. Sets a customer purchase limit (2 units per transaction).",
+            "fail": "Does not implement allocation caps. Allows first-come-first-served store ordering that will drain DC in hours."
+          }
+        },
+        {
+          "criterion": "ordering_decision",
+          "weight": 0.30,
+          "rubric": {
+            "pass": "Evaluates air vs. ocean and quantity: (1) Air freight 500–1,000 units at $6.20 + $4.80 = $11.00/unit, arriving in ~7–10 days. At $14.99 retail, margin is $3.99/unit — still profitable. These arrive during the spike tail. (2) Ocean 3,000 units (MOQ) at $6.20/unit, arriving in 8 weeks. By then, demand is likely 30–60 units/week, so 3,000 units = 50–100 weeks of supply — massive overage. Recommends air shipping 500–800 units for immediate demand, and a conservative ocean order of 3,000 (the MOQ) only if the new baseline is assessed at 40+ units/week after the spike settles. Alternatively, negotiate a smaller ocean order if possible. If the vendor won't reduce MOQ, delay the ocean order until the new baseline is confirmed (day 21–30).",
+            "fail": "Orders 3,000+ units by ocean immediately based on peak demand. Does not consider the air freight option. Ignores the MOQ constraint. Does not calculate the overage risk."
+          }
+        },
+        {
+          "criterion": "financial_risk_assessment",
+          "weight": 0.25,
+          "rubric": {
+            "pass": "Quantifies the risk: air freight 800 units at $11.00 cost = $8,800 investment. If all sell at $14.99, revenue = $11,992, profit = $3,192. If only 500 sell and 300 sit, the remaining 300 × $11.00 = $3,300 in slow-moving inventory — still manageable. Ocean order of 3,000 at $6.20 = $18,600 investment. If post-viral demand is 30 units/week, these 3,000 units last 100 weeks. Holding cost at 25%/year = ~$4,650/year. Risk scenario: if demand drops to pre-viral (12/week), you have 250 weeks of supply — a dead stock problem. Recommends the air shipment as the low-risk play and deferring the ocean decision.",
+            "fail": "Does not compute the financial risk of overstocking. Treats the opportunity as all-upside. Does not compare air vs. ocean economics."
+          }
+        }
+      ]
+    },
+    {
+      "id": "IDP-016",
+      "name": "S&OP override conflict — sales team inflates forecast for pipeline deal",
+      "difficulty": "hard",
+      "category": "forecasting",
+      "context": {
+        "situation": "During the monthly S&OP meeting, the regional sales director for the West Coast insists on adding $45,000/month in demand for your premium protein powder line (8 SKUs, current forecast $120,000/month). The reason: a potential distribution deal with a 28-location fitness studio chain that would stock your products. The sales director says the deal is '90% done' and will close within 2 weeks. Your protein line has 12-week shelf life.\n\nYou check the CRM and find: the opportunity is in 'Proposal Sent' stage (not 'Contract Review'). The fitness chain has been in the pipeline for 4 months. Two previous pipeline deals from this sales director in the past year were both overestimated — one closed at 55% of projected volume, the other fell through entirely. The proposed $45,000/month represents a 37.5% increase in total line demand. Your vendor lead time is 3 weeks. If you order now for the inflated forecast and the deal doesn't close, you'll have ~$45,000 in excess perishable inventory with 12-week shelf life.",
+        "available_data": {
+          "product_line": "Premium protein powder (8 SKUs)",
+          "current_monthly_forecast": 120000,
+          "proposed_override": 45000,
+          "override_pct_increase": 37.5,
+          "deal_source": "West Coast fitness studio chain, 28 locations",
+          "crm_stage": "Proposal Sent",
+          "pipeline_age_months": 4,
+          "sales_director_track_record": [
+            {"deal": "Deal A (last year)", "projected": 35000, "actual": 19250, "realization": 55},
+            {"deal": "Deal B (8 months ago)", "projected": 28000, "actual": 0, "realization": 0}
+          ],
+          "product_shelf_life_weeks": 12,
+          "vendor_lead_time_weeks": 3,
+          "excess_risk_if_no_deal": 45000
+        }
+      },
+      "task": "Evaluate the override request, propose a risk-adjusted approach, determine the appropriate inventory response, and establish governance rules for future overrides.",
+      "evaluation_criteria": [
+        {
+          "criterion": "override_evaluation",
+          "weight": 0.30,
+          "rubric": {
+            "pass": "Challenges the '90% done' assertion with evidence: CRM shows 'Proposal Sent' (not Contract Review or Verbal Commit), the deal has been in the pipeline for 4 months (indicating stalled progress, not imminent close), and the sales director's track record shows a 27.5% weighted realization rate across two deals ((55% + 0%) / 2). Does not reject the override outright but does not accept it at face value. Frames the analysis around probability-weighted outcomes.",
+            "fail": "Accepts the 90% probability at face value. Does not check CRM or historical accuracy. Rejects the override entirely without analysis."
+          }
+        },
+        {
+          "criterion": "risk_adjusted_forecast",
+          "weight": 0.30,
+          "rubric": {
+            "pass": "Proposes a probability-weighted approach: assigns 30–40% probability to the deal closing (based on CRM stage and historical accuracy), with a ramp-up timeline (not full volume from day 1). Risk-adjusted override: $45K × 35% probability × 50% month-1 ramp = ~$7,875 for month 1, ~$11,800 for month 2, ~$15,750 for month 3. Total line forecast: $127,875 in month 1 (not $165,000). Also proposes a contingency trigger: if the deal signs, immediately ramp orders to capture the volume.",
+            "fail": "Either accepts the full $45K or rejects it to $0. Does not probability-weight. Does not model a ramp-up. Does not provide a contingency trigger for deal closure."
+          }
+        },
+        {
+          "criterion": "perishable_risk_management",
+          "weight": 0.25,
+          "rubric": {
+            "pass": "Highlights the perishability constraint: 12-week shelf life means any excess from an over-forecast must be sold or written off within 12 weeks. At the full $45K override, failure to close the deal creates $45K/month in excess × ~3 months of exposure = $135K at risk before course correction. Even the risk-adjusted amount (~$8K/month) is manageable because the 3-week vendor lead time allows rapid scaling if the deal actually closes. Notes that the short lead time is an advantage — you can wait for the deal to close and still respond quickly.",
+            "fail": "Ignores the shelf life in the analysis. Orders for the full override amount on a perishable product line based on a speculative deal."
+          }
+        },
+        {
+          "criterion": "governance_framework",
+          "weight": 0.15,
+          "rubric": {
+            "pass": "Proposes override governance rules: (1) overrides > 15% require CRM stage 'Verbal Commit' or higher, (2) probability weights are calibrated against the override requester's historical accuracy (this sales director's future overrides get a 30% discount), (3) perishable product overrides require signed contract before exceeding 20% of current forecast, (4) all overrides expire after 4 weeks without renewal.",
+            "fail": "Does not propose any governance structure. Treats this as a one-off decision without systemic implications."
+          }
+        }
+      ]
+    },
+    {
+      "id": "IDP-017",
+      "name": "Multi-location allocation during critical supplier shortage",
+      "difficulty": "hard",
+      "category": "replenishment",
+      "context": {
+        "situation": "Your sole supplier for a top-selling infant formula brand (A+ item, $29.99 retail, average 2,200 units/week across 110 stores) has notified you of a 70% supply reduction for the next 8 weeks due to a quality hold at their manufacturing facility. You will receive approximately 660 units/week instead of 2,200. There is no alternative domestic supplier for this specific brand (regulatory constraints on infant formula manufacturing). Your current DC inventory is 5,500 units. Stores have approximately 3,300 units combined. The product is medically necessary for many customers whose infants are on this specific formula. Switching formulas requires pediatrician guidance.\n\nMedia coverage of formula shortages is beginning to appear in local news markets. You expect panic buying to increase demand above the normal 2,200/week once the shortage becomes publicly known.",
+        "available_data": {
+          "product": "Premium infant formula (brand-specific)",
+          "retail": 29.99,
+          "normal_weekly_demand": 2200,
+          "constrained_supply_weekly": 660,
+          "constraint_duration_weeks": 8,
+          "store_count": 110,
+          "dc_on_hand": 5500,
+          "store_on_hand": 3300,
+          "total_on_hand": 8800,
+          "alternative_supplier": "None (regulatory constraints)",
+          "medical_necessity": true,
+          "media_coverage": "Beginning in local markets",
+          "expected_panic_buying_multiplier": "1.3-1.8x normal demand"
+        }
+      },
+      "task": "Design a comprehensive allocation strategy that balances fairness, medical necessity, PR risk, and business continuity. Address both the physical allocation and the customer-facing strategy.",
+      "evaluation_criteria": [
+        {
+          "criterion": "inventory_timeline_projection",
+          "weight": 0.20,
+          "rubric": {
+            "pass": "Projects the inventory runway: 8,800 units on-hand + 660/week supply = 8,800 + (660 × 8) = 14,080 total units over 8 weeks. Normal demand = 2,200 × 8 = 17,600. Shortfall = ~3,520 units at normal demand. With panic buying (1.5× estimate = 3,300/week), demand over 8 weeks = 26,400, shortfall = ~12,320 units. Identifies that the first 2–3 weeks are survivable on existing inventory, but weeks 4–8 become critical.",
+            "fail": "Does not model the 8-week timeline. Ignores the panic buying demand increase. Does not compute the total shortfall."
+          }
+        },
+        {
+          "criterion": "allocation_strategy",
+          "weight": 0.30,
+          "rubric": {
+            "pass": "Designs a tiered allocation: (1) Per-customer purchase limit: 2 cans per transaction, enforced at POS. (2) Per-store allocation proportional to trailing 8-week sales velocity (not pro-rata by store count). (3) Reserve 10–15% of weekly supply for emergency allocations (e.g., hospitals, WIC-authorized stores, stores in medically underserved areas). (4) Reduce initial allocation to 25–30% of normal per store and scale up only if demand normalizes. Notes the equity dimension — stores in lower-income areas may have higher WIC/formula dependency.",
+            "fail": "Uses simple pro-rata allocation. Does not implement purchase limits. Ignores the medical necessity and equity dimensions."
+          }
+        },
+        {
+          "criterion": "customer_and_pr_strategy",
+          "weight": 0.25,
+          "rubric": {
+            "pass": "Recommends: (1) Proactive public statement acknowledging the temporary shortage before media coverage escalates. (2) In-store signage explaining the purchase limit with empathetic messaging ('To ensure all families have access...'). (3) Contact pediatricians' offices in your markets with guidance on formula equivalence for families that need to switch. (4) Coordinate with WIC agencies to ensure WIC-approved stores receive priority allocation. (5) Do NOT raise the price — price gouging on infant formula during a shortage is a regulatory and PR catastrophe.",
+            "fail": "Does not address the customer/PR dimension. Suggests raising prices to manage demand (price gouging on a medical necessity). Does not proactively communicate."
+          }
+        },
+        {
+          "criterion": "operational_execution",
+          "weight": 0.25,
+          "rubric": {
+            "pass": "Addresses the operational mechanics: (1) Daily DC-to-store allocation review (not weekly) given the constrained supply. (2) Configure POS system to enforce 2-unit purchase limit. (3) Disable the standard automated replenishment for this SKU — switch to manual allocation to prevent the algorithm from over-ordering for some stores. (4) Monitor store-level sell-through daily to detect stores that are either running out (under-allocated) or holding inventory (over-allocated) and adjust dynamically. (5) Track the black market — if customers are buying to resell, tighten purchase limits further.",
+            "fail": "Relies on the standard automated replenishment system. Does not implement POS-level controls. Does not monitor at the daily frequency required during a crisis."
+          }
+        }
+      ]
+    },
+    {
+      "id": "IDP-018",
+      "name": "Complete demand regime change from competitor exit — opportunity and risk",
+      "difficulty": "hard",
+      "category": "forecasting",
+      "context": {
+        "situation": "A major competitor in your market (operating 45 stores across your 3-state region) has announced it is closing all locations over the next 90 days due to bankruptcy. Your demand planning team needs to forecast the demand impact across your 85-store chain. The competitor's estimated annual revenue was $280M, with your categories overlapping in grocery, household, and personal care (estimated $180M in overlapping categories). Your current annual revenue in those categories is $420M across 85 stores.\n\nThe competitor's stores are distributed: 30 are within 3 miles of your stores (high capture), 10 are within 3–8 miles (moderate capture), and 5 are >8 miles (low capture). Store closures will be staggered over 90 days, with the first 15 stores closing in 30 days. Customers will need to find alternative shopping locations. Your stores closest to closing competitor locations will see the largest demand increase.",
+        "available_data": {
+          "competitor_store_count": 45,
+          "competitor_estimated_revenue": 280000000,
+          "overlapping_category_revenue": 180000000,
+          "your_store_count": 85,
+          "your_overlapping_revenue": 420000000,
+          "proximity_breakdown": {
+            "within_3mi": 30,
+            "3_to_8mi": 10,
+            "over_8mi": 5
+          },
+          "closure_timeline": "90 days staggered",
+          "first_wave_stores": 15,
+          "first_wave_timing": "30 days"
+        }
+      },
+      "task": "Build a demand impact forecast by store tier and category, develop a phased inventory build plan, identify the risks of both under- and over-investing, and recommend a monitoring framework.",
+      "evaluation_criteria": [
+        {
+          "criterion": "demand_capture_model",
+          "weight": 0.30,
+          "rubric": {
+            "pass": "Builds a tiered capture model: stores within 3 miles of competitor closures capture 25–40% of the competitor's lost volume. Stores 3–8 miles capture 10–20%. Stores >8 miles capture 5–10%. Remaining volume goes to other competitors, online, or is lost (customers move, change habits). Computes: $180M in overlapping categories from 45 stores = $4M/store/year = $77K/store/week. Your 30 nearby stores capture 30% avg = $23K/week each in incremental demand. Total incremental: roughly $40–60M annually, ramping over 90 days. Acknowledges this is an estimate with wide confidence bands.",
+            "fail": "Assumes 100% capture of competitor volume. Does not tier by proximity. Does not account for volume lost to other competitors or online."
+          }
+        },
+        {
+          "criterion": "phased_inventory_plan",
+          "weight": 0.30,
+          "rubric": {
+            "pass": "Phases the inventory build to match the staggered closures: Month 1 (first 15 closures) — increase safety stock and forward inventory at the 15 nearest stores by 15–25%. Month 2 — extend to all affected stores. Month 3 — full impact. Does not overbuild in month 1 because only 15 of 45 competitor stores close. Notes that vendor lead times (typically 1–4 weeks) allow reactive ordering based on actual demand signals rather than pure forecast. Recommends pre-building only the safety stock increment and using the actual POS data to drive replenishment ramp-up.",
+            "fail": "Orders for the full 90-day impact immediately. Does not phase the build to match the staggered closures. Over-invests in month 1 before actual demand signals are available."
+          }
+        },
+        {
+          "criterion": "risk_analysis",
+          "weight": 0.25,
+          "rubric": {
+            "pass": "Identifies both sides of the risk: Under-investing means stockouts during the capture window when new customers are forming habits — you lose them permanently if they can't find product at your store. Over-investing means excess inventory across 85 stores × dozens of categories = potentially millions in overage if capture rates are lower than estimated. Recommends erring slightly toward over-investment for A-items (where the stockout cost is highest) and conservative for C-items. Also identifies the operational risk: receiving, stocking, and checkout capacity at your busiest stores may be overwhelmed.",
+            "fail": "Only considers one side of the risk (either under- or over-investment). Does not differentiate the risk posture by item classification."
+          }
+        },
+        {
+          "criterion": "monitoring_framework",
+          "weight": 0.15,
+          "rubric": {
+            "pass": "Proposes weekly tracking of: actual demand lift by store proximity tier vs. forecast, in-stock rate at affected stores (must not drop below 93% during the capture window), category-level demand transfer by week, and customer count data if available. Sets a 4-week review cadence to adjust capture rate assumptions based on actuals. Flags specific categories where capture may be higher (pharmacy, if competitor had one) or lower (private label, which doesn't transfer across chains).",
+            "fail": "Does not propose a monitoring framework. Does not mention adjusting assumptions based on actuals."
+          }
+        }
+      ]
+    },
+    {
+      "id": "IDP-019",
+      "name": "Selecting forecast method for product transitioning from growth to maturity",
+      "difficulty": "easy",
+      "category": "forecasting",
+      "context": {
+        "situation": "A flavored sparkling water brand (LaCroix Limoncello, 8-pack) was added to your assortment 14 months ago. For the first 10 months, it showed strong growth (from 120 units/week to 380 units/week). Over the past 4 months, growth has decelerated significantly: Month 11: 385, Month 12: 390, Month 13: 388, Month 14: 392. The item is currently forecasted with Holt's double exponential smoothing (alpha = 0.25, beta = 0.10). The model continues to project upward trend, forecasting 415 units for next month, but the actual demand has plateaued around 390. Tracking signal is at +2.8 and rising. The item is classified BY.",
+        "available_data": {
+          "sku": "LACR-LIMON-8",
+          "product": "LaCroix Limoncello 8-pack",
+          "months_in_assortment": 14,
+          "growth_phase_months": 10,
+          "plateau_months": 4,
+          "recent_monthly_demand": [385, 390, 388, 392],
+          "current_method": "Holt's double exponential smoothing",
+          "alpha": 0.25,
+          "beta": 0.10,
+          "next_month_forecast": 415,
+          "tracking_signal": 2.8,
+          "abc_xyz": "BY"
+        }
+      },
+      "task": "Diagnose why the current model is diverging from actuals, recommend a model transition, and explain how to handle the transition smoothly.",
+      "evaluation_criteria": [
+        {
+          "criterion": "lifecycle_diagnosis",
+          "weight": 0.35,
+          "rubric": {
+            "pass": "Identifies that the product has transitioned from the growth phase to the maturity/stabilization phase of its lifecycle. The Holt's trend component (beta = 0.10) is still projecting growth that no longer exists. The positive tracking signal (+2.8, rising) confirms the model is over-forecasting. This is a classic lifecycle transition — the model that was appropriate during growth is no longer appropriate for maturity.",
+            "fail": "Does not recognize the lifecycle transition. Attributes the issue to parameter tuning rather than method mismatch. Suggests increasing beta (which would make the problem worse)."
+          }
+        },
+        {
+          "criterion": "method_recommendation",
+          "weight": 0.35,
+          "rubric": {
+            "pass": "Recommends transitioning to single exponential smoothing (SES) or a weighted moving average now that the product has stabilized. No trend component is needed at the current lifecycle stage. Alternatively, suggests switching to a damped trend model (Holt's with damping factor φ = 0.80–0.85) which will gradually extinguish the trend. Specifies alpha in the 0.15–0.25 range for the new SES model.",
+            "fail": "Recommends continuing with Holt's double exponential smoothing. Recommends a complex seasonal model when no seasonality is present. Does not specify the new method's parameters."
+          }
+        },
+        {
+          "criterion": "transition_approach",
+          "weight": 0.30,
+          "rubric": {
+            "pass": "Recommends: (1) Immediately reduce the trend contribution — either reset the trend component to zero in Holt's, or switch to SES initialized at the current demand level (~390). (2) Run the new method in parallel for 4 weeks to confirm it tracks better. (3) Adjust safety stock for the stabilized demand pattern — the σ_d during growth was higher than it will be during the plateau. The WMAPE should improve from the current level once the over-forecasting trend is removed.",
+            "fail": "Suggests an abrupt switch with no transition period. Does not mention resetting or reinitializing model parameters. Ignores the safety stock recalculation."
+          }
+        }
+      ]
+    },
+    {
+      "id": "IDP-020",
+      "name": "Weather-driven emergency demand shift across multiple categories",
+      "difficulty": "medium",
+      "category": "replenishment",
+      "context": {
+        "situation": "A major hurricane (Category 3) is projected to make landfall on the Gulf Coast in 5 days, directly impacting 22 of your 95 stores. You manage demand planning for grocery and household essentials. Based on historical hurricane patterns (Hurricanes Harvey, Irma, Michael), you expect the following demand spikes in the affected stores starting 3 days before landfall:\n\n- Bottled water: 800–1200% of normal\n- Batteries: 600–900% of normal\n- Canned food: 400–600% of normal\n- Bread: 300–500% of normal\n- Flashlights/lanterns: 500–800% of normal\n- Plywood/tarps: 1000%+ of normal\n- Generators: sold out within hours at any price\n\nPost-storm (days 1–14 after landfall), affected stores may be closed for 3–14 days depending on damage. The 73 unaffected stores continue at normal demand. Your regional DC is 180 miles from the projected landfall zone and may itself experience disruptions.",
+        "available_data": {
+          "hurricane_category": 3,
+          "landfall_days_away": 5,
+          "affected_stores": 22,
+          "unaffected_stores": 73,
+          "total_stores": 95,
+          "dc_distance_from_landfall": "180 miles",
+          "historical_benchmarks": "Harvey, Irma, Michael",
+          "pre_storm_window_days": 3,
+          "expected_store_closure_days": "3–14 depending on damage"
+        }
+      },
+      "task": "Develop a pre-storm demand and inventory plan covering the 5-day preparation window, the storm period, and the post-storm recovery. Address both the affected and unaffected stores.",
+      "evaluation_criteria": [
+        {
+          "criterion": "pre_storm_demand_forecast",
+          "weight": 0.25,
+          "rubric": {
+            "pass": "Builds a category-specific demand forecast for the 22 affected stores during the pre-storm window (3 days of buying frenzy). Uses the historical benchmarks to estimate: water at 10× normal, batteries at 7×, canned food at 5×, etc. Computes the total incremental demand and compares to DC and pipeline inventory. Notes that the buying window is extremely compressed — 3 days of 5–10× demand is equivalent to 3–6 weeks of normal demand in 72 hours.",
+            "fail": "Does not build a specific demand forecast by category. Uses a flat multiplier across all categories. Does not compare demand to available inventory."
+          }
+        },
+        {
+          "criterion": "inventory_repositioning",
+          "weight": 0.30,
+          "rubric": {
+            "pass": "Recommends immediate inventory repositioning: (1) Divert all available DC inventory of critical categories (water, batteries, canned food) to the 22 affected stores within 48 hours. (2) Pull inventory from the nearest unaffected stores to supplement DC stock. (3) Place emergency orders with vendors — specify which categories need expedited shipping. (4) Prioritize full truckloads to affected stores over normal mixed-load replenishment. (5) Pre-position a forward staging area if the DC itself is at risk. Notes that transportation capacity will tighten as evacuations begin — secure truck commitments immediately.",
+            "fail": "Relies on the normal replenishment cycle. Does not pre-position inventory. Does not address the DC's proximity to the storm. Ignores transportation capacity constraints."
+          }
+        },
+        {
+          "criterion": "post_storm_recovery_plan",
+          "weight": 0.25,
+          "rubric": {
+            "pass": "Plans for two phases: (1) Immediate post-storm (days 1–7): stores reopen as infrastructure allows. Demand shifts from preparation items to recovery items (cleaning supplies, tarps, generators, ice, paper products). Pre-position recovery category inventory at the DC for rapid deployment once stores reopen. (2) Extended recovery (days 8–30): demand normalizes in some categories but remains elevated in recovery categories. Affected stores may have reduced operating hours. Notes that the 73 unaffected stores should continue normal operations — do not starve them of inventory to feed the affected stores unless the category is DC-constrained.",
+            "fail": "Does not plan beyond the pre-storm period. Ignores the demand shift from preparation to recovery items. Does not address the reopening logistics."
+          }
+        },
+        {
+          "criterion": "demand_history_management",
+          "weight": 0.20,
+          "rubric": {
+            "pass": "Notes that the hurricane event must be tagged in the demand history as an extreme weather event so it does not contaminate future seasonal indices. Both the pre-storm spike and the post-storm closure (zero demand) should be excluded from baseline model training. If not excluded, next year's model will project a demand spike during the same calendar period — which is only correct if another hurricane hits.",
+            "fail": "Does not mention demand history tagging. Allows the extreme event to flow into the baseline model."
+          }
+        }
+      ]
+    },
+    {
+      "id": "IDP-021",
+      "name": "Product end-of-life transition with V1/V2 coexistence and vendor introductory deal",
+      "difficulty": "hard",
+      "category": "new-product",
+      "context": {
+        "situation": "A major CPG brand is replacing their bestselling dish soap formula (V1: Dawn Ultra 28 oz, SKU DAWN-U28, A-item, 1,100 units/week, $3.99 retail, $1.85 cost) with an updated formulation (V2: Dawn Ultra Platinum 28 oz, new SKU DAWN-P28, $4.49 retail, $2.10 cost). The manufacturer says V2 'significantly outperforms' V1 in consumer testing. They're offering a 20% introductory discount on V2 ($2.10 → $1.68) for the first 3 months of orders. V2 launches in 4 weeks.\n\nYou currently have 6,800 units of V1 in the system (DC + stores). The manufacturer will NOT buy back unsold V1. V1 and V2 will coexist on shelf — V1 is not being forcibly delisted, but the manufacturer will cease V1 production in 8 weeks (your last V1 PO must ship by then). The shelf has room for both, but only for 8 weeks — a planogram reset removes V1's position at week 8.\n\nHistorical data from this manufacturer's last formula transition (3 years ago, different product) showed: V2 captured 30% of V1 volume in week 1, 60% by week 4, and 90% by week 8.",
+        "available_data": {
+          "v1_sku": "DAWN-U28",
+          "v1_product": "Dawn Ultra 28 oz",
+          "v1_weekly_demand": 1100,
+          "v1_retail": 3.99,
+          "v1_cost": 1.85,
+          "v1_on_hand": 6800,
+          "v1_final_order_deadline": "8 weeks from now",
+          "v2_sku": "DAWN-P28",
+          "v2_product": "Dawn Ultra Platinum 28 oz",
+          "v2_retail": 4.49,
+          "v2_cost": 2.10,
+          "v2_intro_discount": 0.20,
+          "v2_discounted_cost": 1.68,
+          "v2_launch": "4 weeks from now",
+          "v2_intro_discount_duration": "3 months",
+          "shelf_coexistence_weeks": 8,
+          "historical_transition": {"wk1_v2_share": 0.30, "wk4_v2_share": 0.60, "wk8_v2_share": 0.90},
+          "store_count": 90
+        }
+      },
+      "task": "Build a combined V1/V2 demand plan for the 12-week transition period, size the V2 introductory buy, create a V1 run-down plan with markdown timing, and evaluate the introductory discount opportunity.",
+      "evaluation_criteria": [
+        {
+          "criterion": "combined_demand_model",
+          "weight": 0.25,
+          "rubric": {
+            "pass": "Models total brand demand as approximately constant or slightly increasing (V2's higher consumer testing may grow the brand slightly, estimate 0–5% category growth). Builds a weekly V1/V2 split using the historical transition data: Week 1–2: V1 70%, V2 30%. Week 3–4: V1 40%, V2 60%. Week 5–6: V1 20%, V2 80%. Week 7–8: V1 10%, V2 90%. Week 9+: V1 0%, V2 100%. Notes that V1 demand will decline rapidly as customers trial V2, especially with the $4.49 vs. $3.99 price positioning (V2 is 12% more expensive, which may slow adoption slightly vs. the historical analog).",
+            "fail": "Forecasts V1 and V2 independently without recognizing they share a demand pool. Assumes V1 demand stays constant after V2 launch. Does not use the historical transition data."
+          }
+        },
+        {
+          "criterion": "v1_run_down_plan",
+          "weight": 0.25,
+          "rubric": {
+            "pass": "Computes V1 sales under the declining split model: weeks 1–2 at 770/week (70% × 1,100) = 1,540 cumulative. Weeks 3–4 at 440/week = 880. Weeks 5–6 at 220/week = 440. Weeks 7–8 at 110/week = 220. Total V1 sales weeks 1–8: ~3,080. Current V1 inventory: 6,800 minus ~4 weeks of pre-launch V1 sales (4,400 units consumed at 1,100/week = 4,400). Wait — V2 launches in 4 weeks, so V1 sells at full rate for 4 more weeks = 4,400 units. V1 on-hand at V2 launch: 6,800 − 4,400 = 2,400. V1 sales during transition: ~3,080. Result: V1 runs out naturally. Stop V1 reorders NOW. If the math shows excess, recommends markdown starting week 4 post-launch.",
+            "fail": "Does not account for the 4 weeks of V1 sales before V2 launches. Continues ordering V1. Gets the V1 remaining inventory calculation wrong by a significant margin."
+          }
+        },
+        {
+          "criterion": "v2_introductory_buy",
+          "weight": 0.25,
+          "rubric": {
+            "pass": "Sizes V2 buy based on the split model: weeks 1–2 at 330/week, weeks 3–4 at 660/week, weeks 5–8 at 880–990/week, weeks 9–12 at ~1,100/week. Total 12-week V2 demand: ~9,200 units. Since the intro discount applies for 3 months (~12 weeks), the optimal strategy is to order the full 12-week V2 forecast at the $1.68 price to maximize the discount benefit (saving $0.42/unit × 9,200 = ~$3,864). Evaluates whether to front-load the buy (to capture the full discount) vs. staging orders (to limit risk if transition is slower than expected). Recommends staging: order 4 weeks of supply initially (~2,600 units), then 4-week reorders at the discounted price.",
+            "fail": "Does not optimize the introductory discount. Orders only 1–2 weeks of supply despite the 3-month discount window. Orders excessive quantities without considering transition risk."
+          }
+        },
+        {
+          "criterion": "financial_optimization",
+          "weight": 0.25,
+          "rubric": {
+            "pass": "Computes the financial picture: V2 at $1.68 intro cost sells at $4.49 = $2.81 margin (63% gross margin). V1 at $1.85 cost sells at $3.99 = $2.14 margin (54%). The transition is margin-accretive even at regular V2 cost ($2.10 → $2.39 margin, 53%). The intro discount is a clear win — $3,864 in savings over 12 weeks. Recommends negotiating with the manufacturer for V1 markdown support (trade funds, return credit) since the manufacturer benefits from fast V1 clearance to drive V2 trial. Also notes: if V1 has any excess at week 8 (planogram reset), markdown to $2.99–$3.29 (still above cost) is better than holding or destroying.",
+            "fail": "Does not compare the V1 and V2 margin profiles. Ignores the introductory discount's financial value. Does not negotiate with the manufacturer for V1 support."
+          }
+        }
+      ]
+    },
+    {
+      "id": "IDP-022",
+      "name": "Simple weeks-of-supply assessment and reorder decision for B-item",
+      "difficulty": "easy",
+      "category": "replenishment",
+      "context": {
+        "situation": "You perform your weekly inventory review on a B-item: premium dog treats (SKU DT-PREM-12, $8.99 retail, weekly demand averaging 85 units with standard deviation of 18 units). Vendor lead time is 2 weeks. Review period is weekly. Target service level is 95%. Current status:\n\n- DC on-hand: 180 units\n- On-order: 0 units\n- Store on-hand (aggregate): 95 units\n- Target order-up-to level: your system calculates it as 350 units\n- The vendor's minimum order is 100 units (case of 25 × 4 cases)",
+        "available_data": {
+          "sku": "DT-PREM-12",
+          "product": "Premium dog treats 12 oz",
+          "abc_class": "B",
+          "retail": 8.99,
+          "weekly_demand_avg": 85,
+          "weekly_demand_std": 18,
+          "lead_time_weeks": 2,
+          "review_period_weeks": 1,
+          "service_level": 0.95,
+          "z_score": 1.65,
+          "dc_on_hand": 180,
+          "store_on_hand": 95,
+          "on_order": 0,
+          "target_order_up_to": 350,
+          "vendor_moq": 100,
+          "case_pack": 25
+        }
+      },
+      "task": "Verify the target order-up-to level calculation, determine the current inventory position, decide if an order is needed, and if so, calculate the correct order quantity rounded to case packs.",
+      "evaluation_criteria": [
+        {
+          "criterion": "order_up_to_verification",
+          "weight": 0.25,
+          "rubric": {
+            "pass": "Verifies: S = demand during (LT + R) + SS. Demand during (2+1) = 85 × 3 = 255 units. SS = 1.65 × 18 × √3 ≈ 51 units. S = 255 + 51 = 306 units. Notes the system's 350 target is somewhat higher than the calculated 306 — this could reflect a buffer or a rounding up to case packs. Either accepts the 350 as reasonable or flags the 44-unit discrepancy for investigation.",
+            "fail": "Does not verify the calculation. Accepts 350 without checking. Gets the formula fundamentally wrong."
+          }
+        },
+        {
+          "criterion": "inventory_position_and_decision",
+          "weight": 0.35,
+          "rubric": {
+            "pass": "Computes IP = DC on-hand + store on-hand + on-order = 180 + 95 + 0 = 275 units. Since this is a periodic review system, compares IP (275) to the order-up-to level S (350 or the calculated 306). IP < S, so an order is needed. Order quantity = S − IP = 350 − 275 = 75 units (or 306 − 275 = 31 using the calculated S).",
+            "fail": "Uses only DC on-hand (180) and ignores store inventory. Compares to the wrong threshold. Decides no order is needed."
+          }
+        },
+        {
+          "criterion": "order_quantity_rounding",
+          "weight": 0.25,
+          "rubric": {
+            "pass": "Rounds up to the nearest case pack: if ordering 75 units, round up to 100 (4 cases of 25). This meets the vendor MOQ of 100 and aligns with case pack multiples. Notes that the 25-unit overage (vs. the raw 75) adds ~1.5 days of extra supply, which is a reasonable trade-off for case-pack compliance.",
+            "fail": "Tries to order exactly 75 units without rounding to case packs. Orders below the MOQ. Does not mention case pack alignment."
+          }
+        },
+        {
+          "criterion": "practical_awareness",
+          "weight": 0.15,
+          "rubric": {
+            "pass": "Notes the weeks-of-supply context: current IP of 275 at 85/week = 3.2 weeks. After the order (375 units at 85/week = 4.4 weeks). This is within the healthy 4–8 week range for a B-item. The lead time of 2 weeks means the order arrives with ~1 week of buffer remaining.",
+            "fail": "Does not contextualize the order in terms of weeks-of-supply. Does not mention the arrival timing relative to remaining inventory."
+          }
+        }
+      ]
+    },
+    {
+      "id": "IDP-023",
+      "name": "Post-promotion analysis revealing forecast miss and excess inventory",
+      "difficulty": "easy",
+      "category": "promotional-planning",
+      "context": {
+        "situation": "A 2-week BOGO promotion on a premium pasta sauce (Rao's Marinara 24 oz, $8.49, A-item) has just ended. Here are the results:\n\nPre-promo forecast:\n- Baseline: 300 units/week\n- Promotional lift estimate: 3.2× (BOGO)\n- Forecasted promo demand: 960 units/week × 2 weeks = 1,920 units\n- Post-promo dip forecast: −40% for 2 weeks (360 units)\n- Total forecast for 4-week window (promo + post-promo): 2,520 units\n\nActual results:\n- Promo week 1: 720 units\n- Promo week 2: 680 units\n- Total promo actual: 1,400 units (vs. 1,920 forecast)\n\nYou ordered 1,920 units of incremental stock for the promotion. Current excess (above normal replenishment pipeline): approximately 520 units. Shelf life: 18 months (not a concern).",
+        "available_data": {
+          "sku": "RAOS-MAR-24",
+          "product": "Rao's Marinara 24 oz",
+          "baseline_weekly": 300,
+          "forecast_lift": 3.2,
+          "forecast_promo_demand": 1920,
+          "forecast_post_promo_dip": -0.40,
+          "actual_week_1": 720,
+          "actual_week_2": 680,
+          "actual_total_promo": 1400,
+          "excess_inventory": 520,
+          "shelf_life_months": 18,
+          "retail": 8.49
+        }
+      },
+      "task": "Analyze why the promotion underperformed, calculate the actual lift achieved, revise the post-promo dip forecast, assess the excess inventory situation, and document lessons for future BOGO promotions on this item.",
+      "evaluation_criteria": [
+        {
+          "criterion": "lift_analysis",
+          "weight": 0.30,
+          "rubric": {
+            "pass": "Computes actual lift: average promo weekly demand = 700 units / 300 baseline = 2.33× (vs. 3.2× forecasted). The promotion underperformed the forecast by 27%. Notes that a 2.33× lift is still a strong promotion — the forecast was simply too aggressive, not the promotion itself. Considers reasons: $8.49 is a premium price point — even BOGO at ~$4.25/unit may not generate the same response as BOGO on a $3 pasta sauce. Also BOGO on premium brands has lower lift ratios than mainstream brands because the customer base is less price-elastic.",
+            "fail": "Does not compute the actual lift ratio. Blames the promotion execution rather than the forecast. Does not consider the premium price point as a factor."
+          }
+        },
+        {
+          "criterion": "post_promo_dip_revision",
+          "weight": 0.25,
+          "rubric": {
+            "pass": "Revises the post-promo dip: since the actual lift was lower than forecast, the post-promo dip should also be proportionally smaller. Actual incremental volume was ~400 units/week (vs. 660 forecast). Post-promo dip at 40% of incremental = −160 units/week (vs. −264 forecast). Post-promo demand: 300 − 160 = ~140 units/week for 1–2 weeks. Notes that the 18-month shelf life means BOGO forward-buying is real for this product — customers will stockpile.",
+            "fail": "Applies the original −40% dip without adjusting for the lower actual lift. Ignores the post-promo period. Does not connect forward-buying to the dip calculation."
+          }
+        },
+        {
+          "criterion": "excess_inventory_assessment",
+          "weight": 0.25,
+          "rubric": {
+            "pass": "Assesses the 520 excess units: at 300 units/week baseline minus the post-promo dip period (~140/week for 2 weeks then recovery), the excess is consumed in approximately 2.5–3 weeks beyond normal pipeline. With 18-month shelf life, this is a non-issue — no markdown needed, just carry as forward inventory. Notes this as a forecast accuracy learning, not an inventory emergency.",
+            "fail": "Panics about the 520-unit excess and recommends markdowns despite the 18-month shelf life. Does not compute how long the excess will take to sell through."
+          }
+        },
+        {
+          "criterion": "lessons_documented",
+          "weight": 0.20,
+          "rubric": {
+            "pass": "Documents actionable lessons: (1) BOGO lift on premium brands should be discounted 20–30% vs. category average BOGO lifts, (2) update this SKU's promotional lift database with the 2.33× actual, (3) for future promotions, use the 2.33× as the primary data point weighted at 50% vs. category data, (4) flag that premium pasta sauce BOGO should forecast at 2.2–2.5× rather than the 3.0–3.5× typical of mainstream brands.",
+            "fail": "Does not document lessons. Does not update the promotional lift database. Does not distinguish premium vs. mainstream brand lift profiles."
+          }
+        }
+      ]
+    },
+    {
+      "id": "IDP-024",
+      "name": "Slow mover evaluation and kill decision for underperforming wine SKU",
+      "difficulty": "easy",
+      "category": "abc-analysis",
+      "context": {
+        "situation": "During your quarterly assortment review, you flag a wine SKU (an imported Malbec, SKU WINE-MAL-750, $14.99 retail, $7.20 cost, C-item) for potential discontinuation. The data:\n\n- Weeks of supply at current rate: 34 weeks\n- Last 13-week velocity: 4 units/week (down from 9 units/week in the first 13 weeks after introduction 8 months ago)\n- Annual margin contribution: $1,216\n- No promotional activity planned\n- No contractual obligation (not a planogram mandatory)\n- Three similar Malbec wines in the assortment priced at $11.99, $16.99, and $19.99\n- Current on-hand: 136 units across DC and stores\n- Vendor lead time: 6 weeks",
+        "available_data": {
+          "sku": "WINE-MAL-750",
+          "product": "Imported Malbec 750ml",
+          "retail": 14.99,
+          "cost": 7.20,
+          "abc_class": "C",
+          "weeks_of_supply": 34,
+          "velocity_last_13_weeks": 4,
+          "velocity_first_13_weeks": 9,
+          "annual_margin": 1216,
+          "promo_planned": false,
+          "planogram_mandatory": false,
+          "substitute_skus": 3,
+          "on_hand": 136,
+          "vendor_lead_time_weeks": 6
+        }
+      },
+      "task": "Apply the slow-mover kill decision framework, determine whether to discontinue, and if so, create the exit plan including markdown strategy and timeline.",
+      "evaluation_criteria": [
+        {
+          "criterion": "kill_criteria_evaluation",
+          "weight": 0.35,
+          "rubric": {
+            "pass": "Evaluates each kill criterion: (1) WOS > 26 — YES (34 weeks). (2) Velocity < 50% of first 13 weeks — YES (4 vs 9, which is 44%). (3) No promo planned — YES. (4) Not contractually obligated — YES. (5) Substitutes exist — YES (3 alternatives). All 5 criteria are met. Recommends discontinuation.",
+            "fail": "Does not evaluate against the specific criteria. Makes a gut-feel decision. Misses one or more criteria. Decides to keep the item without strong justification."
+          }
+        },
+        {
+          "criterion": "exit_plan",
+          "weight": 0.35,
+          "rubric": {
+            "pass": "Creates a structured exit: (1) Cancel any open POs immediately. (2) Week 1–4: markdown 30% ($14.99 → $10.49). At the expected 2× velocity increase (8 units/week), sell ~32 units. (3) Week 5–8: markdown 50% ($7.49, near cost). At 3–4× velocity (~12–16 units/week), sell ~48–64 units. (4) Week 8: liquidate any remainder or donate. Total expected sell-through: 80–96 units of the 136, with remainder liquidated. Hard exit date at 8 weeks.",
+            "fail": "Does not create a phased markdown plan. Tries to sell all 136 units at full price. Sets no hard exit date."
+          }
+        },
+        {
+          "criterion": "financial_reasoning",
+          "weight": 0.30,
+          "rubric": {
+            "pass": "Computes the cost of inaction: holding 136 units for 34 weeks at ~25% annual carrying cost = 136 × $7.20 × 0.25 × (34/52) ≈ $160 in carrying cost. Plus the opportunity cost of the shelf space. The annual margin contribution ($1,216) is barely meaningful for a C-item. The markdown/liquidation cost (estimated $300–$500 in margin loss on discounted units) is worth freeing the shelf space for a better-performing wine. The net decision is clear.",
+            "fail": "Does not compute the financial cost of holding vs. exiting. Makes the decision without financial justification."
+          }
+        }
+      ]
+    }
+  ]
+}

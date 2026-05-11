@@ -1,0 +1,147 @@
+name: captain-lobster
+title: Captain Lobster
+version: 1.2.19
+author: lobster-captain
+license: MIT
+runtime: node
+entry: src/index.js
+min_openclaw_version: "2026.1.0"
+homepage: https://github.com/ryanbihai/captain-lobster
+description: 龙虾船长 - 零玩家游戏，让 AI 扮演大航海时代的船长自主贸易（公测版）。安装后对 AI 说：帮我激活龙虾船长 —— 设置一个 8 位以上密码即可起航。仅当您希望完全自动化时才安装；如需手动游玩请将 auto_react 设为 false。单笔 1000 万金币以上的交易会自动征得您的同意后才执行。
+
+categories:
+  - game
+  - simulation
+  - automation
+
+requires:
+  bins:
+    - node
+  config:
+    - ~/.captain-lobster/state.json
+    - ~/.captain-lobster/keys/
+primaryEnv: L1_OPENID
+envVars:
+  - name: L1_OPENID
+    required: false
+    description: L1 Game Server 的 OpenID（多个用逗号分隔）
+  - name: L1_PUBLIC_OPENID
+    required: false
+    description: 公共 L1 Game Server 的 OpenID（兜底节点）
+  - name: OCEANBUS_URL
+    required: false
+    description: OceanBus L0 API 地址，默认 https://ai-t.ihaola.com.cn/api/l0
+  - name: USER
+    required: false
+    description: 系统用户名（Linux/macOS），用于船长命名
+  - name: USERNAME
+    required: false
+    description: 系统用户名（Windows），用于船长命名
+os:
+  - macos
+  - linux
+  - windows
+
+# 定时调度 — 驱动自主运行
+schedule:
+  - cron: "*/30 * * * *"
+    action: react
+    description: 每 30 分钟 Re-Act 循环
+
+  - cron: "0 8 * * *"
+    action: report
+    description: 每天 8:00 早报
+
+  - cron: "0 20 * * *"
+    action: report
+    description: 每天 20:00 晚报
+
+config:
+  - key: l1_nodes
+    type: array
+    required: false
+    default: []
+    description: L1 Game Server 节点列表（按优先级试连，留空则需设 L1_OPENID 环境变量）。每项含 openid 和可选的 name。
+
+  - key: l1_openid
+    type: string
+    required: false
+    default: "oa9EliN5y6HhsovCV-Q8uy4CKsQb3oM29GACCZ-6Jpn9YpZn9WNiX9pTJ6DpmgE49nmA_kyIyFk09-hA"
+    secret: false
+    description: 单个 L1 Game Server 的 OpenID（公测默认服务器，推荐用 l1_nodes）。也可通过环境变量 L1_OPENID 设置。
+
+  - key: oceanbus_url
+    type: string
+    required: false
+    default: "https://ai-t.ihaola.com.cn/api/l0"
+    description: OceanBus L0 API 地址
+
+  - key: initial_gold
+    type: number
+    required: false
+    default: 20000
+    description: 初始金币数量
+
+  - key: user_name
+    type: string
+    required: false
+    default: ""
+    description: 用户姓名（用于船长自称"XX的龙虾号"，留空则用系统用户名）
+
+  - key: captain_name
+    type: string
+    required: false
+    default: ""
+    description: 船长名字（留空自动生成）
+
+  - key: key_identity
+    type: string
+    required: false
+    default: "default"
+    description: 密钥身份（多个船长时区分用）
+
+  - key: auto_react
+    type: boolean
+    required: false
+    default: true
+    description: 是否启用自主 Re-Act 循环（设为 false 可停止定时自动执行）。如需手动游玩请将 auto_react 设为 false
+
+  - key: max_trade_amount
+    type: number
+    required: false
+    default: 10000000
+    description: 单笔交易最大金币限额（10000000 = 1千万）。游戏内买卖航行皆自动执行无须确认。
+
+  - key: allow_p2p
+    type: boolean
+    required: false
+    default: true
+    description: 是否允许与其他船长互动（飞鸽传书、契约、情报转让）
+
+
+input:
+  type: object
+  properties:
+    action:
+      type: string
+      description: 操作类型
+      enum: ["start", "status", "city", "cities", "buy", "sell", "move", "arrive", "intent", "contract_create", "contract_cancel", "contracts", "p2p_send", "inbox", "report", "journal", "react", "ping", "sign_trade", "rename", "capabilities", "trade_npc", "get_city", "tavern_buy", "intel_list", "intel_transfer", "intel_story"]
+    params:
+      type: object
+      description: 操作参数
+    password:
+      type: string
+      description: 私钥密码
+
+output:
+  type: object
+  properties:
+    success:
+      type: boolean
+      description: 是否成功
+    message:
+      type: string
+      description: 返回消息
+    data:
+      type: object
+      description: 返回数据

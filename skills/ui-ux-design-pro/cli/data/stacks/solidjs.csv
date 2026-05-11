@@ -1,0 +1,64 @@
+No,Category,Guideline,Description,Do,"Don't",Code Good,Code Bad,Severity,Docs URL
+app/routes/dashboard/users.tsx
+  return json(await fetchData());
+};
+  return json(await getPost(params.id));
+  <button type="submit">Submit</button>
+  <input name="title" />
+  return <div>Error!</div>;
+  return [{ title: 'Posts' }];
+  return [{ rel: 'stylesheet', href: stylesheets.app }];
+  <Await resolve={promise}>
+    {(data) => <PostList posts={data} />}
+  </Await>
+  throw new Response('Not found', { status: 404 });
+  return [{ title: data?.title }];
+  return <PendingUI />;
+  dashboard/
+    index.tsx
+    users.tsx
+  const data = await fetch('/api', { headers: { 'Cache-Control': 'public, max-age=300' } });
+  return <div>Something went wrong: {error.message}</div>;
+  <Await />
+26,SolidJS,signals,fine-grained reactivity,Signals track individual values precisely.,Use createSignal for state.,"Don't use object wrappers unnecessarily.","const [count, setCount] = createSignal(0);
+<button onclick={() => setCount(count() + 1)}>{count()}</button>","const state = createSignal({ count: 0 })",Critical,https://www.solidjs.com/docs/latest/api#createsignal
+27,SolidJS,signals,signal functions not objects,Signals are functions with get/set.,Always call signal() to read.,"Don't treat signals as plain values.","<div>{count()}</div> // Reads reactive","<div>{count}</div> // Static",High,https://www.solidjs.com/docs/latest/api#createsignal
+28,SolidJS,stores,deep reactive objects,createStore for nested mutable state.,Use for complex state trees.,"Don't manually propagate nested changes.","const [state, setState] = createStore({ user: { name: '' } });
+setState('user', 'name', 'John');","Manual deep cloning",High,https://www.solidjs.com/docs/latest/api#createstore
+29,SolidJS,createEffect,side effects only,Run DOM updates/subscriptions in createEffect.,Avoid business logic in effects.,"Don't compute values in effects.","createEffect(() => {
+  console.log(`Count: ${count()}`);
+});","createEffect for derivations",Medium,https://www.solidjs.com/docs/latest/api#createeffect
+30,SolidJS,createMemo,pure computations,Memoize expensive derivations.,Use when computation > signal access.,"Don't use for simple getters.","const doubled = createMemo(() => count() * 2);","computed values in render",High,https://www.solidjs.com/docs/latest/api#creatememo
+31,SolidJS,JSX patterns,declarative no Virtual DOM,JSX compiles to direct DOM calls.,Write standard JSX with signals.,"Don't fight reactivity model.","<For each={items()}>{(item) => <div>{item.name}</div>}</For>","Keyed manual lists",Critical,https://www.solidjs.com/docs/latest#jsx
+32,SolidJS,reactive primitives,own your reactivity,Build on signals not framework wrappers.,Avoid third-party state libs initially.,"Don't wrap signals unnecessarily.","Direct signal usage","useState adapters",Medium,https://www.solidjs.com/docs/latest/api
+33,SolidJS,routing,no client-side routing by default,Use Solid Router or server-first.,Prefer file-based routing.,"Don't hydrate client-only routes.","Solid Start file routing","Client-only <Router>",Medium,https://start.solidjs.com/core-concepts/routing
+34,SolidJS,suspense,lazy loading boundaries,Load components async with Suspense.,Split code at route boundaries.,"Don't block on async components.","<Suspense fallback={<div>Loading...</div>}>
+  <LazyComponent />
+</Suspense>","await import() in render",High,https://www.solidjs.com/docs/latest/api#lazy
+35,SolidJS,error boundaries,component-level error recovery,Catch errors without app crash.,Wrap risky sections.,"Don't let errors propagate globally.","<ErrorBoundary fallback={<div>Error!</div>}>
+  <RiskyComponent />
+</ErrorBoundary>","Global error handler only",High,https://www.solidjs.com/docs/latest/api#createresource
+36,SolidJS,component patterns,pure functions prefer,Components should be pure where possible.,Minimize side effects in components.,"Don't mix concerns in components.","function Counter() {
+  const [count, setCount] = createSignal(0);
+  return <button onclick={() => setCount(count() + 1)}>{count()}</button>;
+}","Imperative DOM manipulation",Medium,https://www.solidjs.com/docs/latest/components/pure-components
+37,SolidJS,signals,batch updates automatically,Multiple signal sets batch into one update.,Trust the scheduler.,"Don't manually batch.","setCount(1); setName('John'); // 1 update","Force synchronous updates",Low,https://www.solidjs.com/docs/latest/api#createsignal
+38,SolidJS,stores,immutable updates pattern,Use produce for complex updates.,Maintain store immutability.,"Don't mutate store directly.","const produce = produce => setState(produce);","state.nested = newValue",High,https://www.solidjs.com/docs/latest/api#createstore
+39,SolidJS,createEffect,cleanup properly,Return cleanup functions from effects.,Prevent memory leaks.,"Don't forget cleanup.","createEffect(() => {
+});","No cleanup functions",Medium,https://www.solidjs.com/docs/latest/api#createeffect
+40,SolidJS,createMemo,dependency tracking automatic,Memos track used signals automatically.,No manual deps array.,"Don't overthink dependencies.","const expensive = createMemo(() => {
+});","Manual dependency arrays",Medium,https://www.solidjs.com/docs/latest/api#creatememo
+41,SolidJS,JSX patterns,indexed loops with <Index>,<Index> for non-keyed lists.,Use when items don't need identity.,"Don't use for keyed lists.","<Index each={items()}>{(item, index) => 
+}</Index>","<For> without keys",Medium,https://www.solidjs.com/docs/latest/api#Index
+42,SolidJS,reactive primitives,resources for async,Use createResource for data fetching.,Server-first pattern.,"Don't use effects for data.","const data = createResource(() => fetchData());","createEffect for API calls",High,https://www.solidjs.com/docs/latest/api#createresource
+43,SolidJS,routing,nested layouts solid,Layouts persist with Solid Router.,Use nested <Router> patterns.,"Don't remount layouts.","<FileRoutes />
+<Outlet />","Client-side layout remount",Medium,https://github.com/solidjs/solid-router
+44,SolidJS,suspense,streaming SSR support,Solid supports streaming with Suspense.,Use with Solid Start.,"Don't block SSR for async.","<Suspense>{asyncComponent()}</Suspense>","await all async in layout",Medium,https://start.solidjs.com/core-concepts/suspense
+45,SolidJS,error boundaries,granular recovery,Isolate errors to components.,Multiple ErrorBoundaries.,"Don't recover globally only.","Per-feature ErrorBoundary","Single app root boundary",Medium,https://www.solidjs.com/docs/latest/api#ErrorBoundary
+46,SolidJS,component patterns,no hooks rule,Everything compiles no hooks needed.,Write standard functions.,"Don't create custom hooks.","Standard reactive functions","useCustomHook pattern",Low,https://www.solidjs.com/docs/latest/components/no-hooks
+47,SolidJS,signals,derived signals,Chain signals with createMemo.,Avoid computed properties.,"Don't duplicate calculations.","const isEven = createMemo(() => count() % 2 === 0);","Inline calculations everywhere",Medium,https://www.solidjs.com/docs/latest/api#creatememo
+48,SolidJS,stores,selective reactivity,Store only re-runs changed paths.,Fine-grained updates.,"Don't use signals + stores.","Single store for app state","Multiple signal wrappers",Medium,https://www.solidjs.com/docs/latest/api#createstore
+49,SolidJS,createEffect,avoid in render,Effects don't run during render.,Place outside component body.,"Don't inline effects.","() => {
+  createEffect(onCount(() => {}));
+}","createEffect in JSX flow",High,https://www.solidjs.com/docs/latest/rendering/effects
+50,SolidJS,component patterns,children as signals,Children prop reactive by default.,Use <Show>, <Switch> for conditional.,"Don't manually unwrap children.","{children()} // reactive","{children} // static",Medium,https://www.solidjs.com/docs/latest/api#children

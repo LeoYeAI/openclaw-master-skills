@@ -1,0 +1,468 @@
+# VestingSchedulerV3 — Superfluid Vesting Scheduler (V3)
+# Precise time-and-amount-based vesting using Super Tokens with real-time streaming.
+#
+# Features: vesting cliffs, receiver claiming, schedule updates (amount, duration, flow rate).
+# Uses ERC-20 allowance + Superfluid ACL flow operator permissions to automate vesting.
+# Start and end executions are permissionless (designed for off-chain automation).
+# Execution delays are compensated with token transfers.
+#
+# VestingSchedulerV3 is NOT a Super App but IS ERC-2771 compatible (IRelayRecipient).
+# This means schedule creation can be batched in a Host.batchCall using operationType
+# 302 (ERC2771_FORWARD_CALL), which preserves msg.sender via ERC-2771 appending.
+# Example: approve + create vesting schedule atomically in one transaction.
+#
+# == Off-chain Automation ==
+# executeCliffAndFlow and executeEndVesting are permissionless but require off-chain
+# invocation at the correct time. Manual triggering is possible but off-chain automation
+# (e.g. Gelato, Chainlink Keepers, or a custom bot) is strongly recommended and expected.
+#
+# == Setup Requirements ==
+# Before creating a schedule, the sender must:
+# 1. Grant this contract Super Token ERC-20 allowance (via SuperToken.approve).
+#    This is the Super Token's own ERC-20 allowance — NOT the underlying token's.
+#    For claimable schedules, this may need to cover the full vesting amount.
+#    Use getMaximumNeededTokenAllowance to compute the exact amount needed.
+# 2. Grant this contract Superfluid ACL flow operator permissions.
+#    Required permissions: create + update + delete (bitmask 7) — create to start
+#    the stream at cliff, update for mid-vesting flow rate changes, delete to stop
+#    the stream at end.
+#    Simplest approach: CFAv1Forwarder.grantPermissions (grants full control).
+#    Granular alternative: CFAv1Forwarder.updateFlowOperatorPermissions with
+#    permissions=7 and a specific flowrateAllowance.
+#
+# Key concepts:
+#   schedule        — a vesting config (cliff + stream) between a sender and receiver for a Super Token
+#   cliffAndFlowDate — when the cliff transfer + stream start happens
+#   endDate         — when the stream is stopped (remainder transferred)
+#   claimValidityDate — deadline for claimable schedules (sender or receiver must claim first)
+#   remainderAmount — dust that can't be streamed due to flow rate precision
+
+meta:
+  name: VestingSchedulerV3
+  version: v3
+  source:
+    - https://raw.githubusercontent.com/superfluid-org/protocol-monorepo/refs/heads/dev/packages/automation-contracts/scheduler/contracts/VestingSchedulerV3.sol
+    - https://raw.githubusercontent.com/superfluid-org/protocol-monorepo/refs/heads/dev/packages/automation-contracts/scheduler/contracts/interface/IVestingSchedulerV3.sol
+  implements: [IVestingSchedulerV3, IRelayRecipient]
+  note: >
+    Automates token vesting via Superfluid streams. Sender creates a schedule,
+    an off-chain keeper calls executeCliffAndFlow at the cliff date to start the stream,
+    then executeEndVesting at the end date to stop it. Supports optional cliff amounts,
+    claimable schedules, and mid-vesting updates.
+  deployments:
+    eth-mainnet: "0xbeEDf563D41dcb3e1b7e0B0f7a86685Fd73Ce84C"
+    polygon-mainnet: "0x488913833474bbD9B11f844FdC2f0897FAc0Ca43"
+    optimism-mainnet: "0x5aB84e4B3a5F418c95B77DbdecFAF18D0Fd3b3E4"
+    arbitrum-one: "0xc3069bDE869912E3d9B965F35D7764Fc92BccE67"
+    avalanche-c: "0xB84C98d9B51D0e32114C60C500e17eA79dfd0dAf"
+    bsc-mainnet: "0xa032265Ee9dE740D36Af6eb90cf18775577B1Ef3"
+    xdai-mainnet: "0x625F04c9B91ECdfbeb7021271749212388F12c11"
+    base-mainnet: "0x6Bf35A170056eDf9aEba159dce4a640cfCef9312"
+    eth-sepolia: "0x638a8ABF60118e018c80a0eC878057E8C53E0fd1"
+    optimism-sepolia: "0x4F4BC2ca9A7CA26AfcFabc6A2A381c104927D72C"
+    base-sepolia: "0x2D0B7a30bFdED086571D6525762a809ee1049c98"
+
+# == Constants ==
+
+HOST:
+  # The Superfluid host contract (immutable, set at construction).
+  mutability: view
+  inputs: []
+  outputs:
+    - address
+
+MIN_VESTING_DURATION:
+  # 7 days — minimum time between cliffAndFlowDate and endDate.
+  mutability: pure
+  inputs: []
+  outputs:
+    - uint32
+
+START_DATE_VALID_AFTER:
+  # 3 days — how long after cliffAndFlowDate the execution is still valid.
+  mutability: pure
+  inputs: []
+  outputs:
+    - uint32
+
+END_DATE_VALID_BEFORE:
+  # 1 day — how early before endDate the end execution can be triggered.
+  mutability: pure
+  inputs: []
+  outputs:
+    - uint32
+
+# == Schedule Creation ==
+
+createVestingSchedule(ISuperToken,address,uint32,uint32,int96,uint256,uint32,uint32):
+  # Full-param creation with optional claimValidityDate.
+  # If cliffDate is 0, startDate acts as the cliff.
+  mutability: nonpayable
+  access: anyone  # sender is msg.sender
+  inputs:
+    - superToken: ISuperToken
+    - receiver: address
+    - startDate: uint32
+    - cliffDate: uint32
+    - flowRate: int96
+    - cliffAmount: uint256
+    - endDate: uint32
+    - claimValidityDate: uint32
+  emits: [VestingScheduleCreated]
+  errors: [TimeWindowInvalid, AccountInvalid, ZeroAddress, FlowRateInvalid, CliffInvalid, ScheduleAlreadyExists]
+
+createVestingSchedule(ISuperToken,address,uint32,uint32,int96,uint256,uint32):
+  # Same as above without claimValidityDate (non-claimable schedule).
+  mutability: nonpayable
+  access: anyone  # sender is msg.sender
+  inputs:
+    - superToken: ISuperToken
+    - receiver: address
+    - startDate: uint32
+    - cliffDate: uint32
+    - flowRate: int96
+    - cliffAmount: uint256
+    - endDate: uint32
+  emits: [VestingScheduleCreated]
+  errors: [TimeWindowInvalid, AccountInvalid, ZeroAddress, FlowRateInvalid, CliffInvalid, ScheduleAlreadyExists]
+
+createVestingScheduleFromAmountAndDuration(ISuperToken,address,uint256,uint32,uint32,uint32,uint32):
+  # Convenience: auto-calculates flowRate, endDate, cliffAmount from amount + duration.
+  # If cliffPeriod is 0, no cliff. claimPeriod of 0 means non-claimable.
+  mutability: nonpayable
+  access: anyone  # sender is msg.sender
+  inputs:
+    - superToken: ISuperToken
+    - receiver: address
+    - totalAmount: uint256
+    - totalDuration: uint32
+    - startDate: uint32
+    - cliffPeriod: uint32
+    - claimPeriod: uint32
+  emits: [VestingScheduleCreated]
+  errors: [TimeWindowInvalid, AccountInvalid, ZeroAddress, FlowRateInvalid, CliffInvalid, ScheduleAlreadyExists]
+
+createVestingScheduleFromAmountAndDuration(ISuperToken,address,uint256,uint32,uint32,uint32,uint32,uint256):
+  # Same as above but with explicit cliffAmount (non-linear cliff).
+  mutability: nonpayable
+  access: anyone  # sender is msg.sender
+  inputs:
+    - superToken: ISuperToken
+    - receiver: address
+    - totalAmount: uint256
+    - totalDuration: uint32
+    - startDate: uint32
+    - cliffPeriod: uint32
+    - claimPeriod: uint32
+    - cliffAmount: uint256
+  emits: [VestingScheduleCreated]
+  errors: [TimeWindowInvalid, AccountInvalid, ZeroAddress, FlowRateInvalid, CliffInvalid, ScheduleAlreadyExists]
+
+createAndExecuteVestingScheduleFromAmountAndDuration:
+  # Creates a schedule with startDate=now (no cliff, no claim) and immediately executes the flow start.
+  mutability: nonpayable
+  access: anyone  # sender is msg.sender
+  inputs:
+    - superToken: ISuperToken
+    - receiver: address
+    - totalAmount: uint256
+    - totalDuration: uint32
+  emits: [VestingScheduleCreated, VestingCliffAndFlowExecuted]
+  errors: [TimeWindowInvalid, AccountInvalid, ZeroAddress, FlowRateInvalid, ScheduleAlreadyExists, AlreadyExecuted]
+
+# == Schedule Updates ==
+
+updateVestingSchedule:
+  # Updates end date, keeping the current flow rate (total amount recalculated).
+  # Only works after cliff execution and before end date.
+  mutability: nonpayable
+  access: anyone  # sender is msg.sender (must be schedule creator)
+  inputs:
+    - superToken: ISuperToken
+    - receiver: address
+    - endDate: uint32
+  emits: [VestingScheduleUpdated]
+  errors: [ScheduleDoesNotExist, TimeWindowInvalid, InvalidNewTotalAmount]
+
+updateVestingScheduleFlowRateFromAmountAndEndDate:
+  # Updates both total amount and end date; flow rate is recalculated.
+  mutability: nonpayable
+  access: anyone  # sender is msg.sender (must be schedule creator)
+  inputs:
+    - superToken: ISuperToken
+    - receiver: address
+    - newTotalAmount: uint256
+    - newEndDate: uint32
+  emits: [VestingScheduleUpdated]
+  errors: [ScheduleDoesNotExist, TimeWindowInvalid, InvalidNewTotalAmount]
+
+updateVestingScheduleFlowRateFromAmount:
+  # Updates total amount, keeping end date; flow rate is recalculated.
+  mutability: nonpayable
+  access: anyone  # sender is msg.sender (must be schedule creator)
+  inputs:
+    - superToken: ISuperToken
+    - receiver: address
+    - newTotalAmount: uint256
+  emits: [VestingScheduleUpdated]
+  errors: [ScheduleDoesNotExist, TimeWindowInvalid, InvalidNewTotalAmount]
+
+updateVestingScheduleFlowRateFromEndDate:
+  # Updates end date, keeping total amount; flow rate is recalculated.
+  mutability: nonpayable
+  access: anyone  # sender is msg.sender (must be schedule creator)
+  inputs:
+    - superToken: ISuperToken
+    - receiver: address
+    - endDate: uint32
+  emits: [VestingScheduleUpdated]
+  errors: [ScheduleDoesNotExist, TimeWindowInvalid, InvalidNewTotalAmount]
+
+# == Schedule Deletion ==
+
+deleteVestingSchedule:
+  # Deletes a vesting schedule that hasn't ended yet.
+  mutability: nonpayable
+  access: anyone  # sender is msg.sender (must be schedule creator)
+  inputs:
+    - superToken: ISuperToken
+    - receiver: address
+  emits: [VestingScheduleDeleted]
+  errors: [ScheduleDoesNotExist]
+
+endVestingScheduleNow:
+  # Ends vesting immediately: updates end to now, executes cliff+flow if needed, then executes end.
+  # For non-claimable schedules only.
+  mutability: nonpayable
+  access: anyone  # sender is msg.sender (must be schedule creator)
+  inputs:
+    - superToken: ISuperToken
+    - receiver: address
+  emits: [VestingScheduleUpdated, VestingCliffAndFlowExecuted, VestingEndExecuted]
+  errors: [ScheduleDoesNotExist, TimeWindowInvalid]
+
+# == Permissionless Execution (keepers) ==
+
+executeCliffAndFlow:
+  # Executes cliff transfer + stream start. Called by off-chain automation.
+  # For claimable schedules: also validates and executes the claim.
+  # If the full vesting window has passed, executes as a single lump-sum transfer.
+  mutability: nonpayable
+  access: anyone
+  inputs:
+    - superToken: ISuperToken
+    - sender: address
+    - receiver: address
+  outputs:
+    - success: bool
+  emits:
+    - VestingClaimed  # only for claimable schedules
+    - VestingCliffAndFlowExecuted
+    - VestingEndExecuted  # only if executed as single transfer
+  errors: [AlreadyExecuted, ScheduleNotClaimed, TimeWindowInvalid, CannotClaimScheduleOnBehalf]
+
+executeEndVesting:
+  # Executes end of vesting: deletes stream, transfers remainder + compensation.
+  # Called by off-chain automation.
+  mutability: nonpayable
+  access: anyone
+  inputs:
+    - superToken: ISuperToken
+    - sender: address
+    - receiver: address
+  outputs:
+    - success: bool
+  emits:
+    - VestingEndExecuted  # normal case: stream was active
+    - VestingEndFailed  # edge case: no running stream found
+  errors: [AlreadyExecuted, ScheduleNotClaimed, TimeWindowInvalid]
+
+# == View Functions ==
+
+getVestingSchedule:
+  mutability: view
+  inputs:
+    - superToken: address
+    - sender: address
+    - receiver: address
+  outputs:
+    - schedule: VestingSchedule
+
+getTotalVestedAmount:
+  # Returns the total amount to be vested over the full schedule lifetime.
+  mutability: view
+  inputs:
+    - superToken: ISuperToken
+    - sender: address
+    - receiver: address
+  outputs:
+    - totalVestedAmount: uint256
+
+getMaximumNeededTokenAllowance(ISuperToken,address,address):
+  # Returns max ERC-20 allowance the sender needs to grant this contract for an existing schedule.
+  mutability: view
+  inputs:
+    - superToken: ISuperToken
+    - sender: address
+    - receiver: address
+  outputs:
+    - maxNeededAllowance: uint256
+
+getMaximumNeededTokenAllowance(VestingSchedule):
+  # Pure version: calculates from a VestingSchedule struct (doesn't have to exist on-chain).
+  mutability: view
+  inputs:
+    - vestingSchedule: VestingSchedule
+  outputs:
+    - maxNeededAllowance: uint256
+
+mapCreateVestingScheduleParams(ISuperToken,address,address,uint256,uint32,uint32,uint32,uint32):
+  # Helper: maps amount+duration inputs to a ScheduleCreationParams struct (without cliffAmount).
+  mutability: pure
+  inputs:
+    - superToken: ISuperToken
+    - sender: address
+    - receiver: address
+    - totalAmount: uint256
+    - totalDuration: uint32
+    - startDate: uint32
+    - cliffPeriod: uint32
+    - claimPeriod: uint32
+  outputs:
+    - params: ScheduleCreationParams
+
+mapCreateVestingScheduleParams(ISuperToken,address,address,uint256,uint32,uint32,uint32,uint32,uint256):
+  # Helper: same as above but with explicit cliffAmount for non-linear cliffs.
+  mutability: pure
+  inputs:
+    - superToken: ISuperToken
+    - sender: address
+    - receiver: address
+    - totalAmount: uint256
+    - totalDuration: uint32
+    - startDate: uint32
+    - cliffPeriod: uint32
+    - claimPeriod: uint32
+    - cliffAmount: uint256
+  outputs:
+    - params: ScheduleCreationParams
+
+# == EIP-2771 (meta-tx) ==
+
+isTrustedForwarder:
+  mutability: view
+  inputs:
+    - forwarder: address
+  outputs:
+    - bool
+
+versionRecipient:
+  mutability: pure
+  inputs: []
+  outputs:
+    - version: string
+
+# == Events ==
+
+events:
+
+  VestingScheduleCreated:
+    # Emitted when a new vesting schedule is configured.
+    indexed:
+      - superToken: ISuperToken
+      - sender: address
+      - receiver: address
+    data:
+      - startDate: uint32
+      - cliffDate: uint32
+      - flowRate: int96
+      - endDate: uint32
+      - cliffAmount: uint256
+      - claimValidityDate: uint32
+      - remainderAmount: uint96
+
+  VestingScheduleUpdated:
+    # Emitted when an active vesting schedule is modified (end date, amount, or flow rate).
+    indexed:
+      - superToken: ISuperToken
+      - sender: address
+      - receiver: address
+    data:
+      - endDate: uint32
+      - remainderAmount: uint96
+      - flowRate: int96
+      - totalAmount: uint256
+      - settledAmount: uint256
+
+  VestingCliffAndFlowExecuted:
+    # Emitted when cliff transfer + stream start is executed by a keeper.
+    indexed:
+      - superToken: ISuperToken
+      - sender: address
+      - receiver: address
+    data:
+      - cliffAndFlowDate: uint32
+      - flowRate: int96
+      - cliffAmount: uint256
+      - flowDelayCompensation: uint256
+
+  VestingEndExecuted:
+    # Emitted when the end of vesting is executed (stream stopped, remainder transferred).
+    indexed:
+      - superToken: ISuperToken
+      - sender: address
+      - receiver: address
+    data:
+      - endDate: uint32
+      - earlyEndCompensation: uint256
+      - didCompensationFail: bool
+
+  VestingClaimed:
+    # Emitted when a claimable vesting schedule is claimed by sender or receiver.
+    indexed:
+      - superToken: ISuperToken
+      - sender: address
+      - receiver: address
+    data:
+      - claimer: address
+
+  VestingScheduleDeleted:
+    # Emitted when a vesting schedule is deleted before execution.
+    indexed:
+      - superToken: ISuperToken
+      - sender: address
+      - receiver: address
+
+  VestingEndFailed:
+    # Emitted when executeEndVesting is called but no stream was running.
+    indexed:
+      - superToken: ISuperToken
+      - sender: address
+      - receiver: address
+    data:
+      - endDate: uint32
+
+# == Errors ==
+
+errors:
+
+  # -- Schedule Validation --
+  - TimeWindowInvalid
+  - AccountInvalid
+  - ZeroAddress
+  - FlowRateInvalid
+  - CliffInvalid
+  - ScheduleAlreadyExists
+
+  # -- Schedule State --
+  - ScheduleDoesNotExist
+  - ScheduleNotFlowing
+  - ScheduleNotClaimed
+  - AlreadyExecuted
+  - CannotClaimScheduleOnBehalf
+
+  # -- Update --
+  - InvalidNewTotalAmount
+
+  # -- Inherited from CFA (via SuperTokenV1Library) --
+  - CFA_INVALID_FLOW_RATE

@@ -1,0 +1,33 @@
+{
+  "name": "agent-comm-hub",
+  "version": "2.4.0",
+  "description": "WorkBuddy & Hermes 双向即时通讯 + 任务调度 MCP Hub",
+  "type": "module",
+  "license": "MIT",
+  "main": "src/server.js",
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsx watch src/server.ts",
+    "start": "node src/server.js",
+    "stdio": "node src/stdio.js",
+    "test": "tsx scripts/test-e2e.ts",
+    "test:unit": "vitest run --coverage",
+    "test:unit:watch": "vitest"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.10.2",
+    "better-sqlite3": "^11.9.1",
+    "eventsource": "^4.1.0",
+    "express": "^4.19.2",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@types/better-sqlite3": "^7.6.13",
+    "@types/express": "^4.17.21",
+    "@types/node": "^22.0.0",
+    "@vitest/coverage-v8": "^4.1.5",
+    "tsx": "^4.19.3",
+    "typescript": "^5.4.5",
+    "vitest": "^4.1.5"
+  }
+}

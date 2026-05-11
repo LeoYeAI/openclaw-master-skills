@@ -1,0 +1,72 @@
+{
+  "version": "1.0",
+  "description": "CSV Documentation Generator - Project Configuration",
+
+  "agent": {
+    "default_mode": "interactive",
+    "auto_detect": true,
+    "detection_order": ["env", "process", "git", "config"]
+  },
+
+  "autonomous": {
+    "on_duplicate": "overwrite",
+    "log_level": "verbose",
+    "auto_commit": false,
+    "require_audit_log": true
+  },
+
+  "interactive": {
+    "require_confirmation": true,
+    "show_preview": true,
+    "confirm_before": ["add", "update", "delete", "generate"]
+  },
+
+  "compliance": {
+    "gamp_category": null,
+    "regulations": ["GxP", "21 CFR Part 11", "EU Annex 11", "GAMP 5"],
+    "auto_esig_detection": true,
+    "auto_ra": true,
+    "esig_keywords": [
+      "签名", "签字", "签署", "电子签名",
+      "审核", "审批", "批准", "review", "approve",
+      "sign", "signature", "authorization",
+      "电子记录", "electronic record"
+    ]
+  },
+
+  "requirements": {
+    "id_format": "{type}-{number:03d}",
+    "types": ["URS", "FS", "TS"],
+    "priorities": ["必须", "应该", "可以"]
+  },
+
+  "risk": {
+    "default_severity_weights": {
+      "critical": 5,
+      "high": 4,
+      "medium": 3,
+      "low": 2,
+      "negligible": 1
+    },
+    "default_likelihood_weights": {
+      "frequent": 5,
+      "probable": 4,
+      "occasional": 3,
+      "remote": 2,
+      "improbable": 1
+    },
+    "default_detectability_weights": {
+      "almost_impossible": 5,
+      "difficult": 4,
+      "moderate": 3,
+      "easy": 2,
+      "almost_certain": 1
+    },
+    "rpn_thresholds": {
+      "low": 25,
+      "medium": 50,
+      "high": 75,
+      "critical": 125
+    }
+  }
+}

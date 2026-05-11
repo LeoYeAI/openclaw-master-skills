@@ -1,0 +1,81 @@
+{
+  "id": "guardian-angel",
+  "name": "Guardian Angel",
+  "version": "1.0.0",
+  "description": "Virtue-based moral conscience for AI agents. Evaluates tool calls through Thomistic ethics and blocks/escalates high-stakes actions.",
+  "configSchema": {
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+      "enabled": {
+        "type": "boolean",
+        "default": true
+      },
+      "logLevel": {
+        "type": "string",
+        "enum": ["debug", "info", "warn", "error"],
+        "default": "info"
+      },
+      "escalationThreshold": {
+        "type": "integer",
+        "minimum": 1,
+        "maximum": 100,
+        "default": 36
+      },
+      "pendingTimeoutMs": {
+        "type": "integer",
+        "minimum": 60000,
+        "maximum": 600000,
+        "default": 300000
+      },
+      "approvalWindowMs": {
+        "type": "integer",
+        "minimum": 10000,
+        "maximum": 120000,
+        "default": 30000
+      },
+      "storePath": {
+        "type": "string"
+      },
+      "alwaysBlock": {
+        "type": "array",
+        "items": { "type": "string" },
+        "default": []
+      },
+      "neverBlock": {
+        "type": "array",
+        "items": { "type": "string" },
+        "default": ["memory_search", "memory_get", "session_status", "Read"]
+      }
+    }
+  },
+  "uiHints": {
+    "enabled": {
+      "label": "Enable Guardian Angel",
+      "help": "Master toggle for virtue-based tool evaluation"
+    },
+    "logLevel": {
+      "label": "Log Level"
+    },
+    "escalationThreshold": {
+      "label": "Escalation Threshold",
+      "help": "Clarity × Stakes score (1-100) above which actions require approval"
+    },
+    "pendingTimeoutMs": {
+      "label": "Pending Timeout (ms)",
+      "advanced": true
+    },
+    "approvalWindowMs": {
+      "label": "Approval Window (ms)",
+      "advanced": true
+    },
+    "alwaysBlock": {
+      "label": "Always Require Approval",
+      "help": "Tool names that always need explicit user confirmation"
+    },
+    "neverBlock": {
+      "label": "Exempt Tools",
+      "help": "Tool names that bypass GA evaluation"
+    }
+  }
+}

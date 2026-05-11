@@ -1,0 +1,237 @@
+schema_version: "1.0"
+name: "ai-shifu-course-creator"
+slug: "ai-shifu-course-creator"
+one_liner: "Convert raw course material into optimized MarkdownFlow teaching scripts and deploy them as live AI-Shifu courses."
+description: "Convert raw course material into optimized, runnable MarkdownFlow teaching scripts and deploy them as live courses through a five-phase pipeline covering segmentation, orchestration, generation, optimization, and deployment."
+category: "course-authoring"
+target_users:
+  - "Course content creators"
+  - "Instructional designers"
+  - "Learning experience engineers"
+  - "Learning quality reviewers"
+  - "Course deployment operators"
+primary_problem: "Turn noisy source material into stable, runnable, and optimized lesson scripts at scale and deploy them as live courses."
+language_resolution:
+  allow_any_language: true
+  bcp47_recommended: true
+  priority:
+    - "explicit_output_language_request"
+    - "target_language_parameter"
+    - "session_language_preference"
+    - "prompt_language_detection"
+    - "source_material_dominant_language"
+    - "default_fallback_language"
+  default_fallback_language: "en-US"
+inputs:
+  - name: "course_material"
+    type: "text|markdown"
+    required: true
+    description: "Raw transcript, course document, or structured lesson data."
+  - name: "existing_mdf_script"
+    type: "markdown"
+    required: false
+    description: "Existing teaching script to audit and improve (Phase 4 only)."
+  - name: "generation_constraints"
+    type: "json"
+    required: false
+    description: "Persona, pacing, terminology, and lesson-size constraints."
+  - name: "chapter_hint"
+    type: "json"
+    required: false
+    description: "Optional lesson order and granularity hints."
+  - name: "teaching_constraints"
+    type: "json"
+    required: false
+    description: "Constraints for pacing, interactions, and cross-lesson variable strategy."
+  - name: "optimization_constraints"
+    type: "json"
+    required: false
+    description: "Rules for interaction limits and cross-lesson dependency behavior."
+  - name: "course_profile"
+    type: "json"
+    required: false
+    description: "Course authoring profile: audience level, lesson duration, assessment style."
+  - name: "delivery_constraints"
+    type: "json"
+    required: false
+    description: "Delivery constraints: platform limits, interaction density, must-cover topics."
+  - name: "target_language"
+    type: "text"
+    required: false
+    description: "Requested output language tag (BCP-47 recommended, for example `fr-FR` or `ja-JP`)."
+  - name: "bilingual_output"
+    type: "boolean"
+    required: false
+    description: "Whether to output bilingual content instead of single-target language content."
+  - name: "term_policy"
+    type: "text"
+    required: false
+    description: "Terminology policy: `preserve`, `translate`, or `mixed`."
+  - name: "quote_policy"
+    type: "text"
+    required: false
+    description: "Quote policy: `translate_only` or `original_plus_translation`."
+  - name: "platform_region"
+    type: "text"
+    required: false
+    description: "AI-Shifu platform region: `cn` or `global` (Phase 5)."
+  - name: "course_directory"
+    type: "text"
+    required: false
+    description: "Local course directory path for deployment (Phase 5)."
+outputs:
+  - name: "structured_segments_json"
+    type: "json"
+    required: false
+    description: "Structured segments with source_span and segment_type fields (Phase 1)."
+  - name: "preserve_block_index"
+    type: "json"
+    required: false
+    description: "Index of immutable code, image, and table blocks (Phase 1)."
+  - name: "lesson_cut_candidates"
+    type: "json"
+    required: false
+    description: "Lesson boundary candidates with one core question each (Phase 1)."
+  - name: "lesson_mdf_scripts"
+    type: "markdown_bundle"
+    required: false
+    description: "Lesson-by-lesson MarkdownFlow scripts (Phase 2/3)."
+  - name: "course_index"
+    type: "json"
+    required: false
+    description: "Lesson map with core questions and source references (Phase 2)."
+  - name: "global_variable_table"
+    type: "json"
+    required: false
+    description: "Global variable definitions and cross-lesson usage map (Phase 2)."
+  - name: "used_variables"
+    type: "json"
+    required: false
+    description: "Variable collection and usage map for a single lesson (Phase 3)."
+  - name: "depends_on_lessons"
+    type: "json"
+    required: false
+    description: "Cross-lesson dependency metadata (Phase 3)."
+  - name: "optimized_mdf_script"
+    type: "markdown"
+    required: false
+    description: "Improved runnable MarkdownFlow script (Phase 4)."
+  - name: "risk_and_issue_report"
+    type: "json"
+    required: false
+    description: "Risk report covering gaps, drift, interaction, and syntax issues (Phase 4)."
+  - name: "change_list"
+    type: "json"
+    required: false
+    description: "Grouped change list by issue class (Phase 4)."
+  - name: "deployed_course_url"
+    type: "text"
+    required: false
+    description: "Platform URL of the deployed course (Phase 5)."
+  - name: "shifu_bid"
+    type: "text"
+    required: false
+    description: "Course BID on the AI-Shifu platform (Phase 5)."
+tech_stack:
+  languages:
+    - "markdown"
+    - "yaml"
+    - "python"
+  runtime:
+    - "codex-skill"
+dependencies:
+  internal_skills: []
+  external_services:
+    - "AI-Shifu Platform API"
+  api_keys_required: false
+maturity: "beta"
+reusability_score: 4
+docs_score: 5
+demo:
+  type: "repo_example"
+  url: "./skills/ai-shifu-course-creator/examples/pipeline-full.md"
+keywords:
+  zh:
+    - "transcript cleanup"
+    - "lesson segmentation"
+    - "semantic chunking"
+    - "transcript conversion"
+    - "lesson orchestration"
+    - "markdownflow pipeline"
+    - "course indexing"
+    - "lesson script generation"
+    - "teaching interaction design"
+    - "variable reuse"
+    - "script optimization"
+    - "coverage audit"
+    - "course deployment"
+    - "shifu-cli"
+    - "publishing"
+    - "MDF import"
+  en:
+    - "transcript cleanup"
+    - "lesson segmentation"
+    - "semantic chunking"
+    - "transcript conversion"
+    - "lesson orchestration"
+    - "markdownflow pipeline"
+    - "course indexing"
+    - "lesson script generation"
+    - "teaching interaction design"
+    - "variable reuse"
+    - "script optimization"
+    - "coverage audit"
+    - "course deployment"
+    - "shifu-cli"
+    - "publishing"
+    - "MDF import"
+triggers:
+  zh:
+    - "convert transcript to lesson scripts"
+    - "turn course docs into markdownflow lessons"
+    - "build lesson by lesson teaching prompts"
+    - "clean transcript and build lesson segments"
+    - "generate markdownflow script per lesson"
+    - "audit and optimize an existing markdownflow script"
+    - "create a full course from raw material"
+    - "deploy course to AI-Shifu platform"
+    - "upload lessons to AI-Shifu"
+    - "publish course"
+    - "list courses on AI-Shifu"
+    - "import MDF files"
+  en:
+    - "convert transcript to lesson scripts"
+    - "turn course docs into markdownflow lessons"
+    - "build lesson by lesson teaching prompts"
+    - "clean transcript and build lesson segments"
+    - "generate markdownflow script per lesson"
+    - "audit and optimize an existing markdownflow script"
+    - "create a full course from raw material"
+    - "deploy course to AI-Shifu platform"
+    - "upload lessons to AI-Shifu"
+    - "publish course"
+    - "list courses on AI-Shifu"
+    - "import MDF files"
+related_skills: []
+aliases:
+  zh:
+    - "course creator"
+    - "course author"
+    - "course material segmenter"
+    - "transcript to lessons"
+    - "lesson script generator"
+    - "lesson script optimizer"
+    - "course manager"
+    - "course deployer"
+  en:
+    - "course creator"
+    - "course author"
+    - "course material segmenter"
+    - "transcript to lessons"
+    - "lesson script generator"
+    - "lesson script optimizer"
+    - "course manager"
+    - "course deployer"
+owner: "ai-shifu"
+license: "UNLICENSED"
+last_verified_at: "2026-03-16"

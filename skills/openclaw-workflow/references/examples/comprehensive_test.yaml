@@ -1,0 +1,410 @@
+# 全面节点测试 — 测试所有 12 种节点类型及其参数
+name: comprehensive-node-test
+description: 逐个测试所有节点类型、参数变体和边界情况
+
+steps:
+  # ═══════════════════════════════════════════════════════════
+  # 1. LOG 节点 — 基础日志，各级别
+  # ═══════════════════════════════════════════════════════════
+  - id: log_info
+    name: "LOG 节点 - INFO"
+    type: log
+    message: "这是 INFO 级别日志"
+    level: INFO
+
+  - id: log_warn
+    name: "LOG 节点 - WARN"
+    type: log
+    message: "这是 WARN 级别日志"
+    level: WARN
+
+  - id: log_error_level
+    name: "LOG 节点 - ERROR 级别"
+    type: log
+    message: "这是 ERROR 级别日志 (不会中断流程)"
+    level: ERROR
+
+  # ═══════════════════════════════════════════════════════════
+  # 2. SET 节点 — 各种数据类型
+  # ═══════════════════════════════════════════════════════════
+  - id: set_string
+    name: "SET 节点 - 字符串"
+    type: set
+    var: greeting
+    value: "你好世界"
+
+  - id: set_number
+    name: "SET 节点 - 数字"
+    type: set
+    var: count
+    value: 42
+
+  - id: set_float
+    name: "SET 节点 - 浮点数"
+    type: set
+    var: pi
+    value: 3.14159
+
+  - id: set_bool
+    name: "SET 节点 - 布尔值"
+    type: set
+    var: flag
+    value: true
+
+  - id: set_list
+    name: "SET 节点 - 列表"
+    type: set
+    var: fruits
+    value: ["苹果", "香蕉", "橙子"]
+
+  - id: set_dict
+    name: "SET 节点 - 字典"
+    type: set
+    var: user
+    value:
+      name: "张三"
+      age: 30
+      city: "深圳"
+
+  - id: set_template
+    name: "SET 节点 - 模板引用"
+    type: set
+    var: welcome_msg
+    value: "欢迎 {{user.name}}，你今年 {{user.age}} 岁"
+
+  - id: verify_set
+    name: "验证所有 SET 结果"
+    type: log
+    message: "greeting={{greeting}} | count={{count}} | pi={{pi}} | flag={{flag}} | fruits={{fruits}} | user.name={{user.name}} | welcome={{welcome_msg}}"
+
+  # ═══════════════════════════════════════════════════════════
+  # 3. SCRIPT 节点 — shell 命令
+  # ═══════════════════════════════════════════════════════════
+  - id: script_basic
+    name: "SCRIPT 节点 - 基本命令"
+    type: script
+    command: "echo 'Hello from shell'"
+
+  - id: script_multiline
+    name: "SCRIPT 节点 - 管道"
+    type: script
+    command: "echo 'line1\nline2\nline3' | wc -l"
+
+  - id: script_json_output
+    name: "SCRIPT 节点 - JSON 输出"
+    type: script
+    command: "echo '{\"status\": \"ok\", \"value\": 123}'"
+
+  - id: script_env
+    name: "SCRIPT 节点 - 自定义环境变量"
+    type: script
+    command: "echo MY_VAR=$MY_VAR"
+    env:
+      MY_VAR: "custom_env_value"
+
+  - id: script_template
+    name: "SCRIPT 节点 - 模板替换"
+    type: script
+    command: "echo '用户: {{user.name}}, 计数: {{count}}'"
+
+  - id: script_timeout
+    name: "SCRIPT 节点 - 超时 (正常)"
+    type: script
+    command: "sleep 1 && echo 'done'"
+    timeout: 10
+
+  - id: script_inline
+    name: "SCRIPT 节点 - inline Python"
+    type: script
+    inline: |
+      import json
+      data = {"computed": 6 * 7, "source": "inline_python"}
+      print(json.dumps(data))
+
+  - id: verify_script
+    name: "验证 SCRIPT 结果"
+    type: log
+    message: "basic={{script_basic.output}} | json_out={{script_json_output.output}} | inline={{script_inline.output}}"
+
+  # ═══════════════════════════════════════════════════════════
+  # 4. CODE 节点 — Python 沙箱
+  # ═══════════════════════════════════════════════════════════
+  - id: code_basic
+    name: "CODE 节点 - 基础计算"
+    type: code
+    python: |
+      result = 0
+      for i in range(1, 11):
+          result += i
+      ctx_export(result)
+
+  - id: code_with_context
+    name: "CODE 节点 - 读写上下文变量"
+    type: code
+    python: |
+      # 可以读到之前 SET 的变量
+      name = user["name"]
+      age = user["age"]
+      msg = f"{name} 在 {user['city']} 生活，今年 {age} 岁"
+      ctx_export({"message": msg, "doubled_count": count * 2})
+
+  - id: code_list_processing
+    name: "CODE 节点 - 列表处理"
+    type: code
+    python: |
+      # 处理之前设置的水果列表
+      upper_fruits = [f.upper() if hasattr(f, 'upper') else str(f) for f in fruits]
+      ctx_export({"processed": upper_fruits, "total": len(fruits)})
+
+  - id: code_import
+    name: "CODE 节点 - 使用内置模块"
+    type: code
+    python: |
+      import json
+      import math
+      data = {
+          "sqrt_count": math.sqrt(count),
+          "pi_rounded": round(pi, 2),
+          "json_test": json.dumps({"ok": True})
+      }
+      ctx_export(data)
+
+  - id: verify_code
+    name: "验证 CODE 结果"
+    type: log
+    message: "sum(1..10)={{code_basic.output}} | context={{code_with_context.output}} | list={{code_list_processing.output}} | math={{code_import.output}}"
+
+  # ═══════════════════════════════════════════════════════════
+  # 5. HTTP 节点 — GET/POST 请求
+  # ═══════════════════════════════════════════════════════════
+  - id: http_get
+    name: "HTTP 节点 - GET 请求"
+    type: http
+    url: "https://httpbin.org/get"
+    method: GET
+    headers:
+      Accept: "application/json"
+      X-Custom: "openclaw-workflow-test"
+    timeout: 15
+
+  - id: http_get_params
+    name: "HTTP 节点 - GET + URL 参数"
+    type: http
+    url: "https://httpbin.org/get"
+    params:
+      foo: "bar"
+      count: "{{count}}"
+    timeout: 15
+
+  - id: http_post
+    name: "HTTP 节点 - POST JSON"
+    type: http
+    url: "https://httpbin.org/post"
+    method: POST
+    headers:
+      Content-Type: "application/json"
+    body:
+      name: "{{user.name}}"
+      value: "{{count}}"
+    timeout: 15
+
+  - id: verify_http
+    name: "验证 HTTP 结果"
+    type: log
+    message: "GET status={{http_get.output.status}} | POST status={{http_post.output.status}}"
+
+  # ═══════════════════════════════════════════════════════════
+  # 6. CONDITION 节点 — 各种条件
+  # ═══════════════════════════════════════════════════════════
+  - id: cond_true
+    name: "CONDITION 节点 - 真条件"
+    type: condition
+    if: "count > 10"
+    then:
+      - id: cond_then
+        type: set
+        var: cond_result_1
+        value: "then_branch"
+    else:
+      - id: cond_else
+        type: set
+        var: cond_result_1
+        value: "else_branch"
+
+  - id: cond_false
+    name: "CONDITION 节点 - 假条件"
+    type: condition
+    if: "count < 10"
+    then:
+      - id: cond2_then
+        type: set
+        var: cond_result_2
+        value: "then_branch"
+    else:
+      - id: cond2_else
+        type: set
+        var: cond_result_2
+        value: "else_branch"
+
+  - id: cond_string
+    name: "CONDITION 节点 - 字符串比较"
+    type: condition
+    if: "greeting == '你好世界'"
+    then:
+      - id: cond3_then
+        type: set
+        var: cond_result_3
+        value: "match"
+    else:
+      - id: cond3_else
+        type: set
+        var: cond_result_3
+        value: "no_match"
+
+  - id: cond_bool
+    name: "CONDITION 节点 - 布尔判断"
+    type: condition
+    if: "flag"
+    then:
+      - id: cond4_then
+        type: set
+        var: cond_result_4
+        value: "flag_true"
+    else:
+      - id: cond4_else
+        type: set
+        var: cond_result_4
+        value: "flag_false"
+
+  - id: verify_cond
+    name: "验证 CONDITION 结果"
+    type: log
+    message: "cond1={{cond_result_1}} (expect then) | cond2={{cond_result_2}} (expect else) | cond3={{cond_result_3}} (expect match) | cond4={{cond_result_4}} (expect flag_true)"
+
+  # ═══════════════════════════════════════════════════════════
+  # 7. LOOP 节点 — foreach 和 times
+  # ═══════════════════════════════════════════════════════════
+  - id: loop_foreach
+    name: "LOOP 节点 - foreach 列表"
+    type: loop
+    foreach: "{{fruits}}"
+    as: fruit
+    do:
+      - id: loop_item
+        type: log
+        message: "水果 [{{loop_index}}/{{loop_length}}]: {{fruit}}"
+
+  - id: loop_times
+    name: "LOOP 节点 - times 计数"
+    type: loop
+    times: 3
+    as: i
+    do:
+      - id: loop_count
+        type: log
+        message: "计数循环: i={{i}}, index={{loop_index}}"
+
+  - id: loop_dict_list
+    name: "LOOP 节点 - 对象列表"
+    type: set
+    var: tasks
+    value:
+      - name: "任务A"
+        priority: 1
+      - name: "任务B"
+        priority: 2
+      - name: "任务C"
+        priority: 3
+
+  - id: loop_objects
+    name: "LOOP 节点 - 遍历对象列表"
+    type: loop
+    foreach: "{{tasks}}"
+    as: task
+    do:
+      - id: loop_obj_log
+        type: log
+        message: "任务: {{task.name}}, 优先级: {{task.priority}}"
+
+  # ═══════════════════════════════════════════════════════════
+  # 8. WAIT 节点 — 延时
+  # ═══════════════════════════════════════════════════════════
+  - id: wait_basic
+    name: "WAIT 节点 - 1秒延时"
+    type: wait
+    seconds: 1
+
+  # ═══════════════════════════════════════════════════════════
+  # 9. WHEN 条件守卫 (跨节点通用)
+  # ═══════════════════════════════════════════════════════════
+  - id: when_skip
+    name: "WHEN 守卫 - 条件不满足跳过"
+    type: log
+    message: "这条不应该出现"
+    when: "count < 0"
+
+  - id: when_run
+    name: "WHEN 守卫 - 条件满足执行"
+    type: log
+    message: "WHEN 守卫通过: count={{count}} > 0"
+    when: "count > 0"
+
+  # ═══════════════════════════════════════════════════════════
+  # 10. 错误处理 — retry + skip + on_error
+  # ═══════════════════════════════════════════════════════════
+  - id: error_retry
+    name: "错误处理 - retry 后成功"
+    type: script
+    command: "echo 'retry test ok'"
+    retry: 2
+    retry_delay: 1
+    on_error: retry
+
+  - id: error_skip
+    name: "错误处理 - 失败后 skip"
+    type: script
+    command: "exit 1"
+    on_error: skip
+
+  - id: after_skip
+    name: "skip 后继续执行"
+    type: log
+    message: "skip 之后流程正常继续 ✅"
+
+  # ═══════════════════════════════════════════════════════════
+  # 11. 环境变量引用
+  # ═══════════════════════════════════════════════════════════
+  - id: env_ref
+    name: "环境变量引用"
+    type: log
+    message: "HOME={{env.HOME}} | USER={{env.USER}}"
+
+  # ═══════════════════════════════════════════════════════════
+  # 12. 步骤输出引用链
+  # ═══════════════════════════════════════════════════════════
+  - id: output_chain
+    name: "输出引用链 - 综合验证"
+    type: code
+    python: |
+      results = {}
+      results["set_string_ok"] = greeting == "你好世界"
+      results["set_number_ok"] = count == 42
+      results["set_dict_ok"] = user["name"] == "张三"
+      # code_basic 的 output 是 ctx_export(result) 的值 = 55
+      results["code_sum_ok"] = code_basic == 55
+      # http_get 的 output 是 dict: {"status": 200, "body": ..., "headers": ...}
+      results["http_ok"] = isinstance(http_get, dict) and http_get.get("status") == 200
+      results["cond_ok"] = cond_result_1 == "then_branch" and cond_result_2 == "else_branch"
+      passed = 0
+      total = 0
+      for k, v in results.items():
+          total += 1
+          if v:
+              passed += 1
+      results["ALL_PASS"] = (passed == total)
+      ctx_export(results)
+
+  - id: final_report
+    name: "🏁 最终测试报告"
+    type: log
+    message: "========== 全面测试报告 ==========\n验证结果: {{output_chain.output}}\n=================================="

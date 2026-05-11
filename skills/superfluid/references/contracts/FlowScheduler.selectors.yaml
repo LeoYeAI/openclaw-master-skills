@@ -1,0 +1,30 @@
+# FlowScheduler selectors — computed from @sfpro/sdk ABI
+
+functions:
+  afterAgreementCreated(address,address,bytes32,bytes,bytes,bytes): 0xd86ed3e5
+  afterAgreementTerminated(address,address,bytes32,bytes,bytes,bytes): 0x53c11f99
+  afterAgreementUpdated(address,address,bytes32,bytes,bytes,bytes): 0x230dbd29
+  beforeAgreementCreated(address,address,bytes32,bytes,bytes): 0x30d9c915
+  beforeAgreementTerminated(address,address,bytes32,bytes,bytes): 0x5f9e7d77
+  beforeAgreementUpdated(address,address,bytes32,bytes,bytes): 0x884d1f40
+  cfaV1():                                                    0xd3112b2e
+  createFlowSchedule(address,address,uint32,uint32,int96,uint256,uint32,bytes,bytes): 0x04db3b88
+  deleteFlowSchedule(address,address,bytes):                  0x98550d33
+  executeCreateFlow(address,address,address,bytes):           0x7c4e5037
+  executeDeleteFlow(address,address,address,bytes):           0xfc7a599a
+  flowSchedules(bytes32):                                     0x957ea169
+  getFlowSchedule(address,address,address):                   0x9ccaadaf
+
+events:
+  CreateFlowExecuted(address,address,address,uint32,uint32,int96,uint256,bytes): 0xdcab26a5ac743e62a3f426d2d95cbfaf18749ea5632c5d8199662c2d499a497c
+  DeleteFlowExecuted(address,address,address,uint32,bytes):   0x496dde0c639fcc70501439d3522a80821e1239a059b799941d38e303cd073db5
+  FlowScheduleCreated(address,address,address,uint32,uint32,int96,uint32,uint256,bytes): 0x78e3ea8b5a93e598a03e9162fc7498f01df4be2d6556d67eb67ecb9314e92dbd
+  FlowScheduleDeleted(address,address,address):               0x4d2e2ca3372350ff5347640acfa1163cbbe56592c1a21f81275081dd5b6d42b2
+
+errors:
+  AccountInvalid():    0xa9c6791d
+  HostInvalid():       0x9dcb5fcc
+  ScheduleInvalid():   0x72d8948c
+  TimeWindowInvalid(): 0x3a230cd9
+  UserDataInvalid():   0x8ced320d
+  ZeroAddress():       0xd92e233d

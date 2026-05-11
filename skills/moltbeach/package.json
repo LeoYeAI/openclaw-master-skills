@@ -1,0 +1,43 @@
+{
+  "name": "clawhub",
+  "version": "1.0.0",
+  "description": "Package manager for Molt projects - Install and manage Molt applications",
+  "main": "dist/index.js",
+  "bin": {
+    "clawhub": "./dist/cli.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "prepublishOnly": "npm run build",
+    "dev": "ts-node src/cli.ts"
+  },
+  "keywords": [
+    "molt",
+    "moltbeach",
+    "package-manager",
+    "cli",
+    "installer"
+  ],
+  "author": "",
+  "license": "MIT",
+  "files": [
+    "dist",
+    "templates",
+    "README.md"
+  ],
+  "dependencies": {
+    "commander": "^11.1.0",
+    "chalk": "^4.1.2",
+    "ora": "^5.4.1",
+    "prompts": "^2.4.2"
+  },
+  "devDependencies": {
+    "@types/node": "^20.10.0",
+    "@types/prompts": "^2.4.9",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.3.0"
+  },
+  "engines": {
+    "node": ">=14.0.0"
+  }
+}

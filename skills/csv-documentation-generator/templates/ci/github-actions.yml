@@ -1,0 +1,124 @@
+name: CSV Documentation
+
+on:
+  push:
+    branches: [main, develop]
+    tags:
+      - 'v*'
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Run compliance check
+        run: |
+          python scripts/generate.py check \
+            --requirements requirements.json \
+            --test-results test_results.json \
+            --output-format json
+        continue-on-error: true
+
+      - name: Generate RTM
+        run: |
+          python scripts/generate.py rtm \
+            --project "${{ vars.PROJECT_NAME || 'System' }}" \
+            --system "${{ vars.SYSTEM_NAME || 'System v1.0' }}" \
+            --category ${{ vars.GAMP_CATEGORY || 4 }} \
+            --output ./validation/ \
+            --diff-only
+
+      - name: Upload RTM artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: rtm-document
+          path: validation/RTM*.xlsx
+          retention-days: 30
+
+  build:
+    runs-on: ubuntu-latest
+    needs: validate
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Generate all documents
+        run: |
+          python scripts/generate.py all \
+            --project "${{ vars.PROJECT_NAME || 'System' }}" \
+            --system "${{ vars.SYSTEM_NAME || 'System v1.0' }}" \
+            --category ${{ vars.GAMP_CATEGORY || 4 }} \
+            --output ./validation/
+
+      - name: Upload all artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: validation-documents
+          path: |
+            validation/**/*.docx
+            validation/**/*.xlsx
+          retention-days: 90
+
+      - name: Create release tag
+        if: startsWith(github.ref, 'refs/tags/v')
+        run: |
+          echo "Creating release for ${{ github.ref }}"
+          
+      - name: Generate release notes
+        if: startsWith(github.ref, 'refs/tags/v')
+        run: |
+          echo "## Release ${{ github.ref }}" > release_notes.md
+          echo "" >> release_notes.md
+          echo "### Documents Generated" >> release_notes.md
+          ls -la validation/ >> release_notes.md
+
+  compliance-report:
+    runs-on: ubuntu-latest
+    if: always()
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Run compliance check
+        run: |
+          python scripts/generate.py check \
+            --requirements requirements.json \
+            --test-results test_results.json \
+            --output-format json > compliance_report.json
+        continue-on-error: true
+
+      - name: Upload compliance report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: compliance-report
+          path: compliance_report.json
+          retention-days: 365

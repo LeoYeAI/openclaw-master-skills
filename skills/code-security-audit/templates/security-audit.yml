@@ -1,0 +1,97 @@
+name: Security Audit
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main]
+
+jobs:
+  security-audit:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install security tools
+        run: |
+          pip install pip-audit safety
+          npm install -g audit-ci
+
+      - name: Run npm audit
+        run: npm audit --audit-level=moderate
+        continue-on-error: true
+
+      - name: Run audit-ci
+        run: npx audit-ci --moderate
+        continue-on-error: true
+
+      - name: Run pip-audit
+        run: |
+          if [ -f requirements.txt ]; then
+            pip-audit -r requirements.txt
+          fi
+        continue-on-error: true
+
+      - name: Secret Detection
+        run: |
+          # AWS Access Keys
+          ! grep -rn 'AKIA[0-9A-Z]\{16\}' --include='*.{js,ts,py,env,yml,yaml}' .
+
+          # OpenAI API Keys
+          ! grep -rn 'sk-[A-Za-z0-9]\{20,\}' --include='*.{js,ts,py,env}' .
+
+          # GitHub Tokens
+          ! grep -rn 'ghp_[A-Za-z0-9]\{36\}\|github_pat_' --include='*.*' .
+
+          # Private Keys
+          ! grep -rn 'BEGIN.*PRIVATE KEY' --include='*.*' .
+
+          # Connection Strings with passwords
+          ! grep -rn 'mongodb://\|mysql://\|postgres://\|redis://' --include='*.{js,ts,py,env}' . | grep -v 'localhost\|127.0.0.1'
+        continue-on-error: true
+
+      - name: OWASP Quick Check
+        run: |
+          # Check for dangerous patterns
+          ! grep -rn 'dangerouslySetInnerHTML' --include='*.tsx' --include='*.jsx' . || echo "XSS: dangerouslySetInnerHTML found"
+          ! grep -rn 'eval(' --include='*.ts' --include='*.js' . | grep -v 'node_modules' || echo "Code injection: eval() found"
+          ! grep -rn 'verify.*false\|rejectUnauthorized.*false' --include='*.ts' --include='*.js' . | grep -v 'test\|spec' || echo "SSL verification disabled"
+
+      - name: Security Headers Check
+        run: |
+          # Check if security headers are configured
+          if grep -rn 'Strict-Transport-Security\|Content-Security-Policy\|X-Frame-Options' --include='*.ts' --include='*.js' --include='*.json' . | grep -qv 'node_modules'; then
+            echo "Security headers configured"
+          else
+            echo "Warning: Security headers may not be configured"
+          fi
+
+      - name: Generate Report
+        if: always()
+        run: |
+          echo "## Security Audit Report" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "Audit completed at: $(date -u)" >> $GITHUB_STEP_SUMMARY
+
+      - name: Upload Results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: security-audit-results
+          path: |
+            npm-audit.json
+            pip-audit.json
+          retention-days: 30

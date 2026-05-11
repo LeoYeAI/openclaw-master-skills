@@ -1,0 +1,107 @@
+openclaw_security:
+  # Master enable/disable switch
+  enabled: true
+
+  # Global sensitivity level
+  # Options: paranoid | strict | medium | permissive
+  sensitivity: medium
+
+  # Owner user IDs - these users bypass all security checks
+  owner_ids:
+    - "admin@example.com"
+    - "security-team@example.com"
+
+  # Detection modules configuration
+  modules:
+    # Prompt Injection Detection
+    prompt_injection:
+      enabled: true
+      sensitivity: strict  # Override global sensitivity for this module
+
+    # Command Injection Validation
+    command_validator:
+      enabled: true
+      sensitivity: paranoid  # Most strict for command injection
+
+    # URL/SSRF Validation
+    url_validator:
+      enabled: true
+      sensitivity: medium
+
+    # Path Traversal Validation
+    path_validator:
+      enabled: true
+      sensitivity: strict
+
+    # Secret Detection (API keys, credentials)
+    secret_detector:
+      enabled: true
+      sensitivity: medium
+
+    # Content Scanning (obfuscation, policy violations)
+    content_scanner:
+      enabled: true
+      sensitivity: medium
+
+  # Action mapping by severity level
+  actions:
+    SAFE: allow          # Pass through, no logging
+    LOW: log             # Allow but log to database
+    MEDIUM: warn         # Allow with warning message
+    HIGH: block          # Block the request
+    CRITICAL: block_notify  # Block and send notification
+
+  # Rate limiting configuration
+  rate_limit:
+    enabled: true
+    max_requests_per_minute: 30
+    lockout_threshold: 5  # Failed attempts before lockout
+
+  # Notification channels
+  notifications:
+    enabled: false  # Set to true to enable notifications
+    severity_threshold: HIGH  # Only notify for HIGH and CRITICAL
+    channels:
+      # Generic webhook
+      webhook:
+        enabled: false
+        url: "https://hooks.example.com/security"
+
+      # Slack integration
+      slack:
+        enabled: false
+        webhook_url: "https://hooks.slack.com/services/YOUR/WEBHOOK/URL"
+
+      # Discord integration
+      discord:
+        enabled: false
+        webhook_url: "https://discord.com/api/webhooks/YOUR/WEBHOOK/URL"
+
+      # Email notifications (requires SMTP config)
+      email:
+        enabled: false
+        smtp_config:
+          host: "smtp.example.com"
+          port: 587
+          secure: false
+          auth:
+            user: "security@example.com"
+            pass: "your-password"
+          from: "security@example.com"
+          to:
+            - "admin@example.com"
+            - "security-team@example.com"
+
+  # Logging configuration
+  logging:
+    enabled: true
+    level: info  # debug | info | warn | error
+    file: ~/.openclaw/logs/security-events.log
+    rotation: daily  # daily | weekly | monthly
+    retention_days: 90
+
+  # Database configuration
+  database:
+    path: .openclaw-sec.db
+    analytics_enabled: true
+    retention_days: 365

@@ -1,0 +1,611 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>slide-creator — Zero-Dependency HTML Presentations</title>
+<style>
+
+:root {
+  --slide-count: 10;
+}
+
+:root {
+  --bg-from:        #f0f9ff;
+  --bg-to:          #e0f2fe;
+  --card-bg:        rgba(255, 255, 255, 0.70);
+  --card-border:    rgba(255, 255, 255, 0.90);
+  --text-primary:   #0f172a;
+  --text-secondary: #334155;
+  --text-muted:     #64748b;
+  --accent-blue:    #2563eb;
+  --accent-sky:     #0ea5e9;
+  --accent-indigo:  #4f46e5;
+  --gradient-text:  linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+  --grid-color:     rgba(14, 165, 233, 0.06);
+  --orb1-color: rgba(96,  165, 250, 0.35);
+  --orb2-color: rgba(99,  102, 241, 0.25);
+  --orb3-color: rgba(14,  165, 233, 0.30);
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html, body {
+  width: 100%; height: 100%; overflow: hidden;
+  font-family: 'PingFang SC', 'SF Pro Display', system-ui, sans-serif;
+  background: linear-gradient(160deg, var(--bg-from), var(--bg-to));
+}
+
+/* Noise */
+body::before {
+  content: ''; position: fixed; inset: 0; pointer-events: none; z-index: 0;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+}
+
+/* Grid */
+body::after {
+  content: ''; position: fixed; inset: 0; pointer-events: none; z-index: 0;
+  background-image:
+    linear-gradient(var(--grid-color) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid-color) 1px, transparent 1px);
+  background-size: 40px 40px;
+  -webkit-mask-image: radial-gradient(ellipse 70% 70% at 50% 50%, black 40%, transparent 100%);
+  mask-image:         radial-gradient(ellipse 70% 70% at 50% 50%, black 40%, transparent 100%);
+}
+
+/* Orbs */
+.orb {
+  position: fixed; border-radius: 50%; pointer-events: none; z-index: 0;
+  filter: blur(80px);
+  transition: top 1.2s cubic-bezier(0.22,1,0.36,1), left 1.2s cubic-bezier(0.22,1,0.36,1),
+              width 1.2s cubic-bezier(0.22,1,0.36,1), height 1.2s cubic-bezier(0.22,1,0.36,1);
+}
+#orb1 { background: var(--orb1-color); }
+#orb2 { background: var(--orb2-color); }
+#orb3 { background: var(--orb3-color); }
+
+/* Stage & track */
+#stage { position: fixed; inset: 0; overflow: hidden; z-index: 1; }
+#track {
+  display: flex;
+  width: calc(100vw * var(--slide-count));
+  height: 100%;
+  transition: transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: transform;
+}
+.slide {
+  width: 100vw; flex-shrink: 0; height: 100vh;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  padding: clamp(28px,4vw,56px) clamp(32px,5vw,80px);
+  position: relative; overflow: hidden;
+}
+
+/* Glass card */
+.g {
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 20px;
+  backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);
+  box-shadow: 0 8px 32px rgba(14,165,233,0.10), 0 1px 0 rgba(255,255,255,0.8) inset;
+}
+
+/* Gradient text */
+.gt {
+  background: var(--gradient-text);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Cloud */
+.cloud {
+  position: absolute; border-radius: 50%; pointer-events: none; filter: blur(60px);
+  animation: cloud-drift 8s ease-in-out infinite;
+}
+@keyframes cloud-drift {
+  0%,100% { transform: translateY(0) scale(1); }
+  50%      { transform: translateY(-20px) scale(1.05); }
+}
+
+/* Nav dots */
+#nav-dots {
+  position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
+  display: flex; gap: 8px; align-items: center; z-index: 10;
+}
+.dot {
+  height: 6px; border-radius: 999px; cursor: pointer; border: none;
+  background: rgba(147,197,253,0.5); transition: background 0.4s, width 0.4s; width: 6px;
+}
+.dot.active { background: #2563eb; width: 28px; }
+
+/* Counter */
+#slide-counter {
+  position: fixed; top: 24px; left: 36px; z-index: 10;
+  font-size: 12px; font-weight: 700; letter-spacing: 0.1em; color: var(--text-muted);
+  font-family: 'SF Mono', 'Fira Code', monospace;
+}
+
+/* Typography */
+h1 { font-size: clamp(2.4rem,6vw,5rem);  font-weight: 800; line-height: 1.1; }
+h2 { font-size: clamp(1.7rem,3.8vw,2.8rem); font-weight: 700; line-height: 1.2; }
+h3 { font-size: clamp(1.0rem,2.0vw,1.5rem); font-weight: 700; }
+h4 { font-size: clamp(0.9rem,1.6vw,1.2rem); font-weight: 600; }
+p, li { font-size: clamp(0.84rem,1.4vw,1.05rem); line-height: 1.6; color: var(--text-secondary); }
+
+/* Layout */
+.cols2 { display: grid; grid-template-columns: 1fr 1fr;        gap: 16px; width: 100%; }
+.cols3 { display: grid; grid-template-columns: 1fr 1fr 1fr;    gap: 14px; width: 100%; }
+.cols4 { display: grid; grid-template-columns: repeat(4,1fr);  gap: 12px; width: 100%; }
+.divider { width: 56px; height: 3px; border-radius: 2px; background: linear-gradient(90deg,#2563eb,#0ea5e9); margin: 8px 0 14px; }
+
+/* Chapter */
+.slide.chapter { background: linear-gradient(135deg,rgba(219,234,254,0.7),rgba(224,242,254,0.9)); text-align: center; }
+.chapter-num { font-size: clamp(5rem,14vw,11rem); font-weight: 900; line-height: 1; background: linear-gradient(135deg,rgba(37,99,235,0.15),rgba(14,165,233,0.28)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; margin-bottom: -16px; }
+
+/* Components */
+.pill { display: inline-flex; align-items: center; padding: 4px 14px; border-radius: 999px; font-size: 12px; font-weight: 600; letter-spacing: 0.05em; background: rgba(37,99,235,0.10); color: var(--accent-blue); border: 1px solid rgba(37,99,235,0.20); }
+.stat { font-size: clamp(2.8rem,7vw,5rem); font-weight: 900; line-height: 1; background: var(--gradient-text); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+ul.bl { list-style: none; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+ul.bl li { display: flex; align-items: flex-start; gap: 8px; color: var(--text-secondary); }
+ul.bl li::before { content: '▸'; color: var(--accent-sky); flex-shrink: 0; margin-top: 2px; }
+.step { width: 34px; height: 34px; border-radius: 50%; flex-shrink: 0; background: linear-gradient(135deg,#2563eb,#0ea5e9); display: flex; align-items: center; justify-content: center; color: #fff; font-weight: 800; font-size: 0.88rem; }
+.info { background: rgba(37,99,235,0.07); border: 1px solid rgba(37,99,235,0.20); border-left: 4px solid var(--accent-blue); border-radius: 12px; padding: 12px 16px; font-size: 0.84rem; color: var(--text-secondary); line-height: 1.6; }
+
+/* Code block */
+.code {
+  background: rgba(15,23,42,0.06); border: 1px solid rgba(15,23,42,0.08);
+  border-radius: 12px; padding: 14px 18px;
+  font-family: 'SF Mono','Fira Code',monospace; font-size: 0.88rem;
+  color: #1e3a8a; line-height: 1.7;
+}
+.code .cmd { color: #0369a1; font-weight: 700; }
+.code .comment { color: #94a3b8; }
+
+/* Preset swatch */
+.preset {
+  border-radius: 14px; padding: 14px 16px;
+  display: flex; flex-direction: column; gap: 4px;
+  border: 1px solid rgba(255,255,255,0.7);
+}
+.preset .name { font-size: 0.82rem; font-weight: 700; }
+.preset .vibe { font-size: 0.72rem; opacity: 0.75; }
+
+/* Animations */
+@keyframes fadeUp { from { opacity:0; transform:translateY(22px); } to { opacity:1; transform:translateY(0); } }
+.slide.active > * { animation: fadeUp 0.5s cubic-bezier(0.22,1,0.36,1) both; }
+.slide.active > *:nth-child(2) { animation-delay:.06s; }
+.slide.active > *:nth-child(3) { animation-delay:.12s; }
+.slide.active > *:nth-child(4) { animation-delay:.18s; }
+.slide.active > *:nth-child(5) { animation-delay:.24s; }
+.slide.active > *:nth-child(6) { animation-delay:.30s; }
+
+@media (prefers-reduced-motion: reduce) {
+  #track,.orb,.cloud { transition:none!important; animation:none!important; }
+}
+</style>
+</head>
+<body>
+
+<div class="orb" id="orb1"></div>
+<div class="orb" id="orb2"></div>
+<div class="orb" id="orb3"></div>
+<div id="slide-counter">01 / 10</div>
+<div id="nav-dots"></div>
+
+<div id="stage"><div id="track">
+
+<!-- ═══ 1 · Cover ═══ -->
+<section class="slide cover">
+  <div class="cloud" style="width:520px;height:520px;background:rgba(147,197,253,0.38);top:-200px;left:-100px;animation-duration:9s;"></div>
+  <div class="cloud" style="width:380px;height:380px;background:rgba(196,233,251,0.42);bottom:-140px;right:-80px;animation-duration:12s;animation-delay:-4s;"></div>
+  <div class="cloud" style="width:260px;height:260px;background:rgba(165,214,255,0.30);top:20%;right:8%;animation-duration:10s;animation-delay:-2s;"></div>
+  <div style="text-align:center;position:relative;z-index:1;max-width:780px;">
+    <span class="pill" style="margin-bottom:22px;display:inline-block;font-size:13px;">Claude Code &amp; OpenClaw Skill · v1.4</span>
+    <h1 class="gt" style="font-size:clamp(3rem,8vw,6.5rem);letter-spacing:-0.02em;">slide-creator</h1>
+    <p style="font-size:clamp(1rem,2.2vw,1.4rem);color:var(--text-secondary);margin:16px 0 36px;font-weight:400;">Zero-dependency HTML presentations that run entirely in the browser.<br>No npm · No build tools · No Chromium downloads.</p>
+    <div style="display:flex;gap:20px;justify-content:center;flex-wrap:wrap;">
+      <div class="g" style="padding:16px 28px;text-align:center;">
+        <div class="stat" style="font-size:2.8rem;">13</div>
+        <div style="font-size:0.8rem;color:var(--text-muted);margin-top:2px;">Design Presets</div>
+      </div>
+      <div class="g" style="padding:16px 28px;text-align:center;">
+        <div class="stat" style="font-size:2.8rem;">0</div>
+        <div style="font-size:0.8rem;color:var(--text-muted);margin-top:2px;">Dependencies</div>
+      </div>
+      <div class="g" style="padding:16px 28px;text-align:center;">
+        <div class="stat" style="font-size:2.8rem;">∞</div>
+        <div style="font-size:0.8rem;color:var(--text-muted);margin-top:2px;">Slides per deck</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ 2 · Core Philosophy ═══ -->
+<section class="slide">
+  <div style="max-width:880px;width:100%;">
+    <span class="pill" style="margin-bottom:12px;display:inline-block;">Philosophy</span>
+    <h2 class="gt">Four principles behind every deck</h2>
+    <div class="divider"></div>
+    <div class="cols2">
+      <div class="g" style="padding:22px 24px;">
+        <div style="font-size:1.8rem;margin-bottom:8px;">📦</div>
+        <h3 style="margin-bottom:6px;">Zero Dependencies</h3>
+        <p>Single HTML files with inline CSS/JS. Open in any browser, share as one file, runs forever.</p>
+      </div>
+      <div class="g" style="padding:22px 24px;">
+        <div style="font-size:1.8rem;margin-bottom:8px;">👁️</div>
+        <h3 style="margin-bottom:6px;">Show, Don't Tell</h3>
+        <p>People can't articulate design preferences in words. Generate 3 visual previews first — let them react.</p>
+      </div>
+      <div class="g" style="padding:22px 24px;">
+        <div style="font-size:1.8rem;margin-bottom:8px;">✦</div>
+        <h3 style="margin-bottom:6px;">Distinctive Design</h3>
+        <p>No Inter fonts, no purple gradients, no predictable heroes. Every deck feels custom-crafted.</p>
+      </div>
+      <div class="g" style="padding:22px 24px;">
+        <div style="font-size:1.8rem;margin-bottom:8px;">📐</div>
+        <h3 style="margin-bottom:6px;">Viewport Fitting</h3>
+        <p>Every slide fills exactly 100vh — no scrolling within a slide, ever. Content that overflows gets split.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ 3 · How it Works ═══ -->
+<section class="slide">
+  <div style="max-width:820px;width:100%;">
+    <span class="pill" style="margin-bottom:12px;display:inline-block;">Usage</span>
+    <h2 class="gt">Three ways to create</h2>
+    <div class="divider"></div>
+    <div style="display:flex;flex-direction:column;gap:12px;">
+      <div class="g" style="padding:18px 22px;display:flex;align-items:flex-start;gap:16px;">
+        <div class="step">A</div>
+        <div>
+          <h4 style="margin-bottom:4px;">Interactive — style discovery first</h4>
+          <div class="code" style="margin-top:8px;"><span class="cmd">/slide-creator</span>  <span class="comment"># answer 4 questions → see 3 previews → generate</span></div>
+        </div>
+      </div>
+      <div class="g" style="padding:18px 22px;display:flex;align-items:flex-start;gap:16px;">
+        <div class="step" style="background:linear-gradient(135deg,#4f46e5,#7c3aed);">B</div>
+        <div>
+          <h4 style="margin-bottom:4px;">Two-stage — plan first, generate second</h4>
+          <div class="code" style="margin-top:8px;">
+            <span class="cmd">/slide-creator --plan</span> My AI startup pitch<br>
+            <span class="cmd">/slide-creator --generate</span>
+          </div>
+        </div>
+      </div>
+      <div class="g" style="padding:18px 22px;display:flex;align-items:flex-start;gap:16px;">
+        <div class="step" style="background:linear-gradient(135deg,#0ea5e9,#06b6d4);">C</div>
+        <div>
+          <h4 style="margin-bottom:4px;">PPT conversion — drop a .pptx, get a web deck</h4>
+          <div class="code" style="margin-top:8px;"><span class="cmd">/slide-creator</span>  <span class="comment"># auto-detects .pptx in current directory</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ 4 · Style Discovery ═══ -->
+<section class="slide">
+  <div style="max-width:860px;width:100%;">
+    <span class="pill" style="margin-bottom:12px;display:inline-block;">Style Discovery</span>
+    <h2 class="gt">The "wow moment" — show, don't tell</h2>
+    <div class="divider"></div>
+    <div class="cols3" style="margin-bottom:16px;">
+      <div class="g" style="padding:20px;text-align:center;border-top:3px solid #f59e0b;">
+        <div style="font-size:2rem;margin-bottom:8px;">❓</div>
+        <h4 style="margin-bottom:6px;">1 · Mood question</h4>
+        <p style="font-size:0.82rem;">Impressed &amp; confident? Excited &amp; energized? Calm &amp; focused?</p>
+      </div>
+      <div class="g" style="padding:20px;text-align:center;border-top:3px solid var(--accent-blue);">
+        <div style="font-size:2rem;margin-bottom:8px;">🎨</div>
+        <h4 style="margin-bottom:6px;">2 · 3 visual previews</h4>
+        <p style="font-size:0.82rem;">Three mini title slides — real typography, real colors, real animations.</p>
+      </div>
+      <div class="g" style="padding:20px;text-align:center;border-top:3px solid var(--accent-indigo);">
+        <div style="font-size:2rem;margin-bottom:8px;">✅</div>
+        <h4 style="margin-bottom:6px;">3 · Pick &amp; generate</h4>
+        <p style="font-size:0.82rem;">Choose A, B, C, or mix elements. Full deck generated immediately.</p>
+      </div>
+    </div>
+    <div class="info">
+      If you already know what you want, skip discovery: <code style="font-family:monospace;background:rgba(37,99,235,0.08);padding:2px 6px;border-radius:4px;">/slide-creator --generate Blue Sky style pitch deck for my SaaS product</code>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ 5 · 13 Presets ═══ -->
+<section class="slide">
+  <div style="max-width:960px;width:100%;">
+    <span class="pill" style="margin-bottom:12px;display:inline-block;">Design Presets</span>
+    <h2 class="gt">13 curated styles — no generic AI aesthetics</h2>
+    <div class="divider"></div>
+    <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:8px;">
+      <div class="preset" style="background:linear-gradient(135deg,#0f172a,#1e3a5f);color:#fff;">
+        <div class="name">Bold Signal</div><div class="vibe">Keynotes</div>
+      </div>
+      <div class="preset" style="background:linear-gradient(135deg,#0f2027,#203a43,#2c5364);color:#00ffcc;">
+        <div class="name" style="color:#fff;">Electric Studio</div><div class="vibe" style="color:rgba(255,255,255,0.6);">Agency</div>
+      </div>
+      <div class="preset" style="background:linear-gradient(135deg,#1a1a2e,#16213e);color:#ff6b35;">
+        <div class="name">Creative Voltage</div><div class="vibe">Pitches</div>
+      </div>
+      <div class="preset" style="background:linear-gradient(135deg,#0d1f0f,#1a3320);color:#4ade80;">
+        <div class="name">Dark Botanical</div><div class="vibe">Premium</div>
+      </div>
+      <div class="preset g" style="background:linear-gradient(135deg,rgba(240,249,255,0.9),rgba(224,242,254,0.9));color:#1e3a8a;border:2px solid #2563eb;">
+        <div class="name">Blue Sky ✨</div><div class="vibe" style="color:#0ea5e9;">SaaS / Tech</div>
+      </div>
+      <div class="preset" style="background:#fffef0;color:#1a1a1a;border:1px solid #e5e0d0;">
+        <div class="name">Notebook Tabs</div><div class="vibe">Reports</div>
+      </div>
+      <div class="preset" style="background:linear-gradient(135deg,#fce4ec,#f8bbd0);color:#880e4f;">
+        <div class="name">Pastel Geometry</div><div class="vibe">Products</div>
+      </div>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(6,1fr);gap:8px;margin-top:8px;">
+      <div class="preset" style="background:linear-gradient(135deg,#e8f5e9,#f3e5f5);color:#4a148c;">
+        <div class="name">Split Pastel</div><div class="vibe">Creative</div>
+      </div>
+      <div class="preset" style="background:#fdf6e3;color:#5c4813;border:1px solid #d4c5a9;">
+        <div class="name">Vintage Editorial</div><div class="vibe">Personal</div>
+      </div>
+      <div class="preset" style="background:#0a0f1c;color:#00ffcc;">
+        <div class="name">Neon Cyber</div><div class="vibe">Tech</div>
+      </div>
+      <div class="preset" style="background:#0d1117;color:#00ff41;">
+        <div class="name">Terminal Green</div><div class="vibe">Dev tools</div>
+      </div>
+      <div class="preset" style="background:#f8f8f8;color:#111;border:1px solid #ddd;">
+        <div class="name">Swiss Modern</div><div class="vibe">Corporate</div>
+      </div>
+      <div class="preset" style="background:#f5f0e8;color:#3d2b1f;border:1px solid #d4c5a9;">
+        <div class="name">Paper &amp; Ink</div><div class="vibe">Storytelling</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ 6 · Blue Sky Deep Dive ═══ -->
+<section class="slide">
+  <div style="max-width:880px;width:100%;">
+    <span class="pill" style="margin-bottom:12px;display:inline-block;">Featured Style</span>
+    <h2 class="gt">Blue Sky — you're looking at it right now</h2>
+    <div class="divider"></div>
+    <div class="cols2" style="align-items:start;">
+      <div style="display:flex;flex-direction:column;gap:10px;">
+        <div class="g" style="padding:14px 18px;border-left:3px solid var(--accent-sky);">
+          <h4 style="color:var(--accent-sky);margin-bottom:4px;">Sky gradient background</h4>
+          <p style="font-size:0.82rem;"><code style="font-family:monospace;">#f0f9ff → #e0f2fe</code></p>
+        </div>
+        <div class="g" style="padding:14px 18px;border-left:3px solid var(--accent-blue);">
+          <h4 style="color:var(--accent-blue);margin-bottom:4px;">Glassmorphism cards</h4>
+          <p style="font-size:0.82rem;">rgba(255,255,255,0.7) · backdrop-filter: blur(24px)</p>
+        </div>
+        <div class="g" style="padding:14px 18px;border-left:3px solid var(--accent-indigo);">
+          <h4 style="color:var(--accent-indigo);margin-bottom:4px;">3 animated ambient orbs</h4>
+          <p style="font-size:0.82rem;">Reposition per slide · 80px blur · spring transition</p>
+        </div>
+        <div class="g" style="padding:14px 18px;border-left:3px solid #0284c7;">
+          <h4 style="color:#0284c7;margin-bottom:4px;">Spring-physics slide transitions</h4>
+          <p style="font-size:0.82rem;">Horizontal track · cubic-bezier(0.22, 1, 0.36, 1)</p>
+        </div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:10px;">
+        <div class="g" style="padding:14px 18px;border-left:3px solid var(--accent-sky);">
+          <h4 style="color:var(--accent-sky);margin-bottom:4px;">SVG noise texture</h4>
+          <p style="font-size:0.82rem;">feTurbulence overlay · adds tactile depth without photos</p>
+        </div>
+        <div class="g" style="padding:14px 18px;border-left:3px solid var(--accent-blue);">
+          <h4 style="color:var(--accent-blue);margin-bottom:4px;">40px tech grid</h4>
+          <p style="font-size:0.82rem;">6% opacity · radial gradient mask · fades to edges</p>
+        </div>
+        <div class="g" style="padding:14px 18px;border-left:3px solid var(--accent-indigo);">
+          <h4 style="color:var(--accent-indigo);margin-bottom:4px;">Cloud hero effect</h4>
+          <p style="font-size:0.82rem;">Title slides only · CSS blur clusters · drift animation</p>
+        </div>
+        <div class="g" style="padding:14px 18px;border-left:3px solid #0284c7;">
+          <h4 style="color:#0284c7;margin-bottom:4px;">Gradient headline text</h4>
+          <p style="font-size:0.82rem;"><code style="font-family:monospace;">#1e3a8a → #3b82f6</code> · deep navy to bright blue</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ 7 · Viewport Fitting ═══ -->
+<section class="slide">
+  <div style="max-width:820px;width:100%;">
+    <span class="pill" style="margin-bottom:12px;display:inline-block;">Content Rules</span>
+    <h2 class="gt">Viewport fitting — the non-negotiable</h2>
+    <div class="divider"></div>
+    <div class="g" style="padding:0;overflow:hidden;margin-bottom:14px;">
+      <table style="width:100%;border-collapse:collapse;font-size:0.86rem;">
+        <thead>
+          <tr style="background:rgba(37,99,235,0.10);">
+            <th style="padding:10px 16px;text-align:left;color:var(--accent-blue);font-weight:700;">Slide Type</th>
+            <th style="padding:10px 16px;text-align:left;color:var(--accent-blue);font-weight:700;">Maximum Content</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td style="padding:9px 16px;border-bottom:1px solid rgba(14,165,233,0.10);">Title slide</td><td style="padding:9px 16px;border-bottom:1px solid rgba(14,165,233,0.10);">1 heading + 1 subtitle</td></tr>
+          <tr><td style="padding:9px 16px;border-bottom:1px solid rgba(14,165,233,0.10);">Content slide</td><td style="padding:9px 16px;border-bottom:1px solid rgba(14,165,233,0.10);">1 heading + 4–6 bullets</td></tr>
+          <tr><td style="padding:9px 16px;border-bottom:1px solid rgba(14,165,233,0.10);">Feature grid</td><td style="padding:9px 16px;border-bottom:1px solid rgba(14,165,233,0.10);">1 heading + 6 cards max (2×3 or 3×2)</td></tr>
+          <tr><td style="padding:9px 16px;border-bottom:1px solid rgba(14,165,233,0.10);">Code slide</td><td style="padding:9px 16px;border-bottom:1px solid rgba(14,165,233,0.10);">1 heading + 8–10 lines</td></tr>
+          <tr><td style="padding:9px 16px;">Quote slide</td><td style="padding:9px 16px;">1 quote (3 lines max) + attribution</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="info">
+      When in doubt → <strong>split the slide.</strong> A presentation that scrolls mid-slide is broken. Content that overflows gets split across slides, not squished.
+    </div>
+  </div>
+</section>
+
+<!-- ═══ 8 · PPTX Export ═══ -->
+<section class="slide">
+  <div style="max-width:800px;width:100%;">
+    <span class="pill" style="margin-bottom:12px;display:inline-block;">Export</span>
+    <h2 class="gt">PPTX export — no Chromium download</h2>
+    <div class="divider"></div>
+    <div style="display:flex;flex-direction:column;gap:12px;">
+      <div class="g" style="padding:18px 22px;display:flex;align-items:center;gap:16px;">
+        <div class="step">1</div>
+        <div>
+          <h4 style="margin-bottom:2px;">Run the export command</h4>
+          <div class="code" style="margin-top:6px;"><span class="cmd">/slide-creator --export pptx</span></div>
+        </div>
+      </div>
+      <div class="g" style="padding:18px 22px;display:flex;align-items:center;gap:16px;">
+        <div class="step" style="background:linear-gradient(135deg,#4f46e5,#7c3aed);">2</div>
+        <div>
+          <h4 style="margin-bottom:2px;">Playwright uses your existing Chrome</h4>
+          <p style="font-size:0.84rem;">Chrome/Edge/Brave already on your machine · no 300MB Chromium download</p>
+        </div>
+      </div>
+      <div class="g" style="padding:18px 22px;display:flex;align-items:center;gap:16px;">
+        <div class="step" style="background:linear-gradient(135deg,#0ea5e9,#06b6d4);">3</div>
+        <div>
+          <h4 style="margin-bottom:2px;">Pixel-perfect PPTX</h4>
+          <p style="font-size:0.84rem;">Screenshots each slide at full resolution · assembles into a native .pptx file</p>
+        </div>
+      </div>
+    </div>
+    <div class="info" style="margin-top:12px;">
+      <strong>Requirements:</strong> <code style="font-family:monospace;">pip install playwright python-pptx</code> · No Node.js needed.
+    </div>
+  </div>
+</section>
+
+<!-- ═══ 9 · Install ═══ -->
+<section class="slide">
+  <div style="max-width:780px;width:100%;">
+    <span class="pill" style="margin-bottom:12px;display:inline-block;">Install</span>
+    <h2 class="gt">One line to get started</h2>
+    <div class="divider"></div>
+    <div style="display:flex;flex-direction:column;gap:14px;">
+      <div class="g" style="padding:20px 24px;">
+        <h4 style="color:var(--accent-blue);margin-bottom:10px;">Claude Code</h4>
+        <div class="code">git clone https://github.com/kaisersong/slide-creator <span style="color:#0369a1;">~/.claude/skills/slide-creator</span></div>
+        <p style="font-size:0.82rem;margin-top:8px;color:var(--text-muted);">Restart Claude Code · invoke with <code style="font-family:monospace;">/slide-creator</code></p>
+      </div>
+      <div class="g" style="padding:20px 24px;">
+        <h4 style="color:var(--accent-indigo);margin-bottom:10px;">OpenClaw · via ClawHub</h4>
+        <div class="code">clawhub install <span style="color:#0369a1;">html-slide-creator</span></div>
+        <p style="font-size:0.82rem;margin-top:8px;color:var(--text-muted);">Auto-installs all dependencies · clawhub.ai/skills/html-slide-creator</p>
+      </div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;">
+        <span class="pill">Python 3</span>
+        <span class="pill" style="background:rgba(79,70,229,0.1);color:var(--accent-indigo);border-color:rgba(79,70,229,0.2);">Pillow</span>
+        <span class="pill" style="background:rgba(14,165,233,0.1);color:var(--accent-sky);border-color:rgba(14,165,233,0.2);">python-pptx</span>
+        <span class="pill" style="background:rgba(2,132,199,0.1);color:#0284c7;border-color:rgba(2,132,199,0.2);">playwright</span>
+        <span class="pill" style="background:rgba(16,185,129,0.1);color:#059669;border-color:rgba(16,185,129,0.2);">system Chrome</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ 10 · Closing ═══ -->
+<section class="slide cover">
+  <div class="cloud" style="width:460px;height:460px;background:rgba(147,197,253,0.32);top:-160px;right:-90px;animation-duration:10s;"></div>
+  <div class="cloud" style="width:320px;height:320px;background:rgba(196,233,251,0.38);bottom:-100px;left:-60px;animation-duration:13s;animation-delay:-5s;"></div>
+  <div style="text-align:center;max-width:720px;position:relative;z-index:1;">
+    <span class="pill" style="margin-bottom:20px;display:inline-block;">Ready to create</span>
+    <h2 class="gt" style="font-size:clamp(2rem,5vw,3.8rem);margin-bottom:20px;">Your next presentation<br>starts with one command</h2>
+    <div class="g" style="padding:24px 36px;margin-bottom:24px;">
+      <div class="code" style="font-size:1rem;text-align:left;">
+        <span class="cmd">/slide-creator</span> <span class="comment">--plan  My quarterly review</span><br>
+        <span class="comment"># → review PLANNING.md</span><br>
+        <span class="cmd">/slide-creator</span> <span class="comment">--generate</span><br>
+        <span class="comment"># → presentation.html opens in browser</span>
+      </div>
+    </div>
+    <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">
+      <span class="pill" style="font-size:0.85rem;padding:6px 16px;">13 styles</span>
+      <span class="pill" style="font-size:0.85rem;padding:6px 16px;background:rgba(79,70,229,0.1);color:var(--accent-indigo);border-color:rgba(79,70,229,0.2);">Style discovery</span>
+      <span class="pill" style="font-size:0.85rem;padding:6px 16px;background:rgba(14,165,233,0.1);color:var(--accent-sky);border-color:rgba(14,165,233,0.2);">PPTX export</span>
+      <span class="pill" style="font-size:0.85rem;padding:6px 16px;background:rgba(2,132,199,0.1);color:#0284c7;border-color:rgba(2,132,199,0.2);">Zero dependencies</span>
+    </div>
+    <p style="margin-top:20px;font-size:0.78rem;color:var(--text-muted);">github.com/kaisersong/slide-creator · clawhub.ai/skills/html-slide-creator</p>
+  </div>
+</section>
+
+</div></div>
+
+<script>
+const orbPositions = [
+  /* 1 Cover     */ [-18,-22,520,  82,-12,420,  52, 62,360],
+  /* 2 Philosophy*/ [ 65, 10,440, -15, 55,380,  40, 78,300],
+  /* 3 How it    */ [-20, 40,480,  78,-18,400,  55, 68,290],
+  /* 4 Style disc*/ [ 70,  5,460, -12, 60,390,  42, 80,310],
+  /* 5 13 presets*/ [-10, 20,500,  72,  8,420,  50, 65,280],
+  /* 6 Blue Sky  */ [ 68, 12,450, -18, 58,400,  38, 75,320],
+  /* 7 Viewport  */ [-22, 45,470,  76,-20,410,  54, 70,295],
+  /* 8 PPTX      */ [ 72,  8,440, -14, 62,380,  44, 78,305],
+  /* 9 Install   */ [-14, 30,490,  74, 10,400,  52, 66,285],
+  /* 10 Closing  */ [-18,-22,510,  80,-12,420,  48, 60,350],
+];
+
+(function(){
+  const TOTAL = document.querySelectorAll('#track .slide').length;
+  const track = document.getElementById('track');
+  const dotsEl = document.getElementById('nav-dots');
+  const ctrEl  = document.getElementById('slide-counter');
+  const o1=document.getElementById('orb1'), o2=document.getElementById('orb2'), o3=document.getElementById('orb3');
+  let cur = 0;
+  document.documentElement.style.setProperty('--slide-count', TOTAL);
+
+  for(let i=0;i<TOTAL;i++){
+    const d=document.createElement('button');
+    d.className='dot'+(i===0?' active':'');
+    d.setAttribute('aria-label','Slide '+(i+1));
+    d.addEventListener('click',()=>go(i));
+    dotsEl.appendChild(d);
+  }
+
+  function setOrbs(i){
+    const p=orbPositions[i]||orbPositions[0];
+    const s=(el,l,t,sz)=>{el.style.left=l+'%';el.style.top=t+'%';el.style.width=el.style.height=sz+'px';};
+    s(o1,p[0],p[1],p[2]); s(o2,p[3],p[4],p[5]); s(o3,p[6],p[7],p[8]);
+  }
+
+  function go(n){
+    if(n<0||n>=TOTAL) return;
+    document.querySelectorAll('#track .slide')[cur].classList.remove('active');
+    cur=n;
+    document.querySelectorAll('#track .slide')[cur].classList.add('active');
+    track.style.transform=`translateX(-${cur*100}vw)`;
+    document.querySelectorAll('.dot').forEach((d,i)=>d.classList.toggle('active',i===cur));
+    ctrEl.textContent=String(cur+1).padStart(2,'0')+' / '+String(TOTAL).padStart(2,'0');
+    setOrbs(cur);
+  }
+
+  go(0);
+
+  document.addEventListener('keydown',e=>{
+    if(e.key==='ArrowRight'||e.key===' '||e.key==='ArrowDown'){e.preventDefault();go(cur+1);}
+    if(e.key==='ArrowLeft'||e.key==='ArrowUp'){e.preventDefault();go(cur-1);}
+    if(e.key==='Home') go(0);
+    if(e.key==='End')  go(TOTAL-1);
+  });
+
+  // Wheel: debounce-reset lock — inertia events keep resetting the timer,
+  // so the lock only releases after the gesture truly ends (~180ms of silence).
+  // This prevents trackpad inertia from firing a second navigation mid-transition.
+  let wheelLocked = false, wheelTimer = null;
+  document.addEventListener('wheel', e => {
+    clearTimeout(wheelTimer);
+    if (!wheelLocked) { wheelLocked = true; e.deltaY > 0 ? go(cur+1) : go(cur-1); }
+    wheelTimer = setTimeout(() => { wheelLocked = false; }, 180);
+  }, { passive: true });
+
+  let tx=0;
+  document.addEventListener('touchstart',e=>{tx=e.touches[0].clientX;},{passive:true});
+  document.addEventListener('touchend',e=>{
+    const dx=e.changedTouches[0].clientX-tx;
+    if(Math.abs(dx)>50) dx<0?go(cur+1):go(cur-1);
+  });
+})();
+</script>
+</body>
+</html>

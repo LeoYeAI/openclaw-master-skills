@@ -1,0 +1,148 @@
+diff --git a/ui/src/ui/app-render.ts b/ui/src/ui/app-render.ts
+index 286b3f68e..58d0f908e 100644
+--- a/ui/src/ui/app-render.ts
++++ b/ui/src/ui/app-render.ts
+@@ -596,6 +596,12 @@ export function renderApp(state: AppViewState) {
+                   state.agentSkillsReport = null;
+                   state.agentSkillsError = null;
+                   state.agentSkillsAgentId = null;
++                  // Reset identity edit state when switching agents
++                  state.editAgentName = "";
++                  state.editAgentWorkspace = "";
++                  state.editAgentEmoji = "";
++                  state.editAgentDirty = false;
++                  state.editAgentError = null;
+                   void loadAgentIdentity(state, agentId);
+                   if (state.agentsPanel === "files") {
+                     void loadAgentFiles(state, agentId);
+@@ -709,8 +715,128 @@ export function renderApp(state: AppViewState) {
+                     removeConfigFormValue(state, [...basePath, "deny"]);
+                   }
+                 },
+-                onConfigReload: () => loadConfig(state),
+-                onConfigSave: () => saveConfig(state),
++                onConfigReload: () => {
++                  state.editAgentDirty = false;
++                  state.editAgentError = null;
++                  void loadConfig(state);
++                },
++                onConfigSave: async () => {
++                  const agentId = state.agentsSelectedId;
++                  // Save identity fields first if dirty
++                  if (state.editAgentDirty && agentId) {
++                    state.editAgentSaving = true;
++                    state.editAgentError = null;
++                    try {
++                      const p: Record<string, unknown> = { agentId };
++                      if (state.editAgentName.trim()) {
++                        p.name = state.editAgentName.trim();
++                      }
++                      if (state.editAgentWorkspace.trim()) {
++                        p.workspace = state.editAgentWorkspace.trim();
++                      }
++                      if (state.editAgentEmoji.trim()) {
++                        p.emoji = state.editAgentEmoji.trim();
++                      }
++                      const res = (await state.client?.request("agents.update", p)) as {
++                        ok?: boolean;
++                        error?: string;
++                      } | null;
++                      if (res?.ok) {
++                        state.editAgentDirty = false;
++                        // Refresh agent list so agent.name reflects new config entry name
++                        const list = await state.client?.request("agents.list", {});
++                        state.agentsList = list as typeof state.agentsList;
++                        // Evict stale identity cache and reload from disk
++                        const { [agentId]: _evicted, ...remaining } = state.agentIdentityById;
++                        state.agentIdentityById = remaining as typeof state.agentIdentityById;
++                        void loadAgentIdentity(state, agentId);
++                        // IMPORTANT: agents.update wrote to the config file, changing the
++                        // hash. Reload config now so saveConfig uses the current hash —
++                        // otherwise config.set will fail with a stale-hash error.
++                        await loadConfig(state);
++                      } else {
++                        state.editAgentError =
++                          (res as { ok?: boolean; error?: string } | null)?.error ??
++                          "Failed to save";
++                        state.editAgentSaving = false;
++                        return;
++                      }
++                    } catch (err) {
++                      state.editAgentError = String(err);
++                      state.editAgentSaving = false;
++                      return;
++                    } finally {
++                      state.editAgentSaving = false;
++                    }
++                  }
++                  // Only call saveConfig if the model/config form is actually dirty.
++                  // If only identity fields changed, agents.update already wrote the
++                  // config — calling saveConfig with no model changes is a no-op at
++                  // best and a hash-mismatch error at worst.
++                  if (state.configFormDirty) {
++                    await saveConfig(state);
++                  }
++                },
++                editAgentName: state.editAgentName,
++                editAgentWorkspace: state.editAgentWorkspace,
++                editAgentEmoji: state.editAgentEmoji,
++                editAgentDirty: state.editAgentDirty,
++                editAgentSaving: state.editAgentSaving,
++                editAgentError: state.editAgentError,
++                onEditNameChange: (v) => {
++                  state.editAgentName = v;
++                  state.editAgentDirty = true;
++                },
++                onEditWorkspaceChange: (v) => {
++                  state.editAgentWorkspace = v;
++                  state.editAgentDirty = true;
++                },
++                onEditEmojiChange: (v) => {
++                  state.editAgentEmoji = v;
++                  state.editAgentDirty = true;
++                },
++                confirmDeleteAgentId: state.confirmDeleteAgentId,
++                deleteAgentInProgress: state.deleteAgentInProgress,
++                deleteAgentError: state.deleteAgentError,
++                onDeleteStart: (agentId) => {
++                  state.confirmDeleteAgentId = agentId;
++                  state.deleteAgentError = null;
++                },
++                onDeleteCancel: () => {
++                  state.confirmDeleteAgentId = null;
++                  state.deleteAgentError = null;
++                },
++                onDeleteConfirm: async (agentId) => {
++                  state.deleteAgentInProgress = true;
++                  state.deleteAgentError = null;
++                  try {
++                    const res = (await state.client?.request("agents.delete", { agentId })) as {
++                      ok?: boolean;
++                      error?: string;
++                    } | null;
++                    if (res?.ok) {
++                      state.confirmDeleteAgentId = null;
++                      state.agentsLoading = true;
++                      const list = await state.client?.request("agents.list", {});
++                      state.agentsList = list as typeof state.agentsList;
++                      state.agentsLoading = false;
++                      const remaining = (state.agentsList as { agents?: { id: string }[] } | null)
++                        ?.agents;
++                      if (remaining?.length) {
++                        state.selectedAgentId = remaining[0].id;
++                      }
++                      await loadConfig(state);
++                    } else {
++                      state.deleteAgentError =
++                        (res as { ok?: boolean; error?: string } | null)?.error ??
++                        "Failed to delete";
++                    }
++                  } catch (err) {
++                    state.deleteAgentError = String(err);
++                  } finally {
++                    state.deleteAgentInProgress = false;
++                  }
++                },
+                 onChannelsRefresh: () => loadChannels(state, false),
+                 onCronRefresh: () => state.loadCron(),
+                 onSkillsFilterChange: (next) => (state.skillsFilter = next),

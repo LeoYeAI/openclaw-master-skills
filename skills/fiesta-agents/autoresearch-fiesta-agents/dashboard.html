@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Autoresearch — fiesta-agents proactive optimization</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Segoe UI', system-ui, sans-serif; background: #f8f9fa; color: #2d3748; padding: 24px; }
+  h1 { font-size: 1.5rem; font-weight: 700; margin-bottom: 4px; }
+  .subtitle { color: #718096; font-size: 0.9rem; margin-bottom: 24px; }
+  .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 16px; margin-bottom: 24px; }
+  .card { background: white; border-radius: 12px; padding: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.08); }
+  .card-label { font-size: 0.75rem; color: #718096; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 6px; }
+  .card-value { font-size: 2rem; font-weight: 700; }
+  .card-value.green { color: #38a169; }
+  .card-value.blue { color: #4299e1; }
+  .card-value.purple { color: #805ad5; }
+  .card-value.orange { color: #dd6b20; }
+  .status-badge { display: inline-block; padding: 4px 12px; border-radius: 9999px; font-size: 0.8rem; font-weight: 600; }
+  .status-complete { background: #c6f6d5; color: #276749; }
+  .status-running { background: #bee3f8; color: #2b6cb0; }
+  .chart-card { background: white; border-radius: 12px; padding: 24px; box-shadow: 0 1px 3px rgba(0,0,0,0.08); margin-bottom: 24px; }
+  .chart-card h2 { font-size: 1rem; font-weight: 600; margin-bottom: 16px; color: #4a5568; }
+  .table-card { background: white; border-radius: 12px; padding: 24px; box-shadow: 0 1px 3px rgba(0,0,0,0.08); margin-bottom: 24px; }
+  table { width: 100%; border-collapse: collapse; font-size: 0.875rem; }
+  th { text-align: left; padding: 8px 12px; border-bottom: 2px solid #e2e8f0; color: #718096; font-weight: 600; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; }
+  td { padding: 10px 12px; border-bottom: 1px solid #f7fafc; }
+  .pill { display: inline-block; padding: 2px 8px; border-radius: 9999px; font-size: 0.75rem; font-weight: 600; }
+  .pill-baseline { background: #bee3f8; color: #2b6cb0; }
+  .pill-keep { background: #c6f6d5; color: #276749; }
+  .pill-discard { background: #fed7d7; color: #9b2335; }
+  .eval-bar-wrap { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+  .eval-name { min-width: 240px; font-size: 0.85rem; }
+  .eval-bar-track { flex: 1; background: #e2e8f0; border-radius: 9999px; height: 8px; }
+  .eval-bar-fill { height: 8px; border-radius: 9999px; background: #68d391; }
+  .eval-pct { font-size: 0.8rem; color: #38a169; font-weight: 600; min-width: 40px; text-align: right; }
+  .target-line { font-size: 0.8rem; color: #dd6b20; font-weight: 600; margin-top: 8px; }
+</style>
+</head>
+<body>
+
+<h1>🔬 Autoresearch — fiesta-agents</h1>
+<p class="subtitle">Optimizing for proactive agent behavior &gt;93% · <span id="status-text">Loading...</span></p>
+
+<div class="cards">
+  <div class="card">
+    <div class="card-label">Status</div>
+    <div id="status-badge" class="card-value" style="font-size:1rem; padding-top:6px;"></div>
+  </div>
+  <div class="card">
+    <div class="card-label">Baseline Score</div>
+    <div id="baseline-score" class="card-value orange">—</div>
+  </div>
+  <div class="card">
+    <div class="card-label">Best Score</div>
+    <div id="best-score" class="card-value green">—</div>
+  </div>
+  <div class="card">
+    <div class="card-label">Experiments Run</div>
+    <div id="exp-count" class="card-value blue">—</div>
+  </div>
+  <div class="card">
+    <div class="card-label">Improvement</div>
+    <div id="improvement" class="card-value purple">—</div>
+  </div>
+</div>
+
+<div class="chart-card">
+  <h2>Score Progression</h2>
+  <canvas id="scoreChart" height="80"></canvas>
+  <p class="target-line">▶ Target: 93%</p>
+</div>
+
+<div class="table-card">
+  <h2 style="font-size:1rem;font-weight:600;margin-bottom:16px;color:#4a5568;">Experiments</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Pass Rate</th>
+        <th>Score</th>
+        <th>Status</th>
+        <th>Change</th>
+      </tr>
+    </thead>
+    <tbody id="exp-table-body"></tbody>
+  </table>
+</div>
+
+<div class="table-card">
+  <h2 style="font-size:1rem;font-weight:600;margin-bottom:16px;color:#4a5568;">Eval Breakdown (Final)</h2>
+  <div id="eval-bars"></div>
+</div>
+
+<script>
+let chart = null;
+
+async function load() {
+  try {
+    const r = await fetch('results.json?' + Date.now());
+    const data = await r.json();
+    render(data);
+  } catch(e) {
+    document.querySelector('.subtitle').textContent += ' (waiting for data...)';
+  }
+}
+
+function render(data) {
+  // Status
+  const statusText = data.status === 'complete' ? '✅ Complete' : `🔄 Running experiment ${data.current_experiment}...`;
+  document.getElementById('status-text').textContent = statusText;
+  const badge = document.getElementById('status-badge');
+  badge.innerHTML = `<span class="status-badge ${data.status === 'complete' ? 'status-complete' : 'status-running'}">${data.status === 'complete' ? 'DONE' : 'RUNNING'}</span>`;
+  
+  // Cards
+  document.getElementById('baseline-score').textContent = data.baseline_score.toFixed(1) + '%';
+  document.getElementById('best-score').textContent = data.best_score.toFixed(1) + '%';
+  document.getElementById('exp-count').textContent = data.experiments.length;
+  document.getElementById('improvement').textContent = '+' + (data.best_score - data.baseline_score).toFixed(1) + '%';
+
+  // Chart
+  const labels = data.experiments.map(e => `Exp ${e.id}`);
+  const scores = data.experiments.map(e => e.pass_rate);
+  const colors = data.experiments.map(e => e.status === 'baseline' ? '#4299e1' : e.status === 'keep' ? '#68d391' : '#fc8181');
+
+  if (chart) chart.destroy();
+  const ctx = document.getElementById('scoreChart').getContext('2d');
+  chart = new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels,
+      datasets: [
+        {
+          label: 'Pass Rate %',
+          data: scores,
+          borderColor: '#805ad5',
+          backgroundColor: 'rgba(128,90,213,0.08)',
+          borderWidth: 2.5,
+          pointBackgroundColor: colors,
+          pointRadius: 7,
+          pointHoverRadius: 9,
+          tension: 0.3,
+          fill: true
+        },
+        {
+          label: 'Target (93%)',
+          data: labels.map(() => 93),
+          borderColor: '#dd6b20',
+          borderDash: [6, 4],
+          borderWidth: 1.5,
+          pointRadius: 0,
+          fill: false
+        }
+      ]
+    },
+    options: {
+      scales: {
+        y: { min: 0, max: 105, ticks: { callback: v => v + '%' }, grid: { color: '#f0f0f0' } },
+        x: { grid: { display: false } }
+      },
+      plugins: { legend: { display: true, position: 'top' } }
+    }
+  });
+
+  // Table
+  const tbody = document.getElementById('exp-table-body');
+  tbody.innerHTML = data.experiments.map(e => `
+    <tr>
+      <td><strong>${e.id}</strong></td>
+      <td><strong style="color:${e.pass_rate >= 93 ? '#38a169' : e.pass_rate >= 80 ? '#dd6b20' : '#e53e3e'}">${e.pass_rate.toFixed(1)}%</strong></td>
+      <td>${e.score}/${e.max_score}</td>
+      <td><span class="pill pill-${e.status}">${e.status}</span></td>
+      <td style="color:#4a5568">${e.description}</td>
+    </tr>
+  `).join('');
+
+  // Eval bars
+  const evalDiv = document.getElementById('eval-bars');
+  evalDiv.innerHTML = data.eval_breakdown.map(e => {
+    const pct = Math.round((e.pass_count / e.total) * 100);
+    return `
+      <div class="eval-bar-wrap">
+        <div class="eval-name">${e.name}</div>
+        <div class="eval-bar-track"><div class="eval-bar-fill" style="width:${pct}%"></div></div>
+        <div class="eval-pct">${pct}%</div>
+      </div>
+    `;
+  }).join('');
+}
+
+load();
+setInterval(load, 10000);
+</script>
+</body>
+</html>

@@ -1,0 +1,60 @@
+# xaut-trade example config (safe to commit)
+# For local use, copy to config.yaml and modify as needed.
+
+# Informational only — not read by scripts.
+# The active RPC endpoint comes from ETH_RPC_URL in ~/.aurehub/.env.
+# chain_id is passed explicitly when needed (e.g. --chain-id 1 for limit orders).
+networks:
+  ethereum_mainnet:
+    chain_id: 1
+    rpc_env: ETH_RPC_URL
+  anvil_fork:
+    chain_id: 31337
+    rpc: http://127.0.0.1:8545   # for local fork testing with `anvil --fork-url`
+
+contracts:
+  router: "0x68b3465833fb72A70ecDF485E0e4C7bD8665Fc45"
+  quoter: "0x61fFE014bA17989E743c5F6cB21bF9697530B21e"
+  permit2: "0x000000000022D473030F116dDEE9F6B43aC78BA3"
+
+tokens:
+  XAUT:
+    address: "0x68749665FF8D2d112Fa859AA293F07A622782F38"
+    decimals: 6
+  USDT:
+    address: "0xdAC17F958D2ee523a2206206994597C13D831ec7"
+    decimals: 6
+
+# Whitelist: only the following pairs are supported; all others hard-stop
+pairs:
+  - key: "USDT_XAUT"
+    enabled: true
+    token_in: "USDT"
+    token_out: "XAUT"
+    fee_tier: 3000
+  - key: "XAUT_USDT"
+    enabled: true
+    token_in: "XAUT"
+    token_out: "USDT"
+    fee_tier: 3000
+
+token_rules:
+  USDT:
+    requires_reset_approve: true
+
+risk:
+  default_slippage_bps: 50
+  max_slippage_bps_warn: 50
+  confirm_trade_usd: 10
+  large_trade_usd: 1000
+  approve_confirmation_mode: "first_only" # always | first_only | never (never is high-risk; advanced users only)
+  approve_force_confirm_multiple: 10
+  min_eth_for_gas: "0.005"
+  deadline_seconds: 300
+
+# Limit order config (UniswapX)
+limit_order:
+  default_expiry_seconds: 86400    # Default expiry: 1 day
+  max_expiry_seconds: 2592000      # Maximum: 30 days (API-tested upper bound)
+  min_expiry_seconds: 300          # Minimum: 5 minutes
+  uniswapx_api: "https://api.uniswap.org/v2"

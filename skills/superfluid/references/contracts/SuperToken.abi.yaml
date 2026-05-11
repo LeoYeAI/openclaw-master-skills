@@ -1,0 +1,1033 @@
+# SuperToken — the Superfluid Protocol's token standard
+# Merges three variants into a single ABI surface:
+#   • Wrapper Super Token   — wraps an existing ERC-20 (upgrade / downgrade)
+#   • Native Asset Super Token (SETH) — wraps chain-native asset (upgradeByETH / downgradeToETH)
+#   • Pure Super Token      — pre-minted, no underlying token (upgrade/downgrade revert)
+#
+# Inherits ERC-20, ERC-777, ERC-2612 (permit), EIP-5267, and the Superfluid real-time
+# balance and agreement hosting layer from SuperfluidToken.
+#
+# Proxy / upgradability functions are omitted:
+#   castrate, getCodeAddress, proxiableUUID, initialize, initializeWithAdmin, updateCode
+# Proxy-related events are also omitted: CodeUpdated, Initialized.
+
+meta:
+  name: SuperToken
+  version: v1
+  source:
+    - https://raw.githubusercontent.com/superfluid-org/protocol-monorepo/refs/heads/dev/packages/ethereum-contracts/contracts/superfluid/SuperToken.sol
+    - https://raw.githubusercontent.com/superfluid-org/protocol-monorepo/refs/heads/dev/packages/ethereum-contracts/contracts/interfaces/superfluid/ISuperToken.sol
+    - https://raw.githubusercontent.com/superfluid-org/protocol-monorepo/refs/heads/dev/packages/ethereum-contracts/contracts/superfluid/SuperfluidToken.sol
+    - https://raw.githubusercontent.com/superfluid-org/protocol-monorepo/refs/heads/dev/packages/ethereum-contracts/contracts/interfaces/superfluid/IYieldBackend.sol
+  inherits: [SuperfluidToken, ISuperToken, UUPSProxiable]
+  yield_backends:
+    - name: AaveYieldBackend
+      note: "Production backend for ERC-20 wrapper tokens using Aave V3"
+      source: https://raw.githubusercontent.com/superfluid-org/protocol-monorepo/refs/heads/dev/packages/ethereum-contracts/contracts/superfluid/AaveYieldBackend.sol
+    - name: AaveETHYieldBackend
+      note: "Variant for native-asset (ETH/WETH) wrapper tokens using Aave V3"
+      source: https://raw.githubusercontent.com/superfluid-org/protocol-monorepo/refs/heads/dev/packages/ethereum-contracts/contracts/superfluid/AaveETHYieldBackend.sol
+    - name: ERC4626YieldBackend
+      note: "Generic backend for any ERC-4626 vault"
+      source: https://raw.githubusercontent.com/superfluid-org/protocol-monorepo/refs/heads/dev/packages/ethereum-contracts/contracts/superfluid/ERC4626YieldBackend.sol
+    - name: SparkYieldBackend
+      note: "Extends ERC4626YieldBackend for Spark Protocol vaults with referral tracking"
+      source: https://raw.githubusercontent.com/superfluid-org/protocol-monorepo/refs/heads/dev/packages/ethereum-contracts/contracts/superfluid/SparkYieldBackend.sol
+  variants:
+    wrapper: "Standard ERC-20 wrapper — upgrade() / downgrade()"
+    native-asset: "Native asset wrapper (SETH) — upgradeByETH() / downgradeToETH()"
+    pure: "Pre-minted supply, no underlying — upgrade/downgrade revert"
+  note: >
+    Super Tokens are deployed as individual proxies (one per token) by the
+    SuperTokenFactory.  There is no single canonical deployment address.
+    All proxies share the same logic contract which is upgraded via governance.
+
+# wrapper super token   — a Super Token backed by an ERC-20 underlying token
+# native asset super token (SETH) — a Super Token backed by the chain-native asset (ETH, MATIC, etc.)
+# pure super token      — a Super Token with no underlying; supply is pre-minted at deploy time
+# underlying token      — the ERC-20 token that a wrapper super token wraps
+# real-time balance      — balance that changes continuously based on active agreements (CFA/GDA)
+# available balance      — real-time balance minus locked deposits
+# critical               — an account whose available balance is negative
+# solvent                — an account whose real-time balance (before deposit deductions) is non-negative
+# operator (ERC-777)     — an address authorized to send/burn tokens on behalf of a holder
+# buffer / deposit       — collateral locked while an outgoing flow is active
+
+# == ERC-20 Token Info ==
+
+name:
+  mutability: view
+  inputs: []
+  outputs:
+    - string
+
+symbol:
+  mutability: view
+  inputs: []
+  outputs:
+    - string
+
+decimals:
+  # Always returns 18 regardless of underlying token decimals.
+  notes:
+    - "Always returns 18, regardless of the underlying token's decimals (e.g. USDC has 6). The upgrade/downgrade functions handle decimal conversion internally."
+  mutability: pure
+  inputs: []
+  outputs:
+    - uint8
+
+totalSupply:
+  mutability: view
+  inputs: []
+  outputs:
+    - uint256
+
+# == ERC-20 Balance & Allowance ==
+
+balanceOf:
+  # Returns max(0, availableBalance) — clamps negative balances to zero.
+  # For the full real-time picture, use realtimeBalanceOfNow.
+  notes:
+    - "Returns max(0, availableBalance) — negative/critical balances are clamped to zero. Use realtimeBalanceOfNow to detect critical accounts."
+  mutability: view
+  inputs:
+    - account: address
+  outputs:
+    - balance: uint256
+
+allowance:
+  mutability: view
+  inputs:
+    - account: address
+    - spender: address
+  outputs:
+    - uint256
+
+approve:
+  mutability: nonpayable
+  access: anyone
+  inputs:
+    - spender: address
+    - amount: uint256
+  outputs:
+    - bool
+  emits: [Approval]
+  errors: [SUPER_TOKEN_APPROVE_FROM_ZERO_ADDRESS, SUPER_TOKEN_APPROVE_TO_ZERO_ADDRESS]
+
+increaseAllowance:
+  mutability: nonpayable
+  access: anyone
+  inputs:
+    - spender: address
+    - addedValue: uint256
+  outputs:
+    - bool
+  emits: [Approval]
+  errors: [SUPER_TOKEN_APPROVE_FROM_ZERO_ADDRESS, SUPER_TOKEN_APPROVE_TO_ZERO_ADDRESS]
+
+decreaseAllowance:
+  mutability: nonpayable
+  access: anyone
+  inputs:
+    - spender: address
+    - subtractedValue: uint256
+  outputs:
+    - bool
+  emits: [Approval]
+  errors: [SUPER_TOKEN_APPROVE_FROM_ZERO_ADDRESS, SUPER_TOKEN_APPROVE_TO_ZERO_ADDRESS]
+
+# == ERC-20 Transfers ==
+
+transfer:
+  # ERC-20 transfer. Does NOT invoke ERC-777 send/receive hooks (by design).
+  mutability: nonpayable
+  access: anyone
+  inputs:
+    - recipient: address
+    - amount: uint256
+  outputs:
+    - bool
+  emits: [Sent, Transfer]
+  errors: [SUPER_TOKEN_TRANSFER_FROM_ZERO_ADDRESS, SUPER_TOKEN_TRANSFER_TO_ZERO_ADDRESS, SF_TOKEN_MOVE_INSUFFICIENT_BALANCE]
+
+transferFrom:
+  # ERC-20 transferFrom. Does NOT invoke ERC-777 send/receive hooks.
+  # Does NOT emit an Approval event on allowance spend (OZ v5 behaviour).
+  mutability: nonpayable
+  access: anyone
+  inputs:
+    - holder: address
+    - recipient: address
+    - amount: uint256
+  outputs:
+    - bool
+  emits: [Sent, Transfer]
+  errors: [SUPER_TOKEN_TRANSFER_FROM_ZERO_ADDRESS, SUPER_TOKEN_TRANSFER_TO_ZERO_ADDRESS, SF_TOKEN_MOVE_INSUFFICIENT_BALANCE]
+
+transferAll:
+  # Transfer the caller's entire balanceOf to recipient.
+  mutability: nonpayable
+  access: anyone  # transfers msg.sender's entire balance
+  inputs:
+    - recipient: address
+  emits: [Sent, Transfer]
+  errors: [SUPER_TOKEN_TRANSFER_FROM_ZERO_ADDRESS, SUPER_TOKEN_TRANSFER_TO_ZERO_ADDRESS, SF_TOKEN_MOVE_INSUFFICIENT_BALANCE]
+
+# == ERC-777 ==
+
+granularity:
+  # Always returns 1.
+  mutability: pure
+  inputs: []
+  outputs:
+    - uint256
+
+send:
+  # ERC-777 send — invokes tokensToSend / tokensReceived hooks.
+  mutability: nonpayable
+  access: anyone
+  inputs:
+    - recipient: address
+    - amount: uint256
+    - userData: bytes
+  emits: [Sent, Transfer]
+  errors: [SUPER_TOKEN_TRANSFER_FROM_ZERO_ADDRESS, SUPER_TOKEN_TRANSFER_TO_ZERO_ADDRESS, SF_TOKEN_MOVE_INSUFFICIENT_BALANCE, SUPER_TOKEN_NOT_ERC777_TOKENS_RECIPIENT]
+
+burn:
+  # ERC-777 burn — in SuperToken this actually performs a downgrade (unwrap).
+  notes:
+    - "Gotcha: Reverts with SUPER_TOKEN_NO_UNDERLYING_TOKEN on Pure Super Tokens."
+  mutability: nonpayable
+  access: anyone
+  inputs:
+    - amount: uint256
+    - userData: bytes
+  emits: [Burned, Transfer, TokenDowngraded]
+  errors: [SUPER_TOKEN_NO_UNDERLYING_TOKEN, SUPER_TOKEN_BURN_FROM_ZERO_ADDRESS, SF_TOKEN_BURN_INSUFFICIENT_BALANCE, SUPER_TOKEN_INFLATIONARY_DEFLATIONARY_NOT_SUPPORTED]
+
+authorizeOperator:
+  mutability: nonpayable
+  access: anyone
+  inputs:
+    - operator: address
+  emits: [AuthorizedOperator]
+
+revokeOperator:
+  mutability: nonpayable
+  access: anyone
+  inputs:
+    - operator: address
+  emits: [RevokedOperator]
+
+isOperatorFor:
+  mutability: view
+  inputs:
+    - operator: address
+    - tokenHolder: address
+  outputs:
+    - bool
+
+defaultOperators:
+  mutability: view
+  inputs: []
+  outputs:
+    - "address[]"
+
+operatorSend:
+  # ERC-777 operatorSend — invokes tokensToSend / tokensReceived hooks.
+  mutability: nonpayable
+  access: operator
+  inputs:
+    - sender: address
+    - recipient: address
+    - amount: uint256
+    - userData: bytes
+    - operatorData: bytes
+  emits: [Sent, Transfer]
+  errors: [SUPER_TOKEN_CALLER_IS_NOT_OPERATOR_FOR_HOLDER, SUPER_TOKEN_TRANSFER_FROM_ZERO_ADDRESS, SUPER_TOKEN_TRANSFER_TO_ZERO_ADDRESS, SF_TOKEN_MOVE_INSUFFICIENT_BALANCE, SUPER_TOKEN_NOT_ERC777_TOKENS_RECIPIENT]
+
+operatorBurn:
+  # ERC-777 operatorBurn — like burn(), actually performs a downgrade.
+  mutability: nonpayable
+  access: operator
+  inputs:
+    - account: address
+    - amount: uint256
+    - userData: bytes
+    - operatorData: bytes
+  emits: [Burned, Transfer, TokenDowngraded]
+  errors: [SUPER_TOKEN_CALLER_IS_NOT_OPERATOR_FOR_HOLDER, SUPER_TOKEN_NO_UNDERLYING_TOKEN, SUPER_TOKEN_BURN_FROM_ZERO_ADDRESS, SF_TOKEN_BURN_INSUFFICIENT_BALANCE, SUPER_TOKEN_INFLATIONARY_DEFLATIONARY_NOT_SUPPORTED]
+
+# == ERC-20 Permit ==
+
+permit:
+  mutability: nonpayable
+  access: anyone
+  inputs:
+    - owner: address
+    - spender: address
+    - value: uint256
+    - deadline: uint256
+    - v: uint8
+    - r: bytes32
+    - s: bytes32
+  emits: [Approval]
+  errors: [SUPER_TOKEN_PERMIT_EXPIRED_SIGNATURE, SUPER_TOKEN_PERMIT_INVALID_SIGNER, ECDSAInvalidSignature, ECDSAInvalidSignatureLength, ECDSAInvalidSignatureS, SUPER_TOKEN_APPROVE_FROM_ZERO_ADDRESS, SUPER_TOKEN_APPROVE_TO_ZERO_ADDRESS]
+
+nonces:
+  mutability: view
+  inputs:
+    - owner: address
+  outputs:
+    - uint256
+
+DOMAIN_SEPARATOR:
+  mutability: view
+  inputs: []
+  outputs:
+    - bytes32
+
+eip712Domain:
+  # EIP-5267 domain retrieval.
+  mutability: view
+  inputs: []
+  outputs:
+    - fields: bytes1
+    - name: string
+    - version: string
+    - chainId: uint256
+    - verifyingContract: address
+    - salt: bytes32
+    - "extensions: uint256[]"
+
+# == ERC-20 Wrapping ==
+# These functions interact with the underlying ERC-20 token.
+# They revert with SUPER_TOKEN_NO_UNDERLYING_TOKEN on Pure and Native Asset
+# Super Tokens (use upgradeByETH / downgradeToETH for SETH).
+
+upgrade:
+  # Wrap underlying ERC-20 into Super Tokens for msg.sender.
+  # Requires prior ERC-20 approval on the underlying token.
+  notes:
+    - "Gotcha: amount is always in SuperToken decimals (18), regardless of the underlying token's decimals. The contract handles downscaling internally when pulling from the underlying via transferFrom. However, the ERC-20 approval on the underlying token must use the underlying's native decimals. Example: to wrap 1000 USDC, approve 1000e6 on USDC, then call upgrade(1000e18)."
+  mutability: nonpayable
+  access: anyone  # wraps for msg.sender
+  inputs:
+    - amount: uint256           # in SuperToken decimals (always 18)
+  emits: [Minted, Transfer, TokenUpgraded]
+  errors: [SUPER_TOKEN_NO_UNDERLYING_TOKEN, SUPER_TOKEN_INFLATIONARY_DEFLATIONARY_NOT_SUPPORTED, SUPER_TOKEN_MINT_TO_ZERO_ADDRESS, SafeERC20FailedOperation, SafeCastOverflowedUintToInt]
+
+upgradeTo:
+  # Wrap underlying ERC-20 and mint Super Tokens to a different address.
+  mutability: nonpayable
+  access: anyone
+  inputs:
+    - to: address
+    - amount: uint256
+    - userData: bytes
+  emits: [Minted, Transfer, TokenUpgraded]
+  errors: [SUPER_TOKEN_NO_UNDERLYING_TOKEN, SUPER_TOKEN_INFLATIONARY_DEFLATIONARY_NOT_SUPPORTED, SUPER_TOKEN_MINT_TO_ZERO_ADDRESS, SUPER_TOKEN_NOT_ERC777_TOKENS_RECIPIENT, SafeERC20FailedOperation, SafeCastOverflowedUintToInt]
+
+downgrade:
+  # Unwrap Super Tokens back to underlying ERC-20 for msg.sender.
+  mutability: nonpayable
+  access: anyone  # unwraps to msg.sender
+  inputs:
+    - amount: uint256
+  emits: [Burned, Transfer, TokenDowngraded]
+  errors: [SUPER_TOKEN_NO_UNDERLYING_TOKEN, SUPER_TOKEN_BURN_FROM_ZERO_ADDRESS, SF_TOKEN_BURN_INSUFFICIENT_BALANCE, SUPER_TOKEN_INFLATIONARY_DEFLATIONARY_NOT_SUPPORTED, SafeERC20FailedOperation]
+
+downgradeTo:
+  # Unwrap Super Tokens and send underlying ERC-20 to a different address.
+  mutability: nonpayable
+  access: anyone
+  inputs:
+    - to: address
+    - amount: uint256
+  emits: [Burned, Transfer, TokenDowngraded]
+  errors: [SUPER_TOKEN_NO_UNDERLYING_TOKEN, SUPER_TOKEN_BURN_FROM_ZERO_ADDRESS, SF_TOKEN_BURN_INSUFFICIENT_BALANCE, SUPER_TOKEN_INFLATIONARY_DEFLATIONARY_NOT_SUPPORTED, SafeERC20FailedOperation]
+
+getUnderlyingToken:
+  # Returns address(0) for Pure and Native Asset Super Tokens.
+  mutability: view
+  inputs: []
+  outputs:
+    - address
+
+getUnderlyingDecimals:
+  mutability: view
+  inputs: []
+  outputs:
+    - uint8
+
+toUnderlyingAmount:
+  # Convert a Super Token amount to its underlying equivalent, accounting for
+  # decimal differences. adjustedAmount strips precision loss.
+  mutability: view
+  inputs:
+    - amount: uint256
+  outputs:
+    - underlyingAmount: uint256
+    - adjustedAmount: uint256
+
+# == Native Asset Wrapping (SETH only) ==
+# These functions exist only on Native Asset Super Token (SETH) proxies.
+# They are defined in the SETHProxy contract, not in the SuperToken logic.
+# The SETH proxy also accepts plain ETH transfers via receive() which mints
+# Super Tokens to the sender.
+
+upgradeByETH:
+  # Wrap sent ETH/native asset into Super Tokens for msg.sender.
+  # Variant: native-asset
+  mutability: payable
+  access: anyone  # wraps for msg.sender
+  inputs: []
+  emits: [Minted, Transfer, TokenUpgraded]
+
+upgradeByETHTo:
+  # Wrap sent ETH/native asset into Super Tokens for a different address.
+  # Variant: native-asset
+  mutability: payable
+  access: anyone
+  inputs:
+    - to: address
+  emits: [Minted, Transfer, TokenUpgraded]
+
+downgradeToETH:
+  # Unwrap Super Tokens back to ETH/native asset for msg.sender.
+  # Variant: native-asset
+  mutability: nonpayable
+  access: anyone  # unwraps to msg.sender
+  inputs:
+    - wad: uint256
+  emits: [Burned, Transfer, TokenDowngraded]
+
+# == Real-time Balance ==
+
+realtimeBalanceOf:
+  # Full real-time balance across ALL agreements at a given timestamp.
+  # This aggregates the realtimeBalanceOf from every agreement (CFA, GDA, IDA)
+  # into a single balance. Use this (or realtimeBalanceOfNow) to check an
+  # account's actual balance — not the per-agreement versions.
+  # availableBalance = settled + agreement dynamics − max(0, deposit − owedDeposit)
+  mutability: view
+  inputs:
+    - account: address
+    - timestamp: uint256
+  outputs:
+    - availableBalance: int256
+    - deposit: uint256
+    - owedDeposit: uint256
+
+realtimeBalanceOfNow:
+  # Convenience wrapper: realtimeBalanceOf at the current Host timestamp.
+  # This is the recommended way to check an account's real-time balance.
+  mutability: view
+  inputs:
+    - account: address
+  outputs:
+    - availableBalance: int256
+    - deposit: uint256
+    - owedDeposit: uint256
+    - timestamp: uint256
+
+isAccountCritical:
+  # True if availableBalance < 0 at the given timestamp.
+  mutability: view
+  inputs:
+    - account: address
+    - timestamp: uint256
+  outputs:
+    - isCritical: bool
+
+isAccountCriticalNow:
+  mutability: view
+  inputs:
+    - account: address
+  outputs:
+    - isCritical: bool
+
+isAccountSolvent:
+  # True if realtime balance (before deposit deduction) >= 0 at the given timestamp.
+  mutability: view
+  inputs:
+    - account: address
+    - timestamp: uint256
+  outputs:
+    - isSolvent: bool
+
+isAccountSolventNow:
+  mutability: view
+  inputs:
+    - account: address
+  outputs:
+    - isSolvent: bool
+
+# == Admin ==
+# The admin defaults to the Host contract when address(0).
+# An explicit admin can be set during initializeWithAdmin or via changeAdmin.
+
+changeAdmin:
+  mutability: nonpayable
+  access: admin
+  inputs:
+    - newAdmin: address
+  emits: [AdminChanged]
+  errors: [SUPER_TOKEN_ONLY_ADMIN]
+
+getAdmin:
+  # Returns address(0) if the Host is the implicit admin.
+  mutability: view
+  inputs: []
+  outputs:
+    - address
+
+# == Yield Backend ==
+# Hot-pluggable yield generation for wrapper Super Tokens. The yield backend is a
+# contract implementing IYieldBackend that is invoked via delegatecall. When enabled,
+# the underlying ERC-20 is deposited into a yield protocol (e.g. Aave, Spark, ERC4626 vaults).
+# Surplus yield (balance exceeding totalSupply) can be withdrawn by the admin.
+
+enableYieldBackend:
+  # Enable a yield backend and deposit all underlying token balance into it.
+  # Requires no existing yield backend to be set.
+  notes:
+    - "Gotcha: Reverts if a yield backend is already enabled — must call disableYieldBackend first to switch backends."
+    - "The yield backend contract is invoked via delegatecall — it executes in the SuperToken's context."
+  mutability: nonpayable
+  access: admin
+  inputs:
+    - newYieldBackend: address  # must implement IYieldBackend
+  emits: [YieldBackendEnabled]
+
+disableYieldBackend:
+  # Withdraw all assets from the yield backend and disable it.
+  notes:
+    - "Calls withdrawMax() then disable() on the backend via delegatecall."
+  mutability: nonpayable
+  access: admin
+  inputs: []
+  emits: [YieldBackendDisabled]
+
+getYieldBackend:
+  # Returns the current yield backend address, or address(0) if none is set.
+  mutability: view
+  inputs: []
+  outputs:
+    - yieldBackend: address
+
+withdrawSurplusFromYieldBackend:
+  # Withdraw yield surplus (deposited amount exceeding totalSupply) from the backend.
+  # The surplus is sent to a receiver defined by the yield backend implementation.
+  mutability: nonpayable
+  access: admin
+  inputs: []
+
+# == Self Operations ==
+# Can only be called by the token contract itself (address(this)).
+# Used by custom super token proxies (SETH, Pure) to mint/burn/approve/transfer
+# tokens through their own proxy logic.
+
+selfMint:
+  mutability: nonpayable
+  access: self
+  inputs:
+    - account: address
+    - amount: uint256
+    - userData: bytes
+  emits: [Minted, Transfer]
+  errors: [SUPER_TOKEN_ONLY_SELF, SUPER_TOKEN_MINT_TO_ZERO_ADDRESS]
+
+selfBurn:
+  mutability: nonpayable
+  access: self
+  inputs:
+    - account: address
+    - amount: uint256
+    - userData: bytes
+  emits: [Burned, Transfer]
+  errors: [SUPER_TOKEN_ONLY_SELF, SUPER_TOKEN_BURN_FROM_ZERO_ADDRESS, SF_TOKEN_BURN_INSUFFICIENT_BALANCE]
+
+selfApproveFor:
+  mutability: nonpayable
+  access: self
+  inputs:
+    - account: address
+    - spender: address
+    - amount: uint256
+  emits: [Approval]
+  errors: [SUPER_TOKEN_ONLY_SELF, SUPER_TOKEN_APPROVE_FROM_ZERO_ADDRESS, SUPER_TOKEN_APPROVE_TO_ZERO_ADDRESS]
+
+selfTransferFrom:
+  mutability: nonpayable
+  access: self
+  inputs:
+    - holder: address
+    - spender: address
+    - recipient: address
+    - amount: uint256
+  emits: [Sent, Transfer]
+  errors: [SUPER_TOKEN_ONLY_SELF, SUPER_TOKEN_TRANSFER_FROM_ZERO_ADDRESS, SUPER_TOKEN_TRANSFER_TO_ZERO_ADDRESS, SF_TOKEN_MOVE_INSUFFICIENT_BALANCE]
+
+# == Host Batch Operations ==
+# Called by the Host contract on behalf of a user within batchCall /
+# forwardBatchCall. Each mirrors a user-facing function but takes the
+# account address explicitly.
+
+operationApprove:
+  mutability: nonpayable
+  access: host
+  inputs:
+    - account: address
+    - spender: address
+    - amount: uint256
+  emits: [Approval]
+  errors: [SF_TOKEN_ONLY_HOST, SUPER_TOKEN_APPROVE_FROM_ZERO_ADDRESS, SUPER_TOKEN_APPROVE_TO_ZERO_ADDRESS]
+
+operationIncreaseAllowance:
+  mutability: nonpayable
+  access: host
+  inputs:
+    - account: address
+    - spender: address
+    - addedValue: uint256
+  emits: [Approval]
+  errors: [SF_TOKEN_ONLY_HOST, SUPER_TOKEN_APPROVE_FROM_ZERO_ADDRESS, SUPER_TOKEN_APPROVE_TO_ZERO_ADDRESS]
+
+operationDecreaseAllowance:
+  mutability: nonpayable
+  access: host
+  inputs:
+    - account: address
+    - spender: address
+    - subtractedValue: uint256
+  emits: [Approval]
+  errors: [SF_TOKEN_ONLY_HOST, SUPER_TOKEN_APPROVE_FROM_ZERO_ADDRESS, SUPER_TOKEN_APPROVE_TO_ZERO_ADDRESS]
+
+operationTransferFrom:
+  mutability: nonpayable
+  access: host
+  inputs:
+    - account: address
+    - spender: address
+    - recipient: address
+    - amount: uint256
+  emits: [Sent, Transfer]
+  errors: [SF_TOKEN_ONLY_HOST, SUPER_TOKEN_TRANSFER_FROM_ZERO_ADDRESS, SUPER_TOKEN_TRANSFER_TO_ZERO_ADDRESS, SF_TOKEN_MOVE_INSUFFICIENT_BALANCE]
+
+operationSend:
+  mutability: nonpayable
+  access: host
+  inputs:
+    - spender: address
+    - recipient: address
+    - amount: uint256
+    - userData: bytes
+  emits: [Sent, Transfer]
+  errors: [SF_TOKEN_ONLY_HOST, SUPER_TOKEN_TRANSFER_FROM_ZERO_ADDRESS, SUPER_TOKEN_TRANSFER_TO_ZERO_ADDRESS, SF_TOKEN_MOVE_INSUFFICIENT_BALANCE, SUPER_TOKEN_NOT_ERC777_TOKENS_RECIPIENT]
+
+operationUpgrade:
+  mutability: nonpayable
+  access: host
+  inputs:
+    - account: address
+    - amount: uint256
+  emits: [Minted, Transfer, TokenUpgraded]
+  errors: [SF_TOKEN_ONLY_HOST, SUPER_TOKEN_NO_UNDERLYING_TOKEN, SUPER_TOKEN_INFLATIONARY_DEFLATIONARY_NOT_SUPPORTED, SUPER_TOKEN_MINT_TO_ZERO_ADDRESS, SafeERC20FailedOperation, SafeCastOverflowedUintToInt]
+
+operationDowngrade:
+  mutability: nonpayable
+  access: host
+  inputs:
+    - account: address
+    - amount: uint256
+  emits: [Burned, Transfer, TokenDowngraded]
+  errors: [SF_TOKEN_ONLY_HOST, SUPER_TOKEN_NO_UNDERLYING_TOKEN, SUPER_TOKEN_BURN_FROM_ZERO_ADDRESS, SF_TOKEN_BURN_INSUFFICIENT_BALANCE, SUPER_TOKEN_INFLATIONARY_DEFLATIONARY_NOT_SUPPORTED, SafeERC20FailedOperation]
+
+operationUpgradeTo:
+  mutability: nonpayable
+  access: host
+  inputs:
+    - account: address
+    - to: address
+    - amount: uint256
+  emits: [Minted, Transfer, TokenUpgraded]
+  errors: [SF_TOKEN_ONLY_HOST, SUPER_TOKEN_NO_UNDERLYING_TOKEN, SUPER_TOKEN_INFLATIONARY_DEFLATIONARY_NOT_SUPPORTED, SUPER_TOKEN_MINT_TO_ZERO_ADDRESS, SafeERC20FailedOperation, SafeCastOverflowedUintToInt]
+
+operationDowngradeTo:
+  mutability: nonpayable
+  access: host
+  inputs:
+    - account: address
+    - to: address
+    - amount: uint256
+  emits: [Burned, Transfer, TokenDowngraded]
+  errors: [SF_TOKEN_ONLY_HOST, SUPER_TOKEN_NO_UNDERLYING_TOKEN, SUPER_TOKEN_BURN_FROM_ZERO_ADDRESS, SF_TOKEN_BURN_INSUFFICIENT_BALANCE, SUPER_TOKEN_INFLATIONARY_DEFLATIONARY_NOT_SUPPORTED, SafeERC20FailedOperation]
+
+# == Agreement Hosting ==
+# The token acts as storage host for agreement data.  These functions are
+# called by registered agreement contracts (CFA, GDA, IDA) through the Host.
+
+createAgreement:
+  mutability: nonpayable
+  access: agreement
+  inputs:
+    - id: bytes32
+    - "data: bytes32[]"
+  emits: [AgreementCreated]
+  errors: [SF_TOKEN_AGREEMENT_ALREADY_EXISTS]
+
+getAgreementData:
+  mutability: view
+  inputs:
+    - agreementClass: address
+    - id: bytes32
+    - dataLength: uint256
+  outputs:
+    - "data: bytes32[]"
+
+updateAgreementData:
+  mutability: nonpayable
+  access: agreement
+  inputs:
+    - id: bytes32
+    - "data: bytes32[]"
+  emits: [AgreementUpdated]
+
+terminateAgreement:
+  mutability: nonpayable
+  access: agreement
+  inputs:
+    - id: bytes32
+    - dataLength: uint256
+  emits: [AgreementTerminated]
+  errors: [SF_TOKEN_AGREEMENT_DOES_NOT_EXIST]
+
+updateAgreementStateSlot:
+  mutability: nonpayable
+  access: agreement
+  inputs:
+    - account: address
+    - slotId: uint256
+    - "slotData: bytes32[]"
+  emits: [AgreementStateUpdated]
+
+getAgreementStateSlot:
+  mutability: view
+  inputs:
+    - agreementClass: address
+    - account: address
+    - slotId: uint256
+    - dataLength: uint256
+  outputs:
+    - "slotData: bytes32[]"
+
+settleBalance:
+  # Adjust an account's settled balance. Only listed agreements can call this.
+  mutability: nonpayable
+  access: agreement
+  inputs:
+    - account: address
+    - delta: int256
+  errors: [SF_TOKEN_ONLY_LISTED_AGREEMENT]
+
+makeLiquidationPayoutsV2:
+  # Execute liquidation payouts. Transfers reward to liquidator or reward account,
+  # and adjusts the target account's balance. Only listed agreements can call this.
+  mutability: nonpayable
+  access: agreement
+  inputs:
+    - id: bytes32
+    - liquidationTypeData: bytes
+    - liquidatorAccount: address
+    - useDefaultRewardAccount: bool
+    - targetAccount: address
+    - rewardAmount: uint256
+    - targetAccountBalanceDelta: int256
+  emits: [Transfer, AgreementLiquidatedV2]
+  errors: [SF_TOKEN_ONLY_LISTED_AGREEMENT]
+
+getAccountActiveAgreements:
+  mutability: view
+  inputs:
+    - account: address
+  outputs:
+    - "ISuperAgreement[]"
+
+# == Protocol Info ==
+
+getHost:
+  mutability: view
+  inputs: []
+  outputs:
+    - host: address
+
+POOL_ADMIN_NFT:
+  # Immutable address of the canonical PoolAdminNFT proxy.
+  mutability: view
+  inputs: []
+  outputs:
+    - address
+
+POOL_MEMBER_NFT:
+  # Immutable address of the (deprecated) PoolMemberNFT proxy.
+  mutability: view
+  inputs: []
+  outputs:
+    - address
+
+VERSION:
+  # Returns the version string of the SuperToken logic contract (e.g. "1.0.0").
+  mutability: view
+  inputs: []
+  outputs:
+    - string
+
+# == Events ==
+
+events:
+
+  # -- ERC-20 --
+
+  Transfer:
+    indexed:
+      - from: address
+      - to: address
+    data:
+      - value: uint256
+
+  Approval:
+    indexed:
+      - owner: address
+      - spender: address
+    data:
+      - value: uint256
+
+  # -- ERC-777 --
+
+  Sent:
+    indexed:
+      - operator: address
+      - from: address
+      - to: address
+    data:
+      - amount: uint256
+      - data: bytes
+      - operatorData: bytes
+
+  Minted:
+    indexed:
+      - operator: address
+      - to: address
+    data:
+      - amount: uint256
+      - data: bytes
+      - operatorData: bytes
+
+  Burned:
+    indexed:
+      - operator: address
+      - from: address
+    data:
+      - amount: uint256
+      - data: bytes
+      - operatorData: bytes
+
+  AuthorizedOperator:
+    indexed:
+      - operator: address
+      - tokenHolder: address
+
+  RevokedOperator:
+    indexed:
+      - operator: address
+      - tokenHolder: address
+
+  # -- EIP-5267 --
+
+  EIP712DomainChanged:
+    # Signalled when the EIP-712 domain changes. Not explicitly emitted by
+    # SuperToken, but declared in the EIP-5267 interface for indexing support.
+
+  # -- Wrapping --
+
+  TokenUpgraded:
+    indexed:
+      - account: address
+    data:
+      - amount: uint256
+
+  TokenDowngraded:
+    indexed:
+      - account: address
+    data:
+      - amount: uint256
+
+  # -- Admin --
+
+  AdminChanged:
+    indexed: []
+    data:
+      - oldAdmin: address
+      - newAdmin: address
+
+  # -- Yield Backend --
+
+  YieldBackendEnabled:
+    indexed:
+      - yieldBackend: address
+    data:
+      - depositAmount: uint256
+
+  YieldBackendDisabled:
+    indexed:
+      - yieldBackend: address
+
+  PoolAdminNFTCreated:
+    # Emitted once during logic contract constructor deployment.
+    indexed: []
+    data:
+      - poolAdminNFT: address
+
+  # -- Agreement Hosting --
+
+  AgreementCreated:
+    indexed:
+      - agreementClass: address
+      - id: bytes32
+    data:
+      - "data: bytes32[]"
+
+  AgreementUpdated:
+    indexed:
+      - agreementClass: address
+      - id: bytes32
+    data:
+      - "data: bytes32[]"
+
+  AgreementTerminated:
+    indexed:
+      - agreementClass: address
+      - id: bytes32
+
+  AgreementStateUpdated:
+    indexed:
+      - agreementClass: address
+      - account: address
+    data:
+      - slotId: uint256
+
+  AgreementLiquidatedV2:
+    indexed:
+      - agreementClass: address
+      - id: bytes32
+    data:
+      - liquidatorAccount: address
+      - targetAccount: address
+      - rewardAmountReceiver: address
+      - rewardAmount: uint256
+      - targetAccountBalanceDelta: int256
+      - liquidationTypeData: bytes
+
+  # -- Deprecated events (from ISuperfluidToken, no longer emitted) --
+
+  AgreementLiquidated:
+    deprecated: true
+    note: "Use AgreementLiquidatedV2"
+    indexed:
+      - agreementClass: address
+      - id: bytes32
+    data:
+      - penaltyAccount: address
+      - rewardAccount: address
+      - rewardAmount: uint256
+
+  AgreementLiquidatedBy:
+    deprecated: true
+    note: "Use AgreementLiquidatedV2"
+    indexed:
+      - liquidatorAccount: address
+      - agreementClass: address
+      - id: bytes32
+    data:
+      - penaltyAccount: address
+      - bondAccount: address
+      - rewardAmount: uint256
+      - bailoutAmount: uint256
+
+  Bailout:
+    deprecated: true
+    note: "Use AgreementLiquidatedV2"
+    indexed:
+      - bailoutAccount: address
+      - bailoutAmount: uint256
+
+# == Errors ==
+
+errors:
+
+  # -- Super Token access --
+  - SUPER_TOKEN_ONLY_SELF
+  - SUPER_TOKEN_ONLY_ADMIN
+  - SUPER_TOKEN_ONLY_GOV_OWNER
+
+  # -- SuperfluidToken access --
+  - SF_TOKEN_ONLY_HOST
+  - SF_TOKEN_ONLY_LISTED_AGREEMENT
+
+  # -- Wrapping --
+  - SUPER_TOKEN_NO_UNDERLYING_TOKEN
+  - SUPER_TOKEN_INFLATIONARY_DEFLATIONARY_NOT_SUPPORTED
+
+  # -- ERC-20 / ERC-777 transfer --
+  - SUPER_TOKEN_TRANSFER_FROM_ZERO_ADDRESS
+  - SUPER_TOKEN_TRANSFER_TO_ZERO_ADDRESS
+  - SF_TOKEN_MOVE_INSUFFICIENT_BALANCE
+
+  # -- Approve --
+  - SUPER_TOKEN_APPROVE_FROM_ZERO_ADDRESS
+  - SUPER_TOKEN_APPROVE_TO_ZERO_ADDRESS
+
+  # -- Mint / Burn --
+  - SUPER_TOKEN_MINT_TO_ZERO_ADDRESS
+  - SUPER_TOKEN_BURN_FROM_ZERO_ADDRESS
+  - SF_TOKEN_BURN_INSUFFICIENT_BALANCE
+
+  # -- ERC-777 operator --
+  - SUPER_TOKEN_CALLER_IS_NOT_OPERATOR_FOR_HOLDER
+  - SUPER_TOKEN_NOT_ERC777_TOKENS_RECIPIENT
+
+  # -- ERC-2612 permit --
+  - SUPER_TOKEN_PERMIT_EXPIRED_SIGNATURE:
+      inputs:
+        - deadline: uint256
+  - SUPER_TOKEN_PERMIT_INVALID_SIGNER:
+      inputs:
+        - signer: address
+        - owner: address
+
+  # -- NFT proxy --
+  - SUPER_TOKEN_NFT_PROXY_ADDRESS_CHANGED
+
+  # -- Agreement hosting --
+  - SF_TOKEN_AGREEMENT_ALREADY_EXISTS
+  - SF_TOKEN_AGREEMENT_DOES_NOT_EXIST
+
+  # -- OpenZeppelin ECDSA (from permit) --
+  - ECDSAInvalidSignature
+  - ECDSAInvalidSignatureLength:
+      inputs:
+        - length: uint256
+  - ECDSAInvalidSignatureS:
+      inputs:
+        - s: bytes32
+
+  # -- OpenZeppelin SafeCast --
+  - SafeCastOverflowedUintToInt:
+      inputs:
+        - value: uint256
+
+  # -- OpenZeppelin SafeERC20 --
+  - SafeERC20FailedOperation:
+      inputs:
+        - token: address

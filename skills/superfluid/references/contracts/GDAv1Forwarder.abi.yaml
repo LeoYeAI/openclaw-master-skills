@@ -1,0 +1,234 @@
+# GDAv1Forwarder — convenience wrapper for GeneralDistributionAgreementV1
+# Allows direct interaction with GDA functions without manually routing through
+# the Host's batchCall / forwardBatchCall. Operates as a trusted forwarder,
+# preserving msg.sender via EIP-2771.
+#
+# Each forwarder call is a standalone transaction — forwarder calls cannot be
+# combined in a Host.batchCall. To batch multiple operations atomically,
+# use Host.batchCall with the raw GDA agreement (operationType 201).
+# See Superfluid.abi.yaml for batch operation details.
+# Tradeoff: forwarder calls produce human-readable descriptions in wallets
+# (e.g. "createPool(token, admin, config)"), while Host.batchCall shows
+# encoded tuples that are difficult for users to verify.
+#
+# This contract has no events or custom errors — all events/errors propagate
+# from the underlying GDA, Pool, and Host contracts.
+
+meta:
+  name: GDAv1Forwarder
+  version: v1
+  source:
+    - https://raw.githubusercontent.com/superfluid-org/protocol-monorepo/refs/heads/dev/packages/ethereum-contracts/contracts/utils/GDAv1Forwarder.sol
+    - https://raw.githubusercontent.com/superfluid-org/protocol-monorepo/refs/heads/dev/packages/ethereum-contracts/contracts/utils/ForwarderBase.sol
+  inherits: [ForwarderBase]
+  deployments:
+    # Same address on all networks
+    mainnet:
+      eth-mainnet: "0x6DA13Bde224A05a288748d857b9e7DDEffd1dE08"
+      polygon-mainnet: "0x6DA13Bde224A05a288748d857b9e7DDEffd1dE08"
+      xdai-mainnet: "0x6DA13Bde224A05a288748d857b9e7DDEffd1dE08"
+      base-mainnet: "0x6DA13Bde224A05a288748d857b9e7DDEffd1dE08"
+      optimism-mainnet: "0x6DA13Bde224A05a288748d857b9e7DDEffd1dE08"
+      arbitrum-one: "0x6DA13Bde224A05a288748d857b9e7DDEffd1dE08"
+      bsc-mainnet: "0x6DA13Bde224A05a288748d857b9e7DDEffd1dE08"
+      avalanche-c: "0x6DA13Bde224A05a288748d857b9e7DDEffd1dE08"
+      celo-mainnet: "0x6DA13Bde224A05a288748d857b9e7DDEffd1dE08"
+      scroll-mainnet: "0x6DA13Bde224A05a288748d857b9e7DDEffd1dE08"
+      degenchain: "0x6DA13Bde224A05a288748d857b9e7DDEffd1dE08"
+    testnet:
+      avalanche-fuji: "0x6DA13Bde224A05a288748d857b9e7DDEffd1dE08"
+      base-sepolia: "0x6DA13Bde224A05a288748d857b9e7DDEffd1dE08"
+      eth-sepolia: "0x6DA13Bde224A05a288748d857b9e7DDEffd1dE08"
+      optimism-sepolia: "0x6DA13Bde224A05a288748d857b9e7DDEffd1dE08"
+      scroll-sepolia: "0x6DA13Bde224A05a288748d857b9e7DDEffd1dE08"
+
+# == Glossary ==
+# pool                  — a SuperfluidPool contract distributing tokens to members
+# pool admin            — the address that manages member units and pool config
+# member                — an address holding units in a pool
+# connected             — member receives distributions in real-time
+# disconnected          — member must claim distributions manually
+# adjustment flow       — rounding remainder flow directed to the pool admin
+
+# == Pool Creation ==
+
+createPool:
+  # Create a new SuperfluidPool. Called directly (not routed through the Host).
+  mutability: nonpayable
+  access: anyone
+  inputs:
+    - token: address
+    - admin: address
+    - config:
+        type: tuple
+        components:
+          - transferabilityForUnitsOwner: bool
+          - distributionFromAnyAddress: bool
+  outputs:
+    - success: bool
+    - pool: address
+
+# == Pool Member Management ==
+
+updateMemberUnits:
+  # Set a member's units in a pool. Only the pool admin can call this.
+  notes:
+    - "Gotcha: Unit changes do NOT recompute the per-unit flow rate from scratch. The pool index stores a per-unit rate set by the last distributeFlow call. If a unit increase once caused that rate to truncate to 0 (totalUnits > flowRate), decreasing units later won't recover the distribution — the per-unit rate stays 0 and the entire flow goes to the admin as the adjustment flow. More generally, the adjustment flow can only increase with unit changes (sticky) — it never decreases until distributeFlow is re-called. Fix: re-call distributeFlow with the same flow rate to force recomputation."
+  mutability: nonpayable
+  access: admin
+  inputs:
+    - pool: address
+    - memberAddress: address
+    - newUnits: uint128
+    - userData: bytes
+  outputs:
+    - success: bool
+
+claimAll:
+  # Claim all pending distributions for a member from a pool.
+  mutability: nonpayable
+  access: anyone
+  inputs:
+    - pool: address
+    - memberAddress: address
+    - userData: bytes
+  outputs:
+    - success: bool
+
+# == Pool Connectivity ==
+
+connectPool:
+  # Connect msg.sender to a pool for real-time distribution.
+  mutability: nonpayable
+  access: anyone  # connects msg.sender only
+  inputs:
+    - pool: address
+    - userData: bytes
+  outputs:
+    - bool
+
+disconnectPool:
+  # Disconnect msg.sender from a pool. Future distributions must be claimed.
+  mutability: nonpayable
+  access: anyone  # disconnects msg.sender only
+  inputs:
+    - pool: address
+    - userData: bytes
+  outputs:
+    - bool
+
+# == Distribution Operations ==
+
+distribute:
+  # Instant (lump-sum) distribution from `from` into the pool.
+  # Access depends on the pool's distributionFromAnyAddress config.
+  mutability: nonpayable
+  access: admin | anyone(if-pool-allows)
+  inputs:
+    - token: address
+    - from: address
+    - pool: address
+    - requestedAmount: uint256
+    - userData: bytes
+  outputs:
+    - bool
+
+distributeFlow:
+  # Start or update a continuous flow distribution from `from` into the pool.
+  notes:
+    - "Gotcha: The actual flow rate may differ from the requested rate due to rounding across member units. The difference does not stay in the pool — it is streamed to the admin as a continuous adjustment flow. If requestedFlowRate < totalUnits, the per-unit rate truncates to 0 and the entire flow goes to the admin. Unit changes can only increase the adjustment flow (sticky), never decrease it. Re-call distributeFlow to reset."
+    - "Gotcha: GDA has no app credit — unlike CFA, a Super App cannot borrow deposit buffer for GDA flows. The caller must fund the buffer deposit from its own balance or via ERC-20 transferFrom from the user."
+  mutability: nonpayable
+  access: admin | anyone(if-pool-allows) | anyone(if-liquidation)
+  inputs:
+    - token: address
+    - from: address
+    - pool: address
+    - requestedFlowRate: int96
+    - userData: bytes
+  outputs:
+    - bool
+
+# == GDA Queries ==
+
+isPool:
+  mutability: view
+  inputs:
+    - token: address
+    - account: address
+  outputs:
+    - bool
+
+getNetFlow:
+  # GDA net flow rate for an account (aggregate of all pool distributions).
+  mutability: view
+  inputs:
+    - token: address
+    - account: address
+  outputs:
+    - int96
+
+getFlowDistributionFlowRate:
+  # Flow rate from a specific sender to a specific pool.
+  mutability: view
+  inputs:
+    - token: address
+    - from: address
+    - to: address               # pool address
+  outputs:
+    - int96
+
+getPoolAdjustmentFlowRate:
+  # The adjustment flow rate for a pool (rounding remainder directed to admin).
+  # NOTE: This value can only increase with unit changes (sticky) — it resets only
+  # when distributeFlow is re-called. If unexpectedly high, re-call distributeFlow.
+  mutability: view
+  inputs:
+    - pool: address
+  outputs:
+    - int96
+
+getPoolAdjustmentFlowInfo:
+  # Full adjustment flow info: pool admin, pool ID, and adjustment flow rate.
+  mutability: view
+  inputs:
+    - pool: address
+  outputs:
+    - address                   # pool admin
+    - bytes32                   # pool ID
+    - int96                     # adjustment flow rate
+
+# == Estimation ==
+
+estimateFlowDistributionActualFlowRate:
+  # Preview the actual flow rate and total distribution rate for a given requested rate.
+  mutability: view
+  inputs:
+    - token: address
+    - from: address
+    - to: address               # pool address
+    - requestedFlowRate: int96
+  outputs:
+    - actualFlowRate: int96
+    - totalDistributionFlowRate: int96
+
+estimateDistributionActualAmount:
+  # Preview the actual distributed amount for a given requested amount.
+  mutability: view
+  inputs:
+    - token: address
+    - from: address
+    - to: address               # pool address
+    - requestedAmount: uint256
+  outputs:
+    - actualAmount: uint256
+
+# == Member Queries ==
+
+isMemberConnected:
+  mutability: view
+  inputs:
+    - pool: address
+    - member: address
+  outputs:
+    - bool

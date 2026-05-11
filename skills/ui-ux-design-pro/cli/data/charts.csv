@@ -1,0 +1,107 @@
+No,Data Type,Keywords,Best Chart Type,Secondary Options,Color Guidance,Performance Impact,Accessibility Notes,Library Recommendation,Interactive Level
+1,Trend Over Time,"trend, time-series, line, growth, timeline, progress",Line Chart,"Area Chart, Smooth Area",Primary: #0080FF. Multiple series: use distinct colors. Fill: 20% opacity,⚡ Excellent (optimized),✓ Clear line patterns for colorblind users. Add pattern overlays.,"Chart.js, Recharts, ApexCharts",Hover + Zoom
+2,Compare Categories,"compare, categories, bar, comparison, ranking",Bar Chart (Horizontal or Vertical),"Column Chart, Grouped Bar",Each bar: distinct color. Category: grouped same color. Sorted: descending order,⚡ Excellent,✓ Easy to compare. Add value labels on bars for clarity.,"Chart.js, Recharts, D3.js",Hover + Sort
+3,Part-to-Whole,"part-to-whole, pie, donut, percentage, proportion, share",Pie Chart or Donut,"Stacked Bar, Treemap",Colors: 5-6 max. Contrasting palette. Large slices first. Use labels.,⚡ Good (limit 6 slices),⚠ Hard for accessibility. Better: Stacked bar with legend. Avoid pie if >5 items.,"Chart.js, Recharts, D3.js",Hover + Drill
+4,Correlation/Distribution,"correlation, distribution, scatter, relationship, pattern",Scatter Plot or Bubble Chart,"Heat Map, Matrix",Color axis: gradient (blue-red). Size: relative. Opacity: 0.6-0.8 to show density,⚠ Moderate (many points),⚠ Provide data table alternative. Use pattern + color distinction.,"D3.js, Plotly, Recharts",Hover + Brush
+5,Heatmap/Intensity,"heatmap, heat-map, intensity, density, matrix",Heat Map or Choropleth,"Grid Heat Map, Bubble Heat",Gradient: Cool (blue) to Hot (red). Scale: clear legend. Divergent for ±data,⚡ Excellent (color CSS),⚠ Colorblind: Use pattern overlay. Provide numerical legend.,"D3.js, Plotly, ApexCharts",Hover + Zoom
+6,Geographic Data,"geographic, map, location, region, geo, spatial","Choropleth Map, Bubble Map",Geographic Heat Map,Regional: single color gradient or categorized colors. Legend: clear scale,⚠ Moderate (rendering),⚠ Include text labels for regions. Provide data table alternative.,"D3.js, Mapbox, Leaflet",Pan + Zoom + Drill
+7,Funnel/Flow,funnel/flow,"Funnel Chart, Sankey",Waterfall (for flows),Stages: gradient (starting color → ending color). Show conversion %,⚡ Good,✓ Clear stage labels + percentages. Good for accessibility if labeled.,"D3.js, Recharts, Custom SVG",Hover + Drill
+8,Performance vs Target,performance-vs-target,Gauge Chart or Bullet Chart,"Dial, Thermometer",Performance: Red→Yellow→Green gradient. Target: marker line. Threshold colors,⚡ Good,✓ Add numerical value + percentage label beside gauge.,"D3.js, ApexCharts, Custom SVG",Hover
+9,Time-Series Forecast,time-series-forecast,Line with Confidence Band,Ribbon Chart,Actual: solid line #0080FF. Forecast: dashed #FF9500. Band: light shading,⚡ Good,✓ Clearly distinguish actual vs forecast. Add legend.,"Chart.js, ApexCharts, Plotly",Hover + Toggle
+10,Anomaly Detection,anomaly-detection,Line Chart with Highlights,Scatter with Alert,Normal: blue #0080FF. Anomaly: red #FF0000 circle/square marker + alert,⚡ Good,✓ Circle/marker for anomalies. Add text alert annotation.,"D3.js, Plotly, ApexCharts",Hover + Alert
+11,Hierarchical/Nested Data,hierarchical/nested-data,Treemap,"Sunburst, Nested Donut, Icicle",Parent: distinct hues. Children: lighter shades. White borders 2-3px.,⚠ Moderate,⚠ Poor - provide table alternative. Label large areas.,"D3.js, Recharts, ApexCharts",Hover + Drilldown
+12,Flow/Process Data,flow/process-data,Sankey Diagram,"Alluvial, Chord Diagram",Gradient from source to target. Opacity 0.4-0.6 for flows.,⚠ Moderate,⚠ Poor - provide flow table alternative.,"D3.js (d3-sankey), Plotly",Hover + Drilldown
+13,Cumulative Changes,cumulative-changes,Waterfall Chart,"Stacked Bar, Cascade",Increases: #4CAF50. Decreases: #F44336. Start: #2196F3. End: #0D47A1.,⚡ Good,✓ Good - clear directional colors with labels.,"ApexCharts, Highcharts, Plotly",Hover
+14,Multi-Variable Comparison,multi-variable-comparison,Radar/Spider Chart,"Parallel Coordinates, Grouped Bar",Single: #0080FF 20% fill. Multiple: distinct colors per dataset.,⚡ Good,⚠ Moderate - limit 5-8 axes. Add data table.,"Chart.js, Recharts, ApexCharts",Hover + Toggle
+15,Stock/Trading OHLC,stock/trading-ohlc,Candlestick Chart,"OHLC Bar, Heikin-Ashi",Bullish: #26A69A. Bearish: #EF5350. Volume: 40% opacity below.,⚡ Good,⚠ Moderate - provide OHLC data table.,"Lightweight Charts (TradingView), ApexCharts",Real-time + Hover + Zoom
+16,Relationship/Connection Data,relationship/connection-data,Network Graph,"Hierarchical Tree, Adjacency Matrix",Node types: categorical colors. Edges: #90A4AE 60% opacity.,❌ Poor (500+ nodes struggles),❌ Very Poor - provide adjacency list alternative.,"D3.js (d3-force), Vis.js, Cytoscape.js",Drilldown + Hover + Drag
+17,Distribution/Statistical,distribution/statistical,Box Plot,"Violin Plot, Beeswarm",Box: #BBDEFB. Border: #1976D2. Median: #D32F2F. Outliers: #F44336.,⚡ Excellent,"✓ Good - include stats table (min, Q1, median, Q3, max).","Plotly, D3.js, Chart.js (plugin)",Hover
+18,Performance vs Target (Compact),performance-vs-target-(compact),Bullet Chart,"Gauge, Progress Bar","Ranges: #FFCDD2, #FFF9C4, #C8E6C9. Performance: #1976D2. Target: black 3px.",⚡ Excellent,✓ Excellent - compact with clear values.,"D3.js, Plotly, Custom SVG",Hover
+19,Proportional/Percentage,proportional/percentage,Waffle Chart,"Pictogram, Stacked Bar 100%",10x10 grid. 3-5 categories max. 2-3px spacing between squares.,⚡ Good,✓ Good - better than pie for accessibility.,"D3.js, React-Waffle, Custom CSS Grid",Hover
+20,Hierarchical Proportional,hierarchical-proportional,Sunburst Chart,"Treemap, Icicle, Circle Packing",Center to outer: darker to lighter. 15-20% lighter per level.,⚠ Moderate,⚠ Poor - provide hierarchy table alternative.,"D3.js (d3-hierarchy), Recharts, ApexCharts",Drilldown + Hover
+21,Root Cause Analysis,"root cause, decomposition, tree, hierarchy, drill-down, ai-split",Decomposition Tree,"Decision Tree, Flow Chart",Nodes: #2563EB (Primary) vs #EF4444 (Negative impact). Connectors: Neutral grey.,⚠ Moderate (calculation heavy),✓ clear hierarchy. Allow keyboard navigation for nodes.,"Power BI (native), React-Flow, Custom D3.js",Drill + Expand
+22,3D Spatial Data,"3d, spatial, immersive, terrain, molecular, volumetric",3D Scatter/Surface Plot,"Volumetric Rendering, Point Cloud",Depth cues: lighting/shading. Z-axis: color gradient (cool to warm).,❌ Heavy (WebGL required),❌ Poor - requires alternative 2D view or data table.,"Three.js, Deck.gl, Plotly 3D",Rotate + Zoom + VR
+23,Real-Time Streaming,"streaming, real-time, ticker, live, velocity, pulse",Streaming Area Chart,"Ticker Tape, Moving Gauge",Current: Bright Pulse (#00FF00). History: Fading opacity. Grid: Dark.,⚡ Optimized (canvas/webgl),⚠ Flashing elements - provide pause button. High contrast.,Smoothed D3.js, CanvasJS
+24,Sentiment/Emotion,"sentiment, emotion, nlp, opinion, feeling",Word Cloud with Sentiment,"Sentiment Arc, Radar Chart",Positive: #22C55E. Negative: #EF4444. Neutral: #94A3B8. Size = Frequency.,⚡ Good,⚠ Word clouds poor for screen readers. Use list view.,"D3-cloud, Highcharts, Nivo",Hover + Filter
+25,Process Mining,"process, mining, variants, path, bottleneck, log",Process Map / Graph,"Directed Acyclic Graph (DAG), Petri Net",Happy path: #10B981 (Thick). Deviations: #F59E0B (Thin). Bottlenecks: #EF4444.,⚠ Moderate to Heavy,⚠ Complex graphs hard to navigate. Provide path summary.,"React-Flow, Cytoscape.js, Recharts",Drag + Node-Click
+
+26,Categorical comparison,bar chart,vertical bar,horizontal bar,line plot,Sequential colors for values,Low,Use patterns for colorblind; alt text for bars,D3.js, Chart.js,Hover for values
+27,Categorical comparison,column chart,vertical column,horizontal column,dot plot,Diverging for positive/negative,Low,High contrast labels; screen reader support,Highcharts,Hover/tooltip
+28,Continuous trends over time,line chart,simple line,spline line,step line,Line colors distinct by series,Low,Describe trends in alt text; smooth lines for motion,Plotly,D3.js,Hover,zoom
+29,Stacked magnitudes over time,area chart,stacked area,streamgraph,layered area,Sequential palette for stacks,Medium,Avoid overplotting; legend for stacks,Chart.js,Hover decomposition
+30,Point relationships,scatter plot,simple scatter,jittered scatter,bubble,Color by category, hue by value,Medium,Large points for visibility; patterns,D3.js,Plotly,Hover,zoom,select
+31,Proportions of whole,pie chart,simple pie,exploded pie,polar area,Distinct categorical colors,Low,Limited slices <7; data table alt,D3.js,Chart.js,Hover percentages
+32,Proportions with center,Donut chart,nested donut,waffle chart,pie with center,Distinct segments; grayscale ok,Low,Annular ring description; table backup,Highcharts,Hover values
+33,Grouped categorical,grouped bar chart,clustered bar,small multiples bars,dots by group,Color per group, pattern per category,Medium,Grouped legends; avoid clutter,Plotly,D3.js,Hover group totals
+34,Proportional parts stacked,stacked bar chart,100% stacked bar,horizontal stack,Marimekko,Sequential or diverging stacks,Medium,Stack order logical; hover decomposition,Chart.js,Hover stack breakdown
+35,Single measure deviation,lollipop chart,dot lollipop,bar lollipop,bullet graph,Diverging color for good/bad,Low,Clear reference line; alt text,D3.js,Hover exact values
+36,Diverging comparison,diverging bar chart,back-to-back bar,sliding bar,density plot,Diverging blue-orange-red,Low,Symmetric scale; colorblind safe,Highcharts,Hover deviations
+37,Performance vs target,bullet chart,bullet graph,sliding bar,lollipop,Traffic light colors (green-yellow-red),Low,Reference bands labeled; alt text,Plotly,Hover targets
+38,Trend comparison,slope chart,slopegraph,parallel lines,bumplines,Distinct line colors,Low,Start/end labels clear; describe slope,D3.js,Hover changes
+39,Binned continuous,histogram,simple histogram,frequency polygon,density plot,Sequential fill,Medium,Bin size explained; axis labels,Chart.js,Hover bin counts
+40,Distribution summary,box plot,box whisker,Tukey box,violin,Single color fill/outliers red,Medium,Explain quartiles in alt; outliers marked,D3.js,Plotly,Hover stats
+41,Density distribution,violin plot,kernel density,smoothed box,ridgeline,Gradient fill for density,Medium,Overlay box; mirror description,Plotly,D3.js,Hover density values
+42,Multiple density,ridgeline plot,joyplot,stacked density,small multiples density,Fade older densities,High,Align scales; legend for series,D3.js,Hover peak values
+43,Continuous strip plot,strip plot,stripchart,jittered dots,beeswarm,Color by group,Medium,Avoid overlap; describe spread,D3.js,Plotly,Hover values
+44,Jittered distribution,beeswarm plot,swarm plot,packed beeswarm,density dots,Color by category,Medium,Hexagonal packing; jitter control,Plotly,Hover exacts
+45,Hierarchical rectangles,treemap,nested rectangles,squarified treemap,icicle,Sequential size, diverging deviation,Medium,Zoom navigation; breadcrumb trail,D3.js,Hover hierarchy
+46,Radial hierarchy,sunburst,radial treemap,nested donut,rings,Color by level, pattern by category,Medium,Explode on hover; center label,D3.js,Highcharts,Zoom,drill down
+47,Variable width stacked,Marimekko chart,mosaic plot,stacked variable width,treemap,Sequential stacks,Medium,Axis proportional; hover areas,Plotly,Hover proportions
+48,Grid proportions,waffle chart,pictogram tile,square pie,unit chart,Pattern fills for categories,Low,Grid labels; total count,D3.js,Hover counts
+49,Circular proportions,radial bar chart,circular lollipop,nested radial,radar summary,Categorical colors,Medium,Radial labels; avoid 3D,D3.js,Hover arcs
+50,Nested proportions,nested donut chart,radial sunburst,multi-level donut,waffle nested,Level-based colors,Medium,Legend per level; drill-down,D3.js,Chart.js,Drill/explode
+51,Three-variable relation,bubble chart,sized scatter,packed bubbles,circle packing,Size proportional color hue,Medium,Bubble scale legend; avoid overlap,Plotly,D3.js,Hover x y z
+52,Matrix relationships,heatmap,tile heatmap,clustered heatmap,density matrix,Sequential/diverging colormap,Medium, dendrogram; colorbar,D3.js,Plotly,Hover cells,zoom
+53,Correlation matrix,correlogram,correlation heatmap,pairwise scatter matrix,Parallel sets,Diverging correlation colors,High,Upper triangle only; values overlaid,D3.js,Hover r values
+54,Network connections,network graph,force directed,adjacency matrix,chord diagram,Node color by group, edge opacity,High,Force layout stable; labels on hover,D3.js,Vis.js,Zoom,drag nodes
+55,Circular connections,chord diagram,arc chord,flow matrix,alluvial,Arc color by source/target,High,Clear arc labels; mouseover highlight,D3.js,Hover flows
+56,Tree structure,tree diagram,radial tree,phylogenetic tree,dendrogram,Branch color by level,Medium,Collapsible nodes; path highlight,D3.js,Hover paths
+57,Clustering hierarchy,dendrogram,agglomerative tree,clustered heatmap,icicle,Diverging cluster colors,Medium,Rotate labels; cut levels,D3.js,Plotly,Hover clusters
+58,Horizontal space fill,icicle chart,rectangle tree,voronoi treemap,sunburst horizontal,Sequential rectangles,Medium,Zoomable; labels fit,Plotly,D3.js,Drill down
+59,Circle hierarchy,circle packing,packed circles,bubble hierarchy,treemap circles,Circle color by level, size by value,Medium,Padding control; legend,D3.js,Hover bubbles
+60,Organizational hierarchy,org chart,organizational tree,sunburst org,force org,Department colors,Medium,Collapsible; search box,D3.js,Google Charts,Drill/expand
+61,Node-link flow,Sankey diagram,node-link Sankey,alluvial diagram,parallel sets,Flow color by source,High,Node drag; path highlight,D3.js,SankeyMATIC,Hover paths
+62,Stratified flow,alluvial diagram,stratum flow,Sankey parallel,chord,Stratum color by category,High,Align straights; highlight links,D3.js,Hover flows
+63,Geographic flow,flow map,desire lines,OD map,arc map,Flow color by type, width by volume,Medium,Simplify lines; legend scale,D3.js,Leaflet,Zoom,hover
+64,Sequential process,process flow,flowchart,swimlane,sankey process,Step color by status,Low,Node shapes standard; alt text,Draw.io,D3.js,Click steps
+65,Conversion progression,funnel chart,conversion funnel,pyramid,sankey funnel,Gradient drop-off red,Low,Horizontal labels; percentage labels,Chart.js,Hover drop-offs
+66,Sequential addition waterfall,waterfall chart,bridge chart,stacked waterfall,euler,Positive green negative red,Medium,Floating bars; totals labeled,Plotly,Hover changes
+67,Area proportions,choropleth map,filled map,thematic map,cartogram,Sequential choropleth diverging,Medium,Class breaks equal; legend,D3.js,Leaflet,Tooltip values
+68,Density dots,dot density map,dots per area,proportional dots,hexbin geo,Single color dots sized uniform,Medium,Scale dots appropriately; count legend,Mapbox,D3.js,Zoom
+69,Size by value,proportional symbol map,bubble map,pie map,var size symbols,Size legend clear, color by type,Medium,Scale linear/square root;D3.js,Leaflet,Hover values
+70,Distorted area,cartogram,area cartogram,value-by-area,density distortion,Color by density/value,High,Boundary preservation; legend,D3.js,Tooltip density
+71,Flow on map,flow map,arc flow,proportional flow,desire lines,Arc color/width by flow,Medium,Curvature control; clustering avoid,D3.js,Mapbox,Zoom,filter
+72,Geographic hexbin,hexbin map,hexagonal binning,voronoi map,dot density hex,Sequential hex fill,Medium,Hex size fixed; count legend,D3.js,Hover counts
+73,Event timeline,timeline chart,Gantt bar,slanted timeline,marimekko time,Event color by type,Medium,Zoom slider; milestones marked,D3.js,Highcharts,Zoom,drag
+74,Project schedule,Gantt chart,horizontal Gantt,milestone Gantt,Pert network,Task color by dependency,Medium,Dependencies arrows; critical path red,Plotly,Hover durations
+75,Mini trend,sparkline,inline line,spark column,spark area,Monochrome line,Low,Embed in text; trend arrow,D3.js,Inline hover
+76,Overlapping streams,stream graph,thematic stream,bump chart,stacked area stream,Distinct stream colors,Medium,Smooth baseline; avoid twist,D3.js,Hover decompose
+77,Time matrix,calendar heatmap,heat calendar,race track calendar,small multiples cal,Sequential time colors,Medium,Consistent scale; day labels,D3.js,Hover dates
+78,Layered time,horizon chart,small multiple horizon,layered area time,Nolan horizon,Layer colors red>green,Medium,Zero line clear; scale legend,D3.js,Tooltip layers
+79,Price volume,candlestick chart,financial candle,high-low close,Renko,Green up red down body,Medium,Wicks thin; volume below,TradingView,D3.js,Hover OHLC
+80,Open high low close,OHLC chart,bar OHLC,candlestick alt,Heikin Ashi,Color body wick separate,Medium,Consistent scale; patterns,D3.js,Hover values
+81,Trading volume,volume chart,volume bars,candle volume,area volume,Green/red volume bars,Low,Match price chart; avg line,Highcharts,Sync hover
+82,Market depth,depth chart,bid-ask ladder,cumulative depth,market profile,Blue bid red ask gradient,Medium,Real-time update; crosshair,Plotly,Live update
+83,Price changes,tick chart,time-based ticks,renko brick,P&F box,Brick color up/down,Medium,Tick size fixed; trend lines,D3.js,Hover ticks
+84,Price figure,point-and-figure chart,P&F box,renko alt,three-line break,Box X up O down,Medium,Scale % based; signals,D3.js,Hover reversals
+85,Brick trend,Renko chart,fixed size bricks,trend bricks,unidirectional renko,Green up red down bricks,Medium,No time axis; brick size legend,D3.js,Hover trends
+86,Quantile comparison,Q-Q plot,quantile-quantile,probability plot,P-P plot,Dots color by group, line ref,Medium,Diagonal ref line; axis log ok,Plotly,Hover quantiles
+87,Model residuals,residuals plot,resid vs fitted,scale-location,Q-Q residuals,Red horizontal line zero,Medium,Leverage points marked; smooth,D3.js,Hover leverages
+88,Text distribution,stem-and-leaf plot,stem leaf,back-back stem,dot plot,Grayscale stems leaves,Low,Sort leaves; decimal align,Tableau,Copy text
+89,Probability distribution,probability plot,P-P plot,Q-Q alt,ecdf,Empirical line steps,Medium,Diagonal ref; confidence band,D3.js,Hover probs
+90,Process control,control chart,Shewhart chart,X-bar R,run chart,Points out of control red,Medium,Control limits labeled; rules,D3.js,Hover spec
+91,80/20 rule,Pareto chart,combo Pareto bar,cumulative line,bar sort desc,Red cumulative line,Low,Vital few label; log scale ok,Chart.js,Hover contrib
+92,Target achievement,gauge chart,speedometer,bullet alt,progress arc,Green-yellow-red zones,Low,Pointer clear; % label,Highcharts,Hover needle
+93,KPI summary,KPI card,number tile,sparkline card,status indicator,Monochrome with icon color,Low,Large font; threshold colors,Custom HTML,Hover details
+94,Real-time trend,live line chart,streaming line,real-time spark,updating area,Live point highlight,Medium,Auto-scroll; pause button,Plotly,D3.js,Live update
+95,Moving ticker,ticker tape,scrolling numbers,marquee KPI,leaderboard,Color by change +/-,Low,Accessible pause; rate control,Custom JS,Pause hover
+96,Progress indicator,progress ring,circular progress,donut progress,linear bar,Blue fill green complete,Low,% label center; indeterminate,SVG,Hover %
+97,Status matrix,status grid,heat grid,color cells,dashboard tiles,Status colors RYG,Low,Row/col headers; sort,D3.js,Click drill
+98,Classification summary,confusion matrix,heat confusion,classified matrix,error matrix,Diverging accuracy,Medium,Normalize rows/cols; totals,Plotly,Hover counts
+99,Classifier performance,ROC curve,receiver operating,AUC curve,precision-recall,Blue curve gray ref,Medium,Diagonal ref AUC shade;D3.js,Hover TPR FPR
+100,Feature ranking,feature importance,bar importance,SHAP summary waterfall,Horizontal bar,Diverging impact,Low,Top N only; log scale,Plotly,Hover contribs
+101,Dimensionality reduction,t-SNE plot,UMAP scatter,embedding scatter,PCA biplot,Cluster colors,High,Perplexity note; convex hulls,D3.js,Plotly,Zoom clusters
+102,Model explanation,SHAP summary plot,beeswarm SHAP,waterfall SHAP,dependence,Red positive blue neg,Medium,Global avg line; feature order,Plotly,Hover forces
+103,Training progress,loss curve,learning curve,accuracy loss dual,epoch plot,Red loss blue acc,Medium,Smooth lines; validation dash,D3.js,Zoom epochs
+104,Attention visualization,attention map,heat attention,transformer heads,saliency map,Sequential attention weights,Medium,Layer/head selector; normalize,D3.js,Hover weights
+105,Multi-head attention,attention rollout plot,aggregated attention,saliency overlay,Multi-head heat,High,Head clustering; path highlight,D3.js,Interactive heads

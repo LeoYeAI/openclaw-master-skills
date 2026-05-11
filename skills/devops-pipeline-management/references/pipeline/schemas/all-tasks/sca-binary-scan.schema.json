@@ -1,0 +1,56 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "sca-binary-scan.schema.json",
+  "title": "ScaBinaryScan Task",
+  "description": "二进制扫描任务配置（制品软件成分扫描）",
+  "type": "object",
+  "required": ["taskCategory", "jobType", "name"],
+  "properties": {
+    "taskCategory": {
+      "type": "string",
+      "const": "CodeScanner"
+    },
+    "jobType": {
+      "type": "string",
+      "const": "ScaBinaryScan"
+    },
+    "name": {
+      "type": "string",
+      "maxLength": 100,
+      "description": "任务名称"
+    },
+    "workPath": {
+      "type": "string",
+      "description": "工作目录"
+    },
+    "sourceId": {
+      "type": "string",
+      "description": "代码源ID"
+    },
+    "artifactPath": {
+      "type": "string",
+      "description": "制品路径"
+    },
+    "artifactType": {
+      "type": "string",
+      "enum": ["jar", "war", "zip", "tar", "tgz", "docker"],
+      "description": "制品类型"
+    },
+    "preDependTaskId": {
+      "type": "string",
+      "description": "前置构建任务ID（获取制品）"
+    },
+    "failOnVulnerability": {
+      "type": "boolean",
+      "default": false
+    },
+    "idInTemplate": {
+      "type": "string"
+    },
+    "dependencies": {
+      "type": "array",
+      "items": { "type": "string" },
+      "default": []
+    }
+  }
+}

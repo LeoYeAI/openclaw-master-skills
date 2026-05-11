@@ -1,0 +1,68 @@
+[
+  {
+    "id": 0,
+    "prompt": "Draft a VAT return submission confirmation letter in Greek for Alpha Trading AE (EL123456789). The January 2026 VAT return has been submitted to AADE with net VAT payable of EUR 3,340. Submission reference: AADE-2026-0142.",
+    "expectations": [
+      "Generates professional Greek-language confirmation letter",
+      "Includes the correct client name, AFM, period, and amount",
+      "References the AADE submission reference number",
+      "Includes payment deadline and payment method instructions",
+      "Saves draft to /data/processing/comms/ for human review before sending",
+      "Does not send automatically — requires human confirmation",
+      "Logs the draft creation to /data/memory/episodes/"
+    ],
+    "files": []
+  },
+  {
+    "id": 1,
+    "prompt": "Send a document request to Beta Services OE (EL987654321). We need their February bank statements and 4 missing invoices to complete their monthly processing.",
+    "expectations": [
+      "Drafts a polite professional Greek-language document request",
+      "Lists the specific documents needed: bank statements and 4 invoices",
+      "Includes a deadline for document submission",
+      "Provides instructions on how to submit the documents",
+      "Saves draft for human review before sending",
+      "Records the request in /data/clients/EL987654321/correspondence/"
+    ],
+    "files": []
+  },
+  {
+    "id": 2,
+    "prompt": "Generate the monthly accounting summary for Alpha Trading AE for January 2026 and prepare it for client delivery.",
+    "expectations": [
+      "Pulls financial data from the issued statement for January 2026",
+      "Creates a bilingual summary suitable for client consumption",
+      "Includes key figures: revenue, expenses, profit, VAT position",
+      "Highlights any items requiring client attention or action",
+      "Attaches or references the PDF financial statement pack",
+      "Saves as draft in /data/processing/comms/ pending review"
+    ],
+    "files": []
+  },
+  {
+    "id": 3,
+    "prompt": "A deadline reminder needs to go out to all clients who have VAT returns due within 7 days. Generate the batch.",
+    "expectations": [
+      "Queries deadline data to identify clients with VAT deadlines within 7 days",
+      "Generates individual Greek-language reminder letters for each affected client",
+      "Personalizes each letter with the client's name, AFM, period, and amount due",
+      "Saves all drafts for batch review before sending",
+      "Provides a summary of how many reminders were drafted and for which clients",
+      "Does not send any communications without human batch approval"
+    ],
+    "files": []
+  },
+  {
+    "id": 4,
+    "prompt": "Show me the communication history for Gamma Constructions AE (EL555444333) for the last 3 months.",
+    "expectations": [
+      "Retrieves sent communication records from /data/clients/EL555444333/correspondence/",
+      "Shows date, type, subject, and delivery status for each communication",
+      "Includes both outgoing and incoming correspondence logged by the system",
+      "Presents in chronological order with most recent first",
+      "Formats in English for the accounting assistant",
+      "Does not expose internal processing details — only the client-visible communications"
+    ],
+    "files": []
+  }
+]
