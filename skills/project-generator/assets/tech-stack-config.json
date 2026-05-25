@@ -1,0 +1,221 @@
+{
+  "techStackOptions": {
+    "backend": {
+      "javaVersion": {
+        "description": "Java 版本",
+        "options": [
+          {"id": "8", "name": "Java 8 (经典稳定)"},
+          {"id": "11", "name": "Java 11 (LTS)"},
+          {"id": "17", "name": "Java 17 (推荐)", "default": true},
+          {"id": "21", "name": "Java 21 (最新)"}
+        ]
+      },
+      "buildTool": {
+        "description": "构建工具",
+        "options": [
+          {"id": "maven", "name": "Maven", "default": true},
+          {"id": "gradle", "name": "Gradle"}
+        ]
+      },
+      "springBoot": {
+        "description": "Spring Boot 版本",
+        "options": [
+          {"id": "2.7", "name": "2.7.x (兼容 Java 8/11)", "java8": true},
+          {"id": "3.0", "name": "3.0.x (Java 17+)", "java17": true},
+          {"id": "3.2", "name": "3.2.x (最新)", "java17": true, "default": true}
+        ]
+      },
+      "database": {
+        "description": "数据库",
+        "options": [
+          {"id": "mysql", "name": "MySQL 8.0", "default": true},
+          {"id": "mysql57", "name": "MySQL 5.7 (旧版兼容)"},
+          {"id": "postgresql", "name": "PostgreSQL"},
+          {"id": "mariadb", "name": "MariaDB"},
+          {"id": "oracle", "name": "Oracle"},
+          {"id": "sqlserver", "name": "SQL Server"},
+          {"id": "h2", "name": "H2 (仅开发)"}
+        ]
+      },
+      "orm": {
+        "description": "数据访问",
+        "options": [
+          {"id": "jpa", "name": "JPA / Hibernate", "default": true},
+          {"id": "mybatis", "name": "MyBatis"},
+          {"id": "mybatis-plus", "name": "MyBatis-Plus"},
+          {"id": "jdbc", "name": "Spring Data JDBC (轻量)"}
+        ]
+      },
+      "cache": {
+        "description": "缓存",
+        "options": [
+          {"id": "none", "name": "不需要", "default": true},
+          {"id": "redis", "name": "Redis (分布式)"},
+          {"id": "caffeine", "name": "Caffeine (本地高性能)"},
+          {"id": "ehcache", "name": "Ehcache (传统)"}
+        ]
+      },
+      "mq": {
+        "description": "消息队列",
+        "options": [
+          {"id": "none", "name": "不需要", "default": true},
+          {"id": "rabbitmq", "name": "RabbitMQ"},
+          {"id": "kafka", "name": "Kafka"},
+          {"id": "rocketmq", "name": "RocketMQ"}
+        ]
+      },
+      "search": {
+        "description": "搜索引擎",
+        "options": [
+          {"id": "none", "name": "不需要", "default": true},
+          {"id": "elasticsearch", "name": "Elasticsearch"},
+          {"id": "solr", "name": "Solr"}
+        ]
+      },
+      "features": {
+        "description": "常用功能 (多选)",
+        "multiple": true,
+        "options": [
+          {"id": "jwt", "name": "JWT 登录认证"},
+          {"id": "oauth2", "name": "OAuth2 / 第三方登录"},
+          {"id": "audit", "name": "操作日志审计"},
+          {"id": "excel", "name": "Excel 导入导出"},
+          {"id": "word", "name": "Word / PDF 生成"},
+          {"id": "email", "name": "邮件发送"},
+          {"id": "sms", "name": "短信接口"},
+          {"id": "oss", "name": "文件上传 (OSS/MinIO)"},
+          {"id": "websocket", "name": "WebSocket 实时通信"},
+          {"id": "job", "name": "定时任务 (XXL-Job)"},
+          {"id": "rate", "name": "限流防刷"},
+          {"id": "idempotent", "name": "接口幂等"}
+        ]
+      }
+    },
+    "frontend": {
+      "framework": {
+        "description": "前端框架",
+        "options": [
+          {"id": "vue2", "name": "Vue 2 (经典版本)"},
+          {"id": "vue3", "name": "Vue 3 (推荐)", "default": true},
+          {"id": "react", "name": "React 18"},
+          {"id": "react17", "name": "React 17 (旧版)"},
+          {"id": "angular", "name": "Angular"}
+        ]
+      },
+      "language": {
+        "description": "开发语言",
+        "options": [
+          {"id": "ts", "name": "TypeScript (推荐)", "default": true},
+          {"id": "js", "name": "JavaScript"}
+        ]
+      },
+      "uiLibrary": {
+        "description": "UI 组件库",
+        "options": [
+          {"id": "element-ui", "name": "Element UI (Vue 2)", "vue2": true},
+          {"id": "element-plus", "name": "Element Plus (Vue 3)", "vue3": true, "default": true},
+          {"id": "antdv1", "name": "Ant Design Vue 1.x (Vue 2)", "vue2": true},
+          {"id": "antdv", "name": "Ant Design Vue 3.x/4.x (Vue 3)", "vue3": true},
+          {"id": "naive", "name": "Naive UI (Vue 3)", "vue3": true},
+          {"id": "iview", "name": "iView / View UI (Vue 2)", "vue2": true},
+          {"id": "vuetify2", "name": "Vuetify 2 (Vue 2)", "vue2": true},
+          {"id": "vuetify3", "name": "Vuetify 3 (Vue 3)", "vue3": true},
+          {"id": "vant2", "name": "Vant 2 (Vue 2 移动端)", "vue2": true, "mobile": true},
+          {"id": "vant3", "name": "Vant 3/4 (Vue 3 移动端)", "vue3": true, "mobile": true},
+          {"id": "antdmobile", "name": "Ant Design Mobile (React)", "react": true, "mobile": true}
+        ]
+      },
+      "stateManagement": {
+        "description": "状态管理",
+        "options": [
+          {"id": "vuex", "name": "Vuex", "vue": true},
+          {"id": "pinia", "name": "Pinia (Vue 3 推荐)", "vue3": true, "default": true},
+          {"id": "redux", "name": "Redux / Redux Toolkit", "react": true},
+          {"id": "zustand", "name": "Zustand", "react": true},
+          {"id": "mobx", "name": "MobX", "react": true},
+          {"id": "recoil", "name": "Recoil", "react": true}
+        ]
+      },
+      "css": {
+        "description": "CSS 方案",
+        "options": [
+          {"id": "css", "name": "原生 CSS"},
+          {"id": "scss", "name": "SCSS / Sass"},
+          {"id": "less", "name": "Less"},
+          {"id": "tailwind", "name": "Tailwind CSS (推荐)", "default": true},
+          {"id": "windicss", "name": "Windi CSS"},
+          {"id": "unocss", "name": "UnoCSS"}
+        ]
+      },
+      "features": {
+        "description": "常用功能 (多选)",
+        "multiple": true,
+        "options": [
+          {"id": "darkMode", "name": "暗黑模式"},
+          {"id": "i18n", "name": "国际化多语言"},
+          {"id": "pwa", "name": "PWA 离线应用"},
+          {"id": "echarts", "name": "ECharts 图表"},
+          {"id": "antv", "name": "AntV 可视化"},
+          {"id": "d3", "name": "D3.js 数据可视化"},
+          {"id": "map", "name": "地图 (高德/百度)"},
+          {"id": "editor", "name": "富文本编辑器"},
+          {"id": "markdown", "name": "Markdown 编辑器"},
+          {"id": "video", "name": "视频播放器"},
+          {"id": "excel", "name": "Excel 导入导出"},
+          {"id": "pdf", "name": "PDF 预览/生成"},
+          {"id": "lazyload", "name": "图片懒加载"},
+          {"id": "virtualScroll", "name": "虚拟滚动 (大数据列表)"}
+        ]
+      }
+    }
+  },
+  "selectionPrompt": {
+    "title": "🛠️ 请选择技术栈",
+    "instruction": "回复选项编号，如: 1,1,3,1,1,1,1,1,2,1,1,12 或回车使用默认",
+    "format": "【后端】Java,SpringBoot,数据库,ORM,缓存,MQ,搜索,功能\n【前端】框架,语言,UI库,状态管理,CSS,功能"
+  },
+  "defaults": {
+    "backend": {
+      "javaVersion": "8",
+      "springBoot": "2.7",
+      "database": "mysql57",
+      "orm": "mybatis-plus",
+      "cache": "redis",
+      "mq": "none",
+      "search": "none",
+      "features": []
+    },
+    "frontend": {
+      "framework": "vue3",
+      "language": "ts",
+      "uiLibrary": "element-plus",
+      "stateManagement": "pinia",
+      "css": "tailwind",
+      "features": []
+    }
+  },
+  "compatibility": {
+    "java8": {
+      "springBoot": ["2.7"],
+      "notes": "Java 8 仅支持 Spring Boot 2.x"
+    },
+    "java11": {
+      "springBoot": ["2.7", "3.0", "3.2"],
+      "notes": "Java 11 支持 Spring Boot 2.x 和 3.x"
+    },
+    "java17": {
+      "springBoot": ["3.0", "3.2"],
+      "notes": "Java 17+ 需要 Spring Boot 3.x"
+    },
+    "vue2": {
+      "uiLibrary": ["element-ui", "antdv1", "iview", "vuetify2", "vant2"],
+      "stateManagement": ["vuex"],
+      "notes": "Vue 2 项目推荐使用 Vuex"
+    },
+    "vue3": {
+      "uiLibrary": ["element-plus", "antdv", "naive", "vuetify3", "vant3"],
+      "stateManagement": ["pinia", "vuex"],
+      "notes": "Vue 3 推荐 Pinia，也兼容 Vuex"
+    }
+  }
+}

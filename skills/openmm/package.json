@@ -1,0 +1,23 @@
+{
+  "name": "openmm-ai",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Open-source market making skills for AI agents",
+  "workspaces": [
+    "packages/plugins/*"
+  ],
+  "scripts": {
+    "publish:trading": "npm publish --workspace=@qbtlabs/openmm-trading --access=public",
+    "publish:market-data": "npm publish --workspace=@qbtlabs/openmm-market-data --access=public",
+    "publish:openclaw": "npm publish --workspace=@qbtlabs/openclaw-openmm --access=public",
+    "publish:all": "npm run publish:trading && npm run publish:market-data && npm run publish:openclaw",
+    "typecheck": "npm run --workspace=@qbtlabs/openclaw-openmm typecheck",
+    "version:patch": "npm version patch --workspaces --no-git-tag-version",
+    "version:minor": "npm version minor --workspaces --no-git-tag-version"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/QBT-Labs/OpenMM-ai.git"
+  },
+  "license": "MIT"
+}

@@ -3,6 +3,47 @@
 每次更新的详细发布说明。
 
 
+## v0.13.0 — 2026-05-25
+
+### 🚀 周更：新增 100 个 Skills，总计 1509
+
+来源：openclaw/skills-archive 官方镜像，按质量规则筛选（SKILL.md 800B-30KB、完整 YAML 元数据、有效 description）。
+
+#### 部分新增亮点（前 30 个）
+- `clickup-api` — | ClickUp API integration with managed OAuth. Access tasks, lists, folders, spaces, workspaces, users, and manage webhoo
+- `aawp` — > AAWP (AI Agent Wallet Protocol) — the only crypto wallet protocol built exclusively for AI Agents on EVM-compatible bl
+- `capacitor-expert` — "A comprehensive starting point for AI agents to work with Capacitor. Covers core concepts, CLI, app creation, plugins, 
+- `clawfinder` — The transaction layer for the agent economy. Register agents, publish capabilities and negotiation terms, and enable str
+- `memorist-agent` — "Memorist Agent — helps you capture your parents' and family members' life stories through adaptive interviews via Whats
+- `fire-skills` — >- Practical fire building, management, and safety skills. Use when someone needs to build a campfire, use a fireplace s
+- `hi-lite` — Search, browse, and rediscover your Kindle highlights user-invocable: true
+- `capacitor` — "Comprehensive Capacitor expert skill that consolidates core concepts, CLI usage, app creation, plugin management, frame
+- `aura-a2a-marketplace` — Aura — The agent-to-agent marketplace for tasks, compute, and storage.
+- `ospex-one` — "Bet on sports with one word (or maybe, a few words). Say a team name, city, or abbreviation. 'Edmonton', 'Duke', 'Celti
+- `lecture-notes-master` — "Obsidian lecture notes with recursive atomic decomposition. Generates main note (hub), atomic notes (3+ layers deep, ri
+- `aclawdemy` — The academic research platform for AI agents. Submit papers, review research, build consensus, and push toward AGI — tog
+- `controld` — "Manage Control D DNS filtering service via API. Use for DNS profile management, device configuration, custom blocking r
+- `baoyu-imagine` — AI image generation with OpenAI, Azure OpenAI, Google, OpenRouter, DashScope, MiniMax, Jimeng, Seedream and Replicate AP
+- `kibibot` — Create tokens on-chain, check fee earnings, check Kibi Credit balance, trigger agent credit reload, and interact with Ki
+- `resend-api` — | Resend API integration with managed authentication. Send transactional emails, manage domains, contacts, templates, an
+- `voooai` — > Short drama & webtoon production, text-to-image, image-to-image, storyboard design, text-to-video, image-to-video, vid
+- `openmm` — "Open-source market making for AI agents. Multi-exchange trading, grid strategies, and real-time market data. CLI + MCP 
+- `fundraising-advisor` — Professional fundraising advisory skill for startups - AI-powered project assessment, pitch deck generation, valuation a
+- `oh-my-opencode` — Multi-agent orchestration plugin for OpenCode. Use when the user wants to install, configure, or operate oh-my-opencode 
+- `beekeeping-basics` — >- Introduction to backyard beekeeping including equipment, hive management, and honey harvesting. Use when someone want
+- `data-source-audit` — "Comprehensive audit of all construction data sources and systems. Map data flows, identify silos, assess quality, and c
+- `openclaw-security-patrol` — | OpenClaw 多模式安全巡检工具：默认本地离线扫描，可选联网威胁情报上报。 功能范围：读取系统敏感信息（MAC 地址、主机名、系统日志、完整 Skill 清单）执行本地安全检测；在本机持久化保存扫描报告与安全基线；可选通过 --pu
+- `p3c-code-quality` — "执行代码质量检查测试，基于阿里巴巴 P3C 规范对代码进行全面检查，包括命名规范、异常处理、并发安全、数据库规范、OOP 规范、安全规约和单元测试规范。Invoke when user needs to verify code quali
+- `ctct-security-patrol` — | OpenClaw 多模式安全巡检工具：默认本地离线扫描，可选联网威胁情报上报。 功能范围：读取系统敏感信息（MAC 地址、主机名、系统日志、完整 Skill 清单）执行本地安全检测；在本机持久化保存扫描报告与安全基线；可选通过 --pu
+- `linux-system-health` — Diagnose Linux OS-level issues — slow server, OOM kills, disk full, high CPU/load, DNS failures, connection timeouts, po
+- `phy-regex-audit` — Static ReDoS (Regular Expression Denial of Service) vulnerability scanner and regex quality auditor for codebases. Walks
+- `money-crisis-ladder` — >- Three-phase money crisis protocol: immediate triage when you can't pay bills, surviving on drastically reduced income
+- `deepread-pii` — Redact PII from documents before sharing or sending to LLMs. 14 PII types (names, SSN, credit cards, medical records, et
+- `bettafish-opinion-analysis` — | BettaFish（微舆）多智能体舆情分析系统 - 基于 QueryAgent、MediaAgent、InsightAgent 三引擎并行架构，通过 ForumEngine 实现 Agent 间协作讨论，生成 Word/PDF + 高设
+
+---
+
+
 ## v0.13.0 — 2026-05-18
 
 ### 🚀 周更：新增 100 个 Skills，总计 1409

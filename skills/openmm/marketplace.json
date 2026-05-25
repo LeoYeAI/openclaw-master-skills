@@ -1,0 +1,29 @@
+{
+  "name": "openmm-ai",
+  "version": "0.1.0",
+  "description": "Open-source market making skills for AI agents",
+  "plugins": [
+    {
+      "name": "openmm-trading",
+      "path": "packages/plugins/openmm-trading",
+      "description": "Exchange setup, order management, and grid trading strategies",
+      "skills": ["exchange-setup", "grid-trading", "order-management"],
+      "agents": ["grid-trader"]
+    },
+    {
+      "name": "openmm-market-data",
+      "path": "packages/plugins/openmm-market-data",
+      "description": "Market data, portfolio tracking, and Cardano DEX integration",
+      "skills": ["portfolio", "cardano-dex"]
+    },
+    {
+      "name": "openclaw-openmm",
+      "path": "packages/plugins/openclaw-openmm",
+      "description": "OpenClaw plugin — agent tools, auto-reply commands, and strategy monitoring for Telegram and other channels",
+      "tools": ["openmm_balance", "openmm_ticker", "openmm_orderbook", "openmm_trades", "openmm_list_orders", "openmm_create_order", "openmm_cancel_order", "openmm_cancel_all_orders", "openmm_grid_start", "openmm_grid_stop", "openmm_grid_status", "openmm_cardano_price", "openmm_discover_pools"],
+      "commands": ["balance", "price", "strategy", "orders", "orderbook", "pools", "cardano", "cancel-all"]
+    }
+  ],
+  "repository": "https://github.com/QBT-Labs/OpenMM-ai",
+  "license": "MIT"
+}

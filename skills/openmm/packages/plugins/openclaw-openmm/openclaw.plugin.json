@@ -1,0 +1,36 @@
+{
+  "id": "openmm",
+  "configSchema": {
+    "type": "object",
+    "properties": {
+      "defaultExchange": {
+        "type": "string",
+        "enum": ["mexc", "gateio", "kraken", "bitget"],
+        "description": "Default exchange for commands when no exchange is specified"
+      },
+      "mexcApiKey": { "type": "string" },
+      "mexcSecret": { "type": "string" },
+      "mexcUid": { "type": "string" },
+      "gateioApiKey": { "type": "string" },
+      "gateioSecret": { "type": "string" },
+      "krakenApiKey": { "type": "string" },
+      "krakenSecret": { "type": "string" },
+      "bitgetApiKey": { "type": "string" },
+      "bitgetSecret": { "type": "string" },
+      "bitgetPassphrase": { "type": "string" }
+    }
+  },
+  "uiHints": {
+    "defaultExchange": { "label": "Default Exchange", "placeholder": "mexc" },
+    "mexcApiKey": { "label": "MEXC API Key", "sensitive": true },
+    "mexcSecret": { "label": "MEXC Secret", "sensitive": true },
+    "mexcUid": { "label": "MEXC UID (whitelisted access)", "sensitive": true },
+    "gateioApiKey": { "label": "Gate.io API Key", "sensitive": true },
+    "gateioSecret": { "label": "Gate.io Secret", "sensitive": true },
+    "krakenApiKey": { "label": "Kraken API Key", "sensitive": true },
+    "krakenSecret": { "label": "Kraken Secret", "sensitive": true },
+    "bitgetApiKey": { "label": "Bitget API Key", "sensitive": true },
+    "bitgetSecret": { "label": "Bitget Secret", "sensitive": true },
+    "bitgetPassphrase": { "label": "Bitget Passphrase", "sensitive": true }
+  }
+}

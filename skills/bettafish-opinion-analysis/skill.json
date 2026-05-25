@@ -1,0 +1,62 @@
+{
+  "name": "bettafish-opinion-analysis",
+  "version": "1.0.0",
+  "description": "BettaFish（微舆）多智能体舆情分析系统 - 基于 QueryAgent、MediaAgent、InsightAgent 三引擎并行架构，通过 ForumEngine 实现 Agent 间协作讨论，生成 Word/PDF + 高设计质量 HTML 双格式报告。",
+  "author": "bettafish",
+  "license": "MIT",
+  "main": "scripts/report_generator.py",
+  "scripts": {
+    "run": "scripts/data_collector.py",
+    "analyze": "scripts/sentiment_analyzer.py",
+    "report": "scripts/report_generator.py",
+    "visualize": "scripts/graph_generator.py"
+  },
+  "dependencies": {
+    "python": ">=3.8"
+  },
+  "requirements": [
+    "python3 >= 3.8",
+    "requests",
+    "beautifulsoup4",
+    "pandas",
+    "python-docx",
+    "matplotlib",
+    "selenium (optional)"
+  ],
+  "capabilities": [
+    "opinion-analysis",
+    "sentiment-analysis",
+    "social-media-monitoring",
+    "report-generation",
+    "html-visualization"
+  ],
+  "permissions": {
+    "network": {
+      "outbound": true
+    },
+    "file_system": {
+      "read": [
+        "~/.openclaw/workspace/*.md",
+        "~/.openclaw/workspace/**/*.json"
+      ],
+      "write": [
+        "~/.openclaw/workspace/reports/*.docx",
+        "~/.openclaw/workspace/reports/*.pdf",
+        "~/.openclaw/workspace/reports/*.html"
+      ]
+    }
+  },
+  "configuration": {
+    "default_output_dir": "~/.openclaw/workspace/reports",
+    "max_sources": 50,
+    "sentiment_threshold": 0.6
+  },
+  "documentation": "README.md",
+  "tags": [
+    "opinion",
+    "sentiment",
+    "social-media",
+    "舆情",
+    "report"
+  ]
+}

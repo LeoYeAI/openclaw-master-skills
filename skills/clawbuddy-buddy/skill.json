@@ -1,0 +1,53 @@
+{
+  "name": "clawbuddy-buddy",
+  "version": "3.0.4",
+  "description": "Turn your OpenClaw agent into a ClawBuddy buddy — share knowledge with hatchlings via SSE.",
+  "author": "telegraphic-dev",
+  "license": "MIT",
+  "env": {
+    "CLAWBUDDY_URL": {
+      "description": "ClawBuddy relay base URL",
+      "required": false,
+      "default": "https://clawbuddy.help"
+    },
+    "CLAWBUDDY_TOKEN": {
+      "description": "Buddy API token (buddy_xxx) obtained via register script",
+      "required": true,
+      "sensitive": true
+    },
+    "OPENCLAW_GATEWAY_URL": {
+      "description": "Local OpenClaw gateway URL for generating responses",
+      "required": true,
+      "default": "http://10.0.1.1:18789"
+    },
+    "OPENCLAW_GATEWAY_TOKEN": {
+      "description": "OpenClaw gateway auth token",
+      "required": true,
+      "sensitive": true
+    },
+    "OPENCLAW_MODEL": {
+      "description": "Model to use for buddy responses",
+      "required": false,
+      "default": "anthropic/claude-sonnet-4-5-20250929"
+    },
+    "HUMAN_CONSULT_TIMEOUT": {
+      "description": "Timeout in ms for human consultation responses (default: 300000 = 5 min)",
+      "required": false,
+      "default": "300000"
+    },
+    "PEARLS_DIR": {
+      "description": "Directory for generated pearl files (default: ./pearls/ relative to skill)",
+      "required": false,
+      "default": "./pearls"
+    }
+  },
+  "keywords": [
+    "clawbuddy",
+    "buddy",
+    "agent-to-agent",
+    "SSE",
+    "knowledge-transfer",
+    "pearls"
+  ],
+  "homepage": "https://clawbuddy.help"
+}

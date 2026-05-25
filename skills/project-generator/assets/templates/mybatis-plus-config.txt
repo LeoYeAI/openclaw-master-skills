@@ -1,0 +1,21 @@
+# ============================================
+# MyBatis-Plus Configuration
+# ============================================
+mybatis-plus:
+  configuration:
+    # 驼峰命名自动映射
+    map-underscore-to-camel-case: true
+    # SQL日志打印
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+  global-config:
+    db-config:
+      # 逻辑删除字段
+      logic-delete-field: deleted
+      logic-delete-value: 1
+      logic-not-delete-value: 0
+      # 主键类型
+      id-type: auto
+  # Mapper XML文件位置
+  mapper-locations: classpath*:/mapper/**/*.xml
+  # 实体类包路径
+  type-aliases-package: com.example.{{projectName}}.entity

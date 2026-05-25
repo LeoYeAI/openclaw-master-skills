@@ -1,0 +1,15 @@
+{
+  "id": "openmm-market-data",
+  "configSchema": {
+    "type": "object",
+    "properties": {
+      "exchange": { "type": "string", "enum": ["mexc", "gateio", "kraken", "bitget"] },
+      "apiKey": { "type": "string" },
+      "secretKey": { "type": "string" }
+    }
+  },
+  "uiHints": {
+    "apiKey": { "label": "Exchange API Key", "sensitive": true },
+    "secretKey": { "label": "Exchange Secret Key", "sensitive": true }
+  }
+}

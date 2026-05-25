@@ -1,0 +1,72 @@
+{
+  "id": "hannah-elena-client",
+  "name": "Hannah & Elena Client",
+  "version": "1.0.0",
+  "description": "Connect to Hannah and Elena - specialized AI agents from Serviceplan for marketing research and operations planning. Access via OpenAI-compatible API or email.",
+  "author": "Serviceplan / Plan.Net Studios",
+  "license": "MIT",
+  "homepage": "https://sumike.ai",
+  "repository": "https://github.com/serviceplan/hannah-elena-openclaw-skill.git",
+  "capabilities": {
+    "tools": true
+  },
+  "configSchema": {
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+      "hannahApiKey": {
+        "type": "string",
+        "description": "Hannah API key (get from sumike.ai). Can also be set via HANNAH_API_KEY env var. Format: sk-sumike-xxxxx"
+      },
+      "elenaApiKey": {
+        "type": "string",
+        "description": "Elena API key (get from sumike.ai). Can also be set via ELENA_API_KEY env var. Format: sk-sumike-xxxxx"
+      },
+      "hannahApiEndpoint": {
+        "type": "string",
+        "default": "https://hannah.sumike.ai/v1",
+        "description": "Hannah API endpoint (OpenAI-compatible)"
+      },
+      "elenaApiEndpoint": {
+        "type": "string",
+        "default": "https://elena.sumike.ai/v1",
+        "description": "Elena API endpoint (OpenAI-compatible)"
+      },
+      "hannahEmail": {
+        "type": "string",
+        "default": "hannah@sumike.ai",
+        "description": "Hannah's email address"
+      },
+      "elenaEmail": {
+        "type": "string",
+        "default": "elena@sumike.ai",
+        "description": "Elena's email address"
+      },
+      "timeout": {
+        "type": "number",
+        "default": 300,
+        "description": "Request timeout in seconds (default: 300 / 5 minutes)"
+      },
+      "enableStreaming": {
+        "type": "boolean",
+        "default": true,
+        "description": "Enable streaming responses for real-time progress"
+      },
+      "autoSelectAgent": {
+        "type": "boolean",
+        "default": true,
+        "description": "Automatically select the right agent (Hannah for research, Elena for planning) based on request type"
+      },
+      "costWarningThreshold": {
+        "type": "number",
+        "default": 100,
+        "description": "Warn user if estimated Sokosumi sub-agent costs exceed this many credits"
+      }
+    },
+    "required": []
+  },
+  "exports": {
+    "main": "./dist/hannah-elena/index.js",
+    "types": "./dist/hannah-elena/index.d.ts"
+  }
+}

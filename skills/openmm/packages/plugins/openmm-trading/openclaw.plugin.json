@@ -1,0 +1,17 @@
+{
+  "id": "openmm-trading",
+  "configSchema": {
+    "type": "object",
+    "properties": {
+      "exchange": { "type": "string", "enum": ["mexc", "gateio", "kraken", "bitget"] },
+      "apiKey": { "type": "string" },
+      "secretKey": { "type": "string" },
+      "passphrase": { "type": "string" }
+    }
+  },
+  "uiHints": {
+    "apiKey": { "label": "Exchange API Key", "sensitive": true },
+    "secretKey": { "label": "Exchange Secret Key", "sensitive": true },
+    "passphrase": { "label": "Passphrase (Bitget only)", "sensitive": true }
+  }
+}

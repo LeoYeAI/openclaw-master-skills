@@ -1,0 +1,107 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "openclaw-skill-fundraising-advisor"
+version = "1.0.0"
+description = "Financial Advisor (FA) skill for OpenClaw - A comprehensive investment advisory assistant for primary market financing"
+readme = "README.md"
+requires-python = ">=3.10"
+license = {text = "MIT"}
+keywords = [
+    "openclaw",
+    "skill",
+    "financial-advisor",
+    "fa",
+    "investment",
+    "fundraising",
+    "venture-capital",
+    "pitch-deck",
+    "pdf-parsing",
+]
+authors = [
+    {name = "ZhenRobotics", email = "code@zhenrobot.com"},
+]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+]
+
+dependencies = [
+    "pydantic>=2.5.0",
+    "pydantic-settings>=2.1.0",
+    # PDF Processing
+    "pypdf>=3.17.0",
+    "pdfplumber>=0.11.0",
+    "camelot-py[cv]>=0.11.0",
+    "tabula-py>=2.9.0",
+    # OCR
+    "pytesseract>=0.3.10",
+    "pillow>=10.0.0",
+    "pdf2image>=1.17.0",
+    # PDF Generation
+    "reportlab>=4.0.0",
+    "fpdf2>=2.7.0",
+    # Data Processing
+    "pandas>=2.0.0",
+    "numpy>=1.24.0",
+    # Async Support
+    "aiofiles>=23.2.0",
+    "asyncio>=3.4.3",
+    # Utilities
+    "python-dateutil>=2.8.0",
+    "pyyaml>=6.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.4.0",
+    "pytest-asyncio>=0.21.0",
+    "pytest-cov>=4.1.0",
+    "black>=23.0.0",
+    "ruff>=0.1.0",
+    "mypy>=1.7.0",
+    "ipython>=8.12.0",
+]
+test = [
+    "pytest>=7.4.0",
+    "pytest-asyncio>=0.21.0",
+    "pytest-cov>=4.1.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/ZhenRobotics/openclaw-fa"
+Documentation = "https://github.com/ZhenRobotics/openclaw-fa/blob/main/README.md"
+Repository = "https://github.com/ZhenRobotics/openclaw-fa"
+Issues = "https://github.com/ZhenRobotics/openclaw-fa/issues"
+
+[tool.hatch.build.targets.wheel]
+packages = ["fa_advisor"]
+
+[tool.black]
+line-length = 100
+target-version = ["py310", "py311", "py312"]
+include = '\.pyi?$'
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+select = ["E", "F", "W", "I", "N", "UP", "B", "A", "C4", "DTZ", "T20", "SIM", "RET"]
+
+[tool.mypy]
+python_version = "3.10"
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = true
+plugins = ["pydantic.mypy"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]
+asyncio_mode = "auto"

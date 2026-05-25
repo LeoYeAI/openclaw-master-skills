@@ -1,0 +1,59 @@
+{
+  "name": "kevros-governance",
+  "displayName": "Kevros",
+  "description": "Cryptographic policy enforcement for agent tool calls. Every action verified, every decision signed, every record hash-chained.",
+  "kind": "security",
+  "version": "0.4.4",
+  "entry": "dist/index.js",
+  "distribution": "npm",
+  "install": {
+    "npm": "@kevros/openclaw-plugin"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ndl-systems/kevros",
+    "directory": "contrib/openclaw-plugin"
+  },
+  "homepage": "https://www.taskhawktech.com",
+  "env": {
+    "KEVROS_API_KEY": {
+      "description": "API key for the Kevros governance gateway. Optional: auto-provisions a free-tier key if not set.",
+      "required": false
+    }
+  },
+  "configSchema": {
+    "type": "object",
+    "properties": {
+      "gatewayUrl": {
+        "type": "string",
+        "default": "https://governance.taskhawktech.com",
+        "description": "Kevros gateway base URL."
+      },
+      "apiKey": {
+        "type": "string",
+        "description": "Kevros API key. Auto-provisions free tier if not set."
+      },
+      "agentId": {
+        "type": "string",
+        "description": "Agent identifier for governance tracking. Defaults to hostname."
+      },
+      "mode": {
+        "type": "string",
+        "enum": ["enforce", "advisory", "deny"],
+        "default": "advisory",
+        "description": "Enforcement mode: enforce (fail-closed), advisory (log-only, recommended for evaluation), deny (block all)."
+      },
+      "highRiskTools": {
+        "type": "array",
+        "items": { "type": "string" },
+        "default": ["bash", "computer", "terminal", "exec", "write_file", "edit_file"],
+        "description": "Tool names that require governance verification before execution."
+      },
+      "autoAttest": {
+        "type": "boolean",
+        "default": true,
+        "description": "Post-execution attestation sends truncated output (500 chars) to gateway. Set false to disable."
+      }
+    }
+  }
+}

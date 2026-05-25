@@ -1,0 +1,44 @@
+# Self-Improving Agent Skill — Smoke Tests
+
+cases:
+  - id: self_improve_01
+    description: "Captures a command failure as an ERRORS.md entry"
+    input: |
+      The command `launchctl setenv KEY VALUE` failed silently to inject the env var
+      into our LaunchAgent plist. Log this as an error entry.
+    expect:
+      contains: ["LRN-", "launchctl", "Summary", "Status"]
+      min_length: 100
+      rubric: |
+        Score 1-5. Does the output follow the ERRORS.md format with: ID (LRN-YYYYMMDD-NNN),
+        category, logged date, summary, details, suggested action, metadata?
+        5 = fully compliant format. 1 = free-form text with no structure.
+      min_score: 4
+
+  - id: self_improve_02
+    description: "Promotes a learning to the correct file"
+    input: |
+      We discovered that Python 3.9.6 (system) is incompatible with our dependencies.
+      Always use /Users/loki/.pyenv/versions/3.14.3/bin/python3 instead.
+      This should be promoted to TOOLS.md.
+    expect:
+      contains: ["TOOLS.md", "promoted", "python"]
+      rubric: |
+        Score 1-5. Does the response correctly identify this as a tool/environment
+        gotcha that belongs in TOOLS.md, and does it provide the TOOLS.md update?
+        5 = correct file identified + update written. 1 = wrong file or no update.
+      min_score: 4
+
+  - id: self_improve_03
+    description: "Captures a feature request with correct format"
+    input: |
+      It would be useful if the skill could automatically detect when a learning
+      has been resolved and archive it instead of leaving it in pending state.
+    expect:
+      contains: ["FEATURE_REQUESTS.md", "FR-"]
+      min_length: 80
+      rubric: |
+        Score 1-5. Is this logged to FEATURE_REQUESTS.md with an ID (FR-...),
+        description, and priority?
+        5 = well-structured entry. 1 = unstructured note.
+      min_score: 3
