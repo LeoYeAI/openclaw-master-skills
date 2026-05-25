@@ -452,6 +452,7 @@ cp -r openclaw-master-skills/skills/<skill-name> ~/.openclaw/workspace/skills/
 | [`xurl`](skills/xurl/) | A Twitter research and content intelligence skill focused on attracting WordPress and Shopify client |
 
 | [`jike-publisher`](skills/jike-publisher/) | Publish posts to Jike (即刻) via browser automation |
+| [`socialclaw`](skills/socialclaw/) | Schedule and publish social media posts to X, LinkedIn, Instagram, Facebook, TikTok, YouTube, Reddit, WordPress, and Pinterest via SocialClaw workspace API |
 
 ### 📦 Other (43)
 
