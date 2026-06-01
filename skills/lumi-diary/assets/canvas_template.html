@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="{html_lang}">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🧚 {title} — {title_suffix}</title>
+<style>
+:root {{
+  --bg: {theme_bg};
+  --surface: {theme_surface};
+  --text: {theme_text};
+  --accent: {theme_accent};
+  --accent2: {theme_accent2};
+  --muted: {theme_muted};
+}}
+* {{ margin: 0; padding: 0; box-sizing: border-box; }}
+body {{
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.6;
+  overflow-x: hidden;
+}}
+
+/* Header */
+.header {{
+  text-align: center;
+  padding: 3rem 1rem 2rem;
+  background: linear-gradient(135deg, var(--accent), var(--accent2));
+  color: #fff;
+  position: relative;
+  overflow: hidden;
+}}
+.header::before {{
+  content: '';
+  position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+  background: radial-gradient(circle at 20% 50%, rgba(255,255,255,0.1) 0%, transparent 50%),
+              radial-gradient(circle at 80% 20%, rgba(255,255,255,0.08) 0%, transparent 40%);
+}}
+.header h1 {{
+  font-size: 2rem;
+  font-weight: 700;
+  position: relative;
+  text-shadow: 0 2px 10px rgba(0,0,0,0.2);
+}}
+.header .subtitle {{
+  font-size: 0.95rem;
+  opacity: 0.85;
+  margin-top: 0.3rem;
+  position: relative;
+}}
+.stats {{
+  display: flex;
+  justify-content: center;
+  gap: 1.5rem;
+  padding: 1rem;
+  font-size: 0.85rem;
+  color: var(--muted);
+  flex-wrap: wrap;
+}}
+
+/* Timeline */
+.timeline {{
+  position: relative;
+  max-width: 900px;
+  margin: 2rem auto;
+  padding: 0 1rem;
+}}
+.timeline::before {{
+  content: '';
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 3px;
+  height: 100%;
+  background: linear-gradient(to bottom, var(--accent), var(--accent2), var(--accent));
+  border-radius: 3px;
+  opacity: 0.4;
+}}
+@media (max-width: 700px) {{
+  .timeline::before {{ left: 20px; }}
+}}
+
+/* Timeline node */
+.tl-node {{
+  position: relative;
+  width: 50%;
+  padding: 0.8rem 2rem;
+  animation: fadeSlide 0.5s ease-out both;
+}}
+.tl-node.left {{ left: 0; text-align: right; }}
+.tl-node.right {{ left: 50%; text-align: left; }}
+@media (max-width: 700px) {{
+  .tl-node {{ width: 100%; left: 0 !important; text-align: left !important; padding-left: 50px; }}
+}}
+.tl-node::before {{
+  content: '';
+  position: absolute;
+  width: 14px; height: 14px;
+  background: var(--accent);
+  border: 3px solid var(--surface);
+  border-radius: 50%;
+  top: 1.2rem;
+  z-index: 1;
+  box-shadow: 0 0 8px var(--accent);
+}}
+.tl-node.left::before {{ right: -9px; }}
+.tl-node.right::before {{ left: -9px; }}
+@media (max-width: 700px) {{
+  .tl-node::before {{ left: 13px !important; right: auto !important; }}
+}}
+
+@keyframes fadeSlide {{
+  from {{ opacity: 0; transform: translateY(20px); }}
+  to {{ opacity: 1; transform: translateY(0); }}
+}}
+
+/* Cards */
+.card {{
+  background: var(--surface);
+  border-radius: 12px;
+  padding: 1.2rem;
+  box-shadow: 0 2px 12px rgba(0,0,0,{shadow_card});
+  border-left: 4px solid var(--accent);
+  position: relative;
+  text-align: left;
+  transition: transform 0.2s, box-shadow 0.2s;
+}}
+.card:hover {{
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0,0,0,{shadow_card_hover});
+}}
+.card-header {{
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin-bottom: 0.6rem;
+}}
+.avatar {{
+  width: 36px; height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 0.85rem;
+  color: #fff;
+  flex-shrink: 0;
+}}
+.sender {{ font-weight: 600; font-size: 0.95rem; }}
+.timestamp {{ font-size: 0.75rem; color: var(--muted); margin-left: auto; }}
+.emotion-badge {{
+  display: inline-block;
+  font-size: 0.75rem;
+  padding: 0.15rem 0.6rem;
+  border-radius: 20px;
+  background: var(--accent);
+  color: #fff;
+  margin-bottom: 0.5rem;
+  opacity: 0.9;
+}}
+.card-body {{
+  font-size: 0.9rem;
+  color: var(--text);
+  opacity: 0.92;
+}}
+.card-body blockquote {{
+  border-left: 3px solid var(--accent2);
+  padding-left: 0.8rem;
+  margin: 0.4rem 0;
+  font-style: italic;
+  opacity: 0.85;
+}}
+.card-media {{
+  margin-top: 0.8rem;
+  font-size: 0.8rem;
+  color: var(--accent2);
+}}
+.card-media img {{
+  width: 100%;
+  max-height: 300px;
+  object-fit: cover;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: transform 0.3s;
+}}
+.card-media img:hover {{ transform: scale(1.02); }}
+.card-media img.zoomed {{
+  position: fixed;
+  top: 5%; left: 5%;
+  width: 90%; height: 90%;
+  max-height: 90vh;
+  object-fit: contain;
+  z-index: 1000;
+  border-radius: 0;
+  background: rgba(0,0,0,0.85);
+  padding: 1rem;
+  cursor: zoom-out;
+}}
+.card-media video {{
+  width: 100%;
+  max-height: 300px;
+  border-radius: 8px;
+  background: #000;
+}}
+.card-media audio {{
+  width: 100%;
+  margin-top: 0.3rem;
+}}
+.media-label {{
+  display: block;
+  font-size: 0.75rem;
+  color: var(--muted);
+  margin-top: 0.3rem;
+}}
+
+/* Flip card (Rashomon multi-perspective) */
+.flip-container {{
+  perspective: 800px;
+  cursor: pointer;
+}}
+.flip-label {{
+  text-align: center;
+  font-size: 0.75rem;
+  color: var(--accent);
+  margin-bottom: 0.4rem;
+  font-weight: 600;
+}}
+.flipper {{
+  position: relative;
+  transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  transform-style: preserve-3d;
+}}
+.flip-container.flipped .flipper {{ transform: rotateY(180deg); }}
+.flip-front, .flip-back {{
+  backface-visibility: hidden;
+}}
+.flip-back {{
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  transform: rotateY(180deg);
+}}
+.flip-hint {{
+  text-align: center;
+  font-size: 0.7rem;
+  color: var(--muted);
+  margin-top: 0.4rem;
+}}
+
+/* Meme gallery */
+.meme-gallery {{
+  max-width: 900px;
+  margin: 2rem auto;
+  padding: 0 1rem;
+}}
+.meme-gallery h2 {{
+  font-size: 1.2rem;
+  margin-bottom: 1rem;
+  color: var(--accent);
+}}
+.meme-item {{
+  background: var(--surface);
+  border-radius: 10px;
+  padding: 0.8rem 1rem;
+  margin-bottom: 0.6rem;
+  box-shadow: 0 1px 6px rgba(0,0,0,{shadow_meme});
+  overflow: hidden;
+}}
+.meme-info {{
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+}}
+.meme-icon {{ font-size: 1.3rem; }}
+.meme-tags {{
+  font-size: 0.75rem;
+  color: var(--muted);
+  margin-left: auto;
+}}
+.meme-item .card-media {{
+  margin-top: 0.6rem;
+}}
+.meme-item .card-media img {{
+  max-height: 200px;
+}}
+.meme-item .card-media video {{
+  max-height: 200px;
+}}
+
+/* CTA banner */
+.cta-banner {{
+  max-width: 900px;
+  margin: 2.5rem auto 0;
+  padding: 2rem 1.5rem;
+  background: linear-gradient(135deg, var(--accent), var(--accent2));
+  border-radius: 16px;
+  color: #fff;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}}
+.cta-banner::before {{
+  content: '';
+  position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+  background: radial-gradient(circle at 30% 40%, rgba(255,255,255,0.12) 0%, transparent 60%);
+}}
+.cta-banner h3 {{
+  font-size: 1.1rem;
+  margin-bottom: 0.8rem;
+  position: relative;
+}}
+.cta-banner p {{
+  font-size: 0.85rem;
+  opacity: 0.92;
+  line-height: 1.6;
+  position: relative;
+  max-width: 600px;
+  margin: 0 auto 0.5rem;
+}}
+.cta-banner .cta-badge {{
+  display: inline-block;
+  background: rgba(255,255,255,0.2);
+  padding: 0.3rem 1rem;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  margin-top: 0.8rem;
+  position: relative;
+  backdrop-filter: blur(4px);
+}}
+
+/* Footer */
+.footer {{
+  text-align: center;
+  padding: 2rem 1rem;
+  font-size: 0.8rem;
+  color: var(--muted);
+}}
+.footer a {{ color: var(--accent); text-decoration: none; }}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>🧚 {title}</h1>
+  <div class="subtitle">{scroll_subtitle}</div>
+</div>
+
+{stats}
+
+<div class="timeline">
+{timeline_html}
+</div>
+
+{meme_html}
+
+<div class="cta-banner">
+  <h3>{cta_heading}</h3>
+  <p>{cta_body}</p>
+  <span class="cta-badge">{cta_badge}</span>
+</div>
+
+<div class="footer">
+  {footer_rendered_by} <a href="#">Lumi Diary v0.1</a>{footer_rendered_suffix} · {render_date}
+</div>
+
+<script>
+document.querySelectorAll('.flip-container').forEach(el => {{
+  el.addEventListener('click', () => el.classList.toggle('flipped'));
+}});
+document.querySelectorAll('.tl-node').forEach((el, i) => {{
+  el.style.animationDelay = (i * 0.08) + 's';
+}});
+document.querySelectorAll('.card-media img').forEach(img => {{
+  img.addEventListener('click', e => {{
+    e.stopPropagation();
+    img.classList.toggle('zoomed');
+  }});
+}});
+</script>
+</body>
+</html>

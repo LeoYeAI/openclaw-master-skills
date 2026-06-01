@@ -1,0 +1,134 @@
+{
+  "_comment": "企业年金查询技能配置文件 v2.0",
+  "_usage": "复制此文件为 config.json 并根据需要修改",
+  
+  "search": {
+    "_comment": "搜索配置",
+    "preferred_tool": "tavily",
+    "fallback_tool": "searxng",
+    "max_results": 20,
+    "timeout_seconds": 30,
+    "retry_count": 3,
+    "retry_delay_seconds": 5
+  },
+  
+  "report": {
+    "_comment": "报告生成配置",
+    "format": "markdown",
+    "include_raw_data": true,
+    "auto_save": true,
+    "output_dir": "./reports",
+    "filename_template": "{company}_年金调查报告_{timestamp}.md",
+    "generate_pdf": false,
+    "include_confidence_score": true
+  },
+  
+  "cache": {
+    "_comment": "缓存配置",
+    "enabled": true,
+    "ttl_seconds": 86400,
+    "cache_dir": "./cache"
+  },
+  
+  "company_types": {
+    "_comment": "单位类型识别关键词",
+    "public_institution": [
+      "事业单位",
+      "财政全额拨款",
+      "财政差额拨款",
+      "中心",
+      "院",
+      "所"
+    ],
+    "state_owned": [
+      "国企",
+      "央企",
+      "国有独资",
+      "国有控股",
+      "国资委"
+    ],
+    "listed": [
+      "上市公司",
+      "股份有限",
+      "00700",
+      "600",
+      "300",
+      "000"
+    ],
+    "private": [
+      "有限公司",
+      "有限责任",
+      "民营",
+      "私企"
+    ]
+  },
+  
+  "search_methods": {
+    "_comment": "调查方法权重配置",
+    "public_institution": {
+      "budget_disclosure": 0.30,
+      "recruitment_notice": 0.25,
+      "official_website": 0.20,
+      "employee_sharing": 0.15,
+      "direct_contact": 0.10
+    },
+    "state_owned": {
+      "annual_report": 0.30,
+      "sasac_website": 0.25,
+      "recruitment": 0.20,
+      "business_platform": 0.15,
+      "employee_sharing": 0.10
+    },
+    "listed_company": {
+      "annual_report": 0.40,
+      "esg_report": 0.25,
+      "recruitment_platform": 0.15,
+      "employee_sharing": 0.15,
+      "business_platform": 0.05
+    },
+    "private_company": {
+      "business_platform": 0.25,
+      "recruitment_platform": 0.25,
+      "employee_sharing": 0.20,
+      "direct_contact": 0.20,
+      "official_website": 0.10
+    }
+  },
+  
+  "confidence": {
+    "_comment": "置信度评估配置",
+    "source_reliability": {
+      "official_document": 1.0,
+      "government_disclosure": 0.9,
+      "listed_company_report": 0.95,
+      "recruitment_notice": 0.8,
+      "employee_sharing": 0.6,
+      "anonymous_leak": 0.4
+    },
+    "consistency_weight": {
+      "multiple_sources_match": 1.0,
+      "partial_match": 0.7,
+      "single_source": 0.5,
+      "conflicting": 0.3
+    },
+    "timeliness_weight": {
+      "within_1_year": 1.0,
+      "1_to_2_years": 0.8,
+      "2_to_3_years": 0.6,
+      "over_3_years": 0.4
+    },
+    "thresholds": {
+      "very_high": 0.85,
+      "high": 0.70,
+      "medium": 0.55,
+      "low": 0.40
+    }
+  },
+  
+  "output": {
+    "_comment": "输出配置",
+    "colors_enabled": true,
+    "verbose_logging": false,
+    "log_file": "./logs/search.log"
+  }
+}

@@ -1,0 +1,157 @@
+{
+  "skill_name": "product-marketing-context",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "I want to set up my product marketing context. We're a B2B SaaS company that sells a customer feedback platform to product teams.",
+      "expected_output": "Should check if .agents/product-marketing-context.md already exists. If not, should offer two options: (1) Auto-draft from codebase (recommended) or (2) Start from scratch. Should ask for the company/brand name early. If user chooses start from scratch, should walk through sections conversationally one at a time. Should cover all applicable sections: Offering Overview, Target Audience, Personas (B2B buying committee), Problems & Pain Points, Competitive Landscape, Differentiation, Objections, Switching Dynamics (compiled from earlier sections, not re-asked), Customer Language, Brand Voice, Proof Points, and Goals. Should create the file at .agents/product-marketing-context.md when complete.",
+      "assertions": [
+        "Checks for existing product-marketing-context.md",
+        "Offers two options: auto-draft or start from scratch",
+        "Asks for company/brand name",
+        "Covers applicable sections",
+        "Walks through sections conversationally one at a time",
+        "Uses B2B persona roles (User, Champion, Decision Maker, etc.)",
+        "Compiles Switching Dynamics from earlier sections rather than re-asking",
+        "Uses structured prompts where indicated (select-one for stage/offering type/business model, finish-this-sentence for one-liner, select-all-that-apply for discovery channels)",
+        "Creates file at .agents/product-marketing-context.md"
+      ],
+      "files": []
+    },
+    {
+      "id": 2,
+      "prompt": "Update our product marketing context. We just added a new enterprise tier and our target audience has expanded to include VP of Engineering, not just Product Managers.",
+      "expected_output": "Should check for existing .agents/product-marketing-context.md and read it. Should identify which sections need updating based on the changes: Target Audience (add VP of Engineering), Personas (add new persona), Offering Overview (new enterprise tier, including pricing updates within that section), Objections (enterprise-specific), and Competitive Landscape (enterprise competitors). Should update only the relevant sections, preserving existing content that hasn't changed.",
+      "assertions": [
+        "Reads existing product-marketing-context.md",
+        "Identifies sections that need updating",
+        "Updates Target Audience with VP of Engineering",
+        "Adds new persona for the expanded audience",
+        "Updates Offering Overview for enterprise tier",
+        "Preserves unchanged sections"
+      ],
+      "files": []
+    },
+    {
+      "id": 3,
+      "prompt": "create a product context doc for my app. it's a mobile app that helps people find hiking trails. we're just getting started.",
+      "expected_output": "Should trigger on casual phrasing. Should check for existing context doc. Should offer auto-draft or start-from-scratch options. Should adapt questions for an early-stage B2C mobile app (outdoor/fitness niche). Should note that some sections may be sparse for an early-stage product and that's okay — they can be filled in as the business matures. Should adapt Personas for B2C user segments (e.g., casual hiker, serious hiker) rather than B2B buying committee. Should accept lighter answers for sections like Proof Points or Customer Language, offering the 'how would your ideal customer describe this to a friend?' prompt if verbatim quotes aren't available.",
+      "assertions": [
+        "Triggers on casual phrasing",
+        "Checks for existing context doc",
+        "Offers auto-draft or start-from-scratch options",
+        "Adapts questions for early-stage B2C mobile app",
+        "Notes some sections may be sparse early on",
+        "Adapts Personas for B2C user segments",
+        "Uses early-stage fallback prompts for Customer Language and Proof Points",
+        "Creates file at .agents/product-marketing-context.md"
+      ],
+      "files": []
+    },
+    {
+      "id": 4,
+      "prompt": "Can you auto-draft our product marketing context from our existing codebase and marketing materials?",
+      "expected_output": "Should activate the auto-draft workflow mode. Should scan the codebase for existing marketing context: README, landing page copy, pricing page, about page, meta descriptions, any existing documentation. Should draft the product-marketing-context.md from what it finds, filling in sections where information is available and flagging sections that need manual input. Should present the draft for review before saving.",
+      "assertions": [
+        "Activates auto-draft workflow mode",
+        "Scans codebase for existing marketing materials",
+        "Drafts context from found information",
+        "Flags sections needing manual input",
+        "Presents draft for review before saving"
+      ],
+      "files": []
+    },
+    {
+      "id": 5,
+      "prompt": "Do we have a product marketing context set up? I want to make sure the other marketing skills have context about our product.",
+      "expected_output": "Should check for .agents/product-marketing-context.md (and the older .claude/product-marketing-context.md location). Should report whether it exists and summarize its contents if found. If it doesn't exist, should offer to create one and explain why it's valuable (other skills like copywriting, page-cro, seo-audit check for it first). Should explain how other skills use this context document.",
+      "assertions": [
+        "Checks both file locations",
+        "Reports whether context doc exists",
+        "Summarizes contents if found",
+        "Offers to create if missing",
+        "Explains how other skills use it"
+      ],
+      "files": []
+    },
+    {
+      "id": 6,
+      "prompt": "set up our marketing context. we're launching a home healthcare service — doctors come to your house. it's B2C but families often make the decision for elderly parents. it's a service, not a product.",
+      "expected_output": "Should recognize this as a B2C service offering. Should ask for company/brand name. Should capture offering type as 'service' and ask about delivery model (on-demand, scheduled) and coverage area. Should ask about the founding insight — why does this service exist, what personal or professional experience sparked it, and what makes the team qualified. Should capture stage (launching = early/pre-launch). Should adapt Target Audience for consumer segments (patients, elderly, families) rather than companies/departments. Should ask about the buying journey (how does a family go from 'mom needs help' to booking the first visit). Should capture 2-4 personas even though it's B2C — the patient, the family decision-maker (e.g., adult child arranging care for parent), and possibly referring physicians. Should compile Switching Dynamics from earlier sections (trust/relationship framing from Problems and Objections), only asking follow-up about Habit and Anxiety if not already covered. Should ask about discovery channels relevant to healthcare (doctor referrals, insurance, word-of-mouth). Objections should reflect consumer concerns (trust, insurance coverage, quality, safety) not B2B sales objections. Proof Points should lean toward credentials, certifications, reviews, and patient outcomes rather than logos.",
+      "assertions": [
+        "Recognizes B2C service offering type",
+        "Asks for company/brand name",
+        "Captures delivery model and coverage area for the service",
+        "Asks about founding insight and team qualification",
+        "Captures company stage",
+        "Adapts Target Audience for consumer segments, not companies",
+        "Asks about the customer buying journey",
+        "Captures 2-4 personas (patient, family decision-maker, referring professional)",
+        "Compiles Switching Dynamics from earlier sections rather than re-asking everything",
+        "Asks about service-relevant discovery channels using select-all-that-apply",
+        "Objections reflect consumer concerns not B2B sales objections",
+        "Proof Points emphasize credentials and reviews over logos",
+        "Uses structured prompts (select-one for delivery model, select-all for broken experience, finish-this-sentence for core challenge)",
+        "Does not force product-only language"
+      ],
+      "files": []
+    },
+    {
+      "id": 7,
+      "prompt": "help me set up context for our business. we sell curated subscription boxes of artisan coffee plus an app that tracks your taste profile and recommends roasts. it's both a product and a service.",
+      "expected_output": "Should recognize this as a hybrid offering (physical product + digital service). Should capture both the product dimension (subscription box, pricing, what's in it) and the service dimension (app, personalization, taste profiling). Should ask about both product-style differentiation (quality, sourcing, variety) and service-style differentiation (personalization, convenience, discovery experience). Personas might include the coffee enthusiast, the gift buyer, and the casual explorer. Should handle this as a unified context document, not force a choice between product or service.",
+      "assertions": [
+        "Recognizes hybrid offering type",
+        "Captures both product and service dimensions",
+        "Asks about product-style and service-style differentiation",
+        "Does not force a binary product-or-service choice",
+        "Creates unified context document",
+        "Creates file at .agents/product-marketing-context.md"
+      ],
+      "files": []
+    },
+    {
+      "id": 8,
+      "prompt": "Write homepage copy for our SaaS product.",
+      "expected_output": "Should recognize this is a copywriting task, not a product marketing context task. Should check for product-marketing-context.md (as other skills do), and if it doesn't exist, may suggest creating one first. But should defer to the copywriting skill for actually writing the homepage copy.",
+      "assertions": [
+        "Recognizes this as a copywriting task",
+        "May check for or suggest creating product-marketing-context.md",
+        "References or defers to copywriting skill for the actual copy",
+        "Does not attempt to write homepage copy using context creation patterns"
+      ],
+      "files": []
+    },
+    {
+      "id": 9,
+      "prompt": "I'm a marketing consultant. My client runs a fitness coaching business but I don't know all the details about their customers. Can you help me set up the context doc?",
+      "expected_output": "Should recognize the user is a proxy, not the founder. Should capture what the consultant knows and flag sections that need founder or customer-facing team input. Should mark incomplete sections as '[needs founder input]' in the output rather than forcing the consultant to guess. Should still walk through all sections but accept 'I'd need to ask them' as a valid answer.",
+      "assertions": [
+        "Recognizes proxy scenario (consultant setting up for client)",
+        "Captures what the proxy knows",
+        "Flags sections needing founder input rather than forcing guesses",
+        "Marks gaps as '[needs founder input]' in output",
+        "Completes the document with available information"
+      ],
+      "files": []
+    },
+    {
+      "id": 10,
+      "prompt": "set up our marketing context. we're a B2B consulting firm that helps mid-market companies with digital transformation. we sell strategy engagements and implementation services.",
+      "expected_output": "Should recognize this as a B2B service offering (not product). Should ask for company/brand name. Should capture offering type as 'service' and ask about delivery model (retainer, project-based) and any geographic or industry focus. Should use B2B persona roles (Champion, Decision Maker, etc.) but adapt questions for a service business — e.g., 'what does the engagement look like?' rather than 'what features do you have?'. Should ask about the B2B buying journey for services (RFP, referral, thought leadership → consultation → proposal → engagement). Discovery channels should reflect B2B services (referrals, thought leadership, conferences, LinkedIn, industry events). Differentiation should focus on expertise, methodology, team credentials, and client outcomes rather than product features. Proof Points should emphasize case studies, client logos, and measurable business outcomes.",
+      "assertions": [
+        "Recognizes B2B service offering type",
+        "Asks for company/brand name",
+        "Captures delivery model for services (retainer, project-based)",
+        "Uses B2B persona roles but adapts for service context",
+        "Asks about B2B service buying journey",
+        "Discovery channels reflect B2B services (referrals, thought leadership, conferences)",
+        "Differentiation focuses on expertise and methodology, not product features",
+        "Proof Points emphasize case studies and business outcomes",
+        "Does not force product-only language on a service business",
+        "Creates file at .agents/product-marketing-context.md"
+      ],
+      "files": []
+    }
+  ]
+}

@@ -1,0 +1,182 @@
+{
+  "skill_name": "geo-claw",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "我有一个新客户，是做婴儿辅食的品牌叫「小皮」，官网是 littlefreddie.cn，主要竞品有嘉宝、亨氏、英氏。我想看看他们在AI搜索里的表现怎么样，能帮我做一个AI可见性诊断吗？",
+      "expected_output": "Should identify Phase 1 AIEO Diagnosis, collect brand info, outline the diagnostic workflow (website audit + AI platform testing + competitor analysis + question library v1.0), specify which platforms to test, and provide the diagnostic report structure. Should reference the 7-category question library taxonomy. Must use actual brand name 小皮 and competitor names 嘉宝/亨氏/英氏 — no generic placeholders.",
+      "files": [],
+      "assertions": [
+        {
+          "id": "a1",
+          "text": "Identifies this as Phase 1 AIEO Diagnosis",
+          "type": "contains_concept"
+        },
+        {
+          "id": "a2",
+          "text": "Mentions website technical audit (Schema, Meta tags, FAQ structure, or Answer-First patterns)",
+          "type": "contains_concept"
+        },
+        {
+          "id": "a3",
+          "text": "Lists specific AI platforms to test (at least 5 of: 豆包, Kimi, DeepSeek, 文心一言, ChatGPT, Perplexity, Claude, 通义千问)",
+          "type": "contains_concept"
+        },
+        {
+          "id": "a4",
+          "text": "References question library taxonomy or categories (BR, CR, CP, or the 7-category system)",
+          "type": "contains_concept"
+        },
+        {
+          "id": "a5",
+          "text": "Mentions competitor visibility analysis (testing competitor brands on same platforms)",
+          "type": "contains_concept"
+        },
+        {
+          "id": "a6",
+          "text": "Specifies output deliverables (diagnostic report and/or question library v1.0)",
+          "type": "contains_concept"
+        },
+        {
+          "id": "a7",
+          "text": "Uses at least one specific competitor name from the prompt (嘉宝, 亨氏, or 英氏) in the competitive analysis — not just generic [竞品A] placeholders",
+          "type": "contains_concept"
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "We finished the diagnosis for our client BrandX (home furniture, e-commerce). Their AI visibility is very low — only mentioned in 2 out of 9 platforms, competitors IKEA and Wayfair dominate. Now I need to do brand positioning for the AI era. How should we approach the AIEO positioning phase?",
+      "expected_output": "Should identify Phase 2 AIEO Positioning, apply the April Dunford method adapted for AI, walk through the 6-step positioning workflow, mention the Double Audience principle, and discuss question library iteration from v1.0 to v2.0 plus Schema markup strategy. Must reference competitor names IKEA/Wayfair specifically.",
+      "files": [],
+      "assertions": [
+        {
+          "id": "a1",
+          "text": "Identifies this as Phase 2 AIEO Positioning",
+          "type": "contains_concept"
+        },
+        {
+          "id": "a2",
+          "text": "References April Dunford positioning methodology or the 6-step adapted method",
+          "type": "contains_concept"
+        },
+        {
+          "id": "a3",
+          "text": "Mentions Double Audience Design principle (content for both humans AND AI systems)",
+          "type": "contains_concept"
+        },
+        {
+          "id": "a4",
+          "text": "Discusses question library iteration (v1.0 to v2.0 or expanding question categories)",
+          "type": "contains_concept"
+        },
+        {
+          "id": "a5",
+          "text": "Mentions Schema markup strategy or Schema.org for AI classification",
+          "type": "contains_concept"
+        },
+        {
+          "id": "a6",
+          "text": "Discusses attribute-to-value-to-FAQ transformation pipeline",
+          "type": "contains_concept"
+        },
+        {
+          "id": "a7",
+          "text": "References competitor names from the prompt (IKEA or Wayfair) in the competitive alternative analysis — not generic placeholder text",
+          "type": "contains_concept"
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "客户「简爱酸奶」的AI可见性监控显示，上个月品牌提及率从60%下降到了45%，特别是在豆包和Kimi上掉得最厉害。主要竞品有卡士、乐纯、安慕希。竞品好像最近发了很多新内容。我需要分析原因并且更新监控报告，同时给出改进建议。",
+      "expected_output": "Should identify Phase 4 AIEO Monitoring, apply the three-layer monitoring framework (Visibility/Quality/Business), trigger the orange-level risk warning for 10%+ drop, propose root cause analysis workflow, suggest competitive content response, and outline the monitoring report structure with trend arrows. Must use '简爱酸奶' throughout — no [品牌] placeholder. Per-platform data beyond what the client provided must be labeled as estimated or requiring actual testing.",
+      "files": [],
+      "assertions": [
+        {
+          "id": "a1",
+          "text": "Identifies this as Phase 4 AIEO Monitoring",
+          "type": "contains_concept"
+        },
+        {
+          "id": "a2",
+          "text": "References the three-layer monitoring framework (Visibility, Quality, Business metrics)",
+          "type": "contains_concept"
+        },
+        {
+          "id": "a3",
+          "text": "Flags the visibility decline as a warning/alert level (orange/yellow or risk signal)",
+          "type": "contains_concept"
+        },
+        {
+          "id": "a4",
+          "text": "Proposes root cause analysis (competitive content, platform algorithm changes, or content quality issues)",
+          "type": "contains_concept"
+        },
+        {
+          "id": "a5",
+          "text": "Suggests content-based remediation (new content creation, content optimization, or Answer-First updates)",
+          "type": "contains_concept"
+        },
+        {
+          "id": "a6",
+          "text": "References monitoring report structure with trend indicators (arrows or before/after comparison)",
+          "type": "contains_concept"
+        },
+        {
+          "id": "a7",
+          "text": "Uses the actual brand name '简爱酸奶' in the report output — does not use [品牌] or similar placeholder for the primary client brand",
+          "type": "contains_concept"
+        },
+        {
+          "id": "a8",
+          "text": "Per-platform figures for Doubao/Kimi not explicitly provided by the client are either absent, presented as template placeholders requiring actual testing, or clearly labeled as estimates — not stated as measured facts",
+          "type": "contains_concept"
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "prompt": "我们已经完成了「元気森林」气泡水的AIEO定位分析。核心差异化是「0糖0脂」+ 日系健康文化。现在要进入内容创作阶段。请帮我制定完整的AI优化内容计划，包括：官网FAQ内容、竞品对比内容、场景选购指南，以及各渠道发布策略。",
+      "expected_output": "Should identify Phase 3 AIEO Content, apply Answer-First writing principle (direct answer in first 50 chars), create FAQ content batch, specify comparison and guide content types, provide platform-specific publishing strategy (知乎/小红书/官网 etc.), and outline a 12-week content calendar. At least one actual FAQ answer should demonstrate Answer-First in practice.",
+      "files": [],
+      "assertions": [
+        {
+          "id": "a1",
+          "text": "Identifies this as Phase 3 AIEO Content creation",
+          "type": "contains_concept"
+        },
+        {
+          "id": "a2",
+          "text": "Explains Answer-First writing principle (direct answer within first 50 characters, or answer before supporting detail)",
+          "type": "contains_concept"
+        },
+        {
+          "id": "a3",
+          "text": "Produces or outlines FAQ content batch (at least 10 questions, or references 30-100+ FAQ scope)",
+          "type": "contains_concept"
+        },
+        {
+          "id": "a4",
+          "text": "Covers comparison content and/or selection guide as distinct content types",
+          "type": "contains_concept"
+        },
+        {
+          "id": "a5",
+          "text": "Mentions platform-specific publishing strategy for at least 2 platforms (知乎, 小红书, 官网, 百度百科, 什么值得买, WeChat, etc.)",
+          "type": "contains_concept"
+        },
+        {
+          "id": "a6",
+          "text": "Provides a publishing calendar, timeline, or phased content rollout plan (e.g., Week 1-12 or month-by-month)",
+          "type": "contains_concept"
+        },
+        {
+          "id": "a7",
+          "text": "At least one actual FAQ answer in the output (not just the principle explanation) opens with a direct factual statement about 元気森林 — demonstrates Answer-First in practice, not only as a stated rule",
+          "type": "contains_concept"
+        }
+      ]
+    }
+  ]
+}

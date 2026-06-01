@@ -1,0 +1,21 @@
+[project]
+name = "lumi-diary"
+version = "0.2.0"
+description = "Your local-first memory guardian — MCP server for the Lumi Diary skill"
+readme = "README.md"
+license = {text = "MIT"}
+authors = [{name = "THHOHO Weiqi"}]
+requires-python = ">=3.10"
+dependencies = [
+    "mcp[cli]>=1.0",
+]
+
+[project.optional-dependencies]
+screenshot = ["playwright>=1.40"]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project.scripts]
+lumi-diary = "src.mcp_server:mcp.run"

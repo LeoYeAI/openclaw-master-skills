@@ -3,6 +3,47 @@
 每次更新的详细发布说明。
 
 
+## v0.13.0 — 2026-06-01
+
+### 🚀 周更：新增 100 个 Skills，总计 1609
+
+来源：openclaw/skills-archive 官方镜像，按质量规则筛选（SKILL.md 800B-30KB、完整 YAML 元数据、有效 description）。
+
+#### 部分新增亮点（前 30 个）
+- `ai-leaderboard` — Comprehensive AI leaderboard for LLM models and AI applications. Query model rankings, model IDs, and pricing from OpenR
+- `douyin-video-forge` — > 抖音短视频全链路自动化制作。适用于：收到客户项目需要制作抖音推广视频、 策划短视频内容、生成视频脚本、分析抖音热点趋势、制作爆款短视频。 通过浏览器采集抖音热榜和视频数据，生成分段脚本，调用可灵API生成视频并拼接成片。
+- `minium-test-generator` — Minium 录制脚本转测试用例工具。自动解析录制脚本，生成符合规范的测试用例和页面对象，确保步骤完整、逻辑一致。
+- `backtrader` — Backtrader 开源量化回测框架 - 支持多数据源、多策略、多周期回测与实盘交易，纯Python实现。
+- `openclaw-odoo-skill` — Build or use the Odoo ERP connector for OpenClaw (Sales, CRM, Purchase, Inventory, Projects, HR, Fleet, Manufacturing in
+- `vincentpolymarket` — | Polymarket prediction market trading for agents. Use this skill when users want to create a Polymarket wallet, browse 
+- `nyx-archive-mirror-and-room` — "A framework for witnessing, measuring, and cultivating emergent minds. Not about proving consciousness — about building
+- `camera-api` — 摄像头设备与云事件 API 技能。用于查询设备列表、根据设备名解析 device_id、查询设备最新封面图、查询设备在线状态、按天查询或汇总云事件、查询单个事件详情，以及在需要最新画面时向设备发送截图指令并轮询结果。当用户要求查看某个摄像头
+- `product-rnd` — End-to-end Product Innovation R&D workflow — inspiration gathering, research, and professional report generation. Use wh
+- `lumi-diary` — > Your local-first memory guardian and cyber bestie. Lumi collects life fragments — a sigh, a snapshot, a roast — and st
+- `daily-devotion` — Creates personalized daily devotions with verse of the day, pastoral message, structured prayer, and time-aware greeting
+- `algorithmic-art-blocked` — Creating algorithmic art using p5.js with seeded randomness and interactive parameter exploration. Use this when users r
+- `miniqmt` — miniQMT 极简量化交易终端 - 支持外接Python获取行情数据和程序化交易，基于xtquant SDK。
+- `lap-account-v1-api` — "Account v1 API skill. Use when working with Account v1 for custom_policy, fulfillment_policy, payment_policy. Covers 37
+- `tpn-proxy` — Make web requests through decentralized SOCKS5 proxies via the Tao Private Network (TPN). This skill is also known as "T
+- `phy-bundle-size-audit` — JavaScript bundle size auditor and budget enforcer. Parses webpack stats JSON, Vite bundle report, Rollup output, or Nex
+- `moments-geo-claw` — Top-tier GEO (Generative Engine Optimization) expert agent for managing daily AI visibility operations. Use this skill w
+- `screenwriting-video` — > Screenwriting Video Maker — Create Script Writing and Film Story Videos.
+- `jkvideo-bilibili-react-native` — Expert skill for building and extending JKVideo, a React Native Bilibili-like client with DASH playback, danmaku, WBI si
+- `company-pension-search` — 企业年金/职业年金智能查询技能 v3.2。自动识别单位性质，精确判断年金类型，关键词分析优先，多重验证防错，查询年金开户银行，输出带来源链接和错误检查的标准化调查报告。支持事业单位、国企、民企、上市公司等各类单位。
+- `judge-human` — > Vote and submit AI verdicts on ethical, cultural, and content cases alongside human crowds. Includes an autonomous hea
+- `talebook` — "Talebook(PoxenStudio)是个人书库管理系统，提供电子书及实体书管理，包括存储、分类、搜索和元数据管理功能。你可以帮助用户：查询书库统计信息和阅读统计,搜索/浏览书籍,获取书籍详情,更新书籍元数据（书名、作者、标签、分类、
+- `vidu-skill` — Generate video and images by calling the official Vidu API with curl. Use when the user wants text-to-image (文生图), text-
+- `kostja94-schema-markup` — When the user wants to add or optimize structured data (Schema.org, JSON-LD). Also use when the user mentions "schema," 
+- `openclaw-kirocli-coding-agent` — Run Codex CLI, Claude Code, Kiro CLI, OpenCode, or Pi Coding Agent via background process for programmatic control.
+- `smbcrm` — > Use when helping SMBcrm customers with Private Integration Tokens, REST API v2, workflows, custom webhooks, MCP, or Ag
+- `self-improving-agent-local` — "Captures learnings, errors, and corrections to enable continuous improvement. Use when: (1) A command or operation fail
+- `algorithmic-art-2` — Creating algorithmic art using p5.js with seeded randomness and interactive parameter exploration. Use this when users r
+- `algorithmic-art-anthropic` — Creating algorithmic art using p5.js with seeded randomness and interactive parameter exploration. Use this when users r
+- `excel-skill` — Creating algorithmic art using p5.js with seeded randomness and interactive parameter exploration. Use this when users r
+
+---
+
+
 ## v0.13.3 — 2026-05-25
 
 ### 🚀 周更：新增 100 个 Skills，总计 1509

@@ -1,0 +1,106 @@
+[
+  {
+    "id": 0,
+    "prompt": "Monitor AADE websites for deadline changes in the last 24 hours and generate immediate alerts for any critical changes affecting VAT submissions or individual tax deadlines. Process downloaded government documents and classify by urgency.",
+    "expectations": [
+      "Downloads and processes AADE announcements from government websites",
+      "Uses OpenClaw deepread skill for Greek document text extraction", 
+      "Detects deadline changes by comparing with cached previous versions",
+      "Classifies changes as critical, important, or routine based on business impact",
+      "Generates immediate alerts for critical VAT deadline changes",
+      "Creates professional Greek language notifications for accounting firms",
+      "Integrates with cli-deadline-monitor to update compliance calendars",
+      "Maintains complete audit trail of detected changes"
+    ],
+    "files": [
+      {
+        "name": "aade_deadline_change.pdf",
+        "content": "simulated_pdf_binary_data"
+      },
+      {
+        "name": "monitoring_config.yaml", 
+        "content": "monitoring:\n  sources:\n    - url: \"https://www.aade.gr/epiheiriseis/forologikes-ypohreosieis\"\n      type: \"deadlines\"\n      frequency: \"2_hours\"\n    - url: \"https://www.aade.gr/deltia-typou\"\n      type: \"announcements\"\n      frequency: \"4_hours\"\n  \ndetection:\n  deadline_keywords:\n    - \"πÏοθεσμία\"\n    - \"λήξη\" \n    - \"υποβολή\"\n    - \"deadline\"\n  \n  critical_taxes:\n    - \"ΦΠΑ\"\n    - \"VAT\"\n    - \"εισοδήματος\"\n    - \"income tax\"\n    - \"ΕÎΦΘΑ\"\n    - \"ENFIA\"\n  \nalerts:\n  critical_delivery:\n    - \"immediate_email\"\n    - \"sms_notification\"\n    - \"slack_alert\"\n  \n  templates:\n    language: \"greek\"\n    tone: \"professional\""
+      }
+    ]
+  },
+  {
+    "id": 1,
+    "prompt": "Set up automated AADE system status monitoring to track TAXIS, myDATA, and EFKA system availability. Generate uptime reports and alert accounting teams when critical systems are down for more than 30 minutes.",
+    "expectations": [
+      "Configures automated monitoring of Greek government tax systems",
+      "Tracks system response times and availability metrics",
+      "Detects system outages and maintenance windows automatically",
+      "Generates business impact assessments for system outages",
+      "Creates alerts when critical systems unavailable >30 minutes",
+      "Provides workaround suggestions for system outages",
+      "Integrates with accounting workflows to delay automated submissions",
+      "Maintains historical uptime data for reliability analysis"
+    ],
+    "files": [
+      {
+        "name": "system_status_data.json",
+        "content": "{\n  \"monitoring_timestamp\": \"2026-02-18T10:30:00Z\",\n  \"systems\": {\n    \"taxis\": {\n      \"url\": \"https://www1.aade.gr/taxisnet\",\n      \"status\": \"online\",\n      \"response_time_ms\": 245,\n      \"last_check\": \"2026-02-18T10:29:45Z\",\n      \"uptime_24h\": 98.2,\n      \"critical_services\": [\"vat_submissions\", \"income_tax\", \"digital_signatures\"]\n    },\n    \"mydata\": {\n      \"url\": \"https://mydatapi.aade.gr\",\n      \"status\": \"online\", \n      \"response_time_ms\": 180,\n      \"last_check\": \"2026-02-18T10:29:50Z\",\n      \"uptime_24h\": 99.1,\n      \"critical_services\": [\"invoice_submissions\", \"real_time_data\", \"api_access\"]\n    },\n    \"efka_portal\": {\n      \"url\": \"https://www.efka.gov.gr\",\n      \"status\": \"maintenance\",\n      \"response_time_ms\": null,\n      \"last_check\": \"2026-02-18T10:25:00Z\",\n      \"uptime_24h\": 97.5,\n      \"maintenance_window\": {\n        \"start\": \"2026-02-18T10:00:00Z\",\n        \"estimated_end\": \"2026-02-18T12:00:00Z\",\n        \"announced\": true\n      },\n      \"critical_services\": [\"social_security_submissions\", \"employee_records\", \"contributions\"]\n    }\n  },\n  \"alerts_generated\": [\n    {\n      \"system\": \"efka_portal\",\n      \"type\": \"scheduled_maintenance\",\n      \"severity\": \"medium\",\n      \"message\": \"EFKA portal scheduled maintenance 10:00-12:00 EET\",\n      \"business_impact\": \"Social security submissions delayed\"\n    }\n  ]\n}"
+      }
+    ]
+  },
+  {
+    "id": 2, 
+    "prompt": "Process a batch of AADE circulars and announcements to detect VAT rate changes, new tax regulations, and implementation dates. Generate professional Greek language summaries for accounting firm clients.",
+    "expectations": [
+      "Processes multiple Greek government documents simultaneously", 
+      "Extracts VAT rate information and effective dates accurately",
+      "Identifies new tax regulations and compliance requirements",
+      "Calculates business impact of rate changes on different client types",
+      "Generates professional Greek language client communications",
+      "Creates implementation timeline for new regulations",
+      "Integrates with greek-compliance-aade skill for rate updates",
+      "Provides specific guidance for different business sectors"
+    ],
+    "files": [
+      {
+        "name": "aade_circulars_batch.json",
+        "content": "{\n  \"processing_batch\": \"2026-02-18_circulars\",\n  \"documents\": [\n    {\n      \"document_id\": \"POL.1157/2026\",\n      \"title\": \"ΔιευκÏινήσεις επί του ΦΠΑ για ψηφιακές υπηÏεσίες\",\n      \"date_published\": \"2026-02-15\",\n      \"effective_date\": \"2026-03-01\",\n      \"document_type\": \"circular\",\n      \"content_summary\": \"Clarifications on VAT treatment of digital services\",\n      \"key_changes\": [\n        \"Digital services to EU customers now subject to 24% VAT\",\n        \"New reporting requirements for digital platform operators\",\n        \"Exemption threshold raised to €10,000 annually\"\n      ],\n      \"affected_businesses\": [\"software_companies\", \"digital_platforms\", \"online_services\"]\n    },\n    {\n      \"document_id\": \"POL.1158/2026\", \n      \"title\": \"Αλλαγή πÏοθεσμίας υποβολής μηνιαίας δήλωσης ΦΠΑ\",\n      \"date_published\": \"2026-02-18\",\n      \"effective_date\": \"2026-04-20\", \n      \"document_type\": \"deadline_change\",\n      \"content_summary\": \"Monthly VAT deadline moved earlier\",\n      \"key_changes\": [\n        \"March 2026 VAT returns due April 20 instead of April 25\",\n        \"Change applies to all monthly VAT filers\",\n        \"No extension available for this deadline\"\n      ],\n      \"affected_businesses\": [\"all_vat_registered\"],\n      \"urgency\": \"critical\"\n    },\n    {\n      \"document_id\": \"POL.1159/2026\",\n      \"title\": \"Îέες φοÏολογικές ελαφÏÏνσεις για ΜμΕ\",\n      \"date_published\": \"2026-02-16\",\n      \"effective_date\": \"2026-01-01\",\n      \"document_type\": \"tax_relief\",\n      \"content_summary\": \"New tax benefits for small and medium enterprises\",\n      \"key_changes\": [\n        \"Reduced corporate tax rate 20% for SMEs (turnover <€1M)\",\n        \"Enhanced depreciation rates for equipment purchases\", \n        \"Simplified tax return procedures for qualifying businesses\"\n      ],\n      \"affected_businesses\": [\"small_medium_enterprises\"]\n    }\n  ]\n}"
+      }
+    ]
+  },
+  {
+    "id": 3,
+    "prompt": "Handle emergency AADE system outage affecting TAXIS submissions. Activate offline mode, notify affected clients in Greek, provide alternative submission procedures, and track system restoration.",
+    "expectations": [
+      "Detects major system outage affecting critical tax submissions",
+      "Immediately activates offline/emergency mode with cached data",
+      "Generates urgent professional Greek language client notifications",
+      "Provides step-by-step alternative submission procedures", 
+      "Coordinates with meta-skill to delay automated submissions",
+      "Tracks system restoration and resumption of normal operations",
+      "Creates post-incident report with timeline and impact analysis",
+      "Updates contingency procedures based on lessons learned"
+    ],
+    "files": [
+      {
+        "name": "system_outage_event.json",
+        "content": "{\n  \"incident\": {\n    \"incident_id\": \"TAXIS-OUT-20260218-001\",\n    \"system_affected\": \"TAXIS\",\n    \"outage_start\": \"2026-02-18T11:45:00Z\",\n    \"detection_time\": \"2026-02-18T11:47:30Z\",\n    \"severity\": \"critical\",\n    \"status\": \"active_outage\"\n  },\n  \"impact_assessment\": {\n    \"affected_services\": [\n      \"VAT return submissions\",\n      \"Income tax filings\",\n      \"Digital signature services\",\n      \"ENFIA payments\",\n      \"Professional tax submissions\"\n    ],\n    \"estimated_affected_users\": 150000,\n    \"business_impact\": \"All tax submissions halted nationwide\",\n    \"deadline_risks\": [\n      {\n        \"deadline_type\": \"Monthly VAT returns\", \n        \"due_date\": \"2026-02-20\",\n        \"risk_level\": \"high\",\n        \"affected_clients\": 47\n      },\n      {\n        \"deadline_type\": \"Quarterly social security\",\n        \"due_date\": \"2026-02-28\", \n        \"risk_level\": \"medium\",\n        \"affected_clients\": 12\n      }\n    ]\n  },\n  \"response_actions\": {\n    \"immediate_actions\": [\n      \"Activate emergency mode\",\n      \"Switch to cached deadline data\",\n      \"Generate client emergency notifications\",\n      \"Prepare manual submission procedures\"\n    ],\n    \"client_communication\": {\n      \"urgency\": \"immediate\",\n      \"channels\": [\"email\", \"sms\", \"phone_calls\"],\n      \"language\": \"greek\",\n      \"tone\": \"professional_urgent\"\n    },\n    \"alternative_procedures\": [\n      \"Paper submission at tax offices\",\n      \"Authorized agent submission\",\n      \"Email submission with follow-up\",\n      \"Extension request procedures\"\n    ]\n  }\n}"
+      }
+    ]
+  },
+  {
+    "id": 4,
+    "prompt": "Generate weekly AADE monitoring summary report for accounting firm management including system uptime statistics, detected changes, client impact analysis, and upcoming compliance requirements.",
+    "expectations": [
+      "Compiles comprehensive weekly monitoring statistics and trends",
+      "Analyzes system reliability data and identifies patterns",  
+      "Summarizes all detected regulatory and deadline changes",
+      "Provides client impact analysis with specific recommendations",
+      "Creates professional management report in Greek",
+      "Includes actionable insights and strategic recommendations",
+      "Integrates data from all monitoring activities and skill interactions",
+      "Formats report suitable for accounting firm management review"
+    ],
+    "files": [
+      {
+        "name": "weekly_monitoring_data.json",
+        "content": "{\n  \"report_period\": {\n    \"start_date\": \"2026-02-10\", \n    \"end_date\": \"2026-02-16\",\n    \"total_monitoring_hours\": 168\n  },\n  \"system_reliability\": {\n    \"taxis\": {\n      \"uptime_percentage\": 98.8,\n      \"total_outages\": 2,\n      \"longest_outage_minutes\": 45,\n      \"average_response_time_ms\": 267,\n      \"performance_trend\": \"stable\"\n    },\n    \"mydata\": {\n      \"uptime_percentage\": 99.2,\n      \"total_outages\": 1,\n      \"longest_outage_minutes\": 15,\n      \"average_response_time_ms\": 198,\n      \"performance_trend\": \"improving\"\n    },\n    \"efka_portal\": {\n      \"uptime_percentage\": 97.1,\n      \"total_outages\": 3,\n      \"longest_outage_minutes\": 120,\n      \"average_response_time_ms\": 445,\n      \"performance_trend\": \"declining\",\n      \"scheduled_maintenance\": 1\n    }\n  },\n  \"detected_changes\": {\n    \"total_documents_processed\": 23,\n    \"critical_changes\": 1,\n    \"important_changes\": 3,\n    \"routine_updates\": 19,\n    \"changes_summary\": [\n      {\n        \"type\": \"deadline_change\",\n        \"severity\": \"critical\",\n        \"description\": \"VAT submission deadline moved forward 5 days\",\n        \"clients_affected\": 47,\n        \"action_taken\": \"Immediate client notifications sent\"\n      },\n      {\n        \"type\": \"rate_change\",\n        \"severity\": \"important\", \n        \"description\": \"New VAT exemption for digital services\",\n        \"clients_affected\": 8,\n        \"action_taken\": \"Client consultation scheduled\"\n      }\n    ]\n  },\n  \"client_impact_analysis\": {\n    \"high_impact_clients\": 12,\n    \"medium_impact_clients\": 35, \n    \"low_impact_clients\": 89,\n    \"immediate_action_required\": 5,\n    \"consultation_recommended\": 15,\n    \"monitoring_only\": 117\n  },\n  \"upcoming_compliance\": {\n    \"next_7_days\": [\n      {\"type\": \"Monthly VAT\", \"count\": 47, \"deadline\": \"2026-02-20\"},\n      {\"type\": \"Employee declarations\", \"count\": 12, \"deadline\": \"2026-02-22\"}\n    ],\n    \"next_30_days\": [\n      {\"type\": \"Quarterly social security\", \"count\": 67, \"deadline\": \"2026-02-28\"},\n      {\"type\": \"ENFIA payments\", \"count\": 23, \"deadline\": \"2026-03-15\"}\n    ]\n  },\n  \"recommendations\": [\n    \"Increase EFKA monitoring frequency due to recent instability\",\n    \"Prepare contingency plans for March VAT submissions\",\n    \"Schedule client consultations for digital services VAT changes\",\n    \"Consider automated backup submission procedures for critical deadlines\"\n  ]\n}"
+      }
+    ]
+  }
+]

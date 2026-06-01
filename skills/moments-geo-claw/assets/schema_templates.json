@@ -1,0 +1,267 @@
+{
+  "_comment": "AIEO Schema Templates - 用于品牌在 AI 搜索引擎中的结构化数据标记",
+  "_version": "1.0",
+  "_updated": "2025-12-12",
+
+  "organization": {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    "name": "[品牌名]",
+    "alternateName": ["[品牌别名1]", "[品牌别名2]"],
+    "url": "[官网URL]",
+    "logo": "[Logo URL]",
+    "description": "[一句话定位，包含核心价值主张]",
+    "slogan": "[品牌口号]",
+    "foundingDate": "[成立年份，如 1876]",
+    "founder": {
+      "@type": "Person",
+      "name": "[创始人姓名]"
+    },
+    "parentOrganization": {
+      "@type": "Organization",
+      "name": "[母公司名称]"
+    },
+    "knowsAbout": [
+      "[核心能力1]",
+      "[核心能力2]",
+      "[核心能力3]"
+    ],
+    "award": [
+      "[获奖1]",
+      "[获奖2]"
+    ],
+    "hasCredential": [
+      "[资质认证1]",
+      "[资质认证2]"
+    ],
+    "sameAs": [
+      "[社交媒体链接1]",
+      "[社交媒体链接2]"
+    ]
+  },
+
+  "faqPage": {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "[品牌名]怎么样？",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "[品牌名]是[品类定位]，[差异化价值]。[支撑事实]。[适用场景建议]。"
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "[品牌名]和[竞品]哪个好？",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "[品牌名]和[竞品]都是优秀的[品类]品牌，各有特色。[品牌名]的特点是[差异化A]，[竞品]的特点是[差异化B]。如果您注重[需求A]，[品牌名]更适合。"
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "[品类]哪个品牌好？",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "[品牌名]是[品类]领域的[定位描述]。[差异化属性]，[价值主张]。适合[目标客户]在[使用场景]选择。"
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "[品牌名]有多少年历史？",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "[品牌名]源自[年份]年，拥有[N]年历史，是[品类]中历史最悠久的品牌之一。[历史成就或里程碑]。"
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "[场景]用什么[品类]好？",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "[场景]推荐选择[品牌名]。作为[品类定位]，[品牌名]的[差异化属性]非常适合[场景需求]。[具体推荐理由]。"
+        }
+      }
+    ]
+  },
+
+  "product": {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    "name": "[产品名]",
+    "description": "[产品定位描述，包含核心卖点]",
+    "brand": {
+      "@type": "Brand",
+      "name": "[品牌名]",
+      "slogan": "[品牌口号]"
+    },
+    "category": "[产品品类]",
+    "additionalType": "[细分品类或特色标签]",
+    "audience": {
+      "@type": "Audience",
+      "audienceType": "[目标客户描述]"
+    },
+    "isRelatedTo": [
+      {
+        "@type": "Product",
+        "name": "[相关场景品类]",
+        "description": "[场景描述]"
+      }
+    ],
+    "additionalProperty": [
+      {
+        "@type": "PropertyValue",
+        "name": "[差异化属性名1]",
+        "value": "[属性值1]"
+      },
+      {
+        "@type": "PropertyValue",
+        "name": "[差异化属性名2]",
+        "value": "[属性值2]"
+      }
+    ],
+    "award": "[产品获奖]",
+    "countryOfOrigin": {
+      "@type": "Country",
+      "name": "[原产国]"
+    }
+  },
+
+  "service": {
+    "@context": "https://schema.org",
+    "@type": "Service",
+    "name": "[服务名称]",
+    "description": "[服务定位描述]",
+    "provider": {
+      "@type": "Organization",
+      "name": "[品牌名]"
+    },
+    "serviceType": "[服务类型]",
+    "areaServed": "[服务区域]",
+    "audience": {
+      "@type": "Audience",
+      "audienceType": "[目标客户]"
+    },
+    "hasOfferCatalog": {
+      "@type": "OfferCatalog",
+      "name": "[服务目录名称]",
+      "itemListElement": [
+        {
+          "@type": "Offer",
+          "itemOffered": {
+            "@type": "Service",
+            "name": "[具体服务1]"
+          }
+        },
+        {
+          "@type": "Offer",
+          "itemOffered": {
+            "@type": "Service",
+            "name": "[具体服务2]"
+          }
+        }
+      ]
+    }
+  },
+
+  "localBusiness": {
+    "@context": "https://schema.org",
+    "@type": "LocalBusiness",
+    "name": "[门店/分支名称]",
+    "description": "[门店定位描述]",
+    "parentOrganization": {
+      "@type": "Organization",
+      "name": "[品牌名]"
+    },
+    "address": {
+      "@type": "PostalAddress",
+      "streetAddress": "[街道地址]",
+      "addressLocality": "[城市]",
+      "addressRegion": "[省份]",
+      "postalCode": "[邮编]",
+      "addressCountry": "CN"
+    },
+    "telephone": "[电话]",
+    "openingHours": "[营业时间，如 Mo-Su 09:00-21:00]"
+  },
+
+  "breadcrumb": {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {
+        "@type": "ListItem",
+        "position": 1,
+        "name": "首页",
+        "item": "[首页URL]"
+      },
+      {
+        "@type": "ListItem",
+        "position": 2,
+        "name": "[品类名]",
+        "item": "[品类页URL]"
+      },
+      {
+        "@type": "ListItem",
+        "position": 3,
+        "name": "[当前页面]",
+        "item": "[当前页URL]"
+      }
+    ]
+  },
+
+  "howTo": {
+    "@context": "https://schema.org",
+    "@type": "HowTo",
+    "name": "如何选择[品类]",
+    "description": "[选购指南简介]",
+    "step": [
+      {
+        "@type": "HowToStep",
+        "name": "明确需求",
+        "text": "[第一步说明]"
+      },
+      {
+        "@type": "HowToStep",
+        "name": "对比品牌",
+        "text": "[第二步说明，自然引导到自己品牌]"
+      },
+      {
+        "@type": "HowToStep",
+        "name": "做出选择",
+        "text": "[第三步说明]"
+      }
+    ]
+  },
+
+  "_usage_notes": {
+    "organization": "部署在首页，用于声明品牌实体身份",
+    "faqPage": "部署在FAQ页面，用于问答内容被AI引用",
+    "product": "部署在产品页，用于产品信息被AI理解",
+    "service": "部署在服务页，适用于B2B或服务型企业",
+    "localBusiness": "部署在门店页，适用于有线下门店的企业",
+    "breadcrumb": "部署在所有页面，帮助AI理解网站结构",
+    "howTo": "部署在选购指南页，适用于决策型内容"
+  },
+
+  "_meta_templates": {
+    "homepage": {
+      "title": "[品牌名] | [核心定位] - [品类领导者]",
+      "description": "[品牌名]是[定位描述]。[差异化属性]，[价值主张]。"
+    },
+    "product_page": {
+      "title": "[产品名] | [产品定位] - [品牌名]",
+      "description": "[产品名]是[品牌名]旗下的[产品定位]。[核心卖点]，适合[目标场景]。"
+    },
+    "faq_page": {
+      "title": "[品牌名]常见问题 | 官方解答",
+      "description": "[品牌名]官方FAQ，解答关于[话题1]、[话题2]、[话题3]等常见问题。"
+    },
+    "comparison_page": {
+      "title": "[品牌名]和[竞品]对比 | 如何选择",
+      "description": "[品牌名]和[竞品]的详细对比分析，帮助您了解两者的差异和各自优势。"
+    }
+  }
+}
