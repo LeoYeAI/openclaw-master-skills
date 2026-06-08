@@ -1,0 +1,158 @@
+{
+  "$schema": "https://openclaw.dev/schema/config.json",
+  "_comment": "Cost Optimizer 预设配置 — balanced 方案（推荐）",
+
+  "model_routing": {
+    "enabled": true,
+    "default_model": "claude-sonnet-4-6",
+    "log_decisions": true,
+    "log_path": "~/.openclaw/cost-optimizer.log",
+
+    "rules": [
+      {
+        "priority": 0,
+        "name": "heartbeat_and_status",
+        "description": "心跳、状态检查、cron 任务使用最便宜模型",
+        "match": {
+          "keywords": ["heartbeat", "ping", "status", "health", "alive", "cron", "schedule", "心跳", "检查状态", "是否在线"],
+          "task_types": ["heartbeat", "status_check", "cron"]
+        },
+        "model": "deepseek/v3",
+        "fallback": "gemini-2.0-flash",
+        "max_tokens": 200
+      },
+      {
+        "priority": 1,
+        "name": "simple_queries",
+        "description": "简单查询、文件列表、搜索使用低成本模型",
+        "match": {
+          "keywords": ["list", "find", "search", "grep", "count", "ls", "pwd", "which", "where", "找到", "搜索", "列出", "有几个"],
+          "complexity_max": 2
+        },
+        "model": "gemini-2.0-flash",
+        "fallback": "claude-haiku-4-5",
+        "max_tokens": 1000
+      },
+      {
+        "priority": 2,
+        "name": "file_ops_and_completion",
+        "description": "文件读取、代码补全、格式化使用 Haiku",
+        "match": {
+          "keywords": ["read", "cat", "format", "lint", "fix typo", "rename", "move", "complete", "autocomplete", "suggest", "snippet", "读取", "格式化", "补全", "重命名"],
+          "complexity_max": 5
+        },
+        "model": "claude-haiku-4-5",
+        "fallback": "gemini-2.0-flash",
+        "max_tokens": 4000
+      },
+      {
+        "priority": 3,
+        "name": "code_generation",
+        "description": "代码生成、调试、测试编写使用 Sonnet",
+        "match": {
+          "keywords": ["write", "create", "implement", "generate", "test", "debug", "explain", "refactor", "fix bug", "add feature", "写", "创建", "实现", "生成", "测试", "调试"],
+          "complexity_range": [3, 8]
+        },
+        "model": "claude-sonnet-4-6",
+        "fallback": "claude-haiku-4-5",
+        "max_tokens": 16000
+      },
+      {
+        "priority": 4,
+        "name": "complex_tasks",
+        "description": "复杂架构设计、多文件重构仅在必要时使用 Opus",
+        "match": {
+          "keywords": ["architect", "design", "plan", "migrate", "从零开始", "重新设计"],
+          "complexity_min": 9,
+          "context_tokens_min": 100000
+        },
+        "model": "claude-opus-4-6",
+        "fallback": "claude-sonnet-4-6",
+        "max_tokens": 32000
+      }
+    ],
+
+    "degradation": {
+      "enabled": true,
+      "triggers": {
+        "api_error_codes": [429, 503],
+        "response_timeout_seconds": 30,
+        "session_cost_threshold_pct": 80
+      },
+      "chain": ["claude-opus-4-6", "claude-sonnet-4-6", "claude-haiku-4-5", "gemini-2.0-flash", "deepseek/v3"]
+    },
+
+    "user_overrides": []
+  },
+
+  "heartbeat": {
+    "enabled": true,
+    "base_interval_minutes": 45,
+    "smart_adjustment": {
+      "enabled": true,
+      "rules": [
+        {
+          "condition": "active_development",
+          "description": "检测到频繁文件变更（5分钟内 > 3次）",
+          "interval_minutes": 30
+        },
+        {
+          "condition": "idle",
+          "description": "无文件变更超过 30 分钟",
+          "interval_minutes": 60
+        },
+        {
+          "condition": "night_hours",
+          "description": "本地时间 23:00-07:00",
+          "interval_minutes": 120,
+          "alternative": "disable"
+        }
+      ]
+    },
+    "content": {
+      "mode": "minimal",
+      "checks": [
+        "process_alive",
+        "disk_space_critical",
+        "active_tasks_count"
+      ],
+      "skip": [
+        "full_status_report",
+        "dependency_check",
+        "code_analysis",
+        "git_log_summary"
+      ]
+    },
+    "model": "deepseek/v3",
+    "fallback_model": "gemini-2.0-flash",
+    "max_tokens_per_heartbeat": 200,
+    "cost_cap_monthly_usd": 5.00
+  },
+
+  "context": {
+    "max_context_tokens": 80000,
+    "auto_compress_threshold": 50000,
+    "compression": {
+      "keep_recent_turns": 5,
+      "history_summary_depth": 10,
+      "tool_result_strategy": "key_output_only",
+      "file_content_strategy": "path_and_summary",
+      "snapshot_path": ".context-snapshot.md"
+    }
+  },
+
+  "reporting": {
+    "usage_log_path": "~/.openclaw/usage-log.jsonl",
+    "auto_report_interval": "daily",
+    "include_ascii_chart": true,
+    "savings_estimation": true
+  },
+
+  "cost_limits": {
+    "daily_budget_usd": 10.00,
+    "weekly_budget_usd": 50.00,
+    "monthly_budget_usd": 150.00,
+    "alert_threshold_pct": 80,
+    "hard_limit_action": "degrade_model"
+  }
+}

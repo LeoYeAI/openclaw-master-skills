@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PPT Preview</title>
+  <link rel="stylesheet" href="base.css">
+  <style>
+    /* Override with dynamic style values */
+    :root {
+      --primary-color: {{primary_color}};
+      --secondary-color: {{secondary_color}};
+      --background-color: {{background_color}};
+      --text-color: {{text_color}};
+      --accent-color: {{accent_color}};
+    }
+  </style>
+</head>
+<body>
+  <div class="slide-container">
+
+    <!-- Slide 1: Cover -->
+    <div class="slide cover" id="slide-1">
+      <h1 class="title">{{main_title}}</h1>
+      <p class="subtitle">{{subtitle}}</p>
+      <div class="cover-footer">
+        {{author}} · {{date}}
+      </div>
+    </div>
+
+    <!-- Slide 2: TOC -->
+    <div class="slide toc" id="slide-2">
+      <h2 class="section-title">目录</h2>
+      <div class="divider"></div>
+      <ul class="toc-list">
+        {{#each toc_items}}
+        <li>
+          <span class="num">{{num}}</span>
+          <span class="title">{{title}}</span>
+        </li>
+        {{/each}}
+      </ul>
+    </div>
+
+    <!-- Slide 3: Section Divider -->
+    <div class="slide section" id="slide-3">
+      <div class="section-box">
+        <p class="part">PART 01</p>
+        <h2 class="title">{{section_title}}</h2>
+      </div>
+    </div>
+
+    <!-- Slide 4: Title + Bullets -->
+    <div class="slide content" id="slide-4">
+      <h2 class="section-title">{{slide_title}}</h2>
+      <div class="divider"></div>
+      <ul class="bullet-list">
+        {{#each bullets}}
+        <li>{{text}}</li>
+        {{/each}}
+      </ul>
+    </div>
+
+    <!-- Slide 5: Left Text + Right Image -->
+    <div class="slide" id="slide-5">
+      <h2 class="section-title">{{slide_title}}</h2>
+      <div class="divider"></div>
+      <div class="columns text-left">
+        <div class="column text">
+          <ul class="bullet-list">
+            {{#each bullets}}
+            <li>{{text}}</li>
+            {{/each}}
+          </ul>
+        </div>
+        <div class="column image">
+          <div class="image-container">
+            <img src="{{image_path}}" alt="{{image_alt}}">
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Slide 6: Data Highlight -->
+    <div class="slide" id="slide-6">
+      <h2 class="section-title">{{slide_title}}</h2>
+      <div class="divider"></div>
+      <div class="data-grid">
+        {{#each data_items}}
+        <div class="data-item">
+          <div class="data-value">{{value}}</div>
+          <div class="data-label">{{label}}</div>
+        </div>
+        {{/each}}
+      </div>
+    </div>
+
+    <!-- Slide 7: Comparison -->
+    <div class="slide" id="slide-7">
+      <h2 class="section-title">{{slide_title}}</h2>
+      <div class="divider"></div>
+      <div class="comparison">
+        <div class="comparison-item before">
+          <h3>{{before_title}}</h3>
+          <ul class="bullet-list">
+            {{#each before_items}}
+            <li>{{text}}</li>
+            {{/each}}
+          </ul>
+        </div>
+        <div class="comparison-item after">
+          <h3>{{after_title}}</h3>
+          <ul class="bullet-list">
+            {{#each after_items}}
+            <li>{{text}}</li>
+            {{/each}}
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- Slide 8: Grid -->
+    <div class="slide" id="slide-8">
+      <h2 class="section-title">{{slide_title}}</h2>
+      <div class="divider"></div>
+      <div class="grid grid-2x3">
+        {{#each grid_items}}
+        <div class="grid-item">
+          <h3>{{title}}</h3>
+          <p>{{description}}</p>
+        </div>
+        {{/each}}
+      </div>
+    </div>
+
+    <!-- Slide 9: End -->
+    <div class="slide end" id="slide-9">
+      <h2 class="thanks">感谢聆听</h2>
+      <p class="contact">{{contact_info}}</p>
+    </div>
+
+  </div>
+
+  <!-- Preview Navigation -->
+  <div class="preview-nav">
+    <button id="prev-btn">◀ 上一页</button>
+    <span id="page-indicator">1 / 9</span>
+    <button id="next-btn">下一页 ▶</button>
+  </div>
+
+  <script>
+    // Navigation for interactive preview
+    const slides = document.querySelectorAll('.slide');
+    let currentSlide = 0;
+
+    function showSlide(index) {
+      slides.forEach((slide, i) => {
+        slide.style.display = i === index ? 'block' : 'none';
+      });
+      document.getElementById('page-indicator').textContent = `${index + 1} / ${slides.length}`;
+    }
+
+    document.getElementById('prev-btn').addEventListener('click', () => {
+      if (currentSlide > 0) {
+        currentSlide--;
+        showSlide(currentSlide);
+      }
+    });
+
+    document.getElementById('next-btn').addEventListener('click', () => {
+      if (currentSlide < slides.length - 1) {
+        currentSlide++;
+        showSlide(currentSlide);
+      }
+    });
+
+    // Keyboard navigation
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowLeft') {
+        document.getElementById('prev-btn').click();
+      } else if (e.key === 'ArrowRight') {
+        document.getElementById('next-btn').click();
+      }
+    });
+
+    // Initialize: show only first slide
+    showSlide(0);
+  </script>
+</body>
+</html>

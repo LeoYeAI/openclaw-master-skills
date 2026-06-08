@@ -1,0 +1,135 @@
+{
+  "name": "tencent-cos",
+  "version": "1.0.0",
+  "description": "腾讯云对象存储(COS)和数据万象(CI)集成 - 基于官方MCP服务器的Clawdbot技能",
+  "author": "Clawdbot Community",
+  "license": "BSD-3-Clause",
+  "homepage": "https://github.com/Tencent/cos-mcp",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/clawdbot-community/tencent-cos-skill.git"
+  },
+  "keywords": [
+    "clawdbot",
+    "openclaw",
+    "skill",
+    "tencent",
+    "cos",
+    "cloud-storage",
+    "mcp",
+    "ai",
+    "assistant"
+  ],
+  "categories": [
+    "cloud-storage",
+    "image-processing",
+    "file-management",
+    "chinese-services"
+  ],
+  "tags": [
+    "tencent-cloud",
+    "object-storage",
+    "image-processing",
+    "ai-search",
+    "document-processing"
+  ],
+  "compatibility": {
+    "clawdbot": ">=1.0.0",
+    "node": ">=14.0.0",
+    "python": ">=3.8"
+  },
+  "dependencies": {
+    "cos-mcp": ">=1.0.0"
+  },
+  "installation": {
+    "type": "git",
+    "url": "https://github.com/clawdbot-community/tencent-cos-skill.git"
+  },
+  "configuration": {
+    "env_vars": [
+      "TENCENT_COS_REGION",
+      "TENCENT_COS_BUCKET", 
+      "TENCENT_COS_SECRET_ID",
+      "TENCENT_COS_SECRET_KEY",
+      "TENCENT_COS_DATASET_NAME"
+    ],
+    "files": [
+      "SKILL.md",
+      "scripts/cos_wrapper.py",
+      "config/template.json"
+    ]
+  },
+  "features": [
+    {
+      "name": "file-management",
+      "description": "完整的文件管理功能，包括上传、下载、列出、删除",
+      "tools": ["cos_upload", "cos_download", "cos_list", "cos_delete"]
+    },
+    {
+      "name": "image-processing", 
+      "description": "高级图片处理功能，包括质量评估、超分辨率、抠图、二维码识别",
+      "tools": ["cos_assess_quality", "cos_super_resolution", "cos_remove_background", "cos_detect_qrcode"]
+    },
+    {
+      "name": "intelligent-search",
+      "description": "智能图片搜索功能，支持以图搜图和文本搜图",
+      "tools": ["cos_search_by_image", "cos_search_by_text"]
+    },
+    {
+      "name": "document-processing",
+      "description": "文档处理功能，支持文档转PDF和视频封面生成",
+      "tools": ["cos_convert_to_pdf", "cos_generate_video_cover"]
+    }
+  ],
+  "screenshots": [
+    {
+      "url": "https://raw.githubusercontent.com/Tencent/cos-mcp/master/src/img/eg1.png",
+      "description": "文件上传示例"
+    },
+    {
+      "url": "https://raw.githubusercontent.com/Tencent/cos-mcp/master/src/img/eg3.png",
+      "description": "图片质量评估示例"
+    },
+    {
+      "url": "https://raw.githubusercontent.com/Tencent/cos-mcp/master/src/img/eg2.png",
+      "description": "自然语言搜索示例"
+    }
+  ],
+  "documentation": {
+    "quick_start": "README.md#快速安装",
+    "configuration": "README.md#配置",
+    "usage": "README.md#使用指南",
+    "examples": "examples/basic_usage.py",
+    "api": "scripts/cos_wrapper.py"
+  },
+  "support": {
+    "issues": "https://github.com/clawdbot-community/tencent-cos-skill/issues",
+    "discussions": "https://github.com/clawdbot-community/tencent-cos-skill/discussions",
+    "wiki": "README.md"
+  },
+  "contributors": [
+    {
+      "name": "Clawdbot Community",
+      "email": "community@clawdbot.com"
+    }
+  ],
+  "metrics": {
+    "downloads": 0,
+    "rating": 0,
+    "last_updated": "2026-02-02"
+  },
+  "badges": [
+    {
+      "type": "license",
+      "url": "https://img.shields.io/badge/License-BSD3-brightgreen"
+    },
+    {
+      "type": "version",
+      "url": "https://img.shields.io/badge/Version-1.0.0-blue"
+    },
+    {
+      "type": "mcp",
+      "url": "https://badge.mcpx.dev?type=server"
+    }
+  ]
+}

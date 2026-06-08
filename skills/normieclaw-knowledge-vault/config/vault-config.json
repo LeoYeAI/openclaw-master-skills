@@ -1,0 +1,89 @@
+{
+  "_comment": "Knowledge Vault configuration. Edit these settings to customize your vault behavior.",
+
+  "summarization": {
+    "_comment": "Controls how content is summarized after ingestion.",
+    "max_takeaways": 5,
+    "min_takeaways": 3,
+    "include_timestamps": true,
+    "include_quotes": true,
+    "include_actionable_insights": true,
+    "summary_language": "en",
+    "chunk_size_chars": 50000
+  },
+
+  "ingestion": {
+    "_comment": "Controls content fetching and processing behavior.",
+    "auto_digest": true,
+    "max_content_length_chars": 200000,
+    "deduplicate_urls": true,
+    "fallback_to_browser": true,
+    "supported_types": [
+      "article",
+      "video",
+      "pdf",
+      "tweet",
+      "reddit",
+      "podcast",
+      "github"
+    ]
+  },
+
+  "tagging": {
+    "_comment": "Controls auto-tag generation on ingested content.",
+    "auto_tag": true,
+    "min_tags": 3,
+    "max_tags": 5,
+    "custom_tags": []
+  },
+
+  "search": {
+    "_comment": "Controls vault search behavior.",
+    "max_results": 10,
+    "search_fields": [
+      "title",
+      "executive_summary",
+      "key_takeaways",
+      "tags",
+      "full_text",
+      "user_notes"
+    ],
+    "use_memory_recall": true
+  },
+
+  "memory_integration": {
+    "_comment": "Controls how vault entries are synced to agent long-term memory.",
+    "enabled": true,
+    "default_importance": 0.7,
+    "high_priority_importance": 0.9,
+    "category": "fact"
+  },
+
+  "collections": {
+    "_comment": "Default collections created on first run.",
+    "defaults": [
+      "general",
+      "read-later"
+    ]
+  },
+
+  "export": {
+    "_comment": "Controls vault export behavior.",
+    "format": "markdown",
+    "include_full_text": false,
+    "output_directory": "data/exports"
+  },
+
+  "display": {
+    "_comment": "Controls how vault content is displayed in chat.",
+    "content_type_emojis": {
+      "article": "📄",
+      "video": "🎬",
+      "pdf": "📑",
+      "tweet": "🐦",
+      "reddit": "💬",
+      "podcast": "🎙️",
+      "github": "💻"
+    }
+  }
+}

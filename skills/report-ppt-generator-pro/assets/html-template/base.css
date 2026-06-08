@@ -1,0 +1,378 @@
+/* PPT Base Styles - 16:9 Format */
+
+:root {
+  /* Default colors - override with user style */
+  --primary-color: #1E3A8A;
+  --secondary-color: #3B82F6;
+  --background-color: #FFFFFF;
+  --text-color: #1F2937;
+  --accent-color: #60A5FA;
+
+  /* Typography */
+  --title-size: 42px;
+  --subtitle-size: 28px;
+  --body-size: 20px;
+  --small-size: 16px;
+
+  /* Spacing */
+  --padding: 60px;
+  --gap: 40px;
+}
+
+/* Reset */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* Slide Container */
+.slide-container {
+  width: 100%;
+  max-width: 1920px;
+  margin: 0 auto;
+  background: #f5f5f5;
+}
+
+/* Individual Slide - 16:9 */
+.slide {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  background: var(--background-color);
+  padding: var(--padding);
+  position: relative;
+  overflow: hidden;
+  page-break-after: always;
+}
+
+/* Section Title */
+.section-title {
+  font-size: var(--title-size);
+  font-weight: bold;
+  color: var(--primary-color);
+  margin-bottom: 20px;
+}
+
+/* Divider Line */
+.divider {
+  height: 4px;
+  width: 200px;
+  background: var(--secondary-color);
+  margin-bottom: 40px;
+  border-radius: 2px;
+}
+
+/* Bullet List */
+.bullet-list {
+  list-style: none;
+  font-size: var(--body-size);
+  color: var(--text-color);
+  line-height: 1.8;
+}
+
+.bullet-list li {
+  padding-left: 30px;
+  position: relative;
+  margin-bottom: 15px;
+}
+
+.bullet-list li::before {
+  content: "•";
+  position: absolute;
+  left: 0;
+  color: var(--secondary-color);
+  font-size: 24px;
+  line-height: 1.4;
+}
+
+/* Two Column Layout */
+.columns {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--gap);
+  height: calc(100% - 120px);
+}
+
+.columns.text-left {
+  grid-template-columns: 60% 40%;
+}
+
+.columns.text-right {
+  grid-template-columns: 40% 60%;
+}
+
+.column {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+/* Three Column Layout */
+.columns-three {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 30px;
+}
+
+/* Grid Layout */
+.grid {
+  display: grid;
+  gap: 20px;
+}
+
+.grid-2x2 {
+  grid-template-columns: repeat(2, 1fr);
+  grid-template-rows: repeat(2, 1fr);
+}
+
+.grid-2x3 {
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(2, 1fr);
+}
+
+.grid-3x2 {
+  grid-template-columns: repeat(2, 1fr);
+  grid-template-rows: repeat(3, 1fr);
+}
+
+/* Grid Item */
+.grid-item {
+  background: rgba(var(--secondary-color), 0.1);
+  border-radius: 12px;
+  padding: 30px;
+  text-align: center;
+}
+
+.grid-item h3 {
+  font-size: var(--subtitle-size);
+  color: var(--primary-color);
+  margin-bottom: 15px;
+}
+
+.grid-item p {
+  font-size: var(--small-size);
+  color: var(--text-color);
+}
+
+/* Image Styles */
+.slide img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  border-radius: 8px;
+}
+
+.image-container {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Cover Page */
+.slide.cover {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+  color: white;
+}
+
+.slide.cover .title {
+  font-size: 64px;
+  font-weight: bold;
+  margin-bottom: 20px;
+}
+
+.slide.cover .subtitle {
+  font-size: var(--subtitle-size);
+  opacity: 0.9;
+}
+
+.slide.cover .cover-footer {
+  position: absolute;
+  bottom: 40px;
+  font-size: var(--small-size);
+  opacity: 0.7;
+}
+
+/* Background Image */
+.slide.bg-image {
+  background-size: cover;
+  background-position: center;
+}
+
+.slide.bg-image .overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+}
+
+.slide.bg-image .content {
+  position: relative;
+  z-index: 1;
+  color: white;
+}
+
+/* Data Highlight */
+.data-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 30px;
+  margin-top: 40px;
+}
+
+.data-item {
+  text-align: center;
+  padding: 30px;
+  background: rgba(var(--secondary-color), 0.05);
+  border-radius: 12px;
+}
+
+.data-value {
+  font-size: 56px;
+  font-weight: bold;
+  color: var(--primary-color);
+}
+
+.data-label {
+  font-size: var(--small-size);
+  color: var(--text-color);
+  margin-top: 10px;
+}
+
+/* Comparison */
+.comparison {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 40px;
+}
+
+.comparison-item {
+  padding: 30px;
+  border-radius: 12px;
+}
+
+.comparison-item.before {
+  background: rgba(239, 68, 68, 0.1);
+  border: 2px solid rgba(239, 68, 68, 0.3);
+}
+
+.comparison-item.after {
+  background: rgba(34, 197, 94, 0.1);
+  border: 2px solid rgba(34, 197, 94, 0.3);
+}
+
+.comparison-item h3 {
+  font-size: var(--subtitle-size);
+  margin-bottom: 20px;
+}
+
+/* TOC Page */
+.toc-list {
+  list-style: none;
+  font-size: var(--body-size);
+}
+
+.toc-list li {
+  padding: 20px 0;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.toc-list .num {
+  font-size: 32px;
+  font-weight: bold;
+  color: var(--secondary-color);
+}
+
+/* Section Divider */
+.slide.section {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.section-box {
+  padding: 60px 100px;
+  background: var(--primary-color);
+  color: white;
+  border-radius: 16px;
+  text-align: center;
+}
+
+.section-box .part {
+  font-size: var(--small-size);
+  text-transform: uppercase;
+  letter-spacing: 4px;
+  margin-bottom: 20px;
+  opacity: 0.8;
+}
+
+.section-box .title {
+  font-size: 48px;
+  font-weight: bold;
+}
+
+/* End Page */
+.slide.end {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  background: linear-gradient(135deg, var(--secondary-color) 0%, var(--primary-color) 100%);
+  color: white;
+}
+
+.slide.end .thanks {
+  font-size: 56px;
+  font-weight: bold;
+  margin-bottom: 30px;
+}
+
+.slide.end .contact {
+  font-size: var(--body-size);
+  opacity: 0.8;
+}
+
+/* Print Styles */
+@media print {
+  .slide-container {
+    background: none;
+  }
+
+  .slide {
+    page-break-after: always;
+  }
+}
+
+/* Preview Navigation (for interactive mode) */
+.preview-nav {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 10px;
+  z-index: 1000;
+}
+
+.preview-nav button {
+  padding: 10px 20px;
+  font-size: 16px;
+  border: none;
+  border-radius: 8px;
+  background: var(--primary-color);
+  color: white;
+  cursor: pointer;
+}
+
+.preview-nav button:hover {
+  background: var(--secondary-color);
+}

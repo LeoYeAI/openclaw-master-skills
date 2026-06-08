@@ -1,0 +1,88 @@
+# 参考文献格式配置文件
+# Reference Format Configuration
+# 本文件定义了参考文献引用和列表的格式规则
+
+# 引用标注样式配置
+citation:
+  # 标注样式: superscript(上角标) 或 inline(语句组成部分)
+  style: "superscript"
+
+  # 位置规则
+  position_rules:
+    # 标点符号之前: 将引用置于逗号、分号等标点之前
+    before_punctuation: true
+
+    # 引文在句内时,句号在引文之内,标注在引号之外
+    # 示例: "……。"[1]
+    after_quote_in_sentence: true
+
+    # 引文在全句末尾,标注在句号之前
+    # 示例: "……"[1]
+    before_period: true
+
+# 同文献多页引用格式
+# 说明: 不需要标注页码范围,直接使用上角标格式对应参考文献即可
+# 占位符: {ref}=文献编号
+same_source_format: "[{ref}]"  # 统一格式: [1]
+
+# 图表引用处理规则
+figure_table:
+  # 将图表内的引用标注移至图名/表名
+  move_to_caption: true
+
+  # 图表内注释标注格式
+  # options: "superscript_number"(①②), "parenthesis_number"(1)2)), "dagger"(†)
+  inline_notes_format: "superscript_number"
+
+# 参考文献列表配置
+reference_list:
+  # 排序方式: "order_of_appearance"(按出现顺序) 或 "alphabetical"(字母顺序)
+  sort_order: "order_of_appearance"
+
+  # 编号格式
+  numbering:
+    format: "[{num}]"  # 例如: [1]
+    use_brackets: true
+
+  # 作者列表配置
+  authors:
+    # 作者数量上限(超过此数量添加后缀)
+    max_authors: 3
+
+    # 超出限制时的后缀
+    beyond_limit_suffix: "等"
+
+    # 作者分隔符
+    separator: ", "
+
+    # 最后作者前的连接符
+    last_separator: ", "
+
+# 格式标准
+# 支持的标准: "chinese_academic"(中国学术期刊), "apa", "mla", "chicago"
+format_standard: "chinese_academic"
+
+# 质量检查规则
+quality_check:
+  # 检查引用编号连续性
+  check_continuity: true
+
+  # 检查重复编号
+  check_duplicates: true
+
+  # 检查无效引用(超出范围的编号)
+  check_invalid_refs: true
+
+  # 检查引用位置是否靠近相关引文
+  check_position: true
+
+# 处理方式
+processing:
+  # 处理模式: "auto"(全自动) 或 "semi_auto"(半自动,需用户确认)
+  mode: "semi_auto"
+
+  # 生成报告
+  generate_report: true
+
+  # 备份原始文件
+  backup_original: true

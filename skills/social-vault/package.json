@@ -1,0 +1,20 @@
+{
+  "name": "socialvault",
+  "version": "0.1.0",
+  "description": "OpenClaw Skill for social platform account management",
+  "type": "module",
+  "scripts": {
+    "setup": "npm install --production && npx tsx scripts/vault-crypto.ts init vault",
+    "test": "npx tsx tests/test-crypto.ts && npx tsx tests/test-cookie-parser.ts && npx tsx tests/test-health-check.ts",
+    "test:crypto": "npx tsx tests/test-crypto.ts",
+    "test:cookie": "npx tsx tests/test-cookie-parser.ts",
+    "test:health": "npx tsx tests/test-health-check.ts"
+  },
+  "dependencies": {
+    "tsx": "^4.19.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.7.0",
+    "@types/node": "^22.0.0"
+  }
+}

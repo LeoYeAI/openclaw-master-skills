@@ -1,0 +1,83 @@
+{
+  "$comment": "Example openclaw.json config for multi-agent team projects",
+  "agents": {
+    "defaults": {
+      "subagents": {
+        "maxSpawnDepth": 3,
+        "maxChildrenPerAgent": 8,
+        "announceTimeoutMs": 120000
+      }
+    },
+    "list": [
+      {
+        "id": "main",
+        "name": "Koda",
+        "default": true,
+        "subagents": {
+          "allowAgents": ["*"]
+        },
+        "tools": {
+          "allow": ["*"]
+        },
+        "skills": []
+      },
+      {
+        "id": "researcher",
+        "name": "Scout",
+        "workspace": "/workspace/agents/researcher",
+        "model": {
+          "primary": "anthropic/claude-sonnet-4-6"
+        },
+        "tools": {
+          "allow": [
+            "web_search", "web_fetch", "read", "write", "edit",
+            "exec", "sessions_send", "agents_list"
+          ],
+          "deny": ["browser", "nodes", "gateway"]
+        },
+        "skills": ["brave-search", "weather"]
+      },
+      {
+        "id": "coder",
+        "name": "Forge",
+        "workspace": "/workspace/agents/coder",
+        "model": {
+          "primary": "anthropic/claude-sonnet-4-6"
+        },
+        "tools": {
+          "allow": [
+            "exec", "read", "write", "edit",
+            "sessions_send", "agents_list", "web_search", "web_fetch"
+          ],
+          "deny": ["browser", "nodes", "gateway", "message"]
+        },
+        "skills": ["github", "coding-agent"]
+      },
+      {
+        "id": "writer",
+        "name": "Quill",
+        "workspace": "/workspace/agents/writer",
+        "model": {
+          "primary": "anthropic/claude-sonnet-4-6"
+        },
+        "tools": {
+          "allow": [
+            "read", "write", "edit", "web_search", "web_fetch",
+            "sessions_send", "agents_list"
+          ],
+          "deny": ["exec", "browser", "nodes", "gateway"]
+        },
+        "skills": ["copywriting"]
+      }
+    ]
+  },
+  "tools": {
+    "agentToAgent": {
+      "enabled": true,
+      "allow": ["*"]
+    },
+    "sessions": {
+      "visibility": "all"
+    }
+  }
+}

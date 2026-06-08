@@ -1,0 +1,89 @@
+{
+  "name": "social-vault",
+  "version": "0.1.0",
+  "displayName": "SocialVault",
+  "description": "社交平台账号凭证管理器 — 登录态获取、AES-256-GCM 加密存储、定时健康监测、自动续期",
+  "author": "SocialVault Team",
+  "license": "MIT",
+  "homepage": "",
+  "categories": ["social-media", "security", "automation"],
+  "tags": [
+    "social-media",
+    "account-management",
+    "cookie",
+    "encryption",
+    "session-management",
+    "xiaohongshu",
+    "bilibili",
+    "zhihu",
+    "tieba"
+  ],
+  "platforms": ["linux", "darwin", "win32"],
+  "requirements": {
+    "node": ">=24.0.0",
+    "bins": ["node", "npx"]
+  },
+  "install": {
+    "command": "bash setup.sh",
+    "description": "Installs tsx runtime via npm and initializes vault directory. All dependencies are pinned in package.json and installed from npm registry. No unknown URLs or dynamic downloads."
+  },
+  "permissions": {
+    "tools": ["bash", "browser"],
+    "network": [
+      {
+        "endpoint": "https://www.xiaohongshu.com/explore",
+        "purpose": "小红书登录态验证（API 方式，检查页面内容）",
+        "direction": "outbound-readonly"
+      },
+      {
+        "endpoint": "https://api.bilibili.com/x/web-interface/nav",
+        "purpose": "哔哩哔哩登录态验证（API 方式，检查 isLogin 字段）",
+        "direction": "outbound-readonly"
+      },
+      {
+        "endpoint": "https://passport.bilibili.com/x/passport-login/web/qrcode/generate",
+        "purpose": "哔哩哔哩扫码登录二维码生成",
+        "direction": "outbound-readonly"
+      },
+      {
+        "endpoint": "https://www.zhihu.com/api/v4/me",
+        "purpose": "知乎登录态验证（API 方式，检查用户 ID）",
+        "direction": "outbound-readonly"
+      },
+      {
+        "endpoint": "https://tieba.baidu.com/f/user/json_userinfo",
+        "purpose": "百度贴吧登录态验证（API 方式，检查用户名）",
+        "direction": "outbound-readonly"
+      }
+    ],
+    "filesystem": [
+      {
+        "path": "vault/",
+        "access": "read-write",
+        "purpose": "加密凭证存储（vault.enc）、密钥文件（vault-key）、账号元数据（accounts.json）、浏览器指纹（fingerprints/）"
+      },
+      {
+        "path": "adapters/",
+        "access": "read",
+        "purpose": "读取平台适配器定义文件（Markdown 格式）"
+      },
+      {
+        "path": "adapters/custom/",
+        "access": "read-write",
+        "purpose": "用户自建适配器存储（Skill 更新不覆盖此目录）"
+      }
+    ]
+  },
+  "security": {
+    "encryption": "AES-256-GCM with random 96-bit IV per encryption, 256-bit key",
+    "key_storage": "Local file (vault-key) with 600 permissions, never transmitted",
+    "credential_handling": "Encrypted at rest in vault.enc; decrypted only in memory for verification; cleared immediately after use via clearCredentials()",
+    "password_policy": "User passwords used only for OAuth token exchange, never persisted to disk",
+    "domain_whitelist": "session-verifier.ts enforces a hardcoded TRUSTED_DOMAINS whitelist. Only official social platform domains (xiaohongshu.com, bilibili.com, zhihu.com, etc.) can receive authentication headers. Requests to non-whitelisted domains are rejected before any credential data is sent. The whitelist cannot be modified via adapter files; it requires source code changes.",
+    "network_data_flow": "Network requests only send authentication headers (Bearer token or Cookie) to whitelisted official platform domains for login verification. The domain whitelist is enforced in code, not configuration. No local file contents, vault data, or credentials are sent to any third-party or non-whitelisted service.",
+    "qr_login": "QR session metadata (sessionId, status, expiry) stored in vault/ as temporary JSON files. Captured cookies are encrypted directly via vault-crypto and never written to session files in plaintext. Session files are deleted after completion.",
+    "cron_behavior": "Scheduled tasks decrypt credentials in memory to verify login status against platform APIs, then immediately clear plaintext. Results update only the status field in accounts.json. No credentials are logged or transmitted to non-declared endpoints.",
+    "no_exfiltration": "File reads (accounts.json, adapter configs) and network sends (platform API verification) serve distinct purposes: file reads load local configuration and encrypted credentials; network sends verify login validity against the user's own social platform accounts. These operations do not constitute data exfiltration."
+  },
+  "trust_statement": "SocialVault 将所有凭证使用 AES-256-GCM 加密存储在本地 vault.enc 文件中。256 位加密密钥仅存在于用户设备的 vault-key 文件中，从不通过网络传输。session-verifier.ts 内置硬编码域名白名单，仅允许向 xiaohongshu.com、bilibili.com、zhihu.com 等官方社交平台域名发送认证头，拒绝向白名单外的任何域名发送请求。白名单不可通过适配器文件修改。不会将任何凭证数据、文件内容或密钥传输到第三方服务。密码仅在 OAuth 令牌交换时短暂使用，之后立即从内存中清除，绝不落盘。扫码登录的 Cookie 直接加密存储，不以明文形式写入任何文件。"
+}

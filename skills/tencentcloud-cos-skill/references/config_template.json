@@ -1,0 +1,57 @@
+{
+  "_description": "cos-mcp MCP 服务器配置模板，添加到客户端的 MCP 配置文件中",
+  "_security_note": "⚠️ 凭证（SecretId/SecretKey）为敏感信息，持久化存储增加暴露风险。通过 env 字段传递，不在 args 中暴露（args 会出现在进程列表中）。配置文件应设置 chmod 600 权限。强烈建议使用子账号最小权限密钥，严禁使用主账号密钥。不再使用时请删除此文件。",
+
+  "mcpServers": {
+    "cos-mcp": {
+      "_comment": "✅ stdio 模式（推荐 — 凭证通过 env 传递，不暴露在进程列表中）",
+      "command": "npx",
+      "args": [
+        "cos-mcp",
+        "--connectType=stdio"
+      ],
+      "env": {
+        "TENCENT_COS_SECRET_ID": "<替换为腾讯云 API 密钥 ID>",
+        "TENCENT_COS_SECRET_KEY": "<替换为腾讯云 API 密钥 Key>",
+        "TENCENT_COS_REGION": "<替换为存储桶区域，如 ap-guangzhou>",
+        "TENCENT_COS_BUCKET": "<替换为存储桶名称，格式 name-appid>",
+        "TENCENT_COS_DATASET_NAME": "<替换为数据万象数据集名称，无则删除此行>",
+        "TENCENT_COS_DOMAIN": "<替换为自定义域名，无则删除此行>",
+        "TENCENT_COS_SERVICE_DOMAIN": "<替换为自定义服务域名，无则删除此行>",
+        "TENCENT_COS_PROTOCOL": "<替换为协议，如 https，无则删除此行>"
+      }
+    },
+
+    "cos-mcp-sse": {
+      "_comment": "SSE 模式（适合高频调用场景 — 凭证通过 env 传递）",
+      "command": "npx",
+      "args": [
+        "cos-mcp",
+        "--connectType=sse",
+        "--port=3001"
+      ],
+      "env": {
+        "TENCENT_COS_SECRET_ID": "<替换为腾讯云 API 密钥 ID>",
+        "TENCENT_COS_SECRET_KEY": "<替换为腾讯云 API 密钥 Key>",
+        "TENCENT_COS_REGION": "<替换为存储桶区域，如 ap-guangzhou>",
+        "TENCENT_COS_BUCKET": "<替换为存储桶名称，格式 name-appid>",
+        "TENCENT_COS_DOMAIN": "<替换为自定义域名，无则删除此行>",
+        "TENCENT_COS_SERVICE_DOMAIN": "<替换为自定义服务域名，无则删除此行>",
+        "TENCENT_COS_PROTOCOL": "<替换为协议，如 https，无则删除此行>"
+      }
+    }
+  },
+
+  "_参数说明": {
+    "Region": "存储桶区域，如 ap-guangzhou、ap-shanghai、ap-beijing 等",
+    "Bucket": "存储桶名称，格式为 name-appid，如 mybucket-1250000000",
+    "SecretId": "腾讯云 API 密钥 ID，在 访问管理 > API密钥管理 中创建",
+    "SecretKey": "腾讯云 API 密钥 Key，与 SecretId 配对使用",
+    "DatasetName": "数据万象数据集名称（仅图片搜索等智能功能需要，无则不填）",
+    "Domain": "自定义域名（可选），用于替换默认的 COS 访问域名，如 cdn.example.com",
+    "ServiceDomain": "自定义服务域名（可选），用于自定义 COS API 请求域名",
+    "Protocol": "协议（可选），如 https 或 http，默认根据浏览器环境自动判断",
+    "connectType": "连接模式：stdio（默认，推荐）或 sse",
+    "port": "SSE 模式下的监听端口（默认 3001）"
+  }
+}

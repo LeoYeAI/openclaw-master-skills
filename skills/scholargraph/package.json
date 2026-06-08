@@ -1,0 +1,62 @@
+{
+  "name": "scholargraph",
+  "version": "1.0.0",
+  "description": "学术文献智能工具包 - 高效、系统性的学术文献分析与知识管理工具",
+  "type": "module",
+  "main": "./index.js",
+  "bin": {
+    "lit": "./cli.ts"
+  },
+  "scripts": {
+    "search": "bun run cli.ts search",
+    "learn": "bun run cli.ts learn",
+    "detect": "bun run cli.ts detect",
+    "track": "bun run cli.ts track",
+    "analyze": "bun run cli.ts analyze",
+    "graph": "bun run cli.ts graph",
+    "config": "bun run cli.ts config",
+    "test": "bun test",
+    "test:utils": "bun test tests/utils.test.ts",
+    "test:validators": "bun test tests/validators.test.ts",
+    "test:errors": "bun test tests/errors.test.ts",
+    "typecheck": "bun run tsc --noEmit",
+    "lint": "bun lint"
+  },
+  "keywords": [
+    "scholargraph",
+    "literature",
+    "research",
+    "academic",
+    "knowledge-management",
+    "paper-analysis",
+    "learning",
+    "nlp",
+    "machine-learning",
+    "ai",
+    "knowledge-graph"
+  ],
+  "author": "ScholarGraph Team",
+  "license": "MIT",
+  "dependencies": {
+    "z-ai-web-dev-sdk": "latest"
+  },
+  "optionalDependencies": {
+    "openai": "^4.0.0",
+    "@anthropic-ai/sdk": "^0.30.0"
+  },
+  "devDependencies": {
+    "@types/bun": "latest",
+    "typescript": "^5.0.0"
+  },
+  "engines": {
+    "bun": ">=1.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Josephyb97/ScholarGraph.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Josephyb97/ScholarGraph/issues"
+  },
+  "homepage": "https://github.com/Josephyb97/ScholarGraph#readme"
+}

@@ -1,0 +1,15 @@
+{
+  "skill_id": "knowledge-vault",
+  "display_name": "Knowledge Vault",
+  "description": "Save, organize, and search articles, papers, and content with AI summaries.",
+  "icon": "BookMarked",
+  "accent_color": "#14b8a6",
+  "sidebar": { "route": "/knowledge", "label": "Knowledge", "icon": "BookMarked", "children": [{"label":"Browse","route":"/knowledge"},{"label":"Collections","route":"/knowledge/collections","icon":"FolderOpen"}] },
+  "database": { "prefix": "kv", "tables": [
+    { "name": "kv_entries", "description": "Saved knowledge entries", "columns": [{"name":"id","type":"UUID","primary_key":true},{"name":"user_id","type":"UUID","references":"auth.users(id)"},{"name":"title","type":"TEXT"},{"name":"url","type":"TEXT"},{"name":"content_type","type":"TEXT","default":"article"},{"name":"executive_summary","type":"TEXT"},{"name":"full_text","type":"TEXT"},{"name":"tags","type":"TEXT[]","default":"{}"},{"name":"collection","type":"TEXT","default":"general"},{"name":"status","type":"TEXT","default":"unread"},{"name":"importance","type":"INTEGER","default":5},{"name":"created_at","type":"TIMESTAMPTZ"},{"name":"updated_at","type":"TIMESTAMPTZ"}], "indexes": [{"name":"idx_kv_entries_user","columns":["user_id","created_at DESC"]},{"name":"idx_kv_entries_collection","columns":["user_id","collection"]},{"name":"idx_kv_entries_tags","columns":["tags"],"type":"gin"},{"name":"idx_kv_entries_status","columns":["user_id","status"]}] },
+    { "name": "kv_collections", "description": "Entry collections/folders", "columns": [{"name":"id","type":"UUID","primary_key":true},{"name":"user_id","type":"UUID","references":"auth.users(id)"},{"name":"name","type":"TEXT"},{"name":"description","type":"TEXT"},{"name":"color","type":"TEXT"},{"name":"icon","type":"TEXT"},{"name":"created_at","type":"TIMESTAMPTZ"}], "indexes": [] }
+  ] },
+  "widgets": [{ "id": "vault-count", "type": "stat", "title": "Knowledge Entries", "description": "Total saved entries", "size": "1x1" }],
+  "settings": [{ "key": "default_collection", "label": "Default Collection", "type": "text", "default": "general" }],
+  "sync": { "mode": "json", "source_files": ["knowledge-vault/data/"] }
+}

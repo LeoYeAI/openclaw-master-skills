@@ -1,0 +1,109 @@
+{
+  "name": "self-improving-intent-security-agent",
+  "version": "1.0.7",
+  "description": "Documentation-first skill and workflow toolkit for intent-based security, audit trails, rollback records, and self-improvement logs",
+  "keywords": [
+    "agent",
+    "ai-safety",
+    "intent-security",
+    "self-improving",
+    "autonomous",
+    "monitoring",
+    "rollback",
+    "validation",
+    "openclaw",
+    "agent-skill"
+  ],
+  "author": "Nishant Patil",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/nishantapatil3/self-improving-intent-security-agent.git"
+  },
+  "bugs": {
+    "url": "https://github.com/nishantapatil3/self-improving-intent-security-agent/issues"
+  },
+  "homepage": "https://github.com/nishantapatil3/self-improving-intent-security-agent#readme",
+  "files": [
+    "SKILL.md",
+    "CLAUDE.md",
+    "PUBLISHING.md",
+    "README.md",
+    "assets/",
+    "examples/",
+    "references/",
+    "scripts/"
+  ],
+  "scripts": {
+    "setup": "bash scripts/setup.sh",
+    "validate": "bash scripts/validate-intent.sh",
+    "report": "bash scripts/report.sh",
+    "test": "echo 'No tests yet'"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "openclaw": {
+    "type": "skill",
+    "category": "security",
+    "tags": [
+      "intent-security",
+      "self-improvement",
+      "autonomous-agent",
+      "monitoring"
+    ],
+    "requires": {
+      "bins": [
+        "bash",
+        "grep"
+      ]
+    },
+    "config": {
+      "env": {
+        "AGENT_INTENT_PATH": {
+          "required": false,
+          "default": ".agent/intents",
+          "description": "Path to intent specifications (optional, defaults to .agent/intents)"
+        },
+        "AGENT_AUDIT_PATH": {
+          "required": false,
+          "default": ".agent/audit",
+          "description": "Path to audit logs (optional, defaults to .agent/audit)"
+        },
+        "AGENT_RISK_THRESHOLD": {
+          "required": false,
+          "default": "medium",
+          "description": "Risk threshold: low | medium | high (optional)"
+        },
+        "AGENT_AUTO_ROLLBACK": {
+          "required": false,
+          "default": "true",
+          "description": "Flag that your host workflow should use rollback records on violations (optional)"
+        },
+        "AGENT_ANOMALY_THRESHOLD": {
+          "required": false,
+          "default": "0.8",
+          "description": "Suggested anomaly threshold for your host workflow, 0.0-1.0 (optional)"
+        },
+        "AGENT_LEARNING_ENABLED": {
+          "required": false,
+          "default": "true",
+          "description": "Enable local learning and strategy record generation (optional)"
+        }
+      },
+      "notes": {
+        "security": "All environment variables are optional configuration. No credentials are required or transmitted. All data stays in local .agent/ directory.",
+        "privacy": "This skill does not send data to external services. All logs and learnings are stored locally."
+      }
+    },
+    "install": {
+      "command": "bash scripts/setup.sh"
+    },
+    "links": {
+      "github": "https://github.com/nishantapatil3/self-improving-intent-security-agent",
+      "documentation": "https://nishantapatil3.github.io/self-improving-intent-security-agent/"
+    }
+  },
+  "dependencies": {},
+  "devDependencies": {}
+}

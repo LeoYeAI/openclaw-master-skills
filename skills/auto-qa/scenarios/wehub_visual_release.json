@@ -1,0 +1,122 @@
+{
+  "name": "WeHub Visual Release",
+  "description": "WeHub 严格门禁版本：用于发布质量判定，不忽略已知 4xx 噪音。",
+  "meta": {
+    "scenarioId": "wehub_release",
+    "profile": "release"
+  },
+  "autoScreenshot": true,
+  "continueOnFailure": false,
+  "visual": {
+    "enabled": true,
+    "focusTabBeforeStep": true,
+    "preActionWaitMs": 220,
+    "postActionWaitMs": 420,
+    "highlightBeforeClick": true,
+    "highlightBeforeType": true,
+    "highlightWaitMs": 480
+  },
+  "exploration": {
+    "enabled": true,
+    "maxDepth": 3,
+    "maxChildrenPerNode": 2,
+    "maxPages": 10,
+    "maxDurationMinutes": 8,
+    "sameOriginOnly": true
+  },
+  "steps": [
+    {
+      "id": "step-001",
+      "action": "navigate",
+      "url": "http://wehub.us/",
+      "expected": "进入首页（不新开 tab）"
+    },
+    {
+      "id": "step-002",
+      "action": "wait",
+      "timeMs": 1600,
+      "expected": "首页稳定"
+    },
+    {
+      "id": "step-003",
+      "action": "screenshot",
+      "fullPage": false,
+      "expected": "首页首屏截图"
+    },
+    {
+      "id": "step-004",
+      "action": "scroll",
+      "deltaY": 980,
+      "assertEquals": true,
+      "expected": "执行明显下翻（scrollY 变大）"
+    },
+    {
+      "id": "step-005",
+      "action": "wait",
+      "timeMs": 900,
+      "expected": "下翻后稳定"
+    },
+    {
+      "id": "step-006",
+      "action": "screenshot",
+      "fullPage": false,
+      "expected": "下翻后截图"
+    },
+    {
+      "id": "step-007",
+      "action": "click_link_same_origin",
+      "includeTextAny": ["监控", "状态", "控制台", "文档", "架构", "实时"],
+      "excludeTextAny": ["首页"],
+      "sameOriginOnly": true,
+      "maxCandidates": 12,
+      "depth": 2,
+      "expected": "高亮并点击同域链接"
+    },
+    {
+      "id": "step-008",
+      "action": "wait",
+      "timeMs": 2400,
+      "expected": "等待跳转后页面渲染"
+    },
+    {
+      "id": "step-009",
+      "action": "evaluate",
+      "fn": "() => { const now = window.location.href || ''; let prev = ''; let target = ''; try { prev = sessionStorage.getItem('__autoqa_prev_url') || ''; target = sessionStorage.getItem('__autoqa_target_url') || ''; } catch (e) {} if (!prev || !now) return false; try { const prevUrl = new URL(prev); const nowUrl = new URL(now); if (prevUrl.origin !== nowUrl.origin) return false; const prevKey = prevUrl.pathname + prevUrl.search; const nowKey = nowUrl.pathname + nowUrl.search; if (prevKey === nowKey) return false; if (target) { const targetUrl = new URL(target); if (targetUrl.origin === nowUrl.origin) { const targetKey = targetUrl.pathname + targetUrl.search; return nowKey === targetKey || nowKey.startsWith(targetUrl.pathname); } } return true; } catch (e) { return false; } }",
+      "assertEquals": true,
+      "depth": 2,
+      "expected": "已完成同域跳转（URL发生变化）"
+    },
+    {
+      "id": "step-010",
+      "action": "screenshot",
+      "fullPage": true,
+      "expected": "跳转后页面全页截图"
+    },
+    {
+      "id": "step-011",
+      "action": "navigate",
+      "url": "http://wehub.us/",
+      "returnEdge": true,
+      "depth": 2,
+      "expected": "返回首页"
+    },
+    {
+      "id": "step-012",
+      "action": "wait",
+      "timeMs": 1400,
+      "expected": "返回首页后稳定"
+    },
+    {
+      "id": "step-013",
+      "action": "assert_url_contains",
+      "value": "wehub.us",
+      "expected": "URL 在 wehub.us 域内"
+    },
+    {
+      "id": "step-014",
+      "action": "screenshot",
+      "fullPage": false,
+      "expected": "首页结束截图"
+    }
+  ]
+}

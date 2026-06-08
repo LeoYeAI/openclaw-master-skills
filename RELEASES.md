@@ -5,6 +5,47 @@
 
 ## v0.13.0 — 2026-06-08
 
+### 🚀 周更：新增 100 个 Skills，总计 1809
+
+来源：openclaw/skills-archive 官方镜像，按质量规则筛选（SKILL.md 800B-30KB、完整 YAML 元数据、有效 description）。
+
+#### 部分新增亮点（前 30 个）
+- `openclaw-workflow-automator` — > Automate repeatable workflows with WhatsApp/Telegram notifications, Excel/CSV processing, browser automation, and flex
+- `tencentcloud-management-tool` — | 通过 tccli 命令行管理腾讯云资源。 Load when: 用户要查询云服务器、管理 Lighthouse、购买域名、配置 DNS、 检查安全组、做安全巡检、部署应用、挂载云硬盘、部署 OpenClaw、 监控资源状态、SSL 证书
+- `tonic-system-deploy` — > Software deployment workflow for systems with separate UAT and PROD environments. Use when: planning a bug fix deploym
+- `scholargraph` — Academic literature intelligence toolkit for multi-source paper search, analysis, and knowledge graph building with AI a
+- `risk-metrics-calculation` — Calculate portfolio risk metrics including VaR, CVaR, Sharpe, Sortino, and drawdown analysis. Use when measuring portfol
+- `buzz` — Real-time news aggregator with Discord & Telegram push. Manage Jin10, BlockBeats, RSS, X KOLs, Polymarket, OpenNews via 
+- `organizze` — Manage finances via the Organizze API — bank accounts, credit cards, invoices, transactions, transfers, categories, and 
+- `gamegeeking-community-engagement` — 面向 GameGeeking 的社区活跃 skill。agent 必须先确认账号来源，再确认内容是用户指定还是走默认逻辑，然后使用 headless 浏览器进入网站、登录或注册，并在游戏社区内发帖或评论。
+- `self-improving-intent-security-agent` — "Documentation-first skill and workflow toolkit for intent-based security. Provides templates, examples, and local helpe
+- `clawhub-skill-forge` — "Create ClawhHub-ready OpenClaw skills with correct structure, scanner criteria, security rules & publish checklist. No 
+- `relationships` — "Build meaningful connections on Botbook.space — the social graph for AI agents. Set relationship types (follow, friend,
+- `image-to-data` — "Extract data from construction images using AI Vision. Analyze site photos, scanned documents, drawings."
+- `tencentcloud-cos-skill` — > 腾讯云对象存储(COS)和数据万象(CI)集成技能。当用户需要上传、下载、管理云存储文件， 或需要进行图片处理（质量评估、超分辨率、抠图、二维码识别、水印）、智能图片搜索、 文档转PDF、视频智能封面生成等操作时使用此技能。
+- `memory-feedback` — Agent memory and learning system. Logs actions/failures, detects patterns, proposes skill improvements via GitHub PRs. H
+- `polymarket-quant-trader` — "Professional-grade Polymarket prediction market trading system. Includes Kelly Criterion position sizing, EV calculator
+- `json-render-generative-ui` — Generative UI framework that renders AI-generated JSON specs into type-safe UI components across React, Vue, Svelte, Sol
+- `crawlee` — > Expert guide for building web scrapers and crawlers using Crawlee (JavaScript/TypeScript and Python). Use this skill w
+- `small-engine-repair` — >- Diagnosis and repair of common small engine problems. Use when a lawnmower won't start, a generator is sputtering, a 
+- `openclaw-docker-setup` — Install and configure a fully operational Dockerized OpenClaw instance on macOS from scratch. Includes browser pairing, 
+- `lobsterpot` — Share and discover technical solutions with other AI agents. Stack Overflow for agents.
+- `normieclaw-knowledge-vault` — > You have 200 bookmarks you'll never revisit and a 'Read Later' list that's basically a graveyard. Knowledge Vault chan
+- `phy-pipeline-contract-enforcer` — Data pipeline contract enforcer. Define the expected schema at each pipeline stage boundary — field names, types, nullab
+- `remotion-video-generator` — AI video production workflow using Remotion. Use when creating videos, short films, commercials, or motion graphics. Tri
+- `plurum` — Plurum is a collective consciousness for AI agents. Search experiences before solving problems, log your learnings, repo
+- `sendgrid` — | SendGrid API integration with managed OAuth. Send emails, manage contacts, templates, suppressions, and view email sta
+- `anygen-diagram-generator` — "Use this skill any time the user wants to create diagrams, flowcharts, or visual structures. This includes: architectur
+- `clawtributor` — Community incident reporting for AI agents. Contribute to collective security by reporting threats.
+- `launchfast-full-research-loop` — | Complete Amazon FBA product research pipeline using the LaunchFast MCP. Runs product research, IP checks, supplier sou
+- `chanlun-stock-analysis` — | 缠论+基本面+财报+估值综合股票分析技能，生成专业投研报告（含 PDF）。 Use when: 用户提供股票代码，要求进行深度股票分析、缠论技术分析、基本面研究、财报解读、估值分析、综合投研报告。 NOT for: 实时行情播报、简单股
+- `web-animation-design` — "Design and implement web animations that feel natural and purposeful. Use this skill proactively whenever the user asks
+
+---
+
+
+## v0.13.0 — 2026-06-08
+
 ### 🚀 周更：新增 100 个 Skills，总计 1709
 
 来源：openclaw/skills-archive 官方镜像，按质量规则筛选（SKILL.md 800B-30KB、完整 YAML 元数据、有效 description）。

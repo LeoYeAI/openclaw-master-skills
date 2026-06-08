@@ -1,0 +1,54 @@
+{
+  "name": "workwork-skill",
+  "version": "3.1.0",
+  "description": "学术综述撰写与格式化工具集 - 从格式检查到文档生成的全流程支持（包含连续相同引用检测）",
+  "main": "SKILL.md",
+  "keywords": [
+    "academic",
+    "review",
+    "research",
+    "references",
+    "format-checker",
+    "word-document",
+    "superscript-citations",
+    "chinese-academic"
+  ],
+  "author": "WorkBuddy",
+  "license": "MIT",
+  "dependencies": {
+    "docx": "^9.6.1"
+  },
+  "scripts": {
+    "format-check": "cd scripts && python reference_formatter.py",
+    "typo-check": "cd scripts && python typo_grammar_checker.py",
+    "reference-check": "cd scripts && python reference_accuracy_checker.py",
+    "doc-check": "cd scripts && python document_format_checker.py",
+    "unified-check": "cd scripts && python unified_checker.py",
+    "filter": "cd scripts && python filter_references.py",
+    "fix-refs": "cd scripts && python extract_and_fix_references.py",
+    "verify": "cd scripts && python simple_verify.py",
+    "word": "cd scripts && node create_word_doc_v3.js",
+    "word-superscript": "cd scripts && node create_word_with_superscript.js"
+  },
+  "workbuddy": {
+    "skill": {
+      "name": "workwork",
+      "version": "3.1.0",
+      "category": "academic-research",
+      "description": "学术综述撰写与格式化工具集，支持上标引用格式和连续相同引用检测",
+      "features": [
+        "文献完整性检查器",
+        "统一检查器",
+        "参考文献格式检查",
+        "文献筛选",
+        "参考文献编号修复",
+        "错别字检查",
+        "引用准确性检查",
+        "文档格式检查",
+        "Word文档生成",
+        "上标引用Word生成",
+        "连续相同引用检测"
+      ]
+    }
+  }
+}

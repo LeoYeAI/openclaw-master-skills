@@ -1,0 +1,135 @@
+{
+  "tencent_cos": {
+    "enabled": true,
+    "description": "腾讯云对象存储(COS)和数据万象(CI)集成配置",
+    
+    "authentication": {
+      "region": "ap-guangzhou",
+      "bucket": "your-bucket-name-123456",
+      "secret_id": "AKIDxxxxxxxxxxxxxxxxxxxxxxxx",
+      "secret_key": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+      "dataset_name": "your-dataset-name",
+      
+      "_comment": "获取方式：",
+      "_comment1": "1. 区域(region): 在COS控制台查看存储桶所属地域，如 ap-guangzhou",
+      "_comment2": "2. 存储桶(bucket): 在COS控制台查看存储桶名称",
+      "_comment3": "3. 密钥(secret_id/secret_key): 在腾讯云控制台-访问管理-API密钥管理创建",
+      "_comment4": "4. 数据集(dataset_name): 在数据万象控制台-元数据检索-数据集管理创建"
+    },
+    
+    "mcp_server": {
+      "command": "npx",
+      "args": [
+        "cos-mcp",
+        "--Region=${TENCENT_COS_REGION}",
+        "--Bucket=${TENCENT_COS_BUCKET}",
+        "--SecretId=${TENCENT_COS_SECRET_ID}",
+        "--SecretKey=${TENCENT_COS_SECRET_KEY}",
+        "--DatasetName=${TENCENT_COS_DATASET_NAME}",
+        "--connectType=stdio"
+      ],
+      
+      "sse_mode": {
+        "enabled": false,
+        "port": 3001,
+        "args": [
+          "--connectType=sse",
+          "--port=3001"
+        ]
+      },
+      
+      "_comment": "连接模式说明：",
+      "_comment1": "1. stdio模式: 每次调用时启动进程，适合低频使用",
+      "_comment2": "2. sse模式: 启动HTTP服务器持续运行，适合高频使用"
+    },
+    
+    "operations": {
+      "timeout": 30000,
+      "retry_attempts": 3,
+      "max_file_size": 104857600,
+      "chunk_size": 5242880,
+      
+      "allowed_extensions": [
+        ".jpg", ".jpeg", ".png", ".gif", ".bmp",
+        ".mp4", ".avi", ".mov", ".wmv",
+        ".pdf", ".doc", ".docx", ".xls", ".xlsx", ".ppt", ".pptx",
+        ".txt", ".csv", ".json", ".xml"
+      ],
+      
+      "_comment": "操作配置说明：",
+      "_comment1": "1. timeout: 操作超时时间(毫秒)",
+      "_comment2": "2. retry_attempts: 失败重试次数",
+      "_comment3": "3. max_file_size: 最大文件大小(字节)",
+      "_comment4": "4. chunk_size: 分片上传大小(字节)",
+      "_comment5": "5. allowed_extensions: 允许的文件扩展名"
+    },
+    
+    "image_processing": {
+      "default_quality": 85,
+      "watermark": {
+        "enabled": true,
+        "text": "Powered by Tencent Cloud",
+        "font_size": 24,
+        "opacity": 0.3,
+        "position": "southeast"
+      },
+      
+      "_comment": "图片处理配置：",
+      "_comment1": "1. default_quality: 默认图片质量(1-100)",
+      "_comment2": "2. watermark: 水印配置"
+    },
+    
+    "search": {
+      "max_results": 20,
+      "similarity_threshold": 0.7,
+      
+      "_comment": "搜索配置：",
+      "_comment1": "1. max_results: 最大返回结果数",
+      "_comment2": "2. similarity_threshold: 相似度阈值(0-1)"
+    },
+    
+    "logging": {
+      "level": "INFO",
+      "file": "tencent_cos.log",
+      "max_size": 10485760,
+      "backup_count": 5,
+      
+      "_comment": "日志配置：",
+      "_comment1": "1. level: 日志级别(DEBUG, INFO, WARNING, ERROR)",
+      "_comment2": "2. file: 日志文件路径",
+      "_comment3": "3. max_size: 最大文件大小(字节)",
+      "_comment4": "4. backup_count: 备份文件数量"
+    },
+    
+    "security": {
+      "encrypt_secrets": true,
+      "audit_logging": true,
+      "rate_limit": {
+        "enabled": true,
+        "requests_per_minute": 60
+      },
+      
+      "_comment": "安全配置：",
+      "_comment1": "1. encrypt_secrets: 是否加密存储密钥",
+      "_comment2": "2. audit_logging: 是否记录操作审计日志",
+      "_comment3": "3. rate_limit: 速率限制配置"
+    },
+    
+    "environments": {
+      "development": {
+        "bucket": "dev-bucket-123456",
+        "debug": true
+      },
+      "staging": {
+        "bucket": "staging-bucket-123456"
+      },
+      "production": {
+        "bucket": "prod-bucket-123456",
+        "audit_logging": true
+      },
+      
+      "_comment": "多环境配置：",
+      "_comment1": "可以根据不同环境使用不同的配置"
+    }
+  }
+}

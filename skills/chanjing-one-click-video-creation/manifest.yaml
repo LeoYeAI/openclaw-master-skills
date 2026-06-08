@@ -1,0 +1,107 @@
+# 合规：根目录 合规规则.md §1–§2
+name: chanjing-one-click-video-creation
+version: 0.1.0
+vendor: chanjing
+runtime:
+  interpreter: python3
+  dependencies:
+    - ffmpeg
+    - ffprobe
+    - chan-skill
+env:
+  required: []
+permissions:
+  network_mode: allowlist
+  allowed_hosts:
+    - open-api.chanjing.cc
+    - www.chanjing.cc
+  filesystem:
+    read_roots:
+      - "${WORKSPACE_ROOT}"
+      - "${SKILL_DIR}"
+      - "${CHANJING_OPENAPI_CREDENTIALS_DIR}"
+    write_roots:
+      - "${WORKSPACE_ROOT}"
+      - "${CHANJING_OPENAPI_CREDENTIALS_DIR}"
+  allowed_commands:
+    - python3
+    - ffmpeg
+    - ffprobe
+    - chan-skill
+
+schemaVersion: 1
+skill:
+  id: chanjing-one-click-video-creation
+  author: chan-skills
+  category: 媒体处理
+  tags:
+    - 视频渲染
+    - ffmpeg
+    - ChanjingAPI
+    - 蝉镜
+    - Chanjing
+    - 一键成片
+  summary: >-
+    选题/workflow 驱动一键短视频成片：编排 TTS、数字人合成、文生视频与本地 ffmpeg 封装。
+  skillDoc: SKILL.md
+  supportCommands:
+    - run_render
+  siblingSkills:
+    - chanjing-tts
+    - chanjing-video-compose
+    - chanjing-ai-creation
+    - chanjing-credentials-guard
+
+credentials:
+  model: credentials_json
+  defaultPath: "~/.chanjing/credentials.json"
+  directoryEnv: CHANJING_OPENAPI_CREDENTIALS_DIR
+  fileName: credentials.json
+  sensitiveFields:
+    - app_id
+    - secret_key
+    - access_token
+    - expire_in
+  persistAccessTokenOnDisk: true
+  primaryEnvIntentionallyOmitted: true
+  doNotCommitToVcs:
+    - credentials.json
+
+clientPermissions:
+  network:
+    httpsOutbound: true
+    documentedHosts:
+      - open-api.chanjing.cc
+  filesystem:
+    read:
+      - "${CHANJING_OPENAPI_CREDENTIALS_DIR or CHANJING_CONFIG_DIR or ~/.chanjing}/credentials.json"
+      - "${SKILLS_DIR or CHANJING_ONE_CLICK_VIDEO_SKILLS_ROOT or CHAN_SKILLS_DIR or repo_root}/skills/"
+      - user_workflow_and_output_paths
+    write:
+      - "${CHANJING_OPENAPI_CREDENTIALS_DIR or CHANJING_CONFIG_DIR or ~/.chanjing}/credentials.json"
+      - user_output_directory
+  browser:
+    mayOpenForAuth: true
+    documentedHosts:
+      - www.chanjing.cc
+  subprocess:
+    allowedPatterns:
+      - python3
+      - ffmpeg
+      - ffprobe
+      - chan-skill
+    mayInvokeSiblingSkillScripts: true
+  userContent:
+    mayDownloadFromApiResponseUrls: true
+
+metadata:
+  openclaw:
+    homepage: https://doc.chanjing.cc
+    requires:
+      bins:
+        - ffmpeg
+        - ffprobe
+
+agentPolicy:
+  alwaysSkill: false
+  modifiesOtherSkillsOrGlobalAgent: false

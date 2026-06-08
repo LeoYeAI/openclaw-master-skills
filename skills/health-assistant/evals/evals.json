@@ -1,0 +1,785 @@
+{
+  "skill_name": "health-assistant",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "我今年35岁，最近血压有点高，140/90，需要注意什么？",
+      "expected_output": "提供血压分级判断、饮食建议，运动建议、何时就医",
+      "category": "健康咨询"
+    },
+    {
+      "id": 2,
+      "prompt": "帮我记录今天的血糖：空腹6.5 mmol/L",
+      "expected_output": "记录血糖数据，提供血糖正常范围参考",
+      "category": "数据记录"
+    },
+    {
+      "id": 3,
+      "prompt": "设置每天早上8点的降压药提醒",
+      "expected_output": "创建用药提醒，包含时间、药品名称、频率",
+      "category": "用药提醒"
+    },
+    {
+      "id": 4,
+      "prompt": "下周出差去上海，需要准备什么健康物品？",
+      "expected_output": "提供完整的旅行健康清单：药品、证件、衣物等",
+      "category": "旅行健康"
+    },
+    {
+      "id": 5,
+      "prompt": "我今天跑了10公里，心率172，感觉有点累，正常吗？",
+      "expected_output": "分析运动数据，评估强度是否合适，提供恢复建议",
+      "category": "运动建议"
+    },
+    {
+      "id": 6,
+      "prompt": "我妈妈60岁，有糖尿病，适合什么运动？",
+      "expected_output": "根据年龄和病史提供适合的运动建议",
+      "category": "运动建议"
+    },
+    {
+      "id": 7,
+      "prompt": "最近总是失眠，有什么自然疗法吗？",
+      "expected_output": "提供改善睡眠的方法和生活建议",
+      "category": "健康咨询"
+    },
+    {
+      "id": 8,
+      "prompt": "我头疼三天了，需要去医院吗？",
+      "expected_output": "询问症状细节，判断是否需要就医",
+      "category": "症状分析"
+    },
+    {
+      "id": 9,
+      "prompt": "高血压患者饮食要注意什么？",
+      "expected_output": "提供DASH饮食建议、低钠食谱",
+      "category": "饮食建议"
+    },
+    {
+      "id": 10,
+      "prompt": "家人突然晕倒了，怎么办？",
+      "expected_output": "提供急救步骤：检查呼吸、拨打120，心肺复苏等",
+      "category": "急救指导"
+    },
+    {
+      "id": 11,
+      "prompt": "我想减肥，每天应该怎么吃？",
+      "expected_output": "提供基于用户情况的饮食建议（需先询问年龄性别）",
+      "category": "饮食建议"
+    },
+    {
+      "id": 12,
+      "prompt": "去泰国旅行，需要带什么药品？",
+      "expected_output": "提供目的地特定的药品清单：防蚊、防腹泻、防晒等",
+      "category": "旅行健康"
+    },
+    {
+      "id": 13,
+      "prompt": "我吃了降压药，还能喝酒吗？",
+      "expected_output": "提供药物与酒精相互作用的建议",
+      "category": "健康咨询"
+    },
+    {
+      "id": 14,
+      "prompt": "帮我记录血压：135/85",
+      "expected_output": "记录血压数据，判断属于哪一级别",
+      "category": "数据记录"
+    },
+    {
+      "id": 15,
+      "prompt": "50岁女性更年期有什么症状？如何缓解？",
+      "expected_output": "提供更年期症状和缓解方法",
+      "category": "性别健康"
+    },
+    {
+      "id": 16,
+      "prompt": "小孩发烧39度在家怎么处理？",
+      "expected_output": "提供儿童发烧的处理方法和就医指征",
+      "category": "急救指导"
+    },
+    {
+      "id": 17,
+      "prompt": "我每天跑5公里，为什么体重没降？",
+      "expected_output": "分析可能原因：饮食、代谢、肌肉量等",
+      "category": "运动建议"
+    },
+    {
+      "id": 18,
+      "prompt": "血糖高的人能吃水果吗？",
+      "expected_output": "提供糖尿病患者的水果选择建议",
+      "category": "饮食建议"
+    },
+    {
+      "id": 19,
+      "prompt": "长途飞机后脚肿了，怎么办？",
+      "expected_output": "提供缓解方法和预防建议",
+      "category": "旅行健康"
+    },
+    {
+      "id": 20,
+      "prompt": "胸口疼，出汗，呼吸困难，是不是心脏病？",
+      "expected_output": "识别心脏紧急情况，建议立即就医",
+      "category": "症状分析"
+    },
+    {
+      "id": 21,
+      "prompt": "我每天熬夜到凌晨2点才睡对身体有什么危害？",
+      "expected_output": "分析熬夜危害：免疫力、皮肤，心血管、情绪等",
+      "category": "健康咨询"
+    },
+    {
+      "id": 22,
+      "prompt": "最近心情很低落，感觉抑郁了怎么办？",
+      "expected_output": "提供情绪疏导建议，判断是否需要专业帮助",
+      "category": "心理健康"
+    },
+    {
+      "id": 23,
+      "prompt": "我35岁从来没体检过，需要体检吗？体检哪些项目？",
+      "expected_output": "提供体检建议、年龄段必检项目",
+      "category": "体检建议"
+    },
+    {
+      "id": 24,
+      "prompt": "八段锦适合老年人吗？怎么练？",
+      "expected_output": "提供八段锦好处、动作要领、注意事项",
+      "category": "运动建议"
+    },
+    {
+      "id": 25,
+      "prompt": "我家里养了猫，需要注意什么健康问题？",
+      "expected_output": "提供宠物相关健康注意事项：弓形虫、过敏、狂犬病等",
+      "category": "健康咨询"
+    },
+    {
+      "id": 26,
+      "prompt": "每天看电脑眼睛干涩不舒服，怎么办？",
+      "expected_output": "提供缓解眼疲劳的方法：人工泪液、休息、热敷等",
+      "category": "健康咨询"
+    },
+    {
+      "id": 27,
+      "prompt": "最近流感高发，怎么预防？",
+      "expected_output": "提供流感预防措施：疫苗、个人卫生、增强免疫力",
+      "category": "疾病预防"
+    },
+    {
+      "id": 28,
+      "prompt": "每天坐办公室，颈椎疼有什么缓解方法？",
+      "expected_output": "提供颈椎保健建议：伸展运动、姿势纠正、热敷等",
+      "category": "健康咨询"
+    },
+    {
+      "id": 29,
+      "prompt": "智齿发炎了，一定要拔掉吗？",
+      "expected_output": "提供智齿处理建议、何时就医",
+      "category": "健康咨询"
+    },
+    {
+      "id": 30,
+      "prompt": "听说三伏天养生很重要，具体怎么养生？",
+      "expected_output": "提供三伏天养生建议：饮食、作息、防暑",
+      "category": "养生保健"
+    },
+    {
+      "id": 31,
+      "prompt": "I'm feeling anxious all the time. What are some natural remedies?",
+      "expected_output": "Provide anxiety management techniques, when to seek professional help",
+      "category": "Mental Health"
+    },
+    {
+      "id": 32,
+      "prompt": "What are the best exercises for losing belly fat?",
+      "expected_output": "Provide targeted exercises and overall fat loss strategy",
+      "category": "Fitness"
+    },
+    {
+      "id": 33,
+      "prompt": "I have seasonal allergies. What over-the-counter medications work best?",
+      "expected_output": "Recommend OTC allergy medications, usage tips",
+      "category": "Health Consultation"
+    },
+    {
+      "id": 34,
+      "prompt": "How much water should I drink every day?",
+      "expected_output": "Provide daily water intake recommendations based on activity/weight",
+      "category": "Nutrition"
+    },
+    {
+      "id": 35,
+      "prompt": "What foods should I avoid with high cholesterol?",
+      "expected_output": "List foods to avoid, heart-healthy alternatives",
+      "category": "Nutrition"
+    },
+    {
+      "id": 36,
+      "prompt": "I can't sleep at night. What can I do to improve my sleep?",
+      "expected_output": "Provide sleep hygiene tips, relaxation techniques",
+      "category": "Health Consultation"
+    },
+    {
+      "id": 37,
+      "prompt": "Is it safe to take melatonin for sleep?",
+      "expected_output": "Explain melatonin usage, dosage, side effects",
+      "category": "Medication"
+    },
+    {
+      "id": 38,
+      "prompt": "What are the symptoms of vitamin D deficiency?",
+      "expected_output": "List symptoms, risk factors, supplementation advice",
+      "category": "Health Consultation"
+    },
+    {
+      "id": 39,
+      "prompt": "I sit at a desk all day. How can I stay healthy?",
+      "expected_output": "Provide office health tips, exercises, posture advice",
+      "category": "Health Consultation"
+    },
+    {
+      "id": 40,
+      "prompt": "What's the difference between cold and flu? How can I tell?",
+      "expected_output": "Explain differences, symptoms, treatment approaches",
+      "category": "Health Consultation"
+    },
+    {
+      "id": 41,
+      "prompt": "How often should I go to the dentist for a checkup?",
+      "expected_output": "Provide dental checkup frequency recommendations",
+      "category": "Prevention"
+    },
+    {
+      "id": 42,
+      "prompt": "I'm trying to quit smoking. What helps with nicotine withdrawal?",
+      "expected_output": "Provide quitting strategies, withdrawal management",
+      "category": "Health Consultation"
+    },
+    {
+      "id": 43,
+      "prompt": "What foods boost the immune system?",
+      "expected_output": "List immune-boosting foods and nutrients",
+      "category": "Nutrition"
+    },
+    {
+      "id": 44,
+      "prompt": "I have acid reflux. What foods should I avoid?",
+      "expected_output": "List trigger foods, dietary recommendations",
+      "category": "Nutrition"
+    },
+    {
+      "id": 45,
+      "prompt": "How do I know if I have diabetes? What are the warning signs?",
+      "expected_output": "Explain diabetes symptoms, risk factors, when to test",
+      "category": "Health Consultation"
+    },
+    {
+      "id": 46,
+      "prompt": "What is the best diet for heart health?",
+      "expected_output": "Recommend heart-healthy diet (Mediterranean, DASH)",
+      "category": "Nutrition"
+    },
+    {
+      "id": 47,
+      "prompt": "I work night shifts. How can I adjust my sleep schedule?",
+      "expected_output": "Provide tips for night shift workers, sleep strategies",
+      "category": "Health Consultation"
+    },
+    {
+      "id": 48,
+      "prompt": "What are the health benefits of intermittent fasting?",
+      "expected_output": "Explain IF benefits, methods,注意事项",
+      "category": "Nutrition"
+    },
+    {
+      "id": 49,
+      "prompt": "How do I prevent back pain when lifting weights?",
+      "expected_output": "Provide proper lifting techniques, back strengthening",
+      "category": "Fitness"
+    },
+    {
+      "id": 50,
+      "prompt": "I'm always tired. What could be causing this?",
+      "expected_output": "List possible causes, when to see a doctor",
+      "category": "Health Consultation"
+    },
+    {
+      "id": 51,
+      "prompt": "What are the warning signs of a stroke?",
+      "expected_output": "Explain FAST test, emergency symptoms",
+      "category": "First Aid"
+    },
+    {
+      "id": 52,
+      "prompt": "How much coffee is too much coffee?",
+      "expected_output": "Provide caffeine intake guidelines, side effects",
+      "category": "Nutrition"
+    },
+    {
+      "id": 53,
+      "prompt": "What supplements should I take as I get older?",
+      "expected_output": "Recommend age-related supplements after 50",
+      "category": "Nutrition"
+    },
+    {
+      "id": 54,
+      "prompt": "I have headaches almost every day. When should I worry?",
+      "expected_output": "Explain headache red flags, when to seek care",
+      "category": "Health Consultation"
+    },
+    {
+      "id": 55,
+      "prompt": "What's the best way to treat a sunburn?",
+      "expected_output": "Provide sunburn treatment and prevention",
+      "category": "First Aid"
+    },
+    {
+      "id": 56,
+      "prompt": "How do I know if I have a food allergy?",
+      "expected_output": "Explain allergy symptoms, testing options",
+      "category": "Health Consultation"
+    },
+    {
+      "id": 57,
+      "prompt": "What causes bad breath and how can I fix it?",
+      "expected_output": "List causes, solutions for halitosis",
+      "category": "Health Consultation"
+    },
+    {
+      "id": 58,
+      "prompt": "Is it bad to sleep with my phone next to my bed?",
+      "expected_output": "Explain sleep quality impacts, EMF concerns",
+      "category": "Health Consultation"
+    },
+    {
+      "id": 59,
+      "prompt": "What exercises are safe during pregnancy?",
+      "expected_output": "Recommend safe exercises for pregnant women",
+      "category": "Fitness"
+    },
+    {
+      "id": 60,
+      "prompt": "How do I lower my blood sugar naturally?",
+      "expected_output": "Provide natural methods to reduce blood glucose",
+      "category": "Health Consultation"
+    },
+    {
+      "id": 61,
+      "prompt": "我去日本旅行，能带多少药品入境？需要申报吗？",
+      "expected_output": "提供日本药品入境规定、申报要求、数量限制",
+      "category": "旅行健康-药品法规"
+    },
+    {
+      "id": 62,
+      "prompt": "我想从美国买一些维生素片寄回中国，请问有什么限制吗？",
+      "expected_output": "说明中国海关对保健品/药品的进口限制、税率、申报要求",
+      "category": "旅行健康-药品法规"
+    },
+    {
+      "id": 63,
+      "prompt": "我需要长期服用安眠药，去泰国旅行能带吗？",
+      "expected_output": "提供安眠药跨国携带规定、处方要求、泰国药品法规",
+      "category": "旅行健康-药品法规"
+    },
+    {
+      "id": 64,
+      "prompt": "在日本买了非处方感冒药带回中国，可以吗？",
+      "expected_output": "说明个人自用药品入境中国的数量和规定限制",
+      "category": "旅行健康-药品法规"
+    },
+    {
+      "id": 65,
+      "prompt": "我要去美国探亲，需要带些常用药有什么需要注意的？",
+      "expected_output": "提供美国药品入境规定、FDA要求、处方规定",
+      "category": "旅行健康-药品法规"
+    },
+    {
+      "id": 66,
+      "prompt": "为什么在日本买到的感冒药效果特别强？",
+      "expected_output": "解释日本感冒药成分特点、可能含有的受管制成分",
+      "category": "健康咨询-药品知识"
+    },
+    {
+      "id": 67,
+      "prompt": "听说泰国的咳嗽水很好，但是为什么网上说要注意？",
+      "expected_output": "解释泰国咳嗽水可能含有的管制成分、潜在风险",
+      "category": "健康咨询-药品知识"
+    },
+    {
+      "id": 68,
+      "prompt": "我可以从国外邮寄药品到中国吗？有什么规定？",
+      "expected_output": "说明中国邮寄药品入境的法规、关税、个人自用要求",
+      "category": "旅行健康-药品法规"
+    },
+    {
+      "id": 69,
+      "prompt": "去香港买药有什么需要注意的？",
+      "expected_output": "提供香港购药注意事项、真假辨别、入境规定",
+      "category": "旅行健康-药品法规"
+    },
+    {
+      "id": 70,
+      "prompt": "为什么有些国家购买抗生素不需要处方？",
+      "expected_output": "解释不同国家抗生素管理规定的差异、抗生素滥用风险",
+      "category": "健康咨询-药品知识"
+    },
+    {
+      "id": 71,
+      "prompt": "我要移民到澳大利亚，可以带什么药品过去？",
+      "expected_output": "提供澳大利亚药品入境规定、处方要求、申报清单",
+      "category": "旅行健康-药品法规"
+    },
+    {
+      "id": 72,
+      "prompt": "在欧洲买的保健品能带入美国吗？",
+      "expected_output": "说明美国海关对保健品/补充剂的入境规定",
+      "category": "旅行健康-药品法规"
+    },
+    {
+      "id": 73,
+      "prompt": "什么是聪明药（Nootropic）？在哪里能买到？",
+      "expected_output": "解释聪明药类型、各国法规、获取途径、风险",
+      "category": "健康咨询-药品知识"
+    },
+    {
+      "id": 74,
+      "prompt": "为什么中国的止咳水需要处方？",
+      "expected_output": "解释中国止咳水中可待因的管制历史和现状",
+      "category": "健康咨询-药品知识"
+    },
+    {
+      "id": 75,
+      "prompt": "我可以帮家人从国外代购药品吗？",
+      "expected_output": "说明代购药品的法律风险、海关规定",
+      "category": "旅行健康-药品法规"
+    },
+    {
+      "id": 76,
+      "prompt": "去韩国买药有什么需要注意的？",
+      "expected_output": "提供韩国药品购买建议、入境中国规定",
+      "category": "旅行健康-药品法规"
+    },
+    {
+      "id": 77,
+      "prompt": "为什么有些国家禁止携带含麻黄碱的感冒药？",
+      "expected_output": "解释麻黄碱的管制原因、各国法规、替代建议",
+      "category": "健康咨询-药品知识"
+    },
+    {
+      "id": 78,
+      "prompt": "新加坡对药品有什么特别严格的规定吗？",
+      "expected_output": "说明新加坡药品管制严格程度、携带限制",
+      "category": "旅行健康-药品法规"
+    },
+    {
+      "id": 79,
+      "prompt": "我要去新西兰，需要带些常用药品有什么规定？",
+      "expected_output": "提供新西兰药品入境规定、处方要求、申报清单",
+      "category": "旅行健康-药品法规"
+    },
+    {
+      "id": 80,
+      "prompt": "为什么日本的药妆店可以卖很多药？",
+      "expected_output": "解释日本药品分类、药妆店制度、购买建议",
+      "category": "健康咨询-药品知识"
+    },
+    {
+      "id": 81,
+      "prompt": "去迪拜旅行，能带多少药品入境？",
+      "expected_output": "说明阿联酋药品规定、申报要求、禁忌成分",
+      "category": "旅行健康-药品法规"
+    },
+    {
+      "id": 82,
+      "prompt": "在泰国买到的网红止痛膏带回中国有问题吗？",
+      "expected_output": "解释泰国止痛膏成分、入境中国的数量限制",
+      "category": "旅行健康-药品法规"
+    },
+    {
+      "id": 83,
+      "prompt": "什么是精神类药物？和精神科药物有什么区别？",
+      "expected_output": "解释精神类药物定义、各国分类、管制程度",
+      "category": "健康咨询-药品知识"
+    },
+    {
+      "id": 84,
+      "prompt": "我可以服用朋友从国外带的处方药吗？",
+      "expected_output": "说明处方药服用风险、法律风险、建议",
+      "category": "健康咨询-药品知识"
+    },
+    {
+      "id": 85,
+      "prompt": "去加拿大探亲能带什么药品？",
+      "expected_output": "提供加拿大药品入境规定、处方要求、申报清单",
+      "category": "旅行健康-药品法规"
+    },
+    {
+      "id": 86,
+      "prompt": "为什么有些国家对褪黑素管理严格？",
+      "expected_output": "解释各国对褪黑素的不同管理规定、原因",
+      "category": "健康咨询-药品知识"
+    },
+    {
+      "id": 87,
+      "prompt": "马来西亚买什么药品带回来比较好？有什么限制？",
+      "expected_output": "说明马来西亚购药建议、入境中国限制",
+      "category": "旅行健康-药品法规"
+    },
+    {
+      "id": 88,
+      "prompt": "长期服用安眠药会影响出入境吗？",
+      "expected_output": "解释安眠药（尤其是安定类）跨国旅行的注意事项",
+      "category": "旅行健康-药品法规"
+    },
+    {
+      "id": 89,
+      "prompt": "什么是管制药品？和中国有什么区别？",
+      "expected_output": "解释国际管制药品分类、中国管制药品清单",
+      "category": "健康咨询-药品知识"
+    },
+    {
+      "id": 90,
+      "prompt": "去巴西需要注意哪些药品规定？",
+      "expected_output": "提供巴西药品入境规定、申报要求",
+      "category": "旅行健康-药品法规"
+    },
+    {
+      "id": 91,
+      "prompt": "为什么中国海关对含麝香的药品查得很严？",
+      "expected_output": "解释麝香等濒危动物成分的管制、替代建议",
+      "category": "健康咨询-药品知识"
+    },
+    {
+      "id": 92,
+      "prompt": "我可以把止痛药带给国外的朋友吗？",
+      "expected_output": "说明国际药品携带规定、建议",
+      "category": "旅行健康-药品法规"
+    },
+    {
+      "id": 93,
+      "prompt": "南非对药品有什么特殊规定？",
+      "expected_output": "提供南非药品入境规定、申报清单",
+      "category": "旅行健康-药品法规"
+    },
+    {
+      "id": 94,
+      "prompt": "为什么有些感冒药在跨境电商上买不了？",
+      "expected_output": "解释跨境药品销售法规、个人自用要求",
+      "category": "健康咨询-药品知识"
+    },
+    {
+      "id": 95,
+      "prompt": "去菲律宾旅行需要注意什么药品规定？",
+      "expected_output": "提供菲律宾药品规定、入境限制",
+      "category": "旅行健康-药品法规"
+    },
+    {
+      "id": 96,
+      "prompt": "什么是仿制药？去国外买和国内有什么区别？",
+      "expected_output": "解释仿制药概念、各国法规差异、质量区别",
+      "category": "健康咨询-药品知识"
+    },
+    {
+      "id": 97,
+      "prompt": "台湾买的药品能带回大陆吗？有什么限制？",
+      "expected_output": "说明两岸药品携带规定、申报要求",
+      "category": "旅行健康-药品法规"
+    },
+    {
+      "id": 98,
+      "prompt": "带中药材出国有什么需要注意的？",
+      "expected_output": "解释中药材出境规定、各国入境限制",
+      "category": "旅行健康-药品法规"
+    },
+    {
+      "id": 99,
+      "prompt": "什么是孤儿药？在中国能买到吗？",
+      "expected_output": "解释孤儿药定义、中国引进情况、获取途径",
+      "category": "健康咨询-药品知识"
+    },
+    {
+      "id": 100,
+      "prompt": "去德国买什么OTC药品比较好？带回中国有问题吗？",
+      "expected_output": "提供德国非处方药推荐、入境中国限制",
+      "category": "旅行健康-药品法规"
+    },
+    {
+      "id": 101,
+      "prompt": "我的狗最近总是挠痒痒，皮肤发红怎么办？",
+      "expected_output": "提供狗狗皮肤病可能原因、护理建议、何时就医",
+      "category": "宠物健康-皮肤问题"
+    },
+    {
+      "id": 102,
+      "prompt": "猫粮怎么选？有什么需要注意的成分吗？",
+      "expected_output": "解释猫粮选择要点、成分分析、注意事项",
+      "category": "宠物健康-营养喂养"
+    },
+    {
+      "id": 103,
+      "prompt": "狗多大可以开始打疫苗？有哪些必须打的疫苗？",
+      "expected_output": "说明狗狗疫苗接种时间表、核心疫苗种类",
+      "category": "宠物健康-疫苗接种"
+    },
+    {
+      "id": 104,
+      "prompt": "猫咪吐毛球正常吗？需要怎么处理？",
+      "expected_output": "解释毛球症原因、预防方法、何时就医",
+      "category": "宠物健康-常见问题"
+    },
+    {
+      "id": 105,
+      "prompt": "狗能不能吃巧克力？吃了会怎么样？",
+      "expected_output": "说明巧克力对狗的毒性、危险程度、急救措施",
+      "category": "宠物健康-中毒急救"
+    },
+    {
+      "id": 106,
+      "prompt": "怎么给猫咪驱虫？多久一次？",
+      "expected_output": "提供猫咪驱虫频率、药物选择、注意事项",
+      "category": "宠物健康-寄生虫防治"
+    },
+    {
+      "id": 107,
+      "prompt": "老年狗需要注意什么健康问题？",
+      "expected_output": "说明老年犬常见健康问题、护理建议",
+      "category": "宠物健康-老年护理"
+    },
+    {
+      "id": 108,
+      "prompt": "猫砂多久换一次比较好？",
+      "expected_output": "提供猫砂更换频率、卫生建议",
+      "category": "宠物健康-日常护理"
+    },
+    {
+      "id": 109,
+      "prompt": "狗拉肚子怎么办？什么情况需要看医生？",
+      "expected_output": "解释狗狗腹泻原因、家庭护理、何时就医",
+      "category": "宠物健康-消化问题"
+    },
+    {
+      "id": 110,
+      "prompt": "猫咪不喝水有什么办法让它多喝水吗？",
+      "expected_output": "提供增加猫咪饮水的技巧和方法",
+      "category": "宠物健康-日常护理"
+    },
+    {
+      "id": 111,
+      "prompt": "仓鼠可以吃什么食物？哪些食物不能喂？",
+      "expected_output": "提供仓鼠饮食指南、禁忌食物",
+      "category": "宠物健康-仓鼠喂养"
+    },
+    {
+      "id": 112,
+      "prompt": "猫砂盆应该放在家里什么位置比较好？",
+      "expected_output": "提供猫砂盆放置建议、注意事项",
+      "category": "宠物健康-日常护理"
+    },
+    {
+      "id": 113,
+      "prompt": "狗为什么总是掉毛？正常吗？",
+      "expected_output": "解释狗狗掉毛原因、正常掉毛周期、异常掉毛信号",
+      "category": "宠物健康-皮肤问题"
+    },
+    {
+      "id": 114,
+      "prompt": "怎么训练狗狗定点上厕所？",
+      "expected_output": "提供狗狗如厕训练方法、技巧",
+      "category": "宠物健康-行为训练"
+    },
+    {
+      "id": 115,
+      "prompt": "猫咪眼睛流泪有眼屎是什么原因？",
+      "expected_output": "解释猫咪眼部问题可能原因、护理建议",
+      "category": "宠物健康-眼部问题"
+    },
+    {
+      "id": 116,
+      "prompt": "最近总是心情低落，对什么都没兴趣，是抑郁症吗？",
+      "expected_output": "解释抑郁症症状、诊断标准、建议就医",
+      "category": "精神健康-抑郁症"
+    },
+    {
+      "id": 117,
+      "prompt": "如何缓解焦虑和压力？",
+      "expected_output": "提供焦虑缓解方法、放松技巧",
+      "category": "精神健康-焦虑症"
+    },
+    {
+      "id": 118,
+      "prompt": "失眠怎么办？有什么自然改善方法吗？",
+      "expected_output": "提供失眠改善方法、睡眠卫生建议",
+      "category": "精神健康-睡眠"
+    },
+    {
+      "id": 119,
+      "prompt": "工作压力太大，如何调整心态？",
+      "expected_output": "提供职场压力管理建议、心态调整方法",
+      "category": "精神健康-压力管理"
+    },
+    {
+      "id": 120,
+      "prompt": "怎么判断自己是否有心理问题需要看医生？",
+      "expected_output": "说明心理问题就医信号、评估方法",
+      "category": "精神健康-常识"
+    },
+    {
+      "id": 121,
+      "prompt": "青少年心理健康需要注意什么？",
+      "expected_output": "提供青少年心理健康指南、家长注意事项",
+      "category": "精神健康-青少年"
+    },
+    {
+      "id": 122,
+      "prompt": "如何帮助有抑郁症的朋友？",
+      "expected_output": "提供帮助抑郁症患者的建议、支持方法",
+      "category": "精神健康-支持他人"
+    },
+    {
+      "id": 123,
+      "prompt": "什么是心理咨询？什么情况下需要心理咨询？",
+      "expected_output": "解释心理咨询作用、适用情况",
+      "category": "精神健康-心理咨询"
+    },
+    {
+      "id": 124,
+      "prompt": "产后抑郁怎么办？",
+      "expected_output": "说明产后抑郁症状、应对方法、何时就医",
+      "category": "精神健康-产后抑郁"
+    },
+    {
+      "id": 125,
+      "prompt": "如何克服社交恐惧症？",
+      "expected_output": "提供社交恐惧症克服方法、逐步暴露疗法",
+      "category": "精神健康-社交恐惧"
+    },
+    {
+      "id": 126,
+      "prompt": "考试焦虑怎么缓解？",
+      "expected_output": "提供考试焦虑缓解技巧、应试策略",
+      "category": "精神健康-焦虑症"
+    },
+    {
+      "id": 127,
+      "prompt": "老年人心理健康的常见问题有哪些？",
+      "expected_output": "说明老年心理健康问题、预防方法",
+      "category": "精神健康-老年心理健康"
+    },
+    {
+      "id": 128,
+      "prompt": "如何培养积极乐观的心态？",
+      "expected_output": "提供培养积极心态的方法、正念练习",
+      "category": "精神健康-积极心态"
+    },
+    {
+      "id": 129,
+      "prompt": "焦虑症和焦虑情绪有什么区别？",
+      "expected_output": "解释焦虑症与焦虑情绪的区别、诊断标准",
+      "category": "精神健康-焦虑症"
+    },
+    {
+      "id": 130,
+      "prompt": "心理创伤后如何自我修复？",
+      "expected_output": "提供心理创伤自我修复方法、专业帮助建议",
+      "category": "精神健康-心理创伤"
+    }
+  ]
+}

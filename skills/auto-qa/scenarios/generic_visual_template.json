@@ -1,0 +1,126 @@
+{
+  "name": "Generic Visual Template",
+  "description": "通用动作展示模板：替换 start_url / start_domain 后可用于任意站点的可视化冒烟与报告",
+  "meta": {
+    "template": true,
+    "legacy": false,
+    "owner": "autoqa"
+  },
+  "autoScreenshot": true,
+  "continueOnFailure": false,
+  "visual": {
+    "enabled": true,
+    "focusTabBeforeStep": true,
+    "preActionWaitMs": 220,
+    "postActionWaitMs": 420,
+    "highlightBeforeClick": true,
+    "highlightBeforeType": true,
+    "highlightWaitMs": 480
+  },
+  "exploration": {
+    "enabled": true,
+    "maxDepth": 3,
+    "maxChildrenPerNode": 2,
+    "maxPages": 10,
+    "maxDurationMinutes": 8,
+    "sameOriginOnly": true
+  },
+  "variables": {
+    "start_url": "https://example.com/",
+    "start_domain": "example.com"
+  },
+  "steps": [
+    {
+      "id": "step-001",
+      "action": "navigate",
+      "url": "{{start_url}}",
+      "expected": "进入起始页（请替换为目标站点）"
+    },
+    {
+      "id": "step-002",
+      "action": "wait",
+      "timeMs": 1800,
+      "expected": "起始页渲染稳定"
+    },
+    {
+      "id": "step-003",
+      "action": "screenshot",
+      "fullPage": false,
+      "expected": "起始页首屏截图"
+    },
+    {
+      "id": "step-004",
+      "action": "scroll",
+      "deltaY": 900,
+      "assertEquals": true,
+      "expected": "页面发生明显下翻"
+    },
+    {
+      "id": "step-005",
+      "action": "wait",
+      "timeMs": 1000,
+      "expected": "下翻后稳定"
+    },
+    {
+      "id": "step-006",
+      "action": "click_link_same_origin",
+      "includeTextAny": [
+        "about",
+        "product",
+        "docs",
+        "pricing",
+        "status",
+        "learn",
+        "contact",
+        "support",
+        "blog",
+        "news"
+      ],
+      "excludeTextAny": ["home", "首页"],
+      "sameOriginOnly": true,
+      "maxCandidates": 12,
+      "depth": 2,
+      "expected": "高亮并点击任一同域链接"
+    },
+    {
+      "id": "step-007",
+      "action": "wait",
+      "timeMs": 2200,
+      "expected": "等待跳转后页面稳定"
+    },
+    {
+      "id": "step-008",
+      "action": "evaluate",
+      "fn": "() => { const now = window.location.href || ''; let prev = ''; let target = ''; try { prev = sessionStorage.getItem('__autoqa_prev_url') || ''; target = sessionStorage.getItem('__autoqa_target_url') || ''; } catch (e) {} if (!prev || !now) return false; try { const p = new URL(prev); const n = new URL(now); if (p.origin !== n.origin) return false; const pkey = p.pathname + p.search; const nkey = n.pathname + n.search; if (pkey === nkey) return false; if (target) { const t = new URL(target); if (t.origin === n.origin) { const tkey = t.pathname + t.search; return nkey === tkey || nkey.startsWith(t.pathname); } } return true; } catch (e) { return false; } }",
+      "assertEquals": true,
+      "depth": 2,
+      "expected": "同域跳转已生效（URL 发生变化）"
+    },
+    {
+      "id": "step-009",
+      "action": "screenshot",
+      "fullPage": true,
+      "expected": "跳转后页面全页截图"
+    },
+    {
+      "id": "step-010",
+      "action": "navigate",
+      "url": "{{start_url}}",
+      "returnEdge": true,
+      "depth": 2,
+      "expected": "回到起始页"
+    },
+    {
+      "id": "step-011",
+      "action": "wait",
+      "timeMs": 1200,
+      "expected": "返回后稳定"
+    },
+    {
+      "id": "step-012",
+      "action": "assert_url_contains",
+      "value": "{{start_domain}}",
+      "expected": "URL 属于目标域（请替换为 start_domain）"
+    }
+  ]
+}

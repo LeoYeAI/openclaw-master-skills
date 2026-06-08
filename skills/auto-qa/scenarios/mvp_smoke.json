@@ -1,0 +1,25 @@
+{
+  "name": "MVP Smoke - Example Domain",
+  "autoScreenshot": true,
+  "continueOnFailure": false,
+  "steps": [
+    {
+      "id": "step-001",
+      "action": "open",
+      "url": "https://example.com",
+      "expected": "页面可访问"
+    },
+    {
+      "id": "step-002",
+      "action": "wait",
+      "text": "Example Domain",
+      "expected": "标题出现"
+    },
+    {
+      "id": "step-003",
+      "action": "assert_text_contains",
+      "value": "Example Domain",
+      "expected": "正文包含关键字"
+    }
+  ]
+}
