@@ -1,0 +1,64 @@
+# Khoj RAG 默认配置
+# 复制此文件到 ~/.khoj/config.yml 并根据需要修改
+
+version: "1.4.0"
+
+# LLM 配置
+# 支持的提供商: openai, deepseek, anthropic, gemini, ollama
+llm:
+  provider: deepseek
+  model: deepseek-chat
+  api_key: ${OPENAI_API_KEY}  # 从环境变量读取
+  base_url: ${OPENAI_BASE_URL:-https://api.deepseek.com/v1}
+
+  # 或使用 OpenAI
+  # provider: openai
+  # model: gpt-4o-mini
+  # api_key: ${OPENAI_API_KEY}
+
+# Embedding 配置
+# 推荐使用本地模型，无需 API 费用
+embedding:
+  provider: local
+  model: BAAI/bge-small-zh-v1.5  # 中文优化，仅 ~100MB
+  
+  # 或使用云端 Embedding API
+  # provider: openai
+  # model: text-embedding-3-small
+  # api_key: ${OPENAI_API_KEY}
+
+# 数据库配置（Khoj 使用嵌入式 PostgreSQL）
+# 注意：Khoj 只支持 PostgreSQL，不支持 SQLite
+# 启动时设置: export USE_EMBEDDED_DB="true"
+database:
+  type: postgresql  # 嵌入式 PostgreSQL (pgserver)
+
+# 文档处理配置
+content:
+  # 支持的文件格式
+  supported_formats:
+    - ".md"
+    - ".txt"
+    - ".pdf"
+    - ".docx"
+    - ".org"
+  
+  # 分块配置
+  chunk_size: 500
+  chunk_overlap: 100
+
+# 服务配置
+server:
+  host: 0.0.0.0
+  port: 42110
+
+# 索引配置
+indexing:
+  # 文件监控
+  watch_for_changes: false
+  
+  # 并发数
+  concurrency: 4
+  
+  # 批处理大小
+  batch_size: 100

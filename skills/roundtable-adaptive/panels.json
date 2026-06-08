@@ -1,0 +1,61 @@
+{
+  "panels": {
+    "debate": {
+      "agents": [
+        { "model": "anthropic/claude-opus-4-6",              "role": "Advocate",         "fallback": "anthropic/claude-sonnet-4-6" },
+        { "model": "blockrun/google/gemini-3.1-pro-preview", "role": "Analyst",          "fallback": "blockrun/gemini" },
+        { "model": "blockrun/xai/grok-4-0709",               "role": "Contrarian",       "fallback": "blockrun/grok-fast" },
+        { "model": "openai-codex/gpt-5.3-codex",            "role": "Devil's_Advocate",  "fallback": "anthropic/claude-sonnet-4-6" }
+      ]
+    },
+    "build": {
+      "agents": [
+        { "model": "anthropic/claude-opus-4-6",              "role": "Architect",        "fallback": "anthropic/claude-sonnet-4-6" },
+        { "model": "blockrun/google/gemini-3.1-pro-preview", "role": "Reviewer",         "fallback": "blockrun/gemini" },
+        { "model": "blockrun/xai/grok-4-0709",               "role": "Engineer",         "fallback": "blockrun/grok-code" },
+        { "model": "openai-codex/gpt-5.3-codex",            "role": "Implementer",       "fallback": "anthropic/claude-sonnet-4-6" }
+      ]
+    },
+    "redteam": {
+      "agents": [
+        { "model": "anthropic/claude-opus-4-6",              "role": "Defender",         "fallback": "anthropic/claude-sonnet-4-6" },
+        { "model": "blockrun/google/gemini-3.1-pro-preview", "role": "Analyst",          "fallback": "blockrun/gemini" },
+        { "model": "blockrun/xai/grok-4-0709",               "role": "Attacker",         "fallback": "blockrun/grok-fast" },
+        { "model": "openai-codex/gpt-5.3-codex",            "role": "Red_Teamer",        "fallback": "anthropic/claude-sonnet-4-6" }
+      ]
+    },
+    "vote": {
+      "agents": [
+        { "model": "anthropic/claude-opus-4-6",              "role": "Option_A",         "fallback": "anthropic/claude-sonnet-4-6" },
+        { "model": "blockrun/google/gemini-3.1-pro-preview", "role": "Option_B",         "fallback": "blockrun/gemini" },
+        { "model": "blockrun/xai/grok-4-0709",               "role": "Option_C",         "fallback": "blockrun/grok-fast" },
+        { "model": "openai-codex/gpt-5.3-codex",            "role": "Moderator",         "fallback": "anthropic/claude-sonnet-4-6" }
+      ]
+    },
+    "default": {
+      "agents": [
+        { "model": "anthropic/claude-opus-4-6",              "role": "Advocate",         "fallback": "anthropic/claude-sonnet-4-6" },
+        { "model": "blockrun/google/gemini-3.1-pro-preview", "role": "Analyst",          "fallback": "blockrun/gemini" },
+        { "model": "blockrun/xai/grok-4-0709",               "role": "Contrarian",       "fallback": "blockrun/grok-fast" },
+        { "model": "openai-codex/gpt-5.3-codex",            "role": "Devil's_Advocate",  "fallback": "anthropic/claude-sonnet-4-6" }
+      ]
+    }
+  },
+  "orchestrator": {
+    "model": "blockrun/sonnet",
+    "note": "Blockrun Sonnet — off Anthropic OAuth, non interferisce con main session"
+  },
+  "model_aliases": {
+    "claude-opus":  "anthropic/claude-opus-4-6",
+    "sonnet":       "anthropic/claude-sonnet-4-6",
+    "codex":        "openai-codex/gpt-5.3-codex",
+    "gpt5":         "blockrun/gpt5",
+    "grok-fast":    "blockrun/grok-fast",
+    "grok-code":    "blockrun/grok-code",
+    "grok4":        "blockrun/xai/grok-4-0709",
+    "gemini":       "blockrun/google/gemini-3.1-pro-preview",
+    "flash":        "blockrun/flash",
+    "deepseek":     "blockrun/deepseek",
+    "kimi":         "blockrun/kimi"
+  }
+}

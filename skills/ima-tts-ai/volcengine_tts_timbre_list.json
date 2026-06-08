@@ -1,0 +1,43 @@
+{
+  "source": "https://www.volcengine.com/docs/6561/1257544?lang=zh",
+  "extracted_date": "2026-03-11",
+  "note": "火山引擎官方音色列表。IMA API 使用的是原生格式（如 zh_male_sophie_uranus_bigtts），不支持 BV*_streaming 格式。",
+  
+  "model_2.0_uranus": {
+    "description": "豆包语音合成模型2.0 - 支持情感变化、指令遵循、ASMR",
+    "voices": {
+      "通用场景": [
+        {"name": "Vivi 2.0", "voice_type": "zh_female_vv_uranus_bigtts", "language": "中文、日文、印尼、墨西哥西班牙语"},
+        {"name": "小何 2.0", "voice_type": "zh_female_xiaohe_uranus_bigtts", "language": "中文"},
+        {"name": "云舟 2.0", "voice_type": "zh_male_m191_uranus_bigtts", "language": "中文"},
+        {"name": "小天 2.0", "voice_type": "zh_male_taocheng_uranus_bigtts", "language": "中文"},
+        {"name": "刘飞 2.0", "voice_type": "zh_male_liufei_uranus_bigtts", "language": "中文"},
+        {"name": "魅力苏菲 2.0", "voice_type": "zh_male_sophie_uranus_bigtts", "language": "中文"},
+        {"name": "清新女声 2.0", "voice_type": "zh_female_qingxinnvsheng_uranus_bigtts", "language": "中文"}
+      ],
+      "角色扮演": [
+        {"name": "知性灿灿 2.0", "voice_type": "zh_female_cancan_uranus_bigtts", "language": "中文"},
+        {"name": "撒娇学妹 2.0", "voice_type": "zh_female_sajiaoxuemei_uranus_bigtts", "language": "中文"}
+      ],
+      "视频配音": [
+        {"name": "佩奇猪 2.0", "voice_type": "zh_female_peiqi_uranus_bigtts", "language": "中文"},
+        {"name": "猴哥 2.0", "voice_type": "zh_male_sunwukong_uranus_bigtts", "language": "中文"},
+        {"name": "大壹 2.0", "voice_type": "zh_male_dayi_uranus_bigtts", "language": "中文"}
+      ],
+      "多语种": [
+        {"name": "Tim", "voice_type": "en_male_tim_uranus_bigtts", "language": "美式英语"},
+        {"name": "Dacey", "voice_type": "en_female_dacey_uranus_bigtts", "language": "美式英语"},
+        {"name": "Stokie", "voice_type": "en_female_stokie_uranus_bigtts", "language": "美式英语"}
+      ]
+    }
+  },
+  
+  "tested_with_ima_api": {
+    "success": [
+      {"voice_type": "zh_male_sophie_uranus_bigtts", "name": "魅力苏菲 2.0", "tested_date": "2026-03-11"}
+    ],
+    "failed": [
+      {"format": "BV*_streaming", "reason": "豆包音色 ID 格式不被 IMA API 支持"}
+    ]
+  }
+}

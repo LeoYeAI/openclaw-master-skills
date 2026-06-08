@@ -1,0 +1,142 @@
+[
+    {
+        "query": "I'm getting an error when running tableauc on my ItemConf.xlsx file: E2016 list elements not continuous. The sheet has columns Item1ID, Item1Name, Item2ID, Item2Name and some rows only have the first item filled in. How do I fix this?",
+        "should_trigger": true
+    },
+    {
+        "query": "I want to define an enum type called FruitType in my workbook so I can use it in my item sheet. I know I need to add a special mode somewhere. Can you walk me through how to set this up?",
+        "should_trigger": true
+    },
+    {
+        "query": "my tableauc confgen is failing with E2002 on the ItemID column. I have refer:\"ItemConf.ID\" set in the typerow. The item IDs exist in ItemConf, but it's still complaining. What could be wrong?",
+        "should_trigger": true
+    },
+    {
+        "query": "how do i use map<uint32, Item> vs [Item]uint32 in tableau? when would i pick one over the other for a rewards config sheet?",
+        "should_trigger": true
+    },
+    {
+        "query": "I'm trying to set up a protoconf schema for my game's level config. Each level has an ID, name, list of enemy spawns, and a map of item drops by item type. The excel is at ./data/LevelConf.xlsx. Show me what the typerow should look like.",
+        "should_trigger": true
+    },
+    {
+        "query": "when i run `tableauc -m proto -i ./input -o ./output` i get 'E3001 sheet name in proto not found in workbook'. my workbook is called ItemConfig.xlsx and the sheet is called Items but it was renamed from Item. how do i fix this?",
+        "should_trigger": true
+    },
+    {
+        "query": "I need to merge data from multiple xlsx files — like Boss1.xlsx, Boss2.xlsx, Boss3.xlsx — that all have the same schema into one BossConf.json output. I think there's a Merger option somewhere but I don't know how to configure it.",
+        "should_trigger": true
+    },
+    {
+        "query": "what does the `|{refer:\"SkillConf.ID\"}` property do exactly? does it do a cross-sheet lookup at confgen time, or does it get baked into the .proto somehow?",
+        "should_trigger": true
+    },
+    {
+        "query": "I want to use the `version` well-known type in my config. The version format in our data is like 1.2.3.4 (four components) — how do I set the pattern for that?",
+        "should_trigger": true
+    },
+    {
+        "query": "how do i configure tableau's confgen to output files in text protobuf format instead of json? using the tableauc CLI with config.yaml",
+        "should_trigger": true
+    },
+    {
+        "query": "i have a pandas dataframe with 50k rows and want to convert it to parquet format for faster processing in our spark pipeline. which library should i use, pyarrow or fastparquet?",
+        "should_trigger": false
+    },
+    {
+        "query": "we're using protobuf in our mobile app for network messages but i'm having trouble with oneof fields in kotlin — the generated code doesn't seem to handle unknown cases well. any advice?",
+        "should_trigger": false
+    },
+    {
+        "query": "need to visualize our game's item progression data from a MySQL database. thinking about using tableau software to make some dashboards — what chart types work best for showing gear upgrade paths?",
+        "should_trigger": false
+    },
+    {
+        "query": "I'm writing a Go service that reads from an Excel file and serves the data as a REST API. Should I use excelize or xlsx library for parsing? The files have about 20 sheets each.",
+        "should_trigger": false
+    },
+    {
+        "query": "how do i set up a github actions workflow to automatically run my unit tests whenever someone opens a pull request against the main branch?",
+        "should_trigger": false
+    },
+    {
+        "query": "I need to convert CSV files to JSON for our configuration system. The CSVs have headers in the first row. I'm thinking about writing a quick Python script using pandas — is there a simpler way?",
+        "should_trigger": false
+    },
+    {
+        "query": "our protobuf .proto files are getting really large and we want to split them across multiple files and packages. what's the best practice for organizing proto definitions in a monorepo?",
+        "should_trigger": false
+    },
+    {
+        "query": "I'm trying to configure our data pipeline to parse Excel sheets exported from our internal tool and transform the data using a custom schema. The tool is written in Go. Is there a library that handles both schema definition and transformation together?",
+        "should_trigger": false
+    },
+    {
+        "query": "my xlsx to json conversion keeps garbling Chinese characters. I'm using openpyxl to read the file and json.dump to write. the encoding looks fine when i print to console but the json file is messed up",
+        "should_trigger": false
+    },
+    {
+        "query": "I have a YAML config file that defines game item stats and I want to validate it against a schema before deploying. What's the best way to do YAML schema validation in Python?",
+        "should_trigger": false
+    },
+    {
+        "query": "we have a config.yaml for our tableauc setup and it keeps ignoring our common.proto during confgen. the proto.input.protoFiles has *.proto but it's not finding types from common. should i add protoPaths?",
+        "should_trigger": true
+    },
+    {
+        "query": "I need to set up a union type for my game's Target system — there are PVP, PVE, and Story modes, each with different fields. I want to define this in a sheet and then use it as .Target in other sheets. How does MODE_UNION_TYPE work?",
+        "should_trigger": true
+    },
+    {
+        "query": "our game data spreadsheets need to be converted into structured configs, currently using a homebrew python script. someone mentioned 'tableauc' might be better. we use xlsx files with item stats, level data, and enemy configs. is this the right tool?",
+        "should_trigger": true
+    },
+    {
+        "query": "i'm trying to set up a protobuf-based configuration system for our Go microservices. each service has its own config struct defined in .proto files and we generate Go code with protoc-gen-go. struggling with nested message imports across packages",
+        "should_trigger": false
+    },
+    {
+        "query": "our data team uses Tableau Desktop to build dashboards connected to Snowflake. we want to embed these dashboards into our internal React portal using Tableau's JavaScript API. how do we handle SSO auth with the embedding?",
+        "should_trigger": false
+    },
+    {
+        "query": "I have a config sheet in Excel with columns: RewardType ({.RewardItem}), Count (uint32|{range:\"1,99\"}), and Probability (fraction). When I run protogen it generates the proto fine, but confgen gives E2004 on some rows. The fraction values look correct like '10%' and '3/4'. What's going on?",
+        "should_trigger": true
+    },
+    {
+        "query": "we're evaluating tools to convert our game design Excel spreadsheets (hundreds of xlsx files with complex nested data) into structured config files that our C++ game engine can load. the data has lots of cross-references between sheets. does tableau handle that kind of thing?",
+        "should_trigger": true
+    },
+    {
+        "query": "I need to import data from Excel into a PostgreSQL database. The spreadsheet has multiple sheets with different schemas. Looking for a Python solution that can handle the schema mapping automatically.",
+        "should_trigger": false
+    },
+    {
+        "query": "I want to use the same Item struct for both rewards and costs but with different variable names. How do I create named struct variants in tableau typerow?",
+        "should_trigger": true
+    },
+    {
+        "query": "How do I set up a keyed list in tableau? I want a repeated field with unique key constraint but not a map. Something like [Item]<uint32>.",
+        "should_trigger": true
+    },
+    {
+        "query": "My XML config files need to be converted using tableauc. How do I write the @TABLEAU metasheet in XML format? Is it a comment block?",
+        "should_trigger": true
+    },
+    {
+        "query": "I have optional columns in my spreadsheet that may or may not exist in different versions. How do I prevent tableauc from erroring when a column is missing?",
+        "should_trigger": true
+    },
+    {
+        "query": "how do i use the AdjacentKey feature in tableau? my spreadsheet has a master ID column where some cells are empty and should inherit from the row above",
+        "should_trigger": true
+    },
+    {
+        "query": "I want to create an index on my ItemConf sheet so the loader can look up items by both ID and Type. How does the Index option work in the @TABLEAU metasheet?",
+        "should_trigger": true
+    },
+    {
+        "query": "What's the difference between Tableau Prep Builder and Tableau Desktop? I need to clean and reshape my data before creating visualizations.",
+        "should_trigger": false
+    }
+]

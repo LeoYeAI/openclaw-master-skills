@@ -1,0 +1,18 @@
+{
+  "skill_id": "daily-briefing",
+  "display_name": "Daily Briefing",
+  "description": "Automated morning intelligence briefing with source management and feedback loop.",
+  "icon": "Sun",
+  "accent_color": "#14b8a6",
+  "sidebar": { "route": "/briefing", "label": "Briefing", "icon": "Sun", "children": [{"label":"Today's Brief","route":"/briefing"},{"label":"Archive","route":"/briefing/archive","icon":"Archive"},{"label":"Sources","route":"/briefing/sources","icon":"Rss"}] },
+  "database": { "prefix": "dbr", "tables": [
+    { "name": "dbr_briefings", "description": "Daily briefing documents", "columns": [{"name":"id","type":"UUID","primary_key":true},{"name":"user_id","type":"UUID","references":"auth.users(id)"},{"name":"date","type":"DATE"},{"name":"executive_summary","type":"TEXT"},{"name":"stories_count","type":"INTEGER","default":0},{"name":"raw_markdown","type":"TEXT"},{"name":"delivered","type":"BOOLEAN","default":false},{"name":"created_at","type":"TIMESTAMPTZ"}], "indexes": [{"name":"idx_dbr_briefings_user_date","columns":["user_id","date DESC"]}] },
+    { "name": "dbr_stories", "description": "Individual stories within briefings", "columns": [{"name":"id","type":"UUID","primary_key":true},{"name":"briefing_id","type":"UUID","references":"dbr_briefings(id)"},{"name":"topic","type":"TEXT"},{"name":"headline","type":"TEXT"},{"name":"synthesis","type":"TEXT"},{"name":"sources","type":"JSONB","default":"[]"},{"name":"importance","type":"INTEGER","default":5},{"name":"sort_order","type":"INTEGER","default":0}], "indexes": [{"name":"idx_dbr_stories_briefing","columns":["briefing_id"]}] },
+    { "name": "dbr_sources", "description": "News sources configuration", "columns": [{"name":"id","type":"UUID","primary_key":true},{"name":"user_id","type":"UUID","references":"auth.users(id)"},{"name":"name","type":"TEXT"},{"name":"url","type":"TEXT"},{"name":"type","type":"TEXT"},{"name":"topic","type":"TEXT"},{"name":"reliability_score","type":"NUMERIC(3,2)","default":1.0},{"name":"is_active","type":"BOOLEAN","default":true},{"name":"created_at","type":"TIMESTAMPTZ"},{"name":"updated_at","type":"TIMESTAMPTZ"}], "indexes": [{"name":"idx_dbr_sources_user","columns":["user_id","is_active"]}] },
+    { "name": "dbr_feedback", "description": "Briefing quality feedback", "columns": [{"name":"id","type":"UUID","primary_key":true},{"name":"user_id","type":"UUID"},{"name":"briefing_id","type":"UUID"},{"name":"date","type":"DATE"},{"name":"type","type":"TEXT"},{"name":"comment","type":"TEXT"},{"name":"created_at","type":"TIMESTAMPTZ"}], "indexes": [] },
+    { "name": "dbr_source_fetch_log", "description": "Source fetch audit log", "columns": [{"name":"id","type":"UUID","primary_key":true},{"name":"source_id","type":"UUID","references":"dbr_sources(id)"},{"name":"fetched_at","type":"TIMESTAMPTZ"},{"name":"success","type":"BOOLEAN"},{"name":"items_found","type":"INTEGER","default":0},{"name":"error_message","type":"TEXT"}], "indexes": [{"name":"idx_dbr_source_fetch_log_source","columns":["source_id","fetched_at DESC"]}] }
+  ] },
+  "widgets": [{ "id": "briefing-status", "type": "stat", "title": "Today's Briefing", "description": "Briefing delivery status", "size": "1x1" }],
+  "settings": [{ "key": "delivery_time", "label": "Delivery Time", "type": "text", "default": "06:00" },{ "key": "topics", "label": "Focus Topics", "type": "text", "default": "" }],
+  "sync": { "mode": "webhook", "source_files": [] }
+}

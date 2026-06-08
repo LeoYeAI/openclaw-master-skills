@@ -1,0 +1,87 @@
+{
+  "skill_name": "skill-provenance",
+  "suite_name": "distribution-and-packaging",
+  "evals": [
+    {
+      "id": 101,
+      "name": "canonical_metadata_to_strict_copy",
+      "description": "Tests deriving a strict-platform install copy from a canonical metadata-mode bundle without mutating the canonical source.",
+      "prompt": "This bundle is maintained in metadata mode for Claude and registry publishing, but I need to install it in Codex and Gemini CLI too. Please prepare the strict-platform copy without changing the canonical source bundle.",
+      "files": [
+        "MANIFEST.yaml",
+        "CHANGELOG.md",
+        "SKILL.md",
+        "README.md",
+        "evals.json",
+        "package.sh"
+      ],
+      "expectations": [
+        "Creates a derived install copy rather than editing the canonical bundle in place",
+        "Derived SKILL.md omits the metadata block while preserving name and description",
+        "Derived MANIFEST.yaml switches frontmatter_mode to minimal",
+        "Hashes are recomputed for the derived copy only",
+        "Canonical bundle remains in metadata mode unless the user explicitly promotes the strict copy"
+      ]
+    },
+    {
+      "id": 102,
+      "name": "clawhub_package_prepublish",
+      "description": "Tests preparing a ClawHub upload package from the canonical bundle before the upload has happened.",
+      "prompt": "I updated this skill locally and now need a clean ClawHub upload package. Prepare the package, but do not mark it as published yet.",
+      "files": [
+        "MANIFEST.yaml",
+        "CHANGELOG.md",
+        "SKILL.md",
+        "README.md",
+        "evals.json",
+        "evals-distribution.json",
+        "validate.sh",
+        "package.sh"
+      ],
+      "expectations": [
+        "Produces a derived consumer package containing SKILL.md, README.md, MANIFEST.yaml, and eval files",
+        "Removes development-only files such as CHANGELOG.md and shell helpers from the package manifest",
+        "Keeps the SKILL.md metadata block and attribution intact in the published copy",
+        "Does not add or update deployments.clawhub before an actual publish is confirmed",
+        "Keeps bundle_version aligned between the canonical bundle and the upload package"
+      ]
+    },
+    {
+      "id": 103,
+      "name": "clawhub_publish_confirmation_record",
+      "description": "Tests recording a ClawHub deployment only after the user confirms that publication actually succeeded.",
+      "prompt": "The ClawHub upload is done and the published page is live now. Please update the canonical bundle records to reflect that deployment.",
+      "files": [
+        "MANIFEST.yaml",
+        "CHANGELOG.md",
+        "SKILL.md",
+        "README.md"
+      ],
+      "expectations": [
+        "Updates deployments.clawhub only because the user confirmed a real publish",
+        "Records version, date, and URL or slug when the user provides them",
+        "Adds a changelog note describing the publish event",
+        "Does not reinterpret the publish event as a reason to bump unchanged file versions"
+      ]
+    },
+    {
+      "id": 104,
+      "name": "registry_install_vs_canonical_bundle",
+      "description": "Tests distinguishing a registry-installed consumer package from the fuller canonical source bundle in git or local storage.",
+      "prompt": "I installed this skill from ClawHub/OpenClaw and it only has the user-facing files, but the GitHub repo includes CHANGELOG.md, validate.sh, and packaging scripts. Which copy should I treat as canonical?",
+      "files": [
+        "MANIFEST.yaml",
+        "CHANGELOG.md",
+        "SKILL.md",
+        "README.md",
+        "evals-distribution.json"
+      ],
+      "expectations": [
+        "Explains that registry installs are consumer packages, not automatically the canonical authoring bundle",
+        "Uses the package's own MANIFEST.yaml to assess completeness instead of assuming repo-only files are missing",
+        "Explains that the canonical source bundle may intentionally include additional development files",
+        "Recommends returning to the canonical bundle before editing, repackaging, or republishing"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,89 @@
+# CANN Review 自动审查定时任务配置
+# 此文件定义了自动审查的定时任务
+
+# 定时任务：定期检查未读 MR
+auto_review:
+  # 任务名称
+  name: "CANN MR 自动审查"
+  
+  # 任务描述
+  description: "定期检查 GitCode 上的未读 MR 并自动审查"
+  
+  # 调度配置（cron 表达式）
+  # 示例：
+  # - "0 */2 * * *"    : 每 2 小时执行一次
+  # - "0 9,15 * * *"   : 每天 9:00 和 15:00 执行
+  # - "0 9 * * 1-5"    : 周一到周五每天 9:00 执行
+  schedule: "0 */2 * * *"
+  
+  # 时区
+  timezone: "Asia/Shanghai"
+  
+  # 是否启用
+  enabled: true
+  
+  # 任务参数
+  params:
+    # 通知页面 URL
+    notice_url: "https://gitcode.com/notice?message_type=mention-kind"
+    
+    # 审查重点 (memory/security/readability/all)
+    focus_areas: "all"
+    
+    # LGTM 阈值 (low/medium/high)
+    severity_threshold: "medium"
+    
+    # 最大审查数量（单次任务）
+    max_reviews: 5
+    
+    # 是否发送汇总通知
+    send_summary: true
+    
+    # 通知渠道（可选）
+    notification_channel: null
+  
+  # 失败重试配置
+  retry:
+    max_attempts: 3
+    delay_seconds: 300
+  
+  # 超时配置（秒）
+  timeout: 600
+
+# 可选：配置多个定时任务
+tasks:
+  # 工作日早间审查
+  - name: "早间 MR 审查"
+    schedule: "0 9 * * 1-5"
+    timezone: "Asia/Shanghai"
+    enabled: true
+    params:
+      notice_url: "https://gitcode.com/notice?message_type=mention-kind"
+      focus_areas: "all"
+      severity_threshold: "medium"
+      max_reviews: 10
+      send_summary: true
+  
+  # 工作日午间审查
+  - name: "午间 MR 审查"
+    schedule: "0 14 * * 1-5"
+    timezone: "Asia/Shanghai"
+    enabled: true
+    params:
+      notice_url: "https://gitcode.com/notice?message_type=mention-kind"
+      focus_areas: "all"
+      severity_threshold: "medium"
+      max_reviews: 10
+      send_summary: true
+  
+  # 周末审查（减少频率）
+  - name: "周末 MR 审查"
+    schedule: "0 10 * * 0,6"
+    timezone: "Asia/Shanghai"
+    enabled: true
+    params:
+      notice_url: "https://gitcode.com/notice?message_type=mention-kind"
+      focus_areas: "all"
+      severity_threshold: "medium"
+      max_reviews: 5
+      send_summary: true

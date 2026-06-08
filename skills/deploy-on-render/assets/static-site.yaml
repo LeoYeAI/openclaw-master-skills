@@ -1,0 +1,19 @@
+# Static site (React/Vue/Gatsby/Vite)
+# SPA with client-side routing; set staticPublishPath to your build output
+
+services:
+  - type: web
+    name: my-static-app
+    runtime: static
+    plan: free
+    branch: main
+    autoDeploy: true
+    buildCommand: npm ci && npm run build
+    staticPublishPath: ./build  # or ./dist for Vite, ./public for Gatsby
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
+    envVars:
+      - key: REACT_APP_API_URL
+        value: https://api.example.com

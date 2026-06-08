@@ -1,0 +1,96 @@
+bundle: skill-provenance
+bundle_version: 4.7.2
+bundle_date: 2026-03-09
+description: >
+  Metaskill for version tracking across Agent Skills sessions, surfaces,
+  and platforms. Manifest, changelog, deployment notes, and portable
+  internal version markers prevent version confusion during iterative
+  skill development and cross-surface deployment.
+
+compatibility:
+  designed_for:
+    surfaces:
+      - chat
+      - cli
+      - ide
+      - api
+    capabilities:
+      - metadata or minimal SKILL.md frontmatter
+      - local filesystem access
+      - optional git workflow
+      - deployment drift tracking
+      - hash-based audit trail
+      - derived install and publish package generation
+  tested_on:
+    - platform: Anthropic Claude
+      model: Claude Opus 4.6
+      surface: Chat
+      status: pass
+      date: 2026-02-10
+      notes: Full bootstrap and round-trip validated with .skill ZIP
+    - platform: Anthropic Claude
+      model: Claude Opus 4.6
+      surface: Code
+      status: pass
+      date: 2026-02-28
+      notes: Full session protocol, validate.sh, git commit workflow
+    - platform: Anthropic Claude
+      model: Claude Opus 4.6
+      surface: Cowork
+      status: pass
+      date: 2026-02-28
+      notes: Filesystem persistence, manifest verification
+    - platform: OpenAI Codex
+      model: N/A
+      surface: CLI
+      status: pass
+      date: 2026-02-27
+      notes: Minimal frontmatter mode, local editing workflow
+    - platform: Google Gemini CLI
+      model: Gemini 2.5 Pro
+      surface: CLI
+      status: partial
+      date: 2026-02-27
+      notes: Skill loading and bootstrap work. Gems workflow untested.
+    - platform: Perplexity Computer
+      model: N/A
+      surface: Computer
+      status: partial
+      date: 2026-03-07
+      notes: .zip upload path works. Trigger-oriented description improves discovery.
+  compatible_with:
+    - Claude API (/v1/skills)
+    - Claude Agent SDK
+    - GitHub Copilot / VS Code
+    - Cursor
+    - Any agentskills.io-compatible agent (30+ adopters)
+  spec_version: agentskills.io/1.0
+  frontmatter_mode: metadata
+
+dependencies: []
+
+files:
+  - path: SKILL.md
+    role: skill
+    version: 13
+    hash: sha256:2c5d5aa6278b986a945369b6c099a496aeb4de3649bd48ce37a524158df17c61
+    note: Canonical skill definition. Version tracked in MANIFEST.yaml; canonical bundle ships in metadata mode
+
+  - path: README.md
+    role: reference
+    version: 17
+    hash: sha256:4cb266136b18958d9016c238f06c18c61375a31a9f457392317f8a97aa3d9fb0
+    note: Human-facing instructions, worked example, three-state bundle model, local validation, packaging, troubleshooting, references
+
+  - path: evals.json
+    role: evals
+    version: 9
+    hash: sha256:ae0820d58bcb1fd4c2ec511601a7a00ccf52e43f7eb3845cb799ea1967778cae
+    note: 22 evals covering bootstrap, verify, save, conflict, optional handoff, cross-platform, frontmatter mode, compatibility block, Gemini CLI, Gemini Gems, git commit messaging, per-file handoff, local validation, API surface, dependencies, deployment drift, multi-surface installs, trust checks, redeploy events, deployment conflicts, hash mismatches, packaged subsets
+
+  - path: evals-distribution.json
+    role: evals
+    version: 1
+    hash: sha256:b866c0b9fec3d0df6fc61724bd8ef1406a31e312bf25505713c0186a6b3fb148
+    note: 4 supplemental evals covering strict-platform copies, ClawHub package preparation, publish confirmation, and registry installs versus canonical bundles
+

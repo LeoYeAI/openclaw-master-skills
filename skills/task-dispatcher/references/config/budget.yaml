@@ -1,0 +1,386 @@
+# =============================================================================
+# Task-Dispatcher Configuration: budget.yaml
+# =============================================================================
+# 成本/时间预算配置 - 定义任务预算、防死循环和警告阈值
+# =============================================================================
+
+# =============================================================================
+# 全局预算配置
+# =============================================================================
+global:
+  enabled: true
+  budget_check_enabled: true
+  enforcement_mode: "soft"  # soft=警告, hard=阻止
+  
+  # 模型成本基准（单位：每 1K tokens）
+  model_costs:
+    # MiniMax
+    "minimax-cn/MiniMax-M2.5":
+      input: 0.001
+      output: 0.003
+      
+    # Claude
+    "claude-sonnet-4-20250514":
+      input: 0.015
+      output: 0.075
+      
+    # OpenAI
+    "openai/gpt-4o":
+      input: 0.005
+      output: 0.015
+      
+    # Gemini
+    "gemini-2.5-pro-preview-06-05":
+      input: 0.00125
+      output: 0.005
+      
+    # 默认
+    default:
+      input: 0.01
+      output: 0.03
+
+  # 时间基准
+  time_costs:
+    hourly_rate: 0.50  # 每小时时间成本（USD）
+
+# =============================================================================
+# 按任务类型的预算阈值
+# =============================================================================
+task_budgets:
+  # ---------------------------------------------------------------------------
+  # 代码审查任务
+  # ---------------------------------------------------------------------------
+  code_review:
+    tokens:
+      max_input: 50000
+      max_output: 30000
+      max_total: 80000
+      
+    time:
+      max_minutes: 30
+      warn_minutes: 20
+      
+    cost:
+      max_usd: 1.00
+      warn_usd: 0.70
+
+  # ---------------------------------------------------------------------------
+  # Bug 修复
+  # ---------------------------------------------------------------------------
+  bug_fix:
+    tokens:
+      max_input: 50000
+      max_output: 30000
+      max_total: 80000
+      
+    time:
+      max_minutes: 20
+      warn_minutes: 15
+      
+    cost:
+      max_usd: 0.60
+      warn_usd: 0.45
+
+  # ---------------------------------------------------------------------------
+  # 新功能开发
+  # ---------------------------------------------------------------------------
+  new_feature:
+    tokens:
+      max_input: 50000
+      max_output: 30000
+      max_total: 80000
+      
+    time:
+      max_minutes: 60
+      warn_minutes: 45
+      
+    cost:
+      max_usd: 2.00
+      warn_usd: 1.50
+
+  # ---------------------------------------------------------------------------
+  # 架构设计
+  # ---------------------------------------------------------------------------
+  architecture_design:
+    tokens:
+      max_input: 50000
+      max_output: 30000
+      max_total: 80000
+      
+    time:
+      max_minutes: 45
+      warn_minutes: 35
+      
+    cost:
+      max_usd: 1.50
+      warn_usd: 1.00
+
+  # ---------------------------------------------------------------------------
+  # 调研任务
+  # ---------------------------------------------------------------------------
+  research:
+    tokens:
+      max_input: 50000
+      max_output: 30000
+      max_total: 80000
+      
+    time:
+      max_minutes: 30
+      warn_minutes: 20
+      
+    cost:
+      max_usd: 0.80
+      warn_usd: 0.50
+
+  # ---------------------------------------------------------------------------
+  # 文档任务
+  # ---------------------------------------------------------------------------
+  documentation:
+    tokens:
+      max_input: 50000
+      max_output: 30000
+      max_total: 80000
+      
+    time:
+      max_minutes: 15
+      warn_minutes: 10
+      
+    cost:
+      max_usd: 0.40
+      warn_usd: 0.25
+
+  # ---------------------------------------------------------------------------
+  # 通用任务
+  # ---------------------------------------------------------------------------
+  general:
+    tokens:
+      max_input: 50000
+      max_output: 30000
+      max_total: 80000
+      
+    time:
+      max_minutes: 20
+      warn_minutes: 15
+      
+    cost:
+      max_usd: 0.50
+      warn_usd: 0.35
+
+# =============================================================================
+# 防死循环配置
+# =============================================================================
+deadloop_prevention:
+  enabled: true
+  
+  # ---------------------------------------------------------------------------
+  # 检测规则
+  # ---------------------------------------------------------------------------
+  detection:
+    # 同一任务的重复执行
+    same_task_repeats:
+      threshold: 3
+      time_window_minutes: 30
+      
+    # 循环模式检测
+    loop_patterns:
+      - pattern: ".*retry.*"
+        max_consecutive: 2
+        
+      - pattern: ".*recurse.*"
+        max_depth: 5
+        
+    # 无进展检测（输出相似）
+    no_progress:
+      similarity_threshold: 0.95
+      consecutive_threshold: 3
+      
+    # 资源消耗异常
+    resource_anomaly:
+      token_growth_rate: 1.5  # 每轮增长 50%
+      time_growth_rate: 1.3   # 每轮增长 30%
+
+  # ---------------------------------------------------------------------------
+  # 保护措施
+  # ------------------------------------------------------------------------===
+  protection:
+    # 自动中断
+    auto_abort:
+      enabled: true
+      conditions:
+        - "same_task_repeats > threshold"
+        - "loop_pattern_detected"
+        - "no_progress > consecutive_threshold"
+      action: "abort"
+      notify: true
+      
+    # 强制降级
+    force_downgrade:
+      enabled: true
+      triggers:
+        - "token_usage > 80% budget"
+        - "time_usage > 80% budget"
+      action: "switch_to_simple_pipeline"
+      
+    # 人工干预
+    human_intervention:
+      enabled: true
+      triggers:
+        - "auto_abort_triggered"
+        - "cost_exceeds_threshold"
+      require_approval: true
+
+  # ---------------------------------------------------------------------------
+  # 恢复策略
+  # ------------------------------------------------------------------------===
+  recovery:
+    # 回退检查点
+    rollback:
+      enabled: true
+      checkpoint_interval: 5  # 每 5 轮保存检查点
+      
+    # 任务拆分
+    task_split:
+      enabled: true
+      min_subtask_tokens: 5000
+      max_subtasks: 10
+      
+    # 错误重试策略
+    retry_strategy:
+      max_retries: 2
+      backoff_multiplier: 2
+      max_backoff_seconds: 60
+
+# =============================================================================
+# 预算警告阈值
+# =============================================================================
+warning_thresholds:
+  # ---------------------------------------------------------------------------
+  # 令牌使用警告
+  # ---------------------------------------------------------------------------
+  tokens:
+    # 警告级别
+    warn_percent: 80      # 80% 时警告
+    critical_percent: 95  # 95% 时严重警告
+    
+    # 上下文窗口警告
+    context_warning_percent: 75  # 上下文使用 75% 时警告
+    
+  # ---------------------------------------------------------------------------
+  # 时间使用警告
+  # ---------------------------------------------------------------------------
+  time:
+    warn_percent: 75
+    critical_percent: 90
+    
+  # ---------------------------------------------------------------------------
+  # 成本警告
+  # ---------------------------------------------------------------------------
+  cost:
+    warn_percent: 80
+    critical_percent: 95
+    
+    # 每日预算
+    daily_budget_usd: 10.00
+    weekly_budget_usd: 50.00
+    monthly_budget_usd: 200.00
+
+  # ---------------------------------------------------------------------------
+  # 任务队列警告
+  # ---------------------------------------------------------------------------
+  queue:
+    max_pending_tasks: 20
+    warn_pending_tasks: 15
+    
+    max_wait_time_minutes: 30
+    warn_wait_time_minutes: 20
+
+# =============================================================================
+# 预算通知配置
+# =============================================================================
+notifications:
+  enabled: true
+  
+  # 通知渠道
+  channels:
+    - type: "console"
+      enabled: true
+      
+    - type: "log"
+      enabled: true
+      log_file: "budget_logs.txt"
+      
+    # 可选：Slack/Email（需要配置）
+    # - type: "slack"
+    #   enabled: false
+    # - type: "email"
+    #   enabled: false
+
+  # 通知事件
+  events:
+    # 预算警告
+    - event: "token_warning"
+      threshold: 80
+      message: "Token 使用达到 {percent}%"
+      
+    - event: "token_critical"
+      threshold: 95
+      message: "Token 使用达到 {percent}%，即将耗尽"
+      
+    - event: "time_warning"
+      threshold: 75
+      message: "时间使用达到 {percent}%"
+      
+    - event: "cost_warning"
+      threshold: 80
+      message: "成本达到 ${usd}"
+      
+    # 死循环警告
+    - event: "deadloop_detected"
+      message: "检测到可能的死循环，已自动中止"
+      
+    - event: "no_progress"
+      message: "任务无进展，已重试 {count} 次"
+      
+    # 预算超限
+    - event: "budget_exceeded"
+      message: "任务预算已超限"
+      action: "abort_task"
+
+# =============================================================================
+# 预算报告
+# =============================================================================
+reporting:
+  enabled: true
+  
+  # 报告频率
+  frequency: "daily"  # hourly, daily, weekly
+  
+  # 报告内容
+  include:
+    - "token_usage_by_task"
+    - "cost_by_agent"
+    - "time_usage_stats"
+    - "budget_utilization"
+    - "deadloop_events"
+    
+  # 存储
+  storage:
+    retention_days: 30
+    format: "json"
+    
+# =============================================================================
+# 紧急情况配置
+# =============================================================================
+emergency:
+  # 紧急预算（需要特殊授权）
+  emergency_budget:
+    enabled: false
+    max_tokens: 200000
+    max_usd: 5.00
+    require_role: "admin"
+    
+  # 预算耗尽处理
+  budget_exhausted:
+    action: "queue_task"
+    notify: true
+    allow_emergency: true

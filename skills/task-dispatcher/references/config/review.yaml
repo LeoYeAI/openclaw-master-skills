@@ -1,0 +1,298 @@
+# =============================================================================
+# Task-Dispatcher Configuration: review.yaml
+# =============================================================================
+# 审核模式配置 - 定义任务审核维度、汇总规则和冲突解决策略
+# =============================================================================
+
+# =============================================================================
+# 审核模式定义
+# =============================================================================
+review_modes:
+  # ---------------------------------------------------------------------------
+  # 自动审核 - 低风险任务
+  # ---------------------------------------------------------------------------
+  auto:
+    enabled: true
+    description: "自动通过，无需人工审核"
+    triggers:
+      - type: "complexity"
+        max: 3
+      - type: "task_type"
+        allowed: ["documentation", "refactoring", "test"]
+      - type: "file_count"
+        max: 5
+    actions:
+      - "log"
+      - "proceed"
+
+  # ---------------------------------------------------------------------------
+  # 标准审核 - 中等风险任务
+  # ---------------------------------------------------------------------------
+  standard:
+    enabled: true
+    description: "标准审核流程"
+    triggers:
+      - type: "complexity"
+        min: 4
+        max: 6
+      - type: "task_type"
+        allowed: ["bug_fix", "new_feature", "code_review"]
+    reviewers:
+      min_count: 1
+      required_roles: ["reviewer"]
+    actions:
+      - "notify_reviewer"
+      - "wait_for_approval"
+      - "escalate_on_timeout"
+    timeout_minutes: 30
+
+  # ---------------------------------------------------------------------------
+  # 严格审核 - 高风险任务
+  # ---------------------------------------------------------------------------
+  strict:
+    enabled: true
+    description: "多层级审核"
+    triggers:
+      - type: "complexity"
+        min: 7
+      - type: "task_type"
+        allowed: ["architecture_design", "security_change", "production_deploy"]
+      - type: "risk_level"
+        allowed: ["high", "critical"]
+    reviewers:
+      min_count: 2
+      required_roles: ["reviewer", "architect"]
+      rotation: true  # 轮换审阅者
+    actions:
+      - "notify_reviewer"
+      - "notify_architect"
+      - "require_multiple_approvals"
+      - "block_on_reject"
+    timeout_minutes: 60
+    
+  # ---------------------------------------------------------------------------
+  # 免审核 - 特殊任务
+  # ---------------------------------------------------------------------------
+  bypass:
+    enabled: false  # 默认关闭，需要显式启用
+    description: "跳过审核流程（危险）"
+    triggers:
+      - type: "emergency"
+        require_tag: true
+      - type: "trusted_agent"
+        agents: ["system", "automation"]
+    actions:
+      - "log_bypass_reason"
+      - "notify_admin"
+
+# =============================================================================
+# 审核维度定义
+# =============================================================================
+review_dimensions:
+  # ---------------------------------------------------------------------------
+  # 代码质量维度
+  # ---------------------------------------------------------------------------
+  code_quality:
+    enabled: true
+    weight: 0.3
+    criteria:
+      - name: "code_style"
+        description: "代码风格一致性"
+        checkers:
+          - "lint"
+          - "format"
+          
+      - name: "complexity"
+        description: "圈复杂度、嵌套深度"
+        thresholds:
+          max_cyclomatic: 10
+          max_nesting: 4
+          
+      - name: "duplication"
+        description: "代码重复度"
+        thresholds:
+          max_duplication_percent: 5
+
+  # ---------------------------------------------------------------------------
+  # 安全维度
+  # ---------------------------------------------------------------------------
+  security:
+    enabled: true
+    weight: 0.3
+    criteria:
+      - name: "vulnerability_scan"
+        description: "漏洞扫描"
+        tools:
+          - "semgrep"
+          - "bandit"
+          
+      - name: "secret_detection"
+        description: "敏感信息检测"
+        patterns:
+          - "api_key"
+          - "password"
+          - "token"
+          - "private_key"
+          
+      - name: "dependency_audit"
+        description: "依赖安全审计"
+        tools:
+          - "npm audit"
+          - "safety"
+
+  # ---------------------------------------------------------------------------
+  # 性能维度
+  # ---------------------------------------------------------------------------
+  performance:
+    enabled: true
+    weight: 0.2
+    criteria:
+      - name: "algorithm_complexity"
+        description: "算法复杂度检查"
+        thresholds:
+          max_time_complexity: "O(n²)"
+          max_space_complexity: "O(n)"
+          
+      - name: "database_queries"
+        description: "数据库查询效率"
+        checks:
+          - "n+1 查询检测"
+          - "索引使用检查"
+
+  # ---------------------------------------------------------------------------
+  # 可维护性维度
+  # ---------------------------------------------------------------------------
+  maintainability:
+    enabled: true
+    weight: 0.2
+    criteria:
+      - name: "documentation"
+        description: "文档完整性"
+        required_docs:
+          - "README"
+          - "API docs (if public API)"
+          
+      - name: "test_coverage"
+        description: "测试覆盖率"
+        thresholds:
+          min_coverage_percent: 80
+          
+      - name: "naming_conventions"
+        description: "命名规范"
+
+# =============================================================================
+# 审核汇总规则
+# =============================================================================
+aggregation_rules:
+  # 评分权重
+  weights:
+    code_quality: 0.3
+    security: 0.3
+    performance: 0.2
+    maintainability: 0.2
+
+  # 通过条件
+  pass_conditions:
+    overall_score: 70  # 综合分数 >= 70
+    
+    # 各维度最低分数
+    dimension_min_scores:
+      code_quality: 60
+      security: 80  # 安全必须更高
+      performance: 60
+      maintainability: 50
+
+    # 必须通过的维度（即使总分够）
+    required_passes:
+      - "security"  # 安全必须通过
+
+  # 汇总输出格式
+  output:
+    format: "json"
+    include_details: true
+    include_suggestions: true
+
+# =============================================================================
+# 冲突解决策略
+# =============================================================================
+conflict_resolution:
+  # 审核人意见不一致
+  reviewer_disagreement:
+    strategies:
+      - name: "majority_vote"
+        description: "多数投票"
+        enabled: true
+        min_reviewers: 2
+        
+      - name: "senior_reviewer_wins"
+        description: "高级审阅者决定"
+        enabled: true
+        role_hierarchy: ["architect", "senior_reviewer", "reviewer"]
+        
+      - name: "automatic_escalation"
+        description: "自动升级"
+        enabled: true
+        triggers:
+          - "score_diff > 30"
+          - "any_reject_with_high_confidence"
+        escalate_to: "architect"
+
+  # 审核与实际不符
+  review_vs_implementation:
+    strategies:
+      - name: "request_re_evaluation"
+        description: "请求重新评估"
+        enabled: true
+        
+      - name: "block_deployment"
+        description: "阻止部署"
+        enabled: true
+        blocks:
+          - "production_deploy"
+          
+      - name: "notify_team_lead"
+        description: "通知团队负责人"
+        enabled: true
+
+  # 自动化与人工审核冲突
+  auto_vs_manual:
+    strategies:
+      - name: "favor_manual"
+        description: "优先人工审核"
+        enabled: true
+        
+      - name: "require_justification"
+        description: "需要说明理由"
+        enabled: true
+        when: "manual_overrides_auto"
+
+  # 超时处理
+  timeout_handling:
+    default_action: "escalate"
+    escalate_after_minutes: 30
+    escalation_target: "team_lead"
+
+# =============================================================================
+# 审核通知配置
+# =============================================================================
+notifications:
+  enabled: true
+  
+  channels:
+    - type: "slack"
+      enabled: false
+      webhook_url: "${SLACK_WEBHOOK_URL}"
+      
+    - type: "email"
+      enabled: false
+      recipients: ["team@example.com"]
+      
+    - type: "console"
+      enabled: true
+  
+  events:
+    - "review_requested"
+    - "review_completed"
+    - "review_approved"
+    - "review_rejected"
+    - "review_escalated"

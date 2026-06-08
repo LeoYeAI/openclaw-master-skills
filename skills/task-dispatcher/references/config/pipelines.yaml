@@ -1,0 +1,327 @@
+# =============================================================================
+# Task-Dispatcher Configuration: pipelines.yaml
+# =============================================================================
+# 管道配置 - 定义预定义管道和管道阶段
+# =============================================================================
+
+# =============================================================================
+# 全局管道配置
+# =============================================================================
+global:
+  max_parallel_stages: 3        # 最大并行阶段数
+  default_timeout: 300          # 默认超时（秒）
+  retry_on_failure: true        # 失败时重试
+  max_retries: 2                # 最大重试次数
+  continue_on_stage_failure: false  # 阶段失败时是否继续
+  log_level: "info"             # 日志级别
+
+# =============================================================================
+# 预定义管道
+# =============================================================================
+pipelines:
+  # ---------------------------------------------------------------------------
+  # 简单管道 - 简单任务
+  # ---------------------------------------------------------------------------
+  simple:
+    name: "Simple Pipeline"
+    description: "适用于简单、低风险任务"
+    complexity_range: [1, 3]
+    
+    stages:
+      - id: "execute"
+        name: "Task Execution"
+        agent: "coder"
+        timeout: 120
+        retry: 1
+        
+      - id: "validate"
+        name: "Basic Validation"
+        type: "validation"
+        checks:
+          - "syntax_check"
+          - "format_check"
+        timeout: 30
+        
+      - id: "complete"
+        name: "Completion"
+        type: "finalize"
+        
+    on_complete:
+      - "notify_user"
+      - "log_metrics"
+
+  # ---------------------------------------------------------------------------
+  # 标准管道 - 一般任务
+  # ---------------------------------------------------------------------------
+  standard:
+    name: "Standard Pipeline"
+    description: "适用于中等复杂度任务"
+    complexity_range: [4, 6]
+    
+    stages:
+      - id: "analyze"
+        name: "Task Analysis"
+        agent: "coder"
+        timeout: 60
+        output:
+          - "task_breakdown"
+          - "complexity_score"
+          
+      - id: "execute"
+        name: "Main Execution"
+        agent_selection: "dynamic"  # 动态选择 Agent
+        timeout: 300
+        retry: 2
+        
+      - id: "review"
+        name: "Code Review"
+        agent: "reviewer"
+        timeout: 180
+        review_mode: "standard"
+        
+      - id: "test"
+        name: "Testing"
+        agent: "tester"
+        timeout: 120
+        checks:
+          - "unit_tests"
+          - "integration_tests"
+          
+      - id: "validate"
+        name: "Validation"
+        type: "validation"
+        checks:
+          - "quality_gate"
+          - "security_scan"
+          
+      - id: "complete"
+        name: "Completion"
+        type: "finalize"
+        
+    on_complete:
+      - "notify_user"
+      - "log_metrics"
+      - "archive_artifacts"
+
+  # ---------------------------------------------------------------------------
+  # 复杂管道 - 高风险/高复杂度任务
+  # ---------------------------------------------------------------------------
+  complex:
+    name: "Complex Pipeline"
+    description: "适用于高复杂度、高风险任务"
+    complexity_range: [7, 10]
+    
+    stages:
+      - id: "analyze"
+        name: "Deep Analysis"
+        agent: "architect"
+        timeout: 120
+        output:
+          - "architecture_design"
+          - "risk_assessment"
+          - "implementation_plan"
+          
+      - id: "design_review"
+        name: "Design Review"
+        type: "review"
+        review_mode: "strict"
+        requires_approval: true
+        
+      - id: "execute"
+        name: "Main Execution"
+        agent_selection: "dynamic"
+        timeout: 600
+        retry: 3
+        
+      - id: "parallel_review"
+        name: "Parallel Reviews"
+        type: "parallel"
+        branches:
+          - id: "code_review"
+            name: "Code Quality Review"
+            agent: "reviewer"
+            timeout: 180
+            
+          - id: "security_review"
+            name: "Security Review"
+            agent: "reviewer"
+            timeout: 180
+            config:
+              focus: "security"
+              
+          - id: "performance_review"
+            name: "Performance Review"
+            agent: "reviewer"
+            timeout: 120
+            config:
+              focus: "performance"
+              
+      - id: "aggregate_reviews"
+        name: "Aggregate Reviews"
+        type: "aggregation"
+        inputs:
+          - "parallel_review.code_review"
+          - "parallel_review.security_review"
+          - "parallel_review.performance_review"
+          
+      - id: "test"
+        name: "Comprehensive Testing"
+        agent: "tester"
+        timeout: 300
+        checks:
+          - "unit_tests"
+          - "integration_tests"
+          - "e2e_tests"
+          - "performance_tests"
+          
+      - id: "validate"
+        name: "Full Validation"
+        type: "validation"
+        checks:
+          - "quality_gate"
+          - "security_scan"
+          - "performance_benchmark"
+          - "documentation_check"
+          
+      - id: "complete"
+        name: "Completion"
+        type: "finalize"
+        requires_approval: true
+        
+    on_complete:
+      - "notify_user"
+      - "log_metrics"
+      - "archive_artifacts"
+      - "generate_report"
+
+# =============================================================================
+# 管道阶段类型定义
+# =============================================================================
+stage_types:
+  # ---------------------------------------------------------------------------
+  # Agent 执行阶段
+  # ---------------------------------------------------------------------------
+  agent:
+    properties:
+      - name: "agent"
+        type: "string"
+        required: true
+        description: "Agent 名称"
+        
+      - name: "agent_selection"
+        type: "string"
+        enum: ["static", "dynamic"]
+        default: "static"
+        
+      - name: "timeout"
+        type: "integer"
+        default: 300
+        
+      - name: "retry"
+        type: "integer"
+        default: 0
+
+  # ---------------------------------------------------------------------------
+  # 审核阶段
+  # ---------------------------------------------------------------------------
+  review:
+    properties:
+      - name: "review_mode"
+        type: "string"
+        enum: ["auto", "standard", "strict"]
+        default: "standard"
+        
+      - name: "requires_approval"
+        type: "boolean"
+        default: false
+
+  # ---------------------------------------------------------------------------
+  # 验证阶段
+  # ---------------------------------------------------------------------------
+  validation:
+    properties:
+      - name: "checks"
+        type: "array"
+        items:
+          type: "string"
+          
+      - name: "fail_on_error"
+        type: "boolean"
+        default: true
+
+  # ---------------------------------------------------------------------------
+  # 并行阶段
+  # ---------------------------------------------------------------------------
+  parallel:
+    properties:
+      - name: "branches"
+        type: "array"
+        items:
+          type: "object"
+          
+      - name: "wait_for_all"
+        type: "boolean"
+        default: true
+
+  # ---------------------------------------------------------------------------
+  # 聚合阶段
+  # ---------------------------------------------------------------------------
+  aggregation:
+    properties:
+      - name: "inputs"
+        type: "array"
+        
+      - name: "strategy"
+        type: "string"
+        enum: ["merge", "union", "override"]
+        default: "merge"
+
+  # ---------------------------------------------------------------------------
+  # 最终化阶段
+  # ---------------------------------------------------------------------------
+  finalize:
+    properties:
+      - name: "generate_report"
+        type: "boolean"
+        default: false
+        
+      - name: "archive_artifacts"
+        type: "boolean"
+        default: false
+
+# =============================================================================
+# 管道触发条件
+# =============================================================================
+triggers:
+  auto_pipeline_selection:
+    enabled: true
+    criteria:
+      - "complexity_score"
+      - "task_type"
+      - "risk_level"
+      
+  manual_pipeline_override:
+    enabled: true
+    requires_role: "admin"
+
+# =============================================================================
+# 管道监控
+# =============================================================================
+monitoring:
+  enabled: true
+  
+  metrics:
+    - "stage_duration"
+    - "stage_success_rate"
+    - "retry_count"
+    - "agent_utilization"
+    
+  alerts:
+    - condition: "stage_timeout"
+      severity: "warning"
+      
+    - condition: "multiple_retries"
+      severity: "info"
+      
+    - condition: "pipeline_failure"
+      severity: "critical"

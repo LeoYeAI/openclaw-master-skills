@@ -1,0 +1,304 @@
+# =============================================================================
+# Task-Dispatcher Configuration: agents.yaml
+# =============================================================================
+# Agent 能力映射配置 - 定义任务类型到 Agent 的映射关系
+# =============================================================================
+
+# 全局默认配置
+defaults:
+  fallback_agent: "coder"  # 默认备用 Agent
+  max_retries: 3                 # 最大重试次数
+  timeout_seconds: 300           # 默认超时时间
+
+# =============================================================================
+# Agent 能力定义 (10 agents from SKILL.md)
+# =============================================================================
+agents:
+  # ---------------------------------------------------------------------------
+  # 1. architect - 架构设计
+  # ---------------------------------------------------------------------------
+  architect:
+    name: "System Architect"
+    description: "系统架构设计、技术选型决策"
+    capabilities:
+      - architecture_design
+      - tech_selection
+      - system_modeling
+      - scalability_planning
+    max_complexity: 10
+    preferred_models:
+      - "minimax-cn/MiniMax-M2.5"
+
+  # ---------------------------------------------------------------------------
+  # 2. coder - 编码实现
+  # ---------------------------------------------------------------------------
+  coder:
+    name: "Coder"
+    description: "代码实现、功能开发、问题修复"
+    capabilities:
+      - code_generation
+      - bug_fix
+      - refactoring
+      - debugging
+    max_complexity: 8
+    preferred_models:
+      - "claude-sonnet-4-20250514"
+      - "openai/gpt-4o"
+
+  # ---------------------------------------------------------------------------
+  # 3. critic - 批评审查
+  # ---------------------------------------------------------------------------
+  critic:
+    name: "Critic"
+    description: "方案评审、风险识别、深度审查"
+    capabilities:
+      - code_review
+      - security_audit
+      - risk_assessment
+      - quality_analysis
+    max_complexity: 9
+    preferred_models:
+      - "claude-sonnet-4-20250514"
+      - "minimax-cn/MiniMax-M2.5"
+    rules:
+      - "强制风险评估"
+      - "必须指出潜在问题"
+
+  # ---------------------------------------------------------------------------
+  # 4. devops - 运维部署
+  # ---------------------------------------------------------------------------
+  devops:
+    name: "DevOps"
+    description: "部署、运维、监控、自动化"
+    capabilities:
+      - deployment
+      - infrastructure
+      - monitoring
+      - automation
+    max_complexity: 7
+    preferred_models:
+      - "minimax-cn/MiniMax-M2.5"
+
+  # ---------------------------------------------------------------------------
+  # 5. docs_writer - 文档写作
+  # ---------------------------------------------------------------------------
+  docs_writer:
+    name: "Docs Writer"
+    description: "文档、说明、教程编写"
+    capabilities:
+      - documentation
+      - writing
+      - technical_writing
+      - tutorial_creation
+    max_complexity: 5
+    preferred_models:
+      - "minimax-cn/MiniMax-M2.5"
+
+  # ---------------------------------------------------------------------------
+  # 6. researcher - 调研搜索
+  # ---------------------------------------------------------------------------
+  researcher:
+    name: "Researcher"
+    description: "信息搜集、分析和报告生成"
+    capabilities:
+      - web_search
+      - data_analysis
+      - report_generation
+      - summarization
+    max_complexity: 7
+    preferred_models:
+      - "minimax-cn/MiniMax-M2.5"
+      - "gemini-2.5-pro-preview-06-05"
+
+  # ---------------------------------------------------------------------------
+  # 7. retrospective - 复盘总结
+  # ---------------------------------------------------------------------------
+  retrospective:
+    name: "Retrospective"
+    description: "项目复盘、经验总结、改进建议"
+    capabilities:
+      - analysis
+      - summarization
+      - lessons_learned
+      - improvement_planning
+    max_complexity: 6
+    preferred_models:
+      - "minimax-cn/MiniMax-M2.5"
+
+  # ---------------------------------------------------------------------------
+  # 8. reviewer - 代码审查
+  # ---------------------------------------------------------------------------
+  reviewer:
+    name: "Code Reviewer"
+    description: "PR 审查、代码检查、bug 检测"
+    capabilities:
+      - code_review
+      - bug_detection
+      - security_audit
+      - performance_analysis
+    max_complexity: 8
+    preferred_models:
+      - "claude-sonnet-4-20250514"
+      - "openai/gpt-4o"
+    rules:
+      - "至少 2 名 reviewer"
+      - "强制安全检查"
+
+  # ---------------------------------------------------------------------------
+  # 9. scheduler - 定时任务
+  # ---------------------------------------------------------------------------
+  scheduler:
+    name: "Scheduler"
+    description: "定时触发、调度编排、cron 管理"
+    capabilities:
+      - scheduling
+      - cron_jobs
+      - task_automation
+      - time_based_triggers
+    max_complexity: 5
+    preferred_models:
+      - "minimax-cn/MiniMax-M2.5"
+
+  # ---------------------------------------------------------------------------
+  # 10. tester - 测试验证
+  # ---------------------------------------------------------------------------
+  tester:
+    name: "Tester"
+    description: "写测试、验证功能、质量保证"
+    capabilities:
+      - test_writing
+      - test_execution
+      - quality_assurance
+      - validation
+    max_complexity: 7
+    preferred_models:
+      - "claude-sonnet-4-20250514"
+      - "minimax-cn/MiniMax-M2.5"
+
+# =============================================================================
+# 任务类型 → Agent 映射
+# =============================================================================
+task_mappings:
+  # 代码相关任务
+  code_review:
+    primary_agent: "reviewer"
+    fallback: ["critic", "coder"]
+    priority: "high"
+    
+  bug_fix:
+    primary_agent: "coder"
+    fallback: ["reviewer", "tester"]
+    priority: "high"
+    
+  new_feature:
+    primary_agent: "coder"
+    fallback: ["architect", "reviewer"]
+    priority: "medium"
+    requires_approval: true
+
+  # 架构设计任务
+  architecture_design:
+    primary_agent: "architect"
+    fallback: ["critic"]
+    priority: "high"
+    requires_approval: true
+    
+  tech_eval:
+    primary_agent: "architect"
+    fallback: ["researcher"]
+    priority: "medium"
+
+  # 审查任务
+  code_critique:
+    primary_agent: "critic"
+    fallback: ["architect", "reviewer"]
+    priority: "high"
+
+  # 调研任务
+  research:
+    primary_agent: "researcher"
+    fallback: ["docs_writer"]
+    priority: "low"
+    
+  documentation:
+    primary_agent: "docs_writer"
+    fallback: []
+    priority: "low"
+
+  # 部署运维
+  deployment:
+    primary_agent: "devops"
+    fallback: ["coder"]
+    priority: "high"
+    
+  # 复盘
+  retrospective:
+    primary_agent: "retrospective"
+    fallback: ["docs_writer"]
+    priority: "low"
+
+  # 定时任务
+  scheduled_task:
+    primary_agent: "scheduler"
+    fallback: ["devops"]
+    priority: "medium"
+
+  # 测试
+  testing:
+    primary_agent: "tester"
+    fallback: ["coder"]
+    priority: "high"
+
+  # 通用任务
+  general:
+    primary_agent: "coder"
+    fallback: []
+    priority: "medium"
+
+# =============================================================================
+# 备用 Agent 列表（当主 Agent 不可用时）
+# =============================================================================
+fallback_chain:
+  critical_tasks:    # 关键任务备用链
+    - "coder"
+    - "architect"
+    
+  non_critical_tasks:  # 非关键任务备用链
+    - "coder"
+
+# =============================================================================
+# 任务复杂度评估规则
+# =============================================================================
+complexity_rules:
+  factors:
+    - name: "file_count"
+      weight: 0.3
+      thresholds:
+        low: 1-5
+        medium: 6-20
+        high: 21-100
+        critical: 100+
+        
+    - name: "tech_stack_complexity"
+      weight: 0.25
+      thresholds:
+        low: "单一语言/框架"
+        medium: "2-3 种技术栈"
+        high: "4+ 技术栈"
+        critical: "跨系统集成"
+        
+    - name: "required_expertise"
+      weight: 0.25
+      thresholds:
+        low: "Junior 开发者可完成"
+        medium: "Mid-level 开发者可完成"
+        high: "Senior 开发者可完成"
+        critical: "专家级/架构师"
+        
+    - name: "risk_level"
+      weight: 0.2
+      thresholds:
+        low: "无风险（文档、测试）"
+        medium: "低风险（工具脚本）"
+        high: "中等风险（生产代码）"
+        critical: "高风险（核心系统）"

@@ -1,0 +1,79 @@
+{
+  "name": "trading-agents",
+  "version": "2.4.0",
+  "description": "Multi-agent stock trading signal analysis framework with two-round debate mechanism. Analyzes through 7 SubAgents in 4 layers (Information Gathering → Opinion Formation → Two-Round Debate → Final Decision), outputs BUY/SELL/HOLD recommendation with rationale in markdown report.",
+  "author": "laigen",
+  "license": "MIT",
+  "homepage": "https://github.com/openclaw/openclaw",
+  "env": {
+    "TUSHARE_TOKEN": {
+      "required": true,
+      "description": "Tushare Pro API Token for A-share market data. Get at: https://tushare.pro/register",
+      "sensitive": true
+    },
+    "BRAVE_API_KEY": {
+      "required": false,
+      "description": "Brave Search API Key for news and social media search. If not configured, will use built-in web_search tool.",
+      "sensitive": true
+    }
+  },
+  "dependencies": {
+    "python": ">=3.8",
+    "pip": [
+      "tushare>=1.3.0",
+      "pandas>=1.5.0",
+      "numpy>=1.21.0"
+    ]
+  },
+  "install": {
+    "pip": "pip install tushare pandas numpy"
+  },
+  "capabilities": [
+    "stock-analysis",
+    "financial-data",
+    "multi-agent",
+    "debate-mechanism"
+  ],
+  "tags": [
+    "A-share",
+    "stock-analysis",
+    "investment-decision",
+    "multi-agent",
+    "debate",
+    "trading-signal"
+  ],
+  "sideEffects": {
+    "filesystem": [
+      "Reads from: ~/.openclaw/workspace/memory/reports/",
+      "Writes reports to: ~/.openclaw/workspace/memory/reports/trading-agents-*.md"
+    ],
+    "config": [
+      "Reads TUSHARE_TOKEN and BRAVE_API_KEY from environment variables only",
+      "Never reads other configuration files",
+      "Never modifies user config files automatically"
+    ],
+    "network": [
+      "Connects to Tushare Pro API (api.tushare.pro)",
+      "Uses web_search for news and sentiment data"
+    ]
+  },
+  "security": {
+    "credentials": [
+      "TUSHARE_TOKEN and BRAVE_API_KEY are sensitive credentials",
+      "Do NOT paste tokens in chat messages",
+      "Do NOT include any API keys or tokens in reports or SubAgent communications",
+      "Set via environment variables before running the skill"
+    ],
+    "dataHandling": [
+      "Financial data is fetched from Tushare Pro API only",
+      "Reports are saved locally and not transmitted externally",
+      "No telemetry or analytics collected",
+      "Reports MUST NOT contain any API keys, tokens, or credential values"
+    ],
+    "subagentRules": [
+      "SubAgents MUST NOT read any configuration beyond TUSHARE_TOKEN and BRAVE_API_KEY",
+      "SubAgents MUST NOT pass API keys or tokens in inter-agent communications",
+      "Generated reports MUST NOT contain any sensitive credential information"
+    ]
+  }
+}

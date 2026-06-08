@@ -1,0 +1,42 @@
+{
+  "name": "@kevros/openclaw-plugin",
+  "version": "0.3.9",
+  "description": "Kevros governance plugin for OpenClaw — cryptographic policy enforcement for agent tool calls",
+  "license": "MIT",
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist",
+    "openclaw.plugin.json",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "clean": "rm -rf dist",
+    "prepublishOnly": "npm run clean && npm run build",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@types/node": "^20.19.37",
+    "typescript": "^5.4.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "keywords": [
+    "openclaw",
+    "kevros",
+    "governance",
+    "ai-safety",
+    "agent",
+    "trust",
+    "provenance",
+    "policy-enforcement"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/taskhawk/kevros.git",
+    "directory": "contrib/openclaw-plugin"
+  }
+}

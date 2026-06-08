@@ -1,0 +1,36 @@
+{
+  "name": "openclaw-boss",
+  "version": "5.1.4",
+  "description": "OpenClaw Boss - AI 老板根据你的对话历史生成评价报告。100 分制严厉评分，毒舌老板点评，历史对比分析。",
+  "author": "Winston & Yiweisi",
+  "license": "MIT",
+  "homepage": "https://github.com/yiweisi-bot/openclaw-boss",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yiweisi-bot/openclaw-boss.git"
+  },
+  "keywords": [
+    "openclaw",
+    "skill",
+    "boss",
+    "profile",
+    "analysis",
+    "roast",
+    "self-reflection"
+  ],
+  "openclaw": {
+    "emoji": "💼",
+    "requires": {
+      "bins": ["python3"]
+    },
+    "onload": {
+      "script": ".onload",
+      "description": "自动配置周报和月报定时任务"
+    },
+    "features": {
+      "scheduledReports": true,
+      "weeklyReport": "每周日 22:00",
+      "monthlyReport": "每月 1 日 09:00"
+    }
+  }
+}

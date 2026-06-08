@@ -1,0 +1,43 @@
+{
+  "name": "kevros-governance",
+  "displayName": "Kevros Governance",
+  "description": "Cryptographic policy enforcement for agent tool calls. Every action verified, every decision signed, every record hash-chained.",
+  "kind": "security",
+  "version": "0.3.9",
+  "entry": "dist/index.js",
+  "configSchema": {
+    "type": "object",
+    "properties": {
+      "gatewayUrl": {
+        "type": "string",
+        "default": "https://governance.taskhawktech.com",
+        "description": "Kevros gateway base URL."
+      },
+      "apiKey": {
+        "type": "string",
+        "description": "Kevros API key. Auto-provisions free tier if not set."
+      },
+      "agentId": {
+        "type": "string",
+        "description": "Agent identifier for governance tracking. Defaults to hostname."
+      },
+      "mode": {
+        "type": "string",
+        "enum": ["enforce", "advisory", "deny"],
+        "default": "enforce",
+        "description": "Enforcement mode: enforce (fail-closed), advisory (log-only), deny (block all)."
+      },
+      "highRiskTools": {
+        "type": "array",
+        "items": { "type": "string" },
+        "default": ["bash", "computer", "terminal", "exec", "write_file", "edit_file"],
+        "description": "Tool names that require governance verification before execution."
+      },
+      "autoAttest": {
+        "type": "boolean",
+        "default": true,
+        "description": "Automatically attest tool executions to build provenance history."
+      }
+    }
+  }
+}

@@ -1,0 +1,5340 @@
+ocui_version: "1.0"
+skill: healthclaw
+skill_version: "1.0.0"
+display_name: Healthcare ERP
+icon: heart-pulse
+color: "#ef4444"
+default_entity: patient
+
+domains:
+  - key: patients
+    label: Patients
+    entities: [patient, patient_insurance, allergy, medical_history, consent]
+  - key: appointments
+    label: Appointments
+    entities: [appointment, provider_schedule, schedule_block, waitlist]
+  - key: clinical
+    label: Clinical
+    entities: [encounter, vitals, diagnosis, prescription, procedure, clinical_note, clinical_order]
+  - key: billing
+    label: Billing
+    entities: [fee_schedule, fee_schedule_item, charge, claim, claim_line, payment_posting]
+  - key: inventory
+    label: Pharmacy
+    entities: [formulary, formulary_item, dispensing]
+  - key: lab
+    label: Lab & Imaging
+    entities: [lab_order, lab_test, lab_result, imaging_order, imaging_result]
+  - key: referrals
+    label: Referrals
+    entities: [referral, prior_auth, auth_usage]
+
+dashboard:
+  kpis:
+    - key: total_patients
+      label: "Patients"
+      type: count
+      action: list-patients
+      icon: users
+      drill_action: list-patients
+    - key: today_appointments
+      label: "Today's Appointments"
+      type: count
+      action: list-appointments
+      filter: { status: scheduled }
+      icon: calendar
+      drill_action: list-appointments
+    - key: open_encounters
+      label: "Open Encounters"
+      type: count
+      action: list-encounters
+      filter: { status: open }
+      severity: warning
+      icon: stethoscope
+      drill_action: list-encounters
+      drill_filter: { status: open }
+    - key: pending_claims
+      label: "Pending Claims"
+      type: count
+      action: list-claims
+      filter: { status: draft }
+      severity: warning
+      icon: file-text
+      drill_action: list-claims
+      drill_filter: { status: draft }
+    - key: pending_lab_orders
+      label: "Pending Labs"
+      type: count
+      action: list-lab-orders
+      filter: { status: ordered }
+      severity: info
+      icon: flask-conical
+      drill_action: list-lab-orders
+      drill_filter: { status: ordered }
+    - key: pending_auths
+      label: "Pending Auths"
+      type: count
+      action: list-prior-auths
+      filter: { status: pending }
+      severity: warning
+      icon: shield-check
+      drill_action: list-prior-auths
+      drill_filter: { status: pending }
+  quick_actions:
+    - action: add-patient
+      label: "New Patient"
+      icon: user-plus
+    - action: add-appointment
+      label: "New Appointment"
+      icon: calendar-plus
+    - action: add-encounter
+      label: "New Encounter"
+      icon: stethoscope
+    - action: add-claim
+      label: "New Claim"
+      icon: file-text
+    - action: add-lab-order
+      label: "New Lab Order"
+      icon: flask-conical
+    - action: add-referral
+      label: "New Referral"
+      icon: arrow-right-circle
+
+workflows:
+  - after: add-patient
+    suggest:
+      - action: add-patient-insurance
+        label: "Add insurance coverage"
+        pass: { patient-id: id }
+      - action: add-allergy
+        label: "Record allergies"
+        pass: { patient-id: id }
+      - action: add-appointment
+        label: "Schedule appointment"
+        pass: { patient-id: id }
+  - after: add-appointment
+    suggest:
+      - action: add-encounter
+        label: "Start clinical encounter"
+        pass: { patient-id: patient_id, appointment-id: id }
+  - after: add-encounter
+    suggest:
+      - action: add-vitals
+        label: "Record vitals"
+        pass: { encounter-id: id }
+      - action: add-diagnosis
+        label: "Add diagnosis"
+        pass: { encounter-id: id, patient-id: patient_id }
+  - after: add-vitals
+    suggest:
+      - action: add-diagnosis
+        label: "Add diagnosis"
+        pass: { encounter-id: encounter_id }
+  - after: add-diagnosis
+    suggest:
+      - action: add-prescription
+        label: "Write prescription"
+        pass: { encounter-id: encounter_id, patient-id: patient_id }
+      - action: add-procedure
+        label: "Record procedure"
+        pass: { encounter-id: encounter_id, patient-id: patient_id }
+      - action: add-lab-order
+        label: "Order lab tests"
+        pass: { encounter-id: encounter_id, patient-id: patient_id }
+  - after: add-prescription
+    suggest:
+      - action: add-dispensing
+        label: "Dispense medication"
+        pass: { prescription-id: id, patient-id: patient_id }
+  - after: add-charge
+    suggest:
+      - action: add-claim
+        label: "Create insurance claim"
+        pass: { encounter-id: encounter_id, patient-id: patient_id }
+  - after: add-claim
+    suggest:
+      - action: add-claim-line
+        label: "Add claim line"
+        pass: { claim-id: id }
+  - after: add-claim-line
+    suggest:
+      - action: submit-claim
+        label: "Submit claim"
+        pass: { claim-id: claim_id }
+  - after: add-lab-order
+    suggest:
+      - action: add-lab-test
+        label: "Add test to order"
+        pass: { lab-order-id: id }
+  - after: add-lab-test
+    suggest:
+      - action: add-lab-result
+        label: "Record result"
+        pass: { lab-test-id: id }
+  - after: add-referral
+    suggest:
+      - action: add-prior-auth
+        label: "Request prior authorization"
+        pass: { patient-id: patient_id, insurance-id: insurance_id }
+
+entities:
+  # ---------------------------------------------------------------------------
+  # PATIENTS domain
+  # ---------------------------------------------------------------------------
+  patient:
+    label: Patient
+    label_plural: Patients
+    table: healthclaw_patient
+    id_col: id
+    name_col: full_name
+    primary_field: full_name
+    secondary_field: date_of_birth
+    identifier_field: naming_series
+    status_field: status
+    status_colors:
+      active: green
+      inactive: yellow
+      deceased: gray
+    fields:
+      id:
+        type: text
+        label: ID
+        read_only: true
+        hidden: true
+      naming_series:
+        type: text
+        label: MRN
+        read_only: true
+        in_list_view: true
+      company_id:
+        type: link
+        label: Company
+        required: true
+        link_entity: company
+        link_display_field: name
+        link_search_action: list-companies
+        in_form_view: true
+        form_group: header
+        form_order: 1
+      first_name:
+        type: text
+        label: First Name
+        required: true
+        in_form_view: true
+        form_group: header
+        form_order: 2
+      last_name:
+        type: text
+        label: Last Name
+        required: true
+        in_list_view: true
+        in_form_view: true
+        form_group: header
+        form_order: 3
+      full_name:
+        type: text
+        label: Full Name
+        read_only: true
+        in_list_view: true
+      date_of_birth:
+        type: date
+        label: Date of Birth
+        required: true
+        in_list_view: true
+        in_form_view: true
+        form_group: demographics
+        form_order: 4
+      gender:
+        type: select
+        label: Gender
+        required: true
+        options:
+          - { value: male, label: Male }
+          - { value: female, label: Female }
+          - { value: other, label: Other }
+          - { value: unknown, label: Unknown }
+        in_list_view: true
+        in_form_view: true
+        form_group: demographics
+        form_order: 5
+      ssn:
+        type: text
+        label: SSN (Last 4)
+        in_form_view: true
+        form_group: demographics
+        form_order: 6
+      marital_status:
+        type: select
+        label: Marital Status
+        options:
+          - { value: single, label: Single }
+          - { value: married, label: Married }
+          - { value: divorced, label: Divorced }
+          - { value: widowed, label: Widowed }
+          - { value: separated, label: Separated }
+          - { value: unknown, label: Unknown }
+        in_form_view: true
+        form_group: demographics
+        form_order: 7
+      race:
+        type: text
+        label: Race
+        in_form_view: true
+        form_group: demographics
+        form_order: 8
+      ethnicity:
+        type: select
+        label: Ethnicity
+        options:
+          - { value: hispanic_latino, label: Hispanic or Latino }
+          - { value: not_hispanic_latino, label: Not Hispanic or Latino }
+          - { value: unknown, label: Unknown }
+        in_form_view: true
+        form_group: demographics
+        form_order: 9
+      preferred_language:
+        type: text
+        label: Preferred Language
+        in_form_view: true
+        form_group: demographics
+        form_order: 10
+      primary_phone:
+        type: text
+        label: Primary Phone
+        in_list_view: true
+        in_form_view: true
+        form_group: contact
+        form_order: 11
+      secondary_phone:
+        type: text
+        label: Secondary Phone
+        in_form_view: true
+        form_group: contact
+        form_order: 12
+      email:
+        type: text
+        label: Email
+        in_form_view: true
+        form_group: contact
+        form_order: 13
+      address_line1:
+        type: text
+        label: Address Line 1
+        in_form_view: true
+        form_group: address
+        form_order: 14
+      address_line2:
+        type: text
+        label: Address Line 2
+        in_form_view: true
+        form_group: address
+        form_order: 15
+      city:
+        type: text
+        label: City
+        in_form_view: true
+        form_group: address
+        form_order: 16
+      state:
+        type: text
+        label: State
+        in_form_view: true
+        form_group: address
+        form_order: 17
+      zip_code:
+        type: text
+        label: ZIP Code
+        in_form_view: true
+        form_group: address
+        form_order: 18
+      primary_provider_id:
+        type: link
+        label: Primary Provider
+        link_entity: employee
+        link_display_field: full_name
+        link_search_action: list-employees
+        entity_lookup: { skill: erpclaw-hr, entity: employee, display_field: full_name }
+        in_form_view: true
+        form_group: clinical
+        form_order: 19
+      status:
+        type: select
+        label: Status
+        options:
+          - { value: active, label: Active }
+          - { value: inactive, label: Inactive }
+          - { value: deceased, label: Deceased }
+        in_list_view: true
+        in_form_view: true
+        form_group: header
+        form_order: 20
+      notes:
+        type: textarea
+        label: Notes
+        in_form_view: true
+        form_group: clinical
+        form_order: 21
+    form_groups:
+      header:
+        label: Patient Information
+        order: 1
+        columns: 2
+      demographics:
+        label: Demographics
+        order: 2
+        columns: 2
+      contact:
+        label: Contact Information
+        order: 3
+        columns: 2
+      address:
+        label: Address
+        order: 4
+        columns: 2
+      clinical:
+        label: Clinical
+        order: 5
+        columns: 2
+    actions:
+      add: { action: add-patient, label: Register Patient }
+      update: { action: update-patient, label: Update Patient }
+      get: { action: get-patient, label: View Patient }
+      list: { action: list-patients, label: List Patients }
+    list_columns: [naming_series, full_name, date_of_birth, gender, primary_phone, status]
+    search_fields: [full_name, naming_series, primary_phone, email]
+
+  patient_insurance:
+    label: Insurance
+    label_plural: Insurance Policies
+    table: healthclaw_patient_insurance
+    id_col: id
+    name_col: payer_name
+    primary_field: payer_name
+    secondary_field: plan_name
+    identifier_field: naming_series
+    parent_entity: patient
+    parent_id_field: patient_id
+    status_field: status
+    status_colors:
+      active: green
+      inactive: yellow
+      expired: gray
+      terminated: red
+    tab_hidden: true
+    fields:
+      id:
+        type: text
+        label: ID
+        read_only: true
+        hidden: true
+      naming_series:
+        type: text
+        label: Policy No.
+        read_only: true
+        in_list_view: true
+      patient_id:
+        type: link
+        label: Patient
+        required: true
+        link_entity: patient
+        link_display_field: full_name
+        link_search_action: list-patients
+        entity_lookup: { entity: patient, display_field: full_name }
+        in_form_view: true
+        form_group: header
+        form_order: 1
+      insurance_type:
+        type: select
+        label: Type
+        required: true
+        options:
+          - { value: primary, label: Primary }
+          - { value: secondary, label: Secondary }
+          - { value: tertiary, label: Tertiary }
+        in_list_view: true
+        in_form_view: true
+        form_group: header
+        form_order: 2
+      payer_name:
+        type: text
+        label: Payer Name
+        required: true
+        in_list_view: true
+        in_form_view: true
+        form_group: header
+        form_order: 3
+      payer_id:
+        type: text
+        label: Payer ID
+        in_form_view: true
+        form_group: header
+        form_order: 4
+      plan_name:
+        type: text
+        label: Plan Name
+        in_list_view: true
+        in_form_view: true
+        form_group: plan
+        form_order: 5
+      plan_type:
+        type: select
+        label: Plan Type
+        options:
+          - { value: hmo, label: HMO }
+          - { value: ppo, label: PPO }
+          - { value: epo, label: EPO }
+          - { value: pos, label: POS }
+          - { value: hdhp, label: HDHP }
+          - { value: medicare, label: Medicare }
+          - { value: medicaid, label: Medicaid }
+          - { value: tricare, label: TRICARE }
+          - { value: workers_comp, label: Workers Comp }
+          - { value: self_pay, label: Self Pay }
+          - { value: other, label: Other }
+        in_form_view: true
+        form_group: plan
+        form_order: 6
+      group_number:
+        type: text
+        label: Group Number
+        in_form_view: true
+        form_group: plan
+        form_order: 7
+      member_id:
+        type: text
+        label: Member ID
+        required: true
+        in_list_view: true
+        in_form_view: true
+        form_group: plan
+        form_order: 8
+      subscriber_name:
+        type: text
+        label: Subscriber Name
+        in_form_view: true
+        form_group: subscriber
+        form_order: 9
+      subscriber_dob:
+        type: date
+        label: Subscriber DOB
+        in_form_view: true
+        form_group: subscriber
+        form_order: 10
+      subscriber_relationship:
+        type: select
+        label: Subscriber Relationship
+        options:
+          - { value: self, label: Self }
+          - { value: spouse, label: Spouse }
+          - { value: child, label: Child }
+          - { value: other, label: Other }
+        in_form_view: true
+        form_group: subscriber
+        form_order: 11
+      copay_amount:
+        type: currency
+        label: Copay
+        in_form_view: true
+        form_group: benefits
+        form_order: 12
+      deductible:
+        type: currency
+        label: Deductible
+        in_form_view: true
+        form_group: benefits
+        form_order: 13
+      deductible_met:
+        type: currency
+        label: Deductible Met
+        in_form_view: true
+        form_group: benefits
+        form_order: 14
+      out_of_pocket_max:
+        type: currency
+        label: Out-of-Pocket Max
+        in_form_view: true
+        form_group: benefits
+        form_order: 15
+      effective_date:
+        type: date
+        label: Effective Date
+        required: true
+        in_list_view: true
+        in_form_view: true
+        form_group: dates
+        form_order: 16
+      termination_date:
+        type: date
+        label: Termination Date
+        in_form_view: true
+        form_group: dates
+        form_order: 17
+      status:
+        type: select
+        label: Status
+        options:
+          - { value: active, label: Active }
+          - { value: inactive, label: Inactive }
+          - { value: expired, label: Expired }
+          - { value: terminated, label: Terminated }
+        in_list_view: true
+        in_form_view: true
+        form_group: header
+        form_order: 18
+      company_id:
+        type: link
+        label: Company
+        required: true
+        link_entity: company
+        link_display_field: name
+        link_search_action: list-companies
+        entity_lookup: { skill: erpclaw-setup, entity: company, display_field: name }
+        in_form_view: true
+        form_group: header
+        form_order: 19
+    form_groups:
+      header:
+        label: Insurance Information
+        order: 1
+        columns: 2
+      plan:
+        label: Plan Details
+        order: 2
+        columns: 2
+      subscriber:
+        label: Subscriber Information
+        order: 3
+        columns: 2
+      benefits:
+        label: Benefits & Cost Sharing
+        order: 4
+        columns: 2
+      dates:
+        label: Coverage Dates
+        order: 5
+        columns: 2
+    actions:
+      add: { action: add-patient-insurance, label: Add Insurance }
+      update: { action: update-patient-insurance, label: Update Insurance }
+      list: { action: list-patient-insurances, label: List Insurance }
+    list_columns: [naming_series, insurance_type, payer_name, plan_name, member_id, effective_date, status]
+
+  allergy:
+    label: Allergy
+    label_plural: Allergies
+    table: healthclaw_allergy
+    id_col: id
+    name_col: allergen
+    primary_field: allergen
+    secondary_field: severity
+    parent_entity: patient
+    parent_id_field: patient_id
+    status_field: status
+    status_colors:
+      active: red
+      inactive: gray
+      resolved: green
+    tab_hidden: true
+    fields:
+      id:
+        type: text
+        label: ID
+        read_only: true
+        hidden: true
+      patient_id:
+        type: link
+        label: Patient
+        required: true
+        link_entity: patient
+        link_display_field: full_name
+        link_search_action: list-patients
+        entity_lookup: { entity: patient, display_field: full_name }
+        in_form_view: true
+        form_group: header
+        form_order: 1
+      allergen:
+        type: text
+        label: Allergen
+        required: true
+        in_list_view: true
+        in_form_view: true
+        form_group: header
+        form_order: 2
+      allergen_type:
+        type: select
+        label: Allergen Type
+        required: true
+        options:
+          - { value: drug, label: Drug }
+          - { value: food, label: Food }
+          - { value: environmental, label: Environmental }
+          - { value: other, label: Other }
+        in_list_view: true
+        in_form_view: true
+        form_group: header
+        form_order: 3
+      reaction:
+        type: text
+        label: Reaction
+        in_form_view: true
+        form_group: details
+        form_order: 4
+      severity:
+        type: select
+        label: Severity
+        required: true
+        options:
+          - { value: mild, label: Mild }
+          - { value: moderate, label: Moderate }
+          - { value: severe, label: Severe }
+          - { value: life_threatening, label: Life Threatening }
+        in_list_view: true
+        in_form_view: true
+        form_group: header
+        form_order: 5
+      onset_date:
+        type: date
+        label: Onset Date
+        in_form_view: true
+        form_group: details
+        form_order: 6
+      status:
+        type: select
+        label: Status
+        options:
+          - { value: active, label: Active }
+          - { value: inactive, label: Inactive }
+          - { value: resolved, label: Resolved }
+        in_list_view: true
+        in_form_view: true
+        form_group: header
+        form_order: 7
+      notes:
+        type: textarea
+        label: Notes
+        in_form_view: true
+        form_group: details
+        form_order: 8
+    form_groups:
+      header:
+        label: Allergy Information
+        order: 1
+        columns: 2
+      details:
+        label: Details
+        order: 2
+        columns: 2
+    actions:
+      add: { action: add-allergy, label: Add Allergy }
+      update: { action: update-allergy, label: Update Allergy }
+      list: { action: list-allergies, label: List Allergies }
+    list_columns: [allergen, allergen_type, severity, status]
+
+  medical_history:
+    label: Medical History
+    label_plural: Medical History
+    table: healthclaw_medical_history
+    id_col: id
+    name_col: condition
+    primary_field: condition
+    secondary_field: icd10_code
+    parent_entity: patient
+    parent_id_field: patient_id
+    status_field: status
+    status_colors:
+      active: red
+      resolved: green
+      chronic: yellow
+    tab_hidden: true
+    fields:
+      id:
+        type: text
+        label: ID
+        read_only: true
+        hidden: true
+      patient_id:
+        type: link
+        label: Patient
+        required: true
+        link_entity: patient
+        link_display_field: full_name
+        link_search_action: list-patients
+        entity_lookup: { entity: patient, display_field: full_name }
+        in_form_view: true
+        form_group: header
+        form_order: 1
+      condition:
+        type: text
+        label: Condition
+        required: true
+        in_list_view: true
+        in_form_view: true
+        form_group: header
+        form_order: 2
+      icd10_code:
+        type: text
+        label: ICD-10 Code
+        in_list_view: true
+        in_form_view: true
+        form_group: header
+        form_order: 3
+      diagnosis_date:
+        type: date
+        label: Diagnosis Date
+        in_list_view: true
+        in_form_view: true
+        form_group: details
+        form_order: 4
+      resolution_date:
+        type: date
+        label: Resolution Date
+        in_form_view: true
+        form_group: details
+        form_order: 5
+      status:
+        type: select
+        label: Status
+        options:
+          - { value: active, label: Active }
+          - { value: resolved, label: Resolved }
+          - { value: chronic, label: Chronic }
+        in_list_view: true
+        in_form_view: true
+        form_group: header
+        form_order: 6
+      notes:
+        type: textarea
+        label: Notes
+        in_form_view: true
+        form_group: details
+        form_order: 7
+    form_groups:
+      header:
+        label: Condition Information
+        order: 1
+        columns: 2
+      details:
+        label: Details
+        order: 2
+        columns: 2
+    actions:
+      add: { action: add-medical-history, label: Add Medical History }
+      update: { action: update-medical-history, label: Update Medical History }
+      list: { action: list-medical-histories, label: List Medical History }
+    list_columns: [condition, icd10_code, diagnosis_date, status]
+
+  # ---------------------------------------------------------------------------
+  # PATIENTS domain (continued) + APPOINTMENTS domain
+  # ---------------------------------------------------------------------------
+  consent:
+    label: Consent
+    label_plural: Consents
+    table: healthclaw_consent
+    id_col: id
+    name_col: consent_type
+    primary_field: consent_type
+    secondary_field: granted_date
+    parent_entity: patient
+    parent_id_field: patient_id
+    status_field: status
+    status_colors:
+      active: green
+      expired: yellow
+      revoked: red
+    tab_hidden: true
+    fields:
+      id:
+        type: text
+        label: ID
+        read_only: true
+        hidden: true
+      patient_id:
+        type: link
+        label: Patient
+        entity_lookup: { entity: patient, display_field: full_name }
+        link_entity: patient
+        link_display_field: full_name
+        link_search_action: list-patients
+        required: true
+        in_form_view: true
+        form_group: header
+        form_order: 1
+      consent_type:
+        type: select
+        label: Consent Type
+        required: true
+        options:
+          - { value: hipaa_privacy, label: HIPAA Privacy }
+          - { value: treatment, label: Treatment }
+          - { value: surgery, label: Surgery }
+          - { value: anesthesia, label: Anesthesia }
+          - { value: research, label: Research }
+          - { value: telehealth, label: Telehealth }
+          - { value: photo_video, label: Photo/Video }
+          - { value: release_of_info, label: Release of Info }
+          - { value: other, label: Other }
+        in_list_view: true
+        in_form_view: true
+        form_group: header
+        form_order: 2
+      description:
+        type: text
+        label: Description
+        in_form_view: true
+        form_group: header
+        form_order: 3
+      granted_date:
+        type: date
+        label: Granted Date
+        required: true
+        in_list_view: true
+        in_form_view: true
+        form_group: details
+        form_order: 4
+      expiration_date:
+        type: date
+        label: Expiration Date
+        in_list_view: true
+        in_form_view: true
+        form_group: details
+        form_order: 5
+      revoked_date:
+        type: date
+        label: Revoked Date
+        in_form_view: true
+        form_group: details
+        form_order: 6
+      status:
+        type: select
+        label: Status
+        options:
+          - { value: active, label: Active }
+          - { value: expired, label: Expired }
+          - { value: revoked, label: Revoked }
+        in_list_view: true
+        in_form_view: true
+        form_group: header
+        form_order: 7
+      witness_name:
+        type: text
+        label: Witness Name
+        in_form_view: true
+        form_group: details
+        form_order: 8
+      notes:
+        type: textarea
+        label: Notes
+        in_form_view: true
+        form_group: details
+        form_order: 9
+      company_id:
+        type: link
+        label: Company
+        entity_lookup: { skill: erpclaw-setup, entity: company, display_field: name }
+        link_entity: company
+        link_display_field: name
+        link_search_action: list-companies
+        required: true
+        in_form_view: true
+        form_group: header
+        form_order: 10
+    form_groups:
+      header:
+        label: Consent Information
+        order: 1
+        columns: 2
+      details:
+        label: Details
+        order: 2
+        columns: 2
+    actions:
+      add: { action: add-consent, label: Add Consent }
+      update: { action: update-consent, label: Update Consent }
+      list: { action: list-consents, label: List Consents }
+    list_columns: [consent_type, granted_date, expiration_date, status]
+
+  appointment:
+    label: Appointment
+    label_plural: Appointments
+    table: healthclaw_appointment
+    id_col: id
+    name_col: naming_series
+    primary_field: naming_series
+    secondary_field: appointment_type
+    identifier_field: naming_series
+    status_field: status
+    status_colors:
+      scheduled: blue
+      confirmed: cyan
+      checked_in: yellow
+      in_progress: orange
+      completed: green
+      cancelled: gray
+      no_show: red
+      rescheduled: purple
+    fields:
+      id:
+        type: text
+        label: ID
+        read_only: true
+        hidden: true
+      naming_series:
+        type: text
+        label: Appt No.
+        read_only: true
+        in_list_view: true
+      patient_id:
+        type: link
+        label: Patient
+        entity_lookup: { entity: patient, display_field: full_name }
+        link_entity: patient
+        link_display_field: full_name
+        link_search_action: list-patients
+        required: true
+        in_form_view: true
+        form_group: header
+        form_order: 1
+      provider_id:
+        type: link
+        label: Provider
+        entity_lookup: { skill: erpclaw-hr, entity: employee, display_field: full_name }
+        link_entity: employee
+        link_display_field: full_name
+        link_search_action: list-employees
+        required: true
+        in_form_view: true
+        form_group: header
+        form_order: 2
+      appointment_date:
+        type: date
+        label: Date
+        required: true
+        in_list_view: true
+        in_form_view: true
+        form_group: header
+        form_order: 3
+      start_time:
+        type: text
+        label: Start Time
+        required: true
+        in_list_view: true
+        in_form_view: true
+        form_group: scheduling
+        form_order: 4
+      end_time:
+        type: text
+        label: End Time
+        required: true
+        in_form_view: true
+        form_group: scheduling
+        form_order: 5
+      duration_minutes:
+        type: number
+        label: Duration (min)
+        in_form_view: true
+        form_group: scheduling
+        form_order: 6
+      appointment_type:
+        type: select
+        label: Type
+        required: true
+        options:
+          - { value: new_patient, label: New Patient }
+          - { value: follow_up, label: Follow Up }
+          - { value: urgent, label: Urgent }
+          - { value: walk_in, label: Walk In }
+          - { value: telehealth, label: Telehealth }
+          - { value: procedure, label: Procedure }
+          - { value: physical_exam, label: Physical Exam }
+          - { value: consultation, label: Consultation }
+        in_list_view: true
+        in_form_view: true
+        form_group: header
+        form_order: 7
+      chief_complaint:
+        type: text
+        label: Chief Complaint
+        in_form_view: true
+        form_group: details
+        form_order: 8
+      location:
+        type: text
+        label: Location
+        in_form_view: true
+        form_group: scheduling
+        form_order: 9
+      status:
+        type: select
+        label: Status
+        options:
+          - { value: scheduled, label: Scheduled }
+          - { value: confirmed, label: Confirmed }
+          - { value: checked_in, label: Checked In }
+          - { value: in_progress, label: In Progress }
+          - { value: completed, label: Completed }
+          - { value: cancelled, label: Cancelled }
+          - { value: no_show, label: No Show }
+          - { value: rescheduled, label: Rescheduled }
+        in_list_view: true
+        in_form_view: true
+        form_group: header
+        form_order: 10
+      cancellation_reason:
+        type: text
+        label: Cancellation Reason
+        in_form_view: true
+        form_group: details
+        form_order: 11
+      check_in_time:
+        type: text
+        label: Check-In Time
+        read_only: true
+      check_out_time:
+        type: text
+        label: Check-Out Time
+        read_only: true
+      notes:
+        type: textarea
+        label: Notes
+        in_form_view: true
+        form_group: details
+        form_order: 12
+      company_id:
+        type: link
+        label: Company
+        entity_lookup: { skill: erpclaw-setup, entity: company, display_field: name }
+        link_entity: company
+        link_display_field: name
+        link_search_action: list-companies
+        required: true
+        in_form_view: true
+        form_group: header
+        form_order: 13
+    form_groups:
+      header:
+        label: Appointment Information
+        order: 1
+        columns: 2
+      scheduling:
+        label: Scheduling
+        order: 2
+        columns: 2
+      details:
+        label: Details
+        order: 3
+        columns: 2
+    actions:
+      add: { action: add-appointment, label: Schedule Appointment }
+      update: { action: update-appointment, label: Update Appointment }
+      get: { action: get-appointment, label: View Appointment }
+      list: { action: list-appointments, label: List Appointments }
+    list_columns: [naming_series, appointment_date, start_time, appointment_type, status]
+    search_fields: [naming_series]
+
+  provider_schedule:
+    label: Provider Schedule
+    label_plural: Provider Schedules
+    table: healthclaw_provider_schedule
+    id_col: id
+    name_col: provider_id
+    primary_field: provider_id
+    secondary_field: day_of_week
+    tab_hidden: true
+    fields:
+      id:
+        type: text
+        label: ID
+        read_only: true
+        hidden: true
+      provider_id:
+        type: link
+        label: Provider
+        entity_lookup: { skill: erpclaw-hr, entity: employee, display_field: full_name }
+        link_entity: employee
+        link_display_field: full_name
+        link_search_action: list-employees
+        required: true
+        in_form_view: true
+        form_group: header
+        form_order: 1
+      day_of_week:
+        type: number
+        label: Day of Week (0=Mon)
+        in_list_view: true
+        in_form_view: true
+        form_group: header
+        form_order: 2
+      start_time:
+        type: text
+        label: Start Time
+        in_list_view: true
+        in_form_view: true
+        form_group: schedule
+        form_order: 3
+      end_time:
+        type: text
+        label: End Time
+        in_list_view: true
+        in_form_view: true
+        form_group: schedule
+        form_order: 4
+      slot_duration:
+        type: number
+        label: Slot Duration (min)
+        in_list_view: true
+        in_form_view: true
+        form_group: schedule
+        form_order: 5
+      location:
+        type: text
+        label: Location
+        in_list_view: true
+        in_form_view: true
+        form_group: schedule
+        form_order: 6
+      status:
+        type: select
+        label: Status
+        options:
+          - { value: active, label: Active }
+          - { value: inactive, label: Inactive }
+        in_list_view: true
+        in_form_view: true
+        form_group: header
+        form_order: 7
+      company_id:
+        type: link
+        label: Company
+        entity_lookup: { skill: erpclaw-setup, entity: company, display_field: name }
+        link_entity: company
+        link_display_field: name
+        link_search_action: list-companies
+        required: true
+        in_form_view: true
+        form_group: header
+        form_order: 8
+    form_groups:
+      header:
+        label: Provider Information
+        order: 1
+        columns: 2
+      schedule:
+        label: Schedule Details
+        order: 2
+        columns: 2
+    actions:
+      add: { action: add-provider-schedule, label: Add Schedule }
+      update: { action: update-provider-schedule, label: Update Schedule }
+      list: { action: list-provider-schedules, label: List Schedules }
+    list_columns: [day_of_week, start_time, end_time, slot_duration, location, status]
+
+  schedule_block:
+    label: Schedule Block
+    label_plural: Schedule Blocks
+    table: healthclaw_schedule_block
+    id_col: id
+    name_col: reason
+    primary_field: reason
+    secondary_field: block_date
+    tab_hidden: true
+    fields:
+      id:
+        type: text
+        label: ID
+        read_only: true
+        hidden: true
+      provider_id:
+        type: link
+        label: Provider
+        entity_lookup: { skill: erpclaw-hr, entity: employee, display_field: full_name }
+        link_entity: employee
+        link_display_field: full_name
+        link_search_action: list-employees
+        required: true
+        in_form_view: true
+        form_group: header
+        form_order: 1
+      block_date:
+        type: date
+        label: Block Date
+        required: true
+        in_list_view: true
+        in_form_view: true
+        form_group: header
+        form_order: 2
+      start_time:
+        type: text
+        label: Start Time
+        in_list_view: true
+        in_form_view: true
+        form_group: schedule
+        form_order: 3
+      end_time:
+        type: text
+        label: End Time
+        in_list_view: true
+        in_form_view: true
+        form_group: schedule
+        form_order: 4
+      reason:
+        type: select
+        label: Reason
+        required: true
+        options:
+          - { value: vacation, label: Vacation }
+          - { value: meeting, label: Meeting }
+          - { value: personal, label: Personal }
+          - { value: maintenance, label: Maintenance }
+          - { value: holiday, label: Holiday }
+          - { value: other, label: Other }
+        in_list_view: true
+        in_form_view: true
+        form_group: header
+        form_order: 5
+      notes:
+        type: textarea
+        label: Notes
+        in_form_view: true
+        form_group: details
+        form_order: 6
+      company_id:
+        type: link
+        label: Company
+        entity_lookup: { skill: erpclaw-setup, entity: company, display_field: name }
+        link_entity: company
+        link_display_field: name
+        link_search_action: list-companies
+        required: true
+        in_form_view: true
+        form_group: header
+        form_order: 7
+    form_groups:
+      header:
+        label: Block Information
+        order: 1
+        columns: 2
+      schedule:
+        label: Time Range
+        order: 2
+        columns: 2
+      details:
+        label: Details
+        order: 3
+        columns: 2
+    actions:
+      add: { action: add-schedule-block, label: Add Block }
+      list: { action: list-schedule-blocks, label: List Blocks }
+    list_columns: [block_date, start_time, end_time, reason]
+
+  waitlist:
+    label: Waitlist Entry
+    label_plural: Waitlist
+    table: healthclaw_waitlist
+    id_col: id
+    name_col: patient_id
+    primary_field: patient_id
+    secondary_field: priority
+    status_field: status
+    status_colors:
+      waiting: yellow
+      offered: blue
+      accepted: green
+      expired: gray
+      cancelled: red
+    tab_hidden: true
+    fields:
+      id:
+        type: text
+        label: ID
+        read_only: true
+        hidden: true
+      patient_id:
+        type: link
+        label: Patient
+        entity_lookup: { entity: patient, display_field: full_name }
+        link_entity: patient
+        link_display_field: full_name
+        link_search_action: list-patients
+        required: true
+        in_form_view: true
+        form_group: header
+        form_order: 1
+      provider_id:
+        type: link
+        label: Preferred Provider
+        entity_lookup: { skill: erpclaw-hr, entity: employee, display_field: full_name }
+        link_entity: employee
+        link_display_field: full_name
+        link_search_action: list-employees
+        in_form_view: true
+        form_group: header
+        form_order: 2
+      preferred_date_start:
+        type: date
+        label: Preferred Date Start
+        in_list_view: true
+        in_form_view: true
+        form_group: preferences
+        form_order: 3
+      preferred_date_end:
+        type: date
+        label: Preferred Date End
+        in_form_view: true
+        form_group: preferences
+        form_order: 4
+      appointment_type:
+        type: text
+        label: Appointment Type
+        in_list_view: true
+        in_form_view: true
+        form_group: preferences
+        form_order: 5
+      priority:
+        type: select
+        label: Priority
+        options:
+          - { value: low, label: Low }
+          - { value: normal, label: Normal }
+          - { value: high, label: High }
+          - { value: urgent, label: Urgent }
+        in_list_view: true
+        in_form_view: true
+        form_group: header
+        form_order: 6
+      status:
+        type: select
+        label: Status
+        options:
+          - { value: waiting, label: Waiting }
+          - { value: offered, label: Offered }
+          - { value: accepted, label: Accepted }
+          - { value: expired, label: Expired }
+          - { value: cancelled, label: Cancelled }
+        in_list_view: true
+        in_form_view: true
+        form_group: header
+        form_order: 7
+      notes:
+        type: textarea
+        label: Notes
+        in_form_view: true
+        form_group: details
+        form_order: 8
+      company_id:
+        type: link
+        label: Company
+        entity_lookup: { skill: erpclaw-setup, entity: company, display_field: name }
+        link_entity: company
+        link_display_field: name
+        link_search_action: list-companies
+        required: true
+        in_form_view: true
+        form_group: header
+        form_order: 9
+    form_groups:
+      header:
+        label: Waitlist Information
+        order: 1
+        columns: 2
+      preferences:
+        label: Preferences
+        order: 2
+        columns: 2
+      details:
+        label: Details
+        order: 3
+        columns: 2
+    actions:
+      add: { action: add-waitlist, label: Add to Waitlist }
+      update: { action: update-waitlist, label: Update Waitlist }
+      list: { action: list-waitlist, label: List Waitlist }
+    list_columns: [priority, appointment_type, preferred_date_start, status]
+
+  # ---------------------------------------------------------------------------
+  # CLINICAL domain
+  # ---------------------------------------------------------------------------
+  # ---------------------------------------------------------------------------
+  # CLINICAL domain
+  # ---------------------------------------------------------------------------
+  encounter:
+    label: Encounter
+    label_plural: Encounters
+    table: healthclaw_encounter
+    id_col: id
+    name_col: naming_series
+    primary_field: naming_series
+    secondary_field: encounter_type
+    identifier_field: naming_series
+    status_field: status
+    status_colors:
+      open: blue
+      in_progress: yellow
+      completed: green
+      cancelled: gray
+    fields:
+      id:
+        type: text
+        label: ID
+        read_only: true
+        hidden: true
+      naming_series:
+        type: text
+        label: Encounter No.
+        read_only: true
+        in_list_view: true
+      patient_id:
+        type: link
+        label: Patient
+        link_entity: patient
+        link_display_field: full_name
+        link_search_action: list-patients
+        entity_lookup: { entity: patient, display_field: full_name }
+        required: true
+        in_form_view: true
+        form_group: header
+        form_order: 1
+      appointment_id:
+        type: link
+        label: Appointment
+        link_entity: appointment
+        link_display_field: naming_series
+        link_search_action: list-appointments
+        entity_lookup: { entity: appointment, display_field: naming_series }
+        in_form_view: true
+        form_group: header
+        form_order: 2
+      provider_id:
+        type: link
+        label: Provider
+        link_entity: employee
+        link_display_field: full_name
+        link_search_action: list-employees
+        entity_lookup: { skill: erpclaw-hr, entity: employee, display_field: full_name }
+        required: true
+        in_form_view: true
+        form_group: header
+        form_order: 3
+      encounter_date:
+        type: date
+        label: Date
+        required: true
+        in_list_view: true
+        in_form_view: true
+        form_group: schedule
+        form_order: 4
+      encounter_type:
+        type: select
+        label: Type
+        required: true
+        options:
+          - value: "outpatient"
+            label: "Outpatient"
+          - value: "inpatient"
+            label: "Inpatient"
+          - value: "emergency"
+            label: "Emergency"
+          - value: "observation"
+            label: "Observation"
+          - value: "telehealth"
+            label: "Telehealth"
+          - value: "home_visit"
+            label: "Home Visit"
+        in_list_view: true
+        in_form_view: true
+        form_group: header
+        form_order: 5
+      chief_complaint:
+        type: text
+        label: Chief Complaint
+        in_list_view: true
+        in_form_view: true
+        form_group: schedule
+        form_order: 6
+      department:
+        type: text
+        label: Department
+        in_form_view: true
+        form_group: schedule
+        form_order: 7
+      room:
+        type: text
+        label: Room
+        in_form_view: true
+        form_group: schedule
+        form_order: 8
+      admission_date:
+        type: date
+        label: Admission Date
+        in_form_view: true
+        form_group: admission
+        form_order: 9
+      discharge_date:
+        type: date
+        label: Discharge Date
+        in_form_view: true
+        form_group: admission
+        form_order: 10
+      discharge_disposition:
+        type: text
+        label: Discharge Disposition
+        in_form_view: true
+        form_group: admission
+        form_order: 11
+      status:
+        type: select
+        label: Status
+        options:
+          - value: "open"
+            label: "Open"
+          - value: "in_progress"
+            label: "In Progress"
+          - value: "completed"
+            label: "Completed"
+          - value: "cancelled"
+            label: "Cancelled"
+        in_list_view: true
+        in_form_view: true
+        form_group: header
+        form_order: 12
+      notes:
+        type: textarea
+        label: Notes
+        in_form_view: true
+        form_group: admission
+        form_order: 13
+      company_id:
+        type: link
+        label: Company
+        link_entity: company
+        link_display_field: name
+        link_search_action: list-companies
+        entity_lookup: { skill: erpclaw-setup, entity: company, display_field: name }
+        required: true
+        in_form_view: true
+        form_group: header
+        form_order: 14
+    form_groups:
+      header:
+        label: Patient / Provider / Type
+        order: 1
+        columns: 2
+      schedule:
+        label: Date / Department
+        order: 2
+        columns: 2
+      admission:
+        label: Admission Info
+        order: 3
+        columns: 2
+    actions:
+      add: { action: add-encounter, label: New Encounter }
+      update: { action: update-encounter, label: Update Encounter }
+      get: { action: get-encounter, label: View Encounter }
+      list: { action: list-encounters, label: List Encounters }
+    list_columns: [naming_series, encounter_date, encounter_type, chief_complaint, status]
+    search_fields: [naming_series]
+
+  vitals:
+    label: Vitals
+    label_plural: Vitals
+    table: healthclaw_vitals
+    id_col: id
+    name_col: recorded_at
+    primary_field: recorded_at
+    secondary_field: temperature
+    parent_entity: encounter
+    parent_id_field: encounter_id
+    tab_hidden: true
+    fields:
+      id:
+        type: text
+        label: ID
+        read_only: true
+        hidden: true
+      encounter_id:
+        type: link
+        label: Encounter
+        link_entity: encounter
+        link_display_field: naming_series
+        link_search_action: list-encounters
+        entity_lookup: { entity: encounter, display_field: naming_series }
+        required: true
+        in_form_view: true
+        form_group: header
+        form_order: 1
+      patient_id:
+        type: link
+        label: Patient
+        link_entity: patient
+        link_display_field: full_name
+        link_search_action: list-patients
+        entity_lookup: { entity: patient, display_field: full_name }
+        required: true
+        in_form_view: true
+        form_group: header
+        form_order: 2
+      recorded_at:
+        type: text
+        label: Recorded At
+        read_only: true
+        in_list_view: true
+      temperature:
+        type: text
+        label: Temperature (F)
+        in_list_view: true
+        in_form_view: true
+        form_group: measurements
+        form_order: 3
+      temperature_site:
+        type: select
+        label: Temp Site
+        options:
+          - value: "oral"
+            label: "Oral"
+          - value: "tympanic"
+            label: "Tympanic"
+          - value: "axillary"
+            label: "Axillary"
+          - value: "rectal"
+            label: "Rectal"
+          - value: "temporal"
+            label: "Temporal"
+        in_form_view: true
+        form_group: measurements
+        form_order: 4
+      heart_rate:
+        type: number
+        label: Heart Rate (bpm)
+        in_list_view: true
+        in_form_view: true
+        form_group: measurements
+        form_order: 5
+      respiratory_rate:
+        type: number
+        label: Respiratory Rate
+        in_form_view: true
+        form_group: measurements
+        form_order: 6
+      blood_pressure_systolic:
+        type: number
+        label: BP Systolic
+        in_list_view: true
+        in_form_view: true
+        form_group: measurements
+        form_order: 7
+      blood_pressure_diastolic:
+        type: number
+        label: BP Diastolic
+        in_list_view: true
+        in_form_view: true
+        form_group: measurements
+        form_order: 8
+      oxygen_saturation:
+        type: text
+        label: O2 Sat (%)
+        in_list_view: true
+        in_form_view: true
+        form_group: measurements
+        form_order: 9
+      weight:
+        type: text
+        label: Weight
+        in_form_view: true
+        form_group: body
+        form_order: 10
+      height:
+        type: text
+        label: Height
+        in_form_view: true
+        form_group: body
+        form_order: 11
+      bmi:
+        type: text
+        label: BMI
+        read_only: true
+      pain_level:
+        type: number
+        label: Pain Level (0-10)
+        in_form_view: true
+        form_group: body
+        form_order: 12
+      notes:
+        type: textarea
+        label: Notes
+        in_form_view: true
+        form_group: body
+        form_order: 13
+    form_groups:
+      header:
+        label: Encounter / Patient
+        order: 1
+        columns: 2
+      measurements:
+        label: Measurements
+        order: 2
+        columns: 2
+      body:
+        label: Body Metrics
+        order: 3
+        columns: 2
+    actions:
+      add: { action: add-vitals, label: Record Vitals }
+      list: { action: list-vitals, label: List Vitals }
+    list_columns: [recorded_at, temperature, heart_rate, blood_pressure_systolic, blood_pressure_diastolic, oxygen_saturation]
+
+  diagnosis:
+    label: Diagnosis
+    label_plural: Diagnoses
+    table: healthclaw_diagnosis
+    id_col: id
+    name_col: icd10_code
+    primary_field: icd10_code
+    secondary_field: description
+    parent_entity: encounter
+    parent_id_field: encounter_id
+    status_field: status
+    status_colors:
+      active: red
+      resolved: green
+      chronic: yellow
+      rule_out: blue
+    tab_hidden: true
+    fields:
+      id:
+        type: text
+        label: ID
+        read_only: true
+        hidden: true
+      encounter_id:
+        type: link
+        label: Encounter
+        link_entity: encounter
+        link_display_field: naming_series
+        link_search_action: list-encounters
+        entity_lookup: { entity: encounter, display_field: naming_series }
+        required: true
+        in_form_view: true
+        form_group: header
+        form_order: 1
+      patient_id:
+        type: link
+        label: Patient
+        link_entity: patient
+        link_display_field: full_name
+        link_search_action: list-patients
+        entity_lookup: { entity: patient, display_field: full_name }
+        required: true
+        in_form_view: true
+        form_group: header
+        form_order: 2
+      icd10_code:
+        type: text
+        label: ICD-10 Code
+        required: true
+        in_list_view: true
+        in_form_view: true
+        form_group: details
+        form_order: 3
+      description:
+        type: text
+        label: Description
+        required: true
+        in_list_view: true
+        in_form_view: true
+        form_group: details
+        form_order: 4
+      diagnosis_type:
+        type: select
+        label: Type
+        required: true
+        options:
+          - value: "primary"
+            label: "Primary"
+          - value: "secondary"
+            label: "Secondary"
+          - value: "admitting"
+            label: "Admitting"
+          - value: "discharge"
+            label: "Discharge"
+          - value: "rule_out"
+            label: "Rule Out"
+        in_list_view: true
+        in_form_view: true
+        form_group: details
+        form_order: 5
+      status:
+        type: select
+        label: Status
+        options:
+          - value: "active"
+            label: "Active"
+          - value: "resolved"
+            label: "Resolved"
+          - value: "chronic"
+            label: "Chronic"
+          - value: "rule_out"
+            label: "Rule Out"
+        in_list_view: true
+        in_form_view: true
+        form_group: details
+        form_order: 6
+      onset_date:
+        type: date
+        label: Onset Date
+        in_form_view: true
+        form_group: details
+        form_order: 7
+      notes:
+        type: textarea
+        label: Notes
+        in_form_view: true
+        form_group: details
+        form_order: 8
+    form_groups:
+      header:
+        label: Encounter / Patient
+        order: 1
+        columns: 2
+      details:
+        label: Diagnosis Details
+        order: 2
+        columns: 2
+    actions:
+      add: { action: add-diagnosis, label: Add Diagnosis }
+      update: { action: update-diagnosis, label: Update Diagnosis }
+      list: { action: list-diagnoses, label: List Diagnoses }
+    list_columns: [icd10_code, description, diagnosis_type, status]
+
+  prescription:
+    label: Prescription
+    label_plural: Prescriptions
+    table: healthclaw_prescription
+    id_col: id
+    name_col: naming_series
+    primary_field: medication_name
+    secondary_field: dosage
+    identifier_field: naming_series
+    parent_entity: encounter
+    parent_id_field: encounter_id
+    status_field: status
+    status_colors:
+      active: green
+      completed: blue
+      discontinued: red
+      cancelled: gray
+      on_hold: yellow
+    tab_hidden: true
+    fields:
+      id:
+        type: text
+        label: ID
+        read_only: true
+        hidden: true
+      naming_series:
+        type: text
+        label: Rx No.
+        read_only: true
+        in_list_view: true
+      encounter_id:
+        type: link
+        label: Encounter
+        link_entity: encounter
+        link_display_field: naming_series
+        link_search_action: list-encounters
+        entity_lookup: { entity: encounter, display_field: naming_series }
+        required: true
+        in_form_view: true
+        form_group: header
+        form_order: 1
+      patient_id:
+        type: link
+        label: Patient
+        link_entity: patient
+        link_display_field: full_name
+        link_search_action: list-patients
+        entity_lookup: { entity: patient, display_field: full_name }
+        required: true
+        in_form_view: true
+        form_group: header
+        form_order: 2
+      prescriber_id:
+        type: link
+        label: Prescriber
+        link_entity: employee
+        link_display_field: full_name
+        link_search_action: list-employees
+        entity_lookup: { skill: erpclaw-hr, entity: employee, display_field: full_name }
+        required: true
+        in_form_view: true
+        form_group: header
+        form_order: 3
+      medication_name:
+        type: text
+        label: Medication
+        required: true
+        in_list_view: true
+        in_form_view: true
+        form_group: medication
+        form_order: 4
+      ndc_code:
+        type: text
+        label: NDC Code
+        in_form_view: true
+        form_group: medication
+        form_order: 5
+      dosage:
+        type: text
+        label: Dosage
+        required: true
+        in_list_view: true
+        in_form_view: true
+        form_group: dosing
+        form_order: 6
+      frequency:
+        type: text
+        label: Frequency
+        required: true
+        in_list_view: true
+        in_form_view: true
+        form_group: dosing
+        form_order: 7
+      route:
+        type: select
+        label: Route
+        required: true
+        options:
+          - value: "oral"
+            label: "Oral"
+          - value: "iv"
+            label: "IV"
+          - value: "im"
+            label: "IM"
+          - value: "subq"
+            label: "SubQ"
+          - value: "topical"
+            label: "Topical"
+          - value: "inhaled"
+            label: "Inhaled"
+          - value: "rectal"
+            label: "Rectal"
+          - value: "ophthalmic"
+            label: "Ophthalmic"
+          - value: "otic"
+            label: "Otic"
+          - value: "nasal"
+            label: "Nasal"
+          - value: "sublingual"
+            label: "Sublingual"
+          - value: "transdermal"
+            label: "Transdermal"
+          - value: "other"
+            label: "Other"
+        in_list_view: true
+        in_form_view: true
+        form_group: dosing
+        form_order: 8
+      quantity:
+        type: text
+        label: Quantity
+        in_form_view: true
+        form_group: pharmacy
+        form_order: 9
+      refills:
+        type: number
+        label: Refills
+        in_form_view: true
+        form_group: pharmacy
+        form_order: 10
+      daw:
+        type: number
+        label: Dispense As Written
+        in_form_view: true
+        form_group: pharmacy
+        form_order: 11
+      start_date:
+        type: date
+        label: Start Date
+        required: true
+        in_form_view: true
+        form_group: dosing
+        form_order: 12
+      end_date:
+        type: date
+        label: End Date
+        in_form_view: true
+        form_group: dosing
+        form_order: 13
+      controlled_schedule:
+        type: select
+        label: Schedule
+        options:
+          - value: "II"
+            label: "II"
+          - value: "III"
+            label: "III"
+          - value: "IV"
+            label: "IV"
+          - value: "V"
+            label: "V"
+        in_form_view: true
+        form_group: pharmacy
+        form_order: 14
+      pharmacy_notes:
+        type: textarea
+        label: Pharmacy Notes
+        in_form_view: true
+        form_group: pharmacy
+        form_order: 15
+      status:
+        type: select
+        label: Status
+        options:
+          - value: "active"
+            label: "Active"
+          - value: "completed"
+            label: "Completed"
+          - value: "discontinued"
+            label: "Discontinued"
+          - value: "cancelled"
+            label: "Cancelled"
+          - value: "on_hold"
+            label: "On Hold"
+        in_list_view: true
+        in_form_view: true
+        form_group: header
+        form_order: 16
+      notes:
+        type: textarea
+        label: Notes
+        in_form_view: true
+        form_group: pharmacy
+        form_order: 17
+      company_id:
+        type: link
+        label: Company
+        link_entity: company
+        link_display_field: name
+        link_search_action: list-companies
+        entity_lookup: { skill: erpclaw-setup, entity: company, display_field: name }
+        required: true
+        in_form_view: true
+        form_group: header
+        form_order: 18
+    form_groups:
+      header:
+        label: Encounter / Patient / Prescriber
+        order: 1
+        columns: 2
+      medication:
+        label: Medication
+        order: 2
+        columns: 2
+      dosing:
+        label: Dosing
+        order: 3
+        columns: 2
+      pharmacy:
+        label: Pharmacy
+        order: 4
+        columns: 2
+    actions:
+      add: { action: add-prescription, label: Write Prescription }
+      update: { action: update-prescription, label: Update Prescription }
+      list: { action: list-prescriptions, label: List Prescriptions }
+    list_columns: [naming_series, medication_name, dosage, frequency, route, status]
+
+  procedure:
+    label: Procedure
+    label_plural: Procedures
+    table: healthclaw_procedure
+    id_col: id
+    name_col: naming_series
+    primary_field: cpt_code
+    secondary_field: description
+    identifier_field: naming_series
+    parent_entity: encounter
+    parent_id_field: encounter_id
+    status_field: status
+    status_colors:
+      planned: blue
+      in_progress: yellow
+      completed: green
+      cancelled: gray
+    tab_hidden: true
+    fields:
+      id:
+        type: text
+        label: ID
+        read_only: true
+        hidden: true
+      naming_series:
+        type: text
+        label: Procedure No.
+        read_only: true
+        in_list_view: true
+      encounter_id:
+        type: link
+        label: Encounter
+        link_entity: encounter
+        link_display_field: naming_series
+        link_search_action: list-encounters
+        entity_lookup: { entity: encounter, display_field: naming_series }
+        required: true
+        in_form_view: true
+        form_group: header
+        form_order: 1
+      patient_id:
+        type: link
+        label: Patient
+        link_entity: patient
+        link_display_field: full_name
+        link_search_action: list-patients
+        entity_lookup: { entity: patient, display_field: full_name }
+        required: true
+        in_form_view: true
+        form_group: header
+        form_order: 2
+      provider_id:
+        type: link
+        label: Provider
+        link_entity: employee
+        link_display_field: full_name
+        link_search_action: list-employees
+        entity_lookup: { skill: erpclaw-hr, entity: employee, display_field: full_name }
+        required: true
+        in_form_view: true
+        form_group: header
+        form_order: 3
+      cpt_code:
+        type: text
+        label: CPT Code
+        required: true
+        in_list_view: true
+        in_form_view: true
+        form_group: details
+        form_order: 4
+      description:
+        type: text
+        label: Description
+        required: true
+        in_list_view: true
+        in_form_view: true
+        form_group: details
+        form_order: 5
+      procedure_date:
+        type: date
+        label: Date
+        required: true
+        in_list_view: true
+        in_form_view: true
+        form_group: details
+        form_order: 6
+      modifiers:
+        type: text
+        label: Modifiers
+        in_form_view: true
+        form_group: details
+        form_order: 7
+      anesthesia_type:
+        type: select
+        label: Anesthesia
+        options:
+          - value: "none"
+            label: "None"
+          - value: "local"
+            label: "Local"
+          - value: "regional"
+            label: "Regional"
+          - value: "general"
+            label: "General"
+          - value: "sedation"
+            label: "Sedation"
+        in_form_view: true
+        form_group: details
+        form_order: 8
+      body_site:
+        type: text
+        label: Body Site
+        in_form_view: true
+        form_group: details
+        form_order: 9
+      laterality:
+        type: select
+        label: Laterality
+        options:
+          - value: "left"
+            label: "Left"
+          - value: "right"
+            label: "Right"
+          - value: "bilateral"
+            label: "Bilateral"
+          - value: "not_applicable"
+            label: "Not Applicable"
+        in_form_view: true
+        form_group: details
+        form_order: 10
+      status:
+        type: select
+        label: Status
+        options:
+          - value: "planned"
+            label: "Planned"
+          - value: "in_progress"
+            label: "In Progress"
+          - value: "completed"
+            label: "Completed"
+          - value: "cancelled"
+            label: "Cancelled"
+        in_list_view: true
+        in_form_view: true
+        form_group: header
+        form_order: 11
+      notes:
+        type: textarea
+        label: Notes
+        in_form_view: true
+        form_group: details
+        form_order: 12
+      company_id:
+        type: link
+        label: Company
+        link_entity: company
+        link_display_field: name
+        link_search_action: list-companies
+        entity_lookup: { skill: erpclaw-setup, entity: company, display_field: name }
+        required: true
+        in_form_view: true
+        form_group: header
+        form_order: 13
+    form_groups:
+      header:
+        label: Encounter / Patient / Provider
+        order: 1
+        columns: 2
+      details:
+        label: Procedure Details
+        order: 2
+        columns: 2
+    actions:
+      add: { action: add-procedure, label: Add Procedure }
+      update: { action: update-procedure, label: Update Procedure }
+      list: { action: list-procedures, label: List Procedures }
+    list_columns: [naming_series, cpt_code, description, procedure_date, status]
+
+  clinical_note:
+    label: Clinical Note
+    label_plural: Clinical Notes
+    table: healthclaw_clinical_note
+    id_col: id
+    name_col: note_type
+    primary_field: note_type
+    secondary_field: created_at
+    parent_entity: encounter
+    parent_id_field: encounter_id
+    status_field: status
+    status_colors:
+      draft: yellow
+      signed: green
+      cosigned: blue
+      amended: orange
+      addended: purple
+    tab_hidden: true
+    fields:
+      id:
+        type: text
+        label: ID
+        read_only: true
+        hidden: true
+      encounter_id:
+        type: link
+        label: Encounter
+        link_entity: encounter
+        link_display_field: naming_series
+        link_search_action: list-encounters
+        entity_lookup: { entity: encounter, display_field: naming_series }
+        required: true
+        in_form_view: true
+        form_group: header
+        form_order: 1
+      patient_id:
+        type: link
+        label: Patient
+        link_entity: patient
+        link_display_field: full_name
+        link_search_action: list-patients
+        entity_lookup: { entity: patient, display_field: full_name }
+        required: true
+        in_form_view: true
+        form_group: header
+        form_order: 2
+      author_id:
+        type: link
+        label: Author
+        link_entity: employee
+        link_display_field: full_name
+        link_search_action: list-employees
+        entity_lookup: { skill: erpclaw-hr, entity: employee, display_field: full_name }
+        required: true
+        in_list_view: true
+        in_form_view: true
+        form_group: header
+        form_order: 3
+      note_type:
+        type: select
+        label: Note Type
+        required: true
+        options:
+          - value: "progress"
+            label: "Progress"
+          - value: "soap"
+            label: "SOAP"
+          - value: "hpi"
+            label: "HPI"
+          - value: "consultation"
+            label: "Consultation"
+          - value: "discharge"
+            label: "Discharge"
+          - value: "operative"
+            label: "Operative"
+          - value: "procedure"
+            label: "Procedure"
+          - value: "nursing"
+            label: "Nursing"
+          - value: "other"
+            label: "Other"
+        in_list_view: true
+        in_form_view: true
+        form_group: header
+        form_order: 4
+      subjective:
+        type: textarea
+        label: Subjective (S)
+        in_form_view: true
+        form_group: soap
+        form_order: 5
+      objective:
+        type: textarea
+        label: Objective (O)
+        in_form_view: true
+        form_group: soap
+        form_order: 6
+      assessment:
+        type: textarea
+        label: Assessment (A)
+        in_form_view: true
+        form_group: soap
+        form_order: 7
+      plan:
+        type: textarea
+        label: Plan (P)
+        in_form_view: true
+        form_group: soap
+        form_order: 8
+      body:
+        type: textarea
+        label: Body
+        in_form_view: true
+        form_group: content
+        form_order: 9
+      addendum:
+        type: textarea
+        label: Addendum
+        in_form_view: true
+        form_group: content
+        form_order: 10
+      status:
+        type: select
+        label: Status
+        options:
+          - value: "draft"
+            label: "Draft"
+          - value: "signed"
+            label: "Signed"
+          - value: "cosigned"
+            label: "Cosigned"
+          - value: "amended"
+            label: "Amended"
+          - value: "addended"
+            label: "Addended"
+        in_list_view: true
+        in_form_view: true
+        form_group: header
+        form_order: 11
+    form_groups:
+      header:
+        label: Encounter / Author / Type
+        order: 1
+        columns: 2
+      soap:
+        label: SOAP Notes
+        order: 2
+        columns: 1
+      content:
+        label: Content
+        order: 3
+        columns: 1
+    actions:
+      add: { action: add-clinical-note, label: Add Note }
+      update: { action: update-clinical-note, label: Update Note }
+      list: { action: list-clinical-notes, label: List Notes }
+    list_columns: [note_type, author_id, status, created_at]
+
+  clinical_order:
+    label: Clinical Order
+    label_plural: Clinical Orders
+    table: healthclaw_order
+    id_col: id
+    name_col: naming_series
+    primary_field: order_type
+    secondary_field: clinical_indication
+    identifier_field: naming_series
+    parent_entity: encounter
+    parent_id_field: encounter_id
+    status_field: status
+    status_colors:
+      pending: yellow
+      in_progress: blue
+      completed: green
+      cancelled: gray
+    tab_hidden: true
+    fields:
+      id:
+        type: text
+        label: ID
+        read_only: true
+        hidden: true
+      naming_series:
+        type: text
+        label: Order No.
+        read_only: true
+        in_list_view: true
+      encounter_id:
+        type: link
+        label: Encounter
+        link_entity: encounter
+        link_display_field: naming_series
+        link_search_action: list-encounters
+        entity_lookup: { entity: encounter, display_field: naming_series }
+        required: true
+        in_form_view: true
+        form_group: header
+        form_order: 1
+      patient_id:
+        type: link
+        label: Patient
+        link_entity: patient
+        link_display_field: full_name
+        link_search_action: list-patients
+        entity_lookup: { entity: patient, display_field: full_name }
+        required: true
+        in_form_view: true
+        form_group: header
+        form_order: 2
+      ordering_provider_id:
+        type: link
+        label: Ordering Provider
+        link_entity: employee
+        link_display_field: full_name
+        link_search_action: list-employees
+        entity_lookup: { skill: erpclaw-hr, entity: employee, display_field: full_name }
+        required: true
+        in_form_view: true
+        form_group: header
+        form_order: 3
+      order_type:
+        type: select
+        label: Order Type
+        required: true
+        options:
+          - value: "lab"
+            label: "Lab"
+          - value: "imaging"
+            label: "Imaging"
+          - value: "referral"
+            label: "Referral"
+          - value: "procedure"
+            label: "Procedure"
+          - value: "other"
+            label: "Other"
+        in_list_view: true
+        in_form_view: true
+        form_group: details
+        form_order: 4
+      order_date:
+        type: date
+        label: Order Date
+        required: true
+        in_list_view: true
+        in_form_view: true
+        form_group: details
+        form_order: 5
+      priority:
+        type: select
+        label: Priority
+        options:
+          - value: "stat"
+            label: "Stat"
+          - value: "urgent"
+            label: "Urgent"
+          - value: "routine"
+            label: "Routine"
+          - value: "elective"
+            label: "Elective"
+        in_list_view: true
+        in_form_view: true
+        form_group: details
+        form_order: 6
+      clinical_indication:
+        type: text
+        label: Clinical Indication
+        in_form_view: true
+        form_group: details
+        form_order: 7
+      status:
+        type: select
+        label: Status
+        options:
+          - value: "pending"
+            label: "Pending"
+          - value: "in_progress"
+            label: "In Progress"
+          - value: "completed"
+            label: "Completed"
+          - value: "cancelled"
+            label: "Cancelled"
+        in_list_view: true
+        in_form_view: true
+        form_group: details
+        form_order: 8
+      notes:
+        type: textarea
+        label: Notes
+        in_form_view: true
+        form_group: details
+        form_order: 9
+      company_id:
+        type: link
+        label: Company
+        link_entity: company
+        link_display_field: name
+        link_search_action: list-companies
+        entity_lookup: { skill: erpclaw-setup, entity: company, display_field: name }
+        required: true
+        in_form_view: true
+        form_group: header
+        form_order: 10
+    form_groups:
+      header:
+        label: Encounter / Patient / Provider
+        order: 1
+        columns: 2
+      details:
+        label: Order Details
+        order: 2
+        columns: 2
+    actions:
+      add: { action: add-order, label: Add Order }
+      update: { action: update-order, label: Update Order }
+      list: { action: list-orders, label: List Orders }
+    list_columns: [naming_series, order_type, order_date, priority, status]
+
+  # ---------------------------------------------------------------------------
+  # BILLING domain
+  # ---------------------------------------------------------------------------
+  # ---------------------------------------------------------------------------
+  # BILLING domain
+  # ---------------------------------------------------------------------------
+  fee_schedule:
+    label: Fee Schedule
+    label_plural: Fee Schedules
+    table: healthclaw_fee_schedule
+    id_col: id
+    name_col: name
+    primary_field: name
+    secondary_field: payer_type
+    status_field: status
+    status_colors:
+      active: green
+      inactive: yellow
+      expired: gray
+    fields:
+      id:
+        type: text
+        label: ID
+        read_only: true
+        hidden: true
+      name:
+        type: text
+        label: Name
+        required: true
+        in_list_view: true
+        in_form_view: true
+        form_group: header
+        form_order: 1
+      description:
+        type: text
+        label: Description
+        in_form_view: true
+        form_group: header
+        form_order: 2
+      payer_type:
+        type: select
+        label: Payer Type
+        options:
+          - { value: commercial, label: Commercial }
+          - { value: medicare, label: Medicare }
+          - { value: medicaid, label: Medicaid }
+          - { value: self_pay, label: Self Pay }
+          - { value: workers_comp, label: Workers Comp }
+          - { value: other, label: Other }
+        in_list_view: true
+        in_form_view: true
+        form_group: header
+        form_order: 3
+      effective_date:
+        type: date
+        label: Effective Date
+        required: true
+        in_list_view: true
+        in_form_view: true
+        form_group: dates
+        form_order: 4
+      expiration_date:
+        type: date
+        label: Expiration Date
+        in_form_view: true
+        form_group: dates
+        form_order: 5
+      status:
+        type: select
+        label: Status
+        options:
+          - { value: active, label: Active }
+          - { value: inactive, label: Inactive }
+          - { value: expired, label: Expired }
+        in_list_view: true
+        in_form_view: true
+        form_group: header
+        form_order: 6
+      company_id:
+        type: link
+        label: Company
+        required: true
+        link_entity: company
+        link_display_field: name
+        link_search_action: list-companies
+        entity_lookup: { skill: erpclaw-setup, entity: company, display_field: name }
+        in_form_view: true
+        form_group: header
+        form_order: 7
+    form_groups:
+      header:
+        label: Fee Schedule Information
+        order: 1
+        columns: 2
+      dates:
+        label: Effective Dates
+        order: 2
+        columns: 2
+    actions:
+      add: { action: add-fee-schedule, label: Add Fee Schedule }
+      update: { action: update-fee-schedule, label: Update Fee Schedule }
+      list: { action: list-fee-schedules, label: List Fee Schedules }
+    list_columns: [name, payer_type, effective_date, status]
+
+  fee_schedule_item:
+    label: Fee Schedule Item
+    label_plural: Fee Schedule Items
+    table: healthclaw_fee_schedule_item
+    id_col: id
+    name_col: cpt_code
+    primary_field: cpt_code
+    secondary_field: description
+    parent_entity: fee_schedule
+    parent_id_field: fee_schedule_id
+    tab_hidden: true
+    fields:
+      id:
+        type: text
+        label: ID
+        read_only: true
+        hidden: true
+      fee_schedule_id:
+        type: link
+        label: Fee Schedule
+        required: true
+        link_entity: fee_schedule
+        link_display_field: name
+        link_search_action: list-fee-schedules
+        entity_lookup: { entity: fee_schedule, display_field: name }
+        in_form_view: true
+        form_group: header
+        form_order: 1
+      cpt_code:
+        type: text
+        label: CPT Code
+        required: true
+        in_list_view: true
+        in_form_view: true
+        form_group: header
+        form_order: 2
+      description:
+        type: text
+        label: Description
+        in_list_view: true
+        in_form_view: true
+        form_group: header
+        form_order: 3
+      standard_charge:
+        type: currency
+        label: Standard Charge
+        required: true
+        in_list_view: true
+        in_form_view: true
+        form_group: amounts
+        form_order: 4
+      allowed_amount:
+        type: currency
+        label: Allowed Amount
+        in_list_view: true
+        in_form_view: true
+        form_group: amounts
+        form_order: 5
+      unit_count:
+        type: number
+        label: Unit Count
+        in_form_view: true
+        form_group: amounts
+        form_order: 6
+      modifier:
+        type: text
+        label: Modifier
+        in_form_view: true
+        form_group: header
+        form_order: 7
+    form_groups:
+      header:
+        label: Item Information
+        order: 1
+        columns: 2
+      amounts:
+        label: Charge Amounts
+        order: 2
+        columns: 2
+    actions:
+      add: { action: add-fee-schedule-item, label: Add Fee Schedule Item }
+      list: { action: list-fee-schedule-items, label: List Fee Schedule Items }
+    list_columns: [cpt_code, description, standard_charge, allowed_amount]
+
+  charge:
+    label: Charge
+    label_plural: Charges
+    table: healthclaw_charge
+    id_col: id
+    name_col: naming_series
+    primary_field: naming_series
+    secondary_field: cpt_code
+    identifier_field: naming_series
+    status_field: status
+    status_colors:
+      unbilled: yellow
+      billed: blue
+      paid: green
+      adjusted: purple
+      void: gray
+    fields:
+      id:
+        type: text
+        label: ID
+        read_only: true
+        hidden: true
+      naming_series:
+        type: text
+        label: Charge No.
+        read_only: true
+        in_list_view: true
+      encounter_id:
+        type: link
+        label: Encounter
+        required: true
+        link_entity: encounter
+        link_display_field: naming_series
+        link_search_action: list-encounters
+        entity_lookup: { entity: encounter, display_field: naming_series }
+        in_form_view: true
+        form_group: header
+        form_order: 1
+      patient_id:
+        type: link
+        label: Patient
+        required: true
+        link_entity: patient
+        link_display_field: full_name
+        link_search_action: list-patients
+        entity_lookup: { entity: patient, display_field: full_name }
+        in_form_view: true
+        form_group: header
+        form_order: 2
+      provider_id:
+        type: link
+        label: Provider
+        required: true
+        link_entity: employee
+        link_display_field: full_name
+        link_search_action: list-employees
+        entity_lookup: { skill: erpclaw-hr, entity: employee, display_field: full_name }
+        in_form_view: true
+        form_group: header
+        form_order: 3
+      cpt_code:
+        type: text
+        label: CPT Code
+        required: true
+        in_list_view: true
+        in_form_view: true
+        form_group: service
+        form_order: 4
+      modifiers:
+        type: text
+        label: Modifiers
+        in_form_view: true
+        form_group: service
+        form_order: 5
+      units:
+        type: number
+        label: Units
+        in_form_view: true
+        form_group: service
+        form_order: 6
+      charge_amount:
+        type: currency
+        label: Charge Amount
+        required: true
+        in_list_view: true
+        in_form_view: true
+        form_group: amounts
+        form_order: 7
+      allowed_amount:
+        type: currency
+        label: Allowed Amount
+        in_form_view: true
+        form_group: amounts
+        form_order: 8
+      service_date:
+        type: date
+        label: Service Date
+        required: true
+        in_list_view: true
+        in_form_view: true
+        form_group: service
+        form_order: 9
+      place_of_service:
+        type: text
+        label: Place of Service
+        in_form_view: true
+        form_group: service
+        form_order: 10
+      status:
+        type: select
+        label: Status
+        options:
+          - { value: unbilled, label: Unbilled }
+          - { value: billed, label: Billed }
+          - { value: paid, label: Paid }
+          - { value: adjusted, label: Adjusted }
+          - { value: void, label: Void }
+        in_list_view: true
+        in_form_view: true
+        form_group: header
+        form_order: 11
+      notes:
+        type: textarea
+        label: Notes
+        in_form_view: true
+        form_group: amounts
+        form_order: 12
+      company_id:
+        type: link
+        label: Company
+        required: true
+        link_entity: company
+        link_display_field: name
+        link_search_action: list-companies
+        entity_lookup: { skill: erpclaw-setup, entity: company, display_field: name }
+        in_form_view: true
+        form_group: header
+        form_order: 13
+    form_groups:
+      header:
+        label: Charge Information
+        order: 1
+        columns: 2
+      service:
+        label: Service Details
+        order: 2
+        columns: 2
+      amounts:
+        label: Amounts
+        order: 3
+        columns: 2
+    actions:
+      add: { action: add-charge, label: Add Charge }
+      list: { action: list-charges, label: List Charges }
+    list_columns: [naming_series, cpt_code, charge_amount, service_date, status]
+
+  claim:
+    label: Claim
+    label_plural: Claims
+    table: healthclaw_claim
+    id_col: id
+    name_col: naming_series
+    primary_field: naming_series
+    secondary_field: claim_type
+    identifier_field: naming_series
+    status_field: status
+    status_colors:
+      draft: yellow
+      submitted: blue
+      accepted: cyan
+      denied: red
+      partially_paid: orange
+      paid: green
+      appealed: purple
+      void: gray
+    fields:
+      id:
+        type: text
+        label: ID
+        read_only: true
+        hidden: true
+      naming_series:
+        type: text
+        label: Claim No.
+        read_only: true
+        in_list_view: true
+      patient_id:
+        type: link
+        label: Patient
+        required: true
+        link_entity: patient
+        link_display_field: full_name
+        link_search_action: list-patients
+        entity_lookup: { entity: patient, display_field: full_name }
+        in_form_view: true
+        form_group: header
+        form_order: 1
+      insurance_id:
+        type: link
+        label: Insurance
+        required: true
+        link_entity: patient_insurance
+        link_display_field: payer_name
+        link_search_action: list-patient-insurances
+        entity_lookup: { entity: patient_insurance, display_field: payer_name }
+        in_form_view: true
+        form_group: header
+        form_order: 2
+      encounter_id:
+        type: link
+        label: Encounter
+        required: true
+        link_entity: encounter
+        link_display_field: naming_series
+        link_search_action: list-encounters
+        entity_lookup: { entity: encounter, display_field: naming_series }
+        in_form_view: true
+        form_group: header
+        form_order: 3
+      claim_date:
+        type: date
+        label: Claim Date
+        required: true
+        in_list_view: true
+        in_form_view: true
+        form_group: header
+        form_order: 4
+      total_charge:
+        type: currency
+        label: Total Charge
+        in_list_view: true
+        in_form_view: true
+        form_group: amounts
+        form_order: 5
+      total_allowed:
+        type: currency
+        label: Total Allowed
+        in_form_view: true
+        form_group: amounts
+        form_order: 6
+      total_paid:
+        type: currency
+        label: Total Paid
+        in_list_view: true
+        in_form_view: true
+        form_group: amounts
+        form_order: 7
+      patient_responsibility:
+        type: currency
+        label: Patient Responsibility
+        in_form_view: true
+        form_group: amounts
+        form_order: 8
+      adjustment_amount:
+        type: currency
+        label: Adjustment Amount
+        in_form_view: true
+        form_group: amounts
+        form_order: 9
+      claim_type:
+        type: select
+        label: Claim Type
+        required: true
+        options:
+          - { value: professional, label: Professional }
+          - { value: institutional, label: Institutional }
+          - { value: dental, label: Dental }
+        in_list_view: true
+        in_form_view: true
+        form_group: header
+        form_order: 10
+      filing_indicator:
+        type: text
+        label: Filing Indicator
+        in_form_view: true
+        form_group: status_info
+        form_order: 11
+      status:
+        type: select
+        label: Status
+        options:
+          - { value: draft, label: Draft }
+          - { value: submitted, label: Submitted }
+          - { value: accepted, label: Accepted }
+          - { value: denied, label: Denied }
+          - { value: partially_paid, label: Partially Paid }
+          - { value: paid, label: Paid }
+          - { value: appealed, label: Appealed }
+          - { value: void, label: Void }
+        in_list_view: true
+        in_form_view: true
+        form_group: status_info
+        form_order: 12
+      denial_reason:
+        type: text
+        label: Denial Reason
+        in_form_view: true
+        form_group: status_info
+        form_order: 13
+      notes:
+        type: textarea
+        label: Notes
+        in_form_view: true
+        form_group: status_info
+        form_order: 14
+      company_id:
+        type: link
+        label: Company
+        required: true
+        link_entity: company
+        link_display_field: name
+        link_search_action: list-companies
+        entity_lookup: { skill: erpclaw-setup, entity: company, display_field: name }
+        in_form_view: true
+        form_group: header
+        form_order: 15
+    form_groups:
+      header:
+        label: Claim Information
+        order: 1
+        columns: 2
+      amounts:
+        label: Claim Amounts
+        order: 2
+        columns: 2
+      status_info:
+        label: Status & Notes
+        order: 3
+        columns: 2
+    actions:
+      add: { action: add-claim, label: Add Claim }
+      update: { action: update-claim, label: Update Claim }
+      get: { action: get-claim, label: View Claim }
+      list: { action: list-claims, label: List Claims }
+      submit: { action: submit-claim, label: Submit Claim }
+    list_columns: [naming_series, claim_date, claim_type, total_charge, total_paid, status]
+    search_fields: [naming_series]
+
+  claim_line:
+    label: Claim Line
+    label_plural: Claim Lines
+    table: healthclaw_claim_line
+    id_col: id
+    name_col: cpt_code
+    primary_field: cpt_code
+    secondary_field: line_number
+    parent_entity: claim
+    parent_id_field: claim_id
+    tab_hidden: true
+    fields:
+      id:
+        type: text
+        label: ID
+        read_only: true
+        hidden: true
+      claim_id:
+        type: link
+        label: Claim
+        required: true
+        link_entity: claim
+        link_display_field: naming_series
+        link_search_action: list-claims
+        entity_lookup: { entity: claim, display_field: naming_series }
+        in_form_view: true
+        form_group: header
+        form_order: 1
+      charge_id:
+        type: link
+        label: Charge
+        required: true
+        link_entity: charge
+        link_display_field: naming_series
+        link_search_action: list-charges
+        entity_lookup: { entity: charge, display_field: naming_series }
+        in_form_view: true
+        form_group: header
+        form_order: 2
+      line_number:
+        type: number
+        label: "Line #"
+        in_list_view: true
+        in_form_view: true
+        form_group: header
+        form_order: 3
+      cpt_code:
+        type: text
+        label: CPT Code
+        required: true
+        in_list_view: true
+        in_form_view: true
+        form_group: header
+        form_order: 4
+      modifiers:
+        type: text
+        label: Modifiers
+        in_form_view: true
+        form_group: header
+        form_order: 5
+      units:
+        type: number
+        label: Units
+        in_form_view: true
+        form_group: header
+        form_order: 6
+      charge_amount:
+        type: currency
+        label: Charge Amount
+        required: true
+        in_list_view: true
+        in_form_view: true
+        form_group: amounts
+        form_order: 7
+      allowed_amount:
+        type: currency
+        label: Allowed Amount
+        in_list_view: true
+        in_form_view: true
+        form_group: amounts
+        form_order: 8
+      paid_amount:
+        type: currency
+        label: Paid Amount
+        in_list_view: true
+        in_form_view: true
+        form_group: amounts
+        form_order: 9
+      adjustment_amount:
+        type: currency
+        label: Adjustment Amount
+        in_form_view: true
+        form_group: amounts
+        form_order: 10
+      patient_amount:
+        type: currency
+        label: Patient Amount
+        in_form_view: true
+        form_group: amounts
+        form_order: 11
+      denial_reason:
+        type: text
+        label: Denial Reason
+        in_form_view: true
+        form_group: amounts
+        form_order: 12
+    form_groups:
+      header:
+        label: Line Information
+        order: 1
+        columns: 2
+      amounts:
+        label: Line Amounts
+        order: 2
+        columns: 2
+    actions:
+      add: { action: add-claim-line, label: Add Claim Line }
+      list: { action: list-claim-lines, label: List Claim Lines }
+    list_columns: [line_number, cpt_code, charge_amount, allowed_amount, paid_amount]
+
+  payment_posting:
+    label: Payment Posting
+    label_plural: Payment Postings
+    table: healthclaw_payment_posting
+    id_col: id
+    name_col: posting_type
+    primary_field: posting_type
+    secondary_field: posting_date
+    tab_hidden: true
+    fields:
+      id:
+        type: text
+        label: ID
+        read_only: true
+        hidden: true
+      claim_id:
+        type: link
+        label: Claim
+        link_entity: claim
+        link_display_field: naming_series
+        link_search_action: list-claims
+        entity_lookup: { entity: claim, display_field: naming_series }
+        in_form_view: true
+        form_group: header
+        form_order: 1
+      patient_id:
+        type: link
+        label: Patient
+        required: true
+        link_entity: patient
+        link_display_field: full_name
+        link_search_action: list-patients
+        entity_lookup: { entity: patient, display_field: full_name }
+        in_form_view: true
+        form_group: header
+        form_order: 2
+      posting_type:
+        type: select
+        label: Posting Type
+        required: true
+        options:
+          - { value: insurance_payment, label: Insurance Payment }
+          - { value: patient_payment, label: Patient Payment }
+          - { value: adjustment, label: Adjustment }
+          - { value: refund, label: Refund }
+          - { value: write_off, label: Write Off }
+        in_list_view: true
+        in_form_view: true
+        form_group: header
+        form_order: 3
+      posting_date:
+        type: date
+        label: Posting Date
+        required: true
+        in_list_view: true
+        in_form_view: true
+        form_group: header
+        form_order: 4
+      amount:
+        type: currency
+        label: Amount
+        required: true
+        in_list_view: true
+        in_form_view: true
+        form_group: payment
+        form_order: 5
+      check_number:
+        type: text
+        label: Check Number
+        in_form_view: true
+        form_group: payment
+        form_order: 6
+      payer_name:
+        type: text
+        label: Payer Name
+        in_list_view: true
+        in_form_view: true
+        form_group: payment
+        form_order: 7
+      payment_method:
+        type: select
+        label: Payment Method
+        options:
+          - { value: check, label: Check }
+          - { value: eft, label: EFT }
+          - { value: cash, label: Cash }
+          - { value: credit_card, label: Credit Card }
+          - { value: ach, label: ACH }
+          - { value: other, label: Other }
+        in_list_view: true
+        in_form_view: true
+        form_group: payment
+        form_order: 8
+      eob_date:
+        type: date
+        label: EOB Date
+        in_form_view: true
+        form_group: payment
+        form_order: 9
+      notes:
+        type: textarea
+        label: Notes
+        in_form_view: true
+        form_group: payment
+        form_order: 10
+      company_id:
+        type: link
+        label: Company
+        required: true
+        link_entity: company
+        link_display_field: name
+        link_search_action: list-companies
+        entity_lookup: { skill: erpclaw-setup, entity: company, display_field: name }
+        in_form_view: true
+        form_group: header
+        form_order: 11
+    form_groups:
+      header:
+        label: Posting Information
+        order: 1
+        columns: 2
+      payment:
+        label: Payment Details
+        order: 2
+        columns: 2
+    actions:
+      add: { action: add-payment-posting, label: Add Payment Posting }
+      list: { action: list-payment-postings, label: List Payment Postings }
+    list_columns: [posting_type, posting_date, amount, payer_name, payment_method]
+
+  # ---------------------------------------------------------------------------
+  # PHARMACY / INVENTORY + LAB & IMAGING + REFERRALS domains
+  # ---------------------------------------------------------------------------
+  # ---------------------------------------------------------------------------
+  # PHARMACY domain
+  # ---------------------------------------------------------------------------
+  formulary:
+    label: Formulary
+    label_plural: Formularies
+    table: healthclaw_formulary
+    id_col: id
+    name_col: name
+    primary_field: name
+    secondary_field: effective_date
+    status_field: status
+    status_colors:
+      active: green
+      inactive: yellow
+      expired: gray
+    fields:
+      id:
+        type: text
+        label: ID
+        read_only: true
+        hidden: true
+      name:
+        type: text
+        label: Formulary Name
+        required: true
+        in_list_view: true
+        in_form_view: true
+        form_group: header
+        form_order: 1
+      description:
+        type: text
+        label: Description
+        in_form_view: true
+        form_group: header
+        form_order: 2
+      effective_date:
+        type: date
+        label: Effective Date
+        required: true
+        in_list_view: true
+        in_form_view: true
+        form_group: dates
+        form_order: 3
+      expiration_date:
+        type: date
+        label: Expiration Date
+        in_form_view: true
+        form_group: dates
+        form_order: 4
+      status:
+        type: select
+        label: Status
+        options:
+          - { value: active, label: Active }
+          - { value: inactive, label: Inactive }
+          - { value: expired, label: Expired }
+        in_list_view: true
+        in_form_view: true
+        form_group: header
+        form_order: 5
+      company_id:
+        type: link
+        label: Company
+        required: true
+        link_entity: company
+        link_display_field: name
+        link_search_action: list-companies
+        entity_lookup: { skill: erpclaw-setup, entity: company, display_field: name }
+        in_form_view: true
+        form_group: header
+        form_order: 6
+    form_groups:
+      header:
+        label: Formulary Information
+        order: 1
+        columns: 2
+      dates:
+        label: Dates
+        order: 2
+        columns: 2
+    actions:
+      add: { action: add-formulary, label: Add Formulary }
+      update: { action: update-formulary, label: Update Formulary }
+      list: { action: list-formularies, label: List Formularies }
+    list_columns: [name, effective_date, status]
+
+  formulary_item:
+    label: Formulary Item
+    label_plural: Formulary Items
+    table: healthclaw_formulary_item
+    id_col: id
+    name_col: generic_name
+    primary_field: generic_name
+    secondary_field: brand_name
+    parent_entity: formulary
+    parent_id_field: formulary_id
+    status_field: status
+    status_colors:
+      active: green
+      inactive: yellow
+      recalled: red
+    tab_hidden: true
+    fields:
+      id:
+        type: text
+        label: ID
+        read_only: true
+        hidden: true
+      formulary_id:
+        type: link
+        label: Formulary
+        required: true
+        link_entity: formulary
+        link_display_field: name
+        link_search_action: list-formularies
+        entity_lookup: { entity: formulary, display_field: name }
+        in_form_view: true
+        form_group: header
+        form_order: 1
+      item_id:
+        type: link
+        label: Item
+        required: true
+        link_entity: item
+        link_display_field: item_name
+        link_search_action: list-items
+        entity_lookup: { skill: erpclaw-inventory, entity: item, display_field: item_name }
+        in_form_view: true
+        form_group: header
+        form_order: 2
+      ndc_code:
+        type: text
+        label: NDC Code
+        in_list_view: true
+        in_form_view: true
+        form_group: header
+        form_order: 3
+      drug_class:
+        type: text
+        label: Drug Class
+        in_form_view: true
+        form_group: drug_info
+        form_order: 4
+      generic_name:
+        type: text
+        label: Generic Name
+        in_list_view: true
+        in_form_view: true
+        form_group: drug_info
+        form_order: 5
+      brand_name:
+        type: text
+        label: Brand Name
+        in_list_view: true
+        in_form_view: true
+        form_group: drug_info
+        form_order: 6
+      strength:
+        type: text
+        label: Strength
+        in_list_view: true
+        in_form_view: true
+        form_group: drug_info
+        form_order: 7
+      dosage_form:
+        type: text
+        label: Dosage Form
+        in_form_view: true
+        form_group: drug_info
+        form_order: 8
+      route:
+        type: text
+        label: Route
+        in_form_view: true
+        form_group: drug_info
+        form_order: 9
+      controlled_schedule:
+        type: select
+        label: Controlled Schedule
+        options:
+          - { value: II, label: Schedule II }
+          - { value: III, label: Schedule III }
+          - { value: IV, label: Schedule IV }
+          - { value: V, label: Schedule V }
+        in_form_view: true
+        form_group: classification
+        form_order: 10
+      therapeutic_class:
+        type: text
+        label: Therapeutic Class
+        in_form_view: true
+        form_group: classification
+        form_order: 11
+      formulary_tier:
+        type: select
+        label: Formulary Tier
+        options:
+          - { value: "1", label: Tier 1 }
+          - { value: "2", label: Tier 2 }
+          - { value: "3", label: Tier 3 }
+          - { value: "4", label: Tier 4 }
+          - { value: specialty, label: Specialty }
+        in_list_view: true
+        in_form_view: true
+        form_group: classification
+        form_order: 12
+      max_daily_dose:
+        type: text
+        label: Max Daily Dose
+        in_form_view: true
+        form_group: classification
+        form_order: 13
+      status:
+        type: select
+        label: Status
+        options:
+          - { value: active, label: Active }
+          - { value: inactive, label: Inactive }
+          - { value: recalled, label: Recalled }
+        in_list_view: true
+        in_form_view: true
+        form_group: header
+        form_order: 14
+    form_groups:
+      header:
+        label: Formulary Item
+        order: 1
+        columns: 2
+      drug_info:
+        label: Drug Information
+        order: 2
+        columns: 2
+      classification:
+        label: Classification
+        order: 3
+        columns: 2
+    actions:
+      add: { action: add-formulary-item, label: Add Formulary Item }
+      update: { action: update-formulary-item, label: Update Formulary Item }
+      list: { action: list-formulary-items, label: List Formulary Items }
+    list_columns: [generic_name, brand_name, ndc_code, strength, formulary_tier, status]
+
+  dispensing:
+    label: Dispensing
+    label_plural: Dispensings
+    table: healthclaw_dispensing
+    id_col: id
+    name_col: naming_series
+    primary_field: naming_series
+    secondary_field: dispensed_date
+    identifier_field: naming_series
+    status_field: status
+    status_colors:
+      dispensed: green
+      returned: yellow
+      recalled: red
+      voided: gray
+    fields:
+      id:
+        type: text
+        label: ID
+        read_only: true
+        hidden: true
+      naming_series:
+        type: text
+        label: Dispensing No.
+        read_only: true
+        in_list_view: true
+      prescription_id:
+        type: link
+        label: Prescription
+        required: true
+        link_entity: prescription
+        link_display_field: naming_series
+        link_search_action: list-prescriptions
+        entity_lookup: { entity: prescription, display_field: naming_series }
+        in_form_view: true
+        form_group: header
+        form_order: 1
+      patient_id:
+        type: link
+        label: Patient
+        required: true
+        link_entity: patient
+        link_display_field: full_name
+        link_search_action: list-patients
+        entity_lookup: { entity: patient, display_field: full_name }
+        in_form_view: true
+        form_group: header
+        form_order: 2
+      dispensed_by_id:
+        type: link
+        label: Dispensed By
+        required: true
+        link_entity: employee
+        link_display_field: full_name
+        link_search_action: list-employees
+        entity_lookup: { skill: erpclaw-hr, entity: employee, display_field: full_name }
+        in_form_view: true
+        form_group: header
+        form_order: 3
+      dispensed_date:
+        type: date
+        label: Dispensed Date
+        required: true
+        in_list_view: true
+        in_form_view: true
+        form_group: header
+        form_order: 4
+      quantity:
+        type: text
+        label: Quantity
+        in_list_view: true
+        in_form_view: true
+        form_group: details
+        form_order: 5
+      lot_number:
+        type: text
+        label: Lot Number
+        in_list_view: true
+        in_form_view: true
+        form_group: details
+        form_order: 6
+      expiration_date:
+        type: date
+        label: Expiration Date
+        in_form_view: true
+        form_group: details
+        form_order: 7
+      ndc_code:
+        type: text
+        label: NDC Code
+        in_form_view: true
+        form_group: details
+        form_order: 8
+      directions:
+        type: text
+        label: Directions
+        in_form_view: true
+        form_group: details
+        form_order: 9
+      refill_number:
+        type: number
+        label: "Refill #"
+        in_form_view: true
+        form_group: tracking
+        form_order: 10
+      status:
+        type: select
+        label: Status
+        options:
+          - { value: dispensed, label: Dispensed }
+          - { value: returned, label: Returned }
+          - { value: recalled, label: Recalled }
+          - { value: voided, label: Voided }
+        in_list_view: true
+        in_form_view: true
+        form_group: header
+        form_order: 11
+      notes:
+        type: textarea
+        label: Notes
+        in_form_view: true
+        form_group: tracking
+        form_order: 12
+      company_id:
+        type: link
+        label: Company
+        required: true
+        link_entity: company
+        link_display_field: name
+        link_search_action: list-companies
+        entity_lookup: { skill: erpclaw-setup, entity: company, display_field: name }
+        in_form_view: true
+        form_group: header
+        form_order: 13
+    form_groups:
+      header:
+        label: Dispensing Information
+        order: 1
+        columns: 2
+      details:
+        label: Details
+        order: 2
+        columns: 2
+      tracking:
+        label: Tracking
+        order: 3
+        columns: 2
+    actions:
+      add: { action: add-dispensing, label: Add Dispensing }
+      get: { action: get-dispensing, label: View Dispensing }
+      list: { action: list-dispensings, label: List Dispensings }
+      void: { action: void-dispensing, label: Void Dispensing }
+    list_columns: [naming_series, dispensed_date, quantity, lot_number, status]
+
+  # ---------------------------------------------------------------------------
+  # LAB & IMAGING domain
+  # ---------------------------------------------------------------------------
+  lab_order:
+    label: Lab Order
+    label_plural: Lab Orders
+    table: healthclaw_lab_order
+    id_col: id
+    name_col: naming_series
+    primary_field: naming_series
+    secondary_field: order_date
+    identifier_field: naming_series
+    status_field: status
+    status_colors:
+      ordered: blue
+      collected: yellow
+      received: cyan
+      in_progress: orange
+      completed: green
+      cancelled: gray
+    fields:
+      id:
+        type: text
+        label: ID
+        read_only: true
+        hidden: true
+      naming_series:
+        type: text
+        label: Lab Order No.
+        read_only: true
+        in_list_view: true
+      encounter_id:
+        type: link
+        label: Encounter
+        required: true
+        link_entity: encounter
+        link_display_field: naming_series
+        link_search_action: list-encounters
+        entity_lookup: { entity: encounter, display_field: naming_series }
+        in_form_view: true
+        form_group: header
+        form_order: 1
+      patient_id:
+        type: link
+        label: Patient
+        required: true
+        link_entity: patient
+        link_display_field: full_name
+        link_search_action: list-patients
+        entity_lookup: { entity: patient, display_field: full_name }
+        in_form_view: true
+        form_group: header
+        form_order: 2
+      ordering_provider_id:
+        type: link
+        label: Ordering Provider
+        required: true
+        link_entity: employee
+        link_display_field: full_name
+        link_search_action: list-employees
+        entity_lookup: { skill: erpclaw-hr, entity: employee, display_field: full_name }
+        in_form_view: true
+        form_group: header
+        form_order: 3
+      order_date:
+        type: date
+        label: Order Date
+        required: true
+        in_list_view: true
+        in_form_view: true
+        form_group: header
+        form_order: 4
+      priority:
+        type: select
+        label: Priority
+        required: true
+        options:
+          - { value: stat, label: Stat }
+          - { value: urgent, label: Urgent }
+          - { value: routine, label: Routine }
+        in_list_view: true
+        in_form_view: true
+        form_group: header
+        form_order: 5
+      fasting_required:
+        type: number
+        label: Fasting Required
+        in_form_view: true
+        form_group: specimen
+        form_order: 6
+      clinical_indication:
+        type: text
+        label: Clinical Indication
+        in_list_view: true
+        in_form_view: true
+        form_group: specimen
+        form_order: 7
+      specimen_type:
+        type: text
+        label: Specimen Type
+        in_form_view: true
+        form_group: specimen
+        form_order: 8
+      collection_date:
+        type: date
+        label: Collection Date
+        in_form_view: true
+        form_group: dates
+        form_order: 9
+      received_date:
+        type: date
+        label: Received Date
+        in_form_view: true
+        form_group: dates
+        form_order: 10
+      status:
+        type: select
+        label: Status
+        options:
+          - { value: ordered, label: Ordered }
+          - { value: collected, label: Collected }
+          - { value: received, label: Received }
+          - { value: in_progress, label: In Progress }
+          - { value: completed, label: Completed }
+          - { value: cancelled, label: Cancelled }
+        in_list_view: true
+        in_form_view: true
+        form_group: header
+        form_order: 11
+      notes:
+        type: textarea
+        label: Notes
+        in_form_view: true
+        form_group: dates
+        form_order: 12
+      company_id:
+        type: link
+        label: Company
+        required: true
+        link_entity: company
+        link_display_field: name
+        link_search_action: list-companies
+        entity_lookup: { skill: erpclaw-setup, entity: company, display_field: name }
+        in_form_view: true
+        form_group: header
+        form_order: 13
+    form_groups:
+      header:
+        label: Lab Order Information
+        order: 1
+        columns: 2
+      specimen:
+        label: Specimen
+        order: 2
+        columns: 2
+      dates:
+        label: Dates
+        order: 3
+        columns: 2
+    actions:
+      add: { action: add-lab-order, label: Add Lab Order }
+      update: { action: update-lab-order, label: Update Lab Order }
+      get: { action: get-lab-order, label: View Lab Order }
+      list: { action: list-lab-orders, label: List Lab Orders }
+    list_columns: [naming_series, order_date, priority, clinical_indication, status]
+    search_fields: [naming_series]
+
+  lab_test:
+    label: Lab Test
+    label_plural: Lab Tests
+    table: healthclaw_lab_test
+    id_col: id
+    name_col: test_name
+    primary_field: test_name
+    secondary_field: test_code
+    parent_entity: lab_order
+    parent_id_field: lab_order_id
+    status_field: status
+    status_colors:
+      pending: yellow
+      in_progress: blue
+      completed: green
+      cancelled: gray
+    tab_hidden: true
+    fields:
+      id:
+        type: text
+        label: ID
+        read_only: true
+        hidden: true
+      lab_order_id:
+        type: link
+        label: Lab Order
+        required: true
+        link_entity: lab_order
+        link_display_field: naming_series
+        link_search_action: list-lab-orders
+        entity_lookup: { entity: lab_order, display_field: naming_series }
+        in_form_view: true
+        form_group: header
+        form_order: 1
+      test_code:
+        type: text
+        label: Test Code
+        required: true
+        in_list_view: true
+        in_form_view: true
+        form_group: header
+        form_order: 2
+      test_name:
+        type: text
+        label: Test Name
+        required: true
+        in_list_view: true
+        in_form_view: true
+        form_group: header
+        form_order: 3
+      cpt_code:
+        type: text
+        label: CPT Code
+        in_list_view: true
+        in_form_view: true
+        form_group: header
+        form_order: 4
+      status:
+        type: select
+        label: Status
+        options:
+          - { value: pending, label: Pending }
+          - { value: in_progress, label: In Progress }
+          - { value: completed, label: Completed }
+          - { value: cancelled, label: Cancelled }
+        in_list_view: true
+        in_form_view: true
+        form_group: header
+        form_order: 5
+    form_groups:
+      header:
+        label: Lab Test Information
+        order: 1
+        columns: 2
+    actions:
+      add: { action: add-lab-test, label: Add Lab Test }
+      list: { action: list-lab-tests, label: List Lab Tests }
+    list_columns: [test_code, test_name, cpt_code, status]
+
+  lab_result:
+    label: Lab Result
+    label_plural: Lab Results
+    table: healthclaw_lab_result
+    id_col: id
+    name_col: component_name
+    primary_field: component_name
+    secondary_field: value
+    parent_entity: lab_test
+    parent_id_field: lab_test_id
+    tab_hidden: true
+    fields:
+      id:
+        type: text
+        label: ID
+        read_only: true
+        hidden: true
+      lab_test_id:
+        type: link
+        label: Lab Test
+        required: true
+        link_entity: lab_test
+        link_display_field: test_name
+        link_search_action: list-lab-tests
+        entity_lookup: { entity: lab_test, display_field: test_name }
+        in_form_view: true
+        form_group: header
+        form_order: 1
+      component_name:
+        type: text
+        label: Component Name
+        required: true
+        in_list_view: true
+        in_form_view: true
+        form_group: header
+        form_order: 2
+      value:
+        type: text
+        label: Value
+        required: true
+        in_list_view: true
+        in_form_view: true
+        form_group: header
+        form_order: 3
+      unit:
+        type: text
+        label: Unit
+        in_list_view: true
+        in_form_view: true
+        form_group: header
+        form_order: 4
+      reference_low:
+        type: text
+        label: Reference Low
+        in_list_view: true
+        in_form_view: true
+        form_group: reference
+        form_order: 5
+      reference_high:
+        type: text
+        label: Reference High
+        in_list_view: true
+        in_form_view: true
+        form_group: reference
+        form_order: 6
+      flag:
+        type: select
+        label: Flag
+        options:
+          - { value: normal, label: Normal }
+          - { value: low, label: Low }
+          - { value: high, label: High }
+          - { value: critical_low, label: Critical Low }
+          - { value: critical_high, label: Critical High }
+          - { value: abnormal, label: Abnormal }
+        in_list_view: true
+        in_form_view: true
+        form_group: reference
+        form_order: 7
+      result_date:
+        type: date
+        label: Result Date
+        required: true
+        in_form_view: true
+        form_group: header
+        form_order: 8
+      notes:
+        type: textarea
+        label: Notes
+        in_form_view: true
+        form_group: reference
+        form_order: 9
+    form_groups:
+      header:
+        label: Result Information
+        order: 1
+        columns: 2
+      reference:
+        label: Reference Range
+        order: 2
+        columns: 2
+    actions:
+      add: { action: add-lab-result, label: Add Lab Result }
+      list: { action: list-lab-results, label: List Lab Results }
+    list_columns: [component_name, value, unit, reference_low, reference_high, flag]
+
+  imaging_order:
+    label: Imaging Order
+    label_plural: Imaging Orders
+    table: healthclaw_imaging_order
+    id_col: id
+    name_col: naming_series
+    primary_field: naming_series
+    secondary_field: modality
+    identifier_field: naming_series
+    status_field: status
+    status_colors:
+      ordered: blue
+      scheduled: cyan
+      in_progress: yellow
+      completed: green
+      read: purple
+      cancelled: gray
+    fields:
+      id:
+        type: text
+        label: ID
+        read_only: true
+        hidden: true
+      naming_series:
+        type: text
+        label: Imaging Order No.
+        read_only: true
+        in_list_view: true
+      encounter_id:
+        type: link
+        label: Encounter
+        required: true
+        link_entity: encounter
+        link_display_field: naming_series
+        link_search_action: list-encounters
+        entity_lookup: { entity: encounter, display_field: naming_series }
+        in_form_view: true
+        form_group: header
+        form_order: 1
+      patient_id:
+        type: link
+        label: Patient
+        required: true
+        link_entity: patient
+        link_display_field: full_name
+        link_search_action: list-patients
+        entity_lookup: { entity: patient, display_field: full_name }
+        in_form_view: true
+        form_group: header
+        form_order: 2
+      ordering_provider_id:
+        type: link
+        label: Ordering Provider
+        required: true
+        link_entity: employee
+        link_display_field: full_name
+        link_search_action: list-employees
+        entity_lookup: { skill: erpclaw-hr, entity: employee, display_field: full_name }
+        in_form_view: true
+        form_group: header
+        form_order: 3
+      modality:
+        type: select
+        label: Modality
+        required: true
+        options:
+          - { value: xray, label: X-Ray }
+          - { value: ct, label: CT }
+          - { value: mri, label: MRI }
+          - { value: ultrasound, label: Ultrasound }
+          - { value: mammography, label: Mammography }
+          - { value: fluoroscopy, label: Fluoroscopy }
+          - { value: nuclear, label: Nuclear }
+          - { value: pet, label: PET }
+          - { value: dexa, label: DEXA }
+          - { value: other, label: Other }
+        in_list_view: true
+        in_form_view: true
+        form_group: study
+        form_order: 4
+      body_part:
+        type: text
+        label: Body Part
+        required: true
+        in_list_view: true
+        in_form_view: true
+        form_group: study
+        form_order: 5
+      laterality:
+        type: select
+        label: Laterality
+        options:
+          - { value: left, label: Left }
+          - { value: right, label: Right }
+          - { value: bilateral, label: Bilateral }
+          - { value: not_applicable, label: Not Applicable }
+        in_form_view: true
+        form_group: study
+        form_order: 6
+      cpt_code:
+        type: text
+        label: CPT Code
+        in_form_view: true
+        form_group: study
+        form_order: 7
+      order_date:
+        type: date
+        label: Order Date
+        required: true
+        in_list_view: true
+        in_form_view: true
+        form_group: header
+        form_order: 8
+      priority:
+        type: select
+        label: Priority
+        required: true
+        options:
+          - { value: stat, label: Stat }
+          - { value: urgent, label: Urgent }
+          - { value: routine, label: Routine }
+        in_list_view: true
+        in_form_view: true
+        form_group: header
+        form_order: 9
+      clinical_indication:
+        type: text
+        label: Clinical Indication
+        in_form_view: true
+        form_group: study
+        form_order: 10
+      contrast:
+        type: number
+        label: Contrast Required
+        in_form_view: true
+        form_group: study
+        form_order: 11
+      scheduled_date:
+        type: date
+        label: Scheduled Date
+        in_form_view: true
+        form_group: scheduling
+        form_order: 12
+      status:
+        type: select
+        label: Status
+        options:
+          - { value: ordered, label: Ordered }
+          - { value: scheduled, label: Scheduled }
+          - { value: in_progress, label: In Progress }
+          - { value: completed, label: Completed }
+          - { value: read, label: Read }
+          - { value: cancelled, label: Cancelled }
+        in_list_view: true
+        in_form_view: true
+        form_group: header
+        form_order: 13
+      notes:
+        type: textarea
+        label: Notes
+        in_form_view: true
+        form_group: scheduling
+        form_order: 14
+      company_id:
+        type: link
+        label: Company
+        required: true
+        link_entity: company
+        link_display_field: name
+        link_search_action: list-companies
+        entity_lookup: { skill: erpclaw-setup, entity: company, display_field: name }
+        in_form_view: true
+        form_group: header
+        form_order: 15
+    form_groups:
+      header:
+        label: Imaging Order Information
+        order: 1
+        columns: 2
+      study:
+        label: Study Details
+        order: 2
+        columns: 2
+      scheduling:
+        label: Scheduling
+        order: 3
+        columns: 2
+    actions:
+      add: { action: add-imaging-order, label: Add Imaging Order }
+      update: { action: update-imaging-order, label: Update Imaging Order }
+      list: { action: list-imaging-orders, label: List Imaging Orders }
+    list_columns: [naming_series, modality, body_part, order_date, priority, status]
+    search_fields: [naming_series]
+
+  imaging_result:
+    label: Imaging Result
+    label_plural: Imaging Results
+    table: healthclaw_imaging_result
+    id_col: id
+    name_col: report_date
+    primary_field: report_date
+    secondary_field: status
+    parent_entity: imaging_order
+    parent_id_field: imaging_order_id
+    status_field: status
+    status_colors:
+      preliminary: yellow
+      final: green
+      addended: blue
+      corrected: orange
+    tab_hidden: true
+    fields:
+      id:
+        type: text
+        label: ID
+        read_only: true
+        hidden: true
+      imaging_order_id:
+        type: link
+        label: Imaging Order
+        required: true
+        link_entity: imaging_order
+        link_display_field: naming_series
+        link_search_action: list-imaging-orders
+        entity_lookup: { entity: imaging_order, display_field: naming_series }
+        in_form_view: true
+        form_group: header
+        form_order: 1
+      radiologist_id:
+        type: link
+        label: Radiologist
+        link_entity: employee
+        link_display_field: full_name
+        link_search_action: list-employees
+        entity_lookup: { skill: erpclaw-hr, entity: employee, display_field: full_name }
+        in_form_view: true
+        form_group: header
+        form_order: 2
+      findings:
+        type: textarea
+        label: Findings
+        in_form_view: true
+        form_group: report
+        form_order: 3
+      impression:
+        type: textarea
+        label: Impression
+        in_list_view: true
+        in_form_view: true
+        form_group: report
+        form_order: 4
+      recommendation:
+        type: textarea
+        label: Recommendation
+        in_form_view: true
+        form_group: report
+        form_order: 5
+      critical_finding:
+        type: number
+        label: Critical Finding
+        in_form_view: true
+        form_group: header
+        form_order: 6
+      report_date:
+        type: date
+        label: Report Date
+        required: true
+        in_list_view: true
+        in_form_view: true
+        form_group: header
+        form_order: 7
+      status:
+        type: select
+        label: Status
+        options:
+          - { value: preliminary, label: Preliminary }
+          - { value: final, label: Final }
+          - { value: addended, label: Addended }
+          - { value: corrected, label: Corrected }
+        in_list_view: true
+        in_form_view: true
+        form_group: header
+        form_order: 8
+      addendum:
+        type: textarea
+        label: Addendum
+        in_form_view: true
+        form_group: report
+        form_order: 9
+    form_groups:
+      header:
+        label: Imaging Result
+        order: 1
+        columns: 2
+      report:
+        label: Report
+        order: 2
+        columns: 1
+    actions:
+      add: { action: add-imaging-result, label: Add Imaging Result }
+      update: { action: update-imaging-result, label: Update Imaging Result }
+      list: { action: list-imaging-results, label: List Imaging Results }
+    list_columns: [report_date, impression, status]
+
+  # ---------------------------------------------------------------------------
+  # REFERRALS domain
+  # ---------------------------------------------------------------------------
+  referral:
+    label: Referral
+    label_plural: Referrals
+    table: healthclaw_referral
+    id_col: id
+    name_col: naming_series
+    primary_field: naming_series
+    secondary_field: referred_to_provider
+    identifier_field: naming_series
+    status_field: status
+    status_colors:
+      pending: yellow
+      sent: blue
+      accepted: cyan
+      declined: red
+      completed: green
+      expired: gray
+      cancelled: gray
+    fields:
+      id:
+        type: text
+        label: ID
+        read_only: true
+        hidden: true
+      naming_series:
+        type: text
+        label: Referral No.
+        read_only: true
+        in_list_view: true
+      patient_id:
+        type: link
+        label: Patient
+        required: true
+        link_entity: patient
+        link_display_field: full_name
+        link_search_action: list-patients
+        entity_lookup: { entity: patient, display_field: full_name }
+        in_form_view: true
+        form_group: header
+        form_order: 1
+      encounter_id:
+        type: link
+        label: Encounter
+        link_entity: encounter
+        link_display_field: naming_series
+        link_search_action: list-encounters
+        entity_lookup: { entity: encounter, display_field: naming_series }
+        in_form_view: true
+        form_group: header
+        form_order: 2
+      referring_provider_id:
+        type: link
+        label: Referring Provider
+        required: true
+        link_entity: employee
+        link_display_field: full_name
+        link_search_action: list-employees
+        entity_lookup: { skill: erpclaw-hr, entity: employee, display_field: full_name }
+        in_form_view: true
+        form_group: header
+        form_order: 3
+      referred_to_provider:
+        type: text
+        label: Referred To Provider
+        required: true
+        in_list_view: true
+        in_form_view: true
+        form_group: referred_to
+        form_order: 4
+      referred_to_specialty:
+        type: text
+        label: Referred To Specialty
+        in_list_view: true
+        in_form_view: true
+        form_group: referred_to
+        form_order: 5
+      referred_to_facility:
+        type: text
+        label: Referred To Facility
+        in_form_view: true
+        form_group: referred_to
+        form_order: 6
+      referred_to_phone:
+        type: text
+        label: Referred To Phone
+        in_form_view: true
+        form_group: referred_to
+        form_order: 7
+      referred_to_fax:
+        type: text
+        label: Referred To Fax
+        in_form_view: true
+        form_group: referred_to
+        form_order: 8
+      referral_date:
+        type: date
+        label: Referral Date
+        required: true
+        in_list_view: true
+        in_form_view: true
+        form_group: details
+        form_order: 9
+      expiration_date:
+        type: date
+        label: Expiration Date
+        in_form_view: true
+        form_group: details
+        form_order: 10
+      reason:
+        type: text
+        label: Reason
+        required: true
+        in_form_view: true
+        form_group: details
+        form_order: 11
+      priority:
+        type: select
+        label: Priority
+        options:
+          - { value: stat, label: Stat }
+          - { value: urgent, label: Urgent }
+          - { value: routine, label: Routine }
+          - { value: elective, label: Elective }
+        in_list_view: true
+        in_form_view: true
+        form_group: details
+        form_order: 12
+      status:
+        type: select
+        label: Status
+        options:
+          - { value: pending, label: Pending }
+          - { value: sent, label: Sent }
+          - { value: accepted, label: Accepted }
+          - { value: declined, label: Declined }
+          - { value: completed, label: Completed }
+          - { value: expired, label: Expired }
+          - { value: cancelled, label: Cancelled }
+        in_list_view: true
+        in_form_view: true
+        form_group: header
+        form_order: 13
+      notes:
+        type: textarea
+        label: Notes
+        in_form_view: true
+        form_group: details
+        form_order: 14
+      company_id:
+        type: link
+        label: Company
+        required: true
+        link_entity: company
+        link_display_field: name
+        link_search_action: list-companies
+        entity_lookup: { skill: erpclaw-setup, entity: company, display_field: name }
+        in_form_view: true
+        form_group: header
+        form_order: 15
+    form_groups:
+      header:
+        label: Referral Information
+        order: 1
+        columns: 2
+      referred_to:
+        label: Referred To
+        order: 2
+        columns: 2
+      details:
+        label: Details
+        order: 3
+        columns: 2
+    actions:
+      add: { action: add-referral, label: Add Referral }
+      update: { action: update-referral, label: Update Referral }
+      get: { action: get-referral, label: View Referral }
+      list: { action: list-referrals, label: List Referrals }
+    list_columns: [naming_series, referred_to_provider, referred_to_specialty, referral_date, priority, status]
+    search_fields: [naming_series, referred_to_provider]
+
+  prior_auth:
+    label: Prior Authorization
+    label_plural: Prior Authorizations
+    table: healthclaw_prior_auth
+    id_col: id
+    name_col: naming_series
+    primary_field: naming_series
+    secondary_field: service_type
+    identifier_field: naming_series
+    status_field: status
+    status_colors:
+      pending: yellow
+      approved: green
+      denied: red
+      partially_approved: orange
+      expired: gray
+      cancelled: gray
+      appealed: purple
+    fields:
+      id:
+        type: text
+        label: ID
+        read_only: true
+        hidden: true
+      naming_series:
+        type: text
+        label: Auth No.
+        read_only: true
+        in_list_view: true
+      patient_id:
+        type: link
+        label: Patient
+        required: true
+        link_entity: patient
+        link_display_field: full_name
+        link_search_action: list-patients
+        entity_lookup: { entity: patient, display_field: full_name }
+        in_form_view: true
+        form_group: header
+        form_order: 1
+      insurance_id:
+        type: link
+        label: Insurance
+        required: true
+        link_entity: patient_insurance
+        link_display_field: payer_name
+        link_search_action: list-patient-insurances
+        entity_lookup: { entity: patient_insurance, display_field: payer_name }
+        in_form_view: true
+        form_group: header
+        form_order: 2
+      requesting_provider_id:
+        type: link
+        label: Requesting Provider
+        required: true
+        link_entity: employee
+        link_display_field: full_name
+        link_search_action: list-employees
+        entity_lookup: { skill: erpclaw-hr, entity: employee, display_field: full_name }
+        in_form_view: true
+        form_group: header
+        form_order: 3
+      auth_number:
+        type: text
+        label: Auth Number
+        in_list_view: true
+        in_form_view: true
+        form_group: header
+        form_order: 4
+      service_type:
+        type: select
+        label: Service Type
+        required: true
+        options:
+          - { value: procedure, label: Procedure }
+          - { value: imaging, label: Imaging }
+          - { value: medication, label: Medication }
+          - { value: dme, label: DME }
+          - { value: inpatient, label: Inpatient }
+          - { value: outpatient, label: Outpatient }
+          - { value: referral, label: Referral }
+          - { value: therapy, label: Therapy }
+          - { value: other, label: Other }
+        in_list_view: true
+        in_form_view: true
+        form_group: service
+        form_order: 5
+      cpt_codes:
+        type: text
+        label: CPT Codes
+        in_form_view: true
+        form_group: service
+        form_order: 6
+      icd10_codes:
+        type: text
+        label: ICD-10 Codes
+        in_form_view: true
+        form_group: service
+        form_order: 7
+      description:
+        type: text
+        label: Description
+        required: true
+        in_list_view: true
+        in_form_view: true
+        form_group: service
+        form_order: 8
+      units_requested:
+        type: number
+        label: Units Requested
+        in_form_view: true
+        form_group: units
+        form_order: 9
+      units_approved:
+        type: number
+        label: Units Approved
+        in_form_view: true
+        form_group: units
+        form_order: 10
+      request_date:
+        type: date
+        label: Request Date
+        required: true
+        in_list_view: true
+        in_form_view: true
+        form_group: dates
+        form_order: 11
+      effective_date:
+        type: date
+        label: Effective Date
+        in_form_view: true
+        form_group: dates
+        form_order: 12
+      expiration_date:
+        type: date
+        label: Expiration Date
+        in_form_view: true
+        form_group: dates
+        form_order: 13
+      decision_date:
+        type: date
+        label: Decision Date
+        in_form_view: true
+        form_group: dates
+        form_order: 14
+      status:
+        type: select
+        label: Status
+        options:
+          - { value: pending, label: Pending }
+          - { value: approved, label: Approved }
+          - { value: denied, label: Denied }
+          - { value: partially_approved, label: Partially Approved }
+          - { value: expired, label: Expired }
+          - { value: cancelled, label: Cancelled }
+          - { value: appealed, label: Appealed }
+        in_list_view: true
+        in_form_view: true
+        form_group: header
+        form_order: 15
+      denial_reason:
+        type: text
+        label: Denial Reason
+        in_form_view: true
+        form_group: decision
+        form_order: 16
+      appeal_deadline:
+        type: date
+        label: Appeal Deadline
+        in_form_view: true
+        form_group: decision
+        form_order: 17
+      notes:
+        type: textarea
+        label: Notes
+        in_form_view: true
+        form_group: decision
+        form_order: 18
+      company_id:
+        type: link
+        label: Company
+        required: true
+        link_entity: company
+        link_display_field: name
+        link_search_action: list-companies
+        entity_lookup: { skill: erpclaw-setup, entity: company, display_field: name }
+        in_form_view: true
+        form_group: header
+        form_order: 19
+    form_groups:
+      header:
+        label: Prior Authorization
+        order: 1
+        columns: 2
+      service:
+        label: Service Information
+        order: 2
+        columns: 2
+      units:
+        label: Units
+        order: 3
+        columns: 2
+      dates:
+        label: Dates
+        order: 4
+        columns: 2
+      decision:
+        label: Decision
+        order: 5
+        columns: 2
+    actions:
+      add: { action: add-prior-auth, label: Add Prior Auth }
+      update: { action: update-prior-auth, label: Update Prior Auth }
+      get: { action: get-prior-auth, label: View Prior Auth }
+      list: { action: list-prior-auths, label: List Prior Auths }
+    list_columns: [naming_series, service_type, description, request_date, auth_number, status]
+    search_fields: [naming_series, auth_number]
+
+  auth_usage:
+    label: Auth Usage
+    label_plural: Auth Usages
+    table: healthclaw_auth_usage
+    id_col: id
+    name_col: usage_date
+    primary_field: usage_date
+    secondary_field: units_used
+    parent_entity: prior_auth
+    parent_id_field: prior_auth_id
+    tab_hidden: true
+    fields:
+      id:
+        type: text
+        label: ID
+        read_only: true
+        hidden: true
+      prior_auth_id:
+        type: link
+        label: Prior Auth
+        required: true
+        link_entity: prior_auth
+        link_display_field: naming_series
+        link_search_action: list-prior-auths
+        entity_lookup: { entity: prior_auth, display_field: naming_series }
+        in_form_view: true
+        form_group: header
+        form_order: 1
+      encounter_id:
+        type: link
+        label: Encounter
+        link_entity: encounter
+        link_display_field: naming_series
+        link_search_action: list-encounters
+        entity_lookup: { entity: encounter, display_field: naming_series }
+        in_list_view: true
+        in_form_view: true
+        form_group: header
+        form_order: 2
+      claim_id:
+        type: link
+        label: Claim
+        link_entity: claim
+        link_display_field: naming_series
+        link_search_action: list-claims
+        entity_lookup: { entity: claim, display_field: naming_series }
+        in_form_view: true
+        form_group: header
+        form_order: 3
+      usage_date:
+        type: date
+        label: Usage Date
+        required: true
+        in_list_view: true
+        in_form_view: true
+        form_group: header
+        form_order: 4
+      units_used:
+        type: number
+        label: Units Used
+        in_list_view: true
+        in_form_view: true
+        form_group: header
+        form_order: 5
+      notes:
+        type: textarea
+        label: Notes
+        in_form_view: true
+        form_group: header
+        form_order: 6
+    form_groups:
+      header:
+        label: Auth Usage
+        order: 1
+        columns: 2
+    actions:
+      add: { action: add-auth-usage, label: Add Auth Usage }
+      list: { action: list-auth-usages, label: List Auth Usages }
+    list_columns: [usage_date, units_used, encounter_id]
+
+action_map:
+  add-patient:
+    component: FormView
+    entity: patient
+    mode: create
+  update-patient:
+    component: FormView
+    entity: patient
+    mode: edit
+  get-patient:
+    component: DetailView
+    entity: patient
+  list-patients:
+    component: DataTable
+    entity: patient
+    default_sort: created_at
+  add-patient-insurance:
+    component: FormView
+    entity: patient_insurance
+    mode: create
+  update-patient-insurance:
+    component: FormView
+    entity: patient_insurance
+    mode: edit
+  list-patient-insurances:
+    component: DataTable
+    entity: patient_insurance
+    default_sort: created_at
+  add-allergy:
+    component: FormView
+    entity: allergy
+    mode: create
+  update-allergy:
+    component: FormView
+    entity: allergy
+    mode: edit
+  list-allergies:
+    component: DataTable
+    entity: allergy
+    default_sort: created_at
+  add-medical-history:
+    component: FormView
+    entity: medical_history
+    mode: create
+  update-medical-history:
+    component: FormView
+    entity: medical_history
+    mode: edit
+  list-medical-histories:
+    component: DataTable
+    entity: medical_history
+    default_sort: created_at
+  add-consent:
+    component: FormView
+    entity: consent
+    mode: create
+  update-consent:
+    component: FormView
+    entity: consent
+    mode: edit
+  list-consents:
+    component: DataTable
+    entity: consent
+    default_sort: created_at
+  add-appointment:
+    component: FormView
+    entity: appointment
+    mode: create
+  update-appointment:
+    component: FormView
+    entity: appointment
+    mode: edit
+  get-appointment:
+    component: DetailView
+    entity: appointment
+  list-appointments:
+    component: DataTable
+    entity: appointment
+    default_sort: created_at
+  add-provider-schedule:
+    component: FormView
+    entity: provider_schedule
+    mode: create
+  update-provider-schedule:
+    component: FormView
+    entity: provider_schedule
+    mode: edit
+  list-provider-schedules:
+    component: DataTable
+    entity: provider_schedule
+    default_sort: created_at
+  add-schedule-block:
+    component: FormView
+    entity: schedule_block
+    mode: create
+  list-schedule-blocks:
+    component: DataTable
+    entity: schedule_block
+    default_sort: created_at
+  add-waitlist:
+    component: FormView
+    entity: waitlist
+    mode: create
+  update-waitlist:
+    component: FormView
+    entity: waitlist
+    mode: edit
+  list-waitlist:
+    component: DataTable
+    entity: waitlist
+    default_sort: created_at
+  add-encounter:
+    component: FormView
+    entity: encounter
+    mode: create
+  update-encounter:
+    component: FormView
+    entity: encounter
+    mode: edit
+  get-encounter:
+    component: DetailView
+    entity: encounter
+  list-encounters:
+    component: DataTable
+    entity: encounter
+    default_sort: created_at
+  add-vitals:
+    component: FormView
+    entity: vitals
+    mode: create
+  list-vitals:
+    component: DataTable
+    entity: vitals
+    default_sort: created_at
+  add-diagnosis:
+    component: FormView
+    entity: diagnosis
+    mode: create
+  update-diagnosis:
+    component: FormView
+    entity: diagnosis
+    mode: edit
+  list-diagnoses:
+    component: DataTable
+    entity: diagnosis
+    default_sort: created_at
+  add-prescription:
+    component: FormView
+    entity: prescription
+    mode: create
+  update-prescription:
+    component: FormView
+    entity: prescription
+    mode: edit
+  list-prescriptions:
+    component: DataTable
+    entity: prescription
+    default_sort: created_at
+  add-procedure:
+    component: FormView
+    entity: procedure
+    mode: create
+  update-procedure:
+    component: FormView
+    entity: procedure
+    mode: edit
+  list-procedures:
+    component: DataTable
+    entity: procedure
+    default_sort: created_at
+  add-clinical-note:
+    component: FormView
+    entity: clinical_note
+    mode: create
+  update-clinical-note:
+    component: FormView
+    entity: clinical_note
+    mode: edit
+  list-clinical-notes:
+    component: DataTable
+    entity: clinical_note
+    default_sort: created_at
+  add-order:
+    component: FormView
+    entity: clinical_order
+    mode: create
+  update-order:
+    component: FormView
+    entity: clinical_order
+    mode: edit
+  list-orders:
+    component: DataTable
+    entity: clinical_order
+    default_sort: created_at
+  add-fee-schedule:
+    component: FormView
+    entity: fee_schedule
+    mode: create
+  update-fee-schedule:
+    component: FormView
+    entity: fee_schedule
+    mode: edit
+  list-fee-schedules:
+    component: DataTable
+    entity: fee_schedule
+    default_sort: created_at
+  add-fee-schedule-item:
+    component: FormView
+    entity: fee_schedule_item
+    mode: create
+  list-fee-schedule-items:
+    component: DataTable
+    entity: fee_schedule_item
+    default_sort: created_at
+  add-charge:
+    component: FormView
+    entity: charge
+    mode: create
+  list-charges:
+    component: DataTable
+    entity: charge
+    default_sort: created_at
+  add-claim:
+    component: FormView
+    entity: claim
+    mode: create
+  update-claim:
+    component: FormView
+    entity: claim
+    mode: edit
+  get-claim:
+    component: DetailView
+    entity: claim
+  list-claims:
+    component: DataTable
+    entity: claim
+    default_sort: created_at
+  submit-claim:
+    component: FormView
+    mode: create
+  add-claim-line:
+    component: FormView
+    entity: claim_line
+    mode: create
+  list-claim-lines:
+    component: DataTable
+    entity: claim_line
+    default_sort: created_at
+  add-payment-posting:
+    component: FormView
+    entity: payment_posting
+    mode: create
+  list-payment-postings:
+    component: DataTable
+    entity: payment_posting
+    default_sort: created_at
+  add-formulary:
+    component: FormView
+    entity: formulary
+    mode: create
+  update-formulary:
+    component: FormView
+    entity: formulary
+    mode: edit
+  list-formularies:
+    component: DataTable
+    entity: formulary
+    default_sort: created_at
+  add-formulary-item:
+    component: FormView
+    entity: formulary_item
+    mode: create
+  update-formulary-item:
+    component: FormView
+    entity: formulary_item
+    mode: edit
+  list-formulary-items:
+    component: DataTable
+    entity: formulary_item
+    default_sort: created_at
+  add-dispensing:
+    component: FormView
+    entity: dispensing
+    mode: create
+  get-dispensing:
+    component: DetailView
+    entity: dispensing
+  list-dispensings:
+    component: DataTable
+    entity: dispensing
+    default_sort: created_at
+  void-dispensing:
+    component: FormView
+    mode: create
+  add-lab-order:
+    component: FormView
+    entity: lab_order
+    mode: create
+  update-lab-order:
+    component: FormView
+    entity: lab_order
+    mode: edit
+  get-lab-order:
+    component: DetailView
+    entity: lab_order
+  list-lab-orders:
+    component: DataTable
+    entity: lab_order
+    default_sort: created_at
+  add-lab-test:
+    component: FormView
+    entity: lab_test
+    mode: create
+  list-lab-tests:
+    component: DataTable
+    entity: lab_test
+    default_sort: created_at
+  add-lab-result:
+    component: FormView
+    entity: lab_result
+    mode: create
+  list-lab-results:
+    component: DataTable
+    entity: lab_result
+    default_sort: created_at
+  add-imaging-order:
+    component: FormView
+    entity: imaging_order
+    mode: create
+  update-imaging-order:
+    component: FormView
+    entity: imaging_order
+    mode: edit
+  list-imaging-orders:
+    component: DataTable
+    entity: imaging_order
+    default_sort: created_at
+  add-imaging-result:
+    component: FormView
+    entity: imaging_result
+    mode: create
+  update-imaging-result:
+    component: FormView
+    entity: imaging_result
+    mode: edit
+  list-imaging-results:
+    component: DataTable
+    entity: imaging_result
+    default_sort: created_at
+  add-referral:
+    component: FormView
+    entity: referral
+    mode: create
+  update-referral:
+    component: FormView
+    entity: referral
+    mode: edit
+  get-referral:
+    component: DetailView
+    entity: referral
+  list-referrals:
+    component: DataTable
+    entity: referral
+    default_sort: created_at
+  add-prior-auth:
+    component: FormView
+    entity: prior_auth
+    mode: create
+  update-prior-auth:
+    component: FormView
+    entity: prior_auth
+    mode: edit
+  get-prior-auth:
+    component: DetailView
+    entity: prior_auth
+  list-prior-auths:
+    component: DataTable
+    entity: prior_auth
+    default_sort: created_at
+  add-auth-usage:
+    component: FormView
+    entity: auth_usage
+    mode: create
+  list-auth-usages:
+    component: DataTable
+    entity: auth_usage
+    default_sort: created_at

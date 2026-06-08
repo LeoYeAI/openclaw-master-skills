@@ -1,0 +1,159 @@
+name: cann-review
+version: 4.1.0
+description: |
+  CANN 代码审查技能。用于审查 GitCode 上的 CANN 项目 PR。
+  自动分析代码变更，检查内存泄漏、安全漏洞和可读性，生成结构化报告并发布评论。
+  
+  核心特性：
+  - 🚀 使用 GitCode API，无需浏览器自动化
+  - 🔍 检查内存泄漏、安全漏洞和代码可读性
+  - 📊 生成结构化审查报告
+  - 💬 自动发布审查评论
+  - ⏰ 支持定时自动审查
+  - 🔄 批量扫描多个仓库
+  
+author: OpenClaw Team
+tags:
+  - code-review
+  - cann
+  - runtime
+  - gitcode
+  - pull-request
+  - automation
+
+homepage: https://gitcode.com/cann/runtime
+icon: 🔍
+
+# 技能类型
+type: agent
+
+# 依赖的工具
+tools:
+  - browser
+
+# Cron 配置文件
+cron:
+  config_file: cron.yaml
+  setup_required: true
+
+# 输入参数定义
+inputs:
+  pr_url:
+    description: PR 页面链接 (例如: https://gitcode.com/cann/runtime/pull/472)。如果不提供，将执行自动审查模式。
+    type: string
+    required: false
+  
+  focus_areas:
+    description: |
+      重点审查领域，可选值：
+      - memory: 内存泄漏检查
+      - security: 安全漏洞检查
+      - readability: 代码可读性
+      - all: 全部检查 (默认)
+    type: string
+    required: false
+    default: all
+
+  severity_threshold:
+    description: |
+      严重程度阈值，决定是否自动发布 /lgtm：
+      - low: 低风险自动发布
+      - medium: 中低风险自动发布 (默认)
+      - high: 仅发布审查报告
+    type: string
+    required: false
+    default: medium
+
+  auto_mode:
+    description: |
+      自动审查模式（用于定时任务）：
+      - false: 手动审查指定 PR (默认)
+      - true: 自动审查整点内所有新提交的 PR
+    type: boolean
+    required: false
+    default: false
+
+# 输出定义
+outputs:
+  review_result:
+    description: 审查结果摘要
+    type: object
+    properties:
+      severity:
+        description: 严重程度 (low/medium/high/critical)
+        type: string
+      can_merge:
+        description: 是否可以合入
+        type: boolean
+      issues_count:
+        description: 发现问题数量
+        type: integer
+      comment_posted:
+        description: 是否成功发布评论
+        type: boolean
+      lgtm_posted:
+        description: 是否发布 /lgtm
+        type: boolean
+
+  auto_review_result:
+    description: 自动审查结果（自动模式）
+    type: object
+    properties:
+      total_reviewed:
+        description: 审查的 MR 总数
+        type: integer
+      success_count:
+        description: 成功审查数量
+        type: integer
+      failed_count:
+        description: 失败数量
+        type: integer
+      results:
+        description: 各 MR 审查结果列表
+        type: array
+
+# 示例用法
+examples:
+  - description: 手动审查指定 PR
+    input:
+      pr_url: https://gitcode.com/cann/runtime/pull/472
+    output:
+      severity: low
+      can_merge: true
+      issues_count: 2
+      comment_posted: true
+      lgtm_posted: true
+
+  - description: 自动审查整点内新提交的 PR
+    input:
+      auto_mode: true
+    output:
+      total_reviewed: 3
+      success_count: 3
+      failed_count: 0
+      results:
+        - pr_url: https://gitcode.com/cann/runtime/pull/1270
+          severity: low
+          lgtm_posted: true
+        - pr_url: https://gitcode.com/cann/runtime/pull/1271
+          severity: medium
+          lgtm_posted: true
+
+# 权限要求
+permissions:
+  - browser_access
+  - gitcode_comment
+  - cron_scheduling
+
+# 配置项
+config:
+  timeout: 300  # 单个 PR 审查超时时间(秒)
+  max_files: 100  # 最大文件数
+  max_diff_size: 10000  # 最大 diff 行数
+  browser_profile: openclaw  # 浏览器配置（必须使用内置浏览器）
+
+# 安装后操作
+post_install:
+  - description: "配置定时任务"
+    command: "请参考 README.md 中的'自动审查配置'章节"
+    optional: true

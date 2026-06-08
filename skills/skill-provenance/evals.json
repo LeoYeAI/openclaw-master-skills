@@ -1,0 +1,435 @@
+{
+  "skill_name": "skill-provenance",
+  "evals": [
+    {
+      "id": 1,
+      "name": "bootstrap_unversioned_bundle",
+      "description": "Tests bootstrapping an existing unversioned skill bundle. The skill should inventory files, assign versions, create MANIFEST.yaml and CHANGELOG.md, add internal headers where safe, and use manifest-only tracking for strict-format files.",
+      "prompt": "I have a skill project with these files: SKILL.md, evals.json, generate.js, and output.pdf. None of them currently carry version metadata. This is the third major version of the skill — we've been through two previous iterations but never tracked versions. Please version this bundle as 3.0.0.",
+      "files": [
+        "SKILL.md",
+        "evals.json",
+        "generate.js",
+        "output.pdf"
+      ],
+      "expectations": [
+        "MANIFEST.yaml is created listing all 4 user files plus CHANGELOG.md",
+        "MANIFEST.yaml is treated as the control file and is not self-listed in files",
+        "CHANGELOG.md is created with a 3.0.0 entry summarizing the bootstrap",
+        "SKILL.md version 3 is tracked according to the chosen frontmatter_mode",
+        "evals.json is tracked in MANIFEST.yaml with version: 3 and file_role: evals",
+        "generate.js is tracked in MANIFEST.yaml with version: 3 and file_role: script",
+        "output.pdf is tracked in MANIFEST.yaml with a hash but no internal header",
+        "All manifest paths are relative, not absolute",
+        "skill_bundle name is consistent across all files"
+      ]
+    },
+    {
+      "id": 2,
+      "name": "open_session_verify_bundle",
+      "description": "Tests the session-opening protocol. Given a versioned bundle with one missing file and one stale file, the skill should flag both issues.",
+      "prompt": "I'm starting a new session with this skill bundle. Please verify what I've uploaded and tell me what needs attention.",
+      "files": [
+        "MANIFEST.yaml",
+        "CHANGELOG.md",
+        "SKILL.md",
+        "evals.json"
+      ],
+      "expectations": [
+        "Skill reads MANIFEST.yaml first",
+        "Reports that generate.js is listed in manifest but missing from uploads",
+        "Reports that evals.json version (2) is lower than bundle version (3) and flags it as potentially stale",
+        "Does not silently proceed past the missing file",
+        "Asks the user how to proceed with the discrepancies",
+        "Presents issues clearly without unnecessary alarm"
+      ]
+    },
+    {
+      "id": 3,
+      "name": "save_session_update_bundle",
+      "description": "Tests the session-closing protocol. After changes to SKILL.md and a new script file, the skill should update all versioning artifacts correctly.",
+      "prompt": "We've finished our changes. SKILL.md was rewritten to add a new Phase 6 and I created a new file called validate.js. Please update the bundle versioning.",
+      "files": [
+        "MANIFEST.yaml",
+        "CHANGELOG.md",
+        "SKILL.md",
+        "evals.json",
+        "generate.js",
+        "validate.js"
+      ],
+      "expectations": [
+        "SKILL.md version is incremented according to the bundle's frontmatter_mode",
+        "bundle_version in MANIFEST.yaml is incremented",
+        "validate.js is added to MANIFEST.yaml with file_role: script",
+        "CHANGELOG.md has a new entry at the top describing the changes",
+        "Changelog entry notes that evals.json was NOT updated and may be stale",
+        "Hashes are recomputed for changed files",
+        "Unchanged files retain their previous version numbers"
+      ]
+    },
+    {
+      "id": 4,
+      "name": "conflict_detection_and_resolution",
+      "description": "Tests conflict detection when version headers disagree with the manifest. The skill should present the conflict clearly and ask for user resolution.",
+      "prompt": "I'm loading this bundle into a new session. Something might be off with the versions — can you check?",
+      "files": [
+        "MANIFEST.yaml",
+        "CHANGELOG.md",
+        "SKILL.md",
+        "evals.json"
+      ],
+      "expectations": [
+        "Detects that SKILL.md internal header says version 5 but MANIFEST.yaml says version 4",
+        "Presents both version claims with their change_summary text",
+        "Recommends trusting the more recent version_date as default",
+        "Asks the user for explicit confirmation before proceeding",
+        "Does NOT silently resolve the conflict"
+      ]
+    },
+    {
+      "id": 5,
+      "name": "cross_surface_chat_handoff",
+      "description": "Tests generating a complete handoff package for a Chat-to-Chat session transition where no filesystem persists. Handoff output is appropriate here because the target surface is stateless.",
+      "prompt": "I need to close this session and pick up tomorrow in a new Claude Chat. Package everything I need to bring with me.",
+      "files": [
+        "MANIFEST.yaml",
+        "CHANGELOG.md",
+        "SKILL.md",
+        "evals.json",
+        "generate.js"
+      ],
+      "expectations": [
+        "Creates or updates handoff.md with current session summary because the user is crossing a stateless chat boundary",
+        "handoff.md includes current bundle version, session accomplishments, stale files, and next steps",
+        "If handoff.md is written as a bundle artifact, MANIFEST.yaml is updated to include it",
+        "All deliverable files are packaged for download",
+        "Explicitly tells the user which files they need to save and re-upload next session",
+        "Does not assume filesystem persistence between sessions"
+      ]
+    },
+    {
+      "id": 6,
+      "name": "cross_platform_codex_bootstrap",
+      "description": "Tests bootstrapping a bundle targeting Codex, which rejects SKILL.md frontmatter beyond name and description. The skill should use frontmatter_mode: minimal and omit the metadata block from SKILL.md.",
+      "prompt": "I want to version this skill bundle. It needs to work on both Claude and Codex. SKILL.md currently has name and description only in its frontmatter. This is version 1.",
+      "files": [
+        "SKILL.md",
+        "evals.json"
+      ],
+      "expectations": [
+        "MANIFEST.yaml is created with frontmatter_mode: minimal in the compatibility block",
+        "SKILL.md does NOT get a metadata block added to its frontmatter",
+        "SKILL.md version is tracked only in MANIFEST.yaml, not in the file itself",
+        "evals.json is versioned normally in MANIFEST.yaml without requiring a frontmatter header",
+        "compatibility.designed_for uses portability-oriented surfaces or capabilities rather than requiring a single exact model target",
+        "CHANGELOG.md notes the cross-platform constraint in the bootstrap entry"
+      ]
+    },
+    {
+      "id": 7,
+      "name": "frontmatter_mode_toggle",
+      "description": "Tests switching a bundle's frontmatter_mode from metadata (metadata block in SKILL.md) to minimal (no metadata block) when the user decides to target additional platforms.",
+      "prompt": "This bundle currently targets Claude only and has metadata in SKILL.md frontmatter. I need to make it Codex-compatible too. Please update the bundle to use minimal frontmatter mode.",
+      "files": [
+        "MANIFEST.yaml",
+        "CHANGELOG.md",
+        "SKILL.md",
+        "evals.json"
+      ],
+      "expectations": [
+        "Removes the metadata block from SKILL.md frontmatter",
+        "Preserves name and description in SKILL.md frontmatter",
+        "Updates frontmatter_mode from metadata to minimal in MANIFEST.yaml",
+        "SKILL.md version information is preserved in MANIFEST.yaml",
+        "CHANGELOG.md entry describes the frontmatter mode change and why",
+        "No version information is lost in the transition",
+        "bundle_version is incremented"
+      ]
+    },
+    {
+      "id": 8,
+      "name": "compatibility_block_generation",
+      "description": "Tests that the compatibility block in MANIFEST.yaml is correctly populated when the user specifies testing results across platforms and models.",
+      "prompt": "I just tested this skill on Sonnet 4.5 in Chat and it mostly works but misses staleness detection. I also tested on Codex and it loads fine but doesn't follow the session protocol. Please update the manifest.",
+      "files": [
+        "MANIFEST.yaml",
+        "CHANGELOG.md",
+        "SKILL.md"
+      ],
+      "expectations": [
+        "tested_on array in MANIFEST.yaml gets two new entries",
+        "Sonnet 4.5 entry has status: partial with notes about staleness detection",
+        "Codex entry has status: partial with notes about session protocol",
+        "Each entry includes platform, model (or N/A for Codex), surface, status, date, and notes",
+        "CHANGELOG.md entry documents the test results",
+        "Existing tested_on entries are preserved, not overwritten"
+      ]
+    },
+    {
+      "id": 9,
+      "name": "gemini_cli_compatibility",
+      "description": "Tests bootstrapping a bundle targeting Gemini CLI, which requires SKILL.md frontmatter limited to name and description. The skill should use frontmatter_mode: minimal and provide Gemini CLI installation guidance.",
+      "prompt": "I want to version this skill bundle for use with Gemini CLI. SKILL.md has name and description only. This is the first version — call it 1.0.0. I want to install it to ~/.gemini/skills/ when we're done.",
+      "files": [
+        "SKILL.md",
+        "references/setup-guide.md"
+      ],
+      "expectations": [
+        "MANIFEST.yaml is created with frontmatter_mode: minimal in the compatibility block",
+        "SKILL.md frontmatter is unchanged — no metadata block added",
+        "SKILL.md version is tracked only in MANIFEST.yaml, not in the file itself",
+        "compatibility.designed_for can describe CLI-oriented surfaces or capabilities without requiring a vendor-specific single target",
+        "Install guidance references ~/.gemini/skills/ directory structure",
+        "CHANGELOG.md is created with a 1.0.0 bootstrap entry",
+        "Manifest and changelog are generated normally alongside the skill files"
+      ]
+    },
+    {
+      "id": 10,
+      "name": "gemini_gems_prompt_extraction",
+      "description": "Tests generating a Gem update summary when the user maintains a Gemini Gem alongside the versioned bundle. The skill should identify what needs to be updated in the Gem Manager.",
+      "prompt": "I maintain a Gemini Gem for this skill. The Gem's system prompt is tracked in GEM_INSTRUCTIONS.md. I've updated SKILL.md and GEM_INSTRUCTIONS.md this session. Package the bundle and tell me what I need to update in the Gem Manager.",
+      "files": [
+        "MANIFEST.yaml",
+        "CHANGELOG.md",
+        "SKILL.md",
+        "GEM_INSTRUCTIONS.md"
+      ],
+      "expectations": [
+        "Version tracking updated for SKILL.md and GEM_INSTRUCTIONS.md",
+        "MANIFEST.yaml and CHANGELOG.md updated normally",
+        "Output includes a Gem update section identifying that GEM_INSTRUCTIONS.md changed",
+        "Tells the user to copy the updated instructions into the Gem Manager",
+        "Identifies which files need to be re-uploaded to the Gem's knowledge base",
+        "Does not attempt to automate Gem Manager interaction"
+      ]
+    },
+    {
+      "id": 11,
+      "name": "git_commit_message_generation",
+      "description": "Tests that the session close protocol provides a ready-to-use commit message when the user indicates they are committing to a git repo. The message should be derived from the changelog entry, with a file only as an optional convenience.",
+      "prompt": "We're done with changes. I need to commit this bundle to my git repo. Please update the versioning and give me a commit message I can use.",
+      "files": [
+        "MANIFEST.yaml",
+        "CHANGELOG.md",
+        "SKILL.md",
+        "evals.json",
+        "generate.js"
+      ],
+      "expectations": [
+        "All versioning artifacts updated normally (headers, manifest, changelog)",
+        "A ready-to-use commit message is returned inline by default",
+        "Commit message first line follows the format: bundle-name MAJOR.MINOR.PATCH: summary",
+        "Commit message body lists each changed file with what changed",
+        "Stale files are noted in the commit message",
+        "If a git_commit.txt file is created as a convenience artifact, it is NOT added to MANIFEST.yaml",
+        "User is told they can paste the message directly into git commit or use git commit -F git_commit.txt if a file was requested"
+      ]
+    },
+    {
+      "id": 12,
+      "name": "handoff_with_per_file_changes",
+      "description": "Tests that the handoff note includes per-file change summaries so the next session can verify work without re-reading every file.",
+      "prompt": "I need to close this session and hand off to a new one. I rewrote the Phase 3 instructions in SKILL.md and added two new expectations to eval 4 in evals.json. Package the handoff.",
+      "files": [
+        "MANIFEST.yaml",
+        "CHANGELOG.md",
+        "SKILL.md",
+        "evals.json"
+      ],
+      "expectations": [
+        "handoff.md includes per-file change summaries for SKILL.md and evals.json",
+        "SKILL.md summary mentions Phase 3 rewrite specifically",
+        "evals.json summary mentions the two new expectations in eval 4",
+        "Files not changed this session are not listed in per-file summaries",
+        "Handoff still includes standard fields: version, accomplishments, stale files, next steps",
+        "Per-file summaries are more granular than the changelog entry"
+      ]
+    },
+    {
+      "id": 13,
+      "name": "local_hash_validation",
+      "description": "Tests awareness of the validate.sh script for local hash verification. The skill should reference it when appropriate, especially for Chat-to-Code transitions.",
+      "prompt": "I'm about to upload this bundle to a new Claude Chat session. The files have been sitting in my local directory for a week. How can I verify nothing got corrupted before uploading?",
+      "files": [
+        "MANIFEST.yaml",
+        "CHANGELOG.md",
+        "SKILL.md",
+        "validate.sh"
+      ],
+      "expectations": [
+        "Recommends running validate.sh to verify hashes locally before uploading",
+        "Explains that the script checks file hashes against MANIFEST.yaml",
+        "Notes that MANIFEST.yaml itself is the control file and is not self-hashed",
+        "Notes that this is more reliable than LLM-computed hashes in Chat",
+        "Does not attempt to compute hashes itself when the script is available",
+        "Explains the exit codes or output format so the user knows what to expect"
+      ]
+    },
+    {
+      "id": 14,
+      "name": "api_surface_awareness",
+      "description": "Tests awareness that skills deployed via the API (/v1/skills) use epoch-timestamp versioning and do not sync across surfaces. The skill should explain how manifest-based tracking complements API deployment.",
+      "prompt": "I've been using skill-provenance locally and now I want to deploy this skill via the Claude API. How does version tracking work across the API and my local development?",
+      "files": [
+        "MANIFEST.yaml",
+        "CHANGELOG.md",
+        "SKILL.md"
+      ],
+      "expectations": [
+        "Explains that the API uses epoch-timestamp versioning, not semver",
+        "Notes that skills uploaded to the API do not sync to claude.ai or Claude Code",
+        "Explains that manifest-based tracking handles the development workflow before and across API deployments",
+        "Does not claim that manifest versions replace or override API timestamps",
+        "Recommends noting API deployment events in the changelog for traceability"
+      ]
+    },
+    {
+      "id": 15,
+      "name": "dependencies_field_usage",
+      "description": "Tests that the dependencies field in the manifest is correctly populated when a skill depends on other skills or external resources.",
+      "prompt": "This skill depends on two other skills: 'data-extraction' and 'format-converter'. Please update the manifest to reflect these dependencies.",
+      "files": [
+        "MANIFEST.yaml",
+        "CHANGELOG.md",
+        "SKILL.md"
+      ],
+      "expectations": [
+        "A dependencies field is added to MANIFEST.yaml",
+        "Both data-extraction and format-converter are listed",
+        "CHANGELOG.md entry documents the dependency additions",
+        "Dependencies are listed as skill names, not file paths",
+        "If no dependencies exist, the field can be omitted or set to an empty list"
+      ]
+    },
+    {
+      "id": 16,
+      "name": "deployment_metadata_drift",
+      "description": "Tests optional deployment metadata and drift awareness when a local bundle has changed since the last API deployment.",
+      "prompt": "MANIFEST.yaml says this bundle is at 4.6.0 and deployments.api.version records a Claude API upload from last week. I changed SKILL.md locally but haven't redeployed yet. What is stale and what should I update?",
+      "files": [
+        "MANIFEST.yaml",
+        "CHANGELOG.md",
+        "SKILL.md"
+      ],
+      "expectations": [
+        "Explains that the local bundle may now be ahead of the deployed API copy",
+        "Treats bundle_version and deployments.api.version as different version systems with different purposes",
+        "Does not overwrite or reinterpret the API timestamp as semver",
+        "Recommends updating deployment metadata only after an actual redeploy or explicit verification",
+        "Recommends noting deployment or non-deployment status in the changelog for traceability"
+      ]
+    },
+    {
+      "id": 17,
+      "name": "multi_surface_install_targets",
+      "description": "Tests guidance for the same canonical bundle being installed in multiple local skill directories or upload surfaces.",
+      "prompt": "I keep the same skill in ~/.codex/skills/, .agents/skills/, and a Claude settings ZIP. How should the manifest track that without turning them into separate skills?",
+      "files": [
+        "MANIFEST.yaml",
+        "CHANGELOG.md",
+        "SKILL.md"
+      ],
+      "expectations": [
+        "Treats the bundle as one canonical skill with multiple install or deployment targets",
+        "Uses optional deployment metadata rather than inventing separate bundle names",
+        "Notes that .agents/skills can act as a neutral cross-client install location",
+        "Explains that each installed copy can drift independently from the canonical bundle",
+        "Preserves bundle_version as the author-side source of truth"
+      ]
+    },
+    {
+      "id": 18,
+      "name": "trust_audit_untrusted_bundle",
+      "description": "Tests trust and audit guidance for a downloaded bundle before installation or reuse.",
+      "prompt": "I downloaded a skill bundle from someone else's repo and want to install it across my tools. Before I trust it, what should I verify?",
+      "files": [
+        "MANIFEST.yaml",
+        "CHANGELOG.md",
+        "SKILL.md",
+        "validate.sh"
+      ],
+      "expectations": [
+        "Recommends reading MANIFEST.yaml to confirm expected files and roles",
+        "Recommends verifying hashes locally with validate.sh when available",
+        "Recommends reviewing CHANGELOG.md to understand recent changes and stale files",
+        "Explains that deployment metadata or install-target notes can reveal which copies may be outdated",
+        "Does not treat the bundle as trustworthy solely because it has a manifest"
+      ]
+    },
+    {
+      "id": 19,
+      "name": "deployment_metadata_redeploy_event",
+      "description": "Tests updating deployment metadata after a real redeploy so author-side semver and platform-native deployment versions remain distinct but traceable.",
+      "prompt": "I updated this bundle locally, then redeployed it through the Claude API just now. Please update the bundle records so the deployment history is accurate.",
+      "files": [
+        "MANIFEST.yaml",
+        "CHANGELOG.md",
+        "SKILL.md"
+      ],
+      "expectations": [
+        "Updates deployments.api metadata only because an actual redeploy happened",
+        "Keeps bundle_version as semver and does not replace it with the API timestamp",
+        "Treats the API version as platform-native deployment metadata, not the bundle's canonical version",
+        "Recommends or records a changelog note describing the redeploy event",
+        "Does not imply that redeploying automatically changes unchanged file versions"
+      ]
+    },
+    {
+      "id": 20,
+      "name": "deployment_metadata_conflict",
+      "description": "Tests conflict handling when deployment metadata disagrees with the user's report of what is currently installed or deployed.",
+      "prompt": "MANIFEST.yaml says deployments.api.version is 1759178010641129, but I think I manually redeployed a newer copy yesterday from another machine. Please fix the manifest.",
+      "files": [
+        "MANIFEST.yaml",
+        "CHANGELOG.md",
+        "SKILL.md"
+      ],
+      "expectations": [
+        "Treats the deployment discrepancy as a conflict rather than silently overwriting metadata",
+        "Explains which value comes from the manifest and which comes from the user's report",
+        "Asks for confirmation or supporting details before changing deployment metadata",
+        "Does not reinterpret platform-native deployment versions as semver",
+        "Recommends recording the resolution in the changelog once confirmed"
+      ]
+    },
+    {
+      "id": 21,
+      "name": "hash_mismatch_untrusted_bundle",
+      "description": "Tests that a hash mismatch in a downloaded bundle is treated as a verification failure, not merely ordinary staleness.",
+      "prompt": "I downloaded this skill bundle from another repo. MANIFEST.yaml and CHANGELOG.md are present, but one file fails hash verification. What should I do before installing it?",
+      "files": [
+        "MANIFEST.yaml",
+        "CHANGELOG.md",
+        "SKILL.md",
+        "validate.sh"
+      ],
+      "expectations": [
+        "Treats the hash mismatch as a verification problem or trust issue, not just a stale-file warning",
+        "Recommends verifying the bundle locally with validate.sh when available",
+        "Explains that the manifest helps detect tampering or accidental drift but does not guarantee trust by itself",
+        "Avoids presenting the mismatched bundle as safely installable without clarification",
+        "Recommends checking changelog intent and source provenance before proceeding"
+      ]
+    },
+    {
+      "id": 22,
+      "name": "packaged_subset_vs_canonical_bundle",
+      "description": "Tests awareness that a .skill or .zip installable package may contain only the packaged subset while the canonical source bundle tracks additional files.",
+      "prompt": "I opened a .skill ZIP that has SKILL.md, README.md, and references, but MANIFEST.yaml says the canonical bundle also includes evals and scripts that are not in this package. Is something wrong?",
+      "files": [
+        "MANIFEST.yaml",
+        "CHANGELOG.md",
+        "SKILL.md",
+        "README.md"
+      ],
+      "expectations": [
+        "Explains the difference between an installable packaged subset and the canonical source bundle",
+        "Does not silently treat the package as complete if the manifest expects additional tracked files",
+        "Flags the missing tracked files clearly and asks how the user wants to proceed",
+        "Explains that some files may travel separately even when the installed skill loads correctly",
+        "Uses the manifest as the authoritative inventory rather than the archive contents alone"
+      ]
+    }
+  ]
+}

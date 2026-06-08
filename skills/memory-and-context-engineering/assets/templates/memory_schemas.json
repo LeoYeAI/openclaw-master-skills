@@ -1,0 +1,499 @@
+{
+  "perception_memory": {
+    "description": "感知记忆数据结构",
+    "schema": {
+      "memory_id": {
+        "type": "string",
+        "description": "记忆唯一标识",
+        "pattern": "^perception_[a-f0-9]{12}$"
+      },
+      "user_id": {
+        "type": "string",
+        "description": "用户ID"
+      },
+      "data": {
+        "type": "object",
+        "properties": {
+          "session_id": {
+            "type": "string",
+            "description": "会话ID"
+          },
+          "conversation_history": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "role": {
+                  "type": "string",
+                  "enum": ["user", "system", "assistant"]
+                },
+                "content": {
+                  "type": "string"
+                },
+                "timestamp": {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                "metadata": {
+                  "type": "object"
+                }
+              },
+              "required": ["role", "content", "timestamp"]
+            }
+          },
+          "task_state": {
+            "type": "object",
+            "properties": {
+              "current_topic": {
+                "type": "string"
+              },
+              "pending_questions": {
+                "type": "array",
+                "items": {"type": "string"}
+              },
+              "context_anchors": {
+                "type": "array",
+                "items": {"type": "string"}
+              }
+            }
+          },
+          "temporary_context": {
+            "type": "object",
+            "properties": {
+              "mentioned_concepts": {
+                "type": "array",
+                "items": {"type": "string"}
+              },
+              "referenced_entities": {
+                "type": "array",
+                "items": {"type": "string"}
+              },
+              "active_constraints": {
+                "type": "array",
+                "items": {"type": "string"}
+              }
+            }
+          }
+        },
+        "required": ["session_id", "conversation_history"]
+      },
+      "expires_at": {
+        "type": "string",
+        "format": "date-time",
+        "description": "过期时间"
+      }
+    }
+  },
+  "user_profile_memory": {
+    "description": "用户画像记忆数据结构",
+    "schema": {
+      "memory_id": {
+        "type": "string",
+        "pattern": "^profile_[a-f0-9]{12}$"
+      },
+      "user_id": {
+        "type": "string"
+      },
+      "data": {
+        "type": "object",
+        "properties": {
+          "identity": {
+            "type": "array",
+            "items": {"type": "string"},
+            "description": "身份标签，如 ['开发者', '架构师']"
+          },
+          "technical_background": {
+            "type": "object",
+            "properties": {
+              "domains": {
+                "type": "array",
+                "items": {"type": "string"}
+              },
+              "expertise_level": {
+                "type": "string",
+                "enum": ["beginner", "intermediate", "advanced"]
+              },
+              "stack": {
+                "type": "array",
+                "items": {"type": "string"}
+              },
+              "learning_goals": {
+                "type": "array",
+                "items": {"type": "string"}
+              }
+            }
+          },
+          "communication_style": {
+            "type": "object",
+            "properties": {
+              "style": {
+                "type": "string",
+                "description": "如 '直接'、'详细'、'引导式'"
+              },
+              "preference": {
+                "type": "string"
+              },
+              "dislike": {
+                "type": "array",
+                "items": {"type": "string"}
+              }
+            }
+          },
+          "decision_pattern": {
+            "type": "object",
+            "properties": {
+              "type": {
+                "type": "string",
+                "enum": ["审慎型", "果断型", "平衡型"]
+              },
+              "requires": {
+                "type": "string"
+              },
+              "focus": {
+                "type": "string"
+              }
+            }
+          },
+          "version": {
+            "type": "integer",
+            "description": "版本号，用于增量更新"
+          }
+        },
+        "required": ["identity"]
+      }
+    }
+  },
+  "procedural_memory": {
+    "description": "程序性记忆数据结构",
+    "schema": {
+      "memory_id": {
+        "type": "string",
+        "pattern": "^procedural_[a-f0-9]{12}$"
+      },
+      "user_id": {
+        "type": "string"
+      },
+      "data": {
+        "type": "object",
+        "properties": {
+          "decision_patterns": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "pattern_id": {"type": "string"},
+                "trigger_condition": {"type": "string"},
+                "workflow": {
+                  "type": "array",
+                  "items": {"type": "string"}
+                },
+                "confidence": {"type": "number", "minimum": 0, "maximum": 1},
+                "usage_count": {"type": "integer"},
+                "success_rate": {"type": "number", "minimum": 0, "maximum": 1}
+              }
+            }
+          },
+          "problem_solving_strategies": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "strategy_id": {"type": "string"},
+                "problem_type": {"type": "string"},
+                "approach": {
+                  "type": "array",
+                  "items": {"type": "string"}
+                },
+                "success_rate": {"type": "number"}
+              }
+            }
+          },
+          "tool_effectiveness_records": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "record_id": {"type": "string"},
+                "timestamp": {"type": "string", "format": "date-time"},
+                "task_type": {"type": "string"},
+                "tool_name": {"type": "string"},
+                "effectiveness_score": {"type": "number"},
+                "outcome": {"type": "string", "enum": ["success", "failure"]},
+                "user_feedback": {"type": "number", "minimum": 1, "maximum": 5}
+              }
+            }
+          },
+          "tool_combination_patterns": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "combination_id": {"type": "string"},
+                "sequence": {
+                  "type": "array",
+                  "items": {"type": "string"}
+                },
+                "context": {"type": "string"},
+                "usage_count": {"type": "integer"}
+              }
+            }
+          },
+          "neuroticism_tendency": {
+            "type": "object",
+            "properties": {
+              "score": {"type": "number", "minimum": -1, "maximum": 1},
+              "triggers": {
+                "type": "array",
+                "items": {"type": "string"}
+              },
+              "derived_from": {
+                "type": "array",
+                "items": {"type": "string"}
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "narrative_memory": {
+    "description": "叙事记忆数据结构",
+    "schema": {
+      "memory_id": {
+        "type": "string",
+        "pattern": "^narrative_[a-f0-9]{12}$"
+      },
+      "user_id": {
+        "type": "string"
+      },
+      "data": {
+        "type": "object",
+        "properties": {
+          "growth_milestones": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "timestamp": {"type": "string", "format": "date-time"},
+                "event": {"type": "string"},
+                "significance": {"type": "string"},
+                "importance_score": {"type": "number"},
+                "related_skills": {
+                  "type": "array",
+                  "items": {"type": "string"}
+                }
+              }
+            }
+          },
+          "current_identity": {
+            "type": "array",
+            "items": {"type": "string"}
+          },
+          "identity_evolution": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "from_identity": {"type": "string"},
+                "to_identity": {"type": "string"},
+                "trigger": {"type": "string"},
+                "confidence": {"type": "number"}
+              }
+            }
+          },
+          "continuous_concerns": {
+            "type": "array",
+            "items": {"type": "string"}
+          }
+        }
+      }
+    }
+  },
+  "semantic_memory": {
+    "description": "语义记忆数据结构",
+    "schema": {
+      "memory_id": {
+        "type": "string",
+        "pattern": "^semantic_[a-f0-9]{12}$"
+      },
+      "user_id": {
+        "type": "string"
+      },
+      "data": {
+        "type": "object",
+        "properties": {
+          "core_concepts": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "concept": {"type": "string"},
+                "definition": {"type": "string"},
+                "attributes": {"type": "object"},
+                "related_concepts": {
+                  "type": "array",
+                  "items": {"type": "string"}
+                },
+                "usage_count": {"type": "integer"},
+                "confidence": {"type": "number"}
+              }
+            }
+          },
+          "knowledge_entities": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "entity_id": {"type": "string"},
+                "entity_type": {"type": "string"},
+                "name": {"type": "string"},
+                "properties": {"type": "object"}
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "emotional_memory": {
+    "description": "情感记忆数据结构",
+    "schema": {
+      "memory_id": {
+        "type": "string",
+        "pattern": "^emotional_[a-f0-9]{12}$"
+      },
+      "user_id": {
+        "type": "string"
+      },
+      "data": {
+        "type": "object",
+        "properties": {
+          "emotion_states": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "timestamp": {"type": "string", "format": "date-time"},
+                "emotion_type": {"type": "string"},
+                "intensity": {"type": "number", "minimum": 0, "maximum": 1},
+                "trigger_context": {"type": "string"},
+                "topic": {"type": "string"},
+                "decay_factor": {"type": "number"}
+              }
+            }
+          },
+          "attitude_tendencies": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "topic": {"type": "string"},
+                "attitude": {"type": "string"},
+                "strength": {"type": "number"}
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "activated_memory": {
+    "description": "激活记忆数据结构",
+    "schema": {
+      "memory_id": {"type": "string"},
+      "memory_type": {
+        "type": "string",
+        "enum": ["user_profile", "procedural", "narrative", "semantic", "emotional"]
+      },
+      "content_summary": {"type": "string"},
+      "triggered_by": {
+        "type": "array",
+        "items": {
+          "type": "string",
+          "enum": ["temporal", "semantic", "contextual", "emotional", "causal", "identity"]
+        }
+      },
+      "relevance_score": {"type": "number", "minimum": 0, "maximum": 1},
+      "heat_level": {
+        "type": "string",
+        "enum": ["hot", "warm", "cold"]
+      },
+      "activation_sources": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "dimension": {"type": "string"},
+            "score": {"type": "number"}
+          }
+        }
+      }
+    }
+  },
+  "insight": {
+    "description": "洞察数据结构",
+    "schema": {
+      "insight_id": {
+        "type": "string",
+        "pattern": "^insight_[a-f0-9]{12}$"
+      },
+      "insight_type": {
+        "type": "string",
+        "enum": [
+          "user_preference",
+          "behavioral_pattern",
+          "best_practice",
+          "efficiency_opportunity",
+          "knowledge_gap",
+          "process_improvement",
+          "error_prevention",
+          "emotional_pattern",
+          "identity_evolution"
+        ]
+      },
+      "title": {"type": "string"},
+      "content": {"type": "string"},
+      "priority": {
+        "type": "string",
+        "enum": ["high", "medium", "low"]
+      },
+      "signal_strength": {
+        "type": "string",
+        "enum": ["strong", "moderate", "weak"]
+      },
+      "confidence": {"type": "number", "minimum": 0, "maximum": 1},
+      "actionable": {"type": "boolean"},
+      "actions": {
+        "type": "array",
+        "items": {"type": "string"}
+      },
+      "affected_memories": {
+        "type": "array",
+        "items": {"type": "string"}
+      }
+    }
+  },
+  "global_state_snapshot": {
+    "description": "全局状态快照数据结构",
+    "schema": {
+      "snapshot_id": {
+        "type": "string",
+        "pattern": "^snap_\\d{8}_\\d{6}_[a-f0-9]{8}$"
+      },
+      "user_id": {"type": "string"},
+      "timestamp": {"type": "string", "format": "date-time"},
+      "current_task": {"type": "string"},
+      "task_phase": {"type": "string"},
+      "user_intent": {"type": "string"},
+      "active_memories": {
+        "type": "array",
+        "items": {"type": "string"}
+      },
+      "decision_context": {"type": "object"},
+      "emotion_state": {"type": "string"},
+      "mental_model": {"type": "string"},
+      "conversation_turn": {"type": "object"},
+      "metadata": {"type": "object"}
+    }
+  }
+}

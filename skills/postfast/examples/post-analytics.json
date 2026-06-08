@@ -1,0 +1,42 @@
+{
+  "_description": "Fetch analytics for published TikTok and Instagram posts in March 2026",
+  "method": "GET",
+  "url": "/social-posts/analytics?startDate=2026-03-01T00:00:00.000Z&endDate=2026-03-31T23:59:59.999Z&platforms=TIKTOK,INSTAGRAM",
+  "headers": {
+    "pf-api-key": "$POSTFAST_API_KEY"
+  },
+  "response": {
+    "data": [
+      {
+        "id": "2d43cf7b-3c1b-4ddf-a0ee-344c0ed5b5dc",
+        "content": "Stop posting manually. Seriously...",
+        "socialMediaId": "db5f0597-9cdb-4c89-bf45-d8d5f9446733",
+        "platformPostId": "7615272110943948054",
+        "publishedAt": "2026-03-09T15:05:15.559Z",
+        "latestMetric": {
+          "impressions": "182",
+          "reach": null,
+          "likes": "2",
+          "comments": "0",
+          "shares": "0",
+          "totalInteractions": "2",
+          "fetchedAt": "2026-03-10T06:00:13.220Z",
+          "extras": {
+            "duration": 0,
+            "create_time": 1773068712
+          }
+        }
+      }
+    ]
+  },
+  "_notes": [
+    "startDate and endDate are required (ISO 8601 UTC)",
+    "platforms and socialMediaIds are optional filters",
+    "Only returns PUBLISHED posts with a platformPostId",
+    "latestMetric is null if no metrics have been fetched yet",
+    "All metric values are strings (bigint), not numbers",
+    "LinkedIn personal accounts are excluded",
+    "No pagination - keep date ranges reasonable",
+    "Rate limit: 350 requests/hour"
+  ]
+}

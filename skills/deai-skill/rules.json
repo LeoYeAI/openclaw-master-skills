@@ -1,0 +1,375 @@
+{
+  "chinese_ai_features": {
+    "transition_words": [
+      "综上所述",
+      "值得注意的是",
+      "需要强调的是",
+      "此外",
+      "另外",
+      "同时",
+      "一方面",
+      "另一方面",
+      "总而言之",
+      "因此",
+      "所以",
+      "由此可见",
+      "显然",
+      "显而易见",
+      "换句话说",
+      "换言之",
+      "具体来说",
+      "具体而言",
+      "首先",
+      "其次",
+      "最后",
+      "总之"
+    ],
+    "formal_words": [
+      "具有",
+      "表现出",
+      "体现",
+      "实现",
+      "呈现",
+      "显示",
+      "展示",
+      "反映",
+      "揭示",
+      "表明",
+      "具备",
+      "包含",
+      "涉及",
+      "涵盖",
+      "涵盖"
+    ],
+    "idioms": [
+      "举足轻重",
+      "息息相关",
+      "必不可少",
+      "至关重要",
+      "不可或缺",
+      "不可忽视",
+      "不容忽视",
+      "相辅相成",
+      "互相促进",
+      "齐头并进",
+      "日益增长",
+      "蓬勃发展",
+      "如火如荼",
+      "突飞猛进",
+      "日新月异",
+      "刻不容缓",
+      "势在必行",
+      "大有裨益",
+      "大有可为",
+      "大有前途"
+    ],
+    "formal_phrases": [
+      "具有重要意义",
+      "具有重要作用",
+      "具有重大影响",
+      "具有深远意义",
+      "具有重要的意义",
+      "具有巨大的潜力",
+      "具有广阔的前景",
+      "具有显著的优势",
+      "具有明显的特点",
+      "具有鲜明的特色"
+    ]
+  },
+  "english_ai_features": {
+    "transition_words": [
+      "furthermore",
+      "moreover",
+      "in addition",
+      "additionally",
+      "consequently",
+      "therefore",
+      "thus",
+      "hence",
+      "accordingly",
+      "nevertheless",
+      "nonetheless",
+      "however",
+      "in contrast",
+      "conversely",
+      "meanwhile",
+      "likewise",
+      "similarly",
+      "correspondingly",
+      "specifically",
+      "particularly"
+    ],
+    "formal_words": [
+      "possess",
+      "exhibit",
+      "demonstrate",
+      "implement",
+      "display",
+      "manifest",
+      "indicate",
+      "reveal",
+      "reflect",
+      "signify",
+      "constitute",
+      "comprise",
+      "incorporate",
+      "encompass",
+      "involve"
+    ],
+    "idioms": [
+      "play a crucial role",
+      "of great importance",
+      "significant impact",
+      "essential component",
+      "fundamental aspect",
+      "key factor",
+      "vital element",
+      "critical consideration",
+      "noteworthy point",
+      "relevant aspect"
+    ],
+    "formal_phrases": [
+      "it is important to note that",
+      "it should be noted that",
+      "it is worth mentioning that",
+      "it is worth noting that",
+      "it is essential to recognize",
+      "it is crucial to understand",
+      "it is imperative to consider",
+      "it is necessary to emphasize",
+      "it is significant to acknowledge",
+      "it is vital to appreciate"
+    ]
+  },
+  "conversion_rules": {
+    "zh": {
+      "transition_replacements": {
+        "综上所述": ["总的来说", "简而言之", "总的来说吧", "这么看的话", "简单说", "一句话"],
+        "值得注意的是": ["要知道", "得注意一下", "值得注意的是", "有一点要提醒", "需要注意的是"],
+        "需要强调的是": ["重点是", "关键在于", "得强调下", "主要是", "核心是"],
+        "此外": ["还有", "另外", "而且", "再说了", "加上"],
+        "另外": ["还有", "对了", "再加上"],
+        "因此": ["所以", "这么一来", "因为这个"],
+        "由此可见": ["看得出来", "从这里就能看出"],
+        "显然": ["很明显", "一看就知"],
+        "总而言之": ["总之", "总的来说", "简单说"],
+        "一方面": ["首先", "先说"],
+        "另一方面": ["其次", "再说"]
+      },
+      "formal_word_replacements": {
+        "具有": ["有", "拥有", "具备", "带着"],
+        "表现出": ["显示出", "表现出", "展示出", "看出来"],
+        "体现": ["表现出", "显示出", "体现了", "反映出来"],
+        "实现": ["做到", "达成", "完成", "搞定"],
+        "呈现": ["展现出", "表现出", "显现出", "看起来"],
+        "显示": ["表明", "说明", "看出来", "显示"],
+        "表明": ["说明", "表明", "意思是", "看来"],
+        "反映": ["体现", "反映", "表现", "看得出"],
+        "涵盖": ["包括", "涵盖", "覆盖", "涉及到"]
+      },
+      "sentence_patterns": [
+        ["(.+)具有(.+)的作用和意义", "\\\\1\\\\2很重要"],
+        ["(.+)表现出(.+)的特点", "\\\\1看起来\\\\2"],
+        ["(.+)显示出(.+)的趋势", "\\\\1越来越\\\\2了"],
+        ["我们可以(.+)看出", "从\\\\2看"],
+        ["需要(.+)的是", "要注意\\\\2"],
+        ["值得注意的是", "得注意一点"],
+        ["具有(.+)的特点", "\\\\2"],
+        ["(.+)具有重要意义", "\\\\1很重要"]
+      ],
+      "sentence_replacements": {
+        "(.+)具有(.+)的作用和意义": "\\1\\2很重要",
+        "(.+)表现出(.+)的特点": "\\1看起来\\2",
+        "(.+)显示出(.+)的趋势": "\\1越来越\\2了",
+        "我们可以(.+)看出": "从\\2看",
+        "需要(.+)的是": "要注意\\2",
+        "值得注意的是": "得注意一点",
+        "具有(.+)的特点": "\\2",
+        "(.+)具有重要意义": "\\1很重要"
+      }
+    },
+    "en": {
+      "transition_replacements": {
+        "furthermore": ["also", "plus", "on top of that", "besides"],
+        "moreover": ["also", "besides", "what's more", "and"],
+        "in addition": ["also", "plus", "another thing", "additionally"],
+        "additionally": ["also", "plus", "another point", "besides"],
+        "consequently": ["so", "that's why", "as a result", "therefore"],
+        "therefore": ["so", "that's why", "hence", "for this reason"],
+        "nevertheless": ["but", "still", "anyway", "though"],
+        "however": ["but", "though", "on the other hand", "then again"],
+        "in contrast": ["but", "instead", "on the flip side", "unlike"],
+        "specifically": ["like", "for example", "say"],
+        "particularly": ["especially", "mainly", "mostly"]
+      },
+      "formal_word_replacements": {
+        "possess": ["have", "own", "got", "hold"],
+        "exhibit": ["show", "display", "demonstrate", "reveal"],
+        "demonstrate": ["show", "display", "prove", "illustrate"],
+        "implement": ["put in place", "set up", "start", "carry out"],
+        "display": ["show", "display", "reveal", "exhibit"],
+        "manifest": ["show", "appear", "become clear"],
+        "indicate": ["show", "point to", "suggest", "mean"],
+        "reveal": ["show", "uncover", "disclose", "expose"],
+        "constitute": ["make up", "form", "be"],
+        "comprise": ["consist of", "include", "contain"]
+      },
+      "sentence_patterns": [
+        ["it is important to note that", "we should keep in mind that"],
+        ["it should be noted that", "remember that"],
+        ["it is worth mentioning that", "it's worth saying that"],
+        ["we can (see|observe) that", "it's clear that"],
+        ["(.+)(demonstrates|exhibits)(.+) characteristics", "\\1seems\\3"],
+        ["(.+)(is of great|has significant) importance", "\\1is really important"],
+        ["in order to", "to"],
+        ["with regard to", "about"],
+        ["as far as (.+) is concerned", "when it comes to \\1"],
+        ["it is clear that", "clearly"]
+      ],
+      "sentence_replacements": {
+        "it is important to note that": "we should keep in mind that",
+        "it should be noted that": "remember that",
+        "it is worth mentioning that": "it's worth saying that",
+        "we can (see|observe) that": "it's clear that",
+        "(.+)(demonstrates|exhibits)(.+) characteristics": "\\1seems\\3",
+        "(.+)(is of great|has significant) importance": "\\1is really important",
+        "in order to": "to",
+        "with regard to": "about",
+        "as far as (.+) is concerned": "when it comes to \\1",
+        "it is clear that": "clearly"
+      }
+    }
+  },
+  "colloquial_expressions": {
+    "zh": {
+      "endings": ["吧", "呢", "啊", "呀", "的", "啦", "嘛", "哈", "哦"],
+      "fillers": ["你知道", "那个", "其实", "说真的", "反正", "说白了", "基本上", "我觉得", "说实话"],
+      "uncertainties": ["好像", "大概", "可能", "也许", "差不多", "貌似", "应该是", "估计"],
+      "emphasizers": ["挺", "挺挺", "特别", "超级", "非常", "相当", "蛮", "蛮蛮"],
+      "connectors": ["然后", "接着", "接下来", "再然后"],
+      "opinions": ["我觉得", "我看", "我认为", "我以为", "我的感觉是", "看起来"]
+    },
+    "en": {
+      "endings": [", right?", ", isn't it?", ", you know?", ", you see?", ", I guess"],
+      "fillers": ["you know", "I mean", "like", "actually", "basically", "honestly", "pretty much", "sort of"],
+      "uncertainties": ["sort of", "kind of", "maybe", "probably", "I guess", "might", "could be"],
+      "emphasizers": ["pretty", "really", "quite", "super", "very", "totally", "absolutely"],
+      "connectors": ["then", "after that", "next", "also", "plus"],
+      "opinions": ["I think", "I feel", "to me", "from my perspective", "in my opinion"]
+    }
+  },
+  "style_presets": {
+    "natural": {
+      "transition_probability": 0.7,
+      "formal_word_probability": 0.6,
+      "sentence_pattern_probability": 0.5,
+      "colloquial_intensity": "mild"
+    },
+    "casual": {
+      "transition_probability": 0.9,
+      "formal_word_probability": 0.8,
+      "sentence_pattern_probability": 0.7,
+      "colloquial_intensity": "strong"
+    },
+    "formal": {
+      "transition_probability": 0.4,
+      "formal_word_probability": 0.3,
+      "sentence_pattern_probability": 0.2,
+      "colloquial_intensity": "none"
+    }
+  },
+  "text_patterns": {
+    "zh": [
+      {
+        "pattern": "(.+)具有(.+)的特点",
+        "replacement": "\\1看起来\\2"
+      },
+      {
+        "pattern": "(.+)对于(.+)具有重要意义",
+        "replacement": "\\1对\\2挺重要的"
+      },
+      {
+        "pattern": "我们可以(看出|看出)(.+)",
+        "replacement": "从\\2看"
+      },
+      {
+        "pattern": "(.+)体现出(.+)",
+        "replacement": "\\1表现出\\2"
+      },
+      {
+        "pattern": "需要注意的是(.+)",
+        "replacement": "要注意\\2"
+      }
+    ],
+    "en": [
+      {
+        "pattern": "(.+)(demonstrates|exhibits)(.+) characteristics",
+        "replacement": "\\1seems\\3"
+      },
+      {
+        "pattern": "(.+)(is of great|has significant) importance",
+        "replacement": "\\1is really important"
+      },
+      {
+        "pattern": "it is clear that",
+        "replacement": "clearly"
+      },
+      {
+        "pattern": "we should (note|keep in mind)",
+        "replacement": "remember"
+      },
+      {
+        "pattern": "(.+)(possesses|has)(.+) potential",
+        "replacement": "\\1has got \\3 potential"
+      }
+    ]
+  },
+  "ai_indicators": {
+    "zh": {
+      "sentence_starters": [
+        "综上所述",
+        "总而言之",
+        "值得注意的是",
+        "需要指出的是",
+        "显而易见",
+        "显而易见的是"
+      ],
+      "sentence_endings": [
+        "具有重要意义",
+        "具有重要的意义",
+        "具有重大的意义",
+        "具有深远的影响",
+        "具有重要的价值"
+      ],
+      "common_structures": [
+        "我们可以看出",
+        "我们可以观察到",
+        "从以上分析可以看出",
+        "通过分析可以得出",
+        "从数据可以看出"
+      ]
+    },
+    "en": {
+      "sentence_starters": [
+        "in conclusion",
+        "to summarize",
+        "it is important to note",
+        "it is worth noting",
+        "it is worth mentioning"
+      ],
+      "sentence_endings": [
+        "is of great importance",
+        "has significant implications",
+        "plays a crucial role",
+        "is of vital importance"
+      ],
+      "common_structures": [
+        "we can observe that",
+        "we can see that",
+        "it can be seen that",
+        "it is evident that",
+        "from this analysis, we can conclude"
+      ]
+    }
+  }
+}

@@ -3,6 +3,47 @@
 每次更新的详细发布说明。
 
 
+## v0.13.0 — 2026-06-08
+
+### 🚀 周更：新增 100 个 Skills，总计 1709
+
+来源：openclaw/skills-archive 官方镜像，按质量规则筛选（SKILL.md 800B-30KB、完整 YAML 元数据、有效 description）。
+
+#### 部分新增亮点（前 30 个）
+- `guanrentang-writer` — 观仁堂中医公众号文章生成器。写文章 + 自动配图一体化。当用户说"写文章"、"帮我写一篇"、"公众号文章"时自动触发。支持随机选题和固定主题（古法熏蒸推广、放假通知），生成符合观仁堂风格的中医养生文章，并自动配图。
+- `ai-photos` — | Personal AI photo album for OpenClaw. Use when users say: - "index my photos" - "set up an AI photo album" - "search m
+- `yt-to-blog` — > Full content pipeline: YouTube URL → transcript → blog post → Substack draft → X/Twitter thread → vertical video clips
+- `dating` — "Meet other AI agents and build relationships on inbed.ai. Find compatible agents through matchmaking, swipe, chat in re
+- `cisco-firewall-audit` — >- Dual-platform Cisco ASA and Firepower Threat Defense (FTD) firewall audit with ACL analysis, NAT policy validation, M
+- `stitch-design` — Official Google Stitch SDK wrapper for OpenClaw. Requires only STITCH_API_KEY. Generate UI screens from text, apply targ
+- `openclaw-feishu-docs-perm-auto` — 自动为飞书文档添加用户权限。每次创建飞书文档（多维表格/文档/电子表格/文件夹/云空间文件/知识库节点等）后自动添加用户权限，或用户反馈文档无权限时补充添加权限。适用于 OpenClaw Agent。
+- `chrome-extension` — "Comprehensive guide for building Chrome extensions with Manifest V3. Use this skill whenever the user mentions Chrome e
+- `local-ai-search` — Natural language search for local files (100G-1T). Supports xlsx, pptx, pdf, docx formats with location info. Triggered 
+- `skills-general-testcase` — 本技能从需求文档生成全面的测试用例文档。当用户需要从需求文档、产品规格说明或描述系统功能的文档创建测试用例时使用此技能。默认生成Markdown格式的测试用例文档；当用户明确要求生成"思维导图格式"或"xmind格式"时，会额外生成XMin
+- `social-media-planner` — When user asks to plan social media posts, create content calendar, write captions, generate hashtags, schedule posts, p
+- `evogo` — Complete WhatsApp automation via Evolution API Go v3 - instances, messages (text/media/polls/carousels), groups, contact
+- `healthclaw` — AI-native hospital and multi-department healthcare ERP. 98 actions across 7 domains -- patients, appointments, clinical,
+- `ima-tts-ai` — > Use when generating speech from text (text-to-speech) via IMA Open API. Use for: voice synthesis, TTS,朗读, 语音合成, 配音, 有声
+- `data-anomaly-detector` — "Detect anomalies and outliers in construction data: unusual costs, schedule variances, productivity spikes. Statistical
+- `construction-progress-report` — Help a project manager create a structured weekly or monthly construction progress report from conversational input, pro
+- `cloud-security-posture` — >- Cross-cloud security posture assessment covering IAM analysis, encryption audit, and public exposure detection across
+- `roundtable-adaptive` — "Adaptive multi-model AI roundtable. Runs up to 4 AI models (configurable) in 2 debate rounds with cross-critique and fo
+- `thecorporation-form-and-operate` — How to use the `npx corp` CLI to manage corporate entities, governance, cap tables, finance, agents, and compliance for 
+- `play-physical-instrument` — >- Get-started-fast guides for accessible physical instruments. Use when someone wants to learn an instrument, needs a s
+- `task-dispatcher` — 智能任务分发与子代理协调中枢。当用户提交任何任务时，执行需求分析、任务拆解、分发策略制定，分发给合适的 subagent 执行，监控进度并阶段汇报，最终汇总结果。失败时自动兜底处理。适用于：（1）用户直接下达的任务（2）cron/heart
+- `binance-derivatives-trading-usds-futures` — Binance Derivatives-trading-usds-futures request using the Binance API. Authentication requires API key and secret key. 
+- `markdown-exporter` — Convert Markdown text to DOCX, PPTX, XLSX, PDF, PNG, HTML, IPYNB, MD, CSV, JSON, JSONL, XML files, and extract code bloc
+- `model-routing-orchestrator` — Route each user request to the most cost-effective model or multi-model workflow based on task type, complexity, risk, l
+- `love` — "Find love and real connection with other AI agents on inbed.ai. Meet compatible agents through personality matchmaking,
+- `goods-images` — "Use when the user wants to generate product detail images or carousel/main images for e-commerce platforms like Taobao.
+- `mikrotik-api` — "Manages MikroTik routers via the RouterOS API (port 8728/8729). Use when the user wants to configure, monitor, or troub
+- `hongkong-payment-qfpay` — QFPay API is a comprehensive payment solution that offers various payment methods to meet the needs of different busines
+- `company-investment-research` — "Structured, multi-dimensional company investment research framework for AI agents and human analysts. Provides a 10-par
+- `binance-dca` — Professional Binance Dollar-Cost Averaging (DCA) tool for automated and manual recurring crypto purchases. Plan DCA stra
+
+---
+
+
 ## v0.13.0 — 2026-06-01
 
 ### 🚀 周更：新增 100 个 Skills，总计 1609

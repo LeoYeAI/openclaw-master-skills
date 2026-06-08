@@ -1,0 +1,19 @@
+# Python web app (Flask/FastAPI with Gunicorn)
+# Use: buildCommand/startCommand match your app module
+
+services:
+  - type: web
+    name: python-api
+    runtime: python
+    plan: free
+    region: oregon
+    branch: main
+    autoDeploy: true
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn app:app --bind 0.0.0.0:$PORT --workers 2
+    healthCheckPath: /health
+    envVars:
+      - key: PYTHON_VERSION
+        value: "3.11"
+      - key: SECRET_KEY
+        sync: false  # User provides in Dashboard

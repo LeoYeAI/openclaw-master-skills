@@ -1,0 +1,24 @@
+version: "3.8"
+
+services:
+  mission-control:
+    build: .
+    ports:
+      - "${PORT:-8000}:8000"
+      - "${FRONTEND_PORT:-4173}:4173"
+    volumes:
+      - mc-data:/app/backend/data
+    environment:
+      - PORT=8000
+      - OPENCLAW_GATEWAY_URL=${OPENCLAW_GATEWAY_URL:-ws://host.docker.internal:18789}
+      - OPENCLAW_GATEWAY_TOKEN=${OPENCLAW_GATEWAY_TOKEN:-}
+      - AUTH_MODE=${AUTH_MODE:-none}
+      - LOCAL_AUTH_TOKEN=${LOCAL_AUTH_TOKEN:-}
+      - HOOK_SECRET=${HOOK_SECRET:-change-me}
+      - CORS_ORIGIN=*
+    restart: unless-stopped
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+volumes:
+  mc-data:

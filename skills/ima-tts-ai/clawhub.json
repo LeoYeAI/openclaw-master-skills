@@ -1,0 +1,89 @@
+{
+  "name": "IMA Studio TTS",
+  "tagline": "Text-to-speech, TTS, voice synthesis — seed-tts-2.0 via IMA Open API.",
+  "description": "TTS (text-to-speech) via IMA Open API with seed-tts-2.0. Voice synthesis, speech from text, dubbing, audio content creation. Output: audio URL (mp3/wav). Flow: query products, create task, poll until done. Requires IMA_API_KEY.",
+  "category": "file-generation",
+  "requiredEnvVars": ["IMA_API_KEY"],
+  "credentialNotice": "The IMA API key is required at runtime (--api-key or IMA_API_KEY). It is sent only to https://api.imastudio.com. Obtain keys at https://imastudio.com or https://www.imaclaw.ai/ (same provider). Use a scoped or test key if concerned about credential exposure.",
+  "requires": {
+    "env": ["IMA_API_KEY"],
+    "primaryCredential": "IMA_API_KEY",
+    "credentialNote": "IMA_API_KEY is required at runtime and sent only to api.imastudio.com for TTS APIs."
+  },
+  "localPaths": {
+    "readWrite": [
+      "~/.openclaw/memory/ima_prefs.json",
+      "~/.openclaw/logs/ima_skills/"
+    ],
+    "purpose": "Preferences and generation logs; logs auto-deleted after 7 days. User can delete anytime."
+  },
+  "persistence": {
+    "readWrite": [
+      "~/.openclaw/memory/ima_prefs.json",
+      "~/.openclaw/logs/ima_skills/"
+    ],
+    "retention": "Logs are auto-cleaned after 7 days; preferences remain until user deletes them."
+  },
+  "version": "1.0.0",
+  "license": "MIT",
+  "pricing": "free",
+  "author": {
+    "name": "IMA Studio",
+    "url": "https://www.imaclaw.ai/"
+  },
+  "support_url": "https://www.imaclaw.ai/",
+  "homepage": "https://www.imaclaw.ai/",
+  "supported_models": [
+    "seed-tts",
+    "seed-tts-2.0",
+    "seed tts 2.0",
+    "text-to-speech",
+    "TTS",
+    "speech synthesis"
+  ],
+  "tags": [
+    "ima-studio",
+    "tts",
+    "text-to-speech",
+    "speech-synthesis",
+    "voice",
+    "seed-tts",
+    "seed-tts-2.0"
+  ],
+  "keywords": [
+    "text to speech",
+    "speech synthesis",
+    "ima studio",
+    "seed-tts",
+    "seed tts",
+    "seed tts 2.0",
+    "TTS",
+    "voice synthesis",
+    "voice"
+  ],
+  "search_optimized_terms": [
+    "seed-tts",
+    "seed tts",
+    "seed tts 2.0",
+    "text to speech",
+    "TTS",
+    "speech synthesis",
+    "voice synthesis"
+  ],
+  "related_skills": [
+    "ima-knowledge-ai",
+    "ima-all-ai",
+    "ima-voice-ai",
+    "ima-resource-skill"
+  ],
+  "use_cases": [
+    "Voice synthesis, dubbing, narration",
+    "Audio content, broadcast, voiceover",
+    "Multi-voice TTS"
+  ],
+  "key_features": [
+    "seed-tts-2.0 support",
+    "Text-to-speech, output mp3/wav URL",
+    "IMA flow: query products, create task, poll until done"
+  ]
+}

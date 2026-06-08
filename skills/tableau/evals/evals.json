@@ -1,0 +1,241 @@
+{
+    "skill_name": "tableau",
+    "evals": [
+        {
+            "id": 1,
+            "prompt": "I have an Excel file called ItemConf.xlsx with a sheet named ItemConf. The columns are: ID (uint32), Name (string), Price (int32), and Tags (a comma-separated list of strings in one cell). Can you show me what the typerow should look like and what proto would be generated?",
+            "expected_output": "Correct typerow with map<uint32, Item> for ID, string for Name, int32 for Price, and []string for Tags. Should run tableauc to generate actual proto output rather than hand-writing it.",
+            "files": [],
+            "expectations": [
+                "Uses map<uint32, Item> as the first column type for a vertical map keyed by ID",
+                "Uses []string for the Tags column (incell list)",
+                "Suggests running tableauc rather than hand-crafting the proto output",
+                "Explains the 4-row header layout (namerow, typerow, noterow, datarow)"
+            ]
+        },
+        {
+            "id": 2,
+            "prompt": "I'm getting error E2016 on my RewardConf sheet. It has columns Reward1ID, Reward1Num, Reward2ID, Reward2Num, Reward3ID, Reward3Num with type [Reward]uint32 on the first column. Some rows have Reward1 and Reward3 filled but Reward2 is empty. The design intent is that some items only give rewards in certain slots.",
+            "expected_output": "Diagnoses as intentional sparse layout (Scenario B) and recommends adding |{fixed:true} or |{size:3} to the typerow.",
+            "files": [],
+            "expectations": [
+                "Identifies the issue as an intentional sparse horizontal list",
+                "Recommends |{fixed:true} or |{size:3} as the fix",
+                "Does NOT suggest filling in missing data as the primary fix since user stated design intent",
+                "Explains why fixed/size disables the continuity check"
+            ]
+        },
+        {
+            "id": 3,
+            "prompt": "I want to define a FruitType enum in my workbook with values Apple=1, Orange=2, Grape=3, then use it in my ItemConf sheet's Type column. Walk me through the full setup.",
+            "expected_output": "Explains MODE_ENUM_TYPE setup in metasheet, enum sheet layout with Name/Alias/Number columns, and how to reference it as enum<.FruitType> in the typerow.",
+            "files": [],
+            "expectations": [
+                "Explains the enum sheet needs columns: Name, Alias, Number",
+                "Mentions setting Mode to MODE_ENUM_TYPE in the @TABLEAU metasheet",
+                "Shows the dot-prefix syntax enum<.FruitType> for referencing the enum",
+                "Mentions that FRUIT_TYPE_INVALID = 0 is auto-generated"
+            ]
+        },
+        {
+            "id": 4,
+            "prompt": "How do I set up a config.yaml to generate JSON output with pretty-printing, using Asia/Shanghai timezone, and importing types from a common.proto file? I want to use tableauc CLI.",
+            "expected_output": "Shows a config.yaml with locationName, proto.input.protoFiles, conf.output.formats and conf.output.pretty settings.",
+            "files": [],
+            "expectations": [
+                "Sets locationName to Asia/Shanghai",
+                "Configures proto.input.protoFiles to include common.proto",
+                "Sets conf.output.formats to include json",
+                "Sets conf.output.pretty to true",
+                "References tableauc -c config.yaml for running"
+            ]
+        },
+        {
+            "id": 5,
+            "prompt": "I need to merge data from Zone1.xlsx, Zone2.xlsx, and Zone3.xlsx that all share the same ZoneConf schema into one output. How do I configure the Merger in tableau?",
+            "expected_output": "Explains Merger configuration in the @TABLEAU metasheet using glob pattern Zone*.xlsx.",
+            "files": [],
+            "expectations": [
+                "Shows the Merger option in the @TABLEAU metasheet",
+                "Uses a glob pattern like Zone*.xlsx for the Merger value",
+                "Explains that the main workbook's schema is used as the base",
+                "Mentions that sub-workbooks don't need their own @TABLEAU"
+            ]
+        },
+        {
+            "id": 6,
+            "prompt": "My HeroConf sheet has a complex layout: each hero has an ID, Name, and a nested Stats struct with HP, ATK, DEF columns (cross-cell struct). The Stats columns are named StatsHP, StatsATK, StatsDEF. What should the typerow look like, and what proto will this generate?",
+            "expected_output": "Shows {Stats}int32 for the first struct column, int32 for subsequent columns. Explains cross-cell struct grouping by prefix.",
+            "files": [],
+            "expectations": [
+                "Uses {Stats}int32 syntax for the first column (StatsHP) to declare a cross-cell struct",
+                "Explains that StatsATK and StatsDEF are auto-grouped by the 'Stats' prefix",
+                "Mentions that protogen generates a Stats message with hp, atk, def fields",
+                "Suggests running tableauc to see the actual proto output"
+            ]
+        },
+        {
+            "id": 7,
+            "prompt": "I want to run just the confgen step with tableauc CLI, outputting text protobuf format instead of JSON. I already have the .proto files generated. What's the exact command and config.yaml setup?",
+            "expected_output": "Shows tableauc -m conf command with config.yaml setting conf.output.formats to [\"txtpb\"] for text protobuf output.",
+            "files": [],
+            "expectations": [
+                "Uses tableauc -m conf to run confgen only",
+                "Shows config.yaml with conf.output.formats set to txtpb or text",
+                "References the -c flag for config.yaml usage",
+                "Does NOT suggest using Go API"
+            ]
+        },
+        {
+            "id": 8,
+            "prompt": "My DropConf sheet uses pipe-separated values instead of commas — for example the Tags column has 'fire|ice|lightning'. But other sheets still use commas. How do I set the separator just for this one column without affecting others?",
+            "expected_output": "Shows field-level sep property: []string|{sep:\"|\"} and explains the separator hierarchy.",
+            "files": [],
+            "expectations": [
+                "Uses field-level |{sep:\"|\"} on the typerow for that column",
+                "Explains the separator hierarchy (field > sheet > global > default)",
+                "Does NOT suggest changing the global or sheet-level separator",
+                "Mentions that default sep is comma"
+            ]
+        },
+        {
+            "id": 9,
+            "prompt": "I have a column that should be optional — sometimes the column may not exist at all in different versions of the spreadsheet. How do I handle this in tableau so it doesn't error when the column is missing?",
+            "expected_output": "Shows the |{optional:true} field property and explains the difference between optional fields and FieldPresence.",
+            "files": [],
+            "expectations": [
+                "Uses |{optional:true} field property syntax",
+                "Explains that optional means the column may be absent entirely",
+                "Mentions that when set, empty cells produce null in JSON instead of zero values",
+                "Distinguishes from FieldPresence which applies to all fields on a sheet"
+            ]
+        },
+        {
+            "id": 10,
+            "prompt": "I want to define a union type for my game's targeting system. There are three target types: PVP (with fields HP and ATK), PVE (with fields Level and Wave), and Story (with field Chapter). How do I set this up using MODE_UNION_TYPE?",
+            "expected_output": "Shows union sheet layout with Name, Alias, and Field columns. Explains how to reference the union as .Target in other sheets.",
+            "files": [],
+            "expectations": [
+                "Shows the union sheet layout with Name/Alias/Field1/Field2 columns",
+                "Mentions setting Mode to MODE_UNION_TYPE in @TABLEAU metasheet",
+                "Explains how to reference the union in data sheets as .Target or enum<.Target.Type>",
+                "Shows that the Type column is the discriminator and Field columns hold the data"
+            ]
+        },
+        {
+            "id": 11,
+            "prompt": "I need to use the same Item struct type for both rewards and costs in my sheet, but I want them to have different field names. How do I create two instances of the same struct type with different names?",
+            "expected_output": "Shows named struct variant syntax: {Item(RewardItem)}int32 and {Item(CostItem)}int32.",
+            "files": [],
+            "expectations": [
+                "Uses {Item(RewardItem)}int32 syntax for named variant",
+                "Shows both reward and cost using the same Item type with different variable names",
+                "Explains that column names must use the variable name as prefix (RewardItemID, CostItemID)",
+                "Mentions predefined variant syntax {.Item(PredefinedItem)} for external types"
+            ]
+        },
+        {
+            "id": 12,
+            "prompt": "I want to convert my XML configuration files to JSON using tableauc. The XML has nested elements. How do I set up the @TABLEAU metasheet in XML format?",
+            "expected_output": "Shows XML metasheet as a comment block with <@TABLEAU> tags containing per-sheet configuration elements.",
+            "files": [],
+            "expectations": [
+                "Shows the XML comment block format: <!--<@TABLEAU>...</@TABLEAU>-->",
+                "Demonstrates per-sheet options as XML elements with attributes",
+                "Mentions that XML uses element attributes for simple fields and nested elements for complex types",
+                "Shows proper XML input format configuration in config.yaml"
+            ]
+        },
+        {
+            "id": 13,
+            "prompt": "I have a YAML config file that I want to convert using tableauc. How does the YAML input format work? I need to understand the three-document structure — metasheet, schema, and data. Show me a complete example with a simple item config.",
+            "expected_output": "Shows the YAML three-document structure with --- separators, @sheet annotations, @type/@struct for type definitions.",
+            "files": [],
+            "expectations": [
+                "Shows three YAML documents separated by ---",
+                "First doc uses '@sheet': '@TABLEAU' for metasheet",
+                "Second doc uses '@sheet': '@SheetName' (with @ prefix) for schema with type definitions",
+                "Third doc uses '@sheet': 'SheetName' (without @ prefix) for data",
+                "Uses @type and/or @struct annotations for defining types"
+            ]
+        },
+        {
+            "id": 14,
+            "prompt": "My game has environment-specific configs: base settings, then dev/prod/test overlays that override certain values. How do I set up patch/overlay in tableau? I need PATCH_MERGE for most fields but PATCH_REPLACE for one list field.",
+            "expected_output": "Shows Patch configuration in metasheet with Scatter for overlay files, and field-level |{patch:PATCH_REPLACE} for the list.",
+            "files": [],
+            "expectations": [
+                "Sets Patch to PATCH_MERGE in the @TABLEAU metasheet",
+                "Uses Scatter with a glob pattern to load overlay files",
+                "Shows |{patch:PATCH_REPLACE} on the specific list field",
+                "Explains the merge behavior: scalars overwrite, messages merge, lists append by default"
+            ]
+        },
+        {
+            "id": 15,
+            "prompt": "I want to set up a keyed list in my EquipConf sheet. Each equipment has a unique ID, and I want an ordered list with key-based access (but not a map). The columns are ID (uint32), SlotID (uint32), and Effect (string). How do I configure this?",
+            "expected_output": "Shows [Equip]<uint32> syntax for keyed list, explains that keys must be unique (duplicate key = merge), and distinguishes from map.",
+            "files": [],
+            "expectations": [
+                "Uses [Equip]<uint32> or []<uint32> syntax for keyed list",
+                "Explains that keyed list keys must be unique (duplicate key triggers merge, not allowed as separate entries)",
+                "Distinguishes keyed list from map (repeated vs map in proto, key uniqueness enforced in both)",
+                "Shows the column layout with the key field first"
+            ]
+        },
+        {
+            "id": 16,
+            "prompt": "My spreadsheet has a master-detail layout: the MasterID column has values like 1, (empty), (empty), 2, (empty). The empty rows should inherit the ID from the row above. I think there's an AdjacentKey feature for this. How does it work?",
+            "expected_output": "Shows AdjacentKey: true in the @TABLEAU metasheet, explains carry-down behavior.",
+            "files": [],
+            "expectations": [
+                "Sets AdjacentKey to true in the @TABLEAU metasheet",
+                "Explains that empty key cells inherit the nearest non-empty value above",
+                "Shows an example of the master-detail layout",
+                "Mentions this is useful for flat spreadsheets that logically group rows"
+            ]
+        },
+        {
+            "id": 17,
+            "prompt": "I want to create a CSV workbook for tableauc. How does the CSV file naming work? I have three sheets: ItemConf (data), FruitType (enum), and the metasheet. The workbook should be called GameData.",
+            "expected_output": "Shows CSV naming convention BookName#SheetName.csv and explains CSV workbook = set of files with same BookName prefix.",
+            "files": [],
+            "expectations": [
+                "Uses the naming pattern GameData#ItemConf.csv, GameData#FruitType.csv, GameData#@TABLEAU.csv",
+                "Explains that a CSV workbook is a set of files sharing the same BookName prefix",
+                "Mentions the glob pattern BookName#*.csv that tableauc uses to find all sheets",
+                "Shows proper metasheet CSV content with Sheet,Mode columns"
+            ]
+        },
+        {
+            "id": 18,
+            "prompt": "I need to generate an Index accessor for my ItemConf sheet so the loader can look up items by Type, and also a composite index by (Type, Rarity). How do I configure this in the @TABLEAU metasheet?",
+            "expected_output": "Shows Index option syntax in metasheet with single and composite index examples.",
+            "files": [],
+            "expectations": [
+                "Shows the Index option in the @TABLEAU metasheet",
+                "Uses the syntax Type@TypeIndex for single-column index",
+                "Uses (Type,Rarity)@TypeRarityIndex for composite index",
+                "Mentions OrderedIndex as an alternative for ordered results"
+            ]
+        },
+        {
+            "id": 19,
+            "prompt": "Create Season.xlsx using tableau with two levels of vertical map nesting and a horizontal list inside. Fields: ID uint32 (outer vertical map key), Name string, Phase int32 (inner vertical map key), Item1ID uint32 (horizontal list), Item1Num int32.",
+            "expected_output": "Creates Season.xlsx with @TABLEAU metasheet and SeasonConf data sheet. Typerow uses map<uint32, Season> for ID, string for Name, map<int32, Phase> for Phase, [Item]uint32 for Item1ID, int32 for Item1Num. Outer map key ID is repeated across rows; Name only filled on first row per ID. Runs tableauc to generate proto with nested Season/Phase/Item messages and JSON with seasonMap containing phaseMap containing itemList.",
+            "files": [
+                "test/map-in-map/Season.xlsx"
+            ],
+            "expectations": [
+                "Creates @TABLEAU metasheet with SeasonConf sheet entry",
+                "Uses map<uint32, Season> as the typerow for the ID column (outer vertical map)",
+                "Uses map<int32, Phase> as the typerow for the Phase column (inner vertical map)",
+                "Uses [Item]uint32 as the typerow for Item1ID (horizontal list first element)",
+                "Repeats the outer map key ID across multiple rows for each inner Phase entry; Name only filled on first row per ID",
+                "Runs tableauc to generate actual proto and JSON output",
+                "Generated proto has nested Season message containing Phase message containing Item message",
+                "Generated JSON has seasonMap -> phaseMap -> itemList structure"
+            ]
+        }
+    ]
+}
