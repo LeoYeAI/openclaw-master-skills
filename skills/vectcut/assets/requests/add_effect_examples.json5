@@ -1,0 +1,51 @@
+{
+  "examples": [
+    {
+      "description": "场景特效：金粉闪闪（scene）",
+      "request": {
+        "draft_id": "YOUR_DRAFT_ID",
+        "effect_category": "scene",
+        "effect_type": "金粉闪闪",
+        "start": 0,
+        "end": 10,
+        "track_name": "effect1",
+        "relative_index": 111,
+        "params": [100, 50, 34]
+      }
+    },
+    {
+      "description": "场景特效：Motion_Blur + Black_Flash（两次调用，第二次传 draft_id 续写）",
+      "requests": [
+        {
+          "draft_id": "YOUR_DRAFT_ID",
+          "effect_category": "scene",
+          "effect_type": "Motion_Blur",
+          "start": 0,
+          "end": 10,
+          "track_name": "effect1",
+          "params": [34, 87]
+        },
+        {
+          "draft_id": "YOUR_DRAFT_ID",
+          "effect_category": "scene",
+          "effect_type": "Black_Flash",
+          "start": 10,
+          "end": 20,
+          "track_name": "effect1",
+          "params": [45]
+        }
+      ]
+    },
+    {
+      "description": "人物特效：Like（character）",
+      "request": {
+        "draft_id": "YOUR_DRAFT_ID",
+        "effect_category": "character",
+        "effect_type": "Like",
+        "start": 3,
+        "end": 6,
+        "track_name": "effect1"
+      }
+    }
+  ]
+}

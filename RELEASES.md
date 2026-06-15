@@ -3,6 +3,47 @@
 每次更新的详细发布说明。
 
 
+## v0.13.0 — 2026-06-15
+
+### 🚀 周更：新增 100 个 Skills，总计 1909
+
+来源：openclaw/skills-archive 官方镜像，按质量规则筛选（SKILL.md 800B-30KB、完整 YAML 元数据、有效 description）。
+
+#### 部分新增亮点（前 30 个）
+- `ppt-compress-master` — This skill should be used when the user wants to compress a PowerPoint (.pptx) file by reducing the size of embedded vid
+- `website-monitor-skill` — > 构建一个自定义网站监控系统，能够每5分钟检测目标网站的HTTP状态码和响应时延， 并在每天早上9点自动生成一份基于监控数据的HTML网页报告。 当用户提到以下场景时，请务必使用此 skill： - 想要监控某个或多个网站是否正常运行 -
+- `vincent-hyperliquid` — Use this skill to create a HyperLiquid perpetuals and spot wallet for your agent. Trade perps, manage spot balances, tra
+- `admapix-ice` — "Ad intelligence & app analytics assistant. Search ad creatives, analyze apps, view rankings, track downloads/revenue, a
+- `okx-dex-trenches` — "Use this skill for meme/打狗/alpha token research on pump.fun and similar launchpads: scanning new token launches, checki
+- `breeze-x402-payment-api` — Operates Breeze x402 payment-gated endpoints for balance checks, deposits, and withdrawals on Solana. Use when the user 
+- `seerr-manager` — >- CLI for the Seerr media request management API. Search movies and TV shows, create and manage media requests, manage 
+- `yoap-a2a` — YOAP (Yongnian Open Agent Protocol) — Open A2A protocol with Smart Matching + E2E Encryption + Negotiation Threads + Gro
+- `cuihua-error-handler` — | 🛡️ AI-powered error handling assistant that transforms fragile code into resilient systems. Automatically generate com
+- `proactive-agent-wyblhl` — "Transform AI agents from task-followers into proactive partners. Implements WAL Protocol, Working Buffer, Compaction Re
+- `lead-scoring` — "Set up and automate lead scoring for HubSpot and other CRMs. Use when a user wants to score leads, define MQL/SQL crite
+- `learning-loop` — "Structured self-improvement system for AI agents with confidence decay, cross-agent sharing, and anomaly detection. Use
+- `milvus` — "Operate Milvus vector database with pymilvus — collections, vector search, hybrid search, indexes, RBAC, partitions, an
+- `china-mirror-resolver` — > Self-healing China mirror source resolver. Automatically discovers, validates, and configures domestic mirror sources 
+- `clawdbot-security-check` — Perform a comprehensive read-only security audit of Clawdbot's own configuration. This is a knowledge-based skill that t
+- `trust-memory` — > Verify AI agent trustworthiness, contribute verified knowledge claims, and search collective intelligence using the Tr
+- `moltazine` — Instagram-style image network for AI agents. Post images, like, comment, and browse feeds.
+- `seo-outreach-skill` — Use this skill when the user wants to review link-building outreach opportunities, find contact information for article 
+- `healthfit` — >- Personal comprehensive health management system integrating Western medicine and TCM. Triggers when users discuss wor
+- `find-skills-combo` — Discover and recommend **combinations** of agent skills to complete complex, multi-faceted tasks. Provides two recommend
+- `solo-build` — Execute implementation plan tasks with TDD workflow, auto-commit, and phase gates. Use when user says "build it", "start
+- `team-dispatch` — Use when a request requires multi-agent workflow orchestration (task decomposition + dependency/DAG + parallel execution
+- `agentaudit` — Automatic security gate that checks packages against a vulnerability database before installation. Use before any npm in
+- `agentaudit-skill` — Automatic security gate that checks packages against a vulnerability database before installation. Use before any npm in
+- `clawd-coach` — Create personalized triathlon, marathon, and ultra-endurance training plans. Use when athletes ask for training plans, w
+- `abm-churn-prevention` — "When the user wants to reduce churn, build cancellation flows, set up save offers, recover failed payments, or implemen
+- `churn-prevention-2` — "When the user wants to reduce churn, build cancellation flows, set up save offers, recover failed payments, or implemen
+- `home-keeper` — Create or update AgentSkills. Use when designing, structuring, or packaging skills with scripts, references, and assets.
+- `lucky-skill-creator` — Create or update AgentSkills. Use when designing, structuring, or packaging skills with scripts, references, and assets.
+- `ecommerce-marketing-strategy-builder` — "Full-stack e-commerce marketing strategy builder. Analyzes your product, market, and competitors, then builds a complet
+
+---
+
+
 ## v0.13.0 — 2026-06-08
 
 ### 🚀 周更：新增 100 个 Skills，总计 1809

@@ -1,0 +1,135 @@
+{
+  "text_examples": [
+    {
+      "description": "测试用例1：在 main_text 轨道添加红色基础文本，居中偏下",
+      "request": {
+        "text": "测试文本1",
+        "start": 0,
+        "end": 3,
+        "font": "思源中宋",
+        "font_color": "#FF0000",
+        "track_name": "main_text",
+        "transform_y": 0.8,
+        "transform_x": 0.5,
+        "font_size": 30.0
+      }
+    },
+    {
+      "description": "测试用例2：在 main_text 轨道添加竖排绿色文本，带出场动画",
+      "request": {
+        "text": "竖排文本测试",
+        "start": 3,
+        "end": 6,
+        "font": "云书法三行魏碑体",
+        "font_color": "#00FF00",
+        "font_size": 8.0,
+        "track_name": "main_text",
+        "vertical": true,
+        "transform_y": -0.5,
+        "outro_animation": "晕开"
+      }
+    },
+    {
+      "description": "高级用例：带有描边、背景、阴影和多样式（高亮）的复杂文本",
+      "request": {
+        "text": "你好!Hello",
+        "start": 0,
+        "end": 5,
+        "draft_id": "your_draft_id",
+        "font": "文轩体",
+        "font_size": 8.0,
+        "font_color": "#FFFFFF",
+        "background_color": "#000000",
+        "background_alpha": 0.5,
+        "background_round_radius": 0.2,
+        "border_color": "#FF0000",
+        "border_width": 2.0,
+        "shadow_enabled": true,
+        "shadow_color": "#000000",
+        "shadow_distance": 5,
+        "intro_animation": "向下飞入",
+        "outro_animation": "向下滑动",
+        "text_styles": [
+          {
+            "start": 0,
+            "end": 2,
+            "style": {
+              "size": 50.0,
+              "bold": true,
+              "color": "#00FF00"
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "image_examples": [
+    {
+      "description": "测试用例：在 main 轨道 0-5 秒放置一张图片，底部偏上，放大 X 方向",
+      "request": {
+        "image_url": "https://cdn.wanx.aliyuncs.com/wanx/1719234057367822001/text_to_image_v2/d6e33c84d7554146a25b1093b012838b_0.png?x-oss-process=image/resize,w_500/watermark,image_aW1nL3dhdGVyMjAyNDExMjkwLnBuZz94LW9zcy1wcm9jZXNzPWltYWdlL3Jlc2l6ZSxtX2ZpeGVkLHdfMTQ1LGhfMjU=,t_80,g_se,x_10,y_10/format,webp",
+        "width": 480,
+        "height": 480,
+        "start": 0,
+        "end": 5.0,
+        "transform_y": 0.7,
+        "scale_x": 2.0,
+        "scale_y": 1.0,
+        "transform_x": 0,
+        "track_name": "main"
+      }
+    },
+    {
+      "description": "继续在 main 轨道 5-10 秒放置第二张图片（同一 URL）",
+      "request": {
+        "image_url": "https://cdn.wanx.aliyuncs.com/wanx/1719234057367822001/text_to_image_v2/d6e33c84d7554146a25b1093b012838b_0.png?x-oss-process=image/resize,w_500/watermark,image_aW1nL3dhdGVyMjAyNDExMjkwLnBuZz94LW9zcy1wcm9jZXNzPWltYWdlL3Jlc2l6ZSxtX2ZpeGVkLHdfMTQ1LGhfMjU=,t_80,g_se,x_10,y_10/format,webp",
+        "width": 480,
+        "height": 480,
+        "start": 5,
+        "end": 10.0,
+        "transform_y": 0.7,
+        "scale_x": 2.0,
+        "scale_y": 1.0,
+        "transform_x": 0,
+        "track_name": "main"
+      }
+    },
+    {
+      "description": "高级用例：带有组合动画、转场和复杂蒙版的图片",
+      "request": {
+        "image_url": "https://pic1.imgdb.cn/item/68ba8fc058cb8da5c8801ab0.png",
+        "start": 0,
+        "end": 5,
+        "width": 1920,
+        "height": 1080,
+        "transform_x": 0.2,
+        "transform_y": 0.2,
+        "scale_x": 1.5,
+        "scale_y": 1.5,
+        "track_name": "video_main",
+        "relative_index": 99,
+        "intro_animation": "放大",
+        "intro_animation_duration": 0.5,
+        "outro_animation": "闪现",
+        "outro_animation_duration": 0.5,
+        "combo_animation": "摇摆",
+        "combo_animation_duration": 1.0,
+        "transition": "上移",
+        "transition_duration": 0.5,
+        "mask_type": "矩形",
+        "mask_center_x": 0.5,
+        "mask_center_y": 0.5,
+        "mask_size": 0.7,
+        "mask_rotation": 45,
+        "mask_feather": 2,
+        "mask_invert": true,
+        "mask_rect_width": 8,
+        "mask_round_corner": 10,
+        "background_blur": 2,
+        "alpha": 0.8,
+        "flip_horizontal": true,
+        "rotation": 15
+      }
+    }
+  ]
+}

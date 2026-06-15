@@ -1,0 +1,81 @@
+{
+  "examples": [
+    {
+      "description": "基础：把视频追加到 video_main 轨道",
+      "request": {
+        "draft_id": null,
+        "video_url": "https://cdn.wanx.aliyuncs.com/wanx/1719234057367822001/text_to_video/092faf3c94244973ab752ee1280ba76f.mp4",
+        "track_name": "video_main"
+      }
+    },
+    {
+      "description": "裁剪 + 指定放置位置：截取前 5 秒，从时间线 0 秒开始放",
+      "request": {
+        "video_url": "https://cdn.wanx.aliyuncs.com/wanx/1719234057367822001/text_to_video/092faf3c94244973ab752ee1280ba76f.mp4",
+        "start": 0,
+        "end": 5.0,
+        "target_start": 0,
+        "track_name": "main_video_track"
+      }
+    },
+    {
+      "description": "带蒙版：矩形蒙版 + 羽化（mask_rect_width 只对矩形等蒙版生效）",
+      "request": {
+        "video_url": "https://cdn.wanx.aliyuncs.com/wanx/1719234057367822001/text_to_video/092faf3c94244973ab752ee1280ba76f.mp4",
+        "start": 0,
+        "end": 5.0,
+        "target_start": 3,
+        "track_name": "main_video_track02",
+        "mask_type": "矩形",
+        "mask_center_x": 0.5,
+        "mask_center_y": 0.5,
+        "mask_size": 0.3,
+        "mask_rect_width": 0.4,
+        "mask_feather": 0.1
+      }
+    },
+    {
+      "description": "背景模糊：对素材四周背景做模糊填充（常用于横屏素材放竖屏画布）",
+      "request": {
+        "video_url": "https://cdn.wanx.aliyuncs.com/wanx/1719234057367822001/text_to_video/092faf3c94244973ab752ee1280ba76f.mp4",
+        "start": 0,
+        "end": 5.0,
+        "target_start": 0,
+        "track_name": "main_video_track",
+        "background_blur": 3
+      }
+    },
+    {
+      "description": "透明度 + 水平翻转：alpha=0.8 + flip_horizontal=true",
+      "request": {
+        "video_url": "https://cdn.wanx.aliyuncs.com/wanx/1719234057367822001/text_to_video/092faf3c94244973ab752ee1280ba76f.mp4",
+        "start": 0,
+        "end": 5.0,
+        "target_start": 0,
+        "track_name": "main",
+        "alpha": 0.8,
+        "flip_horizontal": true
+      }
+    },
+    {
+      "description": "混合模式：正片叠底（mix_type）",
+      "request": {
+        "video_url": "https://cdn.wanx.aliyuncs.com/wanx/1719234057367822001/text_to_video/092faf3c94244973ab752ee1280ba76f.mp4",
+        "track_name": "main",
+        "mix_type": "正片叠底"
+      }
+    },
+    {
+      "description": "变速 + 音量：speed=1.554... + volume=10",
+      "request": {
+        "video_url": "https://p26-bot-workflow-sign.byteimg.com/tos-cn-i-mdko3gqilj/e60bcb21031c4a5fadb48d514142fad1.mp4",
+        "start": 0,
+        "end": 10.184,
+        "speed": 1.5543345543345544,
+        "target_start": 0,
+        "volume": 10,
+        "track_name": "main_video_track"
+      }
+    }
+  ]
+}

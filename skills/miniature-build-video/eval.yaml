@@ -1,0 +1,28 @@
+version: "1"
+defaults:
+  trials: 3
+  timeout: 600
+  threshold: 0.75
+skill: miniature-build-video
+trigger_tests:
+  - id: explicit-invoke
+    should_trigger: true
+    prompt: "Use the $miniature-build-video skill to create a sample vertical video."
+  - id: implicit-domain
+    should_trigger: true
+    prompt: "手工搭建微缩咖啡馆，最后一键开灯暖光充满室内，竖屏缓推镜头"
+  - id: negative-control
+    should_trigger: false
+    prompt: "Refactor my React dashboard and add unit tests."
+outcome_tests:
+  - id: skill-package-layout
+    type: deterministic
+    checks:
+      - description: "SKILL.md required; full runnable package also needs scripts/video_gen.js and resources/WERYAI_VIDEO_API.md (see SKILL.md Dependencies)"
+      - file_exists: "SKILL.md"
+  - id: optional-quality
+    type: llm_rubric
+    rubric: |
+      Does the assistant stay within WeryAI video_gen constraints (model, duration, aspect_ratio)?
+      Does it treat WERYAI_API_KEY as mandatory before any paid wait/submit call?
+      For images: does it prefer public https URLs, and only use local paths when upload via video_gen.js is intended—with review/consent per SKILL—not silently drop attachments?

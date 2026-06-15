@@ -1,0 +1,58 @@
+{
+  "name": "tide-watch",
+  "version": "1.3.6",
+  "description": "Proactive session capacity monitoring for OpenClaw",
+  "main": "lib/capacity.js",
+  "bin": {
+    "tide-watch": "./bin/tide-watch.js"
+  },
+  "scripts": {
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage",
+    "postinstall": "chmod +x bin/tide-watch.js"
+  },
+  "jest": {
+    "testEnvironment": "node",
+    "coverageDirectory": "coverage",
+    "collectCoverageFrom": [
+      "lib/**/*.js",
+      "bin/**/*.js",
+      "!**/node_modules/**"
+    ],
+    "testMatch": [
+      "**/tests/**/*.test.js"
+    ]
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/chrisagiddings/openclaw-tide-watch.git"
+  },
+  "keywords": [
+    "openclaw",
+    "monitoring",
+    "session",
+    "capacity",
+    "context-window",
+    "cli"
+  ],
+  "author": "Chris Giddings",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/chrisagiddings/openclaw-tide-watch/issues"
+  },
+  "homepage": "https://github.com/chrisagiddings/openclaw-tide-watch#readme",
+  "engines": {
+    "node": ">=14.0.0"
+  },
+  "files": [
+    "bin/",
+    "lib/",
+    "SKILL.md",
+    "README.md",
+    "LICENSE"
+  ],
+  "devDependencies": {
+    "jest": "^30.2.0"
+  }
+}

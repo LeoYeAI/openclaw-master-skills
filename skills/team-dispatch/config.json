@@ -1,0 +1,143 @@
+{
+  "version": "1.0.8",
+  "language": "en",
+  "languageNote": "Default language for output. Options: 'en' | 'zh'. Set to 'zh' for Chinese output.",
+  "notifyPolicy": "failures-only",
+  "paths": {
+    "projectsRoot": "~/work",
+    "projectsRootNote": "Default real project code directory. Agents should create repos/projects under this folder (e.g. ~/work/<project>)."
+  },
+  "notifyPolicyNote": "Notification policy. Options: 'all' | 'failures-only' | 'none'",
+  "team": {
+    "watcher": {
+      "enabled": true,
+      "backend": "auto",
+      "interval": 300,
+      "grace": 20,
+      "jobName": "Team Dispatch watcher",
+      "jobDescription": "Low-frequency reconciliation: scan tasks/active for overdue in-progress tasks and reset to pending when retries remain.",
+      "note": "Cross-platform background watcher installer. backend: auto|openclaw-cron|launchd|systemd|cron"
+    },
+    "dailySummary": {
+      "enabled": true,
+      "backend": "openclaw-cron",
+      "cron": "0 22 * * *",
+      "timezone": "",
+      "jobName": "team-dispatch.daily-summary",
+      "jobDescription": "Team Dispatch daily summary: aggregate completed tasks, progress, and status for the day"
+    },
+    "main": {
+      "displayName": "main",
+      "displayNameEN": "Dispatcher",
+      "emoji": "🎯",
+      "model": "openai-codex/gpt-5.4"
+    },
+    "agents": {
+      "coder": {
+        "displayName": "Coder",
+        "displayNameEN": "Flash",
+        "emoji": "⚡️",
+        "theme": "coding expert",
+        "toolsProfile": "coding",
+        "model": "openai-codex/gpt-5.3-codex",
+        "username": "",
+        "notify": {
+          "telegram": {
+            "enabled": false,
+            "chatId": ""
+          }
+        }
+      },
+      "product": {
+        "displayName": "Product",
+        "displayNameEN": "Nova",
+        "emoji": "🧭",
+        "theme": "product planning",
+        "toolsProfile": "full",
+        "model": "openai-codex/gpt-5.4",
+        "username": "",
+        "notify": {
+          "telegram": {
+            "enabled": false,
+            "chatId": ""
+          }
+        }
+      },
+      "tester": {
+        "displayName": "Tester",
+        "displayNameEN": "Atlas",
+        "emoji": "🔍",
+        "theme": "testing & verification",
+        "toolsProfile": "coding",
+        "model": "openai-codex/gpt-5.4",
+        "username": "",
+        "notify": {
+          "telegram": {
+            "enabled": false,
+            "chatId": ""
+          }
+        }
+      },
+      "research": {
+        "displayName": "Research",
+        "displayNameEN": "Luna",
+        "emoji": "🔭",
+        "theme": "research & analysis",
+        "toolsProfile": "full",
+        "model": "openai-codex/gpt-5.4",
+        "username": "",
+        "notify": {
+          "telegram": {
+            "enabled": false,
+            "chatId": ""
+          }
+        }
+      },
+      "trader": {
+        "displayName": "Trader",
+        "displayNameEN": "Titan",
+        "emoji": "📈",
+        "theme": "investment analysis",
+        "toolsProfile": "full",
+        "model": "openai-codex/gpt-5.4",
+        "username": "",
+        "notify": {
+          "telegram": {
+            "enabled": false,
+            "chatId": ""
+          }
+        }
+      },
+      "writer": {
+        "displayName": "Writer",
+        "displayNameEN": "Lyra",
+        "emoji": "✒️",
+        "theme": "content writing",
+        "toolsProfile": "full",
+        "model": "openai-codex/gpt-5.4",
+        "username": "",
+        "notify": {
+          "telegram": {
+            "enabled": false,
+            "chatId": ""
+          }
+        }
+      },
+      "shield": {
+        "displayName": "Security",
+        "displayNameEN": "Shield",
+        "emoji": "🛡️",
+        "theme": "security audit",
+        "toolsProfile": "full",
+        "model": "openai-codex/gpt-5.4",
+        "username": "",
+        "notify": {
+          "telegram": {
+            "enabled": false,
+            "chatId": ""
+          }
+        }
+      }
+    }
+  }
+}

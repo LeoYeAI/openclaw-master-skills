@@ -1,0 +1,46 @@
+{
+  "name": "seo-outreach-skill",
+  "version": "1.0.5",
+  "display_name": "SEO Outreach Workflow",
+  "description": "Turn backlink and outreach opportunities into contact research, article analysis, personalized outreach drafts, and follow-up plans for manual sending.",
+  "author": {
+    "name": "GEO-SEO",
+    "website": "https://github.com/GEO-SEO/seo-outreach-skill"
+  },
+  "tags": [
+    "seo",
+    "outreach",
+    "link-building",
+    "email",
+    "backlinks",
+    "growth"
+  ],
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/GEO-SEO/seo-outreach-skill"
+  },
+  "integrations": {
+    "opportunity_source": {
+      "optional_env_vars": [
+        "GOOGLE_SHEETS_TRACKER_URL"
+      ],
+      "recommended_access": "read-only or CSV export"
+    },
+    "search_research": {
+      "optional_env_vars": [
+        "SERPAPI_API_KEY"
+      ]
+    },
+    "draft_handoff": {
+      "mode": "manual-or-external-sender",
+      "note": "This public skill focuses on research and draft generation. Delivery should be handled by a separately approved sender workflow."
+    }
+  },
+  "metadata": {
+    "skill_type": "outreach-workflow",
+    "network_access": "optional",
+    "minimum_permissions": "read-only tracker access and optional search research only",
+    "data_access_policy": "Draft generation is the default and intended public mode. Private spreadsheet access is opt-in only. Delivery should be handled by a separately approved sender workflow."
+  }
+}

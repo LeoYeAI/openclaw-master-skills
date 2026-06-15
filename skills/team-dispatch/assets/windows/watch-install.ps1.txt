@@ -1,0 +1,26 @@
+# Team Dispatch watcher installer (Windows)
+# Usage (PowerShell):
+#   powershell -ExecutionPolicy Bypass -File .\assets\windows\watch-install.ps1
+#   $env:INTERVAL="120"; $env:GRACE="20"; powershell -ExecutionPolicy Bypass -File .\assets\windows\watch-install.ps1
+
+$SkillDir = (Resolve-Path (Join-Path $PSScriptRoot ".."))
+$Interval = if ($env:INTERVAL) { $env:INTERVAL } else { "120" }
+$Grace = if ($env:GRACE) { $env:GRACE } else { "20" }
+
+$TaskName = "TeamDispatchWatcher"
+$LogOut = Join-Path $env:USERPROFILE ".openclaw\workspace\tasks\watch.out.log"
+$LogErr = Join-Path $env:USERPROFILE ".openclaw\workspace\tasks\watch.err.log"
+
+# Requires bash + python in PATH (Git Bash / WSL / MSYS2)
+$Command = "bash `"$SkillDir\scripts\watch.sh`" >> `"$LogOut`" 2>> `"$LogErr`""
+
+Write-Host "Installing scheduled task: $TaskName"
+Write-Host "INTERVAL=$Interval GRACE=$Grace"
+
+$Action = New-ScheduledTaskAction -Execute "cmd.exe" -Argument "/c set INTERVAL=$Interval&& set GRACE=$Grace&& $Command"
+$Trigger = New-ScheduledTaskTrigger -AtStartup
+$Principal = New-ScheduledTaskPrincipal -UserId $env:USERNAME -LogonType Interactive -RunLevel Limited
+
+Register-ScheduledTask -TaskName $TaskName -Action $Action -Trigger $Trigger -Principal $Principal -Force | Out-Null
+Start-ScheduledTask -TaskName $TaskName
+Write-Host "OK"

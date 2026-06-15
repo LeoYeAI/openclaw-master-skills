@@ -1,0 +1,40 @@
+{
+  "examples": [
+    {
+      "description": "只加滤镜：0-10 秒，滤镜类型=奶油",
+      "request": {
+        "draft_id": "YOUR_DRAFT_ID",
+        "start": 0,
+        "end": 10,
+        "filter_type": "奶油",
+        "track_name": "filter",
+        "relative_index": 111
+      }
+    },
+    {
+      "description": "视频 + 滤镜：先 add_video 再 add_filter（复古工业，强度 45）",
+      "requests": [
+        {
+          "endpoint": "/add_video",
+          "body": {
+            "draft_id": "YOUR_DRAFT_ID",
+            "video_url": "https://cdn.wanx.aliyuncs.com/wanx/1719234057367822001/text_to_video/092faf3c94244973ab752ee1280ba76f.mp4",
+            "track_name": "main"
+          }
+        },
+        {
+          "endpoint": "/add_filter",
+          "body": {
+            "draft_id": "YOUR_DRAFT_ID",
+            "start": 0,
+            "end": 10,
+            "filter_type": "复古工业",
+            "track_name": "filter",
+            "intensity": 45,
+            "relative_index": 111
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,47 @@
+name: code-security-auditor
+version: 1.2.0
+description: 综合代码安全审计工具，集成 OWASP Top 10 检测、LLM 驱动分析、220+ 安全规则，对标 OpenAI Codex Security，完全本地运行
+author: JiangMingZhao
+author_id: zenmejiang-commits
+license: MIT
+repository: https://github.com/zenmejiang-commits/code-security-auditor
+tags:
+  - security
+  - code-audit
+  - owasp
+  - llm
+  - static-analysis
+  - vulnerability-detection
+category: security
+min_python_version: "3.8"
+dependencies:
+  - requests
+entry_point: auditor.py
+skill_file: SKILL.md
+readme: README.md
+
+features:
+  - OWASP Top 10 2021 完整覆盖
+  - 220+ 安全检测规则
+  - 本地 LLM 集成 (Ollama/Qwen/ChatGLM)
+  - 跨文件污点追踪
+  - AI 驱动误报优化
+  - 可执行修复代码生成
+  - CI/CD 集成支持
+
+changelog:
+  - version: 1.2.0
+    date: 2026-03-07
+    changes:
+      - 集成 LLM 驱动分析 (AI 能力 60→85)
+      - 规则库扩展到 220+ (50+→220+)
+      - 完善社区生态文档
+  - version: 1.1.0
+    date: 2026-03-07
+    changes:
+      - AI 验证增强 (6 维度启发式)
+      - 跨文件污点追踪
+  - version: 1.0.0
+    date: 2026-03-07
+    changes:
+      - 初始版本

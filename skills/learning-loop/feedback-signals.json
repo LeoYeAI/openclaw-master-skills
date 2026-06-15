@@ -1,0 +1,104 @@
+{
+  "version": "1.1.0",
+  "description": "Patterns to detect human feedback signals in conversation. Used by the learning loop to auto-capture satisfaction/frustration events. Customize for your human's specific language.",
+  "signals": {
+    "positive": {
+      "strong": [
+        "perfect", "exactly", "love it", "nailed it", "thats exactly",
+        "hell yes", "this is great", "this is amazing", "incredible",
+        "outstanding", "brilliant", "flawless", "spot on", "10 out of 10",
+        "couldnt be better", "above and beyond", "blew my mind",
+        "thats what i needed", "you crushed it", "chef kiss", "unstoppable"
+      ],
+      "moderate": [
+        "nice", "good job", "works", "solid", "cool", "right on",
+        "thats it", "looks good", "well done", "not bad", "impressive",
+        "clean", "smooth", "much better", "big improvement",
+        "now were talking", "thats more like it", "getting there"
+      ],
+      "subtle": [
+        "ok lets", "yeah", "yep", "keep going", "more of this",
+        "sure", "fine", "works for me", "go ahead", "do it",
+        "ship it", "send it", "looks right"
+      ]
+    },
+    "negative": {
+      "strong": [
+        "unacceptable", "wrong", "no thats not", "i already told you",
+        "you already know", "how many times", "this is broken",
+        "completely wrong", "total failure", "useless", "garbage",
+        "what the hell", "are you serious", "im done", "start over",
+        "this is embarrassing", "you keep doing this"
+      ],
+      "moderate": [
+        "not what i meant", "thats not right", "try again", "nope",
+        "why did you", "i said", "read it again", "missed the point",
+        "not even close", "you forgot", "pay attention",
+        "thats not what i asked", "off track", "way off"
+      ],
+      "subtle": [
+        "hmm", "not quite", "close but", "almost", "sort of",
+        "kind of", "meh", "i guess", "if you say so", "whatever",
+        "ok but", "sure but"
+      ]
+    },
+    "correction": {
+      "direct": [
+        "no thats not right", "actually it should be", "youre wrong about",
+        "thats outdated", "thats not how", "do it this way",
+        "the right way is", "dont do", "stop doing", "never",
+        "always", "from now on", "new rule", "no more",
+        "cut that out", "knock it off", "quit", "going forward"
+      ],
+      "preference": [
+        "i prefer", "i like", "i want", "lets do", "switch to",
+        "use this instead", "better to", "id rather", "can we",
+        "how about", "what if we", "try this", "go with"
+      ],
+      "priority": [
+        "this is more important", "focus on", "priority", "first do",
+        "before anything", "drop everything", "urgent", "asap",
+        "right now", "this first", "most important", "number one"
+      ]
+    },
+    "feature_request": {
+      "explicit": [
+        "can you also", "i wish you could", "is there a way to",
+        "why cant you", "it would be nice if", "we need to add",
+        "you should be able to", "wouldnt it be cool if",
+        "what if you could", "can we make it so"
+      ],
+      "implicit": [
+        "that would be useful", "we need that", "add that",
+        "build that", "make that happen", "lets add",
+        "missing feature", "we dont have", "gap in"
+      ]
+    },
+    "knowledge_gap": {
+      "patterns": [
+        "you didnt know", "thats not what that means",
+        "let me explain", "actually that changed",
+        "thats old info", "thats been updated"
+      ]
+    }
+  },
+  "scoring": {
+    "strong_positive": 1.0,
+    "moderate_positive": 0.6,
+    "subtle_positive": 0.3,
+    "strong_negative": -1.0,
+    "moderate_negative": -0.6,
+    "subtle_negative": -0.3,
+    "direct_correction": -0.5,
+    "preference": 0.0,
+    "priority": 0.0,
+    "feature_request_explicit": 0.0,
+    "feature_request_implicit": 0.0,
+    "knowledge_gap": -0.3
+  },
+  "auto_capture_threshold": {
+    "positive": 0.8,
+    "negative": -0.5
+  },
+  "notes": "v1.1: Added feature_request and knowledge_gap signal categories (stolen from Self-Improving Agent skill). Added correction patterns from competitive analysis. Customize signals for your human's specific language patterns."
+}

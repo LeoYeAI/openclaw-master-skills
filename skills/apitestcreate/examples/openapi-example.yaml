@@ -1,0 +1,395 @@
+openapi: 3.0.0
+info:
+  title: 用户管理API
+  version: 1.0.0
+  description: 用户注册、登录、信息管理的RESTful API
+servers:
+  - url: https://api.example.com/v1
+    description: 生产环境
+  - url: https://staging-api.example.com/v1
+    description: 预发布环境
+
+paths:
+  /api/users/register:
+    post:
+      summary: 用户注册
+      description: 新用户注册接口，需要验证用户名、邮箱、手机号的唯一性
+      tags:
+        - 用户管理
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - username
+                - password
+                - email
+              properties:
+                username:
+                  type: string
+                  minLength: 3
+                  maxLength: 20
+                  pattern: '^[a-zA-Z0-9_]+$'
+                  description: 用户名，只能包含字母、数字和下划线
+                password:
+                  type: string
+                  minLength: 6
+                  maxLength: 20
+                  description: 密码，6-20位
+                email:
+                  type: string
+                  format: email
+                  description: 邮箱地址
+                phone:
+                  type: string
+                  pattern: '^1[3-9]\d{9}$'
+                  description: 手机号（可选）
+                invite_code:
+                  type: string
+                  minLength: 6
+                  maxLength: 6
+                  description: 邀请码（可选）
+      responses:
+        '200':
+          description: 注册成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    example: 0
+                  message:
+                    type: string
+                    example: "success"
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                        description: 用户ID
+                      username:
+                        type: string
+                        description: 用户名
+                      email:
+                        type: string
+                        description: 邮箱
+                      token:
+                        type: string
+                        description: JWT令牌
+                      created_at:
+                        type: string
+                        format: date-time
+                        description: 创建时间
+        '400':
+          description: 参数错误
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    example: 1001
+                  message:
+                    type: string
+                    example: "参数验证失败"
+        '409':
+          description: 资源冲突（用户名、邮箱或手机号已存在）
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    example: 2001
+                  message:
+                    type: string
+                    example: "用户名已存在"
+
+  /api/users/login:
+    post:
+      summary: 用户登录
+      description: 用户登录接口，支持用户名/邮箱/手机号+密码登录
+      tags:
+        - 用户管理
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - account
+                - password
+              properties:
+                account:
+                  type: string
+                  description: 用户名、邮箱或手机号
+                password:
+                  type: string
+                  description: 密码
+                remember_me:
+                  type: boolean
+                  default: false
+                  description: 记住登录状态
+      responses:
+        '200':
+          description: 登录成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    example: 0
+                  message:
+                    type: string
+                    example: "登录成功"
+                  data:
+                    type: object
+                    properties:
+                      user:
+                        type: object
+                        properties:
+                          id:
+                            type: integer
+                          username:
+                            type: string
+                          email:
+                            type: string
+                          phone:
+                            type: string
+                      token:
+                        type: string
+                        description: JWT令牌
+                      expires_in:
+                        type: integer
+                        description: 过期时间（秒）
+        '401':
+          description: 认证失败
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    example: 3001
+                  message:
+                    type: string
+                    example: "用户名或密码错误"
+
+  /api/users/{id}:
+    get:
+      summary: 获取用户信息
+      description: 根据用户ID获取详细信息
+      tags:
+        - 用户管理
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: 用户ID
+      responses:
+        '200':
+          description: 获取成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    example: 0
+                  message:
+                    type: string
+                    example: "success"
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                      username:
+                        type: string
+                      email:
+                        type: string
+                      phone:
+                        type: string
+                        nullable: true
+                      status:
+                        type: string
+                        enum: [active, inactive, suspended]
+                      created_at:
+                        type: string
+                        format: date-time
+                      updated_at:
+                        type: string
+                        format: date-time
+        '404':
+          description: 用户不存在
+
+    put:
+      summary: 更新用户信息
+      description: 更新用户基本信息，只能修改自己的信息
+      tags:
+        - 用户管理
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: 用户ID
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  format: email
+                phone:
+                  type: string
+                  pattern: '^1[3-9]\d{9}$'
+                avatar:
+                  type: string
+                  format: uri
+                  description: 头像URL
+      responses:
+        '200':
+          description: 更新成功
+        '400':
+          description: 参数错误
+        '403':
+          description: 无权限（不能修改他人信息）
+        '409':
+          description: 邮箱或手机号已存在
+
+  /api/users:
+    get:
+      summary: 查询用户列表
+      description: 分页查询用户列表，支持多种筛选条件
+      tags:
+        - 用户管理
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+          description: 页码
+        - name: page_size
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+          description: 每页数量
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [active, inactive, suspended]
+          description: 用户状态筛选
+        - name: keyword
+          in: query
+          schema:
+            type: string
+            maxLength: 50
+          description: 搜索关键词（用户名、邮箱）
+        - name: sort_by
+          in: query
+          schema:
+            type: string
+            enum: [id, username, created_at]
+            default: id
+          description: 排序字段
+        - name: sort_order
+          in: query
+          schema:
+            type: string
+            enum: [asc, desc]
+            default: desc
+          description: 排序方式
+      responses:
+        '200':
+          description: 查询成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    example: 0
+                  message:
+                    type: string
+                    example: "success"
+                  data:
+                    type: object
+                    properties:
+                      total:
+                        type: integer
+                        description: 总记录数
+                      page:
+                        type: integer
+                        description: 当前页码
+                      page_size:
+                        type: integer
+                        description: 每页数量
+                      list:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            id:
+                              type: integer
+                            username:
+                              type: string
+                            email:
+                              type: string
+                            status:
+                              type: string
+                            created_at:
+                              type: string
+                              format: date-time
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    Error:
+      type: object
+      required:
+        - code
+        - message
+      properties:
+        code:
+          type: integer
+          description: 错误码
+        message:
+          type: string
+          description: 错误信息
+        details:
+          type: object
+          description: 详细错误信息
+          nullable: true
+
+security:
+  - BearerAuth: []

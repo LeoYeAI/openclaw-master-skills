@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>X 帖子摘要</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", Arial, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+            background: #f9f9f9;
+            color: #0f0f0f;
+            line-height: 1.5;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 680px;
+            margin: 0 auto;
+            background: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: #ffffff;
+            text-align: center;
+            padding: 24px 20px;
+            border-bottom: 1px solid #e5e5e5;
+        }
+
+        .header h1 {
+            font-size: 22px;
+            font-weight: 500;
+            color: #0f0f0f;
+            margin-bottom: 6px;
+        }
+
+        .header .subtitle {
+            font-size: 14px;
+            color: #606060;
+            font-weight: 400;
+        }
+
+        .content-wrapper {
+            padding: 16px;
+            background: #f9f9f9;
+        }
+
+        /* 帖子标题（如 @ChinaNow24 的帖子 (6 条)）*/
+        .content-wrapper > h2 {
+            font-size: 18px;
+            font-weight: 500;
+            color: #0f0f0f;
+            margin: 20px 0 12px 0;
+            padding-bottom: 8px;
+            border-bottom: 2px solid #065fd4;
+        }
+
+        /* 帖子序号（如 帖子 1）*/
+        .content-wrapper > h3 {
+            font-size: 16px;
+            font-weight: 500;
+            color: #606060;
+            margin: 20px 0 12px 0;
+        }
+
+        /* 帖子大标题（如 @ChinaNow24 的推文）*/
+        .content-wrapper > h1 {
+            font-size: 20px;
+            font-weight: 500;
+            color: #0f0f0f;
+            margin-bottom: 12px;
+        }
+
+        /* 引用块（作者信息）*/
+        .content-wrapper > blockquote {
+            background: #f0f0f0;
+            border-left: 3px solid #065fd4;
+            padding: 12px 16px;
+            margin: 12px 0;
+            border-radius: 8px;
+        }
+
+        .content-wrapper > blockquote p {
+            font-size: 14px;
+            color: #606060;
+            margin: 0;
+        }
+
+        /* 分隔线 */
+        .content-wrapper > hr {
+            border: none;
+            border-top: 1px solid #e5e5e5;
+            margin: 12px 0;
+        }
+
+        /* 正文内容 - 浅色底色 + 24px 粗体 */
+        .content-wrapper > p {
+            font-size: 24px;
+            line-height: 1.5;
+            color: #0f0f0f;
+            margin-bottom: 12px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #f8f9ff 0%, #fff5ff 100%);
+            padding: 16px;
+            border-radius: 12px;
+            border: 2px solid #e8e4ff;
+        }
+
+        /* 综述区块 */
+        .content-wrapper > .summary {
+            background: linear-gradient(135deg, #e8f4ff 0%, #f0fff4 100%);
+            padding: 20px;
+            border-radius: 16px;
+            border: 2px solid #b8e6ff;
+            margin-bottom: 24px;
+        }
+
+        .content-wrapper > .summary h2 {
+            font-size: 18px;
+            font-weight: 600;
+            color: #0f1419;
+            margin: 0 0 12px 0;
+            border-bottom: 2px solid #1d9bf0;
+            padding-bottom: 8px;
+        }
+
+        .content-wrapper > .summary > ul {
+            margin: 0;
+            padding-left: 20px;
+        }
+
+        .content-wrapper > .summary > ul li {
+            font-size: 15px;
+            color: #0f1419;
+            margin-bottom: 10px;
+            line-height: 1.6;
+        }
+
+        .content-wrapper > .summary > ul li:last-child {
+            margin-bottom: 0;
+        }
+
+        .content-wrapper > .summary strong {
+            color: #1d9bf0;
+        }
+
+        .content-wrapper > p:last-child {
+            margin-bottom: 0;
+        }
+
+        /* 媒体标题 */
+        .content-wrapper > p + h2 {
+            font-size: 14px;
+            font-weight: 500;
+            color: #606060;
+            margin: 16px 0 8px 0;
+        }
+
+        /* 互动数据标题 */
+        .content-wrapper > p + h2 + hr + h2 {
+            font-size: 14px;
+            font-weight: 500;
+            color: #606060;
+            margin: 16px 0 8px 0;
+        }
+
+        /* 图片 */
+        .content-wrapper > p > img {
+            max-width: 100%;
+            height: auto;
+            display: block;
+            border-radius: 12px;
+            border: 1px solid #e5e5e5;
+        }
+
+        /* 列表 */
+        .content-wrapper > ul {
+            background: #ffffff;
+            padding: 12px 16px 12px 32px;
+            border-radius: 12px;
+            margin: 8px 0;
+            border: 1px solid #e5e5e5;
+        }
+
+        .content-wrapper > ul li {
+            font-size: 14px;
+            color: #0f0f0f;
+            margin-bottom: 6px;
+            line-height: 1.5;
+        }
+
+        .content-wrapper > ul li:last-child {
+            margin-bottom: 0;
+        }
+
+        /* footer */
+        .footer {
+            text-align: center;
+            padding: 20px;
+            background: #f9f9f9;
+            border-top: 1px solid #e5e5e5;
+        }
+
+        .footer p {
+            font-size: 13px;
+            color: #606060;
+            margin-bottom: 6px;
+            font-weight: 400;
+        }
+
+        .footer a {
+            color: #065fd4;
+            text-decoration: none;
+            font-weight: 500;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>{{title}}</h1>
+            <p class="subtitle">{{subtitle}}</p>
+        </header>
+
+        <div class="content-wrapper">
+            {{content}}
+        </div>
+
+        <footer class="footer">
+            <p>此邮件由 OpenClaw 自动发送</p>
+            <p>如有疑问，请联系发件人</p>
+        </footer>
+    </div>
+</body>
+</html>

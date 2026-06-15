@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        h1 {
+            color: #2c3e50;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 10px;
+        }
+        .test-image {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            margin: 20px 0;
+        }
+        .info-box {
+            background: #f8f9fa;
+            border-left: 4px solid #3498db;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        .success {
+            color: #27ae60;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <h1>✨ 内嵌图片测试邮件</h1>
+
+    <p>如果你看到下面这张图片直接显示在邮件正文中（不是链接），说明内嵌图片功能正常工作！</p>
+
+    <div class="info-box">
+        <p class="success">✅ 测试成功条件：</p>
+        <ul>
+            <li>图片自动显示，无需点击</li>
+            <li>图片加载速度快（嵌入在邮件中）</li>
+            <li>兼容主流邮件客户端（Gmail、Outlook、Apple Mail 等）</li>
+        </ul>
+    </div>
+
+    <h2>测试图片</h2>
+    <p>下面是一张测试图片（请将 src 替换为实际图片路径）：</p>
+    <img src="/path/to/your/test-image.png" alt="测试图片" class="test-image">
+
+    <p><strong>技术说明：</strong> 此邮件使用 CID（Content-ID）技术，图片作为内嵌资源嵌入到邮件中，而不是外链。</p>
+
+    <hr style="margin: 30px 0; border: none; border-top: 1px solid #eee;">
+
+    <p style="font-size: 12px; color: #999;">
+        此邮件由 send-email 技能发送 | 测试时间: 2026-03-02
+    </p>
+</body>
+</html>

@@ -1,0 +1,54 @@
+{
+  "examples": [
+    {
+      "description": "单个贴纸：带位置、透明度、旋转、缩放、翻转",
+      "request": {
+        "draft_id": "YOUR_DRAFT_ID",
+        "sticker_id": "7107529669750066445",
+        "start": 1.0,
+        "end": 4.0,
+        "transform_y": 0.3,
+        "transform_x": -0.2,
+        "alpha": 0.8,
+        "rotation": 45.0,
+        "scale_x": 1.5,
+        "scale_y": 1.5,
+        "flip_horizontal": true
+      }
+    },
+    {
+      "description": "两个贴纸：同一 sticker_id 不同时间段与参数（两次调用）",
+      "requests": [
+        {
+          "draft_id": "YOUR_DRAFT_ID",
+          "sticker_id": "7107529669750066445",
+          "start": 1.0,
+          "end": 4.0,
+          "transform_y": 0.3,
+          "transform_x": -0.2,
+          "alpha": 0.8,
+          "rotation": 45.0,
+          "scale_x": 1.5,
+          "scale_y": 1.5,
+          "flip_horizontal": true,
+          "track_name": "stiker_main",
+          "relative_index": 999
+        },
+        {
+          "draft_id": "YOUR_DRAFT_ID",
+          "sticker_id": "7107529669750066445",
+          "start": 5.0,
+          "end": 10.0,
+          "transform_y": -0.3,
+          "transform_x": 0.5,
+          "alpha": 0.1,
+          "rotation": 30.0,
+          "scale_x": 1.5,
+          "scale_y": 1.2,
+          "track_name": "stiker_main_2",
+          "relative_index": 0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>openclaw.team-dispatch.daily-summary</string>
+    
+    <key>ProgramArguments</key>
+    <array>
+        <string>/bin/bash</string>
+        <string>HOME/.openclaw/skills/team-dispatch/scripts/daily-summary.sh</string>
+    </array>
+    
+    <key>StartCalendarInterval</key>
+    <dict>
+        <key>Hour</key>
+        <integer>22</integer>
+        <key>Minute</key>
+        <integer>0</integer>
+    </dict>
+    
+    <key>StandardOutPath</key>
+    <string>HOME/.openclaw/workspace/tasks/daily-summary.log</string>
+    
+    <key>StandardErrorPath</key>
+    <string>HOME/.openclaw/workspace/tasks/daily-summary.error.log</string>
+    
+    <key>RunAtLoad</key>
+    <false/>
+</dict>
+</plist>

@@ -1,0 +1,75 @@
+{
+  "name": "openclaw-spawner",
+  "version": "2.0.0",
+  "description": "Enables an Openclaw agent to spawn sub-agents (child Openclaw instances) when a task is too large, complex, or parallel to handle alone.",
+  "author": "",
+  "license": "",
+  "entrypoint": "SKILL.md",
+  "scripts": {
+    "spawner": "scripts/spawn_openclaw.py"
+  },
+  "runtime": {
+    "language": "python",
+    "min_version": "3.9"
+  },
+  "dependencies": {
+    "pip": [
+      "litellm>=1.40.0"
+    ]
+  },
+  "env": {
+    "ANTHROPIC_API_KEY": {
+      "required": false,
+      "description": "API key for Anthropic (Claude models). Required when model= starts with 'anthropic/'."
+    },
+    "OPENAI_API_KEY": {
+      "required": false,
+      "description": "API key for OpenAI. Required when model= starts with 'openai/'."
+    },
+    "GEMINI_API_KEY": {
+      "required": false,
+      "description": "API key for Google Gemini. Required when model= starts with 'gemini/'."
+    },
+    "GROQ_API_KEY": {
+      "required": false,
+      "description": "API key for Groq. Required when model= starts with 'groq/'."
+    },
+    "MISTRAL_API_KEY": {
+      "required": false,
+      "description": "API key for Mistral AI. Required when model= starts with 'mistral/'."
+    },
+    "AZURE_API_KEY": {
+      "required": false,
+      "description": "API key for Azure OpenAI. Required when model= starts with 'azure/'."
+    },
+    "AZURE_API_BASE": {
+      "required": false,
+      "description": "Base URL for Azure OpenAI endpoint. Required when model= starts with 'azure/'."
+    },
+    "AWS_ACCESS_KEY_ID": {
+      "required": false,
+      "description": "AWS access key for Bedrock. Required when model= starts with 'bedrock/'."
+    },
+    "AWS_SECRET_ACCESS_KEY": {
+      "required": false,
+      "description": "AWS secret key for Bedrock. Required when model= starts with 'bedrock/'."
+    }
+  },
+  "env_note": "At least one provider API key is required at runtime. Which key depends on the model= argument passed to spawn_openclaw(). Ollama (model='ollama/...') requires no key.",
+  "capabilities": {
+    "spawn_agents": true,
+    "async_support": true,
+    "max_spawn_depth": 3,
+    "default_model": "anthropic/claude-opus-4-6",
+    "supported_strategies": ["sequential", "parallel-gather", "fire-and-forget"]
+  },
+  "security": {
+    "credentials": "Provider API keys are read from environment variables only. Never embed keys in payloads or snapshots.",
+    "filesystem": "Passing file-access tools to child agents grants them read/write access to arbitrary paths. Only pass tools you trust.",
+    "data_exposure": "progress_so_far is transmitted to the provider API and injected into the child agent's context. Sanitize snapshots and strip secrets before spawning."
+  },
+  "changelog": {
+    "2.0.0": "Replaced Anthropic SDK with LiteLLM for multi-provider support. Added model= parameter. spawn_openclaw_async no longer takes a client argument. Tools must now be in OpenAI function-call format.",
+    "1.0.0": "Initial release. Anthropic-only via anthropic SDK."
+  }
+}

@@ -1,0 +1,43 @@
+{
+  "examples": [
+    {
+      "description": "单个关键帧：在 main 轨道 1.5 秒设置 position_y",
+      "request": {
+        "draft_id": "YOUR_DRAFT_ID",
+        "track_name": "main",
+        "property_type": "position_y",
+        "time": 1.5,
+        "value": "0.2"
+      }
+    },
+    {
+      "description": "单个关键帧：uniform_scale 从 0.4 变到 0.8（同一轨道两次调用）",
+      "requests": [
+        {
+          "draft_id": "YOUR_DRAFT_ID",
+          "track_name": "image1",
+          "property_type": "uniform_scale",
+          "time": 1.8,
+          "value": "0.4"
+        },
+        {
+          "draft_id": "YOUR_DRAFT_ID",
+          "track_name": "image1",
+          "property_type": "uniform_scale",
+          "time": 3.5,
+          "value": "0.8"
+        }
+      ]
+    },
+    {
+      "description": "批量关键帧：一次性写入多组 uniform_scale（property_types/times/values）",
+      "request": {
+        "draft_id": "YOUR_DRAFT_ID",
+        "track_name": "video_human",
+        "property_types": ["uniform_scale", "uniform_scale", "uniform_scale", "uniform_scale"],
+        "times": [1.0, 1.1, 3.1, 3.3],
+        "values": ["1", "0.5", "0.5", "1.5"]
+      }
+    }
+  ]
+}

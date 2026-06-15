@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+  <dict>
+    <key>Label</key>
+    <string>team-dispatch.watch</string>
+
+    <key>ProgramArguments</key>
+    <array>
+      <string>/bin/bash</string>
+      <string>~/.openclaw/skills/team-dispatch/scripts/watch.sh</string>
+    </array>
+
+    <key>EnvironmentVariables</key>
+    <dict>
+      <key>INTERVAL</key>
+      <string>90</string>
+      <key>GRACE</key>
+      <string>20</string>
+    </dict>
+
+    <key>RunAtLoad</key>
+    <true/>
+
+    <key>KeepAlive</key>
+    <true/>
+
+    <key>StandardOutPath</key>
+    <string>~/.openclaw/workspace/tasks/watch.out.log</string>
+
+    <key>StandardErrorPath</key>
+    <string>~/.openclaw/workspace/tasks/watch.err.log</string>
+  </dict>
+</plist>

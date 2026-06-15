@@ -1,0 +1,75 @@
+{
+  "name": "IMA Sevio AI Generation",
+  "tagline": "Ima Sevio 1.0 / 1.0-Fast for text-to-video and image-to-video.",
+  "description": "IMA Sevio video generation via IMA Open API with fixed Sevio model scope. Supports text_to_video, image_to_video, first_last_frame_to_video, and reference_image_to_video. Requires IMA_API_KEY. Local media paths are uploaded through IMA upload service before task creation.",
+  "category": "file-generation",
+  "requiredEnvVars": ["IMA_API_KEY"],
+  "credentialNotice": "IMA_API_KEY is required at runtime (--api-key or IMA_API_KEY). The key is sent to api.imastudio.com for product/task APIs. For local media files, the key is also sent to imapi.liveme.com to obtain upload tokens before uploading to OSS/CDN URLs returned by that API.",
+  "optionalDependencyNote": "This skill is self-contained. If ima-knowledge-ai is installed, the agent may optionally read its reference files (~/.openclaw/skills/ima-knowledge-ai/references/*) for workflow and visual-consistency guidance.",
+  "localPaths": {
+    "readWrite": [
+      "~/.openclaw/memory/ima_prefs.json",
+      "~/.openclaw/logs/ima_skills/"
+    ],
+    "purpose": "Preference cache and operational logs; logs auto-cleaned after 7 days."
+  },
+  "supported_models": [
+    "Ima Sevio 1.0",
+    "Ima Sevio 1.0-Fast"
+  ],
+  "tags": [
+    "ima-studio",
+    "ima-sevio",
+    "video-generation",
+    "text-to-video",
+    "image-to-video",
+    "first-last-frame",
+    "reference-image",
+    "ima-video-pro",
+    "ima-video-pro-fast"
+  ],
+  "version": "1.1.0",
+  "license": "MIT",
+  "pricing": "free",
+  "author": {
+    "name": "IMA Studio",
+    "url": "https://imastudio.com/"
+  },
+  "keywords": [
+    "ima sevio",
+    "ima sevio 1.0",
+    "ima sevio 1.0 fast",
+    "ima video pro",
+    "ima video pro fast",
+    "video generation",
+    "text to video",
+    "image to video",
+    "first last frame",
+    "reference image to video"
+  ],
+  "search_optimized_terms": [
+    "ima sevio",
+    "ima sevio 1.0",
+    "ima sevio 1.0-fast",
+    "ima video pro",
+    "ima video pro fast",
+    "text to video",
+    "image to video"
+  ],
+  "related_skills": [
+    "ima-knowledge-ai",
+    "ima-video-ai",
+    "ima-all-ai"
+  ],
+  "use_cases": [
+    "Text-to-video with Sevio models",
+    "Image-to-video and reference-image motion",
+    "First/last frame transition video"
+  ],
+  "key_features": [
+    "Fixed model allowlist: Ima Sevio 1.0 and Ima Sevio 1.0-Fast",
+    "Supports text/image/first-last/reference video workflows",
+    "Runtime product-list parameter matching",
+    "Reflection retry and timeout diagnostics"
+  ]
+}

@@ -1,0 +1,92 @@
+{
+  "version": "3.0.1",
+  "paths": {
+    "data_dir": "data",
+    "json_dir": "data/json",
+    "txt_dir": "data/txt",
+    "db_dir": "data/db",
+    "backup_dir": "data/db/backup",
+    "assets_dir": "assets",
+    "references_dir": "references",
+    "scripts_dir": "scripts"
+  },
+  "files": {
+    "profile": "profile.json",
+    "health_history": "profile_health_history.json",
+    "fitness_baseline": "profile_fitness_baseline.json",
+    "sexual_health": "private_sexual_health.json",
+    "tcm_profile": "tcm_profile.json",
+    "database": "healthfit.db"
+  },
+  "defaults": {
+    "activity_levels": {
+      "sedentary": 1.2,
+      "light": 1.375,
+      "moderate": 1.55,
+      "active": 1.725,
+      "very_active": 1.9
+    },
+    "macros": {
+      "fat_loss": {
+        "protein_per_kg": 2.2,
+        "fat_per_kg": 0.9,
+        "calorie_adjust": -500
+      },
+      "muscle_gain": {
+        "protein_per_kg": 1.8,
+        "fat_per_kg": 1.0,
+        "calorie_adjust": 300
+      },
+      "maintenance": {
+        "protein_per_kg": 1.6,
+        "fat_per_kg": 0.9,
+        "calorie_adjust": 0
+      }
+    },
+    "backup": {
+      "max_backups": 4,
+      "schedule": "weekly_sunday_0200",
+      "include_private_default": false
+    },
+    "onboarding": {
+      "default_mode": "standard",
+      "modes": {
+        "minimal": {
+          "questions": 10,
+          "duration_min": 5
+        },
+        "standard": {
+          "questions": 25,
+          "duration_min": 20
+        },
+        "complete": {
+          "questions": 45,
+          "duration_min": 35
+        }
+      }
+    }
+  },
+  "privacy": {
+    "sensitive_files": [
+      "private_sexual_health.json"
+    ],
+    "require_double_confirm": true,
+    "encrypt_sensitive": false,
+    "security_log": "security_log.txt",
+    "_note": "encrypt_sensitive to be implemented in v3.1"
+  },
+  "features": {
+    "cycle_tracking": true,
+    "achievement_system": true,
+    "tcm_integration": true,
+    "quick_commands": true,
+    "draft_recovery": true,
+    "photo_upload": false,
+    "_note": "photo_upload to be implemented in v3.1, current version requires manual upload to exercise_images directory"
+  },
+  "ui": {
+    "welcome_menu": "simple",
+    "show_role_status": true,
+    "language": "en-US"
+  }
+}
