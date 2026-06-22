@@ -1,0 +1,62 @@
+# Humanizer Skill — Smoke Tests
+# Tests that AI-generated text is successfully de-artificialised.
+
+cases:
+  - id: humanizer_01
+    description: "Remove em dash overuse and rule-of-three patterns"
+    input: |
+      Our platform offers three core benefits — speed, reliability, and scalability.
+      It's designed to help teams collaborate, innovate, and grow. The solution
+      leverages cutting-edge technology to deliver seamless experiences across
+      all touchpoints.
+    expect:
+      not_contains: ["—", "cutting-edge", "seamless", "leverages"]
+      min_length: 50
+      rubric: |
+        Score 1-5. Does the revised text read like natural human writing?
+        Penalise: em dashes, buzzwords like 'cutting-edge' or 'seamless', 
+        rule-of-three lists, 'leverage'. Reward: conversational tone, specificity.
+      min_score: 4
+
+  - id: humanizer_02
+    description: "Remove AI vocabulary words and vague attributions"
+    input: |
+      It's worth noting that this approach is crucial for success. Notably,
+      many experts argue that the landscape is evolving rapidly. In today's
+      fast-paced world, it's important to delve into these nuances.
+    expect:
+      not_contains: ["it's worth noting", "notably", "it's important to", "delve", "nuances", "landscape", "fast-paced world"]
+      min_length: 30
+      rubric: |
+        Score 1-5. Has the AI filler been removed?
+        5 = all hedges and throat-clearing gone, reads direct and confident.
+        1 = same filler language retained.
+      min_score: 4
+
+  - id: humanizer_03
+    description: "Remove inflated symbolism and negative parallelisms"
+    input: |
+      This isn't just a product — it's a movement. We're not building software;
+      we're building the future. It's not about features; it's about transformation.
+      The journey isn't linear, but rather a tapestry of experiences.
+    expect:
+      not_contains: ["tapestry", "it's not about", "we're not building", "isn't just"]
+      min_length: 30
+      rubric: |
+        Score 1-5. Is the inflated promotional language gone?
+        5 = grounded, matter-of-fact rewrite. 1 = still reads like a pitch deck.
+      min_score: 4
+
+  - id: humanizer_04
+    description: "Preserve factual content while humanising style"
+    input: |
+      The API supports five authentication methods: OAuth 2.0, API keys, JWT tokens,
+      SAML 2.0, and basic auth. It seamlessly integrates with leading enterprise
+      platforms, offering a comprehensive suite of tools for modern development teams.
+    expect:
+      contains: ["OAuth", "API keys", "JWT", "SAML"]
+      not_contains: ["seamlessly", "comprehensive suite", "leading enterprise", "modern development teams"]
+      rubric: |
+        Score 1-5. Are all five auth methods preserved? Is the buzzword padding removed?
+        5 = facts intact, marketing language gone. 1 = facts lost or buzzwords retained.
+      min_score: 4

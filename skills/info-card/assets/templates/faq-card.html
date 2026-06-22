@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=900">
+<title>FAQ Card</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    width: 900px;
+    height: 1200px;
+    overflow: hidden;
+    background: $bg_color;
+    font-family: "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans SC", sans-serif;
+  }
+
+  .card {
+    width: 900px;
+    height: 1200px;
+    background: $bg_color;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* 背景装饰 */
+  .bg-deco {
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    pointer-events: none;
+  }
+  .bg-q {
+    position: absolute;
+    font-size: 280px;
+    font-weight: 900;
+    color: $accent_color;
+    opacity: 0.03;
+    font-family: "SF Pro Display", "Inter", "Helvetica Neue", Arial, sans-serif;
+    line-height: 1;
+    top: 60px;
+    right: 30px;
+  }
+  .bg-circle {
+    position: absolute;
+    border-radius: 50%;
+    border: 2px solid $accent_color;
+    opacity: 0.06;
+    bottom: -60px;
+    left: -40px;
+    width: 240px;
+    height: 240px;
+  }
+
+  /* 顶部品牌栏 */
+  .top-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 48px 60px 0 60px;
+    position: relative;
+    z-index: 1;
+  }
+  .brand-tag {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: $accent_color;
+    font-family: "SF Pro Display", "Inter", "Helvetica Neue", Arial, sans-serif;
+    border: 1.5px solid $accent_color;
+    padding: 5px 12px;
+    border-radius: 2px;
+  }
+  .qa-count {
+    font-size: 12px;
+    font-weight: 600;
+    color: $accent_color;
+    font-family: "SF Pro Display", "Inter", "Helvetica Neue", Arial, sans-serif;
+    letter-spacing: 0.05em;
+  }
+
+  /* 标题区 */
+  .header {
+    padding: 36px 60px 0 60px;
+    position: relative;
+    z-index: 1;
+  }
+  .main-title {
+    font-size: 48px;
+    font-weight: 900;
+    line-height: 1.15;
+    color: $title_color;
+    letter-spacing: -0.02em;
+    margin-bottom: 12px;
+  }
+  .subtitle {
+    font-size: 15px;
+    font-weight: 400;
+    line-height: 1.6;
+    color: $text_secondary;
+    max-width: 600px;
+  }
+
+  /* 分割线 */
+  .divider {
+    margin: 28px 60px 24px 60px;
+    height: 1px;
+    background: $divider_color;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* QA 列表 */
+  .faq-section {
+    flex: 1;
+    padding: 0 60px;
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    overflow: hidden;
+  }
+  .faq-item {
+    background: $qa_bg;
+    border-radius: 14px;
+    padding: 22px 26px;
+    border: 1px solid $qa_border;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    min-height: 0;
+  }
+  .faq-q {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    margin-bottom: 10px;
+  }
+  .q-badge {
+    width: 28px;
+    height: 28px;
+    border-radius: 7px;
+    background: $accent_color;
+    color: #FFFFFF;
+    font-size: 13px;
+    font-weight: 800;
+    font-family: "SF Pro Display", "Inter", "Helvetica Neue", Arial, sans-serif;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+  .q-text {
+    font-size: 18px;
+    font-weight: 700;
+    color: $title_color;
+    line-height: 1.4;
+    padding-top: 2px;
+  }
+  .faq-a {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+  }
+  .a-badge {
+    width: 28px;
+    height: 28px;
+    border-radius: 7px;
+    background: transparent;
+    border: 1.5px solid $accent_color;
+    color: $accent_color;
+    font-size: 13px;
+    font-weight: 800;
+    font-family: "SF Pro Display", "Inter", "Helvetica Neue", Arial, sans-serif;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+  .a-text {
+    font-size: 14px;
+    font-weight: 400;
+    color: $text_secondary;
+    line-height: 1.6;
+    padding-top: 4px;
+  }
+
+  /* 底部 */
+  .footer {
+    padding: 20px 60px 44px 60px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: relative;
+    z-index: 1;
+  }
+  .footer-text {
+    font-size: 12px;
+    color: $text_muted;
+    font-family: "SF Pro Display", "Inter", "Helvetica Neue", Arial, sans-serif;
+    letter-spacing: 0.05em;
+  }
+  .footer-brand {
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: $accent_color;
+    font-family: "SF Pro Display", "Inter", "Helvetica Neue", Arial, sans-serif;
+  }
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="bg-deco">
+    <div class="bg-q">?</div>
+    <div class="bg-circle"></div>
+  </div>
+
+  <div class="top-bar">
+    <div class="brand-tag">$brand</div>
+    <div class="qa-count">$qa_count</div>
+  </div>
+
+  <div class="header">
+    <div class="main-title">$title</div>
+    <div class="subtitle">$subtitle</div>
+  </div>
+
+  <div class="divider"></div>
+
+  <div class="faq-section">
+    $items_html
+  </div>
+
+  <div class="footer">
+    <div class="footer-text">$footer_text</div>
+    <div class="footer-brand">$brand</div>
+  </div>
+</div>
+</body>
+</html>

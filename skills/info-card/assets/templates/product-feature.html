@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=900">
+<title>Product Feature Card</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    width: 900px;
+    height: 1200px;
+    overflow: hidden;
+    font-family: "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans SC", sans-serif;
+  }
+
+  .card {
+    width: 900px;
+    height: 1200px;
+    background: $bg_gradient;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* 背景光晕 */
+  .glow-1 {
+    position: absolute;
+    width: 500px; height: 500px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(255,255,255,0.08) 0%, transparent 70%);
+    top: -100px; right: -100px;
+    pointer-events: none;
+  }
+  .glow-2 {
+    position: absolute;
+    width: 400px; height: 400px;
+    border-radius: 50%;
+    background: radial-gradient(circle, $glow_color 0%, transparent 70%);
+    bottom: 100px; left: -80px;
+    pointer-events: none;
+  }
+
+  /* 顶部 Header */
+  .header {
+    padding: 56px 60px 0 60px;
+    position: relative;
+    z-index: 1;
+    flex-shrink: 0;
+  }
+  .product-eyebrow {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.5);
+    font-family: "SF Pro Display", "Inter", "Helvetica Neue", Arial, sans-serif;
+    margin-bottom: 14px;
+  }
+  .product-name {
+    font-size: 72px;
+    font-weight: 900;
+    color: #FFFFFF;
+    line-height: 0.95;
+    letter-spacing: -0.03em;
+    text-transform: uppercase;
+    font-family: "SF Pro Display", "Inter", "Helvetica Neue", Arial, sans-serif;
+    margin-bottom: 14px;
+  }
+  .product-subtitle-zh {
+    font-size: 22px;
+    font-weight: 700;
+    color: rgba(255,255,255,0.9);
+    margin-bottom: 6px;
+  }
+  .product-subtitle-en {
+    font-size: 14px;
+    font-weight: 300;
+    color: rgba(255,255,255,0.45);
+    letter-spacing: 0.12em;
+    font-family: "SF Pro Display", "Inter", "Helvetica Neue", Arial, sans-serif;
+    margin-bottom: 0;
+  }
+
+  /* 中间内容 */
+  .body {
+    flex: 1;
+    padding: 44px 60px;
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    overflow: hidden;
+  }
+
+  /* 产品图占位 */
+  .product-image-wrap {
+    width: 100%;
+    height: 240px;
+    border-radius: 16px;
+    overflow: hidden;
+    position: relative;
+    background: rgba(255,255,255,0.06);
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid rgba(255,255,255,0.1);
+  }
+  .product-image-wrap img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .product-image-wrap.no-image {
+    background: linear-gradient(135deg, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0.04) 100%);
+  }
+  .product-image-text {
+    font-size: 26px;
+    font-weight: 700;
+    color: rgba(255,255,255,0.5);
+    text-align: center;
+    padding: 20px;
+    line-height: 1.4;
+  }
+
+  /* 特性标签（毛玻璃） */
+  .features-wrap {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    flex-shrink: 0;
+  }
+  .glass-tag {
+    background: rgba(255,255,255,0.18);
+    border: 1px solid rgba(255,255,255,0.22);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-radius: 100px;
+    padding: 9px 18px;
+    display: flex;
+    align-items: center;
+    gap: 7px;
+  }
+  .glass-tag-icon {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.25);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+    color: #FFFFFF;
+    flex-shrink: 0;
+  }
+  .glass-tag-text {
+    font-size: 14px;
+    font-weight: 500;
+    color: rgba(255,255,255,0.9);
+    letter-spacing: 0.02em;
+  }
+
+  /* 核心卖点列表 */
+  .selling-points {
+    flex: 1;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 14px;
+    overflow: hidden;
+  }
+  .selling-point {
+    display: flex;
+    gap: 16px;
+    align-items: flex-start;
+    background: rgba(255,255,255,0.07);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 12px;
+    padding: 18px 22px;
+  }
+  .sp-num {
+    font-size: 11px;
+    font-weight: 700;
+    color: rgba(255,255,255,0.35);
+    font-family: "SF Pro Display", "Inter", "Helvetica Neue", Arial, sans-serif;
+    letter-spacing: 0.1em;
+    min-width: 28px;
+    margin-top: 3px;
+    flex-shrink: 0;
+  }
+  .sp-content {}
+  .sp-title {
+    font-size: 18px;
+    font-weight: 700;
+    color: #FFFFFF;
+    margin-bottom: 4px;
+    line-height: 1.3;
+  }
+  .sp-desc {
+    font-size: 13px;
+    color: rgba(255,255,255,0.55);
+    line-height: 1.6;
+  }
+
+  /* 底部 CTA */
+  .footer {
+    padding: 0 60px 52px 60px;
+    position: relative;
+    z-index: 1;
+    flex-shrink: 0;
+  }
+  .footer-divider {
+    height: 1px;
+    background: rgba(255,255,255,0.12);
+    margin-bottom: 28px;
+  }
+  .footer-inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .brand-name {
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.7);
+    font-family: "SF Pro Display", "Inter", "Helvetica Neue", Arial, sans-serif;
+  }
+  .cta-btn {
+    background: rgba(255,255,255,0.12);
+    border: 1px solid rgba(255,255,255,0.25);
+    border-radius: 100px;
+    padding: 11px 28px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #FFFFFF;
+    letter-spacing: 0.06em;
+    font-family: "SF Pro Display", "Inter", "Helvetica Neue", Arial, sans-serif;
+  }
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="glow-1"></div>
+  <div class="glow-2"></div>
+
+  <div class="header">
+    <div class="product-eyebrow">$eyebrow</div>
+    <div class="product-name">$product_name</div>
+    <div class="product-subtitle-zh">$subtitle_zh</div>
+    <div class="product-subtitle-en">$subtitle_en</div>
+  </div>
+
+  <div class="body">
+    $product_image_html
+
+    <div class="features-wrap">
+      $features_html
+    </div>
+
+    <div class="selling-points">
+      $selling_points_html
+    </div>
+  </div>
+
+  <div class="footer">
+    <div class="footer-divider"></div>
+    <div class="footer-inner">
+      <div class="brand-name">$brand</div>
+      <div class="cta-btn">$cta_text</div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

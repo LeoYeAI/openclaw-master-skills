@@ -1,0 +1,51 @@
+{
+  "name": "article-to-infographic",
+  "version": "2.0.0",
+  "description": "Transform articles into visually stunning HTML infographics with PNG export. v2.0 adds mandatory interaction workflow, fault-tolerant PNG export, Chinese typography optimization, and 6 style presets including Movie Poster and Chinese Anime.",
+  "author": "OpenClaw",
+  "entry": "SKILL.md",
+  "files": [
+    "SKILL.md",
+    "references/style-presets.md",
+    "scripts/html_to_png.py"
+  ],
+  "dependencies": {
+    "optional": [
+      "playwright",
+      "selenium",
+      "wkhtmltopdf",
+      "cutycapt"
+    ]
+  },
+  "styles": [
+    "bold-vibrant",
+    "clean-minimal",
+    "dark-techy",
+    "warm-editorial",
+    "movie-poster",
+    "chinese-anime"
+  ],
+  "features": [
+    "Mandatory interaction checkpoints (outline + style + export)",
+    "Fault-tolerant PNG export with 4-method fallback chain",
+    "CJK typography optimization with system font fallbacks",
+    "6 distinctive visual styles",
+    "Responsive design (4 breakpoints)",
+    "Print-ready output"
+  ],
+  "changelog": {
+    "2.0.0": [
+      "Added mandatory interaction workflow (MUST ask user for outline/style/export)",
+      "Implemented fault-tolerant PNG export (Playwright → Selenium → wkhtmltoimage → CutyCapt)",
+      "Added Chinese typography optimization (CJK line-height, punctuation, system fonts)",
+      "Added 2 new styles: movie-poster and chinese-anime",
+      "Improved font CDN with China mirrors (fonts.loli.net, fonts.font.im)",
+      "Added responsive breakpoints for mobile/tablet/desktop"
+    ],
+    "1.0.0": [
+      "Initial release with 4 base styles",
+      "Basic HTML infographic generation",
+      "Playwright-based PNG export"
+    ]
+  }
+}

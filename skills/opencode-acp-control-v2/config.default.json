@@ -1,0 +1,50 @@
+{
+  "version": 1,
+  "timeouts": {
+    "initialize": 10000,
+    "sessionNew": 10000,
+    "prompt": {
+      "simple": 60000,
+      "medium": 120000,
+      "complex": 300000
+    },
+    "healthCheck": 5000
+  },
+  "retry": {
+    "maxAttempts": 3,
+    "initialDelay": 2000,
+    "backoffMultiplier": 2,
+    "maxDelay": 10000
+  },
+  "polling": {
+    "initial": 1000,
+    "active": 2000,
+    "stable": 3000,
+    "slow": 5000,
+    "thresholds": {
+      "active": 10000,
+      "stable": 60000,
+      "slow": 120000
+    }
+  },
+  "healthCheck": {
+    "noOutputThreshold": 60000,
+    "enabled": true
+  },
+  "recovery": {
+    "autoRecover": true,
+    "cleanupLocksOnStart": true,
+    "lockMaxAge": 30
+  },
+  "mcpServers": {
+    "default": [],
+    "supabase": ["supabase"],
+    "github": ["github"],
+    "full": ["supabase", "github"]
+  },
+  "logging": {
+    "enabled": true,
+    "level": "info",
+    "includeTimestamps": true
+  }
+}

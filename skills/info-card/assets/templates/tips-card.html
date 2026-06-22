@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=900">
+<title>Tips Card</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    width: 900px;
+    height: 1200px;
+    overflow: hidden;
+    background: $bg_color;
+    font-family: "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans SC", sans-serif;
+  }
+
+  .card {
+    width: 900px;
+    height: 1200px;
+    background: $bg_color;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* 背景装饰 */
+  .bg-deco {
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    pointer-events: none;
+  }
+  .bg-dot-pattern {
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background-image: radial-gradient($dot_color 1px, transparent 1px);
+    background-size: 28px 28px;
+    opacity: 0.5;
+  }
+
+  /* 顶部品牌栏 */
+  .top-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 44px 50px 0 50px;
+    position: relative;
+    z-index: 1;
+  }
+  .brand-tag {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: $accent_color;
+    font-family: "SF Pro Display", "Inter", "Helvetica Neue", Arial, sans-serif;
+    border: 1.5px solid $accent_color;
+    padding: 5px 12px;
+    border-radius: 2px;
+  }
+  .tip-count {
+    font-size: 12px;
+    font-weight: 600;
+    color: $accent_color;
+    font-family: "SF Pro Display", "Inter", "Helvetica Neue", Arial, sans-serif;
+    letter-spacing: 0.05em;
+  }
+
+  /* 标题区 */
+  .header {
+    padding: 28px 50px 0 50px;
+    position: relative;
+    z-index: 1;
+  }
+  .main-title {
+    font-size: 46px;
+    font-weight: 900;
+    line-height: 1.15;
+    color: $title_color;
+    letter-spacing: -0.02em;
+    margin-bottom: 10px;
+  }
+  .subtitle {
+    font-size: 15px;
+    font-weight: 400;
+    line-height: 1.6;
+    color: $text_secondary;
+    max-width: 600px;
+  }
+
+  /* 分割线 */
+  .divider {
+    margin: 20px 50px 16px 50px;
+    height: 1px;
+    background: $divider_color;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* 网格区 */
+  .tips-grid {
+    padding: 0 50px;
+    position: relative;
+    z-index: 1;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+    overflow: hidden;
+  }
+  .tip-item {
+    background: $tip_bg;
+    border-radius: 14px;
+    padding: 28px 24px;
+    border: 1px solid $tip_border;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+  .tip-icon {
+    font-size: 32px;
+    margin-bottom: 12px;
+    line-height: 1;
+  }
+  .tip-title {
+    font-size: 20px;
+    font-weight: 700;
+    color: $title_color;
+    line-height: 1.3;
+    margin-bottom: 10px;
+  }
+  .tip-desc {
+    font-size: 15px;
+    font-weight: 400;
+    color: $text_secondary;
+    line-height: 1.6;
+  }
+
+  /* 底部 */
+  .footer {
+    padding: 14px 50px 40px 50px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: relative;
+    z-index: 1;
+  }
+  .footer-text {
+    font-size: 12px;
+    color: $text_muted;
+    font-family: "SF Pro Display", "Inter", "Helvetica Neue", Arial, sans-serif;
+    letter-spacing: 0.05em;
+  }
+  .footer-brand {
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: $accent_color;
+    font-family: "SF Pro Display", "Inter", "Helvetica Neue", Arial, sans-serif;
+  }
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="bg-deco">
+    <div class="bg-dot-pattern"></div>
+  </div>
+
+  <div class="top-bar">
+    <div class="brand-tag">$brand</div>
+    <div class="tip-count">$tip_count</div>
+  </div>
+
+  <div class="header">
+    <div class="main-title">$title</div>
+    <div class="subtitle">$subtitle</div>
+  </div>
+
+  <div class="divider"></div>
+
+  <div class="tips-grid">
+    $items_html
+  </div>
+
+  <div class="footer">
+    <div class="footer-text">$footer_text</div>
+    <div class="footer-brand">$brand</div>
+  </div>
+</div>
+</body>
+</html>

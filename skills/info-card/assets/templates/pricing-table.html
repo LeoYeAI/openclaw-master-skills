@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=900">
+<title>Pricing Table Card</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    width: 900px;
+    height: 1200px;
+    overflow: hidden;
+    background: $bg_color;
+    font-family: "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans SC", sans-serif;
+  }
+
+  .card {
+    width: 900px;
+    height: 1200px;
+    background: $bg_color;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* 背景装饰 */
+  .bg-deco {
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    pointer-events: none;
+  }
+  .bg-shape {
+    position: absolute;
+    border-radius: 50%;
+    border: 2px solid $accent_color;
+    opacity: 0.06;
+  }
+  .bg-shape-1 { top: -80px; left: -40px; width: 280px; height: 280px; }
+  .bg-shape-2 { bottom: -60px; right: -40px; width: 220px; height: 220px; opacity: 0.04; }
+
+  /* 顶部品牌栏 */
+  .top-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 48px 60px 0 60px;
+    position: relative;
+    z-index: 1;
+  }
+  .brand-tag {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: $accent_color;
+    font-family: "SF Pro Display", "Inter", "Helvetica Neue", Arial, sans-serif;
+    border: 1.5px solid $accent_color;
+    padding: 5px 12px;
+    border-radius: 2px;
+  }
+  .pricing-badge {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: $text_secondary;
+    font-family: "SF Pro Display", "Inter", "Helvetica Neue", Arial, sans-serif;
+  }
+
+  /* 标题区 */
+  .header {
+    padding: 32px 60px 0 60px;
+    position: relative;
+    z-index: 1;
+  }
+  .main-title {
+    font-size: 44px;
+    font-weight: 900;
+    line-height: 1.15;
+    color: $title_color;
+    letter-spacing: -0.02em;
+    margin-bottom: 12px;
+  }
+  .title-underline {
+    width: 56px;
+    height: 4px;
+    background: $accent_color;
+    border-radius: 2px;
+    margin-bottom: 12px;
+  }
+  .subtitle {
+    font-size: 15px;
+    font-weight: 400;
+    line-height: 1.6;
+    color: $text_secondary;
+    max-width: 620px;
+  }
+
+  /* 分割线 */
+  .divider {
+    margin: 28px 60px 24px 60px;
+    height: 1px;
+    background: $divider_color;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* 价格卡片区 */
+  .pricing-section {
+    flex: 1;
+    padding: 0 60px;
+    display: flex;
+    gap: 16px;
+    position: relative;
+    z-index: 1;
+    overflow: hidden;
+  }
+  .price-col {
+    flex: 1;
+    background: $col_bg;
+    border-radius: 14px;
+    border: 1px solid $col_border;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    position: relative;
+  }
+  .price-col.recommended {
+    border-color: $accent_color;
+    border-width: 2px;
+  }
+  .recommended-tag {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    background: $accent_color;
+    color: #FFFFFF;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    padding: 5px 16px;
+    border-radius: 0 0 8px 8px;
+    font-family: "SF Pro Display", "Inter", "Helvetica Neue", Arial, sans-serif;
+  }
+  .price-header {
+    padding: 32px 20px 20px 20px;
+    text-align: center;
+    border-bottom: 1px solid $col_border;
+  }
+  .plan-name {
+    font-size: 16px;
+    font-weight: 700;
+    color: $title_color;
+    margin-bottom: 12px;
+    letter-spacing: 0.02em;
+  }
+  .plan-price {
+    font-size: 40px;
+    font-weight: 900;
+    color: $accent_color;
+    font-family: "SF Pro Display", "Inter", "Helvetica Neue", Arial, sans-serif;
+    line-height: 1;
+  }
+  .plan-unit {
+    font-size: 14px;
+    font-weight: 400;
+    color: $text_muted;
+    margin-top: 4px;
+  }
+  .price-features {
+    flex: 1;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .feature-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 13px;
+    color: $text_primary;
+    line-height: 1.4;
+  }
+  .feature-check {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+    flex-shrink: 0;
+  }
+  .feature-check.yes { background: $check_yes_bg; color: $check_yes_color; }
+  .feature-check.no { background: $check_no_bg; color: $check_no_color; }
+
+  /* 底部提示 */
+  .note-section {
+    padding: 20px 60px 0 60px;
+    position: relative;
+    z-index: 1;
+  }
+  .note-text {
+    font-size: 12px;
+    color: $text_muted;
+    text-align: center;
+    line-height: 1.5;
+  }
+
+  /* 底部 */
+  .footer {
+    padding: 20px 60px 40px 60px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: relative;
+    z-index: 1;
+  }
+  .footer-text {
+    font-size: 12px;
+    color: $text_muted;
+    font-family: "SF Pro Display", "Inter", "Helvetica Neue", Arial, sans-serif;
+    letter-spacing: 0.05em;
+  }
+  .footer-brand {
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: $accent_color;
+    font-family: "SF Pro Display", "Inter", "Helvetica Neue", Arial, sans-serif;
+  }
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="bg-deco">
+    <div class="bg-shape bg-shape-1"></div>
+    <div class="bg-shape bg-shape-2"></div>
+  </div>
+
+  <div class="top-bar">
+    <div class="brand-tag">$brand</div>
+    <div class="pricing-badge">$pricing_label</div>
+  </div>
+
+  <div class="header">
+    <div class="main-title">$title</div>
+    <div class="title-underline"></div>
+    <div class="subtitle">$subtitle</div>
+  </div>
+
+  <div class="divider"></div>
+
+  <div class="pricing-section">
+    $plans_html
+  </div>
+
+  <div class="note-section">
+    <div class="note-text">$note</div>
+  </div>
+
+  <div class="footer">
+    <div class="footer-text">$footer_text</div>
+    <div class="footer-brand">$brand</div>
+  </div>
+</div>
+</body>
+</html>

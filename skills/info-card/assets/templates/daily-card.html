@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=900">
+<title>Daily Card</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    width: 900px;
+    height: 1200px;
+    overflow: hidden;
+    background: $bg_color;
+    font-family: "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans SC", sans-serif;
+  }
+
+  .card {
+    width: 900px;
+    height: 1200px;
+    background: $bg_color;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* 背景装饰 */
+  .bg-deco {
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    pointer-events: none;
+  }
+  .bg-gradient-overlay {
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 500px;
+    background: $bg_gradient_top;
+    opacity: 0.6;
+  }
+  .bg-circle {
+    position: absolute;
+    border-radius: 50%;
+    opacity: 0.05;
+    background: $accent_color;
+  }
+  .bg-circle-1 { bottom: -100px; right: -50px; width: 350px; height: 350px; }
+  .bg-circle-2 { top: 300px; left: -60px; width: 180px; height: 180px; opacity: 0.03; }
+
+  /* 顶部品牌栏 */
+  .top-bar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 52px 60px 0 60px;
+    position: relative;
+    z-index: 1;
+  }
+  .brand-tag {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: $accent_color;
+    font-family: "SF Pro Display", "Inter", "Helvetica Neue", Arial, sans-serif;
+  }
+
+  /* 日期区 */
+  .date-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 56px 60px 0 60px;
+    position: relative;
+    z-index: 1;
+  }
+  .date-day {
+    font-size: 120px;
+    font-weight: 900;
+    color: $title_color;
+    font-family: "SF Pro Display", "Inter", "Helvetica Neue", Arial, sans-serif;
+    line-height: 1;
+    letter-spacing: -0.03em;
+  }
+  .date-info {
+    font-size: 16px;
+    font-weight: 500;
+    color: $text_secondary;
+    letter-spacing: 0.15em;
+    margin-top: 8px;
+    font-family: "SF Pro Display", "Inter", "Helvetica Neue", Arial, sans-serif;
+  }
+  .date-weekday {
+    font-size: 14px;
+    font-weight: 400;
+    color: $text_muted;
+    margin-top: 6px;
+    letter-spacing: 0.1em;
+  }
+
+  /* 分割线 */
+  .divider {
+    margin: 40px auto 36px auto;
+    width: 60px;
+    height: 2px;
+    background: $accent_color;
+    border-radius: 1px;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* 内容区 */
+  .content-section {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 0 80px;
+    position: relative;
+    z-index: 1;
+  }
+  .daily-content {
+    font-size: 26px;
+    font-weight: 500;
+    color: $title_color;
+    line-height: 1.8;
+    text-align: center;
+    max-width: 680px;
+  }
+  .daily-author {
+    font-size: 14px;
+    font-weight: 400;
+    color: $text_secondary;
+    margin-top: 24px;
+    text-align: center;
+  }
+
+  /* 心情标签区 */
+  .mood-section {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    flex-wrap: wrap;
+    padding: 0 60px;
+    margin-top: 32px;
+    position: relative;
+    z-index: 1;
+  }
+  .mood-tag {
+    font-size: 13px;
+    font-weight: 500;
+    color: $accent_color;
+    background: $mood_bg;
+    padding: 8px 20px;
+    border-radius: 100px;
+    border: 1px solid $mood_border;
+  }
+
+  /* 底部 */
+  .footer {
+    padding: 36px 60px 52px 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    z-index: 1;
+  }
+  .footer-text {
+    font-size: 12px;
+    color: $text_muted;
+    font-family: "SF Pro Display", "Inter", "Helvetica Neue", Arial, sans-serif;
+    letter-spacing: 0.12em;
+  }
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="bg-deco">
+    <div class="bg-gradient-overlay"></div>
+    <div class="bg-circle bg-circle-1"></div>
+    <div class="bg-circle bg-circle-2"></div>
+  </div>
+
+  <div class="top-bar">
+    <div class="brand-tag">$brand</div>
+  </div>
+
+  <div class="date-section">
+    <div class="date-day">$day</div>
+    <div class="date-info">$date_info</div>
+    <div class="date-weekday">$weekday</div>
+  </div>
+
+  <div class="divider"></div>
+
+  <div class="content-section">
+    <div class="daily-content">$content</div>
+    <div class="daily-author">$author</div>
+  </div>
+
+  <div class="mood-section">
+    $mood_tags_html
+  </div>
+
+  <div class="footer">
+    <div class="footer-text">$footer_text</div>
+  </div>
+</div>
+</body>
+</html>

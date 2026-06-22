@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=900">
+<title>Checklist Card</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    width: 900px;
+    height: 1200px;
+    overflow: hidden;
+    background: $bg_color;
+    font-family: "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans SC", sans-serif;
+  }
+
+  .card {
+    width: 900px;
+    height: 1200px;
+    background: $bg_color;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* 背景装饰 */
+  .bg-deco {
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    pointer-events: none;
+  }
+  .bg-stripe {
+    position: absolute;
+    width: 260px;
+    height: 260px;
+    border: 2.5px solid $accent_color;
+    border-radius: 50%;
+    opacity: 0.10;
+  }
+  .bg-stripe-1 {
+    top: -80px; right: -60px;
+    width: 340px; height: 340px;
+  }
+  .bg-stripe-2 {
+    bottom: 60px; left: -100px;
+    width: 280px; height: 280px;
+  }
+  .bg-stripe-3 {
+    top: 400px; right: 40px;
+    width: 100px; height: 100px;
+    opacity: 0.14;
+  }
+
+  /* 顶部品牌栏 */
+  .top-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 52px 60px 0 60px;
+    position: relative;
+    z-index: 1;
+  }
+  .brand-tag {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: $accent_color;
+    font-family: "SF Pro Display", "Inter", "Helvetica Neue", Arial, sans-serif;
+    border: 1.5px solid $accent_color;
+    padding: 5px 12px;
+    border-radius: 2px;
+  }
+  .progress-text {
+    font-size: 13px;
+    font-weight: 600;
+    color: $accent_color;
+    font-family: "SF Pro Display", "Inter", "Helvetica Neue", Arial, sans-serif;
+    letter-spacing: 0.05em;
+  }
+
+  /* 标题区 */
+  .header {
+    padding: 40px 60px 0 60px;
+    position: relative;
+    z-index: 1;
+  }
+  .main-title {
+    font-size: 52px;
+    font-weight: 900;
+    line-height: 1.15;
+    color: $title_color;
+    letter-spacing: -0.02em;
+    margin-bottom: 14px;
+  }
+  .subtitle {
+    font-size: 16px;
+    font-weight: 400;
+    line-height: 1.6;
+    color: $text_secondary;
+    max-width: 560px;
+  }
+
+  /* 分割线 */
+  .divider {
+    margin: 32px 60px 28px 60px;
+    height: 1.5px;
+    background: $divider_color;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* 清单区 */
+  .checklist-section {
+    flex: 1;
+    padding: 0 60px;
+    position: relative;
+    z-index: 1;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+  .checklist-item {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    flex: 1;
+    border-bottom: 1px solid $divider_color;
+    min-height: 60px;
+  }
+  .checklist-item:last-child {
+    border-bottom: none;
+  }
+  /* 勾选框 */
+  .checkbox {
+    width: 38px;
+    height: 38px;
+    border-radius: 8px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    font-weight: 700;
+    transition: all 0.2s;
+  }
+  .checkbox.checked {
+    background: $accent_color;
+    color: #FFFFFF;
+  }
+  .checkbox.unchecked {
+    background: transparent;
+    border: 2px solid $checkbox_border;
+    color: transparent;
+  }
+  .check-mark {
+    font-size: 18px;
+    line-height: 1;
+  }
+  .item-text {
+    font-size: 22px;
+    font-weight: 500;
+    color: $title_color;
+    line-height: 1.4;
+    flex: 1;
+  }
+  .item-text.done {
+    color: $text_muted;
+    text-decoration: line-through;
+    text-decoration-color: $text_muted;
+  }
+
+  /* 底部 */
+  .footer-divider {
+    margin: 0 60px 28px 60px;
+    height: 1px;
+    background: $divider_color;
+    position: relative;
+    z-index: 1;
+  }
+  .footer {
+    padding: 0 60px 52px 60px;
+    position: relative;
+    z-index: 1;
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+  }
+  .footer-text {
+    font-size: 13px;
+    color: $text_muted;
+    font-family: "SF Pro Display", "Inter", "Helvetica Neue", Arial, sans-serif;
+    letter-spacing: 0.05em;
+  }
+  .footer-brand {
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: $accent_color;
+    font-family: "SF Pro Display", "Inter", "Helvetica Neue", Arial, sans-serif;
+  }
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="bg-deco">
+    <div class="bg-stripe bg-stripe-1"></div>
+    <div class="bg-stripe bg-stripe-2"></div>
+    <div class="bg-stripe bg-stripe-3"></div>
+  </div>
+
+  <div class="top-bar">
+    <div class="brand-tag">$brand</div>
+    <div class="progress-text">$progress_text</div>
+  </div>
+
+  <div class="header">
+    <div class="main-title">$title</div>
+    <div class="subtitle">$subtitle</div>
+  </div>
+
+  <div class="divider"></div>
+
+  <div class="checklist-section">
+    $items_html
+  </div>
+
+  <div class="footer-divider"></div>
+  <div class="footer">
+    <div class="footer-text">$footer_text</div>
+    <div class="footer-brand">$brand</div>
+  </div>
+</div>
+</body>
+</html>

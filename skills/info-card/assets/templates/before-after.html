@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=900">
+<title>Before After Card</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    width: 900px;
+    height: 1200px;
+    overflow: hidden;
+    background: $bg_color;
+    font-family: "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans SC", sans-serif;
+  }
+
+  .card {
+    width: 900px;
+    height: 1200px;
+    background: $bg_color;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* 顶部品牌横幅 */
+  .top-banner {
+    background: $banner_bg;
+    padding: 20px 60px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-shrink: 0;
+  }
+  .banner-brand {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: #FFFFFF;
+    font-family: "SF Pro Display", "Inter", "Helvetica Neue", Arial, sans-serif;
+  }
+  .banner-badge {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: $accent_color;
+    font-family: "SF Pro Display", "Inter", "Helvetica Neue", Arial, sans-serif;
+    background: rgba(255,255,255,0.1);
+    border: 1px solid rgba(255,255,255,0.2);
+    padding: 4px 10px;
+    border-radius: 2px;
+  }
+
+  /* 标题区 */
+  .header {
+    padding: 36px 60px 0 60px;
+    flex-shrink: 0;
+  }
+  .main-title {
+    font-size: 46px;
+    font-weight: 900;
+    color: $title_color;
+    line-height: 1.15;
+    letter-spacing: -0.02em;
+    margin-bottom: 12px;
+  }
+  .title-underline {
+    width: 56px;
+    height: 4px;
+    background: $accent_color;
+    border-radius: 2px;
+    margin-bottom: 12px;
+  }
+  .subtitle {
+    font-size: 15px;
+    color: $text_secondary;
+    line-height: 1.6;
+    max-width: 600px;
+    font-weight: 400;
+  }
+
+  /* 箭头分隔 */
+  .arrow-divider {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 24px 60px 20px 60px;
+    flex-shrink: 0;
+  }
+  .arrow-line {
+    flex: 1;
+    height: 1px;
+    background: $divider_color;
+  }
+  .arrow-badge {
+    font-size: 18px;
+    font-weight: 800;
+    color: $accent_color;
+    font-family: "SF Pro Display", "Inter", "Helvetica Neue", Arial, sans-serif;
+    background: $arrow_bg;
+    padding: 6px 18px;
+    border-radius: 100px;
+    border: 1.5px solid $accent_color;
+    letter-spacing: 0.1em;
+  }
+
+  /* 对比区 */
+  .compare-section {
+    flex: 1;
+    padding: 0 60px;
+    display: flex;
+    gap: 20px;
+    overflow: hidden;
+  }
+  .compare-col {
+    flex: 1;
+    border-radius: 14px;
+    padding: 28px 24px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+  .col-before {
+    background: $before_bg;
+    border: 1px solid $before_border;
+  }
+  .col-after {
+    background: $after_bg;
+    border: 1px solid $after_border;
+  }
+  .col-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 24px;
+    padding-bottom: 16px;
+    border-bottom: 1.5px solid $col_divider;
+  }
+  .col-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    flex-shrink: 0;
+  }
+  .col-icon.before { background: $before_color; color: #FFFFFF; }
+  .col-icon.after { background: $after_color; color: #FFFFFF; }
+  .col-label {
+    font-size: 20px;
+    font-weight: 700;
+    color: $title_color;
+    line-height: 1.3;
+  }
+  .col-items {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+  .col-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    flex: 1;
+    min-height: 28px;
+  }
+  .col-bullet {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    margin-top: 8px;
+  }
+  .col-bullet.before { background: $before_color; }
+  .col-bullet.after { background: $after_color; }
+  .col-item-text {
+    font-size: 15px;
+    font-weight: 400;
+    color: $text_primary;
+    line-height: 1.55;
+  }
+
+  /* 总结区 */
+  .summary {
+    margin: 20px 60px 0 60px;
+    padding: 20px 26px;
+    background: $summary_bg;
+    border-radius: 12px;
+    border-left: 4px solid $accent_color;
+    flex-shrink: 0;
+  }
+  .summary-label {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: $accent_color;
+    font-family: "SF Pro Display", "Inter", "Helvetica Neue", Arial, sans-serif;
+    margin-bottom: 6px;
+  }
+  .summary-text {
+    font-size: 14px;
+    font-weight: 500;
+    color: $title_color;
+    line-height: 1.55;
+  }
+
+  /* 底部 */
+  .footer {
+    padding: 20px 60px 40px 60px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-shrink: 0;
+  }
+  .footer-text {
+    font-size: 12px;
+    color: $text_muted;
+    font-family: "SF Pro Display", "Inter", "Helvetica Neue", Arial, sans-serif;
+    letter-spacing: 0.05em;
+  }
+  .footer-brand {
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: $title_color;
+    font-family: "SF Pro Display", "Inter", "Helvetica Neue", Arial, sans-serif;
+  }
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="top-banner">
+    <div class="banner-brand">$brand</div>
+    <div class="banner-badge">BEFORE & AFTER</div>
+  </div>
+
+  <div class="header">
+    <div class="main-title">$title</div>
+    <div class="title-underline"></div>
+    <div class="subtitle">$subtitle</div>
+  </div>
+
+  <div class="arrow-divider">
+    <div class="arrow-line"></div>
+    <div class="arrow-badge">→</div>
+    <div class="arrow-line"></div>
+  </div>
+
+  <div class="compare-section">
+    <div class="compare-col col-before">
+      <div class="col-header">
+        <div class="col-icon before">$before_icon</div>
+        <div class="col-label">$before_label</div>
+      </div>
+      <div class="col-items">
+        $before_items_html
+      </div>
+    </div>
+    <div class="compare-col col-after">
+      <div class="col-header">
+        <div class="col-icon after">$after_icon</div>
+        <div class="col-label">$after_label</div>
+      </div>
+      <div class="col-items">
+        $after_items_html
+      </div>
+    </div>
+  </div>
+
+  $summary_html
+
+  <div class="footer">
+    <div class="footer-text">$footer_text</div>
+    <div class="footer-brand">$brand</div>
+  </div>
+</div>
+</body>
+</html>

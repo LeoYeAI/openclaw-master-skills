@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=900">
+<title>Brand Mood Card</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    width: 900px;
+    height: 1200px;
+    overflow: hidden;
+    font-family: "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans SC", sans-serif;
+  }
+
+  .card {
+    width: 900px;
+    height: 1200px;
+    position: relative;
+    overflow: hidden;
+    background: $bg_color;
+  }
+
+  /* 背景图层 */
+  .bg-layer {
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: $bg_gradient;
+    pointer-events: none;
+  }
+
+  /* 背景纹理（光晕） */
+  .light-glow {
+    position: absolute;
+    top: -120px; right: -80px;
+    width: 600px; height: 600px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 40% 40%, rgba(255,255,255,0.35) 0%, rgba(255,255,255,0.08) 40%, transparent 70%);
+    pointer-events: none;
+  }
+  .light-glow-2 {
+    position: absolute;
+    bottom: 200px; left: -120px;
+    width: 400px; height: 400px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(184,150,46,0.12) 0%, transparent 65%);
+    pointer-events: none;
+  }
+
+  /* 主内容区 — 极致留白，内容居中偏左 */
+  .content {
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 100px 80px 120px 80px;
+    z-index: 1;
+  }
+
+  /* 品牌 logo / 名称 */
+  .brand-name {
+    font-size: 48px;
+    font-weight: 300;
+    letter-spacing: 0.22em;
+    color: $gold_color;
+    font-family: "SF Pro Display", "Georgia", "Times New Roman", serif;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+    line-height: 1;
+  }
+  .brand-line {
+    width: 48px;
+    height: 1.5px;
+    background: $gold_color;
+    margin-bottom: 36px;
+    opacity: 0.6;
+  }
+
+  /* 主标语 */
+  .tagline-main {
+    font-size: 52px;
+    font-weight: 800;
+    color: $text_dark;
+    line-height: 1.15;
+    letter-spacing: -0.01em;
+    margin-bottom: 20px;
+    max-width: 600px;
+  }
+  .tagline-sub {
+    font-size: 18px;
+    font-weight: 400;
+    color: $text_secondary;
+    line-height: 1.7;
+    max-width: 440px;
+    margin-bottom: 48px;
+  }
+
+  /* 英文副标语（细体） */
+  .tagline-en {
+    font-size: 13px;
+    font-weight: 300;
+    color: $text_muted;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    font-family: "SF Pro Display", "Inter", "Helvetica Neue", Arial, sans-serif;
+    margin-bottom: 52px;
+  }
+
+  /* 毛玻璃产品卡片 */
+  .glass-card {
+    background: rgba(255,255,255,0.45);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-radius: 20px;
+    border: 1px solid rgba(255,255,255,0.65);
+    padding: 28px 32px;
+    max-width: 420px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.06);
+  }
+  .glass-product-name {
+    font-size: 20px;
+    font-weight: 700;
+    color: $text_dark;
+    margin-bottom: 8px;
+    line-height: 1.3;
+  }
+  .glass-product-desc {
+    font-size: 14px;
+    color: $text_secondary;
+    line-height: 1.7;
+    margin-bottom: 16px;
+  }
+  .glass-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 7px;
+  }
+  .glass-micro-tag {
+    font-size: 11px;
+    font-weight: 500;
+    color: $gold_color;
+    background: rgba(184,150,46,0.1);
+    border: 1px solid rgba(184,150,46,0.25);
+    padding: 4px 10px;
+    border-radius: 100px;
+    letter-spacing: 0.06em;
+    font-family: "SF Pro Display", "Inter", "Helvetica Neue", Arial, sans-serif;
+  }
+
+  /* 底部装饰 */
+  .bottom-deco {
+    position: absolute;
+    bottom: 52px;
+    left: 80px;
+    right: 80px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    z-index: 1;
+  }
+  .bottom-brand {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: $text_muted;
+    font-family: "SF Pro Display", "Inter", "Helvetica Neue", Arial, sans-serif;
+  }
+  .bottom-dots {
+    display: flex;
+    gap: 5px;
+  }
+  .dot {
+    width: 5px; height: 5px;
+    border-radius: 50%;
+    background: $gold_color;
+    opacity: 0.4;
+  }
+  .dot.active { opacity: 1; }
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="bg-layer"></div>
+  <div class="light-glow"></div>
+  <div class="light-glow-2"></div>
+
+  <div class="content">
+    <div class="brand-name">$brand</div>
+    <div class="brand-line"></div>
+
+    <div class="tagline-main">$tagline</div>
+    <div class="tagline-sub">$tagline_sub</div>
+    <div class="tagline-en">$tagline_en</div>
+
+    <div class="glass-card">
+      <div class="glass-product-name">$product_name</div>
+      <div class="glass-product-desc">$product_desc</div>
+      <div class="glass-tags">
+        $product_tags_html
+      </div>
+    </div>
+  </div>
+
+  <div class="bottom-deco">
+    <div class="bottom-brand">$footer_text</div>
+    <div class="bottom-dots">
+      <div class="dot active"></div>
+      <div class="dot"></div>
+      <div class="dot"></div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

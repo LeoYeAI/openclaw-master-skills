@@ -1,0 +1,510 @@
+{
+  "cases": [
+    {
+      "id": "zh-01",
+      "language": "zh-CN",
+      "text": "张伟的手机号是13866667777，有事请在工作时间联系。",
+      "types": [
+        "人名",
+        "电话号码"
+      ],
+      "expected_entities": {
+        "人名": [
+          "张伟"
+        ],
+        "电话号码": [
+          "13866667777"
+        ]
+      }
+    },
+    {
+      "id": "zh-02",
+      "language": "zh-CN",
+      "text": "请将合同初稿发送到林芳的邮箱 lin.fang@example.com。",
+      "types": [
+        "人名",
+        "邮箱"
+      ],
+      "expected_entities": {
+        "人名": [
+          "林芳"
+        ],
+        "邮箱": [
+          "lin.fang@example.com"
+        ]
+      }
+    },
+    {
+      "id": "zh-03",
+      "language": "zh-CN",
+      "text": "入职登记表显示，陈磊的身份证号为310101199503156718。",
+      "types": [
+        "人名",
+        "身份证号"
+      ],
+      "expected_entities": {
+        "人名": [
+          "陈磊"
+        ],
+        "身份证号": [
+          "310101199503156718"
+        ]
+      }
+    },
+    {
+      "id": "zh-04",
+      "language": "zh-CN",
+      "text": "请将样品寄到黄丽的地址：深圳市南山区科技园路22号。",
+      "types": [
+        "人名",
+        "地址"
+      ],
+      "expected_entities": {
+        "人名": [
+          "黄丽"
+        ],
+        "地址": [
+          "深圳市南山区科技园路22号"
+        ]
+      }
+    },
+    {
+      "id": "zh-05",
+      "language": "zh-CN",
+      "text": "订单 ORD-20260315-007 需要杨帅签收，联系电话15011223344。",
+      "types": [
+        "订单号",
+        "人名",
+        "电话号码"
+      ],
+      "expected_entities": {
+        "订单号": [
+          "ORD-20260315-007"
+        ],
+        "人名": [
+          "杨帅"
+        ],
+        "电话号码": [
+          "15011223344"
+        ]
+      }
+    },
+    {
+      "id": "zh-06",
+      "language": "zh-CN",
+      "text": "报销单上的收款账户是周琳的银行卡6228480321456789012。",
+      "types": [
+        "人名",
+        "银行卡号"
+      ],
+      "expected_entities": {
+        "人名": [
+          "周琳"
+        ],
+        "银行卡号": [
+          "6228480321456789012"
+        ]
+      }
+    },
+    {
+      "id": "zh-07",
+      "language": "zh-CN",
+      "text": "孙鹏在华创软件的工号是 EMP-3156，请核实门禁权限。",
+      "types": [
+        "人名",
+        "组织机构",
+        "工号"
+      ],
+      "expected_entities": {
+        "人名": [
+          "孙鹏"
+        ],
+        "组织机构": [
+          "华创软件"
+        ],
+        "工号": [
+          "EMP-3156"
+        ]
+      }
+    },
+    {
+      "id": "zh-08",
+      "language": "zh-CN",
+      "text": "访客车辆登记：郑凯，车牌号沪B56789。",
+      "types": [
+        "人名",
+        "车牌号"
+      ],
+      "expected_entities": {
+        "人名": [
+          "郑凯"
+        ],
+        "车牌号": [
+          "沪B56789"
+        ]
+      }
+    },
+    {
+      "id": "zh-09",
+      "language": "zh-CN",
+      "text": "患者吴芳的腕带编号是 PT-70214，请核对用药记录。",
+      "types": [
+        "人名",
+        "患者编号"
+      ],
+      "expected_entities": {
+        "人名": [
+          "吴芳"
+        ],
+        "患者编号": [
+          "PT-70214"
+        ]
+      }
+    },
+    {
+      "id": "zh-10",
+      "language": "zh-CN",
+      "text": "本周末市图书馆将举办免费阅读分享会，欢迎市民报名参加。",
+      "types": [
+        "人名",
+        "电话号码"
+      ],
+      "expected_entities": {
+        "人名": [],
+        "电话号码": []
+      }
+    },
+    {
+      "id": "en-01",
+      "language": "en",
+      "text": "Passenger Noah Bennett is booked under passport number GH7724518.",
+      "types": [
+        "person name",
+        "passport number"
+      ],
+      "expected_entities": {
+        "person name": [
+          "Noah Bennett"
+        ],
+        "passport number": [
+          "GH7724518"
+        ]
+      }
+    },
+    {
+      "id": "en-02",
+      "language": "en",
+      "text": "Wire the deposit to account 443322110099 with routing number 071000013.",
+      "types": [
+        "account number",
+        "routing number"
+      ],
+      "expected_entities": {
+        "account number": [
+          "443322110099"
+        ],
+        "routing number": [
+          "071000013"
+        ]
+      }
+    },
+    {
+      "id": "en-03",
+      "language": "en",
+      "text": "Olivia Chen filed a claim under insurance policy number POL-88-BK-30952.",
+      "types": [
+        "person name",
+        "insurance policy number"
+      ],
+      "expected_entities": {
+        "person name": [
+          "Olivia Chen"
+        ],
+        "insurance policy number": [
+          "POL-88-BK-30952"
+        ]
+      }
+    },
+    {
+      "id": "en-04",
+      "language": "en",
+      "text": "The laptop assigned to Ryan Torres has MAC address 5C:3A:1B:9D:7E:4F.",
+      "types": [
+        "person name",
+        "MAC address"
+      ],
+      "expected_entities": {
+        "person name": [
+          "Ryan Torres"
+        ],
+        "MAC address": [
+          "5C:3A:1B:9D:7E:4F"
+        ]
+      }
+    },
+    {
+      "id": "en-05",
+      "language": "en",
+      "text": "Academic records for Maya Singh, student ID STU-2026-5583, are ready for review.",
+      "types": [
+        "person name",
+        "student ID"
+      ],
+      "expected_entities": {
+        "person name": [
+          "Maya Singh"
+        ],
+        "student ID": [
+          "STU-2026-5583"
+        ]
+      }
+    },
+    {
+      "id": "en-06",
+      "language": "en",
+      "text": "The annual technology conference will take place at the convention center on November 15th.",
+      "types": [
+        "person name",
+        "phone number"
+      ],
+      "expected_entities": {
+        "person name": [],
+        "phone number": []
+      }
+    },
+    {
+      "id": "ja-01",
+      "language": "ja",
+      "text": "田中一郎の連絡先は 03-5678-1234 です。",
+      "types": [
+        "person name",
+        "phone number"
+      ],
+      "expected_entities": {
+        "person name": [
+          "田中一郎"
+        ],
+        "phone number": [
+          "03-5678-1234"
+        ]
+      }
+    },
+    {
+      "id": "ja-02",
+      "language": "ja",
+      "text": "佐藤健一の運転免許証番号は 302847556791 です。",
+      "types": [
+        "person name",
+        "driver license number"
+      ],
+      "expected_entities": {
+        "person name": [
+          "佐藤健一"
+        ],
+        "driver license number": [
+          "302847556791"
+        ]
+      }
+    },
+    {
+      "id": "ja-03",
+      "language": "ja",
+      "text": "資料の送付先は鈴木花子のメールアドレス hanako.suzuki@example.co.jp です。",
+      "types": [
+        "person name",
+        "email"
+      ],
+      "expected_entities": {
+        "person name": [
+          "鈴木花子"
+        ],
+        "email": [
+          "hanako.suzuki@example.co.jp"
+        ]
+      }
+    },
+    {
+      "id": "ko-01",
+      "language": "ko",
+      "text": "김민준 씨의 연락처는 010-9876-5432입니다.",
+      "types": [
+        "person name",
+        "phone number"
+      ],
+      "expected_entities": {
+        "person name": [
+          "김민준"
+        ],
+        "phone number": [
+          "010-9876-5432"
+        ]
+      }
+    },
+    {
+      "id": "ko-02",
+      "language": "ko",
+      "text": "택배 수령지는 이서연, 서울특별시 강남구 역삼로 123입니다.",
+      "types": [
+        "person name",
+        "address"
+      ],
+      "expected_entities": {
+        "person name": [
+          "이서연"
+        ],
+        "address": [
+          "서울특별시 강남구 역삼로 123"
+        ]
+      }
+    },
+    {
+      "id": "ko-03",
+      "language": "ko",
+      "text": "박지훈 고객의 회원번호는 CUST-660214입니다.",
+      "types": [
+        "person name",
+        "customer ID"
+      ],
+      "expected_entities": {
+        "person name": [
+          "박지훈"
+        ],
+        "customer ID": [
+          "CUST-660214"
+        ]
+      }
+    },
+    {
+      "id": "fr-01",
+      "language": "fr",
+      "text": "Le courriel de Marc Lefèvre est marc.lefevre@example.fr.",
+      "types": [
+        "person name",
+        "email"
+      ],
+      "expected_entities": {
+        "person name": [
+          "Marc Lefèvre"
+        ],
+        "email": [
+          "marc.lefevre@example.fr"
+        ]
+      }
+    },
+    {
+      "id": "fr-02",
+      "language": "fr",
+      "text": "Lucas Dupont est responsable du contrat CT-2026-0587.",
+      "types": [
+        "person name",
+        "contract number"
+      ],
+      "expected_entities": {
+        "person name": [
+          "Lucas Dupont"
+        ],
+        "contract number": [
+          "CT-2026-0587"
+        ]
+      }
+    },
+    {
+      "id": "de-01",
+      "language": "de",
+      "text": "Die Telefonnummer von Markus Weber ist +49 170 9876543.",
+      "types": [
+        "person name",
+        "phone number"
+      ],
+      "expected_entities": {
+        "person name": [
+          "Markus Weber"
+        ],
+        "phone number": [
+          "+49 170 9876543"
+        ]
+      }
+    },
+    {
+      "id": "de-02",
+      "language": "de",
+      "text": "Die Steuernummer von Anna Fischer lautet 82 491 372 501.",
+      "types": [
+        "person name",
+        "tax ID"
+      ],
+      "expected_entities": {
+        "person name": [
+          "Anna Fischer"
+        ],
+        "tax ID": [
+          "82 491 372 501"
+        ]
+      }
+    },
+    {
+      "id": "es-01",
+      "language": "es",
+      "text": "El paquete de Carlos Ruiz debe enviarse a Avenida Libertad 42, Barcelona.",
+      "types": [
+        "person name",
+        "address"
+      ],
+      "expected_entities": {
+        "person name": [
+          "Carlos Ruiz"
+        ],
+        "address": [
+          "Avenida Libertad 42, Barcelona"
+        ]
+      }
+    },
+    {
+      "id": "es-02",
+      "language": "es",
+      "text": "La empresa inaugurará una nueva sede en el centro de la ciudad el próximo mes.",
+      "types": [
+        "person name",
+        "phone number"
+      ],
+      "expected_entities": {
+        "person name": [],
+        "phone number": []
+      }
+    },
+    {
+      "id": "pt-01",
+      "language": "pt",
+      "text": "O número de telefone de João Silva é +55 11 91234-5678.",
+      "types": [
+        "person name",
+        "phone number"
+      ],
+      "expected_entities": {
+        "person name": [
+          "João Silva"
+        ],
+        "phone number": [
+          "+55 11 91234-5678"
+        ]
+      }
+    },
+    {
+      "id": "pt-02",
+      "language": "pt",
+      "text": "A conta do Instagram de Ana Costa é anacosta_design.",
+      "types": [
+        "person name",
+        "social media account"
+      ],
+      "expected_entities": {
+        "person name": [
+          "Ana Costa"
+        ],
+        "social media account": [
+          "anacosta_design"
+        ]
+      }
+    }
+  ]
+}

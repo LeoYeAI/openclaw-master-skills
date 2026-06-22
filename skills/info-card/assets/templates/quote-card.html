@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=900">
+<title>Quote Card</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    width: 900px;
+    height: 1200px;
+    overflow: hidden;
+    background: $bg_color;
+    font-family: "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans SC", sans-serif;
+  }
+
+  .card {
+    width: 900px;
+    height: 1200px;
+    background: $bg_color;
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* ── 背景装饰 ── */
+  .bg-corner-tl {
+    position: absolute;
+    top: 48px; left: 48px;
+    width: 48px; height: 48px;
+    border-left: 2px solid $accent_color;
+    border-top: 2px solid $accent_color;
+    opacity: 0.18;
+  }
+  .bg-corner-br {
+    position: absolute;
+    bottom: 48px; right: 48px;
+    width: 48px; height: 48px;
+    border-right: 2px solid $accent_color;
+    border-bottom: 2px solid $accent_color;
+    opacity: 0.18;
+  }
+  /* 大引号背景装饰 */
+  .bg-quote-deco {
+    position: absolute;
+    bottom: 100px;
+    right: 50px;
+    font-size: 280px;
+    font-weight: 900;
+    line-height: 1;
+    color: $accent_color;
+    opacity: 0.04;
+    font-family: Georgia, "Times New Roman", serif;
+    user-select: none;
+    transform: rotate(180deg);
+  }
+
+  /* ── 顶部品牌（绝对定位） ── */
+  .brand-tag {
+    position: absolute;
+    top: 52px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.32em;
+    text-transform: uppercase;
+    color: $text_muted;
+    font-family: "SF Pro Display", "Inter", "Helvetica Neue", Arial, sans-serif;
+    z-index: 2;
+  }
+
+  /* ── 金句主区域（绝对居中） ── */
+  .quote-area {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -47%);
+    width: 740px;
+    text-align: center;
+    z-index: 1;
+  }
+
+  .open-quote {
+    font-size: 100px;
+    font-weight: 900;
+    line-height: 0.6;
+    color: $accent_color;
+    opacity: 0.30;
+    font-family: Georgia, "Times New Roman", serif;
+    user-select: none;
+    margin-bottom: 28px;
+  }
+
+  .quote-text {
+    font-size: 42px;
+    font-weight: 700;
+    line-height: 1.65;
+    color: $text_color;
+    letter-spacing: 0.02em;
+    margin-bottom: 40px;
+  }
+  .deco-line {
+    width: 40px;
+    height: 2.5px;
+    background: $accent_color;
+    border-radius: 2px;
+    margin: 0 auto 24px auto;
+    opacity: 0.55;
+  }
+  .author {
+    font-size: 20px;
+    font-weight: 600;
+    color: $text_color;
+    letter-spacing: 0.08em;
+    margin-bottom: 10px;
+    opacity: 0.72;
+  }
+  .source {
+    font-size: 14px;
+    font-weight: 400;
+    color: $text_muted;
+    letter-spacing: 0.05em;
+    margin-bottom: 28px;
+  }
+  .tags-row {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  .tag-pill {
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    color: $text_muted;
+    border: 1.5px solid $tag_border;
+    padding: 6px 16px;
+    border-radius: 100px;
+    font-family: "SF Pro Display", "Inter", "Helvetica Neue", Arial, sans-serif;
+  }
+
+  /* ── 底部（绝对定位） ── */
+  .footer-text {
+    position: absolute;
+    bottom: 52px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 11px;
+    color: $text_muted;
+    font-family: "SF Pro Display", "Inter", "Helvetica Neue", Arial, sans-serif;
+    letter-spacing: 0.15em;
+    opacity: 0.45;
+    z-index: 2;
+  }
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="bg-corner-tl"></div>
+  <div class="bg-corner-br"></div>
+  <div class="bg-quote-deco">&ldquo;</div>
+
+  <div class="brand-tag">$brand</div>
+
+  <div class="quote-area">
+    <div class="open-quote">&ldquo;</div>
+    <div class="quote-text">$quote</div>
+    <div class="deco-line"></div>
+    <div class="author">$author</div>
+    <div class="source">$source</div>
+    <div class="tags-row">
+      $tags_html
+    </div>
+  </div>
+
+  <div class="footer-text">$footer_text</div>
+</div>
+</body>
+</html>

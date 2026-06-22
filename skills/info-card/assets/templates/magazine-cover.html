@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=900">
+<title>Magazine Cover Card</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    width: 900px;
+    height: 1200px;
+    overflow: hidden;
+    background: $bg_color;
+    font-family: "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans SC", sans-serif;
+  }
+
+  .card {
+    width: 900px;
+    height: 1200px;
+    background: $bg_color;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* 背景装饰 */
+  .bg-deco {
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    pointer-events: none;
+  }
+  .bg-circle-1 {
+    position: absolute;
+    width: 480px; height: 480px;
+    border-radius: 50%;
+    background: $accent_circle1;
+    top: -140px; right: -100px;
+    opacity: 0.25;
+  }
+  .bg-circle-2 {
+    position: absolute;
+    width: 320px; height: 320px;
+    border-radius: 50%;
+    background: $accent_circle2;
+    bottom: 200px; left: -80px;
+    opacity: 0.18;
+  }
+
+  /* 顶部品牌栏 */
+  .top-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 52px 60px 0 60px;
+    position: relative;
+    z-index: 1;
+  }
+  .brand-tag {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: $brand_color;
+    font-family: "SF Pro Display", "Inter", "Helvetica Neue", Arial, sans-serif;
+    border: 1.5px solid $brand_color;
+    padding: 5px 12px;
+    border-radius: 2px;
+  }
+  .issue-no {
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    color: $text_muted;
+    font-family: "SF Pro Display", "Inter", "Helvetica Neue", Arial, sans-serif;
+    font-weight: 400;
+  }
+
+  /* 主标题区 */
+  .header {
+    padding: 48px 60px 0 60px;
+    position: relative;
+    z-index: 1;
+  }
+  .kicker {
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: $accent_color;
+    font-family: "SF Pro Display", "Inter", "Helvetica Neue", Arial, sans-serif;
+    margin-bottom: 16px;
+  }
+  .main-title {
+    font-size: 64px;
+    font-weight: 900;
+    line-height: 1.1;
+    color: $title_color;
+    letter-spacing: -0.02em;
+    margin-bottom: 20px;
+  }
+  .subtitle {
+    font-size: 17px;
+    font-weight: 400;
+    line-height: 1.6;
+    color: $text_secondary;
+    margin-bottom: 0;
+    max-width: 560px;
+  }
+
+  /* 分割线 */
+  .divider {
+    margin: 36px 60px;
+    height: 1px;
+    background: $divider_color;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* 列表区 */
+  .list-section {
+    flex: 1;
+    padding: 0 60px;
+    position: relative;
+    z-index: 1;
+    overflow: hidden;
+  }
+  .list-label {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: $text_muted;
+    font-family: "SF Pro Display", "Inter", "Helvetica Neue", Arial, sans-serif;
+    margin-bottom: 28px;
+  }
+  .list-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 20px;
+    margin-bottom: 28px;
+  }
+  .item-num {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: $num_bg;
+    color: $num_color;
+    font-size: 14px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    font-family: "SF Pro Display", "Inter", "Helvetica Neue", Arial, sans-serif;
+    margin-top: 2px;
+  }
+  .item-content {
+    flex: 1;
+  }
+  .item-title {
+    font-size: 20px;
+    font-weight: 700;
+    color: $title_color;
+    line-height: 1.3;
+    margin-bottom: 5px;
+  }
+  .item-desc {
+    font-size: 14px;
+    font-weight: 400;
+    color: $text_secondary;
+    line-height: 1.6;
+  }
+
+  /* 底部 */
+  .footer {
+    padding: 0 60px 52px 60px;
+    position: relative;
+    z-index: 1;
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+  }
+  .footer-divider {
+    margin: 0 60px 32px 60px;
+    height: 1px;
+    background: $divider_color;
+    position: relative;
+    z-index: 1;
+  }
+  .footer-brand {
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: $brand_color;
+    font-family: "SF Pro Display", "Inter", "Helvetica Neue", Arial, sans-serif;
+  }
+  .footer-tagline {
+    font-size: 12px;
+    color: $text_muted;
+    font-family: "SF Pro Display", "Inter", "Helvetica Neue", Arial, sans-serif;
+    letter-spacing: 0.05em;
+  }
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="bg-deco">
+    <div class="bg-circle-1"></div>
+    <div class="bg-circle-2"></div>
+  </div>
+
+  <div class="top-bar">
+    <div class="brand-tag">$brand</div>
+    <div class="issue-no">$issue_no</div>
+  </div>
+
+  <div class="header">
+    <div class="kicker">$kicker</div>
+    <div class="main-title">$title</div>
+    <div class="subtitle">$subtitle</div>
+  </div>
+
+  <div class="divider"></div>
+
+  <div class="list-section">
+    <div class="list-label">$list_label</div>
+    $list_items_html
+  </div>
+
+  <div class="footer-divider"></div>
+  <div class="footer">
+    <div class="footer-brand">$footer_brand</div>
+    <div class="footer-tagline">$footer_tagline</div>
+  </div>
+</div>
+</body>
+</html>

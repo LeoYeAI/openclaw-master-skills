@@ -1,0 +1,142 @@
+[
+  {
+    "id": 0,
+    "prompt": "Generate today's morning advisory for the firm. We have 42 active clients. Highlight anything that needs attention today.",
+    "expectations": [
+      "Reads pre-computed risk scores from /data/reports/analytics/",
+      "Reads upcoming deadlines via cli-deadline-monitor data",
+      "Identifies clients with risk score 7 or above as watch list",
+      "Groups watch list clients with specific reasons and suggested actions",
+      "Shows portfolio snapshot: count by risk band",
+      "Identifies next high-volume deadline and how many clients are affected",
+      "Includes any sector-wide patterns detected across the portfolio",
+      "Output is in plain English — no statistical jargon",
+      "Each watch list item includes a specific actionable suggestion",
+      "Shows time advisory was generated",
+      "Does not show all 42 clients — focuses on what needs attention"
+    ],
+    "files": [
+      {
+        "name": "risk_scores_2026-02-18.json",
+        "content": "{\"generated_at\": \"2026-02-18T01:12:00Z\", \"clients\": [{\"afm\": \"EL555444333\", \"name\": \"GAMMA CONSTRUCTIONS AE\", \"risk_score\": 8, \"risk_band\": \"HIGH\", \"primary_driver\": \"cash_position_declining_3_months\", \"secondary_driver\": \"tax_payment_due_25_03_2026\"}, {\"afm\": \"EL777888999\", \"name\": \"DELTA SERVICES EPE\", \"risk_score\": 6, \"risk_band\": \"MEDIUM\", \"primary_driver\": \"vat_liability_increase_34pct\", \"data_points\": 4, \"confidence\": \"MEDIUM\"}, {\"afm\": \"EL222333444\", \"name\": \"EPSILON RETAIL OE\", \"risk_score\": 5, \"risk_band\": \"MEDIUM\", \"primary_driver\": \"bank_statements_missing\", \"deadline_days\": 6}, {\"afm\": \"EL123456789\", \"name\": \"ALPHA TRADING AE\", \"risk_score\": 2, \"risk_band\": \"LOW\"}, {\"afm\": \"EL987654321\", \"name\": \"BETA SERVICES OE\", \"risk_score\": 3, \"risk_band\": \"LOW\"}], \"portfolio_summary\": {\"total\": 42, \"low\": 31, \"medium\": 8, \"high\": 3, \"critical\": 0}}"
+      },
+      {
+        "name": "sector_pattern_2026-02-18.json",
+        "content": "{\"patterns\": [{\"sector\": \"retail\", \"client_count\": 7, \"finding\": \"gross_margin_decline\", \"average_decline_pp\": 3.2, \"periods_observed\": 3, \"confidence\": \"MEDIUM\"}]}"
+      }
+    ]
+  },
+  {
+    "id": 1,
+    "prompt": "Run anomaly detection for Alpha Trading AE (EL123456789) for January 2026. Compare against their own history and flag anything unusual.",
+    "expectations": [
+      "Reads financial statements for January 2026 and prior periods",
+      "Computes trailing averages for key expense categories",
+      "Identifies values more than 2 standard deviations from trailing average",
+      "Compares each metric against own history (not just sector)",
+      "Assigns confidence level to each finding based on number of historical data points",
+      "Outputs findings in plain English with specific EUR amounts",
+      "Includes expected range and actual value for each anomaly",
+      "Suggests a specific follow-up action for each finding",
+      "Correctly identifies the third-party services spike as the primary anomaly",
+      "Does not flag normal seasonal variation as anomalies",
+      "Marks findings with fewer than 6 data points as LOW CONFIDENCE"
+    ],
+    "files": [
+      {
+        "name": "alpha_trading_history.json",
+        "content": "{\"afm\": \"EL123456789\", \"monthly_data\": [{\"period\": \"2025-08\", \"revenue\": 39200, \"cost_of_sales\": 12100, \"services_62\": 3800, \"staff_64\": 8800, \"depreciation_66\": 1100}, {\"period\": \"2025-09\", \"revenue\": 41500, \"cost_of_sales\": 13200, \"services_62\": 4100, \"staff_64\": 8900, \"depreciation_66\": 1100}, {\"period\": \"2025-10\", \"revenue\": 38900, \"cost_of_sales\": 11800, \"services_62\": 3900, \"staff_64\": 8800, \"depreciation_66\": 1100}, {\"period\": \"2025-11\", \"revenue\": 43200, \"cost_of_sales\": 13800, \"services_62\": 4200, \"staff_64\": 9100, \"depreciation_66\": 1200}, {\"period\": \"2025-12\", \"revenue\": 45100, \"cost_of_sales\": 14100, \"services_62\": 4400, \"staff_64\": 9200, \"depreciation_66\": 1200}, {\"period\": \"2026-01\", \"revenue\": 47320, \"cost_of_sales\": 14200, \"services_62\": 9800, \"staff_64\": 9200, \"depreciation_66\": 1200}]}"
+      }
+    ]
+  },
+  {
+    "id": 2,
+    "prompt": "Generate a 3-month cash flow forecast for Gamma Constructions AE (EL555444333) starting March 2026. They have a tax payment due and we need to know if there will be a cash problem.",
+    "expectations": [
+      "Reads current cash position from banking reconciliation data",
+      "Reads recurring revenue pattern from trailing 3-month average",
+      "Reads upcoming tax obligations from deadline monitor data",
+      "Reads recurring supplier payment patterns from banking history",
+      "Includes EFKA contributions due in the forecast",
+      "Produces best case, expected, and worst case scenario for each month",
+      "Flags any month where expected cash position may go negative",
+      "Specifies the tax payment amount and date driving the risk",
+      "Applies correct uncertainty ranges: revenue +/-15%, ad-hoc expenses +/-20%",
+      "Labels March forecast as HIGH confidence, April MEDIUM, May LOW",
+      "Output is in plain English with EUR amounts and specific dates",
+      "Does not claim certainty — presents as projections with stated assumptions"
+    ],
+    "files": [
+      {
+        "name": "gamma_constructions_data.json",
+        "content": "{\"afm\": \"EL555444333\", \"current_cash\": 12400.00, \"trailing_revenue\": [{\"period\": \"2025-12\", \"amount\": 38200}, {\"period\": \"2026-01\", \"amount\": 35900}, {\"period\": \"2026-02\", \"amount\": 34100}], \"recurring_expenses\": {\"rent\": 2800, \"utilities\": 620, \"staff_payroll\": 11200, \"efka_employer\": 2240}, \"upcoming_obligations\": [{\"type\": \"VAT_Q1_2026\", \"amount\": 8900, \"due_date\": \"2026-03-25\"}, {\"type\": \"EFKA_March\", \"amount\": 2240, \"due_date\": \"2026-03-31\"}], \"outstanding_debtors\": 22400}"
+      }
+    ]
+  },
+  {
+    "id": 3,
+    "prompt": "Which clients in our retail sector portfolio have the highest compliance risk going into Q2 2026? Give me a ranked list with the main driver for each.",
+    "expectations": [
+      "Filters portfolio to retail sector clients only",
+      "Reads risk scores for all retail sector clients",
+      "Ranks clients by risk score descending",
+      "For each client shows: name, AFM, risk score, risk band, primary driver",
+      "Primary driver is specific — not generic (e.g. 'bank statements missing for February' not 'data issues')",
+      "Includes count of retail clients in the analysis",
+      "Notes if the retail sector has a sector-wide pattern active",
+      "Output is a clean ranked list suitable for a morning briefing",
+      "Includes specific deadline or action pressure driving the Q2 concern",
+      "If fewer than 3 retail clients exist, notes that sector benchmark is not available"
+    ],
+    "files": [
+      {
+        "name": "retail_sector_risk.json",
+        "content": "{\"sector\": \"retail\", \"client_count\": 7, \"clients\": [{\"afm\": \"EL222333444\", \"name\": \"EPSILON RETAIL OE\", \"risk_score\": 7, \"primary_driver\": \"bank_statements_missing_feb_2026\", \"next_deadline\": \"2026-02-25\"}, {\"afm\": \"EL333444555\", \"name\": \"ZETA RETAIL AE\", \"risk_score\": 5, \"primary_driver\": \"compliance_gap_efka_jan_2026\"}, {\"afm\": \"EL444555666\", \"name\": \"ETA TRADING OE\", \"risk_score\": 4, \"primary_driver\": \"gross_margin_declining_3_months\"}, {\"afm\": \"EL111222333\", \"name\": \"THETA STORES AE\", \"risk_score\": 2, \"primary_driver\": null}, {\"afm\": \"EL666777888\", \"name\": \"IOTA RETAIL EPE\", \"risk_score\": 3, \"primary_driver\": null}, {\"afm\": \"EL888999000\", \"name\": \"KAPPA TRADING OE\", \"risk_score\": 2, \"primary_driver\": null}, {\"afm\": \"EL999000111\", \"name\": \"LAMBDA STORES AE\", \"risk_score\": 2, \"primary_driver\": null}], \"sector_pattern\": {\"active\": true, \"finding\": \"gross_margin_decline_3pp_vs_q4_2025\", \"confidence\": \"MEDIUM\"}}"
+      }
+    ]
+  },
+  {
+    "id": 4,
+    "prompt": "I want to understand the VAT liability trend for Delta Services EPE (EL777888999) over the last 6 months. Is it actually increasing and if so is it a concern?",
+    "expectations": [
+      "Reads VAT liability data for the last 6 available periods",
+      "Calculates the trend direction: increasing, decreasing, or flat",
+      "Computes percentage change from first to last period",
+      "Computes 3-month trailing average and compares latest month against it",
+      "States whether the increase exceeds the 20% alert threshold",
+      "Distinguishes between possible causes: higher turnover vs classification issue",
+      "Assigns confidence level based on number of data periods available",
+      "Does not make a definitive diagnosis — presents findings and suggests investigation",
+      "Output is in plain English with specific EUR figures",
+      "Notes if January 2026 figure is particularly anomalous versus the trend"
+    ],
+    "files": [
+      {
+        "name": "delta_vat_history.json",
+        "content": "{\"afm\": \"EL777888999\", \"vat_data\": [{\"period\": \"2025-08\", \"output_vat\": 2800, \"input_vat\": 1100, \"net_vat\": 1700}, {\"period\": \"2025-09\", \"output_vat\": 2950, \"input_vat\": 1050, \"net_vat\": 1900}, {\"period\": \"2025-10\", \"output_vat\": 3100, \"input_vat\": 1200, \"net_vat\": 1900}, {\"period\": \"2025-11\", \"output_vat\": 3300, \"input_vat\": 1100, \"net_vat\": 2200}, {\"period\": \"2025-12\", \"output_vat\": 3500, \"input_vat\": 1200, \"net_vat\": 2300}, {\"period\": \"2026-01\", \"output_vat\": 5800, \"input_vat\": 1700, \"net_vat\": 4100}]}"
+      }
+    ]
+  },
+  {
+    "id": 5,
+    "prompt": "A new client, Mu Trading AE (EL000111222), was onboarded last month. They only have 2 months of data in the system. Run the full analytics suite for them.",
+    "expectations": [
+      "Attempts to run trend analysis but detects only 2 periods of data",
+      "Notes that trend analysis requires minimum 3 periods — labels any output as LOW CONFIDENCE",
+      "Does not refuse to show anything — presents available 2-period comparison",
+      "Risk score is computed based on compliance data even with limited financial history",
+      "Notes that sector benchmark comparison requires minimum 3 clients in sector",
+      "Cash flow forecast attempted for 1 month only given data limitations",
+      "Anomaly detection uses own-history method only — cannot compare to sector with 2 data points",
+      "All outputs clearly marked with confidence levels appropriate to the data quantity",
+      "Does not extrapolate or fabricate figures to fill data gaps",
+      "Suggests that fuller analysis will be available after 3-4 more months of data"
+    ],
+    "files": [
+      {
+        "name": "mu_trading_data.json",
+        "content": "{\"afm\": \"EL000111222\", \"name\": \"MU TRADING AE\", \"onboarded\": \"2026-01-15\", \"sector\": \"wholesale\", \"data_periods\": 2, \"financial_data\": [{\"period\": \"2025-12\", \"revenue\": 28400, \"expenses\": 19200, \"vat_net\": 2180, \"cash\": 14200}, {\"period\": \"2026-01\", \"revenue\": 31200, \"expenses\": 21400, \"vat_net\": 2390, \"cash\": 16800}], \"compliance\": {\"filings_on_time\": 2, \"filings_late\": 0, \"gaps\": 0}, \"sector_clients_count\": 2}"
+      }
+    ]
+  }
+]

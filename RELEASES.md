@@ -3,6 +3,47 @@
 每次更新的详细发布说明。
 
 
+## v0.17.0 — 2026-06-22
+
+### 🚀 周更：新增 100 个 Skills，总计 2009
+
+来源：openclaw/skills-archive 官方镜像，按质量规则筛选（SKILL.md 800B-30KB、完整 YAML 元数据、有效 description）。
+
+#### 部分新增亮点（前 30 个）
+- `bind-protocol-mcp` — Bind Protocol MCP server for credential verification, policy authoring, and zero-knowledge proof generation.
+- `feishu-literature-manager` — Automated literature retrieval and Feishu Bitable management. Use when user requests to create a literature database, se
+- `tencent-docs-chen` — Tencent Docs - Provides complete Tencent Docs operations. Use this skill when working with Tencent Docs, including: (1) 
+- `0xarchive` — > Query historical crypto market data from 0xArchive across Hyperliquid, Lighter.xyz, and HIP-3. Covers orderbooks, trad
+- `google-gemini-media` — Use the Gemini API (Nano Banana image generation, Veo video, Gemini TTS speech and audio understanding) to deliver end-t
+- `fill-docx-template` — 当用户需要基于模板填充 Word 文档（.docx）、从模板生成报告、创建包含动态数据的合同，或自动化文档生成时使用此技能。包括替换普通占位符 {name} 替换文本、使用 {name|r:x,c:y} 格式标记的智能表格填充（支持从标记行
+- `openclaw-optimize` — Audit and optimize OpenClaw token usage, cron job efficiency, and agent performance. Use when user says "optimize opencl
+- `12-factor-apps` — Perform 12-Factor App compliance analysis on any codebase. Use when evaluating application architecture, auditing SaaS a
+- `lbbniu-skill-creator` — Guide for creating effective skills. This skill should be used when users want to create a new skill (or update an exist
+- `virtual-desktop` — > Full Computer Use for OpenClaw via kasmweb/chrome Docker sidecar. Navigate any website, click, type, fill forms, extra
+- `has-anonymizer` — "HaS (Hide and Seek) on-device text and image anonymization. Text: 8 languages (zh/en/fr/de/es/pt/ja/ko), open-set entit
+- `nervepay` — Full NervePay stack - identity + analytics. Register DID, sign requests with Ed25519, track ALL API usage, build reputat
+- `power-automate-mcp` — >- Connect to and operate Power Automate cloud flows via a FlowStudio MCP server. Use when asked to: list flows, read a 
+- `tezos` — Expert Tezos blockchain development guidance. Provides security-first smart contract development, FA1.2/FA2 token standa
+- `analytics-and-advisory-intelligence` — Cross-client analytics for Greek accounting firms. Surfaces trends, anomalies, and risks across financial data. Read-onl
+- `mcp-zentao-pro` — 禅道(ZenTao) MCP大模型能力扩展包。提供跨项目的数据聚合视图、一句话生成任务、无缝报工(Log Effort)、自动状态流转等四组原生能力。
+- `image-ocr-local-aipc` — > Image OCR, text recognition, extract text from image, scan document, read image text, invoice OCR, receipt OCR, contra
+- `agent-anti-false-completion` — "用于减少 AI Agent"没做却说做了""没验证却说完成了"等假完成行为的可靠性技能。通过任务约束、结果校验和执行规范，帮助 Agent 在复杂任务中保持真实执行、明确验证与可信交付。适用于代码、调试、研究、写作、规划、运维、API 集
+- `mailgun-api` — | Mailgun API integration with managed OAuth. Transactional email service for sending, receiving, and tracking emails. U
+- `reddi-humanizer` — | Remove signs of AI-generated writing from text. Use when editing or reviewing text to make it sound more natural and h
+- `layoff-72-hours` — >- Urgent, time-boxed protocol for the first 72 hours after losing a job. Covers immediate document preservation, unempl
+- `tiktok-video-scripts` — TikTok视频脚本模板库，包含10+类带货视频脚本，覆盖产品展示、开箱测评、剧情种草、对比评测等场景。使用场景：(1) TikTok带货视频脚本 (2) TikTok爆款视频模板 (3) TikTok产品展示脚本 (4) TikTok开箱
+- `opencr-skill` — Extract text from images, documents and scanned PDFs using OpenOCR - supports text detection, recognition, universal VLM
+- `deep-strategy` — You are DeepStrategy Agent, an advanced strategic AI assistant built for knowledge workers. Your core responsibilities a
+- `openclaw-skill-creator-pro` — > Teach your OpenClaw agent new tricks by creating custom skills. Use when you want your agent to do something it can't 
+- `openserv-agent-sdk` — Build and deploy autonomous AI agents using the OpenServ SDK (@openserv-labs/sdk). IMPORTANT - Always read the companion
+- `skill-expert-skills-openclaw` — | Creates, optimizes, validates, and packages AI Agent Skills (SKILL.md format). Mandatory 6-Phase workflow with quality
+- `content-remix-studio` — Transform one piece of content into platform-optimized versions for YouTube, TikTok, Twitter/X, LinkedIn, Instagram, new
+- `crypto-payments-ecommerce` — Accept crypto and stablecoin payments for e-commerce stores with self-hosted PayRam. Use when building "crypto e-commerc
+- `client-onboarding-agent` — 'Client onboarding and business diagnostic framework for AI agent deployments. Covers 4-round diagnostic process, 6 cons
+
+---
+
+
 ## v0.13.0 — 2026-06-15
 
 ### 🚀 周更：新增 100 个 Skills，总计 1909

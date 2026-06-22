@@ -1,0 +1,79 @@
+{
+  "mode": "full",
+  "campaignMeta": {
+    "id": "spring-benefit-relay-2026",
+    "title": "Spring Benefit Relay",
+    "subtitle": "Complete daily tasks and unlock final draw chances",
+    "dateRange": {
+      "start": "2026-01-20",
+      "end": "2026-02-05",
+      "display": "01/20 - 02/05"
+    }
+  },
+  "hero": {
+    "headline": "Spring Benefit Relay",
+    "subheadline": "Daily tasks unlock milestone rewards",
+    "primaryCta": {
+      "text": "Start Today",
+      "action": "scrollToTasks"
+    }
+  },
+  "tasks": [
+    {
+      "id": "daily-checkin",
+      "title": "Daily check-in",
+      "reward": "1 milestone point",
+      "state": "todo"
+    },
+    {
+      "id": "read-guide",
+      "title": "Read the campaign guide",
+      "reward": "1 draw chance",
+      "state": "done"
+    }
+  ],
+  "rewards": [
+    {
+      "id": "coupon-10",
+      "title": "$10 Coupon",
+      "type": "coupon"
+    },
+    {
+      "id": "vip-7d",
+      "title": "VIP 7 Days",
+      "type": "membership"
+    }
+  ],
+  "lottery": {
+    "enabled": true,
+    "type": "final-draw",
+    "cta": {
+      "text": "Draw Now",
+      "action": "startDraw"
+    }
+  },
+  "modules": [
+    { "id": "hero", "type": "hero-banner", "dataSource": "hero" },
+    { "id": "meta", "type": "campaign-meta", "dataSource": "campaignMeta" },
+    { "id": "tasks", "type": "task-list", "dataSource": "tasks" },
+    { "id": "draw", "type": "draw-panel", "dataSource": "lottery" },
+    { "id": "rewards", "type": "reward-list", "dataSource": "rewards" }
+  ],
+  "popups": [
+    {
+      "id": "rulePopup",
+      "trigger": "openRules"
+    },
+    {
+      "id": "rewardResultPopup",
+      "trigger": "drawSuccess"
+    }
+  ],
+  "stateMachine": {
+    "states": ["init", "taskUpdated", "chanceReady", "drawing", "resultShown"]
+  },
+  "tracking": [
+    { "event": "task_claim_click", "trigger": "click task claim button" },
+    { "event": "draw_start_click", "trigger": "click draw CTA" }
+  ]
+}

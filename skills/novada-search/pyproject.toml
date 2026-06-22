@@ -1,0 +1,29 @@
+[build-system]
+requires = ["setuptools>=68.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "novada-search"
+version = "1.0.8"
+description = "Multi-engine AI search platform for agents and humans"
+readme = "README.md"
+requires-python = ">=3.9"
+license = {text = "MIT"}
+keywords = ["search", "ai", "agent", "tavily", "scraping", "multi-engine"]
+classifiers = [
+  "Development Status :: 4 - Beta",
+  "Intended Audience :: Developers",
+  "Topic :: Internet :: WWW/HTTP :: Indexing/Search",
+  "Programming Language :: Python :: 3"
+]
+
+[project.urls]
+Homepage = "https://novada.com"
+Repository = "https://github.com/NovadaLabs/novada-search"
+Documentation = "https://github.com/NovadaLabs/novada-search#readme"
+
+[project.scripts]
+novada-search = "novada_search:main"
+
+[tool.setuptools]
+py-modules = ["novada_search", "novada_mcp_server"]

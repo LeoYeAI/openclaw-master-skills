@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=900">
+<title>Comparison Card</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    width: 900px;
+    height: 1200px;
+    overflow: hidden;
+    background: $bg_color;
+    font-family: "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans SC", sans-serif;
+  }
+
+  .card {
+    width: 900px;
+    height: 1200px;
+    background: $bg_color;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* 顶部品牌横幅 */
+  .top-banner {
+    background: $banner_bg;
+    padding: 20px 60px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-shrink: 0;
+  }
+  .banner-brand {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: #FFFFFF;
+    font-family: "SF Pro Display", "Inter", "Helvetica Neue", Arial, sans-serif;
+  }
+  .banner-badge {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: $accent_color;
+    font-family: "SF Pro Display", "Inter", "Helvetica Neue", Arial, sans-serif;
+    background: rgba(255,255,255,0.1);
+    border: 1px solid rgba(255,255,255,0.2);
+    padding: 4px 10px;
+    border-radius: 2px;
+  }
+
+  /* 标题区 */
+  .header {
+    padding: 40px 60px 0 60px;
+    flex-shrink: 0;
+  }
+  .main-title {
+    font-size: 48px;
+    font-weight: 900;
+    color: $title_color;
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+    margin-bottom: 14px;
+  }
+  .title-underline {
+    width: 56px;
+    height: 4px;
+    background: $accent_color;
+    border-radius: 2px;
+    margin-bottom: 14px;
+  }
+  .subtitle {
+    font-size: 15px;
+    color: $text_secondary;
+    line-height: 1.6;
+    max-width: 580px;
+    font-weight: 400;
+  }
+
+  /* VS 分隔 */
+  .vs-divider {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 28px 60px 24px 60px;
+    flex-shrink: 0;
+  }
+  .vs-line {
+    flex: 1;
+    height: 1px;
+    background: $divider_color;
+  }
+  .vs-badge {
+    font-size: 14px;
+    font-weight: 800;
+    letter-spacing: 0.15em;
+    color: $accent_color;
+    font-family: "SF Pro Display", "Inter", "Helvetica Neue", Arial, sans-serif;
+    background: $vs_bg;
+    padding: 6px 18px;
+    border-radius: 100px;
+    border: 1.5px solid $accent_color;
+  }
+
+  /* 对比区 */
+  .compare-section {
+    flex: 1;
+    padding: 0 60px;
+    display: flex;
+    gap: 20px;
+    overflow: hidden;
+  }
+  .compare-col {
+    flex: 1;
+    background: $col_bg;
+    border-radius: 14px;
+    padding: 32px 26px;
+    display: flex;
+    flex-direction: column;
+    border: 1px solid $col_border;
+    overflow: hidden;
+  }
+  .col-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 26px;
+    padding-bottom: 18px;
+    border-bottom: 1.5px solid $col_header_border;
+  }
+  .col-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    font-weight: 700;
+    flex-shrink: 0;
+    font-family: "SF Pro Display", "Inter", "Helvetica Neue", Arial, sans-serif;
+  }
+  .col-icon.left {
+    background: $left_color;
+    color: #FFFFFF;
+  }
+  .col-icon.right {
+    background: $right_color;
+    color: #FFFFFF;
+  }
+  .col-label {
+    font-size: 20px;
+    font-weight: 700;
+    color: $title_color;
+    line-height: 1.3;
+  }
+  .col-items {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+  }
+  .col-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    flex: 1;
+    min-height: 32px;
+  }
+  .col-item:last-child {
+    margin-bottom: 0;
+  }
+  .col-bullet {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    margin-top: 8px;
+    align-self: flex-start;
+  }
+  .col-bullet.left {
+    background: $left_color;
+  }
+  .col-bullet.right {
+    background: $right_color;
+  }
+  .col-item-text {
+    font-size: 16px;
+    font-weight: 400;
+    color: $text_primary;
+    line-height: 1.55;
+  }
+
+  /* 结论区 */
+  .conclusion {
+    margin: 24px 60px 0 60px;
+    padding: 22px 28px;
+    background: $conclusion_bg;
+    border-radius: 12px;
+    border-left: 4px solid $accent_color;
+    flex-shrink: 0;
+  }
+  .conclusion-label {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: $accent_color;
+    font-family: "SF Pro Display", "Inter", "Helvetica Neue", Arial, sans-serif;
+    margin-bottom: 8px;
+  }
+  .conclusion-text {
+    font-size: 15px;
+    font-weight: 500;
+    color: $title_color;
+    line-height: 1.55;
+  }
+
+  /* 底部 */
+  .footer {
+    padding: 24px 60px 44px 60px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-shrink: 0;
+  }
+  .footer-note {
+    font-size: 12px;
+    color: $text_muted;
+    font-family: "SF Pro Display", "Inter", "Helvetica Neue", Arial, sans-serif;
+    letter-spacing: 0.08em;
+  }
+  .footer-brand {
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: $title_color;
+    font-family: "SF Pro Display", "Inter", "Helvetica Neue", Arial, sans-serif;
+  }
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="top-banner">
+    <div class="banner-brand">$brand</div>
+    <div class="banner-badge">COMPARE</div>
+  </div>
+
+  <div class="header">
+    <div class="main-title">$title</div>
+    <div class="title-underline"></div>
+    <div class="subtitle">$subtitle</div>
+  </div>
+
+  <div class="vs-divider">
+    <div class="vs-line"></div>
+    <div class="vs-badge">VS</div>
+    <div class="vs-line"></div>
+  </div>
+
+  <div class="compare-section">
+    <div class="compare-col">
+      <div class="col-header">
+        <div class="col-icon left">A</div>
+        <div class="col-label">$left_label</div>
+      </div>
+      <div class="col-items">
+        $left_items_html
+      </div>
+    </div>
+    <div class="compare-col">
+      <div class="col-header">
+        <div class="col-icon right">B</div>
+        <div class="col-label">$right_label</div>
+      </div>
+      <div class="col-items">
+        $right_items_html
+      </div>
+    </div>
+  </div>
+
+  $conclusion_html
+
+  <div class="footer">
+    <div class="footer-note">$footer_note</div>
+    <div class="footer-brand">$brand</div>
+  </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=900">
+<title>Profile Card</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    width: 900px;
+    height: 1200px;
+    overflow: hidden;
+    background: $bg_color;
+    font-family: "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans SC", sans-serif;
+  }
+
+  .card {
+    width: 900px;
+    height: 1200px;
+    background: $bg_color;
+    position: relative;
+    overflow: hidden;
+    padding: 36px 0 60px 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 0;
+  }
+
+  /* 背景装饰 */
+  .bg-deco {
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    pointer-events: none;
+  }
+  .bg-shape {
+    position: absolute;
+    border-radius: 50%;
+    opacity: 0.05;
+    background: $accent_color;
+  }
+  .bg-shape-1 { top: -150px; left: 50%; transform: translateX(-50%); width: 500px; height: 500px; }
+  .bg-shape-2 { bottom: -80px; right: -60px; width: 250px; height: 250px; opacity: 0.04; }
+
+  /* === 上部：品牌 + 头像 + 标签 === */
+  .section-top {
+    position: relative;
+    z-index: 1;
+  }
+  .top-bar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 60px 36px 60px;
+  }
+  .brand-tag {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: $accent_color;
+    font-family: "SF Pro Display", "Inter", "Helvetica Neue", Arial, sans-serif;
+  }
+  .avatar-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 0 60px;
+  }
+  .avatar {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    background: $avatar_bg;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 48px;
+    border: 3px solid $avatar_border;
+    margin-bottom: 20px;
+    overflow: hidden;
+  }
+  .profile-name {
+    font-size: 42px;
+    font-weight: 900;
+    color: $title_color;
+    text-align: center;
+    line-height: 1.2;
+    margin-bottom: 12px;
+  }
+  .profile-title {
+    font-size: 17px;
+    font-weight: 500;
+    color: $accent_color;
+    text-align: center;
+    letter-spacing: 0.05em;
+    margin-bottom: 6px;
+  }
+  .profile-org {
+    font-size: 15px;
+    font-weight: 400;
+    color: $text_secondary;
+    text-align: center;
+  }
+  .tags-row {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    flex-wrap: wrap;
+    padding: 22px 60px 0 60px;
+  }
+  .profile-tag {
+    font-size: 12px;
+    font-weight: 500;
+    color: $accent_color;
+    background: $tag_bg;
+    padding: 7px 18px;
+    border-radius: 100px;
+    border: 1px solid $tag_border;
+  }
+
+  /* === 中部：Bio + Stats === */
+  .section-mid {
+    position: relative;
+    z-index: 1;
+  }
+  .divider {
+    margin: 0 60px 28px 60px;
+    height: 1px;
+    background: $divider_color;
+  }
+  .bio-section {
+    padding: 0 80px;
+  }
+  .bio-text {
+    font-size: 16px;
+    font-weight: 400;
+    color: $text_primary;
+    line-height: 1.85;
+    text-align: left;
+  }
+  .stats-row {
+    display: flex;
+    gap: 0;
+    margin: 28px 60px 0 60px;
+  }
+  .stat-item {
+    flex: 1;
+    text-align: center;
+    padding: 24px 0;
+    border-right: 1px solid $divider_color;
+  }
+  .stat-item:last-child {
+    border-right: none;
+  }
+  .stat-num {
+    font-size: 32px;
+    font-weight: 800;
+    color: $title_color;
+    font-family: "SF Pro Display", "Inter", "Helvetica Neue", Arial, sans-serif;
+    line-height: 1;
+    margin-bottom: 8px;
+  }
+  .stat-label {
+    font-size: 13px;
+    font-weight: 400;
+    color: $text_muted;
+    letter-spacing: 0.05em;
+  }
+
+  /* === 下部：亮点 + 底栏 === */
+  .section-bottom {
+    position: relative;
+    z-index: 1;
+  }
+  .highlights {
+    padding: 0 60px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    overflow: hidden;
+  }
+  .highlight-item {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 20px 24px;
+    background: $highlight_bg;
+    border-radius: 12px;
+    border: 1px solid $highlight_border;
+  }
+  .highlight-icon {
+    font-size: 22px;
+    flex-shrink: 0;
+  }
+  .highlight-text {
+    font-size: 16px;
+    font-weight: 500;
+    color: $title_color;
+    line-height: 1.45;
+  }
+  .footer {
+    padding: 28px 60px 0 60px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .footer-text {
+    font-size: 12px;
+    color: $text_muted;
+    font-family: "SF Pro Display", "Inter", "Helvetica Neue", Arial, sans-serif;
+    letter-spacing: 0.05em;
+  }
+  .footer-brand {
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: $accent_color;
+    font-family: "SF Pro Display", "Inter", "Helvetica Neue", Arial, sans-serif;
+  }
+
+  /* flex 间距分配：3 组之间均分剩余空间 */
+  .spacer {
+    height: 28px;
+  }
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="bg-deco">
+    <div class="bg-shape bg-shape-1"></div>
+    <div class="bg-shape bg-shape-2"></div>
+  </div>
+
+  <div class="section-top">
+    <div class="top-bar">
+      <div class="brand-tag">$brand</div>
+    </div>
+    <div class="avatar-section">
+      <div class="avatar">$avatar_html</div>
+      <div class="profile-name">$name</div>
+      <div class="profile-title">$title</div>
+      <div class="profile-org">$org</div>
+    </div>
+    <div class="tags-row">
+      $tags_html
+    </div>
+  </div>
+
+  <div class="spacer"></div>
+
+  <div class="section-mid">
+    <div class="divider"></div>
+    <div class="bio-section">
+      <div class="bio-text">$bio</div>
+    </div>
+    <div class="stats-row">
+      $stats_html
+    </div>
+  </div>
+
+  <div class="spacer"></div>
+
+  <div class="section-bottom">
+    <div class="highlights">
+      $highlights_html
+    </div>
+    <div class="footer">
+      <div class="footer-text">$footer_text</div>
+      <div class="footer-brand">$brand</div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

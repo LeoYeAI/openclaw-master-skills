@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=900">
+<title>Tech Knowledge Card</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    width: 900px;
+    height: 1200px;
+    overflow: hidden;
+    background: #F5F5F5;
+    font-family: "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans SC", sans-serif;
+  }
+
+  .card {
+    width: 900px;
+    height: 1200px;
+    background: #F5F5F5;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* 顶部黑色横幅 */
+  .top-banner {
+    background: #111111;
+    padding: 20px 60px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-shrink: 0;
+  }
+  .banner-brand {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: #FFFFFF;
+    font-family: "SF Pro Display", "Inter", "Helvetica Neue", Arial, sans-serif;
+  }
+  .banner-category {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: $accent_color;
+    font-family: "SF Pro Display", "Inter", "Helvetica Neue", Arial, sans-serif;
+    background: rgba(46,110,204,0.15);
+    border: 1px solid $accent_color;
+    padding: 4px 10px;
+    border-radius: 2px;
+  }
+
+  /* 标题区 */
+  .header {
+    padding: 44px 60px 28px 60px;
+    flex-shrink: 0;
+  }
+  .main-title {
+    font-size: 62px;
+    font-weight: 900;
+    color: #111111;
+    line-height: 1.05;
+    letter-spacing: -0.02em;
+    margin-bottom: 18px;
+  }
+  .title-underline {
+    width: 64px;
+    height: 5px;
+    background: $accent_color;
+    border-radius: 2px;
+    margin-bottom: 18px;
+  }
+  .subtitle {
+    font-size: 16px;
+    color: #555555;
+    line-height: 1.6;
+    max-width: 580px;
+    font-weight: 400;
+  }
+
+  /* 标签行 */
+  .tags-row {
+    display: flex;
+    gap: 10px;
+    padding: 0 60px 32px 60px;
+    flex-wrap: wrap;
+    flex-shrink: 0;
+  }
+  .pill-tag {
+    background: #111111;
+    color: #FFFFFF;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    padding: 6px 14px;
+    border-radius: 100px;
+    font-family: "SF Pro Display", "Inter", "Helvetica Neue", Arial, sans-serif;
+  }
+  .pill-tag-outline {
+    background: transparent;
+    color: #333333;
+    border: 1.5px solid #CCCCCC;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    padding: 5px 14px;
+    border-radius: 100px;
+    font-family: "SF Pro Display", "Inter", "Helvetica Neue", Arial, sans-serif;
+  }
+
+  /* 步骤网格 */
+  .steps-grid {
+    flex: 1;
+    padding: 0 60px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+    overflow: hidden;
+  }
+  .step-card {
+    background: #FFFFFF;
+    border-radius: 12px;
+    padding: 22px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    border: 1px solid #E8E8E8;
+    position: relative;
+    overflow: hidden;
+  }
+  .step-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: $accent_color;
+    opacity: 0;
+    transition: opacity 0.2s;
+  }
+  .step-card.highlight::before {
+    opacity: 1;
+  }
+  .step-num {
+    font-size: 42px;
+    font-weight: 900;
+    color: $accent_color;
+    line-height: 1;
+    font-family: "SF Pro Display", "Inter", "Helvetica Neue", Arial, sans-serif;
+    opacity: 0.15;
+    position: absolute;
+    top: 12px; right: 16px;
+  }
+  .step-title {
+    font-size: 18px;
+    font-weight: 700;
+    color: #111111;
+    line-height: 1.3;
+    position: relative;
+    z-index: 1;
+  }
+  .step-desc {
+    font-size: 13px;
+    color: #666666;
+    line-height: 1.6;
+    position: relative;
+    z-index: 1;
+  }
+  .step-tag {
+    display: inline-block;
+    background: $accent_color;
+    color: #FFFFFF;
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    padding: 3px 8px;
+    border-radius: 3px;
+    font-family: "SF Pro Display", "Inter", "Helvetica Neue", Arial, sans-serif;
+    align-self: flex-start;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* 底部 */
+  .footer {
+    padding: 24px 60px 44px 60px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-shrink: 0;
+  }
+  .footer-left {
+    font-size: 12px;
+    color: #999999;
+    font-family: "SF Pro Display", "Inter", "Helvetica Neue", Arial, sans-serif;
+    letter-spacing: 0.08em;
+  }
+  .footer-right {
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: #111111;
+    font-family: "SF Pro Display", "Inter", "Helvetica Neue", Arial, sans-serif;
+  }
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="top-banner">
+    <div class="banner-brand">$brand</div>
+    <div class="banner-category">$category</div>
+  </div>
+
+  <div class="header">
+    <div class="main-title">$title</div>
+    <div class="title-underline"></div>
+    <div class="subtitle">$subtitle</div>
+  </div>
+
+  <div class="tags-row">
+    $tags_html
+  </div>
+
+  <div class="steps-grid">
+    $steps_html
+  </div>
+
+  <div class="footer">
+    <div class="footer-left">$footer_note</div>
+    <div class="footer-right">$brand</div>
+  </div>
+</div>
+</body>
+</html>

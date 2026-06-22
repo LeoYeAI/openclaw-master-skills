@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=900">
+<title>Listicle Card</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    width: 900px;
+    height: 1200px;
+    overflow: hidden;
+    background: $bg_color;
+    font-family: "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans SC", sans-serif;
+  }
+
+  .card {
+    width: 900px;
+    height: 1200px;
+    background: $bg_color;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* 顶部 */
+  .top-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 40px 56px 0 56px;
+    position: relative;
+    z-index: 1;
+  }
+  .brand-tag {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: $accent_color;
+    font-family: "SF Pro Display", "Inter", "Helvetica Neue", Arial, sans-serif;
+  }
+  .count-badge {
+    font-size: 13px;
+    font-weight: 800;
+    color: #FFFFFF;
+    background: $accent_color;
+    padding: 5px 16px;
+    border-radius: 100px;
+    font-family: "SF Pro Display", "Inter", "Helvetica Neue", Arial, sans-serif;
+    letter-spacing: 0.08em;
+  }
+
+  /* 标题 */
+  .header {
+    padding: 24px 56px 0 56px;
+    position: relative;
+    z-index: 1;
+  }
+  .main-title {
+    font-size: 38px;
+    font-weight: 900;
+    line-height: 1.2;
+    color: $title_color;
+    letter-spacing: -0.02em;
+    margin-bottom: 10px;
+  }
+  .subtitle {
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 1.6;
+    color: $text_secondary;
+  }
+
+  .divider {
+    margin: 18px 56px 14px 56px;
+    height: 1px;
+    background: $divider_color;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* 列表区 */
+  .list-area {
+    flex: 1;
+    padding: 0 56px;
+    position: relative;
+    z-index: 1;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+  .list-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    padding: 13px 0;
+    border-bottom: 1px solid $item_border;
+  }
+  .list-item:last-child {
+    border-bottom: none;
+  }
+  .item-rank {
+    flex-shrink: 0;
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    background: $rank_bg;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    font-weight: 800;
+    color: $rank_color;
+    font-family: "SF Pro Display", "Inter", "Helvetica Neue", Arial, sans-serif;
+    margin-top: 2px;
+  }
+  .item-rank.top3 {
+    background: $accent_color;
+    color: #FFFFFF;
+  }
+  .item-body {
+    flex: 1;
+    min-width: 0;
+  }
+  .item-title {
+    font-size: 16px;
+    font-weight: 700;
+    color: $title_color;
+    line-height: 1.35;
+    margin-bottom: 4px;
+  }
+  .item-desc {
+    font-size: 13px;
+    font-weight: 400;
+    color: $text_secondary;
+    line-height: 1.5;
+  }
+
+  /* 底部 */
+  .footer {
+    padding: 12px 56px 36px 56px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: relative;
+    z-index: 1;
+    border-top: 1px solid $divider_color;
+  }
+  .footer-text {
+    font-size: 12px;
+    color: $text_muted;
+    font-family: "SF Pro Display", "Inter", "Helvetica Neue", Arial, sans-serif;
+    letter-spacing: 0.05em;
+  }
+  .footer-brand {
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: $accent_color;
+    font-family: "SF Pro Display", "Inter", "Helvetica Neue", Arial, sans-serif;
+  }
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="top-bar">
+    <div class="brand-tag">$brand</div>
+    <div class="count-badge">$count_label</div>
+  </div>
+
+  <div class="header">
+    <div class="main-title">$title</div>
+    <div class="subtitle">$subtitle</div>
+  </div>
+
+  <div class="divider"></div>
+
+  <div class="list-area">
+    $items_html
+  </div>
+
+  <div class="footer">
+    <div class="footer-text">$footer_text</div>
+    <div class="footer-brand">$brand</div>
+  </div>
+</div>
+</body>
+</html>

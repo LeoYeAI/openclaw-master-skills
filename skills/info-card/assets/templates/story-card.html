@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=900">
+<title>Story Card</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    width: 900px;
+    height: 1200px;
+    overflow: hidden;
+    background: $bg_color;
+    font-family: "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans SC", sans-serif;
+  }
+
+  .card {
+    width: 900px;
+    height: 1200px;
+    background: $bg_color;
+    position: relative;
+    overflow: hidden;
+    padding: 44px 56px 80px 56px;
+  }
+
+  /* 背景装饰 */
+  .bg-deco {
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    pointer-events: none;
+  }
+  .bg-shape {
+    position: absolute;
+    border-radius: 50%;
+    opacity: 0.04;
+    background: $accent_color;
+  }
+  .bg-shape-1 { bottom: -120px; left: -80px; width: 350px; height: 350px; }
+  .bg-shape-2 { top: -60px; right: -40px; width: 200px; height: 200px; opacity: 0.03; }
+
+  /* 顶部 */
+  .top-bar {
+    display: flex;
+    align-items: center;
+    margin-bottom: 32px;
+    position: relative;
+    z-index: 1;
+  }
+  .brand-tag {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: $accent_color;
+    font-family: "SF Pro Display", "Inter", "Helvetica Neue", Arial, sans-serif;
+  }
+
+  /* 引言 hook */
+  .hook-section {
+    margin-bottom: 24px;
+    position: relative;
+    z-index: 1;
+  }
+  .hook-mark {
+    font-size: 64px;
+    font-weight: 900;
+    color: $accent_color;
+    opacity: 0.2;
+    line-height: 0.6;
+    margin-bottom: 8px;
+    font-family: Georgia, "Times New Roman", serif;
+  }
+  .hook-text {
+    font-size: 28px;
+    font-weight: 800;
+    color: $title_color;
+    line-height: 1.35;
+    letter-spacing: -0.01em;
+  }
+  .hook-author {
+    font-size: 14px;
+    font-weight: 500;
+    color: $text_secondary;
+    margin-top: 12px;
+  }
+
+  .divider {
+    margin-bottom: 20px;
+    height: 1px;
+    background: $divider_color;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* 正文叙事 */
+  .story-body {
+    position: relative;
+    z-index: 1;
+  }
+  .story-paragraph {
+    font-size: 15px;
+    font-weight: 400;
+    color: $text_primary;
+    line-height: 1.9;
+    text-align: justify;
+    margin-bottom: 16px;
+  }
+
+  /* 结语引用框 */
+  .closing {
+    margin-top: 20px;
+    padding: 20px 24px;
+    background: $closing_bg;
+    border-radius: 10px;
+    border-left: 3px solid $accent_color;
+    position: relative;
+    z-index: 1;
+  }
+  .closing-text {
+    font-size: 15px;
+    font-weight: 500;
+    color: $title_color;
+    line-height: 1.7;
+    font-style: italic;
+  }
+
+  /* 底部固定在卡片底边 */
+  .footer {
+    position: absolute;
+    bottom: 32px;
+    left: 56px;
+    right: 56px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    z-index: 1;
+  }
+  .footer-text {
+    font-size: 12px;
+    color: $text_muted;
+    font-family: "SF Pro Display", "Inter", "Helvetica Neue", Arial, sans-serif;
+    letter-spacing: 0.05em;
+  }
+  .footer-brand {
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: $accent_color;
+    font-family: "SF Pro Display", "Inter", "Helvetica Neue", Arial, sans-serif;
+  }
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="bg-deco">
+    <div class="bg-shape bg-shape-1"></div>
+    <div class="bg-shape bg-shape-2"></div>
+  </div>
+
+  <div class="top-bar">
+    <div class="brand-tag">$brand</div>
+  </div>
+
+  <div class="hook-section">
+    <div class="hook-mark">"</div>
+    <div class="hook-text">$hook</div>
+    <div class="hook-author">$author</div>
+  </div>
+
+  <div class="divider"></div>
+
+  <div class="story-body">
+    $paragraphs_html
+  </div>
+
+  <div class="closing">
+    <div class="closing-text">$closing</div>
+  </div>
+
+  <div class="footer">
+    <div class="footer-text">$footer_text</div>
+    <div class="footer-brand">$brand</div>
+  </div>
+</div>
+</body>
+</html>

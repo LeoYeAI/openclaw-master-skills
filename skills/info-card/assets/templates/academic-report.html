@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=900">
+<title>Academic Report Card</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; font-feature-settings: "liga" 0, "clig" 0, "dlig" 0, "kern" 0; -webkit-font-feature-settings: "liga" 0, "clig" 0, "dlig" 0, "kern" 0; text-rendering: geometricPrecision; }
+
+  body {
+    width: 900px;
+    height: 1200px;
+    overflow: hidden;
+    background: #F5F2EB;
+    font-family: "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans SC", sans-serif;
+  }
+
+  .card {
+    width: 900px;
+    height: 1200px;
+    background: #F5F2EB;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    overflow: hidden;
+    padding: 52px 56px;
+  }
+
+  /* 顶部标题区 */
+  .header {
+    margin-bottom: 28px;
+    flex-shrink: 0;
+  }
+  .doc-meta {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 14px;
+    flex-wrap: wrap;
+  }
+  .meta-tag {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    padding: 4px 10px;
+    border-radius: 4px;
+    font-family: "SF Pro Display", "Inter", "Helvetica Neue", Arial, sans-serif;
+  }
+  .meta-tag.blue { background: #2E6ECC; color: #FFFFFF; }
+  .meta-tag.orange { background: #D94F00; color: #FFFFFF; }
+  .meta-tag.green { background: #2A8855; color: #FFFFFF; }
+  .meta-tag.gray { background: #555555; color: #FFFFFF; }
+
+  .main-title {
+    font-size: 52px;
+    font-weight: 900;
+    color: #1A1A1A;
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+    margin-bottom: 12px;
+  }
+  .title-en {
+    font-size: 16px;
+    font-weight: 400;
+    color: #888888;
+    letter-spacing: 0.08em;
+    font-family: "SF Pro Display", "Inter", "Helvetica Neue", Arial, sans-serif;
+    margin-bottom: 14px;
+  }
+
+  /* 章节分割线 */
+  .section-divider {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 14px;
+    margin-top: 8px;
+    flex-shrink: 0;
+  }
+  .section-line {
+    flex: 1;
+    height: 1px;
+    background: #BBAA95;
+  }
+  .section-label {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: #888888;
+    font-family: "SF Pro Display", "Inter", "Helvetica Neue", Arial, sans-serif;
+    white-space: nowrap;
+  }
+
+  /* 核心数据行（大数字） */
+  .stats-row {
+    display: flex;
+    gap: 0;
+    margin-bottom: 16px;
+    flex-shrink: 0;
+  }
+  .stat-item {
+    flex: 1;
+    padding: 14px 0;
+    border-right: 1px solid #BBAA95;
+    padding-right: 24px;
+    padding-left: 0;
+  }
+  .stat-item:not(:first-child) {
+    padding-left: 24px;
+  }
+  .stat-item:last-child {
+    border-right: none;
+  }
+  .stat-num {
+    font-size: 44px;
+    font-weight: 900;
+    line-height: 1;
+    margin-bottom: 5px;
+    font-family: "SF Pro Display", "Inter", "Helvetica Neue", Arial, sans-serif;
+  }
+  .stat-num.blue { color: #2E6ECC; }
+  .stat-num.orange { color: #D94F00; }
+  .stat-num.green { color: #2A8855; }
+  .stat-label {
+    font-size: 12px;
+    color: #666666;
+    line-height: 1.4;
+  }
+
+  /* 要点列表 */
+  .points-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 16px;
+    flex-shrink: 0;
+  }
+  .point-item {
+    display: flex;
+    gap: 14px;
+    align-items: flex-start;
+  }
+  .point-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #2E6ECC;
+    margin-top: 7px;
+    flex-shrink: 0;
+  }
+  .point-text {
+    font-size: 16px;
+    color: #333333;
+    line-height: 1.6;
+    flex: 1;
+  }
+  .point-text strong {
+    color: #1A1A1A;
+    font-weight: 700;
+  }
+
+  /* 警示/引用块 */
+  .alert-block {
+    border-left: 4px solid #D94F00;
+    background: rgba(217, 79, 0, 0.06);
+    padding: 14px 18px;
+    border-radius: 0 8px 8px 0;
+    margin-bottom: 14px;
+    flex-shrink: 0;
+  }
+  .alert-block.blue {
+    border-left-color: #2E6ECC;
+    background: rgba(46, 110, 204, 0.06);
+  }
+  .alert-title {
+    font-size: 12px;
+    font-weight: 700;
+    color: #D94F00;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    font-family: "SF Pro Display", "Inter", "Helvetica Neue", Arial, sans-serif;
+    margin-bottom: 6px;
+  }
+  .alert-block.blue .alert-title { color: #2E6ECC; }
+  .alert-text {
+    font-size: 14px;
+    color: #444444;
+    line-height: 1.6;
+    font-family: "SF Mono", "Menlo", "Monaco", "Courier New", monospace;
+  }
+
+  /* 代码块 */
+  .code-block {
+    background: #1A1A1A;
+    border-radius: 8px;
+    padding: 14px 18px;
+    margin-bottom: 20px;
+    flex-shrink: 0;
+  }
+  .code-text {
+    font-size: 13px;
+    color: #7DD3FC;
+    line-height: 1.7;
+    font-family: "SF Mono", "Fira Code", "Fira Mono", "Roboto Mono", monospace;
+    white-space: pre-wrap;
+    word-break: break-all;
+  }
+
+  /* 两列对比 */
+  .compare-row {
+    display: flex;
+    gap: 14px;
+    margin-bottom: 20px;
+    flex-shrink: 0;
+  }
+  .compare-col {
+    flex: 1;
+    background: #FFFFFF;
+    border-radius: 10px;
+    padding: 16px 18px;
+  }
+  .compare-col.dark { background: #1A1A1A; }
+  .compare-title {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+    font-family: "SF Pro Display", "Inter", "Helvetica Neue", Arial, sans-serif;
+  }
+  .compare-col.dark .compare-title { color: #888888; }
+  .compare-col:not(.dark) .compare-title { color: #888888; }
+  .compare-item {
+    font-size: 14px;
+    line-height: 1.6;
+    margin-bottom: 4px;
+  }
+  .compare-col.dark .compare-item { color: #CCCCCC; }
+  .compare-col:not(.dark) .compare-item { color: #333333; }
+
+  /* 内容区 */
+  .content-body {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    gap: 6px;
+  }
+
+  /* 底部 */
+  .footer {
+    margin-top: auto;
+    padding-top: 20px;
+    border-top: 1px solid #BBAA95;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-shrink: 0;
+  }
+  .footer-brand {
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: #555555;
+    font-family: "SF Pro Display", "Inter", "Helvetica Neue", Arial, sans-serif;
+  }
+  .footer-note {
+    font-size: 11px;
+    color: #999999;
+    font-family: "SF Pro Display", "Inter", "Helvetica Neue", Arial, sans-serif;
+  }
+</style>
+</head>
+<body>
+<div class="card">
+  <!-- 标题区 -->
+  <div class="header">
+    <div class="doc-meta">$meta_tags_html</div>
+    <div class="main-title">$title</div>
+    <div class="title-en">$title_en</div>
+  </div>
+
+  <!-- 数据统计行 -->
+  $stats_html
+
+  <!-- 内容区（自动填充剩余空间） -->
+  <div class="content-body">
+    $section1_html
+    $section2_html
+  </div>
+
+  <!-- 底部 -->
+  <div class="footer">
+    <div class="footer-brand">$brand</div>
+    <div class="footer-note">$footer_note</div>
+  </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=900">
+<title>Night Essay Card</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;700;900&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    width: 900px;
+    height: 1200px;
+    overflow: hidden;
+    background: $bg_color;
+  }
+
+  .card {
+    width: 900px;
+    height: 1200px;
+    background: $bg_gradient;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* 纸纹噪点 */
+  .card::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+    pointer-events: none;
+    opacity: 0.4;
+  }
+
+  /* 左侧装饰线 */
+  .side-line {
+    position: absolute;
+    left: 108px;
+    top: 0;
+    width: 1px;
+    height: 100%;
+    background: linear-gradient(180deg, transparent 0%, $line_color 25%, $line_color 75%, transparent 100%);
+  }
+
+  /* 顶部元信息 */
+  .top-meta {
+    position: absolute;
+    top: 48px;
+    left: 132px;
+    right: 132px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .series-tag {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: $accent_color;
+    font-family: "SF Pro Display", "Inter", "Helvetica Neue", Arial, sans-serif;
+  }
+  .date-tag {
+    font-size: 11px;
+    font-weight: 400;
+    color: $text_muted;
+    font-family: "SF Mono", "Fira Code", monospace;
+    letter-spacing: 0.05em;
+  }
+
+  /* 内容主区 */
+  .content-main {
+    width: 540px;
+    margin-left: -48px;
+    margin-top: 20px;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* 标题 */
+  .essay-title {
+    font-size: 46px;
+    font-weight: 900;
+    color: $title_color;
+    line-height: 1.2;
+    letter-spacing: 0.02em;
+    margin-bottom: 14px;
+    font-family: "Noto Serif SC", "Source Han Serif SC", "SimSun", "PingFang SC", serif;
+  }
+  .essay-subtitle {
+    font-size: 15px;
+    color: $text_muted;
+    line-height: 1.6;
+    font-weight: 400;
+    font-style: italic;
+    margin-bottom: 28px;
+    font-family: "PingFang SC", "Hiragino Sans GB", "Noto Sans SC", sans-serif;
+  }
+
+  /* 分隔 */
+  .divider {
+    width: 32px;
+    height: 1.5px;
+    background: $accent_color;
+    margin-bottom: 28px;
+    opacity: 0.5;
+  }
+
+  /* 正文 */
+  .essay-body {
+    width: 100%;
+  }
+  .essay-paragraph {
+    font-size: 16.5px;
+    color: $text_primary;
+    line-height: 2.1;
+    margin-bottom: 10px;
+    text-align: justify;
+    font-family: "Noto Serif SC", "Source Han Serif SC", "PingFang SC", serif;
+  }
+  .essay-paragraph:first-child {
+    text-indent: 2em;
+  }
+  .essay-paragraph:last-child {
+    margin-bottom: 0;
+  }
+  .essay-paragraph em {
+    font-style: italic;
+    color: $accent_color;
+  }
+  .essay-paragraph strong {
+    font-weight: 700;
+    color: $title_color;
+  }
+
+  /* 引用块 */
+  .essay-quote {
+    border-left: 2px solid $accent_color;
+    padding: 8px 16px;
+    margin: 6px 0 10px 0;
+    background: $quote_bg;
+    border-radius: 0 3px 3px 0;
+  }
+  .essay-quote p {
+    font-size: 14.5px;
+    color: $text_secondary;
+    line-height: 1.9;
+    font-style: italic;
+    font-family: "Noto Serif SC", "Source Han Serif SC", "PingFang SC", serif;
+  }
+
+  /* 底部 */
+  .footer {
+    position: absolute;
+    bottom: 44px;
+    left: 132px;
+    right: 132px;
+    padding-top: 14px;
+    border-top: 1px solid $line_color;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+  }
+  .footer-left {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+  .footer-author {
+    font-size: 12px;
+    font-weight: 600;
+    color: $text_secondary;
+    letter-spacing: 0.08em;
+  }
+  .footer-tagline {
+    font-size: 10px;
+    color: $text_muted;
+    letter-spacing: 0.03em;
+    opacity: 0.7;
+  }
+  .footer-right {
+    font-size: 9px;
+    font-weight: 600;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: $text_muted;
+    font-family: "SF Pro Display", "Inter", "Helvetica Neue", Arial, sans-serif;
+    opacity: 0.6;
+  }
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="side-line"></div>
+
+  <!-- 顶部元信息 -->
+  <div class="top-meta">
+    <div class="series-tag">$series_tag</div>
+    <div class="date-tag">$date</div>
+  </div>
+
+  <!-- 内容主区（垂直居中） -->
+  <div class="content-main">
+    <div class="essay-title">$title</div>
+    <div class="essay-subtitle">$subtitle</div>
+    <div class="divider"></div>
+    <div class="essay-body">
+      $body_html
+    </div>
+  </div>
+
+  <!-- 底部 -->
+  <div class="footer">
+    <div class="footer-left">
+      <div class="footer-author">$footer_author</div>
+      <div class="footer-tagline">$footer_tagline</div>
+    </div>
+    <div class="footer-right">$footer_brand</div>
+  </div>
+</div>
+</body>
+</html>

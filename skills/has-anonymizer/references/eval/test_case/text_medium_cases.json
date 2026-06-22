@@ -1,0 +1,520 @@
+{
+  "cases": [
+    {
+      "id": "zh-medium-01",
+      "language": "zh-CN",
+      "text": "上周三下午，客服二组在处理退款工单 TK-20260315-042 时发现该工单被反复转派了三次但始终没有最终归口。根据系统备注，最初的投诉由用户在 APP 端提交，原因是签收当天蓝牙耳机出现充电异常，连续三次充满后仅能使用不到两小时。一组的同事尝试过远程指导恢复出厂设置，但问题并未解决，随后建议走换货流程。组长在内部沟通群里确认情况后，将该工单重新指派给售后专员李明负责后续跟进。工单附件中记录了李明的直拨手机号 13912345678，用户备注希望在下午三点以后再联系，因为上午通常在开会，短信回复也比较慢。由于距首次投诉已超过 72 小时，按照服务承诺应优先在次日上午安排电话确认，并将处理进展同步更新到工单备注栏。主管要求本周五之前完成闭环，如果涉及产品质量问题还需同步通知供应链团队做批次排查。",
+      "types": [
+        "人名",
+        "电话号码"
+      ],
+      "expected_entities": {
+        "人名": [
+          "李明"
+        ],
+        "电话号码": [
+          "13912345678"
+        ]
+      }
+    },
+    {
+      "id": "zh-medium-02",
+      "language": "zh-CN",
+      "text": "本季度产品改版计划已经进入设计评审阶段。上周五的跨部门会议上，前端组提出希望在四月底之前完成首页信息流的改版上线，但设计侧目前只完成了移动端的视觉定稿，桌面端的交互方案还在迭代中。会上确定由产品经理张婷负责协调排期冲突，她会在本周内把修订后的里程碑计划发给各方确认。如果需要提前获取高保真原型图或组件标注文件，可以发邮件到 ting.zhang@example.com 申请权限，张婷会在收到后一个工作日内回复。后端接口方面，用户画像和推荐模块的联调窗口目前排在五月第二周，如果前端进度提前，需要在四月中旬就启动联调环境搭建。设计团队建议在正式上线前安排两轮用户可用性测试，测试人群从内部灰度用户中抽取，每轮不少于 20 人。会议结论已整理到飞书文档中，各组本周内完成响应。",
+      "types": [
+        "人名",
+        "邮箱"
+      ],
+      "expected_entities": {
+        "人名": [
+          "张婷"
+        ],
+        "邮箱": [
+          "ting.zhang@example.com"
+        ]
+      }
+    },
+    {
+      "id": "zh-medium-03",
+      "language": "zh-CN",
+      "text": "法务部本周需要将劳动仲裁答辩状的正式文本和相关证据材料寄出。这批材料总共有三份，分别对应三位前员工提出的加班工资争议。其中第一份材料涉及的争议金额最大，证据附件也最多，需要额外准备两套副本供仲裁庭存档。行政助理已经确认了快递账号和发件流程，但收件信息还差一位当事人的最新地址。经过人事核实后确认，王磊目前的收件地址已更新为上海市浦东新区丁香路88号，旧办公室那边已经没有人代收个人快件了。法务同事提醒，所有寄出材料的封面页上不应出现非当事人的个人信息，回执单据需要单独扫描归档到案件文件夹中。快递建议选择当日达或次日达的方式，并要求签收时拍照留底，以便在仲裁庭上作为送达回证使用。寄出前请再次核对材料清单和收件信息，避免遗漏或寄错地址。",
+      "types": [
+        "人名",
+        "地址"
+      ],
+      "expected_entities": {
+        "人名": [
+          "王磊"
+        ],
+        "地址": [
+          "上海市浦东新区丁香路88号"
+        ]
+      }
+    },
+    {
+      "id": "zh-medium-04",
+      "language": "zh-CN",
+      "text": "研发区的门禁权限调整申请本周二开始集中批处理。物业管理系统里累积了十二条待审批记录，其中大部分是新入职员工的初始权限开通，还有几条是跨楼层访问权限的临时追加。安全运维在逐条复核时注意到，有一条记录的申请描述不够完整——只写了「恢复权限」，没有说明原因和范围。经过与人事确认，这条记录对应的是星河科技派驻到联合实验室的陈雪，工号 EMP-2048。她之前因为项目阶段调整被临时冻结了研发区和机房的通行权限，现在项目重新启动，需要恢复原有的全部区域访问。安全运维要求补充申请表中的审批人和有效期字段，并在通行记录里标注本次恢复的原因编码。权限变更生效后还需要回邮件给人事确认，确保门禁卡的物理状态与系统记录一致。整批权限申请预计在本周四之前全部处理完毕。",
+      "types": [
+        "人名",
+        "组织机构",
+        "工号"
+      ],
+      "expected_entities": {
+        "人名": [
+          "陈雪"
+        ],
+        "组织机构": [
+          "星河科技"
+        ],
+        "工号": [
+          "EMP-2048"
+        ]
+      }
+    },
+    {
+      "id": "zh-medium-05",
+      "language": "zh-CN",
+      "text": "仓库管理组在上午的分拣会上通报了本周的出库异常情况。三月以来，B 区仓库的订单拣货准确率从 99.2% 下降到了 97.8%，主要集中在生鲜品类的温控标签缺失问题上。运营负责人要求从本周起对所有生鲜订单在封箱前增加一道核验步骤，逐件扫码确认温控标签是否粘贴到位。在此过程中还发现一笔优先级较高的订单需要特别处理——订单号 ORD-20260320-018 是一批实验设备的紧急调拨件，收货方指定由赵敏签收，不接受代签。仓库调度已联系承运方确认到站时间预计在明天下午两点左右，如果赵敏当时不在场需要提前改约。司机到站前应先确认交付窗口是否仍然有效，避免到了之后无人接收又要返回站点重新安排第二天派送。出库异常的整改报告需要在本月底之前提交给运营总监。",
+      "types": [
+        "人名",
+        "订单号"
+      ],
+      "expected_entities": {
+        "人名": [
+          "赵敏"
+        ],
+        "订单号": [
+          "ORD-20260320-018"
+        ]
+      }
+    },
+    {
+      "id": "zh-medium-06",
+      "language": "zh-CN",
+      "text": "财务部门在月末批量审核报销单据时发现了几起填写不规范的情况。最常见的问题是出差住宿费的发票抬头与报销申请人不一致，另外还有几笔餐费报销超出了差旅标准但没有附主管审批意见。复核人员特别标注了一笔报销单需要退回修改：刘洋提交的差旅报销申请中，把收款银行卡号 6222021234567890123 直接写进了申请表的备注栏，而不是填在系统的收款账户字段里。这样做的问题是备注栏内容会出现在审批流的邮件通知中，意味着每一级审批人的邮箱里都会留下一份含有完整卡号的邮件记录。财务主管提醒，以后所有收款信息必须通过系统的加密字段录入，不要再写进任何自由文本区域。刘洋的这笔报销已经退回要求重新提交，同时需要请 IT 协助检查已发出的审批通知邮件是否可以从邮件服务器上批量清理。",
+      "types": [
+        "人名",
+        "银行卡号"
+      ],
+      "expected_entities": {
+        "人名": [
+          "刘洋"
+        ],
+        "银行卡号": [
+          "6222021234567890123"
+        ]
+      }
+    },
+    {
+      "id": "zh-medium-07",
+      "language": "zh-CN",
+      "text": "公司差旅服务台收到了一个改签申请的加急工单。由于客户方临时将原定于下周二的技术交流会推迟到了周四，对应的出差行程需要全部顺延两天。差旅助理在操作改签时发现，航空公司的系统要求重新验证乘客信息，主要是因为原始订票记录中的证件有效期即将到期。系统提示乘客周宁的护照号 E12345678 对应的有效期截止到今年六月底，虽然在出行日期范围内仍然有效，但部分航司对剩余有效期不足六个月的证件会触发额外审核。差旅助理已经把这个情况通知了周宁，建议他确认证件更新进度，如果在出发前完成换证就需要同步更新差旅系统里的证件信息。改签本身的费用差价为 320 元，按照规定由部门预算承担，已提交审批等待主管确认。机票改签的操作窗口截止到本周五下午六点，逾期将产生额外手续费。",
+      "types": [
+        "人名",
+        "护照号"
+      ],
+      "expected_entities": {
+        "人名": [
+          "周宁"
+        ],
+        "护照号": [
+          "E12345678"
+        ]
+      }
+    },
+    {
+      "id": "zh-medium-08",
+      "language": "zh-CN",
+      "text": "园区物业在今天上午的早会上通报了近期访客车辆管理的改进事项。由于地下停车场 B 区正在施工改造，临时访客车位从原来的 40 个缩减到了 25 个，导致上周连续三天出现访客无车位可停的情况，有两位来访的合作伙伴不得不在园区外公共停车场步行十分钟才到达会议楼。为了缓解这个问题，物业决定在 A 区划出 10 个临时车位专供访客使用，有效期到施工结束。同时更新访客登记流程——接待人需要在访客到达前一天通过内部系统提交车辆信息。今天的预登记记录中有一条来自研发部的申请，接待人注明来访者是合作方工程师孙浩，驾驶车牌为京A12345的深灰色大众帕萨特，预计上午十点到达。安保前台在车辆进场时只需核对预登记信息放行，不再需要现场手写登记单，交接班时也不保留含车牌号的纸质记录。",
+      "types": [
+        "人名",
+        "车牌号"
+      ],
+      "expected_entities": {
+        "人名": [
+          "孙浩"
+        ],
+        "车牌号": [
+          "京A12345"
+        ]
+      }
+    },
+    {
+      "id": "zh-medium-09",
+      "language": "zh-CN",
+      "text": "人事部门正在进行本月新入职员工的材料复核。按照集团的合规要求，所有入职材料必须在员工报到后五个工作日内完成三级审核——用人部门初审、人事专员复核、合规组终审。目前这一批共有八位新员工的材料在走流程，大部分已经完成了前两级审核，只剩下合规终审环节。复核过程中发现一处需要修正的地方：林晓的入职登记表上身份证号填写为 11010119900101999X，但提交的身份证复印件扫描质量偏低，末位的 X 在系统 OCR 识别时被误读成了数字 8。人事专员已经与林晓本人电话确认了正确号码，并在系统中手动修正。合规组提醒，身份证号这类证件信息只用于背调阶段的核验和社保开户登记，复核完成后原始扫描件应移入加密档案库，不要保留在共享文件夹或邮件附件中。整理新员工名册的对外版本时，需要先做脱敏处理再分发给其他部门。",
+      "types": [
+        "人名",
+        "身份证号"
+      ],
+      "expected_entities": {
+        "人名": [
+          "林晓"
+        ],
+        "身份证号": [
+          "11010119900101999X"
+        ]
+      }
+    },
+    {
+      "id": "zh-medium-10",
+      "language": "zh-CN",
+      "text": "技术沙龙筹备组在这周的协调会上确认了嘉宾邀约和场地布置的最新进展。目前已有六位嘉宾确认出席，其中两位来自外部合作企业，需要提前办理园区访客通行证。场地方面，三楼多功能厅的灯光和音响设备已经完成检修，但投影幕布的遥控器电池需要更换，行政组会在活动前一天处理。关于线上直播的安排，运营组建议用公司的视频号做同步推流，预计观看人数在 200 到 500 之间。活动当天的签到和嘉宾接待由吴倩统筹负责，如果有关于议程时间调整、展位安排或茶歇方面的问题，可以添加她的微信号 wq_test_2026 直接沟通。吴倩会在签到开始前两小时把会议链接和签到二维码单独发送到筹备群里。对外宣传物料上只列活动官方联系邮箱，不要出现个人的联系方式。筹备组还讨论了活动后的内容整理计划，包括演讲录像剪辑和要点摘要的发布节奏。",
+      "types": [
+        "人名",
+        "社交账号"
+      ],
+      "expected_entities": {
+        "人名": [
+          "吴倩"
+        ],
+        "社交账号": [
+          "wq_test_2026"
+        ]
+      }
+    },
+    {
+      "id": "zh-medium-11",
+      "language": "zh-CN",
+      "text": "宽带运维团队在处理本月的用户故障工单时，发现有一组连续的断线投诉集中在同一个接入层交换机端口上。初步排查显示该交换机固件版本偏旧，在高并发时段存在已知的端口震荡问题。运维工程师远程登录到接入设备后确认了故障端口的状态日志，发现近七天内该端口累计重连超过 200 次。工单系统匹配到的受影响用户中，赵杰的投诉频率最高，过去两周已经报修了四次。根据装机记录，赵杰家的宽带终端设备序列号为 SN-A9K2-7781，绑定的公网 IP 地址是 203.0.113.17。工程师判断问题根因不在用户侧设备上，而是接入层交换机需要升级固件。已经提交了固件升级申请，预计在本周末维护窗口期间实施。升级完成后需要主动回访受影响用户，确认断线问题是否彻底解决，并在工单中闭环记录处理结论。",
+      "types": [
+        "人名",
+        "IP地址",
+        "设备标识"
+      ],
+      "expected_entities": {
+        "人名": [
+          "赵杰"
+        ],
+        "IP地址": [
+          "203.0.113.17"
+        ],
+        "设备标识": [
+          "SN-A9K2-7781"
+        ]
+      }
+    },
+    {
+      "id": "zh-medium-12",
+      "language": "zh-CN",
+      "text": "呼吸内科病区今天上午的交接班会议按照惯例在八点准时开始。夜班值班护士汇报了过夜期间的重点巡查情况：三楼西区共有 28 位在院患者，夜间有两位患者出现了发热症状，已按医嘱给予退热处理并记录在护理日志中。其中一位是术后第三天的患者韩梅，腕带编号 PT-99381，凌晨三点体温升至 38.4°C，给予物理降温后四十分钟回落到 37.6°C，目前状态平稳。主治医生在晨查房时会重点关注她的恢复情况，如果体温再次反复可能需要调整抗感染方案。另外，昨天新收治了两位患者，床位信息已更新到电子白板上，护士站的排班也做了相应调整。交接班记录提醒，本周四有一批医疗耗材供应商要来院做产品演示，科室会整理部分典型案例作为讨论素材，但发给外部供应商的版本只保留病程讨论和处理结论，不能包含任何患者的身份信息或腕带编号。",
+      "types": [
+        "人名",
+        "患者编号"
+      ],
+      "expected_entities": {
+        "人名": [
+          "韩梅"
+        ],
+        "患者编号": [
+          "PT-99381"
+        ]
+      }
+    },
+    {
+      "id": "zh-medium-13",
+      "language": "zh-CN",
+      "text": "中介在整理本周的租房签约进度时发现，有三套房源的签约流程都卡在了付款确认环节。其中两套是因为租客的公司转账审批流程还没走完，预计下周一可以到款。另外一套的情况有些特殊——房东和租客双方已经就租期、押金和维修责任达成一致，但房东对支付方式有额外要求。根据沟通记录，房东许晨希望租客把首月租金和押金合并后直接打到其个人银行账号 6217003810045219988，不走中介的托管账户。中介经理认为这种方式不符合公司的资金监管流程，建议还是通过平台代收后再转付给房东。目前双方还在协商这个问题，中介已经把平台代收的手续费减免政策发给了许晨供参考。如果周末之前能达成一致，下周一就可以安排正式签约。内部台账只需记录签约状态和到款情况，不应在共享文档中保留房东的原始银行账号。",
+      "types": [
+        "人名",
+        "账号"
+      ],
+      "expected_entities": {
+        "人名": [
+          "许晨"
+        ],
+        "账号": [
+          "6217003810045219988"
+        ]
+      }
+    },
+    {
+      "id": "zh-medium-14",
+      "language": "zh-CN",
+      "text": "法务台账的月度清理会议上，团队逐一过了一遍当前在途合同的状态。本月共有十七份合同处于不同阶段，其中五份在等待对方盖章回寄，三份在内部法务审阅中，其余九份已经归档完毕。沟通效率最低的是一份与境外供应商的技术许可协议，双方在知识产权归属条款上已经来回修改了五轮，预计还需要两到三周才能定稿。另外，唐静负责跟进的那份服务外包框架合同——合同编号 CT-2026-0441——上周已经完成了对方的签章流程，对方通过快递把双签原件寄回，法务助理在周三收到后已完成归档扫描。唐静接下来需要把合同起止日期和关键条款摘要更新到项目管理系统中，供业务组在执行阶段查阅。转给其他组查看时只附摘要信息，不应在转发正文里保留完整合同编号和签约方的详细联系人信息。",
+      "types": [
+        "人名",
+        "合同编号"
+      ],
+      "expected_entities": {
+        "人名": [
+          "唐静"
+        ],
+        "合同编号": [
+          "CT-2026-0441"
+        ]
+      }
+    },
+    {
+      "id": "zh-medium-15",
+      "language": "zh-CN",
+      "text": "每月的发票核销工作通常在月初第一周集中处理。财务组的核销流程分三步：先由提交人上传电子发票和对应的费用说明，然后由财务专员逐张验证发票真伪和抬头信息，最后与报销系统中的对应记录做金额匹配。本月核销量比上月增加了约 15%，主要是因为上季度积压了一批差旅报销没有及时清理。在这批积压中，有一张发票引起了核销人员的注意：高原提交的一张增值税普通发票，发票编号 INV-2026-11873，金额为 2860 元，备注栏写的是「技术咨询服务费」。核销人员在税务验证平台上查询后发现这张发票的开票日期与费用发生日期相差超过 90 天，按照公司财务制度需要补交一份延迟报销说明。财务组已经通知高原补充材料，预计在本周内可以完成核销。核销摘要归档时只需说明已处理状态和审核结论，不需要在归档摘要中展示原始票据编号。",
+      "types": [
+        "人名",
+        "发票号"
+      ],
+      "expected_entities": {
+        "人名": [
+          "高原"
+        ],
+        "发票号": [
+          "INV-2026-11873"
+        ]
+      }
+    },
+    {
+      "id": "zh-medium-16",
+      "language": "zh-CN",
+      "text": "客服质检组在上周的升级工单回顾中，梳理了九月中旬以来所有从一线升级至二线的工单。总量共 47 件，其中 31 件在二线处理完毕并已闭环，12 件仍在跟进中，还有 4 件因为需要技术侧介入而转到了工程支持组。质检组重点看了其中三件处理时间最长的工单，分析延迟原因。排在第一位的是陈诺关联的升级工单，案例编号 CASE-2026-0915，该工单从一线升级至今已经超过十四个工作日。延迟的主要原因是涉及到的技术问题需要联合产品组和运维组共同排查，三方排期对齐花了较多时间。目前根因已经定位到了后端缓存层的一个竞态条件，修复补丁正在测试环境验证中，预计本周可以部署到生产环境。部署完成后需要联系陈诺确认问题是否彻底解决，并完成用户满意度回访。质检报告在跨团队同步时只展示统计数据和改进建议，不需要列出完整的案例编号和关联用户信息。",
+      "types": [
+        "人名",
+        "案件编号"
+      ],
+      "expected_entities": {
+        "人名": [
+          "陈诺"
+        ],
+        "案件编号": [
+          "CASE-2026-0915"
+        ]
+      }
+    },
+    {
+      "id": "zh-medium-17",
+      "language": "zh-CN",
+      "text": "采购部在进行新一轮供应商资质审核时，需要核验每家供应商提交的营业执照、税务登记信息和银行开户证明。本轮审核涵盖了十二家候选供应商，其中八家是已有合作关系的续期审核，另外四家是新引入的候选方。审核流程要求每位采购专员至少负责三家，并在系统里逐项填写核验结论。负责消耗品品类的采购专员在核查第三家供应商时注意到一处异常：由马可提交的供应商资料中，统一社会信用代码填写为 91310110MA1K3F8Q2L，但营业执照扫描件上该编码的第九位数字不太清晰，看起来像是 K 也像是 R。专员已经联系马可要求重新提交一份高清扫描件进行确认。在此期间这家供应商的审核状态暂时标记为「待补充材料」。审核完成后的供应商入库清单对外共享时，需要隐去具体的税号和联系人信息，只保留公司名称和审核通过状态。",
+      "types": [
+        "人名",
+        "税号"
+      ],
+      "expected_entities": {
+        "人名": [
+          "马可"
+        ],
+        "税号": [
+          "91310110MA1K3F8Q2L"
+        ]
+      }
+    },
+    {
+      "id": "zh-medium-18",
+      "language": "zh-CN",
+      "text": "本季度的城市创意市集将在下月初正式开放报名。根据活动组委会公布的方案，这次市集选址在市中心的滨河文创园区，预计设置 80 到 100 个摊位，分为手作工艺、独立设计、本地美食和互动体验四个主题区域。市集时间安排在每周六和周日的上午十点到下午六点，持续三个完整周末。目前已经有超过 200 个团队和个人提交了摊位申请，组委会将根据产品类型多样性和过往参展经验综合筛选，预计在报名截止后一周内公布入选名单。入选摊主需要自行准备展台搭建和产品陈列所需的物料，组委会负责提供统一的电力接口和废弃物回收服务。现场将配备流动安保和医疗急救站，并设置三个公共卫生间服务点。有关活动详细规则和报名入口的信息会在本周内发布到组委会的官方公众号上，届时也会同步发送到各社区创业服务群。",
+      "types": [
+        "人名",
+        "电话号码",
+        "地址"
+      ],
+      "expected_entities": {
+        "人名": [],
+        "电话号码": [],
+        "地址": []
+      }
+    },
+    {
+      "id": "en-medium-01",
+      "language": "en",
+      "text": "The accounts payable team escalated a payment discrepancy that had been open for nearly two weeks without resolution. The original issue was flagged during a routine batch reconciliation when the system detected a mismatch between the approved reimbursement amount and the actual disbursement recorded by the bank. After reviewing the transaction logs, the team traced the discrepancy to a manual entry error in the wire transfer instructions — the intermediary bank code had been copied from an outdated template. Ryan Cooper, who submitted the original reimbursement request, confirmed during a follow-up call that the routing number on file should be 021000021 and that the funds were intended for a domestic account. The corrected transfer has been resubmitted and is currently awaiting clearance, which typically takes one to two business days. The finance operations manager has asked the team to update their reference templates this quarter to prevent similar issues and to include a secondary verification step for any manual wire transfers exceeding five thousand dollars.",
+      "types": [
+        "person name",
+        "routing number"
+      ],
+      "expected_entities": {
+        "person name": [
+          "Ryan Cooper"
+        ],
+        "routing number": [
+          "021000021"
+        ]
+      }
+    },
+    {
+      "id": "en-medium-02",
+      "language": "en",
+      "text": "The quarterly account health review surfaced several cases where customer records had not been updated following recent subscription changes. Most of these were minor — expired promotional codes that should have been removed, or plan tier labels that still reflected last quarter's naming convention. However, one case required direct follow-up with the customer success team. The record for Nina Patel, associated with customer ID CUST-884201, showed an active enterprise subscription but had no designated billing contact on file. This typically happens when the original contract signer leaves the client organization and the transition paperwork is not completed. The customer success manager reached out to the client's new operations lead to confirm the current billing contact and verify that the invoicing address is still correct. In the meantime, the system has flagged the account to prevent any automated payment retries until the contact information is updated. Future status updates shared with partner teams should reference only the account health status and resolution steps, not the raw customer identifier.",
+      "types": [
+        "person name",
+        "customer ID"
+      ],
+      "expected_entities": {
+        "person name": [
+          "Nina Patel"
+        ],
+        "customer ID": [
+          "CUST-884201"
+        ]
+      }
+    },
+    {
+      "id": "en-medium-03",
+      "language": "en",
+      "text": "The regional distribution center reported that a batch of shipments dispatched last Thursday experienced unexpected delays due to a customs hold at the transit hub. Out of the forty-seven packages in that batch, forty-four have since cleared customs and are back on schedule, but three remain held pending additional documentation. The logistics coordinator has been working with the customs broker to expedite clearance, and two of the three are expected to be released by end of day. The remaining package is a replacement unit for a laboratory instrument and requires a separate import classification code that was not included in the original shipping manifest. The recipient, Daniel Kim, has been notified about the delay and was given the tracking number ZX204668913US to monitor the shipment status directly. The customs broker estimates clearance will take an additional two to three business days once the corrected documentation is submitted. The warehouse team has already prepared the updated classification paperwork and will submit it through the broker's electronic filing system this afternoon.",
+      "types": [
+        "person name",
+        "shipment tracking number"
+      ],
+      "expected_entities": {
+        "person name": [
+          "Daniel Kim"
+        ],
+        "shipment tracking number": [
+          "ZX204668913US"
+        ]
+      }
+    },
+    {
+      "id": "en-medium-04",
+      "language": "en",
+      "text": "The claims processing team has been reviewing a backlog of property damage reports submitted during the early March storm season. Most of the new claims involve minor wind damage to roofing and siding, and the adjusters have been able to process them within the standard five-day turnaround. One claim, however, required additional investigation because the reported damage exceeded the threshold for expedited review. Olivia Brooks filed the claim under insurance policy number POL-77-AC-20481, reporting significant water damage to a finished basement after a sump pump failure coincided with heavy rainfall. The adjuster who conducted the on-site inspection confirmed visible water damage to drywall, flooring, and several pieces of furniture, and recommended approving the claim for the full assessed amount. The claims supervisor has signed off on the assessment, and the settlement offer is being prepared for delivery to the policyholder. The internal case summary shared with the underwriting team for loss-ratio reporting should describe the damage category and resolution outcome but should not carry the raw policy number or personal contact details.",
+      "types": [
+        "person name",
+        "insurance policy number"
+      ],
+      "expected_entities": {
+        "person name": [
+          "Olivia Brooks"
+        ],
+        "insurance policy number": [
+          "POL-77-AC-20481"
+        ]
+      }
+    },
+    {
+      "id": "en-medium-05",
+      "language": "en",
+      "text": "Corporate travel recently processed a batch of itinerary changes triggered by the rescheduling of the annual Asia-Pacific partner summit. The event was originally set for the last week of April but has been moved to mid-May to accommodate a scheduling conflict with two keynote speakers. As a result, twenty-three employee travel bookings need to be modified, including flights, hotel reservations, and ground transportation. The travel coordinator has been working through the list in order of departure date proximity. Most changes have been straightforward — same routing with shifted dates and minimal fare differences. One booking, however, requires special attention because it involves a multi-city itinerary with a stopover that falls on a weekend. Ethan Cole's reservation, referenced under booking code BR7K2P, includes flights from San Francisco to Tokyo and then onward to Singapore, with a planned weekend layover in Tokyo for client meetings. Shifting the entire itinerary by three weeks changes the fare class availability, and the coordinator is waiting for approval on the fare difference before confirming the rebooking. The deadline for rebooking is this Friday at noon Pacific time.",
+      "types": [
+        "person name",
+        "booking reference"
+      ],
+      "expected_entities": {
+        "person name": [
+          "Ethan Cole"
+        ],
+        "booking reference": [
+          "BR7K2P"
+        ]
+      }
+    },
+    {
+      "id": "en-medium-06",
+      "language": "en",
+      "text": "The service recovery team held its weekly review of escalated guest complaints and identified three cases that require compensation beyond the standard goodwill gesture. Each case involves a service failure during a peak travel period where the guest experienced a significant disruption that was not resolved during their stay. The most time-sensitive case involves Sarah Gomez, who reported that her confirmed suite reservation was downgraded to a standard room upon arrival due to an overbooking error. The front desk offered a complimentary room upgrade for the following night, but the guest had already made dinner and event arrangements based on the suite layout. The service recovery manager reviewed the case details and approved a points credit of fifty thousand to the guest's loyalty account number LQ-5520-8841, along with a written apology from the general manager. The guest relations coordinator will reach out directly to confirm the resolution. When this case is included in the monthly service quality report for regional leadership, it should reference the incident type and recovery actions taken without including the guest's membership identifier or direct contact information.",
+      "types": [
+        "person name",
+        "loyalty account number"
+      ],
+      "expected_entities": {
+        "person name": [
+          "Sarah Gomez"
+        ],
+        "loyalty account number": [
+          "LQ-5520-8841"
+        ]
+      }
+    },
+    {
+      "id": "en-medium-07",
+      "language": "en",
+      "text": "The registrar's office is in the middle of its spring semester enrollment audit, a process that reviews all active student records for discrepancies between course registrations, financial aid awards, and degree progress records. This year's audit flagged a higher than usual number of records with mismatched credit hours, largely due to a system migration that took place over winter break. Most mismatches were minor — a one-credit lab section showing as two credits, or a cross-listed course appearing under both department codes — and have been corrected in batch. One case, however, required individual follow-up with the student's academic advisor. Jacob Li, listed under student ID STU-2026-4419, appears to have completed all required coursework for a minor in data science, but the minor declaration was never formally recorded in the degree audit system. The advisor confirmed that the declaration form was submitted on time but was not processed due to a clerical backlog. The registrar has now updated the record to reflect the declared minor, and the corrected degree audit will be available in the student portal within two business days.",
+      "types": [
+        "person name",
+        "student ID"
+      ],
+      "expected_entities": {
+        "person name": [
+          "Jacob Li"
+        ],
+        "student ID": [
+          "STU-2026-4419"
+        ]
+      }
+    },
+    {
+      "id": "en-medium-08",
+      "language": "en",
+      "text": "The procurement operations team wrapped up its monthly vendor performance scorecard review on Wednesday. The review covers delivery reliability, invoice accuracy, and issue resolution timeliness for all active vendors in the indirect materials category. Out of the thirty-eight vendors evaluated this quarter, thirty-two met or exceeded the target thresholds across all three metrics. Four vendors fell below the delivery reliability target due to supply chain disruptions in the semiconductor components category, and two had invoice accuracy scores below the acceptable range. The team flagged one vendor for a more detailed performance conversation. Michael Reed, the category manager for electronic components, is responsible for the relationship with this vendor, which is registered in the system under vendor ID VEND-04128. The vendor's delivery reliability score dropped from ninety-four percent to eighty-one percent over the past two quarters, primarily due to recurring lead-time extensions that were not communicated in advance. Michael has scheduled a quarterly business review with the vendor's account team for next Tuesday to discuss corrective actions and agree on an improvement plan.",
+      "types": [
+        "person name",
+        "vendor ID"
+      ],
+      "expected_entities": {
+        "person name": [
+          "Michael Reed"
+        ],
+        "vendor ID": [
+          "VEND-04128"
+        ]
+      }
+    },
+    {
+      "id": "en-medium-09",
+      "language": "en",
+      "text": "The IT service desk received a support ticket last Monday from an employee reporting persistent Wi-Fi connectivity issues on a company-issued laptop. The user described intermittent disconnections occurring three to four times per hour, primarily during video calls, which had been affecting productivity for over a week. A help desk technician performed initial remote diagnostics and confirmed that the laptop's wireless network adapter was experiencing frequent reassociations with the access point, indicating either a driver compatibility issue or a hardware fault. The ticket was escalated to the network engineering team for deeper investigation. After correlating the laptop's wireless logs with the access point controller data, the engineers identified that the device belonging to Ava Thompson, which has a wireless MAC address of 00:1A:2B:3C:4D:5E, was consistently failing the 802.1X reauthentication handshake approximately every fifteen minutes. The root cause appears to be a known bug in the wireless adapter's firmware that was introduced in a recent driver update. The engineering team has rolled back the driver to the previous stable version and is monitoring the connection stability over the next forty-eight hours before closing the ticket.",
+      "types": [
+        "person name",
+        "MAC address"
+      ],
+      "expected_entities": {
+        "person name": [
+          "Ava Thompson"
+        ],
+        "MAC address": [
+          "00:1A:2B:3C:4D:5E"
+        ]
+      }
+    },
+    {
+      "id": "ja-medium-01",
+      "language": "ja",
+      "text": "今月の安全運転管理点検の一環として、総務部は全社の社用車ユーザーリストと運転免許情報の照合を行っています。この点検は年に二回、四月と十月に実施され、免許の有効期限確認、違反歴の自己申告、及び車両保険の付保状況を一括で確認する目的で行われます。今回の対象者は全国五つの拠点を合わせた合計84名で、そのうち79名はすでに必要書類の提出を完了しています。残りの五名のうち、四名は出張中のため来週提出予定ですが、一名については書類の記載内容に確認が必要な点がありました。営業部の山田太郎から提出された免許証コピーでは、免許番号がD-4021-778845と記載されていますが、前回の記録と末尾二桁が異なっており、更新時の番号変更か記載ミスかを判断するため、本人への再確認を依頼しています。確認が取れ次第、管理台帳を更新し、点検完了として総務部長に報告します。社外に共有する安全運転レポートには統計データのみを掲載し、個人の免許番号や氏名は含めません。",
+      "types": [
+        "person name",
+        "driver license number"
+      ],
+      "expected_entities": {
+        "person name": [
+          "山田太郎"
+        ],
+        "driver license number": [
+          "D-4021-778845"
+        ]
+      }
+    },
+    {
+      "id": "fr-medium-01",
+      "language": "fr",
+      "text": "La directrice des opérations a envoyé un récapitulatif interne concernant le partenariat en cours de négociation avec un studio de design basé à Lille. Les discussions portent sur un contrat de prestation de services créatifs d'une durée de dix-huit mois, couvrant la refonte de l'identité visuelle de trois gammes de produits. Lors de la dernière réunion, tenue mardi dernier en visioconférence, les deux parties se sont mises d'accord sur le périmètre fonctionnel et le calendrier général, mais les conditions de propriété intellectuelle restent à finaliser. La coordination côté interne est assurée par Claire Martin, qui travaille chez Atelier Nord en tant que responsable du pôle création. Elle a transmis la semaine dernière une première version du cahier des charges technique, accompagnée d'exemples de livrables attendus. L'équipe juridique interne a demandé quelques ajustements sur les clauses de confidentialité et de sous-traitance avant de passer à la rédaction finale du contrat. Une prochaine réunion est prévue vendredi pour valider les derniers points en suspens.",
+      "types": [
+        "person name",
+        "organization"
+      ],
+      "expected_entities": {
+        "person name": [
+          "Claire Martin"
+        ],
+        "organization": [
+          "Atelier Nord"
+        ]
+      }
+    },
+    {
+      "id": "es-medium-01",
+      "language": "es",
+      "text": "El equipo de logística interna está revisando las entregas pendientes del mes de marzo para asegurarse de que todos los envíos prioritarios se completen antes del cierre trimestral. En total hay veintitrés paquetes en cola, de los cuales dieciocho ya tienen etiqueta de envío generada y están esperando recogida por parte del servicio de mensajería. Los cinco restantes están pendientes de verificación de dirección porque el sistema detectó discrepancias entre la dirección registrada en el perfil del destinatario y la que aparece en la solicitud de envío. El coordinador de logística ha comenzado a resolver estos casos uno por uno contactando directamente a los solicitantes. El primero que se resolvió fue el de Lucía Torres, cuyo paquete contiene documentación notarial que debe entregarse en mano. Después de confirmar con ella por teléfono, se verificó que la dirección correcta de entrega es Calle Mayor 15, Madrid, ya que su oficina anterior dejó de recibir correspondencia a nombre de terceros el mes pasado. El mensajero tiene instrucciones de solicitar firma en persona y no dejar el paquete en recepción si la destinataria no está presente.",
+      "types": [
+        "person name",
+        "address"
+      ],
+      "expected_entities": {
+        "person name": [
+          "Lucía Torres"
+        ],
+        "address": [
+          "Calle Mayor 15, Madrid"
+        ]
+      }
+    }
+  ]
+}
