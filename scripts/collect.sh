@@ -146,12 +146,28 @@ update_docs() {
   NEW_COUNT=$(wc -l < "$TMP_IMPORT_LIST" | tr -d ' ')
   TOTAL_COUNT=$(find "$SKILLS_DIR" -mindepth 1 -maxdepth 1 -type d | wc -l | tr -d ' ')
   NEW_VERSION=$(python3 <<'PY'
-import re
+import re, subprocess
 from pathlib import Path
-content = Path('CHANGELOG.md').read_text(encoding='utf-8', errors='ignore')
-match = re.search(r'v(\d+)\.(\d+)\.(\d+)', content)
-if match:
-    major, minor, patch = map(int, match.groups())
+
+versions = []
+# Source of truth: existing git tags (vX.Y.Z)
+try:
+    out = subprocess.check_output(['git', 'tag'], text=True)
+    for line in out.splitlines():
+        m = re.fullmatch(r'v(\d+)\.(\d+)\.(\d+)', line.strip())
+        if m:
+            versions.append(tuple(map(int, m.groups())))
+except Exception:
+    pass
+# Fallback/cross-check: all versions mentioned in CHANGELOG
+try:
+    content = Path('CHANGELOG.md').read_text(encoding='utf-8', errors='ignore')
+    for m in re.finditer(r'v(\d+)\.(\d+)\.(\d+)', content):
+        versions.append(tuple(map(int, m.groups())))
+except Exception:
+    pass
+if versions:
+    major, minor, patch = max(versions)
     print(f"{major}.{minor + 1}.0")
 else:
     print('0.1.0')
