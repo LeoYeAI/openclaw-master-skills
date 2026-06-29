@@ -1,0 +1,104 @@
+{
+  "name": "medeo-video",
+  "version": "1.5.0",
+  "description": "AI-powered video generation from text. Tell your assistant to make a video and it handles everything — screenwriting, shot composition, transitions, music, and rendering via the Medeo platform.",
+  "author": "one2x-ai",
+  "license": "MIT",
+  "homepage": "https://github.com/one2x-ai/medeo-video-skill",
+  "repository": "https://github.com/one2x-ai/medeo-video-skill",
+  "keywords": [
+    "video",
+    "ai-video",
+    "video-generation",
+    "medeo",
+    "text-to-video",
+    "rendering",
+    "recipes",
+    "media",
+    "upload",
+    "content-creation"
+  ],
+  "sbom": {
+    "files": [
+      {
+        "path": "SKILL.md",
+        "required": true,
+        "description": "Agent instruction manual — how to use the Medeo video skill"
+      },
+      {
+        "path": "README.md",
+        "required": false,
+        "description": "User-facing install and usage guide"
+      },
+      {
+        "path": "scripts/medeo_video.py",
+        "required": true,
+        "description": "Main CLI script — all subcommands (generate, upload, compose, render, etc.)"
+      },
+      {
+        "path": "scripts/feishu_send_video.py",
+        "required": false,
+        "description": "Feishu video delivery helper"
+      },
+      {
+        "path": "docs/assets-upload.md",
+        "required": false,
+        "description": "All upload paths (URL, local file, IM attachments)"
+      },
+      {
+        "path": "docs/feishu-send.md",
+        "required": false,
+        "description": "Feishu video delivery integration guide"
+      },
+      {
+        "path": "docs/multi-platform.md",
+        "required": false,
+        "description": "Multi-platform delivery setup (Telegram, Discord, Feishu, WhatsApp)"
+      },
+      {
+        "path": "docs/recipes.md",
+        "required": false,
+        "description": "Video recipe/template browsing and selection guide"
+      }
+    ]
+  },
+  "openclaw": {
+    "emoji": "🎬",
+    "category": "content-creation",
+    "requires": {
+      "bins": ["python3"],
+      "env": {
+        "MEDEO_API_KEY": {
+          "required": true,
+          "description": "Medeo API key (get from https://medeo.app/dev/apikey, starts with mk_)",
+          "setup_url": "https://medeo.app/dev/apikey"
+        }
+      }
+    },
+    "triggers": [
+      "generate video",
+      "make a video",
+      "create a video",
+      "text to video",
+      "video from text",
+      "AI video",
+      "medeo",
+      "video generation",
+      "make me a video",
+      "produce a video",
+      "video about",
+      "video of",
+      "short video",
+      "make video",
+      "video clip",
+      "video creator"
+    ],
+    "platforms": [
+      "feishu",
+      "telegram",
+      "discord",
+      "whatsapp",
+      "signal"
+    ]
+  }
+}

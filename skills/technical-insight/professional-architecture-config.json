@@ -1,0 +1,65 @@
+{
+  "architecture_standards": {
+    "layout_principles": {
+      "hierarchy_direction": "top-down",
+      "layer_isolation": true,
+      "dependency_direction": "unidirectional",
+      "max_components_per_layer": 6,
+      "min_spacing": 20,
+      "alignment": "grid-based"
+    },
+    "layer_definitions": {
+      "01-system-context": {
+        "layers": ["01-external_users", "02-system_boundary", "03-external_systems"],
+        "layout": "horizontal-three-tier"
+      },
+      "02-containers": {
+        "layers": ["01-infrastructure", "02-platform", "03-application", "04-interface"],
+        "layout": "vertical-four-tier"
+      },
+      "03-components": {
+        "layers": ["01-presentation", "02-business_logic", "03-data_access", "04-external_integration"],
+        "layout": "vertical-four-tier"
+      },
+      "04-data-flow": {
+        "layers": ["01-input", "02-processing", "03-storage", "04-output"],
+        "layout": "horizontal-four-tier"
+      }
+    },
+    "styling_guidelines": {
+      "colors": {
+        "infrastructure": "#E3F2FD",
+        "platform": "#BBDEFB", 
+        "application": "#90CAF9",
+        "interface": "#64B5F6",
+        "external": "#FFCDD2",
+        "boundary": "#4FC3F7"
+      },
+      "shapes": {
+        "user": "actor",
+        "system": "rounded-rectangle",
+        "container": "rectangle",
+        "component": "ellipse",
+        "database": "cylinder",
+        "queue": "parallelogram"
+      },
+      "fonts": {
+        "title": "bold 14px Arial",
+        "label": "12px Arial",
+        "description": "10px Arial"
+      }
+    },
+    "validation_rules": {
+      "required_diagrams": [
+        "system-context",
+        "containers", 
+        "components",
+        "data-flow"
+      ],
+      "required_formats": ["png", "drawio"],
+      "min_quality_score": 8.5,
+      "layer_consistency_check": true,
+      "dependency_cycle_detection": true
+    }
+  }
+}

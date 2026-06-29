@@ -3,7 +3,13 @@
 All notable changes to the OpenClaw Master Skills collection are documented here.
 Updated every Monday.
 
-- **v0.12.0** (2026-05-04): +51 skills → 611 total
+---
+
+## [v0.18.0] — 2026-06-29
+
+### 🚀 周更：新增 100 个 Skills，总计 2109
+
+来源：openclaw/skills-archive 官方镜像，按质量规则筛选。详见 RELEASES.md。
 
 ---
 

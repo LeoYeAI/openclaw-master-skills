@@ -1,0 +1,97 @@
+{
+  "skill_name": "xianyu-service-ops",
+  "evals": [
+    {
+      "id": 0,
+      "prompt": "我想在闲鱼上卖简历优化服务。我是 HR 出身，有 6 年招聘经验，手里有不少面试通过率提升的真实案例。账号是全新的，一个评价都没有。帮我把商品完整地上架起来，包括标题、定价、详情页文案，还有主图应该怎么设计。",
+      "expected_output": "3 title variants (each with its keyword focus explained), pricing recommendation (including cold-start strategy and package structure), complete detail page copy framework (six-section structure), specific main image design suggestions. All output ready to copy directly into Xianyu.",
+      "files": [],
+      "assertions": [
+        {
+          "name": "Produces 3 title variants",
+          "description": "The response includes at least 3 distinct Xianyu listing titles, each with a clearly stated focus or purpose (e.g., Version A, Version B, Version C)"
+        },
+        {
+          "name": "Titles contain core keywords",
+          "description": "Each title includes '简历' or '简历优化' or equivalent core keyword, positioned toward the front of the title"
+        },
+        {
+          "name": "Pricing includes cold-start trajectory",
+          "description": "The pricing section explains that a new account should start below market price then raise after accumulating reviews — not just a single fixed price"
+        },
+        {
+          "name": "Provides a package structure",
+          "description": "Proposes at least two pricing tiers (e.g., basic/standard, or different service levels) rather than a single price point"
+        },
+        {
+          "name": "Detail page copy has a complete framework",
+          "description": "The detail page section contains at least 4 structural segments (e.g., pain point resonance, service description, case work, guarantees) — not just one or two sentences"
+        },
+        {
+          "name": "Includes main image direction",
+          "description": "Gives specific guidance on what the main image should contain or how it should be designed — not just 'make it look good'"
+        },
+        {
+          "name": "Output is copy-ready",
+          "description": "Titles and other key deliverables can be pasted directly into Xianyu without placeholders like '[fill in here]' or 'depending on your situation, do X'"
+        }
+      ]
+    },
+    {
+      "id": 1,
+      "prompt": "我在闲鱼上卖 PPT 制作已经三个月了，发了 4 个商品，定价 99-399 元，每天曝光大概 200 次，但每天只有 1-2 个咨询，基本没有成交。我感觉问题挺严重的，但不知道出在哪里。帮我诊断一下，给出具体的改进方案。",
+      "expected_output": "Funnel analysis identifying which stage is breaking (impressions → clicks → inquiries → conversions), followed by targeted fixes: title optimization suggestions, main image improvement direction, detail page gaps, pricing assessment. All suggestions must be specific and actionable, not generic.",
+      "files": [],
+      "assertions": [
+        {
+          "name": "Runs funnel diagnosis before giving advice",
+          "description": "The response first identifies which funnel stage is the problem (e.g., impressions are fine but CTR is low, indicating a main image / title issue) rather than immediately listing all possible improvements"
+        },
+        {
+          "name": "Diagnosis is specific",
+          "description": "Clearly names the most likely problem stage (low CTR, low inquiry rate, or low close rate) rather than vaguely saying 'all aspects need work'"
+        },
+        {
+          "name": "Provides a specific title improvement",
+          "description": "Gives at least one concrete optimized title for the PPT-making category, not just 'titles should include keywords'"
+        },
+        {
+          "name": "Improvement suggestions are actionable",
+          "description": "At least 3 improvement suggestions are specific operational steps (what to do and how) rather than abstract principles like 'improve content quality'"
+        },
+        {
+          "name": "Evaluates the pricing",
+          "description": "Gives a clear assessment of whether the ¥99–399 price range is reasonable, too high, or structurally flawed — does not ignore pricing as a factor"
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "我准备在闲鱼上卖小红书文案代写服务，定价打算在 39 元一篇。在正式上架之前，帮我分析一下这个品类的竞争情况，告诉我怎么定位才能有差异化，另外帮我检查一下 39 元的定价合不合适。",
+      "expected_output": "Category competitive analysis (competition intensity, mainstream price range, top sellers' key selling points), differentiation positioning advice (how to enter a sub-niche), pricing assessment (whether ¥39 is appropriate with cold-start logic applied).",
+      "files": [],
+      "assertions": [
+        {
+          "name": "Assesses category competition intensity",
+          "description": "Clearly states the competitive intensity of the Xiaohongshu copywriting category (crowded / moderate / blue ocean) and its primary competitive dynamics — not just 'you need to differentiate'"
+        },
+        {
+          "name": "Gives specific differentiation positioning",
+          "description": "Differentiation advice is specific enough to act on (e.g., focus on a particular vertical, emphasize a specific style, target a specific buyer type) — not left at the level of 'find your differentiation'"
+        },
+        {
+          "name": "Gives a clear pricing assessment for ¥39",
+          "description": "Clearly states whether ¥39 is appropriate and explains why (referencing market median, cold-start logic, or similar)"
+        },
+        {
+          "name": "Provides alternative pricing or package suggestion",
+          "description": "In addition to assessing ¥39, suggests an alternative pricing structure or package — not just a yes/no verdict"
+        },
+        {
+          "name": "Proactively raises key risks",
+          "description": "Proactively flags important considerations for selling copywriting services on Xianyu (e.g., competitive dynamics, risks of under-pricing) — demonstrates the proactive alert mechanism"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,56 @@
+{
+  "topics": [
+    {
+      "id": "example-topic",
+      "name": "Example Topic",
+      "query": "search query here",
+      "keywords": ["keyword1", "keyword2", "keyword3"],
+      "frequency": "daily",
+      "importance_threshold": "medium",
+      "channels": ["telegram"],
+      "context": "Why this topic matters to you",
+      "alert_on": ["keyword_exact_match"],
+      "ignore_sources": [],
+      "boost_sources": []
+    }
+  ],
+  "settings": {
+    "digest_day": "sunday",
+    "digest_time": "18:00",
+    "max_alerts_per_day": 5,
+    "max_alerts_per_topic_per_day": 2,
+    "deduplication_window_hours": 72,
+    "learning_enabled": true,
+    "quiet_hours": {
+      "enabled": false,
+      "start": "22:00",
+      "end": "08:00"
+    }
+  },
+  "channels": {
+    "telegram": {
+      "enabled": true,
+      "chat_id": null,
+      "silent": false,
+      "effects": {
+        "high_importance": "🔥",
+        "medium_importance": "📌"
+      }
+    },
+    "discord": {
+      "enabled": false,
+      "webhook_url": null,
+      "username": "Research Bot",
+      "avatar_url": null
+    },
+    "email": {
+      "enabled": false,
+      "to": null,
+      "from": "research@yourdomain.com",
+      "smtp_server": "smtp.gmail.com",
+      "smtp_port": 587,
+      "smtp_user": null,
+      "smtp_password": null
+    }
+  }
+}

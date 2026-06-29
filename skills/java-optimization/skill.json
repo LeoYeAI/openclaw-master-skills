@@ -1,0 +1,244 @@
+{
+  "name": "java-optimization",
+  "description": "执行 Java 代码性能优化，包括 JVM 调优、并发编程、内存管理、缓存策略、数据库优化、集合框架优化等。Invoke when user needs to optimize Java code performance.",
+  "version": "1.0.0",
+  "last_updated": "2026-03-11",
+  "author": "AI Assistant",
+  "language": "zh-CN",
+  "category": "performance",
+  "tags": [
+    "java",
+    "performance",
+    "optimization",
+    "jvm",
+    "concurrency",
+    "memory",
+    "caching",
+    "database"
+  ],
+  "triggers": {
+    "keywords": [
+      "Java 性能优化",
+      "提高响应速度",
+      "减少内存占用",
+      "JVM 调优",
+      "并发优化",
+      "数据库优化",
+      "缓存策略",
+      "性能分析",
+      "CPU 占用高",
+      "内存泄漏",
+      "GC 频繁",
+      "接口响应慢",
+      "optimize java",
+      "improve performance",
+      "reduce memory",
+      "jvm tuning",
+      "Stream 优化",
+      "线程池配置",
+      "批量查询",
+      "N+1 问题"
+    ],
+    "patterns": [
+      ".*优化.*[Jj]ava.*",
+      ".*[Jj]ava.*性能.*",
+      ".*性能.*提升.*",
+      ".*内存.*优化.*",
+      ".*并发.*优化.*",
+      ".*查询.*太慢.*",
+      ".*接口.*耗时.*",
+      ".*CPU.*过高.*",
+      ".*GC.*频繁.*"
+    ],
+    "contexts": [
+      "性能优化场景",
+      "系统调优需求",
+      "故障排查（性能相关）",
+      "代码审查（性能检查）",
+      "新功能开发（性能设计）"
+    ]
+  },
+  "capabilities": [
+    {
+      "name": "caching-strategy",
+      "description": "实现高效的缓存策略，包括本地缓存（Caffeine）和分布式缓存（Redis）",
+      "priority": 1,
+      "examples": ["@Cacheable 使用", "Caffeine 配置", "缓存穿透/击穿/雪崩解决方案"]
+    },
+    {
+      "name": "parallel-processing",
+      "description": "使用 Stream API、CompletableFuture 和 Fork/Join 框架进行并行处理",
+      "priority": 2,
+      "examples": ["parallelStream 使用", "CompletableFuture 组合", "批量异步处理"]
+    },
+    {
+      "name": "memory-optimization",
+      "description": "优化内存使用，减少对象创建，避免内存泄漏",
+      "priority": 3,
+      "examples": ["对象池化", "弱引用使用", "内存泄漏排查"]
+    },
+    {
+      "name": "database-optimization",
+      "description": "优化数据库查询，避免 N+1 问题，实现批量操作",
+      "priority": 4,
+      "examples": ["JOIN FETCH", "批量查询", "索引优化", "分页查询"]
+    },
+    {
+      "name": "concurrency-optimization",
+      "description": "线程池配置、并发容器使用、锁优化",
+      "priority": 5,
+      "examples": ["ThreadPoolExecutor 配置", "ReadWriteLock", "ConcurrentHashMap"]
+    },
+    {
+      "name": "jvm-tuning",
+      "description": "JVM 参数调优、GC 策略选择、堆内存配置",
+      "priority": 6,
+      "examples": ["G1 GC 配置", "堆内存设置", "GC 日志分析"]
+    },
+    {
+      "name": "profiling-analysis",
+      "description": "使用 VisualVM、JProfiler、Arthas 等工具进行性能分析",
+      "priority": 7,
+      "examples": ["Arthas 在线诊断", "火焰图分析", "线程 dump 分析"]
+    },
+    {
+      "name": "benchmark-testing",
+      "description": "使用 JMH 进行基准测试和性能对比",
+      "priority": 8,
+      "examples": ["JMH 测试编写", "性能回归测试", "对比测试"]
+    },
+    {
+      "name": "stream-optimization",
+      "description": "Stream API 优化，包括惰性求值、并行流使用场景",
+      "priority": 9,
+      "examples": ["peek vs forEach", "中间操作优化", "收集器选择"]
+    },
+    {
+      "name": "lock-optimization",
+      "description": "锁优化，包括缩小同步范围、读写锁使用",
+      "priority": 10,
+      "examples": ["synchronized 优化", "ReentrantReadWriteLock", "StampedLock"]
+    }
+  ],
+  "optimization_areas": {
+    "code_level": [
+      "避免循环内创建对象",
+      "使用 StringBuilder 拼接字符串",
+      "集合初始化指定容量",
+      "优先使用基本类型",
+      "及时关闭资源（try-with-resources）",
+      "避免过度同步",
+      "使用懒加载",
+      "Stream API 正确使用",
+      "合理选择集合类型",
+      "避免不必要的自动装箱/拆箱"
+    ],
+    "database_level": [
+      "添加合适的索引",
+      "避免 SELECT *",
+      "使用分页查询",
+      "批量操作代替单条",
+      "使用连接池",
+      "慢查询监控",
+      "避免 N+1 查询",
+      "使用投影减少数据传输",
+      "合理使用缓存（二级缓存）"
+    ],
+    "architecture_level": [
+      "合理使用缓存",
+      "异步处理耗时操作",
+      "消息队列削峰填谷",
+      "CDN 加速静态资源",
+      "负载均衡分散压力",
+      "服务拆分（微服务）",
+      "读写分离",
+      "分库分表"
+    ],
+    "jvm_level": [
+      "堆内存合理配置",
+      "选择合适的 GC 收集器",
+      "调整新生代老年代比例",
+      "优化元空间大小",
+      "GC 日志分析和调优"
+    ]
+  },
+  "tools": {
+    "profiling": [
+      "VisualVM",
+      "JProfiler",
+      "Arthas",
+      "YourKit",
+      "Async Profiler"
+    ],
+    "monitoring": [
+      "Prometheus",
+      "Grafana",
+      "Micrometer",
+      "Spring Boot Actuator"
+    ],
+    "testing": [
+      "JMH",
+      "JMeter",
+      "Gatling",
+      "Wrk"
+    ]
+  },
+  "project_context": {
+    "tech_stack": "Java 8 + Maven + Spring Boot + MyBatis-Plus",
+    "business_domain": "停车管理、退款订单处理",
+    "typical_scenarios": [
+      "退款订单查询优化",
+      "批量数据处理",
+      "统计报表生成",
+      "高并发接口响应"
+    ]
+  },
+  "performance_metrics": {
+    "response_time": {
+      "excellent": "< 100ms",
+      "good": "< 500ms",
+      "acceptable": "< 1s",
+      "needs_improvement": "> 1s"
+    },
+    "throughput": {
+      "unit": "QPS (Queries Per Second)",
+      "target": "根据业务需求设定"
+    },
+    "cpu_usage": {
+      "normal": "< 70%",
+      "warning": "70%-85%",
+      "critical": "> 85%"
+    },
+    "memory_usage": {
+      "normal": "< 80%",
+      "warning": "80%-90%",
+      "critical": "> 90%"
+    }
+  },
+  "best_practices": [
+    "先测量再优化（不要猜测）",
+    "关注 20% 的关键代码（二八原则）",
+    "优先优化业务逻辑而非微优化",
+    "考虑可维护性而非极致性能",
+    "使用成熟框架而非重复造轮子",
+    "定期进行性能回归测试",
+    "建立性能监控和告警机制",
+    "文档化性能优化决策"
+  ],
+  "anti_patterns": [
+    "在循环中执行数据库查询",
+    "滥用同步锁",
+    "大对象频繁创建销毁",
+    "不合理的缓存策略",
+    "过度使用反射",
+    "忽视连接池配置",
+    "过早优化（premature optimization）",
+    "忽略异常处理的性能影响"
+  ],
+  "references": [
+    "《Effective Java》- Joshua Bloch",
+    "《Java Performance: The Definitive Guide》- Scott Oaks",
+    "《Java Concurrency in Practice》- Brian Goetz",
+    "《深入理解 Java 虚拟机》- 周志明"
+  ]
+}

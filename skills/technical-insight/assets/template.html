@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tech Insight Deep Dive</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'architecture': '#8b5cf6',
+                        'mechanisms': '#10b981', 
+                        'barriers': '#f59e0b',
+                        'risks': '#ef4444',
+                        'roadmap': '#3b82f6'
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700;900&family=HarmonyOS+Sans+SC:wght@300;400;700;900&display=swap');
+        
+        body {
+            font-family: 'Inter', 'HarmonyOS Sans SC', system-ui, sans-serif;
+            background: #000000;
+            color: #ffffff;
+            overflow-x: hidden;
+        }
+        
+        .slide {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 48px 48px;
+            box-sizing: border-box;
+        }
+        
+        .title {
+            font-weight: 900;
+            font-size: 2.5rem;
+            line-height: 1.2;
+            text-align: center;
+            margin-bottom: 1rem;
+        }
+        
+        .subtitle {
+            font-weight: 300;
+            font-size: 1.25rem;
+            color: #9ca3af;
+            text-align: center;
+            max-width: 60ch;
+        }
+        
+        /* Code blocks */
+        .code-block {
+            font-family: 'JetBrains Mono', Consolas, monospace;
+            font-size: 0.875rem;
+            line-height: 1.4;
+            background: #111827;
+            border-radius: 8px;
+            padding: 16px;
+            overflow-x: auto;
+            margin: 16px 0;
+        }
+        
+        /* Diagrams placeholder */
+        .diagram {
+            width: 100%;
+            max-width: 500px;
+            height: auto;
+            margin: 24px 0;
+            border-radius: 12px;
+            background: #111827;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #9ca3af;
+            padding: 24px;
+        }
+        
+        /* Background light spots animation */
+        .background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+        
+        .spot {
+            position: absolute;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            opacity: 0.05;
+        }
+    </style>
+</head>
+<body>
+    <!-- Background light spots -->
+    <div class="background" id="background"></div>
+    
+    <!-- Slides will be inserted here by the generator -->
+    
+    <script>
+        // Generate background light spots
+        const background = document.getElementById('background');
+        const spotCount = 8;
+        
+        for (let i = 0; i < spotCount; i++) {
+            const spot = document.createElement('div');
+            spot.className = 'spot';
+            
+            // Random size and position
+            const size = Math.random() * 400 + 200;
+            const x = Math.random() * 100;
+            const y = Math.random() * 100;
+            
+            spot.style.width = `${size}px`;
+            spot.style.height = `${size}px`;
+            spot.style.left = `${x}%`;
+            spot.style.top = `${y}%`;
+            
+            // Random animation
+            const duration = Math.random() * 60 + 30;
+            const delay = Math.random() * 10;
+            spot.style.animation = `float ${duration}s ease-in-out ${delay}s infinite alternate`;
+            
+            background.appendChild(spot);
+        }
+        
+        // Add floating animation
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes float {
+                0% { transform: translate(0, 0); }
+                100% { transform: translate(${Math.random() * 100 - 50}px, ${Math.random() * 100 - 50}px); }
+            }
+        `;
+        document.head.appendChild(style);
+        
+        // Keyboard navigation
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.slide');
+        
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight' && currentSlide < slides.length - 1) {
+                slides[currentSlide].style.display = 'none';
+                currentSlide++;
+                slides[currentSlide].style.display = 'flex';
+            } else if (e.key === 'ArrowLeft' && currentSlide > 0) {
+                slides[currentSlide].style.display = 'none';
+                currentSlide--;
+                slides[currentSlide].style.display = 'flex';
+            }
+        });
+    </script>
+</body>
+</html>

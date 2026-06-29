@@ -3,6 +3,47 @@
 每次更新的详细发布说明。
 
 
+## v0.18.0 — 2026-06-29
+
+### 🚀 周更：新增 100 个 Skills，总计 2109
+
+来源：openclaw/skills-archive 官方镜像，按质量规则筛选（SKILL.md 800B-30KB、完整 YAML 元数据、有效 description）。
+
+#### 部分新增亮点（前 30 个）
+- `humanizer-1` — | Remove signs of AI-generated writing from text. Use when editing or reviewing text to make it sound more natural and h
+- `humanizer-1-0-0` — | Remove signs of AI-generated writing from text. Use when editing or reviewing text to make it sound more natural and h
+- `humanizer-bak` — | Remove signs of AI-generated writing from text. Use when editing or reviewing text to make it sound more natural and h
+- `humanizer-conflict` — | Remove signs of AI-generated writing from text. Use when editing or reviewing text to make it sound more natural and h
+- `humanizer-local-backup` — | Remove signs of AI-generated writing from text. Use when editing or reviewing text to make it sound more natural and h
+- `humanizer-pro` — | Remove signs of AI-generated writing from text. Use when editing or reviewing text to make it sound more natural and h
+- `loadpage` — | Remove signs of AI-generated writing from text. Use when editing or reviewing text to make it sound more natural and h
+- `max-humanizer` — | Remove signs of AI-generated writing from text. Use when editing or reviewing text to make it sound more natural and h
+- `yuyonghao-humanizer` — | Remove signs of AI-generated writing from text. Use when editing or reviewing text to make it sound more natural and h
+- `auto-dealer-marketing` — "When the user wants to create, optimize, or plan automotive dealership marketing — including inventory merchandising, V
+- `medeo-video` — AI-powered video generation skill. Use when the user wants to generate videos from text descriptions, browse video recip
+- `automl-skill` — > AutoML 自动化机器学习技能 | Automated Machine Learning Skill. 基于 PyCaret 进行低代码机器学习建模，支持分类、回归、聚类、异常检测、时间序列预测、自然语言处理和关联规则挖掘等任务。 未
+- `qintianjian` — 解读钦天监(qintianjian)网站、经济周期理论、木星周期与三元九运/康波周期/美林时钟的关联。用于用户询问钦天监网站用途、项目价值、周期预测原理、BAP-578、Crypto+AI、币安黑客松、钦天监指数、QCX等时触发。
+- `respawn` — > Your agent always comes back. Anchor identity and memory on-chain so any new instance can resurrect from just an addre
+- `technical-insight` — "选型结论出来后，对最终选定的方案做深度技术拆解——内部架构分析、核心机制、竞争壁垒、风险点。不是介绍文章那种表面描述，是真的去拆它怎么运作。工作流包含：架构拆解、机制分析、壁垒识别、风险评估、演进预测、深度报告。"
+- `manychat` — | ManyChat API integration with managed authentication. Manage subscribers, tags, custom fields, and send messages throu
+- `37soul-skill` — Connect your AI agent to 37Soul social platform for authentic interactions, posting tweets, replying to messages, and de
+- `ydc-openai-agent-sdk-integration` — Integrate OpenAI Agents SDK with You.com MCP server - Hosted and Streamable HTTP support for Python and TypeScript. Use 
+- `horoscope-daily` — | Generates personalized horoscope readings for all twelve zodiac signs based on Western astrology. Supports any date (t
+- `tushare-data` — 面向中文自然语言的 Tushare 数据研究技能。用于把“看看这只股票最近怎么样”“帮我查财报趋势”“最近哪个板块最强”“北向资金在买什么”“给我导出一份行情数据”这类请求，转成可执行的数据获取、清洗、对比、筛选、导出与简要分析流程。适用于
+- `news-monitor` — Real-time news aggregator with Discord & Telegram push. Manage Jin10, BlockBeats, RSS, X KOLs, Polymarket, OpenNews via 
+- `summarize-pro` — When user asks to summarize text, articles, documents, meetings, emails, YouTube transcripts, books, PDFs, reports, conv
+- `strict-self-improvement` — "Captures learnings, errors, and corrections to enable continuous improvement. Use when: (1) A command or operation fail
+- `polymarket-cli-trading` — Trade prediction markets on Polymarket using the official polymarket CLI. Use when the user wants to browse prediction m
+- `use-browser` — Automates browser interactions for social media management across Instagram, LinkedIn, and X. Handles posting, DMs, conn
+- `init-memory` — 为任意项目初始化 Claude 持久化记忆系统（v3.0 搜索引擎模型）。自动扫描项目结构、技术栈、代码规范，生成完整的记忆文件和 CLAUDE.md 指令。
+- `keats-topic-monitor` — Monitor topics of interest and proactively alert when important developments occur. Use when user wants automated monito
+- `pinch` — Secure agent-to-agent encrypted messaging via the Pinch protocol. Send and receive end-to-end encrypted messages, manage
+- `clawspaces` — X Spaces, but for AI Agents. Live voice rooms where AI agents host conversations.
+- `java-optimization` — "执行 Java 代码性能优化，包括 JVM 调优、并发编程、内存管理、缓存策略、数据库优化、集合框架优化等。Invoke when user needs to optimize Java code performance."
+
+---
+
+
 ## v0.17.0 — 2026-06-22
 
 ### 🚀 周更：新增 100 个 Skills，总计 2009

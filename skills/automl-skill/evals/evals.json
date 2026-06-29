@@ -1,0 +1,185 @@
+{
+  "skill_name": "automl-skill",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "使用 PyCaret 构建一个分类模型，数据集是 breast_cancer，目标是预测 target 列。我需要完整的 AutoML 流程，包括数据预处理（归一化、异常值处理、特征选择）、模型比较、超参数调优和最终预测。",
+      "expected_output": "完整的 PyCaret 分类工作流代码，包含 setup（含 normalize=True, remove_outliers=True, feature_selection=True 等参数）、compare_models、tune_model、ensemble_model、predict_model 等函数调用",
+      "files": []
+    },
+    {
+      "id": 2,
+      "prompt": "我有一个 CSV 文件 'house_price.csv'，目标列是 'Price'，请帮我用 PyCaret 搭建一个回归模型来预测房价。需要进行数据预处理（归一化、异常值处理、特征工程）和模型调优。",
+      "expected_output": "针对回归任务的 PyCaret 代码，包含回归模块的导入、setup 配置（含 normalize=True, remove_outliers=True, transformation=True 等参数）和回归模型相关函数",
+      "files": []
+    },
+    {
+      "id": 3,
+      "prompt": "使用 PyCaret 进行客户聚类分析，我有客户数据包含年龄、收入、消费分数等特征，请帮我完成整个聚类分析流程。",
+      "expected_output": "使用 pycaret.clustering 模块的完整代码，包括 create_model、assign_model、evaluate_model 等",
+      "files": []
+    },
+    {
+      "id": 4,
+      "prompt": "我有时序数据 'sales.csv'，包含历史销售记录，请帮我用 PyCaret 预测未来12个月的销售量。",
+      "expected_output": "使用 pycaret.time_series 模块的代码，包含 setup（指定 fh 参数）、compare_models、create_model、predict_model 等",
+      "files": []
+    },
+    {
+      "id": 5,
+      "prompt": "帮我用 PyCaret 进行异常检测，数据集是信用卡交易记录，需要识别欺诈交易。",
+      "expected_output": "使用 pycaret.anomaly 模块，包含 iforest、lof 等异常检测算法的使用",
+      "files": []
+    },
+    {
+      "id": 6,
+      "prompt": "我有一组客户评论文本数据，请用 PyCaret 进行文本主题建模，提取主要主题。",
+      "expected_output": "使用 pycaret.nlp 模块，包含 setup、create_model（lda/nmf）、assign_model、plot_model 等",
+      "files": []
+    },
+    {
+      "id": 7,
+      "prompt": "我的分类数据集存在严重的类别不平衡问题，少数类占比只有5%，请帮我用 PyCaret 处理这个问题并建模。",
+      "expected_output": "在 setup 中使用 fix_imbalance=True, fix_imbalance_method='SMOTE' 参数，并展示如何评估不平衡数据",
+      "files": []
+    },
+    {
+      "id": 8,
+      "prompt": "请帮我用 PyCaret 比较逻辑回归、随机森林、XGBoost、CatBoost 在分类任务上的性能，并选出最佳模型。",
+      "expected_output": "使用 compare_models(include=['lr', 'rf', 'xgboost', 'catboost']) 进行模型比较",
+      "files": []
+    },
+    {
+      "id": 9,
+      "prompt": "我的数据集有较多缺失值和异常值，请帮我配置 PyCaret 的数据预处理参数进行清洗。",
+      "expected_output": "setup 中使用 numeric_imputation、categorical_imputation、remove_outliers、outliers_method 等参数",
+      "files": []
+    },
+    {
+      "id": 10,
+      "prompt": "请帮我用 PyCaret 进行特征选择，我有100多个特征，需要筛选出最重要的特征来建模。",
+      "expected_output": "setup 中使用 feature_selection=True、feature_selection_method、n_features_to_select 参数",
+      "files": []
+    },
+    {
+      "id": 11,
+      "prompt": "我的数据包含日期特征 'Date'，请帮我用 PyCaret 自动提取日期相关特征。",
+      "expected_output": "setup 中使用 date_features 参数指定日期列，PyCaret 会自动提取年/月/日/星期等特征",
+      "files": []
+    },
+    {
+      "id": 12,
+      "prompt": "请帮我用 PyCaret 对数据进行归一化处理，有哪些归一化方法可选？",
+      "expected_output": "setup 中使用 normalize=True 和 normalize_method 参数，可选 zscore/minmax/maxabs/robust",
+      "files": []
+    },
+    {
+      "id": 13,
+      "prompt": "请帮我用 PyCaret 进行模型可解释性分析，查看哪些特征对预测结果影响最大。",
+      "expected_output": "使用 plot_model(model, plot='feature') 或 interpret_model(model) 进行特征重要性分析",
+      "files": []
+    },
+    {
+      "id": 14,
+      "prompt": "请帮我用 PyCaret 创建一个集成模型，结合多个基础模型的预测结果。",
+      "expected_output": "使用 ensemble_model、blend_models 或 stack_models 进行模型集成",
+      "files": []
+    },
+    {
+      "id": 15,
+      "prompt": "训练好的 PyCaret 模型如何保存和部署到生产环境？请给我一个完整的示例。",
+      "expected_output": "使用 save_model 保存模型，load_model 加载模型，deploy_model 部署到云端，或 create_app 创建 Streamlit 应用",
+      "files": []
+    },
+    {
+      "id": 16,
+      "prompt": "我需要用 PyCaret 进行购物篮分析，找出商品之间的关联规则。",
+      "expected_output": "使用 pycaret.arules 模块，包含 setup、create_model、assign_model 等",
+      "files": []
+    },
+    {
+      "id": 17,
+      "prompt": "请帮我用 PyCaret 查看模型评估指标，比如 AUC、准确率、召回率、F1分数等。",
+      "expected_output": "使用 get_metrics 获取指标，evaluate_model 或 plot_model 查看详细评估结果",
+      "files": []
+    },
+    {
+      "id": 18,
+      "prompt": "我的数据有类别型特征，比如城市、产品类别等，请帮我用 PyCaret 处理这些类别特征。",
+      "expected_output": "在 setup 中使用 categorical_features 参数指定类别特征，PyCaret 会自动进行编码",
+      "files": []
+    },
+    {
+      "id": 19,
+      "prompt": "请帮我用 PyCaret 进行自动化机器学习（AutoML），自动选择最佳模型和超参数。",
+      "expected_output": "使用 automl() 函数或结合 compare_models + tune_model + ensemble_model 的完整流程",
+      "files": []
+    },
+    {
+      "id": 20,
+      "prompt": "我有一个分类问题，需要使用 GroupKFold 进行交叉验证，因为数据有分组结构（同一用户多条记录）。",
+      "expected_output": "setup 中使用 fold_strategy='groupkfold' 和 fold_groups 参数指定分组列",
+      "files": []
+    },
+    {
+      "id": 21,
+      "prompt": "请帮我用 PyCaret 对回归模型进行超参数调优，优化 RMSE 指标。",
+      "expected_output": "使用 tune_model(model, optimize='RMSE') 进行调优",
+      "files": []
+    },
+    {
+      "id": 22,
+      "prompt": "我的时间序列数据有明显的季节性（周季节），请帮我配置 PyCaret 的季节性参数。",
+      "expected_output": "setup 中使用 seasonal_period 参数，如 seasonal_period=7 表示周季节性",
+      "files": []
+    },
+    {
+      "id": 23,
+      "prompt": "请帮我用 PyCaret 绘制分类模型的 ROC 曲线和混淆矩阵。",
+      "expected_output": "使用 plot_model(model, plot='auc') 和 plot_model(model, plot='confusion_matrix')",
+      "files": []
+    },
+    {
+      "id": 24,
+      "prompt": "我需要使用 PyCaret 生成一个交互式的模型评估仪表板。",
+      "expected_output": "使用 evaluate_model(model) 或 dashboard(model) 生成交互式仪表板",
+      "files": []
+    },
+    {
+      "id": 25,
+      "prompt": "请帮我用 PyCaret 进行情感分析，判断文本评论是正面还是负面。",
+      "expected_output": "使用 pycaret.nlp 或 pycaret.text 模块进行情感分析",
+      "files": []
+    },
+    {
+      "id": 26,
+      "prompt": "我需要对 PyCaret 回归模型的结果进行统计显著性检验，查看哪些特征对目标变量有显著影响。",
+      "expected_output": "使用 statsmodels 的 OLS 回归获取 P值和置信区间，或在 PyCaret 中使用 interpret_model 查看特征重要性",
+      "files": []
+    },
+    {
+      "id": 27,
+      "prompt": "请帮我用 statsmodels 进行假设检验，判断两组数据的均值是否有显著差异。",
+      "expected_output": "使用 scipy.stats 的 ttest_ind 进行 t 检验，或使用 statsmodels 的 ANOVA",
+      "files": []
+    },
+    {
+      "id": 28,
+      "prompt": "请帮我用 statsmodels 进行时间序列分析，建立 ARIMA 模型预测未来趋势。",
+      "expected_output": "使用 statsmodels.tsa.arima.model.ARIMA 或 SARIMAX 进行时间序列建模和预测",
+      "files": []
+    },
+    {
+      "id": 29,
+      "prompt": "我需要对回归模型进行统计诊断，包括残差自相关检验和异方差检验。",
+      "expected_output": "使用 statsmodels.stats.stattools.durbin_watson 检验自相关，使用 statsmodels.stats.diagnostic.het_breuschpagan 检验异方差",
+      "files": []
+    },
+    {
+      "id": 30,
+      "prompt": "请帮我用 statsmodels 的广义线性模型 GLM 进行二分类建模，需要获取系数和置信区间。",
+      "expected_output": "使用 statsmodels.GLM 设置 family=sm.families.Binomial() 进行 logistic 回归",
+      "files": []
+    }
+  ]
+}

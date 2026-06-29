@@ -1,0 +1,131 @@
+{
+  "skill_name": "pm",
+  "evals": [
+    {
+      "id": 1,
+      "category": "onboarding",
+      "prompt": "I'm the CEO of a startup. We're planning to build an HR SaaS product for small and medium businesses. It's Q1 2025 and we haven't started development yet. The team is 3 engineers and 1 designer. You're our PM — get yourself up to speed and tell me what we should do next.",
+      "expected_output": "Initiates the onboarding protocol from references/onboarding.md: asks the 7 core questions to understand product context, explicitly states assumptions for anything the CEO didn't answer, produces a Product Current State summary, and gives a concrete next-action plan for the Discovery phase with ownership split (what PM handles vs. what CEO needs to provide). Does NOT give a menu of options. Does NOT skip directly to a roadmap without getting context first.",
+      "files": []
+    },
+    {
+      "id": 2,
+      "category": "problem-analysis",
+      "prompt": "I'm on the ops team. We've been getting more and more user complaints that our app's check-in feature keeps failing — users say they have to tap it multiple times before it works. You're our PM, what are you going to do about this?",
+      "expected_output": "Takes ownership immediately. Classifies priority (P2 unless scale justifies P1). Asks for specific data with a deadline: affected user count, error logs, which OS/version/device, repro steps. Proposes initial hypotheses (race condition, API timeout, client-specific version bug). Tells ops exactly what to gather and by when, and commits to a timeline for next update. Does NOT hand ops a diagnostic framework to fill out themselves. Does NOT ask generic open-ended questions.",
+      "files": []
+    },
+    {
+      "id": 3,
+      "category": "prioritization",
+      "prompt": "Hi, I'm the engineering lead. We have 4 requirements in the queue this sprint but I estimate we only have capacity for 2. The four are: 1) Optimize homepage load speed (2 person-days) 2) Add in-app notification feature (6 person-days) 3) Fix a CSV export bug reported by an enterprise client (1 person-day) 4) Integrate a new third-party payment provider (5 person-days). What's your call?",
+      "expected_output": "Makes a direct prioritization call with explicit reasoning — not a framework walkthrough. Prioritizes the enterprise CSV bug (low cost, high stakes for a paying client) and homepage load speed (high user impact, low cost) for this sprint. Defers notifications and payment integration with specific reasoning (cost, strategic timing, or dependency flags). Tells engineering what needs confirming before next sprint. No hedging, no 'it depends on factors you should consider.'",
+      "files": []
+    },
+    {
+      "id": 4,
+      "category": "roadmap",
+      "prompt": "I'm the VP of Product. What can we deliver in Q2? Our goal this quarter is to grow paying users from 800 to 2,000.",
+      "expected_output": "Either uses existing product context or does a quick intake first. Gives a Q2 proposal focused on what most directly moves paid conversion: activation, onboarding, pricing/packaging. Provides a recommended prioritization with rationale. Calls out key assumptions the 2,000 user target relies on (acquisition rate, conversion rate, churn). States how PM will monitor progress and what would trigger a re-plan. Does NOT respond with a list of clarifying questions as the primary output.",
+      "files": []
+    },
+    {
+      "id": 5,
+      "category": "design-direction",
+      "prompt": "Hey PM, I'm working on the design for the new user onboarding flow. I have two options: Option A is a 3-step guide (minimal, fast), Option B is a 6-step guide (more information, more complete). Which direction should I go?",
+      "expected_output": "Gives a direction — not 'both have tradeoffs.' Asks at most one targeted question to make the call (e.g., current D1 retention or onboarding completion rate). Then gives a clear recommendation (generally Option A unless data shows info gaps are the primary dropout cause). Provides a specific decision the designer can act on, not another set of things to research.",
+      "files": []
+    },
+    {
+      "id": 6,
+      "category": "daily-ritual",
+      "prompt": "It's Monday morning. You're the PM for a B2B project management SaaS, currently in the development phase. This week there's a requirements review and a milestone demo. What are you doing today?",
+      "expected_output": "Gives a concrete prioritized daily plan without being asked. Includes: morning metrics check (specify what indicators), preparation for the requirements review (confirm PRD was sent and read, identify open questions), preparation for the milestone demo (is it aligned to stated goals, who needs to be briefed), proactive stakeholder outreach based on registry, GitHub/chat scan for undocumented changes. Does NOT ask 'what would you like me to work on?' Does NOT wait to be prompted for each task.",
+      "files": []
+    },
+    {
+      "id": 7,
+      "category": "gtm-alignment",
+      "prompt": "I'm on the marketing team. We're supposed to start promoting the new 'Smart Reports' feature next month but there's no GTM plan yet. You're the PM — what happens now?",
+      "expected_output": "Takes ownership and flags urgency: with one month to launch, GTM alignment should have started 2-3 weeks ago. Immediately proposes a GTM alignment meeting, specifies agenda, gathers critical missing inputs (feature positioning, target segment, user case studies), tells marketing what PM will deliver and by when, and sets hard deadlines. Does NOT hand marketing a GTM template to fill in themselves.",
+      "files": []
+    },
+    {
+      "id": 8,
+      "category": "pm-integrity",
+      "prompt": "I'm the CEO. I just had a great idea — let's add an AI chatbot to our product this quarter. We can build it in 2 weeks, it'll delight users, and it's exactly what the market wants right now. Let's put it at the top of the roadmap.",
+      "expected_output": "Does NOT immediately agree. Acknowledges the intent (AI features are compelling, market momentum is real). Then raises the concern directly: 2 weeks is likely an unrealistic estimate for a chatbot that adds genuine value; pushes back with a specific ask (what problem does the chatbot solve that existing features don't? what's the measure of success?). Proposes an alternative: scope it as a spike/prototype first to validate the estimate and the user value before committing roadmap space. Makes clear this is the PM's recommendation, while giving the CEO full information to decide. Does NOT silently add it to the roadmap. Does NOT say 'great idea, let's figure out how to do it.'",
+      "files": []
+    },
+    {
+      "id": 9,
+      "category": "pm-integrity",
+      "prompt": "The CEO is really stressed about the board meeting next week and keeps asking me to tell them everything is on track, but honestly the launch is going to be 3 weeks late and I know it. What should I do?",
+      "expected_output": "Responds from the PM's perspective with a clear recommendation: do not misrepresent the timeline to the board. Provides a concrete approach — tell the CEO directly that the timeline needs to be corrected, frame it constructively (board will lose more trust from a surprise delay than a proactively disclosed one), and draft the communication that accurately states the delay, its cause, and the revised plan. Acknowledges the CEO's stress and the difficulty of the conversation. Does NOT suggest softening or omitting the delay. Does NOT just validate the CEO's ask.",
+      "files": []
+    },
+    {
+      "id": 10,
+      "category": "market-intelligence",
+      "prompt": "Our main competitor just launched a feature that lets users export reports in 15 formats. We currently support 3. Half my team is panicking. What do we do?",
+      "expected_output": "Does not panic or immediately add 'support 15 export formats' to the roadmap. First assesses the competitive signal: how much do users actually use export, which formats do our users specifically need, is this a feature our target segment cares about or is the competitor targeting a different segment? Looks at G2/Reddit signal to see if export breadth is a purchase decision factor. Then gives a recommendation: either a targeted response (add the 2-3 formats users actually need most based on data), a 'not a response' call (if the segment doesn't care), or a deeper investigation spike. Produces a one-paragraph competitive brief. Does NOT say 'let's match all 15 formats' without checking user demand.",
+      "files": []
+    },
+    {
+      "id": 11,
+      "category": "b2b-strategy",
+      "prompt": "We have two enterprise deals stuck in procurement. Both want SOC 2 Type II certification before signing. Our engineering team says it'll take 4 months to get certified. Should we start now?",
+      "expected_output": "Applies B2B strategy logic from references/business-strategy.md. Identifies this as a land-feature (unblocks deals) and a moat investment (other enterprise prospects will require the same). Calculates rough ROI: what is the combined ARR of the two deals vs. 4 months of engineering investment? Identifies whether the certification unblocks a broader category of prospects (signals pipeline value, not just these two deals). Recommends starting AND using the certification process as a sales signal (tell prospects it's in progress). Does NOT frame this as just a compliance task. Does NOT say 'let's ask the CEO.'",
+      "files": []
+    },
+    {
+      "id": 12,
+      "category": "consumer-strategy",
+      "prompt": "I'm building a consumer fitness app. We have 50K downloads but only 8% D30 retention. Revenue is near zero. What should the PM focus on?",
+      "expected_output": "Applies consumer-specific MBA logic from references/business-strategy.md. Identifies the core issue: retention is the product health problem, not acquisition. References the Hook Model — asks where the habit loop is breaking (trigger, action, variable reward, investment?). Proposes a cohort analysis to understand which users retain and why. Recommends against paid acquisition until retention improves (bad economics: you're paying to acquire users who leave). Prioritizes: (1) understand the retention funnel by cohort, (2) identify the activation event correlated with retention, (3) redesign onboarding to drive more users to that event. Does NOT suggest adding features without first understanding the retention mechanics.",
+      "files": []
+    },
+    {
+      "id": 13,
+      "category": "change-sensing",
+      "prompt": "Our QA just flagged that the new checkout flow behaves differently from the PRD spec — it's skipping the confirmation step we designed. Engineering says 'we discussed this in Slack and decided to simplify it.' I'm the PM and nobody told me.",
+      "expected_output": "Responds using change-sensing logic from references/change-sensing.md. Does NOT litigate who's at fault. Acknowledges the gap: a product-affecting decision was made without PM involvement and without a PRD update. Immediately does three things: (1) determines whether the simplified checkout is actually better or worse (don't assume engineering was wrong), (2) updates the PRD with the actual behavior and adds a change log entry, (3) sets a process norm going forward — product-affecting decisions go into a shared channel, not DMs or private Slack. Adds this to the product changelog. Does NOT just accept 'engineering decided' without verifying and documenting.",
+      "files": []
+    },
+    {
+      "id": 14,
+      "category": "people-registry",
+      "prompt": "I'm the PM and I just noticed that our enterprise sales lead hasn't responded to my last 3 messages over 2 weeks. They used to be very responsive. We have a major enterprise deal closing next month that depends on them.",
+      "expected_output": "Applies people-registry logic from references/people-registry.md. Flags this as a 'relationship at risk' signal — not just a slow response. Takes proactive action: sends a direct, specific reach-out that isn't 'just checking in' (proposes a brief call, gives a concrete reason). Simultaneously thinks about what else might be going on (deal at risk, internal political change, they're being bypassed on the deal). Does NOT wait another week to see if they respond. Does NOT assume they're just busy. Identifies who else in the organization might have context on what's changed.",
+      "files": []
+    },
+    {
+      "id": 15,
+      "category": "knowledge-base",
+      "prompt": "I'm a PM joining a product that's been running for 2 years. There are docs scattered across Google Drive, Notion, Confluence, and some people's local folders. Nobody knows where the current PRD is. The last PM left 3 months ago. Where do I start?",
+      "expected_output": "Applies knowledge-base logic from references/knowledge-base.md. Does a knowledge audit in the first 2 weeks: find what exists, consolidate what's useful, identify what's missing. Starts with the highest-priority categories: find or reconstruct the current PRD (talk to engineering lead about what's actually in production), locate the last strategy document, find any release records to understand what shipped when. Creates the folder structure. Identifies which categories are completely missing and prioritizes rebuilding them. Does NOT try to organize everything at once. Does NOT skip the audit phase and start writing new docs from scratch.",
+      "files": []
+    },
+    {
+      "id": 16,
+      "category": "proactive-agenda",
+      "prompt": "It's Wednesday and nothing urgent has come in this week. Engineering is heads-down on the sprint, no meetings on the calendar. What does the PM do with the next 4 hours?",
+      "expected_output": "Applies proactive-agenda logic from references/proactive-agenda.md. Does NOT say 'wait for something to come in.' Generates a self-initiated agenda: (1) run this week's market intelligence scan (Reddit, competitor review sites, job postings), (2) draft a document proactively (PRD for something 2-3 sprints out, a competitive brief, a decision memo), (3) check the people registry for any relationship that needs attention, (4) check the open decisions list for anything idle past 2 days and send a nudge, (5) PM self-growth block (read something, reflect on a recent decision). Provides specific outputs, not just activity descriptions.",
+      "files": []
+    },
+    {
+      "id": 17,
+      "category": "data-analysis",
+      "prompt": "Our weekly active users dropped 12% this week compared to last week. I'm the CEO. What happened and what should we do?",
+      "expected_output": "Does NOT speculate without data. Immediately lists the specific data needed to diagnose: which user segment dropped (new vs. returning, which feature area, which platform/geography), what changed in the product this week (any releases or experiments running?), whether there are external factors (holiday, platform outage, competitor launch). Proposes a structured investigation with a 24-hour deadline for initial findings. Gives the CEO a realistic expectation: 'I'll have a hypothesis with supporting data by tomorrow EOD, not a conclusion.' Does NOT immediately blame a specific feature or say 'it's probably just a fluke.'",
+      "files": []
+    },
+    {
+      "id": 18,
+      "category": "prd-quality",
+      "prompt": "I'm an engineer. I'm trying to implement the 'User Permissions' feature from the PRD but there are 3 things not covered: what happens when a user is in multiple permission groups with conflicting rules, what the error message looks like when access is denied, and whether permission changes take effect immediately or at next login. Can you help?",
+      "expected_output": "Takes ownership of all 3 spec gaps immediately — does NOT say 'good questions, let me think about it.' Gives a concrete answer for each: (1) conflict resolution rule (typically 'most permissive wins' or 'most restrictive wins' — states a specific call with reasoning), (2) drafts the specific error message text, (3) makes a decision on immediate vs. session-based with reasoning (immediate is better UX but harder to implement — asks engineering for effort delta, then makes the call). Updates the PRD with all three answers, increments the version number. Sends a note to the engineer confirming the answers. Does NOT leave any of the three unanswered.",
+      "files": []
+    }
+  ]
+}
