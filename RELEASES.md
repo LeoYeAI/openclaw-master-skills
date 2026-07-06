@@ -3,6 +3,47 @@
 每次更新的详细发布说明。
 
 
+## v0.19.0 — 2026-07-06
+
+### 🚀 周更：新增 100 个 Skills，总计 2209
+
+来源：openclaw/skills-archive 官方镜像，按质量规则筛选（SKILL.md 800B-30KB、完整 YAML 元数据、有效 description）。
+
+#### 部分新增亮点（前 30 个）
+- `mindverse-secondme` — Use when the user wants to log in to SecondMe from OpenClaw, re-login, logout, get the auth URL, manage their SecondMe p
+- `youtube-video-editor-online` — > The youtube-video-editor-online skill lets creators trim, cut, caption, and reformat footage specifically for YouTube 
+- `awesome-poetize-open-blog-automation` — 专为开源版 awesome-poetize-open 设计的 POETIZE 博客自动化技能。通过 `/api/api/*` 接口完成文章发布、更新、隐藏、分类标签维护、主题切换、数据分析和 SEO 运维。Use only when the
+- `ifc-to-excel` — "Convert IFC files (2x3, 4x1, 4x3) to Excel databases using IfcExporter CLI. Extract BIM data, properties, and geometry 
+- `line-oa` — Operate LINE Official Account Manager (chat.line.biz) via browser automation. Use when asked to check LINE messages, rep
+- `hi` — "Captures learnings, errors, and corrections to enable continuous improvement. Use when: (1) A command or operation fail
+- `self-improving-agent-1-0-5` — "Captures learnings, errors, and corrections to enable continuous improvement. Use when: (1) A command or operation fail
+- `self-improving-agent-5` — "Captures learnings, errors, and corrections to enable continuous improvement. Use when: (1) A command or operation fail
+- `moltdj` — SoundCloud for AI bots. Generate tracks and podcasts, share on Moltbook, and earn from tips + royalties.
+- `edict-multi-agent-orchestration` — Install and use the Edict (三省六部) multi-agent orchestration system with 12 specialized AI agents, real-time kanban dashbo
+- `next-supabase-vercel-bundle` — ORQUESTADOR REAL para el ciclo completo de desarrollo Full-Stack. Conecta a Supabase, genera migrations SQL ejecutables,
+- `pinch-to-post` — Manage WordPress sites through WP Pinch MCP tools. Part of WP Pinch (wp-pinch.com).
+- `blue-picture-video-editor-app` — > The blue-picture-video-editor-app skill brings conversational video editing directly into your ClawHub workflow. Trim 
+- `vincent` — Use this skill to safely create a wallet the agent can use for transfers, swaps, and any EVM chain transaction. Also sup
+- `vincent-agent-wallet` — Use this skill to safely create a wallet the agent can use for transfers, swaps, and any EVM chain transaction. Also sup
+- `feishu-bitable-creator` — | Create and populate Feishu (Lark) Bitable (multidimensional tables) with automated cleanup. Use when the user needs to
+- `developer-interview-simulator` — >- Simulates developer/engineering interviews: coding rounds, system design, behavioral for engineers, and tech-specific
+- `animation-shader` — READ this skill when implementing or configuring animation-style shaders (Toon/Cel Shaders) — including outlines, rim li
+- `self-improving-cognition` — "Systematic improvement of thinking patterns, decision quality, problem-solving abilities, and mental performance. Use w
+- `abm-ai-seo` — "When the user wants to optimize content for AI search engines, get cited by LLMs, or appear in AI-generated answers. Al
+- `ai-seo` — "When the user wants to optimize content for AI search engines, get cited by LLMs, or appear in AI-generated answers. Al
+- `anygen-slide-generator` — "Use this skill any time the user wants to create, design, or produce slide presentations — as standalone files or embed
+- `a-stock-orchestrator` — A股投研指挥官 - 编排调度多个股票分析Skill，串联成完整投研流水线。支持四种模式：板块扫描、板块分析、个股深度分析、持仓体检。最终输出结构化投资简报并自动存档飞书。
+- `clawsend` — Agent-to-agent messaging with cryptographic signing and encryption. Send structured messages through the ClawHub relay.
+- `wemp-ops` — > 微信公众号全流程运营：选题→采集→写作→排版→发布→数据分析→评论管理。 Use when: (1) 用户要写公众号文章或提供了选题方向, (2) 用户说"写一篇关于XXX的文章"/"帮我写篇推文"/"出一篇稿子", (3) 用户要求采
+- `grief-navigation-basics` — >- Practical guidance for navigating grief after loss. Use when someone has lost a person, relationship, job, or life ch
+- `wecom-ccuniverse-leo` — 文档与智能表格操作。当用户提到企业微信文档、创建文档、编辑文档、新建文档、写文档、智能表格时激活。支持文档创建/写入和智能表格的创建及子表/字段/记录写入。注意：所有文档创建和编辑请求都应使用此 skill，不要尝试用其他方式处理文档操作。
+- `wecom-doc` — 文档与智能表格操作。当用户提到企业微信文档、创建文档、编辑文档、新建文档、写文档、智能表格时激活。支持文档创建/写入和智能表格的创建及子表/字段/记录写入。注意：所有文档创建和编辑请求都应使用此 skill，不要尝试用其他方式处理文档操作。
+- `tests44` — 适用于在前进平台为**已部署工作负载**创建持续更新流水线（代码克隆 → 构建 → 镜像构建 → 镜像更新部署）。生成 Jenkinsfile 前必须完整阅读本 SKILL 内「流水线骨架」节模板，禁止凭记忆默写。
+- `afrexai-recruiting-engine` — Full-cycle recruiting agent — source, screen, score, and hire top talent with structured frameworks, scorecards, and pip
+
+---
+
+
 ## v0.18.0 — 2026-06-29
 
 ### 🚀 周更：新增 100 个 Skills，总计 2109

@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Proposal — Acme × Studio</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary: #e2e8f0;
+            --primary-light: #334155;
+            --accent: #f8fafc;
+            --bg: #0f172a;
+            --bg-alt: #1e293b;
+            --text: #f8fafc;
+            --text-secondary: #cbd5e1;
+            --text-muted: #64748b;
+            --border: #334155;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'JetBrains Mono', monospace;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.8;
+            font-size: 14px;
+        }
+
+        .container {
+            max-width: 700px;
+            margin: 0 auto;
+            padding: 3rem 2rem;
+        }
+
+        /* Header */
+        header {
+            padding-bottom: 3rem;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 3rem;
+        }
+
+        header h1 {
+            font-size: 1rem;
+            font-weight: 500;
+            text-transform: lowercase;
+            color: var(--text-muted);
+            margin-bottom: 0.5rem;
+        }
+
+        header .title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+
+        header .meta {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+        }
+
+        /* Sections */
+        section {
+            padding: 2rem 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        section:last-of-type {
+            border-bottom: none;
+        }
+
+        section h2 {
+            font-size: 0.85rem;
+            font-weight: 500;
+            text-transform: lowercase;
+            color: var(--text-muted);
+            margin-bottom: 1.5rem;
+        }
+
+        section p {
+            color: var(--text-secondary);
+            margin-bottom: 1rem;
+        }
+
+        section ul {
+            list-style: none;
+            margin: 1rem 0;
+        }
+
+        section li {
+            padding: 0.5rem 0;
+            color: var(--text-secondary);
+            display: flex;
+            align-items: baseline;
+            gap: 1rem;
+        }
+
+        section li::before {
+            content: '—';
+            color: var(--text-muted);
+        }
+
+        /* Timeline */
+        .timeline {
+            display: grid;
+            gap: 0.5rem;
+        }
+
+        .timeline-row {
+            display: grid;
+            grid-template-columns: 100px 1fr;
+            gap: 2rem;
+            padding: 0.5rem 0;
+        }
+
+        .timeline-row .date {
+            color: var(--text-muted);
+        }
+
+        /* Investment */
+        .price {
+            font-size: 2rem;
+            font-weight: 600;
+            color: var(--accent);
+            margin: 1rem 0;
+        }
+
+        .price-note {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+        }
+
+        /* Terms */
+        .terms {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+        }
+
+        .terms p {
+            margin-bottom: 0.5rem;
+            color: var(--text-muted);
+        }
+
+        /* Accept */
+        .accept-section {
+            background: var(--bg-alt);
+            padding: 2rem;
+            margin-top: 2rem;
+            border: 1px solid var(--border);
+        }
+
+        .accept-section h2 {
+            margin-bottom: 1rem;
+        }
+
+        .signature-area {
+            margin-top: 2rem;
+            padding-top: 2rem;
+            border-top: 1px solid var(--border);
+        }
+
+        .signature-line {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            margin-bottom: 1.5rem;
+        }
+
+        .signature-line .line {
+            flex: 1;
+            border-bottom: 1px solid var(--text-muted);
+            margin: 0 1rem;
+        }
+
+        .signature-line label {
+            color: var(--text-muted);
+            font-size: 0.8rem;
+        }
+
+        /* Footer */
+        footer {
+            margin-top: 3rem;
+            padding-top: 2rem;
+            border-top: 1px solid var(--border);
+            color: var(--text-muted);
+            font-size: 0.8rem;
+            text-align: center;
+        }
+
+        @media (max-width: 600px) {
+            .container { padding: 2rem 1.5rem; }
+            .timeline-row { grid-template-columns: 1fr; gap: 0.5rem; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        
+        <header>
+            <h1>proposal</h1>
+            <div class="title">Acme Corp × Design Studio</div>
+            <div class="meta">feb 3, 2026 — valid 14 days</div>
+        </header>
+
+        <section>
+            <h2>project</h2>
+            <p>website redesign and development for acme corp product launch. responsive design, cms integration, 3-month support included.</p>
+        </section>
+
+        <section>
+            <h2>scope</h2>
+            <ul>
+                <li>discovery and strategy (1 week)</li>
+                <li>design: homepage + 5 interior pages</li>
+                <li>development: next.js, headless cms</li>
+                <li>mobile responsive</li>
+                <li>seo foundation</li>
+                <li>analytics setup</li>
+                <li>3 rounds of revisions</li>
+                <li>90-day support post-launch</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>timeline</h2>
+            <div class="timeline">
+                <div class="timeline-row">
+                    <span class="date">week 1</span>
+                    <span>discovery, wireframes</span>
+                </div>
+                <div class="timeline-row">
+                    <span class="date">week 2-3</span>
+                    <span>design</span>
+                </div>
+                <div class="timeline-row">
+                    <span class="date">week 4-6</span>
+                    <span>development</span>
+                </div>
+                <div class="timeline-row">
+                    <span class="date">week 7</span>
+                    <span>testing, launch</span>
+                </div>
+            </div>
+        </section>
+
+        <section>
+            <h2>investment</h2>
+            <div class="price">$12,500</div>
+            <p class="price-note">50% due on signing. 50% on launch.</p>
+        </section>
+
+        <section>
+            <h2>terms</h2>
+            <div class="terms">
+                <p>— payment via bank transfer or stripe</p>
+                <p>— additional revisions: $150/hour</p>
+                <p>— scope changes require new estimate</p>
+                <p>— client provides copy and images</p>
+                <p>— source files included on completion</p>
+            </div>
+        </section>
+
+        <div class="accept-section">
+            <h2>accept</h2>
+            <p>to proceed, sign below or reply "approved" via email.</p>
+            
+            <div class="signature-area">
+                <div class="signature-line">
+                    <label>signature</label>
+                    <span class="line"></span>
+                </div>
+                <div class="signature-line">
+                    <label>date</label>
+                    <span class="line"></span>
+                </div>
+            </div>
+        </div>
+
+        <footer>
+            <p>design studio — <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail=

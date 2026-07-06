@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enterprise Consulting Services — Proposal for Meridian Corp</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary: #1e3a5f;
+            --primary-dark: #172e4d;
+            --primary-light: #e0f2fe;
+            --accent: #2563eb;
+            --bg: #ffffff;
+            --bg-alt: #f8fafc;
+            --text: #0f172a;
+            --text-secondary: #334155;
+            --border: #cbd5e1;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.7;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        /* Header */
+        header {
+            background: var(--primary);
+            color: white;
+            padding: 4rem 3rem;
+        }
+
+        .logo {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 3rem;
+            letter-spacing: 0.05em;
+        }
+
+        header h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            line-height: 1.2;
+        }
+
+        header .subtitle {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            margin-bottom: 2rem;
+        }
+
+        .meta-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+            font-size: 0.9rem;
+            opacity: 0.85;
+            border-top: 1px solid rgba(255,255,255,0.2);
+            padding-top: 2rem;
+            margin-top: 2rem;
+        }
+
+        .meta-item label {
+            display: block;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            opacity: 0.7;
+            margin-bottom: 0.25rem;
+        }
+
+        /* Sections */
+        section {
+            padding: 3rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        section h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 3px solid var(--primary);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        section p {
+            color: var(--text-secondary);
+            margin-bottom: 1rem;
+        }
+
+        section ul {
+            margin: 1.5rem 0 1.5rem 1.5rem;
+            color: var(--text-secondary);
+        }
+
+        section li {
+            margin-bottom: 0.75rem;
+        }
+
+        /* Highlight */
+        .highlight {
+            background: var(--primary-light);
+            border-left: 4px solid var(--primary);
+            padding: 1.5rem 2rem;
+            margin: 2rem 0;
+        }
+
+        /* Table */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 2rem 0;
+            border: 2px solid var(--border);
+        }
+
+        th {
+            background: var(--primary);
+            color: white;
+            padding: 1rem;
+            text-align: left;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        td {
+            padding: 1rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        tr:nth-child(even) {
+            background: var(--bg-alt);
+        }
+
+        /* Team */
+        .team-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .team-member {
+            padding: 1.5rem;
+            background: var(--bg-alt);
+            border-radius: 8px;
+        }
+
+        .team-member h4 {
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+
+        .team-member .role {
+            color: var(--accent);
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .team-member p {
+            font-size: 0.9rem;
+            margin: 0;
+        }
+
+        /* Investment */
+        .investment-box {
+            background: var(--bg-alt);
+            border: 2px solid var(--border);
+            padding: 2rem;
+            margin: 2rem 0;
+        }
+
+        .investment-box h3 {
+            font-size: 1.25rem;
+            margin-bottom: 1rem;
+        }
+
+        .investment-amount {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin: 1rem 0;
+        }
+
+        /* Next Steps */
+        .steps {
+            counter-reset: step;
+            list-style: none;
+            margin: 2rem 0;
+            padding: 0;
+        }
+
+        .steps li {
+            counter-increment: step;
+            padding: 1rem 0 1rem 3.5rem;
+            position: relative;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .steps li::before {
+            content: counter(step);
+            position: absolute;
+            left: 0;
+            top: 1rem;
+            width: 2rem;
+            height: 2rem;
+            background: var(--primary);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        /* CTA */
+        .cta-section {
+            background: var(--bg-alt);
+            text-align: center;
+            padding: 3rem;
+        }
+
+        .cta-button {
+            display: inline-block;
+            background: var(--primary);
+            color: white;
+            padding: 1rem 2.5rem;
+            font-weight: 600;
+            text-decoration: none;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            transition: all 0.3s;
+        }
+
+        .cta-button:hover {
+            background: var(--primary-dark);
+        }
+
+        /* Footer */
+        footer {
+            background: var(--primary);
+            color: white;
+            padding: 2rem 3rem;
+            text-align: center;
+            font-size: 0.9rem;
+        }
+
+        footer a {
+            color: var(--primary-light);
+        }
+
+        /* Signature */
+        .signature-block {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 3rem;
+            margin-top: 2rem;
+            padding-top: 2rem;
+            border-top: 1px solid var(--border);
+        }
+
+        .signature-line {
+            border-bottom: 1px solid var(--text);
+            padding-bottom: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .signature-label {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+
+        @media (max-width: 768px) {
+            header { padding: 2rem 1.5rem; }
+            header h1 { font-size: 1.75rem; }
+            section { padding: 2rem 1.5rem; }
+            .meta-grid, .team-grid, .signature-block { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        
+        <header>
+            <div class="logo">STRATEGIC PARTNERS LLC</div>
+            <h1>Enterprise Consulting Services</h1>
+            <p class="subtitle">Digital Transformation & Process Optimization Engagement</p>
+            
+            <div class="meta-grid">
+                <div class="meta-item">
+                    <label>Prepared For</label>
+                    <span>Meridian Corporation</span>
+                </div>
+                <div class="meta-item">
+                    <label>Prepared By</label>
+                    <span>Strategic Partners LLC</span>
+                </div>
+                <div class="meta-item">
+                    <label>Date</label>
+                    <span>February 3, 2026</span>
+                </div>
+                <div class="meta-item">
+                    <label>Valid Until</label>
+                    <span>March 3, 2026</span>
+                </div>
+            </div>
+        </header>
+
+        <section>
+            <h2>Executive Summary</h2>
+            <p>Meridian Corporation has identified the need to modernize its operational processes and technology infrastructure to maintain competitive advantage in an evolving marketplace. Following our discovery session on January 28, 2026, Strategic Partners LLC is pleased to present this proposal for a comprehensive digital transformation engagement.</p>
+            <div class="highlight">
+                <strong>Engagement Objective:</strong> Reduce operational costs by 25% while improving process efficiency and customer satisfaction within 12 months.
+            </div>
+        </section>
+
+        <section>
+            <h2>Understanding Your Needs</h2>
+            <p>Based on our assessment, Meridian Corporation is currently facing the following challenges:</p>
+            <ul>
+                <li>Legacy systems creating operational bottlenecks and data silos</li>
+                <li>Manual processes consuming significant staff resources</li>
+                <li>Limited visibility into real-time business metrics</li>
+                <li>Customer experience inconsistencies across channels</li>
+                <li>Difficulty scaling operations to meet growth targets</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Proposed Solution</h2>
+            <p>We recommend a phased approach to digital transformation that minimizes disruption while delivering measurable value at each stage:</p>
+            <ul>
+                <li><strong>Phase 1:</strong> Process audit and technology assessment</li>
+                <li><strong>Phase 2:</strong> Core system modernization and integration</li>
+                <li><strong>Phase 3:</strong> Automation implementation and staff training</li>
+                <li><strong>Phase 4:</strong> Optimization and continuous improvement framework</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Timeline & Milestones</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Phase</th>
+                        <th>Deliverables</th>
+                        <th>Timeline</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Phase 1</td>
+                        <td>Assessment report, roadmap, quick wins</td>
+                        <td>Weeks 1-4</td>
+                    </tr>
+                    <tr>
+                        <td>Phase 2</td>
+                        <td>System architecture, integrations, data migration</td>
+                        <td>Weeks 5-16</td>
+                    </tr>
+                    <tr>
+                        <td>Phase 3</td>
+                        <td>Automation workflows, training program, documentation</td>
+                        <td>Weeks 17-24</td>
+                    </tr>
+                    <tr>
+                        <td>Phase 4</td>
+                        <td>Optimization report, KPI dashboard, handoff</td>
+                        <td>Weeks 25-30</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>Project Team</h2>
+            <div class="team-grid">
+                <div class="team-member">
+                    <h4>Sarah Chen</h4>
+                    <div class="role">Engagement Lead</div>
+                    <p>20+ years enterprise consulting experience</p>
+                </div>
+                <div class="team-member">
+                    <h4>Michael Torres</h4>
+                    <div class="role">Technical Architect</div>
+                    <p>Former CTO, Fortune 500 implementations</p>
+                </div>
+                <div class="team-member">
+                    <h4>Jennifer Walsh</h4>
+                    <div class="role">Process Analyst</div>
+                    <p>Six Sigma Black Belt, change management</p>
+                </div>
+                <div class="team-member">
+                    <h4>David Kim</h4>
+                    <div class="role">Solutions Engineer</div>
+                    <p>15+ years systems integration</p>
+                </div>
+            </div>
+        </section>
+
+        <section>
+            <h2>Investment</h2>
+            <div class="investment-box">
+                <h3>Full Engagement (Phases 1-4)</h3>
+                <div class="investment-amount">$185,000</div>
+                <p>Includes all consulting services, deliverables, and training as outlined above.</p>
+                <p><strong>Payment Terms:</strong> 30% upon signing, 40% at Phase 2 completion, 30% at engagement completion.</p>
+            </div>
+            <p>Optional: Phase 1 only (Assessment & Roadmap): $35,000</p>
+            <p>Optional: Ongoing advisory retainer post-engagement: $8,500/month</p>
+        </section>
+
+        <section>
+            <h2>Terms & Conditions</h2>
+            <ul>
+                <li>This proposal is valid for 30 days from the date above</li>
+                <li>All work performed under mutual NDA signed January 15, 2026</li>
+                <li>Travel expenses billed at cost with prior approval</li>
+                <li>Change requests outside scope subject to separate SOW</li>
+                <li>Engagement governed by Master Services Agreement</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Next Steps</h2>
+            <ol class="steps">
+                <li>Review this proposal and schedule follow-up call to discuss questions</li>
+                <li>Finalize scope and execute Statement of Work</li>
+                <li>Complete procurement and compliance requirements</li>
+                <li>Kickoff meeting scheduled within 5 business days of execution</li>
+            </ol>
+            
+            <div class="signature-block">
+                <div>
+                    <div class="signature-line"></div>
+                    <div class="signature-label">Meridian Corporation — Authorized Signature</div>
+                    <div class="signature-label" style="margin-top: 1rem;">Date: _____________</div>
+                </div>
+                <div>
+                    <div class="signature-line"></div>
+                    <div class="signature-label">Strategic Partners LLC — Authorized Signature</div>
+                    <div class="signature-label" style="margin-top: 1rem;">Date: _____________</div>
+                </div>
+            </div>
+        </section>
+
+        <div class="cta-section">
+            <p style="margin-bottom: 1.5rem; color: var(--text-secondary);">Ready to proceed?</p>
+            <a href="/cdn-cgi/l/email-protection#ee8b80898f898b838b809aae9d9a9c8f9a8b89878d9e8f9c9a808b9c9dc08d8183" class="cta-button">Contact Our Team</a>
+        </div>
+
+        <footer>
+            <p><strong>Strategic Partners LLC</strong></p>
+            <p>123 Business Center Drive, Suite 400 • Chicago, IL 60601</p>
+            <p><a href="/cdn-cgi/l/email-protection#21444f464046444c444f5561525553405544464842514053554f4453520f424e4c"><span class="__cf_email__" data-cfemail="c3a6ada4a2a4a6aea6adb783b0b7b1a2b7a6a4aaa0b3a2b1b7ada6b1b0eda0acae">[email&#160;protected]</span></a> • (31

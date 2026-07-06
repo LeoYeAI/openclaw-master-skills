@@ -1,0 +1,31 @@
+{
+  "name": "precog-skill",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "OpenClaw skill for PrecogMasterV8 prediction markets",
+  "scripts": {
+    "test":        "vitest run",
+    "test:markets": "vitest run tests/markets.test.mjs",
+    "test:trade":   "vitest run tests/trade.test.mjs"
+  },
+  "dependencies": {
+    "viem": "^2.0.0"
+  },
+  "devDependencies": {
+    "vitest": "^1.0.0"
+  },
+  "openclaw": {
+    "envVars": {
+      "PRIVATE_KEY": "required — secp256k1 private key (0x-prefixed) for signing transactions. Written to ~/.openclaw/.env by setup.mjs --generate. Never transmitted over the network.",
+      "PRECOG_RPC_URL": "optional — override the default public RPC endpoints. Use a trusted endpoint only.",
+      "PRECOG_NETWORK": "optional — default network: 'sepolia' (testnet, default) or 'mainnet' (Base mainnet, real funds). Can be overridden per-command with --network."
+    },
+    "configPaths": {
+      "~/.openclaw/.env": "created by setup.mjs --generate. Stores PRIVATE_KEY in plaintext. Treat as a wallet key file: restrict permissions and back it up."
+    },
+    "networks": {
+      "sepolia": { "chainId": 84532, "contract": "0x61ec71F1Fd37ecc20d695E83F3D68e82bEfe8443" },
+      "mainnet": { "chainId": 8453,  "contract": "0x00000000000c109080dfa976923384b97165a57a" }
+    }
+  }
+}

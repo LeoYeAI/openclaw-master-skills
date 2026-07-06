@@ -1,0 +1,32 @@
+{
+  "id": "my-first-skill",
+  "name": "my-first-skill",
+  "version": "0.1.0",
+  "description": "A simple demo skill",
+  "tags": [],
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "query": {
+        "type": "string"
+      }
+    },
+    "required": [
+      "query"
+    ]
+  },
+  "outputSchema": {
+    "type": "object",
+    "properties": {
+      "result": {
+        "type": "string"
+      }
+    }
+  },
+  "adapterType": "subprocess",
+  "entrypoint": "python3 skill.py",
+  "metadata": {
+    "author": "",
+    "license": "MIT"
+  }
+}

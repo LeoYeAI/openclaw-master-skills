@@ -1,0 +1,117 @@
+{
+  "id": "web-search-basic",
+  "name": "Basic Web Search Tasks",
+  "version": "1.0.0",
+  "domain": "web",
+  "scoringMethod": "mean",
+  "maxLatencyMs": 30000,
+  "metadata": {
+    "source": "eval-skills built-in",
+    "lastUpdated": "2026-02-28"
+  },
+  "tasks": [
+    {
+      "id": "search_001",
+      "description": "Find the 2024 Nobel Prize in Physics winners",
+      "inputData": { "query": "2024 Nobel Prize Physics" },
+      "expectedOutput": {
+        "type": "contains",
+        "keywords": ["Hinton", "Hopfield"]
+      },
+      "evaluator": { "type": "contains", "caseSensitive": false },
+      "timeoutMs": 15000,
+      "tags": ["factual", "science"]
+    },
+    {
+      "id": "search_002",
+      "description": "Find the creator of Python programming language",
+      "inputData": { "query": "Python creator" },
+      "expectedOutput": {
+        "type": "contains",
+        "keywords": ["Guido van Rossum"]
+      },
+      "evaluator": { "type": "contains", "caseSensitive": false },
+      "timeoutMs": 15000,
+      "tags": ["factual", "tech"]
+    },
+    {
+      "id": "search_003",
+      "description": "Find information about TypeScript",
+      "inputData": { "query": "TypeScript" },
+      "expectedOutput": {
+        "type": "contains",
+        "keywords": ["JavaScript", "Microsoft"]
+      },
+      "evaluator": { "type": "contains", "caseSensitive": false },
+      "timeoutMs": 15000,
+      "tags": ["factual", "tech"]
+    },
+    {
+      "id": "search_004",
+      "description": "Search for the largest planet",
+      "inputData": { "query": "largest planet" },
+      "expectedOutput": {
+        "type": "contains",
+        "keywords": ["Jupiter"]
+      },
+      "evaluator": { "type": "contains", "caseSensitive": false },
+      "timeoutMs": 15000,
+      "tags": ["factual", "science"]
+    },
+    {
+      "id": "search_005",
+      "description": "Search for the speed of light",
+      "inputData": { "query": "speed of light" },
+      "expectedOutput": {
+        "type": "contains",
+        "keywords": ["299"]
+      },
+      "evaluator": { "type": "contains", "caseSensitive": false },
+      "timeoutMs": 15000,
+      "tags": ["factual", "physics"]
+    },
+    {
+      "id": "search_006",
+      "description": "Search for MCP Protocol information",
+      "inputData": { "query": "MCP Protocol" },
+      "expectedOutput": {
+        "type": "contains",
+        "keywords": ["Model Context Protocol"]
+      },
+      "evaluator": { "type": "contains", "caseSensitive": false },
+      "timeoutMs": 15000,
+      "tags": ["factual", "tech"]
+    },
+    {
+      "id": "search_007",
+      "description": "Search for machine learning definition",
+      "inputData": { "query": "machine learning" },
+      "expectedOutput": {
+        "type": "contains",
+        "keywords": ["artificial intelligence", "learn"]
+      },
+      "evaluator": { "type": "contains", "caseSensitive": false },
+      "timeoutMs": 15000,
+      "tags": ["factual", "ai"]
+    },
+    {
+      "id": "search_008",
+      "description": "Verify search result has structured output",
+      "inputData": { "query": "TypeScript" },
+      "expectedOutput": {
+        "type": "schema",
+        "schema": {
+          "type": "object",
+          "properties": {
+            "result": { "type": "string", "minLength": 10 },
+            "source": { "type": "string" }
+          },
+          "required": ["result"]
+        }
+      },
+      "evaluator": { "type": "json_schema" },
+      "timeoutMs": 15000,
+      "tags": ["schema", "structure"]
+    }
+  ]
+}

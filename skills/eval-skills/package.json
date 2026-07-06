@@ -1,0 +1,56 @@
+{
+  "name": "eval-skills",
+  "private": true,
+  "version": "0.1.0",
+  "description": "AI Agent Skill 单元测试框架 — 框架无关的 Skill 发现、生成、筛选与评测工具",
+  "keywords": [
+    "ai-agent",
+    "skill",
+    "evaluation",
+    "benchmark",
+    "llm",
+    "mcp",
+    "openclaw",
+    "langchain"
+  ],
+  "author": "Hertz",
+  "license": "MIT",
+  "engines": {
+    "node": ">=18.0.0",
+    "pnpm": ">=8.0.0"
+  },
+  "scripts": {
+    "build": "pnpm -r run build",
+    "build:core": "pnpm --filter @eval-skills/core run build",
+    "build:cli": "pnpm --filter @eval-skills/cli run build",
+    "dev": "pnpm -r --parallel run dev",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:cov": "vitest run --coverage",
+    "lint": "eslint packages/*/src --ext .ts",
+    "lint:fix": "eslint packages/*/src --ext .ts --fix",
+    "format": "prettier --write \"packages/*/src/**/*.ts\"",
+    "typecheck": "tsc --noEmit -p tsconfig.base.json",
+    "clean": "pnpm -r run clean && rm -rf node_modules"
+  },
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^7.0.0",
+    "@typescript-eslint/parser": "^7.0.0",
+    "@vitest/coverage-v8": "^1.4.0",
+    "eslint": "^8.57.0",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-import": "^2.29.0",
+    "prettier": "^3.2.0",
+    "typescript": "^5.4.0",
+    "vitest": "^1.4.0"
+  },
+  "pnpm": {
+    "overrides": {
+      "typescript": "^5.4.0"
+    }
+  },
+  "dependencies": {
+    "pino": "^10.3.1",
+    "pino-pretty": "^13.1.3"
+  }
+}

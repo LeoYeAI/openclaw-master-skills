@@ -1,0 +1,84 @@
+/* Ember Orange Theme — Bold, energetic */
+:root {
+    --theme-primary: #ff6b35;
+    --theme-primary-dark: #e55a2b;
+    --theme-primary-light: #fff1ed;
+    --theme-accent: #ff8c42;
+    --theme-bg: #ffffff;
+    --theme-bg-alt: #fffaf8;
+    --theme-bg-dark: #0a0a0a;
+    --theme-text: #1a1a1a;
+    --theme-text-secondary: #525252;
+    --theme-text-muted: #737373;
+    --theme-border: #e5e5e5;
+    --theme-shadow: rgba(255, 107, 53, 0.15);
+}
+
+body {
+    background: var(--theme-bg);
+    color: var(--theme-text);
+}
+
+/* Dark mode variant */
+body.dark {
+    background: var(--theme-bg-dark);
+    color: #ffffff;
+    --theme-text: #ffffff;
+    --theme-text-secondary: #a3a3a3;
+    --theme-border: #2a2a2a;
+    --theme-bg-alt: #141414;
+}
+
+.proposal-header {
+    background: linear-gradient(135deg, var(--theme-primary) 0%, var(--theme-accent) 100%);
+    color: white;
+}
+
+.proposal-section-title {
+    color: var(--theme-primary);
+    border-bottom: 3px solid var(--theme-primary);
+}
+
+.proposal-highlight {
+    background: var(--theme-primary-light);
+    border-left: 4px solid var(--theme-primary);
+}
+
+body.dark .proposal-highlight {
+    background: rgba(255, 107, 53, 0.15);
+}
+
+.proposal-cta {
+    background: linear-gradient(135deg, var(--theme-primary) 0%, var(--theme-accent) 100%);
+    color: white;
+    font-weight: 700;
+}
+
+.proposal-cta:hover {
+    box-shadow: 0 8px 25px var(--theme-shadow);
+    transform: translateY(-2px);
+}
+
+.proposal-price {
+    color: var(--theme-primary);
+    font-weight: 800;
+}
+
+.proposal-table th {
+    background: var(--theme-primary);
+    color: white;
+}
+
+.proposal-card {
+    border: 2px solid var(--theme-border);
+}
+
+.proposal-card:hover {
+    border-color: var(--theme-primary);
+    box-shadow: 0 10px 30px var(--theme-shadow);
+}
+
+.proposal-footer {
+    background: var(--theme-bg-alt);
+    border-top: 2px solid var(--theme-primary);
+}

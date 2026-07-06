@@ -1,0 +1,42 @@
+{
+  "id": "gaia-v1",
+  "name": "GAIA v1 (Sample)",
+  "version": "1.0.0",
+  "domain": "general",
+  "scoringMethod": "mean",
+  "tasks": [
+    {
+      "id": "gaia_1",
+      "description": "Find the capital of the country where the 2024 Summer Olympics were held.",
+      "inputData": {
+        "query": "Where were the 2024 Summer Olympics held and what is the capital of that country?"
+      },
+      "expectedOutput": {
+        "type": "contains",
+        "keywords": ["Paris", "France"]
+      },
+      "evaluator": {
+        "type": "contains",
+        "caseSensitive": false
+      },
+      "timeoutMs": 30000,
+      "tags": ["reasoning", "knowledge"]
+    },
+    {
+      "id": "gaia_2",
+      "description": "Calculate the square root of 144 multiplied by 2.",
+      "inputData": {
+        "query": "Calculate the square root of 144 multiplied by 2"
+      },
+      "expectedOutput": {
+        "type": "exact",
+        "value": "24"
+      },
+      "evaluator": {
+        "type": "exact"
+      },
+      "timeoutMs": 10000,
+      "tags": ["math"]
+    }
+  ]
+}

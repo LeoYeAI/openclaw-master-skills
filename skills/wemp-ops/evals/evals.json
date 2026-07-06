@@ -1,0 +1,41 @@
+{
+  "skill_name": "wemp-ops",
+  "evals": [
+    {
+      "id": 1,
+      "eval_name": "article-from-topic",
+      "prompt": "帮我写一篇关于AI如何改变电商运营的公众号文章",
+      "expected_output": "应该走完素材采集→内容写作→封面生图→排版美化的完整流程",
+      "assertions": [
+        {"id": "env-check", "text": "执行环境检查或提到 setup.mjs", "type": "quality"},
+        {"id": "material-collection", "text": "有素材采集/热点搜索步骤", "type": "quality"},
+        {"id": "writing-structure", "text": "文章有清晰的结构（标题/引言/正文/结尾）", "type": "format"},
+        {"id": "cover-image", "text": "提到生成封面图", "type": "quality"},
+        {"id": "no-ai-exposure", "text": "不暴露AI参与写作", "type": "quality"},
+        {"id": "draft-push", "text": "提到推送到草稿箱或通过API发布", "type": "quality"}
+      ]
+    },
+    {
+      "id": 2,
+      "eval_name": "comment-management",
+      "prompt": "帮我看看公众号最新文章的评论，有需要回复的吗",
+      "expected_output": "应该使用公众号API获取评论列表并分析是否需要回复",
+      "assertions": [
+        {"id": "api-usage", "text": "提到使用微信公众号API获取评论", "type": "quality"},
+        {"id": "comment-analysis", "text": "对评论内容进行分析/分类", "type": "quality"},
+        {"id": "reply-suggestion", "text": "给出回复建议或草稿", "type": "quality"}
+      ]
+    },
+    {
+      "id": 3,
+      "eval_name": "data-report",
+      "prompt": "给我看看公众号这周的数据表现怎么样",
+      "expected_output": "应该获取公众号数据并生成周报",
+      "assertions": [
+        {"id": "data-fetch", "text": "提到获取阅读量/粉丝/互动等数据", "type": "quality"},
+        {"id": "report-structure", "text": "有结构化的数据报告格式", "type": "format"},
+        {"id": "trend-analysis", "text": "包含趋势分析或同比/环比", "type": "quality"}
+      ]
+    }
+  ]
+}

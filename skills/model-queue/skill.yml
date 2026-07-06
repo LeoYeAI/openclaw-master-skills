@@ -1,0 +1,151 @@
+name: task-queue-by-model-source
+display_name: "Task Queue by Model Source"
+description: >
+  Multi-queue task orchestration system. Tasks are routed to queues by model source,
+  with support for task dependencies, context passing, and failure handling.
+  Each model source has its own FIFO queue, executing one task at a time.
+version: 1.0.0
+tier: general
+
+metadata:
+  author: openclaw
+  created: "2026-03-04"
+  updated: "2026-03-04"
+
+modes:
+  - name: INTAKE
+    trigger_type: user_message
+    description: Parse user message into tasks, route to appropriate queue
+  
+  - name: DISPATCHER
+    trigger_type: heartbeat_or_cron
+    description: Check queues, dispatch pending tasks, handle completions
+
+triggers:
+  positive:
+    - "add task"
+    - "new task"
+    - "queue this"
+    - "do this for me"
+    - "handle this"
+    - "task status"
+    - "show queue"
+    - "what's pending"
+    - "cancel T-"
+    - "retry T-"
+    - "skip T-"
+    - "用.*模型"
+    - "send to"
+  
+  system_events:
+    - "MODEL_QUEUE_DISPATCH: check queues and run pending tasks"
+
+configuration:
+  tools_md_keys:
+    MODEL_QUEUES_DIR:
+      default: "~/.openclaw/model-queues/"
+      type: path
+      description: Directory for queue files and archives
+    
+    MODEL_QUEUE_MAX_RETRIES:
+      default: 3
+      type: integer
+      description: Max retry attempts per task
+    
+    MODEL_QUEUE_ARCHIVE_DAYS:
+      default: 7
+      type: integer
+      description: Days before archiving completed tasks
+    
+    MODEL_SOURCE_*:
+      type: mapping
+      description: Model source definitions (e.g., MODEL_SOURCE_OLLAMA_LOCAL=ollama/llama3,ollama/qwen2.5)
+
+task_states:
+  - pending    # Ready to be dispatched
+  - waiting    # Waiting for dependency
+  - running    # Currently executing
+  - done       # Completed successfully
+  - failed     # Failed after max retries
+  - blocked    # Dependency failed, needs action
+  - skipped    # Skipped by user or dependency failure
+
+dependency_handling:
+  on_depends_fail:
+    - block     # Mark as blocked, wait for user action
+    - skip      # Skip the task automatically
+    - continue  # Execute anyway with warning context
+
+outputs:
+  - name: queue_files
+    type: file (JSON)
+    path: "${MODEL_QUEUES_DIR}/{source}.json"
+    description: One queue file per model source
+  
+  - name: notifications
+    type: message (chat)
+    description: Task completion/failure notifications
+  
+  - name: archive_files
+    type: file (JSON)
+    path: "${MODEL_QUEUES_DIR}/archive/{source}/{YYYY-MM}.json"
+    description: Archived completed tasks
+
+heartbeat_integration:
+  register_in_heartbeat_md: true
+  heartbeat_check: "Check all queue files in ${MODEL_QUEUES_DIR}; if any pending/running tasks exist, run DISPATCHER mode; else HEARTBEAT_OK"
+  cron_backup:
+    schedule: "every 15 minutes"
+    system_event: "MODEL_QUEUE_DISPATCH: check queues and run pending tasks"
+
+permissions:
+  filesystem:
+    - "create ${MODEL_QUEUES_DIR}/ directory on first run"
+    - "read/write queue files in ${MODEL_QUEUES_DIR}/"
+    - "create archive directories"
+    - "update HEARTBEAT.md"
+  
+  cron:
+    - "register one backup cron job on first run"
+  
+  subagents:
+    - "spawn subagent per running task"
+    - "check subagent session status"
+
+dependencies:
+  tools:
+    required:
+      - read
+      - write
+      - exec
+      - sessions_spawn
+      - subagents
+    optional:
+      - cron
+      - message
+
+references:
+  - queue-schema.md
+
+first_run_behavior: >
+  On first INTAKE (no queue files exist):
+  1. Create ${MODEL_QUEUES_DIR}/ directory
+  2. Create queue files for each configured model source
+  3. Register heartbeat entry in HEARTBEAT.md
+  4. Register backup cron job
+  5. Notify user: "⚙️ Model Queue initialized. N queues ready."
+
+examples:
+  - user: "用 qwen2.5 分析一下销售数据"
+    response: "📋 Added T-001 to queue [ollama-local]\nModel: ollama/qwen2.5\nTask: 分析销售数据\nQueue position: 1"
+  
+  - user: "然后生成报告"
+    response: "📋 Added T-002 to queue [ollama-local]\nModel: ollama/qwen2.5\nTask: 生成报告\nDepends on: T-001\nQueue position: 2"
+  
+  - user: "任务状态"
+    response: |
+      📊 Queue Status
+      
+      [ollama-local] 1 pending, 1 running, 0 done
+        T-001 🔄 running: 分析销售数据 (started 2min ago)
+        T-002 ⏳ waiting: 生成报告 (depends on T-001)

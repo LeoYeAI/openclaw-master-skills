@@ -1,0 +1,60 @@
+{
+  "id": "skill-quality",
+  "name": "Skill Quality Assessment",
+  "version": "1.0.0",
+  "domain": "tool-use",
+  "scoringMethod": "mean",
+  "maxLatencyMs": 30000,
+  "metadata": {
+    "source": "eval-skills",
+    "description": "Assessment criteria for installed skills",
+    "lastUpdated": "2026-02-28"
+  },
+  "tasks": [
+    {
+      "id": "skill_001",
+      "description": "Check if SKILL.md exists and has required YAML frontmatter",
+      "inputData": { "checkType": "metadata", "field": "SKILL.md" },
+      "expectedOutput": { "type": "contains", "keywords": ["name:", "description:"] },
+      "evaluator": { "type": "contains" },
+      "timeoutMs": 5000,
+      "tags": ["metadata", "documentation"]
+    },
+    {
+      "id": "skill_002",
+      "description": "Verify skill has a meaningful description (at least 20 characters)",
+      "inputData": { "checkType": "description_length", "minLength": 20 },
+      "expectedOutput": { "type": "contains", "keywords": ["description"] },
+      "evaluator": { "type": "contains" },
+      "timeoutMs": 5000,
+      "tags": ["metadata", "quality"]
+    },
+    {
+      "id": "skill_003",
+      "description": "Check if skill directory is not empty",
+      "inputData": { "checkType": "directory_not_empty" },
+      "expectedOutput": { "type": "contains", "keywords": ["SKILL.md", "README"] },
+      "evaluator": { "type": "contains" },
+      "timeoutMs": 5000,
+      "tags": ["structure", "completeness"]
+    },
+    {
+      "id": "skill_004",
+      "description": "Verify skill has valid JSON structure (if applicable)",
+      "inputData": { "checkType": "json_valid" },
+      "expectedOutput": { "type": "contains", "keywords": ["valid", "json"] },
+      "evaluator": { "type": "contains" },
+      "timeoutMs": 5000,
+      "tags": ["format", "validity"]
+    },
+    {
+      "id": "skill_005",
+      "description": "Check if skill is not locked or inaccessible",
+      "inputData": { "checkType": "accessibility" },
+      "expectedOutput": { "type": "exact", "value": "accessible" },
+      "evaluator": { "type": "exact" },
+      "timeoutMs": 5000,
+      "tags": ["accessibility", "permissions"]
+    }
+  ]
+}

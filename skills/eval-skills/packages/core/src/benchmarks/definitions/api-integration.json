@@ -1,0 +1,43 @@
+{
+  "id": "api-integration",
+  "name": "API Integration Skills",
+  "description": "Tests ability to handle API responses, including error cases and data extraction.",
+  "version": "1.0.0",
+  "domain": "web",
+  "scoringMethod": "weighted_mean",
+  "tasks": [
+    {
+      "id": "json-parse-extract",
+      "prompt": "Parse the provided JSON string and extract the 'userId'. Input: JSON string.",
+      "inputData": { "json": "{\"userId\": 123, \"name\": \"John\"}" },
+      "expectedOutput": {
+        "type": "exact_match",
+        "value": 123
+      },
+      "timeoutMs": 2000,
+      "weight": 1
+    },
+    {
+      "id": "status-code-check",
+      "prompt": "Check if the HTTP status code indicates success (200-299). Input: status code (integer). Output: boolean.",
+      "inputData": { "code": 201 },
+      "expectedOutput": {
+        "type": "exact_match",
+        "value": true
+      },
+      "timeoutMs": 1000,
+      "weight": 1
+    },
+    {
+      "id": "error-handling",
+      "prompt": "Identify if the response contains an error message. Input: response object. Output: boolean.",
+      "inputData": { "response": { "error": "Not found", "code": 404 } },
+      "expectedOutput": {
+        "type": "exact_match",
+        "value": true
+      },
+      "timeoutMs": 1000,
+      "weight": 2
+    }
+  ]
+}

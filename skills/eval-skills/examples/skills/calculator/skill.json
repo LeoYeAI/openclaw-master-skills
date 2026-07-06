@@ -1,0 +1,26 @@
+{
+  "id": "calculator",
+  "name": "Calculator",
+  "version": "0.1.0",
+  "description": "A simple calculator that evaluates math expressions",
+  "tags": ["math", "calculator", "basic"],
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "expression": { "type": "string", "description": "Math expression to evaluate" }
+    },
+    "required": ["expression"]
+  },
+  "outputSchema": {
+    "type": "object",
+    "properties": {
+      "result": { "type": "string" }
+    }
+  },
+  "adapterType": "subprocess",
+  "entrypoint": "python3 skill.py",
+  "metadata": {
+    "author": "eval-skills",
+    "license": "MIT"
+  }
+}

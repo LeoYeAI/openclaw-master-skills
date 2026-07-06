@@ -1,0 +1,27 @@
+{
+  "id": "web_search_mock",
+  "name": "Web Search Mock",
+  "version": "0.1.0",
+  "description": "A mock web search skill that returns predefined results for common queries. Demonstrates the HTTP adapter pattern.",
+  "tags": ["web", "search", "mock", "demo"],
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "query": { "type": "string", "description": "Search query" }
+    },
+    "required": ["query"]
+  },
+  "outputSchema": {
+    "type": "object",
+    "properties": {
+      "result": { "type": "string" },
+      "source": { "type": "string" }
+    }
+  },
+  "adapterType": "subprocess",
+  "entrypoint": "python3 skill.py",
+  "metadata": {
+    "author": "eval-skills",
+    "license": "MIT"
+  }
+}

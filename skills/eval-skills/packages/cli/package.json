@@ -1,0 +1,31 @@
+{
+  "name": "@eval-skills/cli",
+  "version": "0.1.0",
+  "description": "eval-skills CLI — find, create, select, eval, run, report",
+  "type": "module",
+  "bin": {
+    "eval-skills": "./dist/index.js"
+  },
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": ["dist", "README.md"],
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "clean": "rm -rf dist"
+  },
+  "dependencies": {
+    "@eval-skills/core": "workspace:*",
+    "commander": "^12.0.1",
+    "chalk": "^5.3.0",
+    "ora": "^8.0.1",
+    "js-yaml": "^4.1.0"
+  },
+  "devDependencies": {
+    "@types/js-yaml": "^4.0.9",
+    "@types/node": "^20.11.0",
+    "tsup": "^8.0.2",
+    "typescript": "^5.4.0"
+  },
+  "license": "MIT"
+}

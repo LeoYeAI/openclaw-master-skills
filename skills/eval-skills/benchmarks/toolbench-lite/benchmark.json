@@ -1,0 +1,56 @@
+{
+  "id": "toolbench-lite",
+  "name": "ToolBench Lite (Sample)",
+  "version": "1.0.0",
+  "domain": "tool-use",
+  "scoringMethod": "mean",
+  "tasks": [
+    {
+      "id": "tool_1",
+      "description": "Call the weather tool for New York",
+      "inputData": {
+        "instruction": "What is the weather in New York?",
+        "tools_available": ["weather_api"]
+      },
+      "expectedOutput": {
+        "type": "schema",
+        "schema": {
+          "type": "object",
+          "properties": {
+            "tool": { "const": "weather_api" },
+            "args": {
+              "type": "object",
+              "properties": {
+                "location": { "const": "New York" }
+              },
+              "required": ["location"]
+            }
+          },
+          "required": ["tool", "args"]
+        }
+      },
+      "evaluator": {
+        "type": "json_schema"
+      },
+      "timeoutMs": 15000,
+      "tags": ["tool-use"]
+    },
+    {
+      "id": "tool_2",
+      "description": "Search for 'Apple stock price'",
+      "inputData": {
+        "instruction": "Search for Apple stock price",
+        "tools_available": ["search_tool"]
+      },
+      "expectedOutput": {
+        "type": "contains",
+        "keywords": ["search_tool", "Apple stock price"]
+      },
+      "evaluator": {
+        "type": "contains"
+      },
+      "timeoutMs": 15000,
+      "tags": ["tool-use"]
+    }
+  ]
+}

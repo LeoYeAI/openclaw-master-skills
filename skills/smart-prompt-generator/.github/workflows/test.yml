@@ -1,0 +1,46 @@
+name: Test
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+
+    - name: Check files
+      run: |
+        ls -la
+        echo "Checking SKILL.md..."
+        test -f SKILL.md && echo "✓ SKILL.md exists" || echo "✗ SKILL.md missing"
+        echo "Checking README.md..."
+        test -f README.md && echo "✓ README.md exists" || echo "✗ README.md missing"
+        echo "Checking LICENSE..."
+        test -f LICENSE && echo "✓ LICENSE exists" || echo "✗ LICENSE missing"
+
+    - name: Install dependencies
+      run: npm install
+
+    - name: Run linter
+      run: npm run lint
+
+    - name: Validate package.json
+      run: node -e "const pkg = require('./package.json'); console.log('Package name:', pkg.name); console.log('Version:', pkg.version);"
+
+    - name: Check OpenClaw compatibility
+      run: node -e "const pkg = require('./package.json'); const oc = pkg.openclaw || pkg.openclaw_skill; console.log('OpenClaw compatibility:', oc?.compatibility || 'Not specified');"
+
+    - name: Verify files
+      run: |
+        echo "Files in repository:"
+        git ls-files | sort

@@ -5,6 +5,14 @@ Updated every Monday.
 
 ---
 
+## [v0.19.0] — 2026-07-06
+
+### 🚀 周更：新增 100 个 Skills，总计 2209
+
+来源：openclaw/skills-archive 官方镜像，按质量规则筛选。详见 RELEASES.md。
+
+---
+
 ## [v0.18.0] — 2026-06-29
 
 ### 🚀 周更：新增 100 个 Skills，总计 2109

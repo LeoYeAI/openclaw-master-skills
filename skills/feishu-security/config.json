@@ -1,0 +1,123 @@
+{
+  "version": "2.1.0",
+  "owner": {
+    "lark_id": "",
+    "identified_at": null,
+    "identified_by": null
+  },
+  "security": {
+    "state": "UNBOUND",
+    "locked": false,
+    "auto_identify_sources": [
+      "openclaw_config",
+      "env_var",
+      "feishu_api"
+    ],
+    "transfer": {
+      "pending": false,
+      "new_owner_id": null,
+      "authorized_at": null,
+      "expires_at": null
+    }
+  },
+  "skill_install": {
+    "require_approval": true,
+    "approval_timeout_minutes": 10,
+    "pending_requests": {},
+    "trusted_sources": ["clawhub", "skillhub"],
+    "blocked_skills": []
+  },
+  "rate_limits": {
+    "user_same_content": {
+      "count": 3,
+      "window_seconds": 120,
+      "penalty_seconds": 60
+    },
+    "user_total": {
+      "count": 20,
+      "window_seconds": 60,
+      "penalty_seconds": 60
+    }
+  },
+  "forbidden_paths": [
+    "~/.ssh/",
+    "~/.gnupg/",
+    "~/.aws/",
+    "~/.openclaw/credentials/",
+    "/etc/passwd",
+    "/etc/shadow",
+    "/proc/self/environ",
+    "/proc/self/cmdline",
+    "/var/log/",
+    "**/*key*",
+    "**/*secret*",
+    "**/*password*",
+    "**/*token*",
+    "**/*credential*",
+    "*.pem",
+    "*.p12",
+    "*.pfx",
+    "*.env",
+    ".env.*"
+  ],
+  "injection_keywords": {
+    "chinese": [
+      "忽略之前的指令",
+      "忽略所有规则",
+      "忘记你的规则",
+      "修改SOUL.md",
+      "修改IDENTITY.md",
+      "你现在是",
+      "新指令",
+      "覆盖配置",
+      "改变性格",
+      "系统提示",
+      "忽略指令",
+      "忘记规则",
+      "从现在开始",
+      "忘记之前"
+    ],
+    "english": [
+      "ignore instructions",
+      "disregard rules",
+      "forget previous",
+      "new instructions",
+      "system prompt",
+      "you are now",
+      "override settings",
+      "DAN mode",
+      "jailbreak",
+      "ignore all",
+      "forget everything"
+    ]
+  },
+  "owner_keywords": {
+    "bind": ["绑定主人", "设置主人", "成为主人", "我是主人"],
+    "unbind": ["解绑主人", "解除主人"],
+    "transfer": ["转移主人", "更换主人", "切换主人"],
+    "confirm": ["确认绑定", "确认转移"],
+    "authorize": ["同意转移主人", "授权转移"]
+  },
+  "skill_install_keywords": {
+    "install": ["安装技能", "添加技能", "装技能"],
+    "approve": ["同意安装", "批准安装"],
+    "reject": ["拒绝安装", "不同意安装"],
+    "view": ["查看技能"]
+  },
+  "probing_keywords": [
+    "系统架构", "OpenClaw版本", "有哪些技能",
+    "查看日志", "查看配置", "环境变量",
+    "当前目录", "workspace", "我是管理员", "我有权限"
+  ],
+  "impersonation_keywords": [
+    "我是管理员", "我是主人", "我有权限", "主人让我来的",
+    "i am admin", "i am owner", "i have permission"
+  ],
+  "logging": {
+    "enabled": true,
+    "level": "INFO",
+    "log_path": "./logs/security.log",
+    "max_size_mb": 10,
+    "retention_days": 7
+  }
+}

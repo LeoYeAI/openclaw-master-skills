@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{title}} — Proposal for {{client_name}}</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        /* ========================================
+           BASE STYLES (All Themes)
+           ======================================== */
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            line-height: 1.7;
+            font-size: 16px;
+        }
+        
+        .proposal-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 0;
+        }
+        
+        /* Header */
+        .proposal-header {
+            padding: 4rem 3rem;
+            text-align: center;
+        }
+        
+        .proposal-logo {
+            max-height: 60px;
+            margin-bottom: 2rem;
+        }
+        
+        .proposal-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            line-height: 1.2;
+        }
+        
+        .proposal-subtitle {
+            font-size: 1.25rem;
+            opacity: 0.9;
+            margin-bottom: 2rem;
+        }
+        
+        .proposal-meta {
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+        
+        .proposal-meta span {
+            margin: 0 1rem;
+        }
+        
+        /* Sections */
+        .proposal-section {
+            padding: 3rem;
+            border-bottom: 1px solid var(--theme-border, #e5e5e5);
+        }
+        
+        .proposal-section:last-child {
+            border-bottom: none;
+        }
+        
+        .proposal-section-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.75rem;
+        }
+        
+        .proposal-section p {
+            margin-bottom: 1rem;
+            color: var(--theme-text-secondary, #525252);
+        }
+        
+        .proposal-section ul, .proposal-section ol {
+            margin: 1rem 0 1rem 1.5rem;
+            color: var(--theme-text-secondary, #525252);
+        }
+        
+        .proposal-section li {
+            margin-bottom: 0.5rem;
+        }
+        
+        /* Highlight Blocks */
+        .proposal-highlight {
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            border-radius: 8px;
+        }
+        
+        /* Tables */
+        .proposal-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1.5rem 0;
+        }
+        
+        .proposal-table th,
+        .proposal-table td {
+            padding: 1rem;
+            text-align: left;
+        }
+        
+        .proposal-table th {
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+        
+        .proposal-table td {
+            border-bottom: 1px solid var(--theme-border, #e5e5e5);
+        }
+        
+        /* Cards */
+        .proposal-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin: 1.5rem 0;
+        }
+        
+        .proposal-card {
+            padding: 2rem;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+        }
+        
+        .proposal-card h4 {
+            font-size: 1.25rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .proposal-card .price {
+            font-size: 2rem;
+            font-weight: 700;
+            margin: 1rem 0;
+        }
+        
+        /* Pricing */
+        .proposal-price {
+            font-size: 2.5rem;
+            font-weight: 800;
+        }
+        
+        .proposal-price-period {
+            font-size: 1rem;
+            font-weight: 400;
+            opacity: 0.7;
+        }
+        
+        /* CTA */
+        .proposal-cta {
+            display: inline-block;
+            padding: 1rem 2.5rem;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 1rem;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+        }
+        
+        .proposal-cta-container {
+            text-align: center;
+            padding: 2rem 0;
+        }
+        
+        /* Footer */
+        .proposal-footer {
+            padding: 2rem 3rem;
+            text-align: center;
+            font-size: 0.9rem;
+        }
+        
+        /* ========================================
+           STYLE: CORPORATE
+           ======================================== */
+        
+        .proposal-corporate {
+            font-family: 'Inter', serif;
+        }
+        
+        .proposal-corporate .proposal-title {
+            font-family: 'Playfair Display', serif;
+        }
+        
+        .proposal-corporate .proposal-section-title {
+            font-family: 'Playfair Display', serif;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            font-size: 1.25rem;
+        }
+        
+        /* ========================================
+           STYLE: ENTREPRENEUR
+           ======================================== */
+        
+        .proposal-entrepreneur .proposal-title {
+            font-size: 3rem;
+            font-weight: 800;
+            text-transform: uppercase;
+        }
+        
+        .proposal-entrepreneur .proposal-section-title {
+            font-weight: 800;
+            font-size: 1.75rem;
+        }
+        
+        .proposal-entrepreneur .proposal-cta {
+            font-size: 1.25rem;
+            padding: 1.25rem 3rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        
+        /* ========================================
+           STYLE: CREATIVE
+           ======================================== */
+        
+        .proposal-creative .proposal-header {
+            min-height: 60vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        
+        .proposal-creative .proposal-title {
+            font-size: 3.5rem;
+            font-weight: 800;
+            line-height: 1.1;
+        }
+        
+        .proposal-creative .proposal-section {
+            padding: 4rem 3rem;
+        }
+        
+        .proposal-creative .proposal-section-title {
+            font-size: 2rem;
+        }
+        
+        /* ========================================
+           STYLE: CONSULTANT
+           ======================================== */
+        
+        .proposal-consultant .proposal-section-title {
+            font-weight: 600;
+            border-bottom-width: 1px;
+        }
+        
+        .proposal-consultant .proposal-cards {
+            grid-template-columns: 1fr;
+        }
+        
+        .proposal-consultant .proposal-card {
+            display: grid;
+            grid-template-columns: 1fr auto;
+            align-items: center;
+            gap: 2rem;
+        }
+        
+        /* ========================================
+           STYLE: MINIMAL
+           ======================================== */
+        
+        .proposal-minimal {
+            font-family: 'JetBrains Mono', monospace;
+        }
+        
+        .proposal-minimal .proposal-header {
+            padding: 3rem;
+            text-align: left;
+        }
+        
+        .proposal-minimal .proposal-title {
+            font-size: 1.5rem;
+            font-weight: 500;
+            text-transform: lowercase;
+        }
+        
+        .proposal-minimal .proposal-section {
+            padding: 2rem 3rem;
+        }
+        
+        .proposal-minimal .proposal-section-title {
+            font-size: 1rem;
+            font-weight: 500;
+            text-transform: lowercase;
+            border-bottom: none;
+            margin-bottom: 1rem;
+        }
+        
+        .proposal-minimal .proposal-cta {
+            font-family: 'JetBrains Mono', monospace;
+            padding: 0.75rem 1.5rem;
+        }
+        
+        /* ========================================
+           PRINT STYLES
+           ======================================== */
+        
+        @media print {
+            .proposal-container {
+                max-width: 100%;
+            }
+            
+            .proposal-section {
+                page-break-inside: avoid;
+            }
+            
+            .proposal-header {
+                page-break-after: avoid;
+            }
+            
+            .proposal-cta {
+                display: none;
+            }
+        }
+        
+        /* ========================================
+           RESPONSIVE
+           ======================================== */
+        
+        @media (max-width: 768px) {
+            .proposal-header {
+                padding: 2rem 1.5rem;
+            }
+            
+            .proposal-title {
+                font-size: 2rem;
+            }
+            
+            .proposal-section {
+                padding: 2rem 1.5rem;
+            }
+            
+            .proposal-cards {
+                grid-template-columns: 1fr;
+            }
+            
+            .proposal-meta span {
+                display: block;
+                margin: 0.25rem 0;
+            }
+        }
+        
+        /* ========================================
+           THEME CSS (Injected)
+           ======================================== */
+        
+        {{theme_css}}
+    </style>
+</head>
+<body class="{{dark_mode}}">
+    <div class="proposal-container proposal-{{style}}">
+        
+        <!-- Header -->
+        <header class="proposal-header">
+            {{#if logo}}
+            <img src="{{logo}}" alt="{{company_name}}" class="proposal-logo">
+            {{/if}}
+            <h1 class="proposal-title">{{title}}</h1>
+            <p class="proposal-subtitle">Prepared for {{client_name}}</p>
+            <p class="proposal-meta">
+                <span>{{date}}</span>
+                <span>•</span>
+                <span>Valid until {{valid_until}}</span>
+            </p>
+        </header>
+        
+        <!-- Content Sections -->
+        {{content}}
+        
+        <!-- CTA -->
+        <div class="proposal-cta-container">
+            <a href="{{cta_link}}" class="proposal-cta">{{cta_text}}</a>
+        </div>
+        
+        <!-- Footer -->
+        <footer class="proposal-footer">
+            <p>{{company_name}} — {{tagline}}</p>
+            <p>{{contact_info}}</p>
+        </footer>
+        
+    </div>
+</body>
+</html>

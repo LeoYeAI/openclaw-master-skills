@@ -1,0 +1,63 @@
+{
+  "name": "cloudcc-openapi-withobject",
+  "version": "2.1.0",
+  "description": "CloudCC OpenAPI 调用技能 - 提供完整的 REST API 接口调用能力，支持对象/字段元数据查询和安全日志",
+  "author": "鲁班",
+  "license": "MIT",
+  "keywords": [
+    "cloudcc",
+    "crm",
+    "api",
+    "openapi",
+    "rest",
+    "metadata",
+    "logging"
+  ],
+  "categories": [
+    "productivity",
+    "business",
+    "development"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/openclaw/skills.git",
+    "directory": "cloudcc-openapi-withobject"
+  },
+  "engines": {
+    "openclaw": ">=0.7.0"
+  },
+  "scripts": {
+    "test": "echo \"No tests specified\""
+  },
+  "skill": {
+    "name": "cloudcc-openapi-withobject",
+    "version": "2.1.0",
+    "entry": "SKILL.md",
+    "readme": "README.md",
+    "scripts": [
+      "scripts/get-token.sh",
+      "scripts/call-api.sh",
+      "scripts/logger.sh",
+      "scripts/find-object.sh",
+      "scripts/get-objects.sh",
+      "scripts/get-fields.sh"
+    ],
+    "config": {
+      "config.example.json": "config.example.json"
+    },
+    "capabilities": [
+      "http_request",
+      "file_read",
+      "file_write",
+      "exec"
+    ],
+    "permissions": [
+      "network:cloudcc.cn",
+      "network:developer.apis.cloudcc.cn"
+    ]
+  },
+  "bugs": {
+    "url": "https://github.com/openclaw/skills/issues"
+  },
+  "homepage": "https://clawhub.com/skills/cloudcc-openapi-withobject"
+}

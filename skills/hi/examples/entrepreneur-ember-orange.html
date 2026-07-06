@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Marketing Partnership — Proposal for TechStart Inc</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary: #ff6b35;
+            --primary-dark: #e55a2b;
+            --primary-light: #fff1ed;
+            --accent: #ff8c42;
+            --bg: #ffffff;
+            --bg-alt: #fffaf8;
+            --text: #1a1a1a;
+            --text-secondary: #525252;
+            --border: #e5e5e5;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.7;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        /* Header */
+        header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+            color: white;
+            padding: 5rem 3rem;
+            text-align: center;
+        }
+
+        header h1 {
+            font-size: 3rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: -0.02em;
+            margin-bottom: 1rem;
+        }
+
+        header p {
+            font-size: 1.25rem;
+            opacity: 0.9;
+        }
+
+        header .meta {
+            margin-top: 2rem;
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+
+        /* Sections */
+        section {
+            padding: 4rem 3rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        section h2 {
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--primary);
+            margin-bottom: 1.5rem;
+        }
+
+        section p {
+            color: var(--text-secondary);
+            margin-bottom: 1rem;
+            font-size: 1.1rem;
+        }
+
+        section ul {
+            list-style: none;
+            margin: 1.5rem 0;
+        }
+
+        section li {
+            padding: 0.75rem 0;
+            padding-left: 2rem;
+            position: relative;
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+        }
+
+        section li::before {
+            content: '→';
+            position: absolute;
+            left: 0;
+            color: var(--primary);
+            font-weight: 700;
+        }
+
+        /* Highlight */
+        .highlight {
+            background: var(--primary-light);
+            border-left: 4px solid var(--primary);
+            padding: 1.5rem 2rem;
+            margin: 2rem 0;
+            border-radius: 0 8px 8px 0;
+        }
+
+        /* Timeline */
+        .timeline {
+            display: grid;
+            gap: 1rem;
+            margin: 2rem 0;
+        }
+
+        .timeline-item {
+            display: grid;
+            grid-template-columns: 120px 1fr;
+            gap: 1.5rem;
+            align-items: start;
+        }
+
+        .timeline-label {
+            background: var(--primary);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            text-align: center;
+        }
+
+        /* Pricing */
+        .price-box {
+            background: var(--bg-alt);
+            border: 2px solid var(--primary);
+            border-radius: 16px;
+            padding: 3rem;
+            text-align: center;
+            margin: 2rem 0;
+        }
+
+        .price-box .package {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--primary);
+            margin-bottom: 1rem;
+        }
+
+        .price-box .amount {
+            font-size: 4rem;
+            font-weight: 800;
+            color: var(--text);
+        }
+
+        .price-box .period {
+            font-size: 1.25rem;
+            color: var(--text-secondary);
+        }
+
+        .price-box .includes {
+            margin-top: 2rem;
+            text-align: left;
+            color: var(--text-secondary);
+        }
+
+        /* CTA */
+        .cta-section {
+            background: var(--primary-light);
+            text-align: center;
+            padding: 4rem 3rem;
+        }
+
+        .cta-section h2 {
+            color: var(--text);
+        }
+
+        .cta-button {
+            display: inline-block;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+            color: white;
+            padding: 1.25rem 3rem;
+            border-radius: 8px;
+            font-size: 1.25rem;
+            font-weight: 700;
+            text-decoration: none;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-top: 1.5rem;
+            transition: all 0.3s;
+        }
+
+        .cta-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(255, 107, 53, 0.3);
+        }
+
+        /* Footer */
+        footer {
+            background: var(--bg-alt);
+            padding: 2rem 3rem;
+            text-align: center;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            border-top: 2px solid var(--primary);
+        }
+
+        @media (max-width: 768px) {
+            header { padding: 3rem 1.5rem; }
+            header h1 { font-size: 2rem; }
+            section { padding: 2.5rem 1.5rem; }
+            section h2 { font-size: 1.5rem; }
+            .timeline-item { grid-template-columns: 1fr; }
+            .price-box .amount { font-size: 3rem; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        
+        <header>
+            <h1>Let's Build Something Great</h1>
+            <p>A marketing partnership proposal for TechStart Inc</p>
+            <p class="meta">February 3, 2026 • Valid for 14 days</p>
+        </header>
+
+        <section>
+            <h2>The Problem</h2>
+            <p>You're launching a product in Q2. You have zero brand awareness. Your competitors are already everywhere. And your internal team is stretched thin building the actual product.</p>
+            <p>You don't have time to figure out marketing. You need someone who already knows what works.</p>
+        </section>
+
+        <section>
+            <h2>The Solution</h2>
+            <p>We'll take marketing off your plate completely. Social media, content, email — all handled. You focus on the product. We'll make sure people know about it.</p>
+            <div class="highlight">
+                <strong>Our goal:</strong> Build enough brand awareness before your Q2 launch that you have a waitlist, not crickets.
+            </div>
+        </section>
+
+        <section>
+            <h2>What You Get</h2>
+            <ul>
+                <li>Social media management across LinkedIn, Twitter, and Instagram</li>
+                <li>4 blog posts per month (SEO-optimized, on-brand)</li>
+                <li>Email newsletter setup + weekly sends</li>
+                <li>Monthly strategy call to align on priorities</li>
+                <li>Dedicated Slack channel for quick questions</li>
+                <li>Monthly analytics report — no vanity metrics, just what matters</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>How It Works</h2>
+            <div class="timeline">
+                <div class="timeline-item">
+                    <span class="timeline-label">Week 1</span>
+                    <div>
+                        <strong>Kickoff & Brand Immersion</strong>
+                        <p>We learn your product, voice, and goals. Set up all accounts and tools.</p>
+                    </div>
+                </div>
+                <div class="timeline-item">
+                    <span class="timeline-label">Week 2-3</span>
+                    <div>
+                        <strong>Content Engine Activated</strong>
+                        <p>First content goes live. Social cadence starts. Email list building begins.</p>
+                    </div>
+                </div>
+                <div class="timeline-item">
+                    <span class="timeline-label">Week 4+</span>
+                    <div>
+                        <strong>Full Speed</strong>
+                        <p>Consistent publishing, community engagement, and optimization based on data.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section>
+            <h2>Investment</h2>
+            <div class="price-box">
+                <div class="package">Growth Package</div>
+                <div class="amount">$4,500<span class="period">/month</span></div>
+                <div class="includes">
+                    <p><strong>Includes everything listed above.</strong></p>
+                    <p>3-month initial commitment, then month-to-month.</p>
+                    <p>Payment due on the 1st of each month.</p>
+                </div>
+            </div>
+        </section>
+
+        <section>
+            <h2>Why Us?</h2>
+            <ul>
+                <li>We've launched 20+ startups from zero to first customers</li>
+                <li>Average client sees 3x social engagement in 90 days</li>
+                <li>We move fast — same-day responses, next-day content</li>
+                <li>No long-term lock-in. We earn your business every month.</li>
+            </ul>
+        </section>
+
+        <section class="cta-section">
+            <h2>Let's Go</h2>
+            <p>Ready to stop worrying about marketing and start building?</p>
+            <a href="/cdn-cgi/l/email-protection#d3bbb6bfbfbc93b6abb2bea3bfb6fdb0bcbeeca0a6b1b9b6b0a7ee9fb6a7f4a0f6e1e394bc" class="cta-button">Reply "Yes" to Start →</a>
+            <p style="margin-top: 1.5rem; font-size: 0.9rem; color: var(--text-secondary);">
+                Or schedule a call: <a href="#" style="color: var(--primary);">calendly.com/example</a>
+            </p>
+        </section>
+
+        <footer>
+            <p><strong>Savage Marketing Co.</strong> — Making brands impossible to ignore</p>
+            <p><a href="/cdn-cgi/l/email-pr
