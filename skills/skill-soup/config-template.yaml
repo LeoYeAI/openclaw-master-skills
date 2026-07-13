@@ -1,0 +1,14 @@
+# Skill Soup Runner Configuration
+api_url: http://localhost:3001
+auth_token: ""  # Set via setup.sh device flow
+agent_runtime: claude-code  # claude-code | codex | gemini-cli
+
+loop:
+  max_iterations: 10
+  delay_between_iterations_seconds: 30
+  evolve_every_n_skills: 3
+
+builder_pool:
+  local_dir: .soup/builders
+  min_pool_size: 3
+  nursery_generations: 1

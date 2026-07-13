@@ -1,0 +1,43 @@
+{
+  "platform": "ClawHub",
+  "uploadPage": "https://clawhub.ai/upload",
+  "uploadMode": "folder",
+  "formFields": {
+    "slug": "stockclaw-yingyan",
+    "displayName": "stockClaw-yingyan 股票量化助手",
+    "version": "1.1.4",
+    "tags": [
+      "latest",
+      "stock",
+      "quant",
+      "openclaw"
+    ],
+    "license": "MIT-0",
+    "updateLog": "1.1.4：openclawCredentials 拆分为 openClaw_api_key / monitor_api_key；HTTP 与 WS 分钥。1.1.3：防重复索要凭证。"
+  },
+  "uploadValidation": {
+    "requiresSlug": true,
+    "requiresDisplayName": true,
+    "requiresAtLeastOneFile": true,
+    "requiresSkillMd": true,
+    "requiresMit0Agreement": true
+  },
+  "folderPayload": {
+    "rootFolderName": "stockClaw-yingyan",
+    "requiredFiles": [
+      "SKILL.md"
+    ],
+    "recommendedFiles": [
+      "reference.md",
+      "examples.md",
+      "CLAWHUB_UPLOAD.md",
+      "openapi.json",
+      "manifest.json",
+      "config.json"
+    ],
+    "notes": [
+      "上传页面提示应上传包含 SKILL.md 文件和文本文件的文件夹。",
+      "页面会保留文件夹路径并自动扁平化外部包装器。"
+    ]
+  }
+}

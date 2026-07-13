@@ -1,0 +1,2358 @@
+ocui_version: "1.0"
+skill: educlaw
+skill_version: "1.0.0"
+display_name: EduClaw
+icon: graduation-cap
+color: "#6366f1"
+default_entity: student
+
+domains:
+  - key: students
+    label: Students
+    entities: [student, student_applicant, guardian, consent_record]
+  - key: academics
+    label: Academics
+    entities: [academic_year, academic_term, program, course, section, room]
+  - key: enrollment
+    label: Enrollment
+    entities: [program_enrollment, course_enrollment, waitlist]
+  - key: grading
+    label: Grading
+    entities: [grading_scale, assessment_plan, assessment]
+  - key: attendance
+    label: Attendance
+    entities: [student_attendance]
+  - key: staff
+    label: Staff
+    entities: [instructor]
+  - key: fees
+    label: Fees
+    entities: [fee_category, fee_structure, scholarship]
+  - key: communications
+    label: Communications
+    entities: [announcement, notification]
+
+dashboard:
+  kpis:
+    - key: total_students
+      label: "Students"
+      type: count
+      action: list-students
+      icon: users
+      drill_action: list-students
+    - key: active_enrollments
+      label: "Active Enrollments"
+      type: count
+      action: list-enrollments
+      filter: { enrollment_status: enrolled }
+      severity: success
+      icon: book-open
+      drill_action: list-enrollments
+      drill_filter: { enrollment_status: enrolled }
+    - key: pending_applicants
+      label: "Pending Applications"
+      type: count
+      action: list-applicants
+      filter: { applicant_status: applied }
+      severity: warning
+      icon: user-plus
+      drill_action: list-applicants
+      drill_filter: { applicant_status: applied }
+    - key: outstanding_fees
+      label: "Outstanding Fees"
+      type: count
+      action: get-outstanding-fees
+      severity: warning
+      icon: dollar-sign
+      drill_action: get-outstanding-fees
+  quick_actions:
+    - action: add-student-applicant
+      label: "New Applicant"
+      icon: user-plus
+    - action: add-student
+      label: "New Student"
+      icon: user
+    - action: add-course
+      label: "New Course"
+      icon: book
+    - action: record-attendance
+      label: "Record Attendance"
+      icon: check-square
+
+workflows:
+  - after: approve-applicant
+    suggest:
+      - action: convert-applicant-to-student
+        label: "Convert to Student"
+        pass: { applicant-id: id }
+  - after: convert-applicant-to-student
+    suggest:
+      - action: create-program-enrollment
+        label: "Enroll in Program"
+        pass: { student-id: id }
+      - action: create-section-enrollment
+        label: "Enroll in Section"
+        pass: { student-id: id }
+  - after: add-section
+    suggest:
+      - action: activate-section
+        label: "Activate Section"
+        pass: { section-id: id }
+      - action: add-assessment-plan
+        label: "Create Assessment Plan"
+        pass: { section-id: id }
+  - after: create-section-enrollment
+    suggest:
+      - action: generate-fee-invoice
+        label: "Generate Fee Invoice"
+        pass: { student-id: student_id }
+  - after: submit-grades
+    suggest:
+      - action: generate-gpa
+        label: "Recalculate GPA"
+        pass: { student-id: student_id }
+      - action: generate-transcript
+        label: "Generate Transcript"
+        pass: { student-id: student_id }
+
+entities:
+  # ---------------------------------------------------------------------------
+  # Students domain
+  # ---------------------------------------------------------------------------
+  student:
+    label: Student
+    label_plural: Students
+    table: educlaw_student
+    id_col: id
+    name_col: full_name
+    primary_field: full_name
+    secondary_field: grade_level
+    identifier_field: naming_series
+    status_field: status
+    status_colors:
+      active: green
+      graduated: blue
+      withdrawn: gray
+      suspended: yellow
+      expelled: red
+      transferred: gray
+      inactive: gray
+    list_action: list-students
+    get_action: get-student
+    add_action: add-student
+    edit_action: update-student
+    fields:
+      id:
+        type: text
+        label: ID
+        read_only: true
+        hidden: true
+      naming_series:
+        type: text
+        label: Student No.
+        read_only: true
+        in_list_view: true
+      company_id:
+        type: link
+        label: Company
+        required: true
+        link_entity: company
+        link_display_field: name
+        link_search_action: list-companies
+        in_form_view: true
+        form_group: header
+        form_order: 1
+      first_name:
+        type: text
+        label: First Name
+        required: true
+        in_list_view: true
+        in_form_view: true
+        form_group: personal
+        form_order: 1
+      middle_name:
+        type: text
+        label: Middle Name
+        in_form_view: true
+        form_group: personal
+        form_order: 2
+      last_name:
+        type: text
+        label: Last Name
+        required: true
+        in_list_view: true
+        in_form_view: true
+        form_group: personal
+        form_order: 3
+      full_name:
+        type: text
+        label: Full Name
+        read_only: true
+        in_list_view: true
+      date_of_birth:
+        type: date
+        label: Date of Birth
+        in_form_view: true
+        form_group: personal
+        form_order: 5
+      gender:
+        type: select
+        label: Gender
+        options: [male, female, non_binary, prefer_not_to_say]
+        in_form_view: true
+        form_group: personal
+        form_order: 6
+      email:
+        type: email
+        label: Email
+        in_form_view: true
+        form_group: contact
+        form_order: 1
+      phone:
+        type: phone
+        label: Phone
+        in_form_view: true
+        form_group: contact
+        form_order: 2
+      grade_level:
+        type: text
+        label: Grade Level
+        in_list_view: true
+        in_form_view: true
+        form_group: academic
+        form_order: 1
+      current_program_id:
+        type: link
+        label: Program
+        link_entity: program
+        link_display_field: name
+        link_search_action: list-programs
+        in_list_view: true
+        in_form_view: true
+        form_group: academic
+        form_order: 2
+      cumulative_gpa:
+        type: text
+        label: Cumulative GPA
+        read_only: true
+        in_list_view: true
+        in_form_view: true
+        form_group: academic
+        form_order: 3
+      academic_standing:
+        type: select
+        label: Academic Standing
+        options: [good, deans_list, honor_roll, probation, suspension]
+        read_only: true
+        in_list_view: true
+        form_group: academic
+        form_order: 4
+      status:
+        type: select
+        label: Status
+        options: [active, graduated, withdrawn, suspended, expelled, transferred, inactive]
+        in_list_view: true
+        in_form_view: true
+        form_group: header
+        form_order: 2
+      enrollment_date:
+        type: date
+        label: Enrollment Date
+        in_form_view: true
+        form_group: academic
+        form_order: 5
+      graduation_date:
+        type: date
+        label: Graduation Date
+        in_form_view: true
+        form_group: academic
+        form_order: 6
+      is_coppa_applicable:
+        type: checkbox
+        label: COPPA Applicable
+        read_only: true
+        in_form_view: true
+        form_group: compliance
+        form_order: 1
+      registration_hold:
+        type: checkbox
+        label: Registration Hold
+        in_form_view: true
+        form_group: compliance
+        form_order: 2
+      created_at:
+        type: datetime
+        label: Created
+        read_only: true
+
+  student_applicant:
+    label: Applicant
+    label_plural: Applicants
+    table: educlaw_student_applicant
+    id_col: id
+    name_col: naming_series
+    primary_field: first_name
+    secondary_field: status
+    identifier_field: naming_series
+    status_field: status
+    status_colors:
+      applied: blue
+      under_review: yellow
+      accepted: green
+      rejected: red
+      waitlisted: orange
+      confirmed: green
+      enrolled: green
+    list_action: list-applicants
+    get_action: get-applicant
+    add_action: add-student-applicant
+    edit_action: update-student-applicant
+    fields:
+      id:
+        type: text
+        label: ID
+        read_only: true
+        hidden: true
+      naming_series:
+        type: text
+        label: Application No.
+        read_only: true
+        in_list_view: true
+      first_name:
+        type: text
+        label: First Name
+        required: true
+        in_list_view: true
+        in_form_view: true
+        form_group: personal
+        form_order: 1
+      last_name:
+        type: text
+        label: Last Name
+        required: true
+        in_list_view: true
+        in_form_view: true
+        form_group: personal
+        form_order: 2
+      date_of_birth:
+        type: date
+        label: Date of Birth
+        required: true
+        in_form_view: true
+        form_group: personal
+        form_order: 3
+      email:
+        type: email
+        label: Email
+        in_form_view: true
+        form_group: contact
+        form_order: 1
+      phone:
+        type: phone
+        label: Phone
+        in_form_view: true
+        form_group: contact
+        form_order: 2
+      applying_for_program_id:
+        type: link
+        label: Program
+        link_entity: program
+        link_display_field: name
+        link_search_action: list-programs
+        in_form_view: true
+        form_group: application
+        form_order: 1
+      applying_for_term_id:
+        type: link
+        label: Term
+        link_entity: academic_term
+        link_display_field: name
+        link_search_action: list-academic-terms
+        in_form_view: true
+        form_group: application
+        form_order: 2
+      application_date:
+        type: date
+        label: Application Date
+        in_list_view: true
+        in_form_view: true
+        form_group: application
+        form_order: 3
+      status:
+        type: select
+        label: Status
+        options: [applied, under_review, accepted, rejected, waitlisted, pending_info, confirmed, enrolled]
+        in_list_view: true
+        in_form_view: true
+        form_group: header
+        form_order: 1
+      company_id:
+        type: link
+        label: Company
+        required: true
+        link_entity: company
+        link_display_field: name
+        link_search_action: list-companies
+        in_form_view: true
+        form_group: header
+        form_order: 2
+
+  guardian:
+    label: Guardian
+    label_plural: Guardians
+    table: educlaw_guardian
+    id_col: id
+    name_col: full_name
+    primary_field: full_name
+    secondary_field: relationship
+    identifier_field: id
+    list_action: list-guardians
+    get_action: get-guardian
+    add_action: add-guardian
+    edit_action: update-guardian
+    fields:
+      id:
+        type: text
+        label: ID
+        read_only: true
+        hidden: true
+      first_name:
+        type: text
+        label: First Name
+        required: true
+        in_list_view: true
+        in_form_view: true
+        form_group: personal
+        form_order: 1
+      last_name:
+        type: text
+        label: Last Name
+        required: true
+        in_list_view: true
+        in_form_view: true
+        form_group: personal
+        form_order: 2
+      relationship:
+        type: select
+        label: Relationship
+        options: [father, mother, guardian, grandparent, stepparent, foster_parent, other]
+        in_list_view: true
+        in_form_view: true
+        form_group: personal
+        form_order: 3
+      email:
+        type: email
+        label: Email
+        in_list_view: true
+        in_form_view: true
+        form_group: contact
+        form_order: 1
+      phone:
+        type: phone
+        label: Phone
+        required: true
+        in_list_view: true
+        in_form_view: true
+        form_group: contact
+        form_order: 2
+      occupation:
+        type: text
+        label: Occupation
+        in_form_view: true
+        form_group: personal
+        form_order: 4
+      company_id:
+        type: link
+        label: Company
+        required: true
+        link_entity: company
+        link_display_field: name
+        link_search_action: list-companies
+        in_form_view: true
+        form_group: header
+        form_order: 1
+
+  consent_record:
+    label: Consent Record
+    label_plural: Consent Records
+    table: educlaw_consent_record
+    id_col: id
+    name_col: id
+    primary_field: consent_type
+    secondary_field: is_revoked
+    identifier_field: id
+    add_action: add-consent-record
+    fields:
+      id:
+        type: text
+        label: ID
+        read_only: true
+        hidden: true
+      student_id:
+        type: link
+        label: Student
+        required: true
+        link_entity: student
+        link_display_field: full_name
+        link_search_action: list-students
+        in_list_view: true
+        in_form_view: true
+        form_group: header
+        form_order: 1
+      consent_type:
+        type: select
+        label: Consent Type
+        options: [ferpa_directory, ferpa_disclosure, coppa_collection, coppa_school_consent]
+        required: true
+        in_list_view: true
+        in_form_view: true
+        form_group: header
+        form_order: 2
+      consent_date:
+        type: date
+        label: Consent Date
+        required: true
+        in_list_view: true
+        in_form_view: true
+        form_group: dates
+        form_order: 1
+      expiry_date:
+        type: date
+        label: Expiry Date
+        in_form_view: true
+        form_group: dates
+        form_order: 2
+      is_revoked:
+        type: checkbox
+        label: Revoked
+        in_list_view: true
+        in_form_view: true
+        form_group: header
+        form_order: 3
+      granted_by:
+        type: text
+        label: Granted By
+        in_form_view: true
+        form_group: details
+        form_order: 1
+      purpose:
+        type: textarea
+        label: Purpose
+        in_form_view: true
+        form_group: details
+        form_order: 2
+      company_id:
+        type: link
+        label: Company
+        required: true
+        link_entity: company
+        link_display_field: name
+        link_search_action: list-companies
+        in_form_view: true
+        form_group: header
+        form_order: 4
+
+  # ---------------------------------------------------------------------------
+  # Academics domain
+  # ---------------------------------------------------------------------------
+  academic_year:
+    label: Academic Year
+    label_plural: Academic Years
+    table: educlaw_academic_year
+    id_col: id
+    name_col: name
+    primary_field: name
+    secondary_field: is_active
+    identifier_field: id
+    list_action: list-academic-years
+    get_action: get-academic-year
+    add_action: add-academic-year
+    edit_action: update-academic-year
+    fields:
+      id:
+        type: text
+        label: ID
+        read_only: true
+        hidden: true
+      name:
+        type: text
+        label: Name
+        required: true
+        in_list_view: true
+        in_form_view: true
+        form_group: header
+        form_order: 1
+      start_date:
+        type: date
+        label: Start Date
+        required: true
+        in_list_view: true
+        in_form_view: true
+        form_group: dates
+        form_order: 1
+      end_date:
+        type: date
+        label: End Date
+        required: true
+        in_list_view: true
+        in_form_view: true
+        form_group: dates
+        form_order: 2
+      is_active:
+        type: checkbox
+        label: Active
+        in_list_view: true
+        in_form_view: true
+        form_group: header
+        form_order: 2
+      company_id:
+        type: link
+        label: Company
+        required: true
+        link_entity: company
+        link_display_field: name
+        link_search_action: list-companies
+        in_form_view: true
+        form_group: header
+        form_order: 3
+
+  academic_term:
+    label: Academic Term
+    label_plural: Academic Terms
+    table: educlaw_academic_term
+    id_col: id
+    name_col: name
+    primary_field: name
+    secondary_field: term_type
+    identifier_field: id
+    status_field: status
+    status_colors:
+      setup: gray
+      enrollment_open: blue
+      active: green
+      grades_open: yellow
+      grades_finalized: purple
+      closed: gray
+    list_action: list-academic-terms
+    get_action: get-academic-term
+    add_action: add-academic-term
+    edit_action: update-academic-term
+    fields:
+      id:
+        type: text
+        label: ID
+        read_only: true
+        hidden: true
+      name:
+        type: text
+        label: Name
+        required: true
+        in_list_view: true
+        in_form_view: true
+        form_group: header
+        form_order: 1
+      term_type:
+        type: select
+        label: Term Type
+        options: [semester, quarter, trimester, summer, custom]
+        required: true
+        in_list_view: true
+        in_form_view: true
+        form_group: header
+        form_order: 2
+      academic_year_id:
+        type: link
+        label: Academic Year
+        required: true
+        link_entity: academic_year
+        link_display_field: name
+        link_search_action: list-academic-years
+        in_list_view: true
+        in_form_view: true
+        form_group: header
+        form_order: 3
+      start_date:
+        type: date
+        label: Start Date
+        required: true
+        in_form_view: true
+        form_group: dates
+        form_order: 1
+      end_date:
+        type: date
+        label: End Date
+        required: true
+        in_form_view: true
+        form_group: dates
+        form_order: 2
+      enrollment_start_date:
+        type: date
+        label: Enrollment Start
+        in_form_view: true
+        form_group: dates
+        form_order: 3
+      enrollment_end_date:
+        type: date
+        label: Enrollment End
+        in_form_view: true
+        form_group: dates
+        form_order: 4
+      grade_submission_deadline:
+        type: date
+        label: Grade Submission Deadline
+        in_form_view: true
+        form_group: dates
+        form_order: 5
+      status:
+        type: select
+        label: Status
+        options: [setup, enrollment_open, active, grades_open, grades_finalized, closed]
+        in_list_view: true
+        in_form_view: true
+        form_group: header
+        form_order: 4
+      company_id:
+        type: link
+        label: Company
+        required: true
+        link_entity: company
+        link_display_field: name
+        link_search_action: list-companies
+        in_form_view: true
+        form_group: header
+        form_order: 5
+
+  program:
+    label: Program
+    label_plural: Programs
+    table: educlaw_program
+    id_col: id
+    name_col: name
+    primary_field: name
+    secondary_field: program_type
+    identifier_field: code
+    list_action: list-programs
+    get_action: get-program
+    add_action: add-program
+    edit_action: update-program
+    fields:
+      id:
+        type: text
+        label: ID
+        read_only: true
+        hidden: true
+      code:
+        type: text
+        label: Program Code
+        required: true
+        in_list_view: true
+        in_form_view: true
+        form_group: header
+        form_order: 1
+      name:
+        type: text
+        label: Program Name
+        required: true
+        in_list_view: true
+        in_form_view: true
+        form_group: header
+        form_order: 2
+      program_type:
+        type: select
+        label: Type
+        options: [k12, associate, bachelor, master, doctoral, certificate, diploma]
+        required: true
+        in_list_view: true
+        in_form_view: true
+        form_group: header
+        form_order: 3
+      total_credits_required:
+        type: text
+        label: Total Credits Required
+        in_form_view: true
+        form_group: details
+        form_order: 1
+      duration_years:
+        type: integer
+        label: Duration (Years)
+        in_form_view: true
+        form_group: details
+        form_order: 2
+      description:
+        type: textarea
+        label: Description
+        in_form_view: true
+        form_group: details
+        form_order: 3
+      is_active:
+        type: checkbox
+        label: Active
+        in_list_view: true
+        in_form_view: true
+        form_group: header
+        form_order: 4
+      company_id:
+        type: link
+        label: Company
+        required: true
+        link_entity: company
+        link_display_field: name
+        link_search_action: list-companies
+        in_form_view: true
+        form_group: header
+        form_order: 5
+
+  course:
+    label: Course
+    label_plural: Courses
+    table: educlaw_course
+    id_col: id
+    name_col: name
+    primary_field: name
+    secondary_field: course_code
+    identifier_field: course_code
+    list_action: list-courses
+    get_action: get-course
+    add_action: add-course
+    edit_action: update-course
+    fields:
+      id:
+        type: text
+        label: ID
+        read_only: true
+        hidden: true
+      course_code:
+        type: text
+        label: Course Code
+        required: true
+        in_list_view: true
+        in_form_view: true
+        form_group: header
+        form_order: 1
+      name:
+        type: text
+        label: Course Name
+        required: true
+        in_list_view: true
+        in_form_view: true
+        form_group: header
+        form_order: 2
+      credit_hours:
+        type: text
+        label: Credit Hours
+        required: true
+        in_list_view: true
+        in_form_view: true
+        form_group: details
+        form_order: 1
+      course_type:
+        type: select
+        label: Course Type
+        options: [lecture, lab, seminar, independent_study, internship, online]
+        in_list_view: true
+        in_form_view: true
+        form_group: details
+        form_order: 2
+      description:
+        type: textarea
+        label: Description
+        in_form_view: true
+        form_group: details
+        form_order: 3
+      grade_level:
+        type: text
+        label: Grade Level
+        in_form_view: true
+        form_group: details
+        form_order: 4
+      is_active:
+        type: checkbox
+        label: Active
+        in_list_view: true
+        in_form_view: true
+        form_group: header
+        form_order: 3
+      company_id:
+        type: link
+        label: Company
+        required: true
+        link_entity: company
+        link_display_field: name
+        link_search_action: list-companies
+        in_form_view: true
+        form_group: header
+        form_order: 4
+
+  section:
+    label: Section
+    label_plural: Sections
+    table: educlaw_section
+    id_col: id
+    name_col: naming_series
+    primary_field: naming_series
+    secondary_field: status
+    identifier_field: naming_series
+    status_field: status
+    status_colors:
+      draft: gray
+      scheduled: blue
+      open: green
+      closed: yellow
+      cancelled: red
+    list_action: list-sections
+    get_action: get-section
+    add_action: add-section
+    edit_action: update-section
+    fields:
+      id:
+        type: text
+        label: ID
+        read_only: true
+        hidden: true
+      naming_series:
+        type: text
+        label: Section No.
+        read_only: true
+        in_list_view: true
+      course_id:
+        type: link
+        label: Course
+        required: true
+        link_entity: course
+        link_display_field: name
+        link_search_action: list-courses
+        in_list_view: true
+        in_form_view: true
+        form_group: header
+        form_order: 1
+      section_number:
+        type: text
+        label: Section Number
+        required: true
+        in_list_view: true
+        in_form_view: true
+        form_group: header
+        form_order: 2
+      academic_term_id:
+        type: link
+        label: Academic Term
+        required: true
+        link_entity: academic_term
+        link_display_field: name
+        link_search_action: list-academic-terms
+        in_list_view: true
+        in_form_view: true
+        form_group: header
+        form_order: 3
+      instructor_id:
+        type: link
+        label: Instructor
+        link_entity: instructor
+        link_display_field: naming_series
+        link_search_action: list-instructors
+        in_list_view: true
+        in_form_view: true
+        form_group: details
+        form_order: 1
+      max_enrollment:
+        type: integer
+        label: Max Enrollment
+        required: true
+        in_list_view: true
+        in_form_view: true
+        form_group: details
+        form_order: 2
+      current_enrollment:
+        type: integer
+        label: Current Enrollment
+        read_only: true
+        in_list_view: true
+        in_form_view: true
+        form_group: details
+        form_order: 3
+      status:
+        type: select
+        label: Status
+        options: [draft, scheduled, open, closed, cancelled]
+        in_list_view: true
+        in_form_view: true
+        form_group: header
+        form_order: 4
+      company_id:
+        type: link
+        label: Company
+        required: true
+        link_entity: company
+        link_display_field: name
+        link_search_action: list-companies
+        in_form_view: true
+        form_group: header
+        form_order: 5
+
+  room:
+    label: Room
+    label_plural: Rooms
+    table: educlaw_room
+    id_col: id
+    name_col: room_number
+    primary_field: room_number
+    secondary_field: room_type
+    identifier_field: id
+    list_action: list-rooms
+    add_action: add-room
+    edit_action: update-room
+    fields:
+      id:
+        type: text
+        label: ID
+        read_only: true
+        hidden: true
+      room_number:
+        type: text
+        label: Room Number
+        required: true
+        in_list_view: true
+        in_form_view: true
+        form_group: header
+        form_order: 1
+      building:
+        type: text
+        label: Building
+        required: true
+        in_list_view: true
+        in_form_view: true
+        form_group: header
+        form_order: 2
+      capacity:
+        type: integer
+        label: Capacity
+        required: true
+        in_list_view: true
+        in_form_view: true
+        form_group: details
+        form_order: 1
+      room_type:
+        type: select
+        label: Room Type
+        options: [classroom, lab, auditorium, gym, library, office]
+        in_list_view: true
+        in_form_view: true
+        form_group: details
+        form_order: 2
+      is_active:
+        type: checkbox
+        label: Active
+        in_list_view: true
+        in_form_view: true
+        form_group: header
+        form_order: 3
+      company_id:
+        type: link
+        label: Company
+        required: true
+        link_entity: company
+        link_display_field: name
+        link_search_action: list-companies
+        in_form_view: true
+        form_group: header
+        form_order: 4
+
+  # ---------------------------------------------------------------------------
+  # Enrollment domain
+  # ---------------------------------------------------------------------------
+  program_enrollment:
+    label: Program Enrollment
+    label_plural: Program Enrollments
+    table: educlaw_program_enrollment
+    id_col: id
+    name_col: naming_series
+    primary_field: student_id
+    secondary_field: enrollment_status
+    identifier_field: naming_series
+    status_field: enrollment_status
+    status_colors:
+      active: green
+      completed: blue
+      withdrawn: gray
+      suspended: yellow
+    list_action: list-program-enrollments
+    add_action: create-program-enrollment
+    fields:
+      id:
+        type: text
+        label: ID
+        read_only: true
+        hidden: true
+      naming_series:
+        type: text
+        label: Enrollment No.
+        read_only: true
+        in_list_view: true
+      student_id:
+        type: link
+        label: Student
+        required: true
+        link_entity: student
+        link_display_field: full_name
+        link_search_action: list-students
+        in_list_view: true
+        in_form_view: true
+        form_group: header
+        form_order: 1
+      program_id:
+        type: link
+        label: Program
+        required: true
+        link_entity: program
+        link_display_field: name
+        link_search_action: list-programs
+        in_list_view: true
+        in_form_view: true
+        form_group: header
+        form_order: 2
+      academic_year_id:
+        type: link
+        label: Academic Year
+        required: true
+        link_entity: academic_year
+        link_display_field: name
+        link_search_action: list-academic-years
+        in_list_view: true
+        in_form_view: true
+        form_group: header
+        form_order: 3
+      enrollment_date:
+        type: date
+        label: Enrollment Date
+        in_form_view: true
+        form_group: details
+        form_order: 1
+      enrollment_status:
+        type: select
+        label: Status
+        options: [active, completed, withdrawn, suspended]
+        in_list_view: true
+        in_form_view: true
+        form_group: header
+        form_order: 4
+      company_id:
+        type: link
+        label: Company
+        required: true
+        link_entity: company
+        link_display_field: name
+        link_search_action: list-companies
+        in_form_view: true
+        form_group: header
+        form_order: 5
+
+  course_enrollment:
+    label: Course Enrollment
+    label_plural: Course Enrollments
+    table: educlaw_course_enrollment
+    id_col: id
+    name_col: id
+    primary_field: student_id
+    secondary_field: enrollment_status
+    identifier_field: id
+    status_field: enrollment_status
+    status_colors:
+      enrolled: green
+      completed: blue
+      dropped: gray
+      withdrawn: gray
+      incomplete: yellow
+      waitlisted: orange
+    list_action: list-enrollments
+    get_action: get-enrollment
+    add_action: create-section-enrollment
+    fields:
+      id:
+        type: text
+        label: ID
+        read_only: true
+        hidden: true
+      student_id:
+        type: link
+        label: Student
+        required: true
+        link_entity: student
+        link_display_field: full_name
+        link_search_action: list-students
+        in_list_view: true
+        in_form_view: true
+        form_group: header
+        form_order: 1
+      section_id:
+        type: link
+        label: Section
+        required: true
+        link_entity: section
+        link_display_field: naming_series
+        link_search_action: list-sections
+        in_list_view: true
+        in_form_view: true
+        form_group: header
+        form_order: 2
+      enrollment_date:
+        type: date
+        label: Enrollment Date
+        in_list_view: true
+        in_form_view: true
+        form_group: details
+        form_order: 1
+      enrollment_status:
+        type: select
+        label: Status
+        options: [enrolled, completed, dropped, withdrawn, incomplete, waitlisted]
+        in_list_view: true
+        in_form_view: true
+        form_group: header
+        form_order: 3
+      final_letter_grade:
+        type: text
+        label: Final Grade
+        read_only: true
+        in_list_view: true
+        in_form_view: true
+        form_group: grades
+        form_order: 1
+      final_grade_points:
+        type: text
+        label: Grade Points
+        read_only: true
+        in_form_view: true
+        form_group: grades
+        form_order: 2
+      is_grade_submitted:
+        type: checkbox
+        label: Grade Submitted
+        read_only: true
+        in_list_view: true
+        in_form_view: true
+        form_group: grades
+        form_order: 3
+      company_id:
+        type: link
+        label: Company
+        required: true
+        link_entity: company
+        link_display_field: name
+        link_search_action: list-companies
+        in_form_view: true
+        form_group: header
+        form_order: 4
+
+  waitlist:
+    label: Waitlist Entry
+    label_plural: Waitlist
+    table: educlaw_waitlist
+    id_col: id
+    name_col: id
+    primary_field: student_id
+    secondary_field: waitlist_status
+    identifier_field: id
+    status_field: waitlist_status
+    status_colors:
+      waiting: yellow
+      offered: blue
+      accepted: green
+      expired: gray
+      cancelled: gray
+    list_action: list-waitlist
+    fields:
+      id:
+        type: text
+        label: ID
+        read_only: true
+        hidden: true
+      student_id:
+        type: link
+        label: Student
+        required: true
+        link_entity: student
+        link_display_field: full_name
+        link_search_action: list-students
+        in_list_view: true
+        in_form_view: true
+        form_group: header
+        form_order: 1
+      section_id:
+        type: link
+        label: Section
+        required: true
+        link_entity: section
+        link_display_field: naming_series
+        link_search_action: list-sections
+        in_list_view: true
+        in_form_view: true
+        form_group: header
+        form_order: 2
+      position:
+        type: integer
+        label: Position
+        read_only: true
+        in_list_view: true
+        in_form_view: true
+        form_group: details
+        form_order: 1
+      waitlist_status:
+        type: select
+        label: Status
+        options: [waiting, offered, accepted, expired, cancelled]
+        in_list_view: true
+        in_form_view: true
+        form_group: header
+        form_order: 3
+      requested_date:
+        type: date
+        label: Requested Date
+        in_list_view: true
+        in_form_view: true
+        form_group: details
+        form_order: 2
+
+  # ---------------------------------------------------------------------------
+  # Grading domain
+  # ---------------------------------------------------------------------------
+  grading_scale:
+    label: Grading Scale
+    label_plural: Grading Scales
+    table: educlaw_grading_scale
+    id_col: id
+    name_col: name
+    primary_field: name
+    secondary_field: is_default
+    identifier_field: id
+    list_action: list-grading-scales
+    get_action: get-grading-scale
+    add_action: add-grading-scale
+    edit_action: update-grading-scale
+    fields:
+      id:
+        type: text
+        label: ID
+        read_only: true
+        hidden: true
+      name:
+        type: text
+        label: Name
+        required: true
+        in_list_view: true
+        in_form_view: true
+        form_group: header
+        form_order: 1
+      description:
+        type: textarea
+        label: Description
+        in_form_view: true
+        form_group: details
+        form_order: 1
+      is_default:
+        type: checkbox
+        label: Default Scale
+        in_list_view: true
+        in_form_view: true
+        form_group: header
+        form_order: 2
+      company_id:
+        type: link
+        label: Company
+        required: true
+        link_entity: company
+        link_display_field: name
+        link_search_action: list-companies
+        in_form_view: true
+        form_group: header
+        form_order: 3
+
+  assessment_plan:
+    label: Assessment Plan
+    label_plural: Assessment Plans
+    table: educlaw_assessment_plan
+    id_col: id
+    name_col: id
+    primary_field: section_id
+    secondary_field: grading_scale_id
+    identifier_field: id
+    add_action: add-assessment-plan
+    edit_action: update-assessment-plan
+    get_action: get-assessment-plan
+    fields:
+      id:
+        type: text
+        label: ID
+        read_only: true
+        hidden: true
+      section_id:
+        type: link
+        label: Section
+        required: true
+        link_entity: section
+        link_display_field: naming_series
+        link_search_action: list-sections
+        in_list_view: true
+        in_form_view: true
+        form_group: header
+        form_order: 1
+      grading_scale_id:
+        type: link
+        label: Grading Scale
+        required: true
+        link_entity: grading_scale
+        link_display_field: name
+        link_search_action: list-grading-scales
+        in_list_view: true
+        in_form_view: true
+        form_group: header
+        form_order: 2
+      company_id:
+        type: link
+        label: Company
+        required: true
+        link_entity: company
+        link_display_field: name
+        link_search_action: list-companies
+        in_form_view: true
+        form_group: header
+        form_order: 3
+
+  assessment:
+    label: Assessment
+    label_plural: Assessments
+    table: educlaw_assessment
+    id_col: id
+    name_col: name
+    primary_field: name
+    secondary_field: max_points
+    identifier_field: id
+    list_action: list-assessments
+    add_action: add-assessment
+    edit_action: update-assessment
+    fields:
+      id:
+        type: text
+        label: ID
+        read_only: true
+        hidden: true
+      name:
+        type: text
+        label: Name
+        required: true
+        in_list_view: true
+        in_form_view: true
+        form_group: header
+        form_order: 1
+      max_points:
+        type: text
+        label: Max Points
+        required: true
+        in_list_view: true
+        in_form_view: true
+        form_group: details
+        form_order: 1
+      due_date:
+        type: date
+        label: Due Date
+        in_list_view: true
+        in_form_view: true
+        form_group: details
+        form_order: 2
+      description:
+        type: textarea
+        label: Description
+        in_form_view: true
+        form_group: details
+        form_order: 3
+      is_published:
+        type: checkbox
+        label: Published
+        in_list_view: true
+        in_form_view: true
+        form_group: header
+        form_order: 2
+
+  # ---------------------------------------------------------------------------
+  # Attendance domain
+  # ---------------------------------------------------------------------------
+  student_attendance:
+    label: Attendance Record
+    label_plural: Attendance Records
+    table: educlaw_student_attendance
+    id_col: id
+    name_col: id
+    primary_field: student_id
+    secondary_field: attendance_status
+    identifier_field: id
+    status_field: attendance_status
+    status_colors:
+      present: green
+      absent: red
+      tardy: yellow
+      excused: blue
+      half_day: orange
+    list_action: list-attendance
+    get_action: get-attendance
+    add_action: record-attendance
+    edit_action: update-attendance
+    fields:
+      id:
+        type: text
+        label: ID
+        read_only: true
+        hidden: true
+      student_id:
+        type: link
+        label: Student
+        required: true
+        link_entity: student
+        link_display_field: full_name
+        link_search_action: list-students
+        in_list_view: true
+        in_form_view: true
+        form_group: header
+        form_order: 1
+      section_id:
+        type: link
+        label: Section
+        link_entity: section
+        link_display_field: naming_series
+        link_search_action: list-sections
+        in_list_view: true
+        in_form_view: true
+        form_group: header
+        form_order: 2
+      attendance_date:
+        type: date
+        label: Date
+        required: true
+        in_list_view: true
+        in_form_view: true
+        form_group: header
+        form_order: 3
+      attendance_status:
+        type: select
+        label: Status
+        options: [present, absent, tardy, excused, half_day]
+        required: true
+        in_list_view: true
+        in_form_view: true
+        form_group: header
+        form_order: 4
+      late_minutes:
+        type: integer
+        label: Late Minutes
+        in_form_view: true
+        form_group: details
+        form_order: 1
+      comments:
+        type: textarea
+        label: Comments
+        in_form_view: true
+        form_group: details
+        form_order: 2
+      company_id:
+        type: link
+        label: Company
+        required: true
+        link_entity: company
+        link_display_field: name
+        link_search_action: list-companies
+        in_form_view: true
+        form_group: header
+        form_order: 5
+
+  # ---------------------------------------------------------------------------
+  # Staff domain
+  # ---------------------------------------------------------------------------
+  instructor:
+    label: Instructor
+    label_plural: Instructors
+    table: educlaw_instructor
+    id_col: id
+    name_col: naming_series
+    primary_field: naming_series
+    secondary_field: is_active
+    identifier_field: naming_series
+    list_action: list-instructors
+    get_action: get-instructor
+    add_action: add-instructor
+    edit_action: update-instructor
+    fields:
+      id:
+        type: text
+        label: ID
+        read_only: true
+        hidden: true
+      naming_series:
+        type: text
+        label: Instructor No.
+        read_only: true
+        in_list_view: true
+      employee_id:
+        type: link
+        label: Employee
+        required: true
+        link_entity: employee
+        link_display_field: first_name
+        link_search_action: list-employees
+        in_list_view: true
+        in_form_view: true
+        form_group: header
+        form_order: 1
+      bio:
+        type: textarea
+        label: Bio
+        in_form_view: true
+        form_group: details
+        form_order: 1
+      office_location:
+        type: text
+        label: Office Location
+        in_form_view: true
+        form_group: details
+        form_order: 2
+      max_teaching_load_hours:
+        type: integer
+        label: Max Teaching Load (hrs)
+        in_form_view: true
+        form_group: details
+        form_order: 3
+      is_active:
+        type: checkbox
+        label: Active
+        in_list_view: true
+        in_form_view: true
+        form_group: header
+        form_order: 2
+      company_id:
+        type: link
+        label: Company
+        required: true
+        link_entity: company
+        link_display_field: name
+        link_search_action: list-companies
+        in_form_view: true
+        form_group: header
+        form_order: 3
+
+  # ---------------------------------------------------------------------------
+  # Fees domain
+  # ---------------------------------------------------------------------------
+  fee_category:
+    label: Fee Category
+    label_plural: Fee Categories
+    table: educlaw_fee_category
+    id_col: id
+    name_col: name
+    primary_field: name
+    secondary_field: is_active
+    identifier_field: id
+    list_action: list-fee-categories
+    add_action: add-fee-category
+    edit_action: update-fee-category
+    fields:
+      id:
+        type: text
+        label: ID
+        read_only: true
+        hidden: true
+      name:
+        type: text
+        label: Name
+        required: true
+        in_list_view: true
+        in_form_view: true
+        form_group: header
+        form_order: 1
+      description:
+        type: textarea
+        label: Description
+        in_form_view: true
+        form_group: details
+        form_order: 1
+      is_active:
+        type: checkbox
+        label: Active
+        in_list_view: true
+        in_form_view: true
+        form_group: header
+        form_order: 2
+      company_id:
+        type: link
+        label: Company
+        required: true
+        link_entity: company
+        link_display_field: name
+        link_search_action: list-companies
+        in_form_view: true
+        form_group: header
+        form_order: 3
+
+  fee_structure:
+    label: Fee Structure
+    label_plural: Fee Structures
+    table: educlaw_fee_structure
+    id_col: id
+    name_col: name
+    primary_field: name
+    secondary_field: total_amount
+    identifier_field: id
+    list_action: list-fee-structures
+    get_action: get-fee-structure
+    add_action: add-fee-structure
+    edit_action: update-fee-structure
+    fields:
+      id:
+        type: text
+        label: ID
+        read_only: true
+        hidden: true
+      name:
+        type: text
+        label: Name
+        required: true
+        in_list_view: true
+        in_form_view: true
+        form_group: header
+        form_order: 1
+      program_id:
+        type: link
+        label: Program
+        link_entity: program
+        link_display_field: name
+        link_search_action: list-programs
+        in_list_view: true
+        in_form_view: true
+        form_group: header
+        form_order: 2
+      academic_term_id:
+        type: link
+        label: Academic Term
+        link_entity: academic_term
+        link_display_field: name
+        link_search_action: list-academic-terms
+        in_list_view: true
+        in_form_view: true
+        form_group: header
+        form_order: 3
+      total_amount:
+        type: currency
+        label: Total Amount
+        read_only: true
+        in_list_view: true
+        in_form_view: true
+        form_group: details
+        form_order: 1
+      is_active:
+        type: checkbox
+        label: Active
+        in_list_view: true
+        in_form_view: true
+        form_group: header
+        form_order: 4
+      company_id:
+        type: link
+        label: Company
+        required: true
+        link_entity: company
+        link_display_field: name
+        link_search_action: list-companies
+        in_form_view: true
+        form_group: header
+        form_order: 5
+
+  scholarship:
+    label: Scholarship
+    label_plural: Scholarships
+    table: educlaw_scholarship
+    id_col: id
+    name_col: name
+    primary_field: name
+    secondary_field: scholarship_status
+    identifier_field: id
+    status_field: scholarship_status
+    status_colors:
+      active: green
+      expired: gray
+      revoked: red
+    list_action: list-scholarships
+    add_action: add-scholarship
+    edit_action: update-scholarship
+    fields:
+      id:
+        type: text
+        label: ID
+        read_only: true
+        hidden: true
+      name:
+        type: text
+        label: Name
+        required: true
+        in_list_view: true
+        in_form_view: true
+        form_group: header
+        form_order: 1
+      student_id:
+        type: link
+        label: Student
+        required: true
+        link_entity: student
+        link_display_field: full_name
+        link_search_action: list-students
+        in_list_view: true
+        in_form_view: true
+        form_group: header
+        form_order: 2
+      discount_type:
+        type: select
+        label: Discount Type
+        options: [fixed, percentage]
+        required: true
+        in_list_view: true
+        in_form_view: true
+        form_group: details
+        form_order: 1
+      discount_amount:
+        type: currency
+        label: Discount Amount
+        required: true
+        in_list_view: true
+        in_form_view: true
+        form_group: details
+        form_order: 2
+      scholarship_status:
+        type: select
+        label: Status
+        options: [active, expired, revoked]
+        in_list_view: true
+        in_form_view: true
+        form_group: header
+        form_order: 3
+      reason:
+        type: textarea
+        label: Reason
+        in_form_view: true
+        form_group: details
+        form_order: 3
+      company_id:
+        type: link
+        label: Company
+        required: true
+        link_entity: company
+        link_display_field: name
+        link_search_action: list-companies
+        in_form_view: true
+        form_group: header
+        form_order: 4
+
+  # ---------------------------------------------------------------------------
+  # Communications domain
+  # ---------------------------------------------------------------------------
+  announcement:
+    label: Announcement
+    label_plural: Announcements
+    table: educlaw_announcement
+    id_col: id
+    name_col: title
+    primary_field: title
+    secondary_field: announcement_status
+    identifier_field: id
+    status_field: announcement_status
+    status_colors:
+      draft: gray
+      published: green
+      archived: gray
+    list_action: list-announcements
+    get_action: get-announcement
+    add_action: add-announcement
+    edit_action: update-announcement
+    fields:
+      id:
+        type: text
+        label: ID
+        read_only: true
+        hidden: true
+      title:
+        type: text
+        label: Title
+        required: true
+        in_list_view: true
+        in_form_view: true
+        form_group: header
+        form_order: 1
+      body:
+        type: textarea
+        label: Body
+        required: true
+        in_form_view: true
+        form_group: content
+        form_order: 1
+      priority:
+        type: select
+        label: Priority
+        options: [normal, urgent, emergency]
+        in_list_view: true
+        in_form_view: true
+        form_group: header
+        form_order: 2
+      audience_type:
+        type: select
+        label: Audience
+        options: [all, students, guardians, staff, program, section, department, grade_level]
+        in_list_view: true
+        in_form_view: true
+        form_group: header
+        form_order: 3
+      announcement_status:
+        type: select
+        label: Status
+        options: [draft, published, archived]
+        in_list_view: true
+        in_form_view: true
+        form_group: header
+        form_order: 4
+      publish_date:
+        type: date
+        label: Publish Date
+        in_form_view: true
+        form_group: dates
+        form_order: 1
+      expiry_date:
+        type: date
+        label: Expiry Date
+        in_form_view: true
+        form_group: dates
+        form_order: 2
+      company_id:
+        type: link
+        label: Company
+        required: true
+        link_entity: company
+        link_display_field: name
+        link_search_action: list-companies
+        in_form_view: true
+        form_group: header
+        form_order: 5
+
+  notification:
+    label: Notification
+    label_plural: Notifications
+    table: educlaw_notification
+    id_col: id
+    name_col: title
+    primary_field: title
+    secondary_field: notification_type
+    identifier_field: id
+    list_action: list-notifications
+    fields:
+      id:
+        type: text
+        label: ID
+        read_only: true
+        hidden: true
+      title:
+        type: text
+        label: Title
+        read_only: true
+        in_list_view: true
+        in_form_view: true
+        form_group: header
+        form_order: 1
+      message:
+        type: textarea
+        label: Message
+        read_only: true
+        in_form_view: true
+        form_group: content
+        form_order: 1
+      notification_type:
+        type: select
+        label: Type
+        options: [grade_posted, fee_due, absence, announcement, progress_report, emergency, acceptance, enrollment_confirmed]
+        read_only: true
+        in_list_view: true
+        in_form_view: true
+        form_group: header
+        form_order: 2
+      recipient_type:
+        type: select
+        label: Recipient Type
+        options: [student, guardian, employee]
+        read_only: true
+        in_list_view: true
+        in_form_view: true
+        form_group: header
+        form_order: 3
+      is_read:
+        type: checkbox
+        label: Read
+        in_list_view: true
+        in_form_view: true
+        form_group: header
+        form_order: 4
+      sent_at:
+        type: datetime
+        label: Sent At
+        read_only: true
+        in_list_view: true
+        in_form_view: true
+        form_group: header
+        form_order: 5
+      company_id:
+        type: link
+        label: Company
+        required: true
+        link_entity: company
+        link_display_field: name
+        link_search_action: list-companies
+        in_form_view: true
+        form_group: header
+        form_order: 6
+
+# =============================================================================
+# Action Map — maps actions to UI components
+# =============================================================================
+action_map:
+  # ── Dashboard ──────────────────────────────────────────────────────────────
+  status:
+    component: DashboardView
+    sections:
+      - type: kpis
+      - type: quick_actions
+      - type: recent_activity
+
+  # ── Students domain ────────────────────────────────────────────────────────
+  list-students:
+    component: DataTable
+    entity: student
+    default_sort: created_at
+    add_action: add-student
+  add-student:
+    component: FormView
+    entity: student
+    mode: create
+  update-student:
+    component: FormView
+    entity: student
+    mode: edit
+  get-student:
+    component: DetailView
+    entity: student
+
+  list-applicants:
+    component: DataTable
+    entity: student_applicant
+    default_sort: created_at
+    add_action: add-student-applicant
+  add-student-applicant:
+    component: FormView
+    entity: student_applicant
+    mode: create
+  update-student-applicant:
+    component: FormView
+    entity: student_applicant
+    mode: edit
+  get-applicant:
+    component: DetailView
+    entity: student_applicant
+
+  list-guardians:
+    component: DataTable
+    entity: guardian
+    default_sort: created_at
+    add_action: add-guardian
+  add-guardian:
+    component: FormView
+    entity: guardian
+    mode: create
+  update-guardian:
+    component: FormView
+    entity: guardian
+    mode: edit
+  get-guardian:
+    component: DetailView
+    entity: guardian
+
+  add-consent-record:
+    component: FormView
+    entity: consent_record
+    mode: create
+
+  # ── Academics domain ───────────────────────────────────────────────────────
+  list-academic-years:
+    component: DataTable
+    entity: academic_year
+    default_sort: created_at
+    add_action: add-academic-year
+  add-academic-year:
+    component: FormView
+    entity: academic_year
+    mode: create
+  update-academic-year:
+    component: FormView
+    entity: academic_year
+    mode: edit
+  get-academic-year:
+    component: DetailView
+    entity: academic_year
+
+  list-academic-terms:
+    component: DataTable
+    entity: academic_term
+    default_sort: created_at
+    add_action: add-academic-term
+  add-academic-term:
+    component: FormView
+    entity: academic_term
+    mode: create
+  update-academic-term:
+    component: FormView
+    entity: academic_term
+    mode: edit
+  get-academic-term:
+    component: DetailView
+    entity: academic_term
+
+  list-programs:
+    component: DataTable
+    entity: program
+    default_sort: created_at
+    add_action: add-program
+  add-program:
+    component: FormView
+    entity: program
+    mode: create
+  update-program:
+    component: FormView
+    entity: program
+    mode: edit
+  get-program:
+    component: DetailView
+    entity: program
+
+  list-courses:
+    component: DataTable
+    entity: course
+    default_sort: created_at
+    add_action: add-course
+  add-course:
+    component: FormView
+    entity: course
+    mode: create
+  update-course:
+    component: FormView
+    entity: course
+    mode: edit
+  get-course:
+    component: DetailView
+    entity: course
+
+  list-sections:
+    component: DataTable
+    entity: section
+    default_sort: created_at
+    add_action: add-section
+  add-section:
+    component: FormView
+    entity: section
+    mode: create
+  update-section:
+    component: FormView
+    entity: section
+    mode: edit
+  get-section:
+    component: DetailView
+    entity: section
+
+  list-rooms:
+    component: DataTable
+    entity: room
+    default_sort: created_at
+    add_action: add-room
+  add-room:
+    component: FormView
+    entity: room
+    mode: create
+  update-room:
+    component: FormView
+    entity: room
+    mode: edit
+
+  # ── Enrollment domain ──────────────────────────────────────────────────────
+  list-program-enrollments:
+    component: DataTable
+    entity: program_enrollment
+    default_sort: created_at
+    add_action: create-program-enrollment
+  create-program-enrollment:
+    component: FormView
+    entity: program_enrollment
+    mode: create
+
+  list-enrollments:
+    component: DataTable
+    entity: course_enrollment
+    default_sort: created_at
+    add_action: create-section-enrollment
+  create-section-enrollment:
+    component: FormView
+    entity: course_enrollment
+    mode: create
+  get-enrollment:
+    component: DetailView
+    entity: course_enrollment
+
+  list-waitlist:
+    component: DataTable
+    entity: waitlist
+    default_sort: created_at
+
+  # ── Grading domain ─────────────────────────────────────────────────────────
+  list-grading-scales:
+    component: DataTable
+    entity: grading_scale
+    default_sort: created_at
+    add_action: add-grading-scale
+  add-grading-scale:
+    component: FormView
+    entity: grading_scale
+    mode: create
+  update-grading-scale:
+    component: FormView
+    entity: grading_scale
+    mode: edit
+  get-grading-scale:
+    component: DetailView
+    entity: grading_scale
+
+  add-assessment-plan:
+    component: FormView
+    entity: assessment_plan
+    mode: create
+  update-assessment-plan:
+    component: FormView
+    entity: assessment_plan
+    mode: edit
+  get-assessment-plan:
+    component: DetailView
+    entity: assessment_plan
+
+  list-assessments:
+    component: DataTable
+    entity: assessment
+    default_sort: created_at
+    add_action: add-assessment
+  add-assessment:
+    component: FormView
+    entity: assessment
+    mode: create
+  update-assessment:
+    component: FormView
+    entity: assessment
+    mode: edit
+
+  # ── Attendance domain ──────────────────────────────────────────────────────
+  list-attendance:
+    component: DataTable
+    entity: student_attendance
+    default_sort: created_at
+    add_action: record-attendance
+  record-attendance:
+    component: FormView
+    entity: student_attendance
+    mode: create
+  update-attendance:
+    component: FormView
+    entity: student_attendance
+    mode: edit
+  get-attendance:
+    component: DetailView
+    entity: student_attendance
+
+  # ── Staff domain ───────────────────────────────────────────────────────────
+  list-instructors:
+    component: DataTable
+    entity: instructor
+    default_sort: created_at
+    add_action: add-instructor
+  add-instructor:
+    component: FormView
+    entity: instructor
+    mode: create
+  update-instructor:
+    component: FormView
+    entity: instructor
+    mode: edit
+  get-instructor:
+    component: DetailView
+    entity: instructor
+
+  # ── Fees domain ────────────────────────────────────────────────────────────
+  list-fee-categories:
+    component: DataTable
+    entity: fee_category
+    default_sort: created_at
+    add_action: add-fee-category
+  add-fee-category:
+    component: FormView
+    entity: fee_category
+    mode: create
+  update-fee-category:
+    component: FormView
+    entity: fee_category
+    mode: edit
+
+  list-fee-structures:
+    component: DataTable
+    entity: fee_structure
+    default_sort: created_at
+    add_action: add-fee-structure
+  add-fee-structure:
+    component: FormView
+    entity: fee_structure
+    mode: create
+  update-fee-structure:
+    component: FormView
+    entity: fee_structure
+    mode: edit
+  get-fee-structure:
+    component: DetailView
+    entity: fee_structure
+
+  list-scholarships:
+    component: DataTable
+    entity: scholarship
+    default_sort: created_at
+    add_action: add-scholarship
+  add-scholarship:
+    component: FormView
+    entity: scholarship
+    mode: create
+  update-scholarship:
+    component: FormView
+    entity: scholarship
+    mode: edit
+
+  # ── Communications domain ──────────────────────────────────────────────────
+  list-announcements:
+    component: DataTable
+    entity: announcement
+    default_sort: created_at
+    add_action: add-announcement
+  add-announcement:
+    component: FormView
+    entity: announcement
+    mode: create
+  update-announcement:
+    component: FormView
+    entity: announcement
+    mode: edit
+  get-announcement:
+    component: DetailView
+    entity: announcement
+
+  list-notifications:
+    component: DataTable
+    entity: notification
+    default_sort: created_at

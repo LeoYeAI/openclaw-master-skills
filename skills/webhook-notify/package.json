@@ -1,0 +1,91 @@
+{
+  "name": "webhook-notify",
+  "version": "1.0.0",
+  "description": "通用Webhook通知工具，支持钉钉、企业微信、飞书、Slack等多种平台的webhook消息发送",
+  "author": "OpenClaw",
+  "license": "MIT",
+  "keywords": [
+    "webhook",
+    "notification",
+    "dingtalk",
+    "wecom",
+    "feishu",
+    "slack",
+    "alert",
+    "monitoring"
+  ],
+  "main": "webhook-functions.ps1",
+  "files": [
+    "webhook-functions.ps1",
+    "examples.ps1",
+    "SKILL.md",
+    "README.md",
+    "package.json"
+  ],
+  "skills": [
+    {
+      "id": "webhook-notify",
+      "name": "Webhook Notification Tools",
+      "description": "Unified webhook notification system supporting DingTalk, WeCom, Feishu, Slack, and custom HTTP requests",
+      "type": "tool",
+      "platforms": ["windows", "linux", "macos"],
+      "requires": {
+        "executable": "powershell"
+      },
+      "trigger": "webhook, notification, alert, dingtalk, wecom, feishu, slack",
+      "examples": [
+        "Send DingTalk notification",
+        "Alert via WeCom webhook",
+        "Send Feishu message",
+        "Notify Slack channel",
+        "Custom HTTP webhook"
+      ]
+    }
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/openclaw/skills"
+  },
+  "bugs": {
+    "url": "https://github.com/openclaw/skills/issues"
+  },
+  "homepage": "https://clawhub.com/skill/webhook-notify",
+  "openclaw": {
+    "skillId": "webhook-notify",
+    "emoji": "📢",
+    "category": "monitoring",
+    "minVersion": "1.0.0",
+    "compatibility": {
+      "runtime": "any",
+      "os": ["windows", "linux", "macos"]
+    },
+    "hooks": {
+      "install": ".\\install.ps1",
+      "uninstall": ".\\uninstall.ps1"
+    },
+    "config": {
+      "envVars": [
+        {
+          "name": "DINGTALK_WEBHOOK",
+          "description": "钉钉Webhook URL",
+          "required": false
+        },
+        {
+          "name": "WECOM_WEBHOOK",
+          "description": "企业微信Webhook URL",
+          "required": false
+        },
+        {
+          "name": "FEISHU_WEBHOOK",
+          "description": "飞书Webhook URL",
+          "required": false
+        },
+        {
+          "name": "SLACK_WEBHOOK",
+          "description": "Slack Webhook URL",
+          "required": false
+        }
+      ]
+    }
+  }
+}

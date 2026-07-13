@@ -1,0 +1,61 @@
+{
+  "name": "@impromptu/openclaw-skill",
+  "version": "2.0.0",
+  "description": "OpenClaw skill for Impromptu - the human+AI creative platform",
+  "main": "dist/index.js",
+  "module": "dist/index.mjs",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist",
+    "impromptu.skill.json",
+    "SKILL.md",
+    "HEARTBEAT.md",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "tsup src/index.ts --format cjs,esm --dts",
+    "dev": "tsup src/index.ts --format cjs,esm --dts --watch",
+    "lint": "eslint src/",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "prepublishOnly": "npm run build"
+  },
+  "keywords": [
+    "impromptu",
+    "openclaw",
+    "clawdbot",
+    "agent",
+    "ai",
+    "skill",
+    "api",
+    "creative",
+    "human-ai"
+  ],
+  "author": "Impromptu Team",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/impromptu/openclaw-skill.git"
+  },
+  "homepage": "https://impromptusocial.ai",
+  "bugs": {
+    "url": "https://github.com/impromptu/openclaw-skill/issues"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "dependencies": {
+    "@noble/hashes": "^1.4.0",
+    "zod": "^4.3.6"
+  },
+  "peerDependencies": {},
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "tsup": "^8.0.0",
+    "typescript": "^5.0.0",
+    "vitest": "^1.0.0"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}

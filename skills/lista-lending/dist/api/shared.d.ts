@@ -1,0 +1,12 @@
+import type { Address } from "viem";
+import { getSDK } from "../sdk.js";
+export declare function getVaultConcurrency(chain: string): number;
+export declare function getMarketConcurrency(chain: string): number;
+export declare function getTotalBudget(chain: string): number;
+export declare function withRpcGuard<T>(operation: () => Promise<T>, chain: string, label: string): Promise<T>;
+export declare function toApiChainFilter(chain: string | string[], sdk: ReturnType<typeof getSDK>): string | string[];
+export declare function mapWithConcurrency<T, R>(items: T[], concurrency: number, mapper: (item: T, index: number) => Promise<R>): Promise<R[]>;
+export declare function mapByChainWithConcurrency<T, R>(items: T[], resolveChain: (item: T) => string, resolveConcurrency: (chain: string) => number, mapper: (item: T, index: number) => Promise<R>): Promise<R[]>;
+export declare function toAddress(value: string): Address;
+export declare function sortByNumericDesc<T>(items: T[], getValue: (item: T) => string): T[];
+export declare function safeNormalizeHoldingChain(chain: string): string;

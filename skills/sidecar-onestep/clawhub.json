@@ -1,0 +1,100 @@
+{
+  "name": "sidecar-onestep",
+  "version": "1.4.1",
+  "slug": "sidecar-onestep",
+  "displayName": "SidecarOneStep - macOS Sidecar Enhancement",
+  "description": "Control SidecarOneStep - A macOS Sidecar enhancement tool. One-click iPad connection, remote control, automation integration via MCP.",
+  "description_zh": "控制 SidecarOneStep - macOS Sidecar 增强工具。一键连接 iPad、远程控制、自动化集成。",
+  "author": "MurphyYi",
+  "author_zh": "张易",
+  "license": "MIT",
+  "homepage": "https://sidecaronestep.app.murphyyi.com/",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yi-nology/sidecarOneStep.git"
+  },
+  "download": {
+    "darwin-x64": "https://github.com/yi-nology/sidecarOneStep/releases/download/v1.4.1/SidecarOneStep_Installer.dmg",
+    "darwin-arm64": "https://github.com/yi-nology/sidecarOneStep/releases/download/v1.4.1/SidecarOneStep_Installer.dmg"
+  },
+  "keywords": [
+    "sidecar",
+    "ipad",
+    "macos",
+    "mcp",
+    "automation",
+    "remote-control",
+    "随航",
+    "iPad",
+    "远程控制"
+  ],
+  "categories": ["productivity", "utilities"],
+  "platforms": ["macos"],
+  "engines": {
+    "openclaw": ">=1.0.0",
+    "mcporter": ">=0.7.0"
+  },
+  "requirements": {
+    "os": "macOS 11.0+",
+    "apps": ["/Applications/SidecarOneStep.app"],
+    "bins": ["mcporter"]
+  },
+  "installation": {
+    "pre_install": [
+      {
+        "type": "download",
+        "url": "https://github.com/yi-nology/sidecarOneStep/releases/latest",
+        "message": "Please download and install SidecarOneStep from GitHub Releases"
+      },
+      {
+        "type": "app_install",
+        "path": "/Applications/SidecarOneStep.app",
+        "message": "Install SidecarOneStep.app to /Applications/"
+      }
+    ],
+    "post_install": [
+      {
+        "type": "command",
+        "cmd": "mcporter config add sidecar-onestep --command /Applications/SidecarOneStep.app/Contents/MacOS/SidecarOneStep --args mcp",
+        "message": "Configure SidecarOneStep MCP server"
+      }
+    ]
+  },
+  "changelog": {
+    "1.4.1": [
+      "UI refactoring and optimization",
+      "Virtual display support (5 new tools)",
+      "15 MCP tools available",
+      "Enhanced virtual display size presets"
+    ],
+    "1.4.0": [
+      "Added virtual display support",
+      "New tools: virtual_display_status, list_virtual_display_sizes, set_virtual_display_size, enable_virtual_display, disable_virtual_display",
+      "15 MCP tools available"
+    ],
+    "1.3.9": [
+      "Fixed stdio MCP mode RunLoop deadlock issue",
+      "Fixed async task status tracking across processes",
+      "Added manual RunLoop driving for stdio mode",
+      "Improved async connection with immediate status return",
+      "10 MCP tools available"
+    ]
+  },
+  "badges": [
+    {
+      "label": "Version",
+      "message": "v1.4.1",
+      "color": "blue"
+    },
+    {
+      "label": "License",
+      "message": "MIT",
+      "color": "green"
+    },
+    {
+      "label": "Platform",
+      "message": "macOS 11.0+",
+      "color": "orange"
+    }
+  ]
+}

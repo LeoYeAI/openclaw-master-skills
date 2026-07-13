@@ -1,0 +1,153 @@
+{
+  "description": "Token optimization config patches for OpenClaw",
+  "patches": {
+    "enable_prompt_caching": {
+      "description": "Enable Anthropic prompt caching for SOUL.md, AGENTS.md, and docs",
+      "patch": {
+        "agentConfig": {
+          "promptCaching": {
+            "enabled": true,
+            "cacheTTL": 14400,
+            "cacheableFiles": [
+              "SOUL.md",
+              "AGENTS.md",
+              "USER.md",
+              "TOOLS.md",
+              "IDENTITY.md",
+              "docs/**/*.md"
+            ]
+          }
+        }
+      },
+      "savings": "Up to 90% reduction on cached content (currently in Anthropic beta)"
+    },
+    "lazy_context_loading": {
+      "description": "Don't load all project files upfront, load on-demand",
+      "patch": {
+        "agentConfig": {
+          "contextLoading": {
+            "mode": "lazy",
+            "alwaysLoad": [
+              "SOUL.md",
+              "AGENTS.md",
+              "USER.md"
+            ],
+            "loadOnMention": true,
+            "loadOnToolCall": true
+          }
+        }
+      },
+      "savings": "50-70% reduction in initial context size"
+    },
+    "model_routing": {
+      "description": "Automatically route simple tasks to cheaper models",
+      "patch": {
+        "agentConfig": {
+          "modelRouting": {
+            "enabled": true,
+            "defaultModel": "anthropic/claude-sonnet-4-5",
+            "rules": [
+              {
+                "pattern": "read|list|show|status|check|get",
+                "model": "anthropic/claude-haiku-4"
+              },
+              {
+                "pattern": "complex|design|architect|comprehensive",
+                "model": "anthropic/claude-opus-4"
+              }
+            ]
+          }
+        }
+      },
+      "savings": "15-30% cost reduction with smart routing"
+    },
+    "heartbeat_optimization": {
+      "description": "Longer, smarter heartbeat intervals",
+      "patch": {
+        "agentConfig": {
+          "heartbeat": {
+            "interval": 3600,
+            "useOptimizer": true,
+            "quietHours": {
+              "start": 23,
+              "end": 8
+            },
+            "skipOnLowActivity": true
+          }
+        }
+      },
+      "savings": "50% reduction in heartbeat API calls"
+    },
+    "token_budgets": {
+      "description": "Set daily token budgets per session type",
+      "patch": {
+        "agentConfig": {
+          "tokenBudgets": {
+            "enabled": true,
+            "daily": {
+              "main": 100000,
+              "heartbeat": 10000,
+              "subagent": 50000
+            },
+            "actions": {
+              "onExceed": "switch_to_cheaper_model",
+              "warnThreshold": 0.8
+            }
+          }
+        }
+      },
+      "savings": "Prevents runaway costs, enforces discipline"
+    },
+    "multi_provider_fallback": {
+      "description": "Automatic fallback to alternative providers when rate-limited",
+      "patch": {
+        "providers": [
+          {
+            "name": "anthropic-primary",
+            "type": "anthropic",
+            "apiKey": "${ANTHROPIC_API_KEY}",
+            "priority": 1
+          },
+          {
+            "name": "openrouter-fallback",
+            "type": "openrouter",
+            "apiKey": "${OPENROUTER_API_KEY}",
+            "priority": 2,
+            "models": {
+              "anthropic/claude-sonnet-4-5": "anthropic/claude-sonnet-4",
+              "anthropic/claude-haiku-4": "google/gemini-2.5-flash"
+            }
+          },
+          {
+            "name": "together-fallback",
+            "type": "together",
+            "apiKey": "${TOGETHER_API_KEY}",
+            "priority": 3,
+            "models": {
+              "anthropic/claude-sonnet-4-5": "meta-llama/Llama-3.3-70B-Instruct-Turbo"
+            }
+          }
+        ],
+        "routing": {
+          "onRateLimit": "fallback",
+          "onError": "fallback",
+          "retryAttempts": 3
+        }
+      },
+      "savings": "Prevents downtime from rate limits, spreads load"
+    }
+  },
+  "usage": {
+    "apply_single_patch": "gateway config.patch --patch '{\"agentConfig\": {...}}'",
+    "apply_multiple": "Combine multiple patches into one config.patch call",
+    "note": "Not all patches are currently supported by OpenClaw core - some require future updates"
+  },
+  "implementation_status": {
+    "prompt_caching": "Requires Anthropic API feature (currently beta)",
+    "lazy_context": "Requires core OpenClaw changes",
+    "model_routing": "Can be implemented as wrapper script (skill includes)",
+    "heartbeat_optimization": "Fully implemented in this skill",
+    "token_budgets": "Can be implemented as monitoring script (skill includes)",
+    "multi_provider": "Partially supported via OpenClaw config"
+  }
+}

@@ -1,0 +1,42 @@
+{
+  "skill_name": "content-collector",
+  "evals": [
+    {
+      "id": 1,
+      "eval_name": "blog-url-collection",
+      "prompt": "帮我收藏一下这篇文章 https://paulgraham.com/writes.html 觉得写得挺好的，关于写作的",
+      "expected_output": "应该抓取文章内容，生成结构化的 markdown 文件到 collections/articles/ 目录，包含 YAML frontmatter（title/source/url/tags 等）、核心观点提取、要点摘录、摘要，并更新 index.md 和 tags.md",
+      "assertions": [
+        {"id": "correct-directory", "text": "文件保存到 collections/articles/ 目录", "type": "quality"},
+        {"id": "yaml-frontmatter", "text": "包含完整的 YAML frontmatter（title, source, url, tags, category, summary）", "type": "format"},
+        {"id": "content-extraction", "text": "提取了文章核心观点（至少3个要点）", "type": "quality"},
+        {"id": "index-update", "text": "提到更新 index.md 或实际执行了更新", "type": "quality"},
+        {"id": "tags-reasonable", "text": "标签合理且包含与写作相关的标签", "type": "quality"},
+        {"id": "supadata-or-fetch", "text": "使用了 supadata API 或 web_fetch 抓取内容", "type": "quality"}
+      ]
+    },
+    {
+      "id": 2,
+      "eval_name": "bilibili-video-collection",
+      "prompt": "这个B站视频讲AI Agent的，帮我存一下 https://www.bilibili.com/video/BV1example",
+      "expected_output": "应该识别出B站视频，使用本地 bilibili 脚本流程（bilibili_extract.py + bilibili_transcribe.sh），生成到 collections/videos/ 目录",
+      "assertions": [
+        {"id": "bilibili-detection", "text": "识别出B站链接并使用本地 bilibili 脚本而非 supadata", "type": "quality"},
+        {"id": "correct-tools", "text": "提到使用 bilibili_extract.py 获取元数据和/或 bilibili_transcribe.sh 转录", "type": "quality"},
+        {"id": "video-directory", "text": "文件保存到 collections/videos/ 目录", "type": "quality"},
+        {"id": "video-metadata", "text": "包含视频专属字段（duration/platform/bvid/stats）", "type": "format"}
+      ]
+    },
+    {
+      "id": 3,
+      "eval_name": "recall-search",
+      "prompt": "上次我收藏过一篇关于产品经理做AI的文章，帮我找一下",
+      "expected_output": "应该在收藏库中搜索，通过 tags.md/index.md 或 grep 查找与'产品经理'和'AI'相关的收藏",
+      "assertions": [
+        {"id": "search-action", "text": "执行了搜索操作（读取 tags.md/index.md 或使用 grep）", "type": "quality"},
+        {"id": "keyword-match", "text": "搜索关键词包含'产品经理'和/或'AI'", "type": "quality"},
+        {"id": "results-format", "text": "返回结果包含标题和摘要信息", "type": "format"}
+      ]
+    }
+  ]
+}

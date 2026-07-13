@@ -1,0 +1,29 @@
+{
+  "name": "@lista-dao/lista-lending-skill",
+  "version": "0.1.1",
+  "description": "Lista Lending vault operations via WalletConnect",
+  "skillRequires": {
+    "lista-wallet-connect": ">=1.0.0"
+  },
+  "type": "module",
+  "main": "dist/cli/cli.bundle.mjs",
+  "scripts": {
+    "clean": "node -e \"require('node:fs').rmSync('dist',{ recursive: true, force: true })\"",
+    "build": "npm run clean && tsc && npm run build:bundle",
+    "build:bundle": "esbuild src/cli.ts --bundle --packages=external --platform=node --format=esm --target=node18 --outfile=dist/cli/cli.bundle.mjs",
+    "dev": "tsx src/cli.ts",
+    "start": "node dist/cli/cli.bundle.mjs",
+    "start:dist": "node dist/cli.js"
+  },
+  "dependencies": {
+    "@lista-dao/moolah-sdk-core": "1.0.7",
+    "@lista-dao/moolah-lending-sdk": "1.0.6",
+    "viem": "^2.22.10"
+  },
+  "devDependencies": {
+    "@types/node": "^20.10.0",
+    "esbuild": "^0.27.3",
+    "tsx": "^4.7.0",
+    "typescript": "^5.3.0"
+  }
+}

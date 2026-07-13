@@ -1,0 +1,1 @@
+# Inquiry Templates\n\n- dgx spark 示例： "需要1台dgx spark，开票，上海收货，请报价"。\n- 通用： "需要[数量] [产品]，[要求]，请报价"。\n\n自定义根据用户需求。

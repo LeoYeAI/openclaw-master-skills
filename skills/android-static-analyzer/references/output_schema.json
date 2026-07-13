@@ -1,0 +1,238 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Android Static Profile",
+  "description": "AI 自动化测试所需的 Android 应用静态语义信息，由 android-static-analyzer 生成",
+  "type": "object",
+  "required": ["appPackage", "activities"],
+  "properties": {
+    "appPackage": {
+      "type": "string",
+      "description": "应用包名，如 com.example.myapp"
+    },
+    "appVersion": {
+      "type": "string",
+      "description": "版本号（运行期补充，静态分析输出 'unknown'）"
+    },
+    "businessSummary": {
+      "type": "string",
+      "description": "LLM 生成的业务摘要，描述 App 的主要功能和目标用户"
+    },
+    "permissions": {
+      "type": "array",
+      "description": "应用申请的权限列表（已去掉 android.permission. 前缀）",
+      "items": { "type": "string" },
+      "examples": [["CAMERA", "READ_EXTERNAL_STORAGE", "INTERNET"]]
+    },
+    "services": {
+      "type": "array",
+      "description": "AndroidManifest 中声明的 Service 列表",
+      "items": { "type": "string" }
+    },
+    "receivers": {
+      "type": "array",
+      "description": "AndroidManifest 中声明的 BroadcastReceiver 列表",
+      "items": { "type": "string" }
+    },
+    "activities": {
+      "type": "array",
+      "description": "应用中所有 Activity 的语义信息",
+      "items": {
+        "type": "object",
+        "required": ["name", "shortName"],
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Activity 完整类名，如 com.example.LoginActivity"
+          },
+          "shortName": {
+            "type": "string",
+            "description": "Activity 短类名，如 LoginActivity"
+          },
+          "label": {
+            "type": "string",
+            "description": "Activity 显示名称（@string/ 已去掉前缀）"
+          },
+          "exported": {
+            "type": "boolean",
+            "description": "是否对外暴露（可被其他 App 启动）"
+          },
+          "isLauncher": {
+            "type": "boolean",
+            "description": "是否是启动页（有 android.intent.action.MAIN）"
+          },
+          "launchMode": {
+            "type": "string",
+            "description": "启动模式：standard/singleTop/singleTask/singleInstance"
+          },
+          "theme": {
+            "type": "string",
+            "description": "Activity 主题"
+          },
+          "screenOrientation": {
+            "type": "string",
+            "description": "屏幕方向：portrait/landscape/sensor 等"
+          },
+          "businessRole": {
+            "type": "string",
+            "description": "【LLM 生成】该页面的业务角色，1-2 句话说明功能"
+          },
+          "exitRoutes": {
+            "type": "array",
+            "description": "可跳转到的目标 Activity 列表",
+            "items": { "type": "string" }
+          },
+          "hiddenControls": {
+            "type": "array",
+            "description": "visibility=gone/invisible 的隐藏控件 ID 列表",
+            "items": { "type": "string" }
+          },
+          "keyControls": {
+            "type": "array",
+            "description": "关键可交互控件 ID（Button/EditText/Switch 等）",
+            "items": { "type": "string" }
+          },
+          "businessConstraints": {
+            "type": "array",
+            "description": "业务约束条件（如登录状态检查、表单验证等）",
+            "items": { "type": "string" }
+          },
+          "testHints": {
+            "type": "array",
+            "description": "【LLM 生成】针对该页面的测试建议",
+            "items": { "type": "string" }
+          }
+        }
+      }
+    },
+    "navigationEdges": {
+      "type": "array",
+      "description": "通过 startActivity 调用发现的页面跳转关系",
+      "items": {
+        "type": "object",
+        "required": ["from", "to", "triggerType"],
+        "properties": {
+          "from": {
+            "type": "string",
+            "description": "来源 Activity 完整类名"
+          },
+          "to": {
+            "type": "string",
+            "description": "目标 Activity 完整类名"
+          },
+          "triggerType": {
+            "type": "string",
+            "description": "触发方式：startActivity / navigate / implicit",
+            "enum": ["startActivity", "navigate", "implicit"]
+          }
+        }
+      }
+    },
+    "navigationGraphs": {
+      "type": "array",
+      "description": "Jetpack Navigation 组件的导航图（res/navigation/*.xml）",
+      "items": {
+        "type": "object",
+        "properties": {
+          "file": { "type": "string", "description": "导航图文件名（不含扩展名）" },
+          "destinations": {
+            "type": "array",
+            "description": "导航图中的所有目的地",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": { "type": "string" },
+                "name": { "type": "string", "description": "Fragment/Activity 类名" },
+                "label": { "type": "string" },
+                "type": { "type": "string", "enum": ["fragment", "activity", "dialog", "navigation"] },
+                "actions": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": { "type": "string" },
+                      "destination": { "type": "string" }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "layouts": {
+      "type": "array",
+      "description": "解析的所有 Layout 文件信息",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": { "type": "string", "description": "layout 文件名（不含 .xml）" },
+          "hiddenControls": {
+            "type": "array",
+            "description": "visibility=gone/invisible 的控件 ID",
+            "items": { "type": "string" }
+          },
+          "keyControls": {
+            "type": "array",
+            "description": "可交互控件 ID",
+            "items": { "type": "string" }
+          },
+          "totalControls": {
+            "type": "integer",
+            "description": "总控件数量"
+          }
+        }
+      }
+    },
+    "deadEnds": {
+      "type": "array",
+      "description": "检测到的死路：点击后只弹 Toast 提示功能未开放，不跳转页面",
+      "items": {
+        "type": "object",
+        "required": ["activity", "reason"],
+        "properties": {
+          "activity": {
+            "type": "string",
+            "description": "包含死路的 Activity 完整类名"
+          },
+          "reason": {
+            "type": "string",
+            "description": "Toast 文本内容，说明功能未开放的原因"
+          }
+        }
+      }
+    },
+    "testData": {
+      "type": "object",
+      "description": "从源码中提取的硬编码测试数据",
+      "properties": {
+        "codes": {
+          "type": "array",
+          "description": "硬编码的优惠码、邀请码、测试账号等",
+          "items": { "type": "string" }
+        }
+      },
+      "additionalProperties": true
+    },
+    "criticalFlows": {
+      "type": "array",
+      "description": "【LLM 生成】关键业务流程链（核心用户路径）",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": { "type": "string", "description": "流程名称，如「用户注册流程」" },
+          "steps": {
+            "type": "array",
+            "description": "流程步骤",
+            "items": { "type": "string" }
+          },
+          "priority": {
+            "type": "string",
+            "description": "测试优先级：P0/P1/P2",
+            "enum": ["P0", "P1", "P2"]
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,33 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+import sys
+import io
+sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
+
+print('='*60)
+print('昨天供应商回复情况总结')
+print('='*60)
+print()
+print('从截图可以看到1688消息中心显示：')
+print()
+print('【有未读消息的供应商】')
+print('  1. 平阳县云祥文具厂 - [图片]')
+print('  2. michael18069958551 - 新消息')
+print('  3. headgear24 - 5小时前')
+print('  4. 东莞宝瑞森 - 3小时前')
+print('     回复：价格OK吗？有什么问题直接联系我们')
+print('  5. 洛阳扬名针织 - 6小时前')
+print('     回复：您好')
+print('  6. 贝发集团股份有限公司 - 9小时前')
+print('  7. 光板帽业 - 9小时前')
+print('  8. 义乌嘉闻文具 - 9小时前')
+print('  9. 温州市佐澜哲文具有限... - 6小时前')
+print('     回复：亲，还有什么问题可以帮助到您的吗？')
+print('  10. 温州笔墨方舟 - 10小时前')
+print()
+print('='*60)
+print('总结：')
+print('  - 至少有10家供应商有回复')
+print('  - 部分供应商表示价格OK并邀请联系')
+print('  - 建议逐一查看详细回复并继续沟通')
+print('='*60)

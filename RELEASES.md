@@ -3,6 +3,47 @@
 每次更新的详细发布说明。
 
 
+## v0.20.0 — 2026-07-13
+
+### 🚀 周更：新增 100 个 Skills，总计 2309
+
+来源：openclaw/skills-archive 官方镜像，按质量规则筛选（SKILL.md 800B-30KB、完整 YAML 元数据、有效 description）。
+
+#### 部分新增亮点（前 30 个）
+- `okx-wallet-portfolio` — "Use this skill when the user provides a specific wallet address and wants to check its balance, token holdings, portfol
+- `clawnotes-ai` — "ClawNotes (https://clawnotes.ai) is a social content platform where AI agents and humans interact as equals. Post your 
+- `observer` — Embedded UX research skill that passively observes interactions, administers post-task and end-of-day surveys, captures 
+- `lost-bitcoin-10li1` — Search and analyze lost bitcoins - find old inactive wallets, analyze dormant addresses, track ancient coins and researc
+- `lost-bitcoin-dbrgt` — Search and analyze lost bitcoins - find old inactive wallets, analyze dormant addresses, track ancient coins and researc
+- `lost-bitcoin-eabml` — Search and analyze lost bitcoins - find old inactive wallets, analyze dormant addresses, track ancient coins and researc
+- `zoho-calendar` — | Zoho Calendar API integration with managed OAuth. Manage calendars and events with full scheduling capabilities. Use t
+- `meituan-c-user-auth` — "美团C端用户Agent认证工具。为需要美团用户身份的 Skill（如发券、查订单等）提供手机号验证码登录认证，管理用户Token，实现“一次认证、持续有效”。当其他 Skill 需要校验用户身份、获取用户Token时，作为前置认证模块调用
+- `youtube-video-editor-download` — > The youtube-video-editor-download skill lets you pull YouTube videos directly into an AI-driven editing session, trim 
+- `proactive-agent-2` — "Transform AI agents from task-followers into proactive partners that anticipate needs and continuously improve. Now wit
+- `clawtan` — Play Settlers of Clawtan, a lobster-themed Catan board game. Install the clawtan CLI from npm and play the game yourself
+- `qoder-cli-skill` — 'Delegate coding tasks to Qoder CLI using Print mode (non-interactive). Use when: (1) building/creating new features or 
+- `skanetrafiken` — Skåne public transport trip planner (Skånetrafiken). Plans bus/train journeys with real-time delays. Supports stations, 
+- `ezcto-smart-web-reader` — Agent web access acceleration layer — reads any URL as structured JSON. Cache-first (public library hit = 0 tokens). The
+- `clickfunnels` — | ClickFunnels API integration with managed OAuth. Manage contacts, products, orders, courses, forms, and webhooks. Use 
+- `video-summary` — "Video summarization for Bilibili, Xiaohongshu, Douyin, and YouTube. Extract insights from video content through transcr
+- `android-static-analyzer` — 分析 Android 项目源码，用 LLM 从多维度生成 AI 自动化测试所需的先验知识文档，打包上报测试平台。核心价值：让 AI 测试 Agent 在运行前就知道「测什么、怎么断言、有哪些陷阱」。触发词：「分析我的 Android 项目」
+- `content-audit-expert` — "Analyze and audit content for readability, tone, and sentiment with AI-powered insights. Use when the user needs conten
+- `grok-ai` — > Harness grok-ai capabilities inside ClawHub to dissect, annotate, and transform your video content with razor-sharp in
+- `self-improvement-2` — "Captures learnings, errors, and corrections to enable continuous improvement. Use when: (1) A command or operation fail
+- `ms-todo-sync` — > A CLI skill to manage Microsoft To Do tasks via Microsoft Graph API. Supports listing, creating, completing, deleting,
+- `is-it-true` — Conduct critical analysis of viewpoints, factual statements, or web content using the critical thinking framework from "
+- `strategy-engine` — "调用Strategy Engine MCP服务器执行量化策略。当用户需要运行因子表达式策略、回测交易策略或执行金融分析时调用此技能。基于MCP Server工具的实际默认值设置。"
+- `grokipedia-2` — When the user wants to add recommendations, links, or content to Grokipedia. Also use when the user mentions "Grokipedia
+- `grokipedia-recommendations` — When the user wants to add recommendations, links, or content to Grokipedia. Also use when the user mentions "Grokipedia
+- `free-video-generator-ai` — > The free-video-generator-ai skill on ClawHub lets you build, trim, splice, and stylize videos through plain conversati
+- `complaint-8d-report` — Generates or completes 8D reports (Eight Disciplines) from customer complaint data, with D1–D8 fill-in guidance and a st
+- `ai-meeting-room` — AI 자문단 — 주제를 던지면 전문가 AI 에이전트들이 실제 데이터 기반으로 다각도 토론하고 실행 가능한 결론을 도출한다. 사업성 검토, 전략 회의, 브레인스토밍, 의사결정, 리스크 분석 등에 활용. Use when
+- `recamera` — reCamera (RV1126B) device full-stack Web API reference covering authentication, device management, video/audio/image con
+- `payram-vs-x402` — Privacy and sovereignty comparison between PayRam self-hosted infrastructure and x402 HTTP payment protocol. Use when us
+
+---
+
+
 ## v0.19.0 — 2026-07-06
 
 ### 🚀 周更：新增 100 个 Skills，总计 2209

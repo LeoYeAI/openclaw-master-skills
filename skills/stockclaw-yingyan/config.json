@@ -1,0 +1,44 @@
+{
+  "platform": "ClawHub",
+  "uploadPage": "https://clawhub.ai/upload",
+  "uploadFormDefaults": {
+    "slug": "stockclaw-yingyan",
+    "displayName": "stockClaw-yingyan 股票量化助手",
+    "version": "1.1.4",
+    "tagsText": "latest, stock, quant, openclaw",
+    "mit0Accepted": true,
+    "updateLog": "1.1.4：openclawCredentials 拆分为 openClaw_api_key / monitor_api_key；HTTP 与 WebSocket 分钥。1.1.3：凭证防重复索要。"
+  },
+  "uploadFolder": {
+    "path": "examples_skill/stockClaw-yingyan",
+    "mustInclude": [
+      "SKILL.md"
+    ],
+    "shouldInclude": [
+      "reference.md",
+      "examples.md",
+      "CLAWHUB_UPLOAD.md"
+    ]
+  },
+  "openclawCredentials": {
+    "user_id": "",
+    "openClaw_api_key": "",
+    "monitor_api_key": ""
+  },
+  "runtimeEndpoints": {
+    "baseUrl": "https://yingyan.chatface.com",
+    "healthUrl": "https://yingyan.chatface.com/api/openclaw/health",
+    "demoUrl": "https://yingyan.chatface.com/web/openclaw_demo.html",
+    "messageApi": "https://yingyan.chatface.com/api/openclaw/stock/message",
+    "stockQueryApi": "https://yingyan.chatface.com/api/openclaw/stock/query",
+    "limitUpApi": "https://yingyan.chatface.com/api/openclaw/stock/limit-up",
+    "monitorStreamApi": "https://yingyan.chatface.com/api/openclaw/stock/monitor/stream",
+    "monitorWsTemplate": "wss://yingyan.chatface.com/ws/monitor/open?apikey={monitor_api_key}&user_id={user_id}"
+  },
+  "testInputs": {
+    "userId": "",
+    "chartMessage": "000001",
+    "marketMessage": "000001行情",
+    "stockQuery": "涨幅超过8%的半导体股票，按换手率从高到低排序，取前20只"
+  }
+}

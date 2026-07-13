@@ -1,0 +1,161 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "stockClaw-yingyan OpenClaw API",
+    "version": "1.1.4",
+    "description": "HTTP 接口中参数名 apikey 须为会员中心「OpenClaw」12 位 Key。WebSocket /ws/monitor/open 的查询参数 apikey 须为「监控信号」Key。详见 SKILL.md openclawCredentials。"
+  },
+  "servers": [
+    {
+      "url": "https://yingyan.chatface.com",
+      "description": "生产环境"
+    }
+  ],
+  "paths": {
+    "/api/openclaw/stock/message": {
+      "post": {
+        "summary": "Handle stock message (chart or market query)",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["message", "user_id", "apikey"],
+                "properties": {
+                  "message": {
+                    "type": "string",
+                    "description": "股票代码/名称，或股票+行情"
+                  },
+                  "user_id": {
+                    "type": "string"
+                  },
+                  "apikey": {
+                    "type": "string",
+                    "minLength": 12,
+                    "maxLength": 12,
+                    "description": "会员中心 OpenClaw API Key（config.openClaw_api_key）"
+                  },
+                  "start_date": {
+                    "type": "string",
+                    "description": "仅量化图请求使用"
+                  },
+                  "end_date": {
+                    "type": "string",
+                    "description": "仅量化图请求使用"
+                  },
+                  "initial_capital": {
+                    "type": "number",
+                    "description": "仅量化图请求使用"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OpenClaw unified response (chart or market_query with TDX data and prompts)"
+          }
+        }
+      }
+    },
+    "/api/openclaw/stock/query": {
+      "post": {
+        "summary": "Natural language stock screener for OpenClaw",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["query", "user_id", "apikey"],
+                "properties": {
+                  "query": {
+                    "type": "string",
+                    "description": "自然语言选股条件，例如：涨幅超过8%的半导体股票，按换手率从高到低排序，取前20只"
+                  },
+                  "user_id": {
+                    "type": "string"
+                  },
+                  "apikey": {
+                    "type": "string",
+                    "minLength": 12,
+                    "maxLength": 12,
+                    "description": "会员中心 OpenClaw API Key（config.openClaw_api_key）"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OpenClaw stock screener response, max 20 rows and fixed fields only"
+          }
+        }
+      }
+    },
+    "/api/openclaw/stock/limit-up": {
+      "get": {
+        "summary": "Get today's limit-up stocks for OpenClaw",
+        "parameters": [
+          {
+            "name": "user_id",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "apikey",
+            "in": "query",
+            "required": true,
+            "description": "会员中心 OpenClaw API Key（config.openClaw_api_key）",
+            "schema": {
+              "type": "string",
+              "minLength": 12,
+              "maxLength": 12
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OpenClaw limit-up stock list based on latest TDX CSV"
+          }
+        }
+      }
+    },
+    "/api/openclaw/stock/monitor/stream": {
+      "get": {
+        "summary": "Get WebSocket monitor connection info",
+        "parameters": [
+          {
+            "name": "user_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "WebSocket 模板中 apikey 占位须替换为监控信号 Key（config.monitor_api_key），非 OpenClaw Key"
+          }
+        }
+      }
+    },
+    "/api/openclaw/health": {
+      "get": {
+        "summary": "Health check",
+        "responses": {
+          "200": {
+            "description": "Service health and endpoint info"
+          }
+        }
+      }
+    }
+  }
+}
