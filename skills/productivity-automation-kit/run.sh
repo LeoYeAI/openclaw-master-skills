@@ -1,0 +1,21 @@
+#!/bin/bash
+# Productivity Automation Kit - 运行入口
+
+echo "Productivity Automation Kit"
+echo "=========================="
+echo ""
+echo "请进入scripts目录运行："
+echo ""
+echo "  数据自动化："
+echo "    cd scripts"
+echo "    python data_automation.py --help"
+echo ""
+echo "  日程规划："
+echo "    cd scripts"
+echo "    python schedule_planner.py --help"
+echo ""
+echo "  任务提醒："
+echo "    cd scripts"
+echo "    bash task_reminder.sh"
+echo ""
+echo "详细说明请查看 README.md"

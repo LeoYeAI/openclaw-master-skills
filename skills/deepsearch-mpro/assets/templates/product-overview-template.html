@@ -1,0 +1,56 @@
+<!--
+  产品概览模板 (Product Overview Template)
+  用于展示产品/服务的核心定位和背景信息
+  
+  使用方式：
+  1. 替换 {{变量名}} 为实际内容
+  2. 标签可根据实际情况增删
+  3. 核心定位和产品背景是必填项
+-->
+
+<div class="section" id="overview">
+  <div class="section-header">
+    <div class="icon" style="background:#FFF3E0">🔍</div>
+    <div><h2>产品概览</h2><div class="sub">Product Overview</div></div>
+  </div>
+  
+  <div class="card" style="border-left: 5px solid var(--primary)">
+    <p style="font-size:1rem; line-height:1.9; color:var(--text)">
+      <strong>{{产品名称}}</strong>（{{英文名称}}）是{{公司/组织}}于 <strong>{{发布日期}}</strong> 正式发布的<strong>{{产品定位}}</strong>。
+      {{产品命名寓意/背景}}。
+      产品定位为{{产品类型}}，{{核心特点描述}}。
+      目前以{{发布状态}}形式开放{{附加说明}}。
+    </p>
+    
+    <div style="display:flex;gap:0.5rem;flex-wrap:wrap;margin-top:1rem;">
+      <span class="tag tag-orange">{{标签1}}</span>
+      <span class="tag tag-blue">{{标签2}}</span>
+      <span class="tag tag-green">{{标签3}}</span>
+      <span class="tag tag-purple">{{标签4}}</span>
+      <span class="tag tag-teal">{{标签5}}</span>
+    </div>
+  </div>
+  
+  <!-- 核心定位表格（可选） -->
+  <div class="card" style="margin-top:1rem;">
+    <h4 style="margin-bottom:0.75rem">核心定位</h4>
+    <table style="width:100%;font-size:0.9rem;">
+      <tr>
+        <td style="padding:0.5rem 0;color:var(--text-light);width:120px;">类别</td>
+        <td style="padding:0.5rem 0;">{{产品类别}}</td>
+      </tr>
+      <tr>
+        <td style="padding:0.5rem 0;color:var(--text-light);">发布方</td>
+        <td style="padding:0.5rem 0;">{{发布组织}}</td>
+      </tr>
+      <tr>
+        <td style="padding:0.5rem 0;color:var(--text-light);">当前状态</td>
+        <td style="padding:0.5rem 0;">{{产品状态}}</td>
+      </tr>
+      <tr>
+        <td style="padding:0.5rem 0;color:var(--text-light);">组织归属</td>
+        <td style="padding:0.5rem 0;">{{所属组织}}</td>
+      </tr>
+    </table>
+  </div>
+</div>

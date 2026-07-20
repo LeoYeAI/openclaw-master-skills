@@ -1,0 +1,23 @@
+%%{init: {'theme':'base', 'themeVariables': { 'primaryColor':'#4A90E2','primaryTextColor':'#fff','primaryBorderColor':'#2E5C8A','lineColor':'#333','secondaryColor':'#7B68EE','tertiaryColor':'#90EE90','background':'#f9f9f9','mainBkg':'#4A90E2','secondBkg':'#7B68EE','tertiaryBkg':'#90EE90'}}}%%
+graph TB
+    subgraph "{{SYSTEM_NAME}}"
+        C1[{{COMPONENT_1_LABEL}}]
+        C2[{{COMPONENT_2_LABEL}}]
+        C3[{{COMPONENT_3_LABEL}}]
+    end
+    
+    E1(({{EXTERNAL_1_LABEL}}))
+    E2(({{EXTERNAL_2_LABEL}}))
+    
+    E1 -->|{{FLOW_1}}| C1
+    C1 -->|{{FLOW_2}}| C2
+    C2 -->|{{FLOW_3}}| C3
+    C3 -->|{{FLOW_4}}| E2
+    
+    classDef primary fill:#4A90E2,stroke:#2E5C8A,stroke-width:2px,color:#fff
+    classDef secondary fill:#7B68EE,stroke:#5A4FCF,stroke-width:2px,color:#fff
+    classDef external fill:#90EE90,stroke:#6DBE6D,stroke-width:2px,color:#333
+    
+    class C1,C2 primary
+    class C3 secondary
+    class E1,E2 external

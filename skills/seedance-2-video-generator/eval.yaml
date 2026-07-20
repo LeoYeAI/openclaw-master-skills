@@ -1,0 +1,48 @@
+version: "1"
+defaults:
+  trials: 3
+  timeout: 600
+  threshold: 0.75
+skill: seedance-2-video-gen
+trigger_tests:
+  - id: explicit-invoke
+    should_trigger: true
+    prompt: "Use the seedance-2-video-gen skill to generate a WeryAI Werydance 2.0 video."
+  - id: implicit-domain
+    should_trigger: true
+    prompt: "用 Werydance 2.0 把这张 HTTPS 图片做成 5 秒竖屏视频，并保留人物身份。"
+  - id: text-to-video-search
+    should_trigger: true
+    prompt: "I need a Werydance 2.0 text-to-video generator for WeryAI."
+  - id: image-to-video-search
+    should_trigger: true
+    prompt: "Animate an HTTPS image with Werydance 2.0 image-to-video."
+  - id: first-last-frame
+    should_trigger: true
+    prompt: "Generate a transition video from a first frame and a last frame with Werydance 2.0."
+  - id: wavespeed-migration
+    should_trigger: true
+    prompt: "I have a Seedance workflow with image plus last_image; migrate it to this WeryAI skill."
+  - id: almighty-mixed-reference
+    should_trigger: true
+    prompt: "Use Werydance 2.0 almighty reference mode with image + video + audio to generate a 5s clip."
+  - id: negative-control
+    should_trigger: false
+    prompt: "Refactor my Node.js API handlers and add tests."
+outcome_tests:
+  - id: skill-package-layout
+    type: deterministic
+    checks:
+      - file_exists: "SKILL.md"
+      - file_exists: "scripts/video_gen.js"
+  - id: optional-quality
+    type: llm_rubric
+    rubric: |
+      The skill should:
+      - stay within documented Werydance 2.0 constraints,
+      - support text/image/multi-image and almighty mixed-reference routing,
+      - document and validate almighty limits (prompt 500, count limits, duration 5-15, video_number 1-4),
+      - support local media upload through the official /v1/generation/upload-file contract,
+      - keep compatibility for first_frame+last_frame and image+last_image workflows,
+      - include actionable Werydance 2.0 prompt-engineering guidance beyond raw API usage,
+      - require prompt expansion before paid submission.

@@ -1,0 +1,91 @@
+<!--
+  目标用户分析模板 (Target Users Analysis Template)
+  用于展示产品/服务的目标用户画像分析
+  
+  使用方式：
+  1. 替换 {{变量名}} 为实际内容
+  2. 根据实际用户画像数量复制/删除 persona-card 区块
+  3. 每个 persona-card 包含：头像、名称、角色定位、标签、详细描述
+-->
+
+<div class="section" id="users">
+  <div class="section-header">
+    <div class="icon" style="background:#E3F2FD">👥</div>
+    <div><h2>目标用户群</h2><div class="sub">Target User Segments</div></div>
+  </div>
+  
+  <div style="display:flex;flex-direction:column;gap:1rem;">
+  
+    <!-- 用户画像 1：核心目标客群 -->
+    <div class="persona-card">
+      <div class="persona-avatar" style="background:#FFF3E0">🏪</div>
+      <div class="persona-content">
+        <h3>{{用户画像1名称}}</h3>
+        <div class="role">{{用户画像1英文名}} · {{优先级标签（如：核心目标客群）}}</div>
+        <div class="persona-pills">
+          <span class="tag tag-orange">{{标签1}}</span>
+          <span class="tag tag-orange">{{标签2}}</span>
+          <span class="tag tag-orange">{{标签3}}</span>
+        </div>
+        <p>{{用户画像1详细描述：场景、需求、痛点、解决方案}}</p>
+      </div>
+    </div>
+    
+    <!-- 用户画像 2 -->
+    <div class="persona-card">
+      <div class="persona-avatar" style="background:#E8F5E9">🏢</div>
+      <div class="persona-content">
+        <h3>{{用户画像2名称}}</h3>
+        <div class="role">{{用户画像2英文名}} · {{优先级标签}}</div>
+        <div class="persona-pills">
+          <span class="tag tag-green">{{标签1}}</span>
+          <span class="tag tag-green">{{标签2}}</span>
+          <span class="tag tag-green">{{标签3}}</span>
+        </div>
+        <p>{{用户画像2详细描述}}</p>
+      </div>
+    </div>
+    
+    <!-- 用户画像 3 -->
+    <div class="persona-card">
+      <div class="persona-avatar" style="background:#F3E5F5">💼</div>
+      <div class="persona-content">
+        <h3>{{用户画像3名称}}</h3>
+        <div class="role">{{用户画像3英文名}} · {{优先级标签}}</div>
+        <div class="persona-pills">
+          <span class="tag tag-purple">{{标签1}}</span>
+          <span class="tag tag-purple">{{标签2}}</span>
+          <span class="tag tag-purple">{{标签3}}</span>
+        </div>
+        <p>{{用户画像3详细描述}}</p>
+      </div>
+    </div>
+    
+    <!-- 用户画像 4：可选 -->
+    <div class="persona-card">
+      <div class="persona-avatar" style="background:#E0F2F1">👩‍💻</div>
+      <div class="persona-content">
+        <h3>{{用户画像4名称}}</h3>
+        <div class="role">{{用户画像4英文名}} · {{优先级标签}}</div>
+        <div class="persona-pills">
+          <span class="tag tag-teal">{{标签1}}</span>
+          <span class="tag tag-teal">{{标签2}}</span>
+          <span class="tag tag-teal">{{标签3}}</span>
+        </div>
+        <p>{{用户画像4详细描述}}</p>
+      </div>
+    </div>
+    
+  </div>
+</div>
+
+<!--
+样式说明：
+- persona-avatar 背景色可选：
+  · #FFF3E0 (橙色系) - 核心用户
+  · #E8F5E9 (绿色系) - 企业用户
+  · #F3E5F5 (紫色系) - 垂直行业
+  · #E0F2F1 (青色系) - 开发者/生态
+- tag 颜色类：
+  · tag-orange, tag-blue, tag-green, tag-red, tag-purple, tag-teal
+-->

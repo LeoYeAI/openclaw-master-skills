@@ -1,0 +1,202 @@
+name: autonomous-task-runner
+display_name: "Autonomous Task Runner"
+description: >
+  Persistent task queue system with two operating modes: INTAKE (user adds tasks via message,
+  stored in persistent queue) and DISPATCHER (heartbeat/cron triggers queue check, spawns
+  subagents for pending tasks, reports completions). The system runs continuously — never finishes.
+version: 2.1.0
+tier: general
+
+metadata:
+  author: skill-engineer
+  owner: main agent
+  created: "2026-02-17"
+  updated: "2026-02-17"
+  based_on: "skill-engineer quality rubric v3.0.0"
+
+modes:
+  - name: INTAKE
+    trigger_type: user_message
+    description: Parse user message into tasks and add to persistent queue
+  - name: DISPATCHER
+    trigger_type: heartbeat_or_cron
+    description: Check queue, dispatch pending tasks, report completions
+
+triggers:
+  # --- INTAKE MODE: triggered by user message ---
+  positive:
+    - "add task"
+    - "add these tasks"
+    - "new task"
+    - "task:"
+    - "do this for me"
+    - "do these for me"
+    - "handle these"
+    - "handle this for me"
+    - "I need you to"
+    - "I need to"
+    - "help me with"
+    - "can you do"
+    - "I want you to"
+    - "task list"
+    - "my tasks"
+    - "show tasks"
+    - "task status"
+    - "what's in the queue"
+    - "pending tasks"
+    - "queue these"
+    - "work on these"
+    - "skip T-"
+    - "retry T-"
+    - "cancel T-"
+    - "mark T-"
+    - "run my tasks"
+    - "execute task list"
+
+  # --- DISPATCHER MODE: triggered by heartbeat/cron ---
+  system_events:
+    - "TASK_RUNNER_DISPATCH: check queue and run pending tasks"
+    - "HEARTBEAT: task-runner dispatcher check"
+
+  negative:
+    - Pure single-question lookup answerable in one sentence
+    - "remind me in X minutes" (scheduling-only, no task)
+    - "google search for X" (single web search, answer directly)
+    - "what time is it" (trivial lookup)
+    - Conversational acknowledgment with no action items
+
+configuration:
+  tools_md_keys:
+    TASK_RUNNER_DIR:
+      default: "~/.openclaw/tasks/"
+      type: path
+      description: Directory where queue file and deliverables are stored
+
+    TASK_RUNNER_MAX_CONCURRENT:
+      default: 2
+      type: integer
+      description: Maximum number of tasks running simultaneously
+
+    TASK_RUNNER_MAX_RETRIES:
+      default: 3
+      type: integer
+      description: Maximum retry attempts per task before marking blocked
+
+    TASK_RUNNER_ARCHIVE_DAYS:
+      default: 7
+      type: integer
+      description: Days after which done/blocked tasks are archived out of main queue
+
+inputs:
+  # INTAKE mode
+  - name: user_message
+    type: string (natural language)
+    required: true (INTAKE)
+    description: User's message containing one or more tasks in plain English
+
+  # Both modes
+  - name: task_runner_dir
+    type: path
+    required: false
+    source: TOOLS.md or default
+    description: Queue file directory
+
+  - name: max_concurrent
+    type: integer
+    required: false
+    source: TOOLS.md or default
+    description: Override max concurrent running tasks
+
+  - name: max_retries
+    type: integer
+    required: false
+    source: TOOLS.md or default
+    description: Override max retry count
+
+outputs:
+  # INTAKE mode
+  - name: intake_confirmation
+    type: message (chat)
+    description: Confirmation sent to user after tasks are added to queue
+
+  # DISPATCHER mode
+  - name: done_notification
+    type: message (chat)
+    description: Sent immediately when a task completes successfully
+
+  - name: blocked_notification
+    type: message (chat)
+    description: Sent immediately when a task is blocked with unblock instructions
+
+  # Both modes
+  - name: queue_file
+    type: file (JSON)
+    path: "${TASK_RUNNER_DIR}/task-queue.json"
+    description: Single persistent queue file (all tasks, accumulates over time)
+
+  - name: deliverable_files
+    type: file (various)
+    path: task-specific
+    description: Files produced by individual tasks (when applicable)
+
+task_states:
+  - pending     # waiting to be dispatched
+  - running     # subagent spawned and executing
+  - done        # completed successfully
+  - blocked     # failed maxRetries times, needs user action
+  - skipped     # skipped by user request
+
+task_types:
+  - info-lookup
+  - file-creation
+  - code-execution
+  - agent-delegation
+  - reminder-scheduling
+  - messaging
+  - unknown
+
+heartbeat_integration:
+  register_in_heartbeat_md: true
+  heartbeat_check: "Read ${TASK_RUNNER_DIR}/task-queue.json; if pending/running tasks exist, run DISPATCHER mode; else HEARTBEAT_OK"
+  cron_backup:
+    schedule: "every 15 minutes"
+    system_event: "TASK_RUNNER_DISPATCH: check queue and run pending tasks"
+
+permissions:
+  # Declared explicitly so security scanners understand intent.
+  # All actions are taken on behalf of the authenticated user.
+  filesystem:
+    - "create ${TASK_RUNNER_DIR}/ directory on first run"
+    - "read/write ${TASK_RUNNER_DIR}/task-queue.json (persistent queue)"
+    - "read/write/create HEARTBEAT.md (injects dispatcher entry on first run)"
+    - "write ${TASK_RUNNER_DIR}/archive/YYYY-MM.json (archiving old tasks)"
+  cron:
+    - "register one recurring cron job on first run (every 15 min dispatcher)"
+    - "no cron jobs are registered after first-run setup"
+  subagents:
+    - "spawn subagent per pending task (up to maxConcurrent simultaneously)"
+    - "subagents execute tasks and report results back to queue"
+  exec:
+    - "mkdir -p ${TASK_RUNNER_DIR} (directory creation only)"
+  first_run_behavior: >
+    On first INTAKE invocation (queue file absent), the skill auto-configures:
+    creates queue directory, initializes queue file, appends entry to HEARTBEAT.md,
+    and registers one backup cron job. User is notified. All subsequent runs skip setup.
+
+dependencies:
+  tools:
+    required:
+      - web_search
+      - exec
+      - write
+      - message
+      - subagents (for spawning task workers)
+    optional:
+      - cron (for backup dispatcher scheduling)
+      - browser (for complex info-lookup tasks)
+
+references:
+  - references/queue-schema.md
+  - references/task-types.md
+  - references/verification-guide.md
+  - tests/test-triggers.json

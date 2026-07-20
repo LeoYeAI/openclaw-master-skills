@@ -1,0 +1,65 @@
+version: "3.8"
+
+# OpenClaw + n8n Co-located Stack
+# Both services share a private Docker network.
+# No ports exposed to public internet by default.
+#
+# Usage:
+#   1. Copy .env.example to .env and fill in values
+#   2. docker compose up -d
+#   3. Access n8n at http://localhost:5678
+#   4. Gateway available at http://localhost:18789
+
+services:
+  openclaw:
+    image: openclaw/openclaw:latest
+    container_name: openclaw-agent
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:18789:18789"
+    volumes:
+      - openclaw-data:/app/workspace
+      - ./openclaw.json:/app/openclaw.json:ro
+    environment:
+      - OPENCLAW_GATEWAY_TOKEN=${GATEWAY_TOKEN}
+      - OPENCLAW_DEFAULT_MODEL=${DEFAULT_MODEL:-claude-sonnet-4-20250514}
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
+    networks:
+      - openclaw-n8n
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:18789/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  n8n:
+    image: docker.n8n.io/n8nio/n8n:latest
+    container_name: n8n-orchestrator
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:5678:5678"
+    volumes:
+      - n8n-data:/home/node/.n8n
+    environment:
+      - N8N_ENCRYPTION_KEY=${N8N_ENCRYPTION_KEY}
+      - WEBHOOK_URL=${N8N_WEBHOOK_URL:-http://n8n:5678}
+      - N8N_DEFAULT_BINARY_DATA_MODE=filesystem
+      - EXECUTIONS_DATA_PRUNE=true
+      - EXECUTIONS_DATA_MAX_AGE=168
+      - GENERIC_TIMEZONE=${TIMEZONE:-America/New_York}
+      - N8N_PAYLOAD_SIZE_MAX=50
+    networks:
+      - openclaw-n8n
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5678/healthz"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+volumes:
+  openclaw-data:
+  n8n-data:
+
+networks:
+  openclaw-n8n:
+    driver: bridge

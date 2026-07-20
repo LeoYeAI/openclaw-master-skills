@@ -1,0 +1,221 @@
+# SHIFT Configuration Schema
+# Copy this to ~/.openclaw/workspace/.shift/config.yaml and customize.
+
+# =============================================================================
+# CORE SETTINGS
+# =============================================================================
+
+enabled: true
+
+# Display mode:
+# - hidden: seamless — user sees only the master's response (recommended)
+# - transparent: user sees delegation and consultation in action
+displayMode: hidden
+
+# =============================================================================
+# FAST PATH
+# =============================================================================
+
+# Conservative: only trivial greetings/acknowledgments bypass delegation.
+# Everything else gets routed normally.
+# Set to "off" if you want the master to handle everything.
+fastPath: conservative
+
+# =============================================================================
+# COST MANAGEMENT
+# =============================================================================
+
+costManagement:
+  # Enable delegation cost tracking and budget enforcement.
+  # When hourly spend exceeds costBudgetPerHour, master handles all tasks directly.
+  enabled: true
+
+  # Maximum USD spend on delegation API calls per rolling hour.
+  # Set to 0 to disable budget (master always delegates if budget is exceeded).
+  costBudgetPerHour: 2.00
+
+  # When trackOnly is true, costs are logged but never enforced.
+  # Useful for estimating your actual delegation spend.
+  trackOnly: false
+
+  # Send a warning when this threshold is reached (fraction of budget).
+  alertThreshold: 0.75
+
+# =============================================================================
+# CONTEXT BRIDGE
+# =============================================================================
+
+contextBridge:
+  # Number of master conversation turns to include in delegation context.
+  # Set to 0 to disable history passing (sub-identity starts fresh).
+  historyTurns: 10
+
+  # Auto-cleanup delegation session files after this many minutes.
+  archiveAfterMinutes: 60
+
+  # Where delegation session files are stored (INBOUND, CONTEXT, OUTBOUND, etc).
+  sessionFolder: "~/.openclaw/workspace/.shift/sessions"
+
+# =============================================================================
+# PERSONAS
+# =============================================================================
+# Each persona defines a sub-identity: its model, routing rules, consultation
+# behavior, and voice. The skill ships with three defaults.
+#
+# IMPORTANT: The model field is model-agnostic. Set it to whatever model you
+# have access to. The skill works with any provider.
+#
+# Recommended model configurations:
+#   Codex (coding):      openai-codex/gpt-5.3-codex, openai/gpt-5.4
+#   Researcher (research): openai/gpt-5.4, openai/gpt-5.4-pro, anthropic/claude-sonnet-4-5
+#   Runner (quick):      minimax/MiniMax-M2.7, minimax/MiniMax-M2.5-Lightning,
+#                        openai/gpt-5o
+
+personas:
+  codex:
+    enabled: true
+
+    # MODEL — replace with your coding model
+    model: openai-codex/gpt-5.3-codex
+
+    # Routing: keywords that trigger this persona
+    routing:
+      keywords:
+        - code
+        - function
+        - implement
+        - debug
+        - refactor
+        - api
+        - script
+        - fix
+        - error
+        - class
+        - module
+        - python
+        - javascript
+        - typescript
+        - rust
+        - golang
+        - java
+        - sql
+        - bash
+        - shell
+        - git
+      minConfidence: 0.7
+
+    # Timeout for this persona (seconds).
+    # If exceeded, master takes over.
+    timeout: 60
+
+    # Message shown to user if master takes over from this persona.
+    fallbackMessage: "Let me work through this coding task myself..."
+
+    # Consultation: which sub-identities this one CAN consult.
+    # Set to [] to disable consultation for this persona.
+    consults:
+      - researcher
+
+    # Sub-identities this one must NEVER consult (loop prevention).
+    consultsNever:
+      - runner
+
+    # Max seconds to wait for a consultation response.
+    # Actual timeout = min(remaining_parent_time * 0.5, consultationTimeout).
+    consultationTimeout: 45
+
+  researcher:
+    enabled: true
+
+    # MODEL — replace with your research model
+    model: openai/gpt-5.4
+
+    routing:
+      keywords:
+        - research
+        - analyze
+        - compare
+        - explain
+        - study
+        - investigate
+        - review
+        - evaluate
+        - what is
+        - how does
+        - why does
+        - differences between
+        - pros and cons
+        - advantages
+        - disadvantages
+        - breakdown
+      minConfidence: 0.7
+
+    timeout: 90
+
+    fallbackMessage: "Let me dig into this myself..."
+
+    # Researcher doesn't consult others in v1 (prevents loops).
+    consults: []
+    consultsNever:
+      - codex
+      - runner
+
+    consultationTimeout: 45
+
+  runner:
+    enabled: true
+
+    # MODEL — replace with your fast/everyday model
+    model: minimax/MiniMax-M2.5-Lightning
+
+    routing:
+      keywords:
+        - quick
+        - simple
+        - just
+        - check
+        - look up
+        - find
+        - remind me
+        - what is the
+        - who is the
+        - define
+      minConfidence: 0.8
+
+    # Runner is for quick tasks only.
+    # requireExplicit: true means Runner only triggers on keyword match,
+    # not on every short message (master handles those gracefully).
+    requireExplicit: true
+
+    timeout: 30
+
+    fallbackMessage: "On it!"
+
+    # Runner never consults — it's for quick tasks.
+    consults: []
+    consultsNever:
+      - codex
+      - researcher
+
+    consultationTimeout: 20
+
+# =============================================================================
+# MASTER SYNTHESIS
+# =============================================================================
+
+synthesis:
+  # Simplify technical jargon in sub-identity responses.
+  simplifyJargon: true
+
+  # Add examples where helpful.
+  addExamples: true
+
+  # How much warmth to add to technical answers.
+  # - low:    clinical, precise
+  # - medium: balanced
+  # - high:   warm, personable
+  warmthLevel: high
+
+  # When true, the master's final response never mentions the sub-identity name.
+  # When false, the sub-identity name appears in transparent mode.
+  hideAttribution: true

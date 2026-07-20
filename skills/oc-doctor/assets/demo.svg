@@ -1,0 +1,92 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="620" viewBox="0 0 800 620">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&amp;display=swap');
+    text { font-family: 'JetBrains Mono', 'SF Mono', 'Menlo', 'Consolas', monospace; }
+  </style>
+  <defs>
+    <linearGradient id="titlebar" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#3a3a3c"/>
+      <stop offset="100%" stop-color="#2c2c2e"/>
+    </linearGradient>
+  </defs>
+  <!-- Window -->
+  <rect width="800" height="620" rx="10" fill="#1c1c1e"/>
+  <!-- Title bar -->
+  <rect width="800" height="36" rx="10" fill="url(#titlebar)"/>
+  <rect y="26" width="800" height="10" fill="url(#titlebar)"/>
+  <!-- Traffic lights -->
+  <circle cx="20" cy="18" r="6" fill="#ff5f57"/>
+  <circle cx="40" cy="18" r="6" fill="#febc2e"/>
+  <circle cx="60" cy="18" r="6" fill="#28c840"/>
+  <!-- Title -->
+  <text x="400" y="23" text-anchor="middle" fill="#98989d" font-size="13">Terminal — oc-doctor</text>
+
+  <!-- Command line -->
+  <text x="20" y="65" fill="#28c840" font-size="13" font-weight="700">❯</text>
+  <text x="36" y="65" fill="#e5e5e7" font-size="13">/oc-doctor</text>
+
+  <!-- Spinner line -->
+  <text x="20" y="88" fill="#98989d" font-size="13">🩺 Running 11 diagnostic sections...</text>
+
+  <!-- ═══ Report Header ═══ -->
+  <text x="20" y="118" fill="#bf5af2" font-size="14" font-weight="700"># OpenClaw Doctor Report</text>
+
+  <!-- Summary -->
+  <text x="20" y="148" fill="#64d2ff" font-size="13" font-weight="700">## Summary</text>
+  <text x="20" y="170" fill="#98989d" font-size="12">- Version:</text>
+  <text x="120" y="170" fill="#e5e5e7" font-size="12">0.8.2</text>
+  <text x="20" y="189" fill="#98989d" font-size="12">- Gateway:</text>
+  <text x="120" y="189" fill="#28c840" font-size="12">running (port 3456)</text>
+  <text x="20" y="208" fill="#98989d" font-size="12">- Overall:</text>
+  <text x="120" y="208" fill="#febc2e" font-size="12" font-weight="700">NEEDS ATTENTION</text>
+
+  <!-- Divider -->
+  <line x1="20" y1="222" x2="780" y2="222" stroke="#3a3a3c" stroke-width="1"/>
+
+  <!-- Finding 1: CRITICAL -->
+  <text x="20" y="248" fill="#64d2ff" font-size="13" font-weight="700">## Findings</text>
+  <rect x="20" y="260" width="760" height="52" rx="6" fill="#3a1a1a" opacity="0.6"/>
+  <rect x="20" y="260" width="4" height="52" rx="2" fill="#ff453a"/>
+  <text x="36" y="280" fill="#ff453a" font-size="12" font-weight="700">[CRITICAL]</text>
+  <text x="120" y="280" fill="#e5e5e7" font-size="12" font-weight="700">Feishu groupPolicy is "open"</text>
+  <text x="36" y="300" fill="#98989d" font-size="11">Any Feishu group can interact with the bot — restrict to allowlisted groups</text>
+
+  <!-- Finding 2: WARNING -->
+  <rect x="20" y="322" width="760" height="52" rx="6" fill="#3a3018" opacity="0.6"/>
+  <rect x="20" y="322" width="4" height="52" rx="2" fill="#ffd60a"/>
+  <text x="36" y="342" fill="#ffd60a" font-size="12" font-weight="700">[WARNING]</text>
+  <text x="122" y="342" fill="#e5e5e7" font-size="12" font-weight="700">Session model drift — 3 sessions on wrong model</text>
+  <text x="36" y="362" fill="#98989d" font-size="11">Telegram sessions using deepseek/chat, config default is claude-sonnet-4-20250514</text>
+
+  <!-- Finding 3: WARNING -->
+  <rect x="20" y="384" width="760" height="52" rx="6" fill="#3a3018" opacity="0.6"/>
+  <rect x="20" y="384" width="4" height="52" rx="2" fill="#ffd60a"/>
+  <text x="36" y="404" fill="#ffd60a" font-size="12" font-weight="700">[WARNING]</text>
+  <text x="122" y="404" fill="#e5e5e7" font-size="12" font-weight="700">System instruction budget elevated (2.6% of context)</text>
+  <text x="36" y="424" fill="#98989d" font-size="11">5,259 tokens across 7 workspace files — BOOTSTRAP.md can be archived</text>
+
+  <!-- Finding 4: INFO -->
+  <rect x="20" y="446" width="760" height="52" rx="6" fill="#1a2a3a" opacity="0.6"/>
+  <rect x="20" y="446" width="4" height="52" rx="2" fill="#64d2ff"/>
+  <text x="36" y="466" fill="#64d2ff" font-size="12" font-weight="700">[INFO]</text>
+  <text x="86" y="466" fill="#e5e5e7" font-size="12" font-weight="700">Reclaimable disk space — 67 MB in orphan files</text>
+  <text x="36" y="486" fill="#98989d" font-size="11">12 orphan JSONL (45 MB) + 8 *.deleted.* (22 MB) — run sessions cleanup</text>
+
+  <!-- Divider -->
+  <line x1="20" y1="510" x2="780" y2="510" stroke="#3a3a3c" stroke-width="1"/>
+
+  <!-- Quick Stats -->
+  <text x="20" y="536" fill="#64d2ff" font-size="13" font-weight="700">## Quick Stats</text>
+  <!-- Table header -->
+  <text x="36" y="558" fill="#98989d" font-size="11">Active sessions</text>
+  <text x="280" y="558" fill="#e5e5e7" font-size="11">23</text>
+  <text x="380" y="558" fill="#98989d" font-size="11">Cron jobs</text>
+  <text x="540" y="558" fill="#e5e5e7" font-size="11">5 enabled / 3 disabled</text>
+  <text x="36" y="576" fill="#98989d" font-size="11">Browser cache</text>
+  <text x="280" y="576" fill="#e5e5e7" font-size="11">142 MB</text>
+  <text x="380" y="576" fill="#98989d" font-size="11">Total disk</text>
+  <text x="540" y="576" fill="#e5e5e7" font-size="11">387 MB</text>
+
+  <!-- Interactive prompt -->
+  <text x="20" y="608" fill="#bf5af2" font-size="12">💡 Would you like me to fix these issues? (batch-fix / one-by-one / skip)</text>
+</svg>

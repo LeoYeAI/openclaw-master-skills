@@ -1,0 +1,30 @@
+{
+  "name": "skill-mermaid-diagrams",
+  "version": "1.0.0",
+  "description": "Generate consistent, template-based Mermaid diagrams for technical content",
+  "type": "module",
+  "keywords": [
+    "mermaid",
+    "diagrams",
+    "technical",
+    "documentation",
+    "templates",
+    "skill"
+  ],
+  "license": "MIT",
+  "scripts": {
+    "generate": "node scripts/generate.mjs",
+    "validate": "node scripts/validate.mjs",
+    "test": "node scripts/run-semantic-tests.mjs && npm run test:render",
+    "test:semantic": "node scripts/run-semantic-tests.mjs",
+    "test:render": "node scripts/generate.mjs --content tests/all-templates-content.json --out test-output && node scripts/validate.mjs --dir test-output && rm -rf test-output",
+    "install-deps": "./scripts/install-deps.sh"
+  },
+  "dependencies": {},
+  "peerDependencies": {
+    "@mermaid-js/mermaid-cli": "^11.0.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

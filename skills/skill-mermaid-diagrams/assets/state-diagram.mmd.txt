@@ -1,0 +1,24 @@
+%%{init: {'theme':'base', 'themeVariables': { 'primaryColor':'#4A90E2','primaryTextColor':'#fff','primaryBorderColor':'#2E5C8A','lineColor':'#333','secondaryColor':'#7B68EE','tertiaryColor':'#90EE90'}}}%%
+stateDiagram-v2
+    direction LR
+    [*] --> {{STATE_1}}
+    {{STATE_1}} --> {{STATE_2}} : {{TRANSITION_1_LABEL}}
+    {{STATE_2}} --> {{STATE_3}} : {{TRANSITION_2_LABEL}}
+    {{STATE_3}} --> {{STATE_4}} : {{TRANSITION_3_LABEL}}
+    {{STATE_4}} --> {{STATE_5}} : {{TRANSITION_4_LABEL}}
+    {{STATE_5}} --> {{STATE_6}} : {{TRANSITION_5_LABEL}}
+    {{STATE_6}} --> {{STATE_7}} : {{TRANSITION_6_LABEL}}
+    {{STATE_7}} --> {{STATE_8}} : {{TRANSITION_7_LABEL}}
+    {{STATE_8}} --> [*]
+
+    note right of {{STATE_1}}
+        {{STATE_1_NOTE}}
+    end note
+
+    note right of {{STATE_4}}
+        {{STATE_4_NOTE}}
+    end note
+
+    note right of {{STATE_7}}
+        {{STATE_7_NOTE}}
+    end note

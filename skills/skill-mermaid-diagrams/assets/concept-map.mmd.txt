@@ -1,0 +1,48 @@
+%%{init: {'theme':'base', 'themeVariables': { 'primaryColor':'#4A90E2','primaryTextColor':'#fff','primaryBorderColor':'#2E5C8A','lineColor':'#333','secondaryColor':'#7B68EE','tertiaryColor':'#90EE90'}}}%%
+graph LR
+    Central["{{CENTRAL_CONCEPT}}"]
+    
+    B1["{{BRANCH_1}}"]
+    B1S1["{{BRANCH_1_SUB_1}}"]
+    B1S2["{{BRANCH_1_SUB_2}}"]
+    B1S3["{{BRANCH_1_SUB_3}}"]
+    
+    B2["{{BRANCH_2}}"]
+    B2S1["{{BRANCH_2_SUB_1}}"]
+    B2S2["{{BRANCH_2_SUB_2}}"]
+    
+    B3["{{BRANCH_3}}"]
+    B3S1["{{BRANCH_3_SUB_1}}"]
+    B3S2["{{BRANCH_3_SUB_2}}"]
+    B3S3["{{BRANCH_3_SUB_3}}"]
+    
+    B4["{{BRANCH_4}}"]
+    B4S1["{{BRANCH_4_SUB_1}}"]
+    B4S2["{{BRANCH_4_SUB_2}}"]
+    
+    Central --- B1
+    Central --- B2
+    Central --- B3
+    Central --- B4
+    
+    B1 --- B1S1
+    B1 --- B1S2
+    B1 --- B1S3
+    
+    B2 --- B2S1
+    B2 --- B2S2
+    
+    B3 --- B3S1
+    B3 --- B3S2
+    B3 --- B3S3
+    
+    B4 --- B4S1
+    B4 --- B4S2
+    
+    classDef central fill:#4A90E2,stroke:#2E5C8A,stroke-width:4px,color:#fff,font-size:16px,font-weight:bold
+    classDef branch fill:#7B68EE,stroke:#5A4FCF,stroke-width:3px,color:#fff,font-size:14px
+    classDef leaf fill:#90EE90,stroke:#6DBE6D,stroke-width:2px,color:#333,font-size:12px
+    
+    class Central central
+    class B1,B2,B3,B4 branch
+    class B1S1,B1S2,B1S3,B2S1,B2S2,B3S1,B3S2,B3S3,B4S1,B4S2 leaf

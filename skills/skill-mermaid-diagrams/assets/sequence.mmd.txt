@@ -1,0 +1,20 @@
+%%{init: {'theme':'base', 'themeVariables': { 'actorBkg':'#4A90E2','actorBorder':'#2E5C8A','actorTextColor':'#fff','signalColor':'#333','signalTextColor':'#333','labelBoxBkgColor':'#7B68EE','labelBoxBorderColor':'#5A4FCF','labelTextColor':'#fff','loopTextColor':'#333','noteBorderColor':'#FFD700','noteBkgColor':'#FFFACD','noteTextColor':'#333'}}}%%
+sequenceDiagram
+    participant {{ACTOR_1}} as {{ACTOR_1_LABEL}}
+    participant {{ACTOR_2}} as {{ACTOR_2_LABEL}}
+    participant {{ACTOR_3}} as {{ACTOR_3_LABEL}}
+    
+    {{ACTOR_1}}->>{{ACTOR_2}}: {{MESSAGE_1}}
+    activate {{ACTOR_2}}
+    Note over {{ACTOR_2}}: {{NOTE_1}}
+    {{ACTOR_2}}->>{{ACTOR_3}}: {{MESSAGE_2}}
+    activate {{ACTOR_3}}
+    {{ACTOR_3}}-->>{{ACTOR_2}}: {{RESPONSE_1}}
+    deactivate {{ACTOR_3}}
+    {{ACTOR_2}}-->>{{ACTOR_1}}: {{RESPONSE_2}}
+    deactivate {{ACTOR_2}}
+    
+    opt {{OPTIONAL_CONDITION}}
+        {{ACTOR_1}}->>{{ACTOR_3}}: {{MESSAGE_3}}
+        {{ACTOR_3}}-->>{{ACTOR_1}}: {{RESPONSE_3}}
+    end

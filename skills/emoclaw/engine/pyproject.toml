@@ -1,0 +1,27 @@
+[build-system]
+requires = ["setuptools>=68.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "emotion_model"
+version = "1.0.0"
+description = "Persistent emotional state model for AI agents"
+requires-python = ">=3.10"
+dependencies = [
+    "torch>=2.0.0",
+    "sentence-transformers>=2.2.0",
+    "numpy>=1.24.0",
+    "pyyaml>=6.0",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=7.0"]
+bootstrap = ["anthropic>=0.30.0"]
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["emotion_model*"]
+
+[tool.pytest.ini_options]
+testpaths = ["emotion_model/tests"]
+pythonpath = ["."]

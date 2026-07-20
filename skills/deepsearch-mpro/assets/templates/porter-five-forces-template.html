@@ -1,0 +1,71 @@
+<!--
+  波特五力分析模板 (Porter's Five Forces Template)
+  用于分析行业竞争格局
+  
+  使用方式：
+  1. 替换 {{变量名}} 为实际内容
+  2. 强度标签可选：intensity-high（极高）、intensity-med（中等）、intensity-low（低）
+  3. 中心产品名称和描述
+-->
+
+<div class="section" id="porter">
+  <div class="section-header">
+    <div class="icon" style="background:#E3F2FD">⚔️</div>
+    <div><h2>波特五力分析</h2><div class="sub">Porter's Five Forces</div></div>
+  </div>
+  
+  <div class="porter-wrap">
+    <div class="porter-grid">
+      <!-- 上方：新进入者威胁 -->
+      <div style="grid-column:2; grid-row:1;" class="porter-cell">
+        <h4>🆕 新进入者威胁</h4>
+        <span class="intensity {{intensity-class}}">{{强度标签（极高/中等/低）}}</span>
+        <p style="margin-top:0.5rem">{{详细分析：进入壁垒、潜在进入者、威胁程度}}</p>
+      </div>
+      
+      <!-- 左侧：供应商议价能力 -->
+      <div style="grid-column:1; grid-row:2;" class="porter-cell">
+        <h4>🏭 供应商议价能力</h4>
+        <span class="intensity {{intensity-class}}">{{强度标签}}</span>
+        <p style="margin-top:0.5rem">{{详细分析：供应商集中度、替代供应商、议价空间}}</p>
+      </div>
+      
+      <!-- 中心：产品/企业 -->
+      <div style="grid-column:2; grid-row:2;" class="porter-cell center">
+        <h4>{{产品/企业名称}}<br>{{行业类型}}</h4>
+        <p>{{公司}} · {{时间}}</p>
+      </div>
+      
+      <!-- 右侧：买家议价能力 -->
+      <div style="grid-column:3; grid-row:2;" class="porter-cell">
+        <h4>🛒 买家议价能力</h4>
+        <span class="intensity {{intensity-class}}">{{强度标签}}</span>
+        <p style="margin-top:0.5rem">{{详细分析：买家集中度、替代选择、价格敏感度}}</p>
+      </div>
+      
+      <!-- 下方：替代品威胁 -->
+      <div style="grid-column:2; grid-row:3;" class="porter-cell">
+        <h4>🔄 替代品威胁</h4>
+        <span class="intensity {{intensity-class}}">{{强度标签}}</span>
+        <p style="margin-top:0.5rem">{{详细分析：替代品类型、替代成本、转换意愿}}</p>
+      </div>
+      
+      <!-- 占位符 -->
+      <div style="grid-column:1; grid-row:1;"></div>
+      <div style="grid-column:3; grid-row:1;"></div>
+      <div style="grid-column:1; grid-row:3;"></div>
+      <div style="grid-column:3; grid-row:3;"></div>
+    </div>
+  </div>
+  
+  <!-- 现有竞争者（全宽） -->
+  <div class="card" style="border-left:5px solid var(--accent);margin-top:0.5rem;">
+    <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:0.5rem;margin-bottom:0.75rem;">
+      <h4 style="font-size:1rem;font-weight:700;">⚡ 现有竞争者 — 行业竞争强度</h4>
+      <span class="intensity intensity-high" style="font-size:0.88rem;padding:0.25rem 0.75rem;">{{强度标签}}</span>
+    </div>
+    <p style="font-size:0.88rem;color:var(--text);line-height:1.8;">
+      {{现有竞争者详细分析：主要竞争对手、竞争格局、市场份额、竞争态势}}
+    </p>
+  </div>
+</div>

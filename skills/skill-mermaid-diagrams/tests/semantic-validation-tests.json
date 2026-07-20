@@ -1,0 +1,282 @@
+{
+  "testSuite": "Semantic Validation",
+  "version": "1.0.0",
+  "tests": [
+    {
+      "name": "Flowchart with decisions - PASS",
+      "template": "flowchart",
+      "placeholders": {
+        "START_LABEL": "Begin",
+        "DECISION_1": "Is valid?",
+        "CHOICE_1_YES": "Yes",
+        "CHOICE_1_NO": "No",
+        "ACTION_1": "Process",
+        "ACTION_2": "Reject",
+        "END_LABEL": "End"
+      },
+      "expected": {
+        "pass": true,
+        "errors": 0,
+        "warnings": 0
+      }
+    },
+    {
+      "name": "Flowchart without decisions - FAIL (should be state-diagram)",
+      "template": "flowchart",
+      "placeholders": {
+        "START_LABEL": "INITIALIZING",
+        "ACTION_1": "PLANNING",
+        "ACTION_2": "RESEARCH",
+        "ACTION_3": "WRITING",
+        "ACTION_4": "REVIEWING",
+        "END_LABEL": "COMPLETE"
+      },
+      "expected": {
+        "pass": false,
+        "errors": 0,
+        "warnings": 1,
+        "suggestedTemplates": ["state-diagram", "timeline"]
+      }
+    },
+    {
+      "name": "Timeline with matching events/dates - PASS",
+      "template": "timeline",
+      "placeholders": {
+        "EVENT_1": "Project start",
+        "DATE_1": "2026-01-01",
+        "EVENT_2": "Alpha release",
+        "DATE_2": "2026-02-01",
+        "EVENT_3": "Beta release",
+        "DATE_3": "2026-03-01"
+      },
+      "expected": {
+        "pass": true,
+        "errors": 0,
+        "warnings": 0
+      }
+    },
+    {
+      "name": "Timeline with mismatched events/dates - FAIL",
+      "template": "timeline",
+      "placeholders": {
+        "EVENT_1": "Project start",
+        "DATE_1": "2026-01-01",
+        "EVENT_2": "Alpha release",
+        "EVENT_3": "Beta release",
+        "DATE_3": "2026-03-01"
+      },
+      "expected": {
+        "pass": false,
+        "errors": 1,
+        "warnings": 0
+      }
+    },
+    {
+      "name": "Architecture with components - PASS",
+      "template": "architecture",
+      "placeholders": {
+        "SYSTEM_NAME": "My System",
+        "COMPONENT_1_LABEL": "Frontend",
+        "COMPONENT_2_LABEL": "Backend",
+        "COMPONENT_3_LABEL": "Database",
+        "EXTERNAL_1_LABEL": "User",
+        "EXTERNAL_2_LABEL": "API",
+        "FLOW_1": "Request",
+        "FLOW_2": "Process",
+        "FLOW_3": "Query",
+        "FLOW_4": "Response"
+      },
+      "expected": {
+        "pass": true,
+        "errors": 0,
+        "warnings": 0
+      }
+    },
+    {
+      "name": "Architecture without components - FAIL",
+      "template": "architecture",
+      "placeholders": {
+        "FLOW_1": "Start",
+        "FLOW_2": "Process",
+        "FLOW_3": "End",
+        "FLOW_4": "Done"
+      },
+      "expected": {
+        "pass": false,
+        "errors": 0,
+        "warnings": 1,
+        "suggestedTemplates": ["flowchart", "sequence"]
+      }
+    },
+    {
+      "name": "Sequence with multiple actors - PASS",
+      "template": "sequence",
+      "placeholders": {
+        "ACTOR_1": "User",
+        "ACTOR_2": "Server",
+        "ACTOR_3": "Database",
+        "MESSAGE_1": "Login request",
+        "MESSAGE_2": "Validate credentials",
+        "MESSAGE_3": "Query user",
+        "MESSAGE_4": "Return data",
+        "MESSAGE_5": "Login success"
+      },
+      "expected": {
+        "pass": true,
+        "errors": 0,
+        "warnings": 0
+      }
+    },
+    {
+      "name": "Sequence with single actor - FAIL",
+      "template": "sequence",
+      "placeholders": {
+        "ACTOR_1": "System",
+        "MESSAGE_1": "Start",
+        "MESSAGE_2": "Process",
+        "MESSAGE_3": "End"
+      },
+      "expected": {
+        "pass": false,
+        "errors": 0,
+        "warnings": 1,
+        "suggestedTemplates": ["flowchart", "state-diagram"]
+      }
+    },
+    {
+      "name": "State diagram with states and transitions - PASS",
+      "template": "state-diagram",
+      "placeholders": {
+        "STATE_1": "INITIALIZING",
+        "STATE_2": "PLANNING",
+        "STATE_3": "RESEARCH",
+        "STATE_4": "WRITING",
+        "STATE_5": "REVIEWING",
+        "STATE_6": "INTEGRATING",
+        "STATE_7": "POLISHING",
+        "STATE_8": "PUBLISHING",
+        "TRANSITION_1_LABEL": "Define scope",
+        "TRANSITION_2_LABEL": "Gather data",
+        "TRANSITION_3_LABEL": "Draft content",
+        "TRANSITION_4_LABEL": "Quality check",
+        "TRANSITION_5_LABEL": "Merge sections",
+        "TRANSITION_6_LABEL": "Final edits",
+        "TRANSITION_7_LABEL": "Release",
+        "STATE_1_NOTE": "Set up project",
+        "STATE_4_NOTE": "Main work phase",
+        "STATE_7_NOTE": "Final polish"
+      },
+      "expected": {
+        "pass": true,
+        "errors": 0,
+        "warnings": 0
+      }
+    },
+    {
+      "name": "State diagram with too few states - FAIL",
+      "template": "state-diagram",
+      "placeholders": {
+        "STATE_1": "Start",
+        "STATE_2": "End",
+        "TRANSITION_1_LABEL": "Go"
+      },
+      "expected": {
+        "pass": false,
+        "errors": 0,
+        "warnings": 1,
+        "suggestedTemplates": ["flowchart"]
+      }
+    },
+    {
+      "name": "Comparison quadrant without coordinates - FAIL",
+      "template": "comparison",
+      "placeholders": {
+        "COMPARISON_TITLE": "Options",
+        "ITEM_1": "Option A",
+        "ITEM_2": "Option B"
+      },
+      "expected": {
+        "pass": false,
+        "errors": 1,
+        "warnings": 0,
+        "suggestedTemplates": ["comparison-table"]
+      }
+    },
+    {
+      "name": "Gantt with tasks and dates - PASS",
+      "template": "gantt",
+      "placeholders": {
+        "CHART_TITLE": "Project Timeline",
+        "SECTION_1_TITLE": "Phase 1",
+        "TASK_1_1": "Research",
+        "TASK_1_1_ID": "r1",
+        "TASK_1_1_START": "2026-01-01",
+        "TASK_1_1_DURATION": "5d",
+        "TASK_1_2": "Design",
+        "TASK_1_2_ID": "d1",
+        "TASK_1_2_START": "after r1",
+        "TASK_1_2_DURATION": "3d"
+      },
+      "expected": {
+        "pass": true,
+        "errors": 0,
+        "warnings": 0
+      }
+    },
+    {
+      "name": "Gantt without temporal data - FAIL",
+      "template": "gantt",
+      "placeholders": {
+        "CHART_TITLE": "Steps",
+        "SECTION_1_TITLE": "Phase 1"
+      },
+      "expected": {
+        "pass": false,
+        "errors": 1,
+        "warnings": 0,
+        "suggestedTemplates": ["timeline", "state-diagram"]
+      }
+    },
+    {
+      "name": "Class diagram with OOP structure - PASS",
+      "template": "class-diagram",
+      "placeholders": {
+        "CLASS_1_NAME": "User",
+        "CLASS_1_ATTR_1": "+String name",
+        "CLASS_1_ATTR_2": "+String email",
+        "CLASS_1_METHOD_1": "+login()",
+        "CLASS_2_NAME": "Admin",
+        "CLASS_2_ATTR_1": "+String permissions",
+        "CLASS_2_METHOD_1": "+grant()",
+        "CLASS_3_NAME": "Database",
+        "CLASS_3_ATTR_1": "+Connection conn",
+        "CLASS_3_METHOD_1": "+query()",
+        "REL_1_TYPE": "<|--",
+        "REL_1_LABEL": "inherits",
+        "REL_2_TYPE": "-->",
+        "REL_2_LABEL": "uses",
+        "REL_3_TYPE": "*--",
+        "REL_3_LABEL": "contains"
+      },
+      "expected": {
+        "pass": true,
+        "errors": 0,
+        "warnings": 0
+      }
+    },
+    {
+      "name": "Class diagram without OOP structure - FAIL",
+      "template": "class-diagram",
+      "placeholders": {
+        "CLASS_1_NAME": "Step1",
+        "CLASS_2_NAME": "Step2"
+      },
+      "expected": {
+        "pass": false,
+        "errors": 0,
+        "warnings": 1,
+        "suggestedTemplates": ["architecture", "flowchart"]
+      }
+    }
+  ]
+}

@@ -1,0 +1,998 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>用友网络竞争分析报告</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: "PingFang SC", "Microsoft YaHei", -apple-system, BlinkMacSystemFont, sans-serif;
+            background-color: #f5f7fa;
+            color: #2c3e50;
+            line-height: 1.8;
+        }
+
+        /* 主容器 - 左右布局 */
+        .container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* 左侧导航 */
+        .sidebar {
+            width: 280px;
+            background: linear-gradient(135deg, #1a2332 0%, #2d3e50 100%);
+            color: #ffffff;
+            padding: 30px 20px;
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .sidebar-header {
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .sidebar-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: #ff7d00;
+            margin-bottom: 8px;
+        }
+
+        .sidebar-subtitle {
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .nav-menu {
+            list-style: none;
+        }
+
+        .nav-item {
+            margin-bottom: 5px;
+        }
+
+        .nav-link {
+            display: block;
+            padding: 12px 15px;
+            color: rgba(255, 255, 255, 0.85);
+            text-decoration: none;
+            border-radius: 6px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .nav-link:hover {
+            background: rgba(255, 125, 0, 0.15);
+            color: #ff7d00;
+        }
+
+        .nav-link.active {
+            background: linear-gradient(90deg, rgba(255, 125, 0, 0.25) 0%, rgba(255, 125, 0, 0.1) 100%);
+            color: #ff7d00;
+            font-weight: 600;
+            border-left: 3px solid #ff7d00;
+        }
+
+        /* 右侧内容区 */
+        .main-content {
+            flex: 1;
+            margin-left: 280px;
+            padding: 40px 50px;
+            background: #ffffff;
+            min-height: 100vh;
+        }
+
+        .content-wrapper {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        /* 报告头部 */
+        .report-header {
+            margin-bottom: 40px;
+            padding-bottom: 30px;
+            border-bottom: 2px solid #e8eef3;
+        }
+
+        .report-title {
+            font-size: 32px;
+            color: #1a2332;
+            margin-bottom: 15px;
+            font-weight: 700;
+        }
+
+        .report-meta {
+            display: flex;
+            gap: 20px;
+            font-size: 14px;
+            color: #7f8c8d;
+        }
+
+        .report-meta-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        /* 章节标题 */
+        .section-title {
+            font-size: 26px;
+            color: #1a2332;
+            margin: 40px 0 20px 0;
+            padding-bottom: 12px;
+            border-bottom: 2px solid #ff7d00;
+            font-weight: 700;
+        }
+
+        /* ====== 可视化组件样式 ====== */
+
+        /* Section Header */
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 1.5rem;
+        }
+        .section-header .icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+            flex-shrink: 0;
+        }
+        .section-header h2 {
+            font-size: 1.45rem;
+            font-weight: 700;
+            color: #1a2332;
+        }
+
+        /* Card */
+        .card {
+            background: #ffffff;
+            border-radius: 14px;
+            padding: 1.5rem;
+            box-shadow: 0 1px 8px rgba(0,0,0,0.06);
+            border: 1px solid #e8eef3;
+            margin-bottom: 1.5rem;
+        }
+
+        /* Grid layouts */
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; }
+        .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1.25rem; }
+        .grid-4 { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 1rem; }
+
+        @media (max-width: 768px) {
+            .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; }
+        }
+
+        /* Tags */
+        .tag { display: inline-block; border-radius: 6px; padding: 0.2rem 0.6rem; font-size: 0.75rem; font-weight: 600; }
+        .tag-orange { background: #FFF3E0; color: #E65100; }
+        .tag-blue { background: #E3F2FD; color: #1565C0; }
+        .tag-green { background: #E8F5E9; color: #2E7D32; }
+        .tag-red { background: #FFEBEE; color: #C62828; }
+        .tag-purple { background: #F3E5F5; color: #6A1B9A; }
+        .tag-teal { background: #E0F2F1; color: #00695C; }
+
+        /* Feature Cards */
+        .feature-card {
+            background: #ffffff;
+            border-radius: 14px;
+            padding: 1.4rem;
+            border: 1px solid #e8eef3;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .feature-card:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0,0,0,0.1); }
+        .feature-card .icon { font-size: 1.8rem; margin-bottom: 0.75rem; }
+        .feature-card h3 { font-size: 1rem; font-weight: 700; margin-bottom: 0.5rem; color: #1a2332; }
+        .feature-card p { font-size: 0.88rem; color: #7f8c8d; line-height: 1.6; margin: 0; }
+
+        /* 商业模式画布 */
+        .bmc { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr 1fr; grid-template-rows: auto auto auto; gap: 0.75rem; }
+        .bmc-cell {
+            background: #ffffff;
+            border-radius: 12px;
+            padding: 1.1rem;
+            border: 1px solid #e8eef3;
+            min-height: 130px;
+        }
+        .bmc-cell h4 { font-size: 0.78rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 0.6rem; }
+        .bmc-cell ul { list-style: none; padding: 0; margin: 0; }
+        .bmc-cell ul li { font-size: 0.82rem; color: #2c3e50; padding: 0.18rem 0; padding-left: 0.9rem; position: relative; line-height: 1.5; }
+        .bmc-cell ul li::before { content: '▸'; position: absolute; left: 0; color: #ff7d00; }
+
+        .bmc-kp { grid-column: 1; grid-row: 1 / 3; border-left: 4px solid #805AD5; }
+        .bmc-kp h4 { color: #805AD5; }
+        .bmc-ka { grid-column: 2; grid-row: 1; border-left: 4px solid #3182CE; }
+        .bmc-ka h4 { color: #3182CE; }
+        .bmc-kr { grid-column: 2; grid-row: 2; border-left: 4px solid #3182CE; }
+        .bmc-kr h4 { color: #3182CE; }
+        .bmc-vp { grid-column: 3; grid-row: 1 / 3; background: linear-gradient(135deg, #fff8f0, #fff3e0); border-left: 4px solid #ff7d00; }
+        .bmc-vp h4 { color: #ff7d00; }
+        .bmc-cr { grid-column: 4; grid-row: 1; border-left: 4px solid #38A169; }
+        .bmc-cr h4 { color: #38A169; }
+        .bmc-ch { grid-column: 4; grid-row: 2; border-left: 4px solid #38A169; }
+        .bmc-ch h4 { color: #38A169; }
+        .bmc-cs { grid-column: 5; grid-row: 1 / 3; border-left: 4px solid #E53E3E; }
+        .bmc-cs h4 { color: #E53E3E; }
+        .bmc-cost { grid-column: 1 / 3; grid-row: 3; border-top: 4px solid #718096; }
+        .bmc-cost h4 { color: #718096; }
+        .bmc-rev { grid-column: 3 / 6; grid-row: 3; border-top: 4px solid #ff7d00; }
+        .bmc-rev h4 { color: #ff7d00; }
+
+        @media (max-width: 900px) {
+            .bmc { grid-template-columns: 1fr 1fr; grid-template-rows: none; }
+            .bmc-kp, .bmc-vp, .bmc-cs { grid-column: auto; grid-row: auto; }
+            .bmc-cost, .bmc-rev { grid-column: auto; }
+        }
+
+        /* SWOT 分析 */
+        .swot { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+        .swot-cell { border-radius: 14px; padding: 1.4rem; }
+        .swot-s { background: linear-gradient(135deg, #E8F5E9, #C8E6C9); border-left: 5px solid #2E7D32; }
+        .swot-w { background: linear-gradient(135deg, #FFEBEE, #FFCDD2); border-left: 5px solid #C62828; }
+        .swot-o { background: linear-gradient(135deg, #E3F2FD, #BBDEFB); border-left: 5px solid #1565C0; }
+        .swot-t { background: linear-gradient(135deg, #FFF3E0, #FFE0B2); border-left: 5px solid #E65100; }
+        .swot-cell h3 { font-size: 1rem; font-weight: 800; margin-bottom: 0.8rem; }
+        .swot-cell ul { list-style: none; padding: 0; margin: 0; }
+        .swot-cell ul li { font-size: 0.85rem; padding: 0.25rem 0; padding-left: 1rem; position: relative; line-height: 1.55; color: #2c3e50; }
+        .swot-cell ul li::before { content: '●'; position: absolute; left: 0; font-size: 0.55rem; top: 0.45rem; }
+        .swot-s li::before { color: #2E7D32; }
+        .swot-w li::before { color: #C62828; }
+        .swot-o li::before { color: #1565C0; }
+        .swot-t li::before { color: #E65100; }
+
+        /* PESTEL 分析 */
+        .pestel { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; }
+        .pestel-cell { border-radius: 12px; padding: 1.2rem; }
+        .pestel-cell h4 { font-size: 0.88rem; font-weight: 700; margin-bottom: 0.6rem; display: flex; align-items: center; gap: 0.4rem; }
+        .pestel-cell p, .pestel-cell li { font-size: 0.82rem; color: #2c3e50; line-height: 1.6; }
+        .pestel-cell ul { list-style: none; padding: 0; margin: 0; }
+        .pestel-cell ul li { padding: 0.15rem 0; padding-left: 0.9rem; position: relative; }
+        .pestel-cell ul li::before { content: '→'; position: absolute; left: 0; color: inherit; }
+        .p-cell { background: #F3E5F5; } .p-cell h4 { color: #6A1B9A; }
+        .e-cell { background: #E3F2FD; } .e-cell h4 { color: #1565C0; }
+        .s-cell { background: #E8F5E9; } .s-cell h4 { color: #2E7D32; }
+        .t-cell { background: #FFF3E0; } .t-cell h4 { color: #E65100; }
+        .en-cell { background: #F1F8E9; } .en-cell h4 { color: #558B2F; }
+        .l-cell { background: #FCE4EC; } .l-cell h4 { color: #880E4F; }
+
+        /* 竞品对比表格 */
+        .comp-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+        .comp-table th { background: #1a2332; color: white; padding: 0.8rem 1rem; text-align: left; font-weight: 600; }
+        .comp-table th:first-child { border-radius: 10px 0 0 0; }
+        .comp-table th:last-child { border-radius: 0 10px 0 0; }
+        .comp-table td { padding: 0.8rem 1rem; border-bottom: 1px solid #e8eef3; vertical-align: middle; }
+        .comp-table tr:hover td { background: #f8f9ff; }
+        .comp-table tr.highlight td { background: linear-gradient(135deg, #fff8f0, #fff3e0); }
+        .comp-table .product-name { font-weight: 700; color: #1a2332; }
+
+        .dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; margin-right: 4px; }
+        .dot-high { background: #38A169; }
+        .dot-mid { background: #F59E0B; }
+        .dot-low { background: #E53E3E; }
+
+        /* 指标卡片 */
+        .metric-card {
+            background: #ffffff;
+            border-radius: 14px;
+            padding: 1.3rem;
+            border: 1px solid #e8eef3;
+            text-align: center;
+        }
+        .metric-card .number { font-size: 2rem; font-weight: 800; color: #ff7d00; line-height: 1.2; }
+        .metric-card .unit { font-size: 0.8rem; color: #7f8c8d; }
+        .metric-card .desc { font-size: 0.82rem; color: #2c3e50; margin-top: 0.4rem; }
+
+        /* 时间线 */
+        .timeline { position: relative; padding-left: 2rem; }
+        .timeline::before { content: ''; position: absolute; left: 0.5rem; top: 0; bottom: 0; width: 2px; background: linear-gradient(to bottom, #ff7d00, #1565C0); }
+        .tl-item { position: relative; margin-bottom: 1.5rem; }
+        .tl-dot {
+            position: absolute;
+            left: -1.75rem;
+            top: 0.2rem;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #ff7d00;
+            border: 2px solid white;
+            box-shadow: 0 0 0 2px #ff7d00;
+        }
+        .tl-item h4 { font-size: 0.92rem; font-weight: 700; margin-bottom: 0.3rem; }
+        .tl-item p { font-size: 0.85rem; color: #7f8c8d; margin: 0; }
+        .tl-date { font-size: 0.75rem; color: #ff7d00; font-weight: 700; text-transform: uppercase; margin-bottom: 0.15rem; }
+
+        /* 洞察框 */
+        .insight-box {
+            background: linear-gradient(135deg, #1a2332, #0f3460);
+            color: white;
+            border-radius: 16px;
+            padding: 2rem;
+            margin-top: 2rem;
+        }
+        .insight-box h3 { font-size: 1.2rem; font-weight: 700; color: #ff7d00; margin-bottom: 1rem; }
+        .insight-box p { font-size: 0.9rem; color: rgba(255,255,255,0.8); line-height: 1.8; margin-bottom: 0.75rem; }
+
+        .divider { border: none; border-top: 1px solid #e8eef3; margin: 2rem 0; }
+
+        /* 响应式设计 */
+        @media (max-width: 1024px) {
+            .sidebar { width: 250px; }
+            .main-content { margin-left: 250px; padding: 30px; }
+        }
+
+        @media (max-width: 768px) {
+            .container { flex-direction: column; }
+            .sidebar { position: relative; width: 100%; height: auto; }
+            .main-content { margin-left: 0; padding: 20px; }
+        }
+
+        /* 打印样式 */
+        @media print {
+            .sidebar { display: none; }
+            .main-content { margin-left: 0; }
+        }
+
+        /* 平滑滚动 */
+        html {
+            scroll-behavior: smooth;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- 左侧导航 -->
+        <nav class="sidebar">
+            <div class="sidebar-header">
+                <div class="sidebar-title">用友网络竞争分析</div>
+                <div class="sidebar-subtitle">企业研究报告</div>
+            </div>
+
+            <ul class="nav-menu">
+                <li class="nav-item">
+                    <a class="nav-link" href="#overview">1. 公司概览</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#pestel">2. PESTEL分析</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#bmc">3. 商业模式画布</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#competitors">4. 竞品对比矩阵</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#swot">5. SWOT分析</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#product-evolution">6. 产品演进</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#customers">7. 客户案例</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#ecosystem">8. 生态活动</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#recent">9. 近期动态</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#insights">10. 综合判断</a>
+                </li>
+            </ul>
+        </nav>
+
+        <!-- 右侧内容区 -->
+        <main class="main-content">
+            <div class="content-wrapper">
+                <!-- 报告头部 -->
+                <div class="report-header">
+                    <h1 class="report-title">用友网络竞争分析</h1>
+                    <div class="report-meta">
+                        <div class="report-meta-item">
+                            <span>📅 生成日期：2026年3月18日</span>
+                        </div>
+                        <div class="report-meta-item">
+                            <span>📊 时间范围：近一周</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 1. 公司概览 -->
+                <section id="overview">
+                    <h2 class="section-title">1. 公司概览</h2>
+
+                    <div class="card">
+                        <h3>基本信息</h3>
+                        <p><strong>公司名称：</strong>用友网络科技股份有限公司</p>
+                        <p><strong>股票代码：</strong>600588.SH</p>
+                        <p><strong>成立时间：</strong>1988年</p>
+                        <p><strong>定位：</strong>中国领先的企业管理软件和云服务提供商</p>
+                        <p><strong>战略方向：</strong>ALL in 企业AI</p>
+                    </div>
+
+                    <div class="card">
+                        <h3>业务范围</h3>
+                        <div class="grid-3">
+                            <div class="feature-card">
+                                <div class="icon">💰</div>
+                                <h3>智能财务</h3>
+                                <p>财务共享、业财一体化、智能核算</p>
+                            </div>
+                            <div class="feature-card">
+                                <div class="icon">👥</div>
+                                <h3>数智人力</h3>
+                                <p>人力资源管理、人才发展、组织协同</p>
+                            </div>
+                            <div class="feature-card">
+                                <div class="icon">🚚</div>
+                                <h3>敏捷供应链</h3>
+                                <p>采购管理、仓储物流、供应链金融</p>
+                            </div>
+                            <div class="feature-card">
+                                <div class="icon">🏭</div>
+                                <h3>智能制造</h3>
+                                <p>生产执行、质量管理、设备运维</p>
+                            </div>
+                            <div class="feature-card">
+                                <div class="icon">📊</div>
+                                <h3>数据服务</h3>
+                                <p>数据中台、数据分析、商业智能</p>
+                            </div>
+                            <div class="feature-card">
+                                <div class="icon">🤖</div>
+                                <h3>AI智能体</h3>
+                                <p>YonGPT企业级大模型、智能决策</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <h3>市场地位</h3>
+                        <div class="grid-3">
+                            <div class="metric-card">
+                                <div class="number">6.5万+</div>
+                                <div class="unit">家企业客户</div>
+                                <div class="desc">截至2025年Q1</div>
+                            </div>
+                            <div class="metric-card">
+                                <div class="number">40+</div>
+                                <div class="unit">国家和地区</div>
+                                <div class="desc">全球化业务覆盖</div>
+                            </div>
+                            <div class="metric-card">
+                                <div class="number">NO.1</div>
+                                <div class="unit">国产化替代</div>
+                                <div class="desc">替代国际ERP最多</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <h3>财务概况</h3>
+                        <p><strong>营收结构：</strong>软件销售 + 技术服务（占比约90%）</p>
+                        <p><strong>商业模式：</strong>订阅制 + 定制化服务</p>
+                        <p><strong>部署模式：</strong>云原生部署 + 传统部署（灵活选择）</p>
+                        <p><strong>定价策略：</strong>模块化设计，按需订阅，降低初始投资</p>
+                    </div>
+                </section>
+
+                <!-- 2. PESTEL分析 -->
+                <section id="pestel">
+                    <h2 class="section-title">2. PESTEL宏观环境分析</h2>
+
+                    <div class="pestel">
+                        <div class="pestel-cell p-cell">
+                            <h4>🏛️ 政策环境（P）</h4>
+                            <ul>
+                                <li>国产化替代政策推进</li>
+                                <li>企业数字化转型支持</li>
+                                <li>数据安全与隐私保护法规</li>
+                            </ul>
+                        </div>
+                        <div class="pestel-cell e-cell">
+                            <h4>💹 经济环境（E）</h4>
+                            <ul>
+                                <li>企业降本增效需求增强</li>
+                                <li>云计算市场持续增长</li>
+                                <li>宏观经济压力推动数字化转型</li>
+                            </ul>
+                        </div>
+                        <div class="pestel-cell s-cell">
+                            <h4>👥 社会环境（S）</h4>
+                            <ul>
+                                <li>人才老龄化与技能转型</li>
+                                <li>年轻员工对数字化工具接受度高</li>
+                                <li>远程办公与协作需求增加</li>
+                            </ul>
+                        </div>
+                        <div class="pestel-cell t-cell">
+                            <h4>🔬 技术环境（T）</h4>
+                            <ul>
+                                <li>AI大模型技术快速发展</li>
+                                <li>云原生架构成熟</li>
+                                <li>企业软件智能化升级</li>
+                            </ul>
+                        </div>
+                        <div class="pestel-cell en-cell">
+                            <h4>🌱 环境因素（E）</h4>
+                            <ul>
+                                <li>绿色低碳转型需求</li>
+                                <li>可持续发展报告要求</li>
+                                <li>碳排放管理数字化</li>
+                            </ul>
+                        </div>
+                        <div class="pestel-cell l-cell">
+                            <h4>⚖️ 法律环境（L）</h4>
+                            <ul>
+                                <li>数据本地化存储要求</li>
+                                <li>知识产权保护加强</li>
+                                <li>行业监管合规性提升</li>
+                            </ul>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 3. 商业模式画布 -->
+                <section id="bmc">
+                    <h2 class="section-title">3. 商业模式画布</h2>
+
+                    <div class="bmc">
+                        <div class="bmc-cell bmc-kp">
+                            <h4>关键合作</h4>
+                            <ul>
+                                <li>云服务商（阿里云、华为云等）</li>
+                                <li>行业ISV合作伙伴</li>
+                                <li>系统集成商</li>
+                                <li>咨询公司</li>
+                                <li>硬件供应商</li>
+                            </ul>
+                        </div>
+                        <div class="bmc-cell bmc-ka">
+                            <h4>关键活动</h4>
+                            <ul>
+                                <li>产品研发与创新</li>
+                                <li>市场推广与销售</li>
+                                <li>客户实施与交付</li>
+                                <li>客户成功服务</li>
+                            </ul>
+                        </div>
+                        <div class="bmc-cell bmc-kr">
+                            <h4>关键资源</h4>
+                            <ul>
+                                <li>核心技术团队</li>
+                                <li>云基础设施</li>
+                                <li>行业知识库</li>
+                                <li>客户数据资产</li>
+                                <li>品牌影响力</li>
+                            </ul>
+                        </div>
+                        <div class="bmc-cell bmc-vp">
+                            <h4>价值主张</h4>
+                            <ul>
+                                <li>AI原生的数智化平台</li>
+                                <li>全场景业务覆盖</li>
+                                <li>灵活的云原生架构</li>
+                                <li>国产化安全合规</li>
+                                <li>行业深度解决方案</li>
+                                <li>高性价比的订阅服务</li>
+                            </ul>
+                        </div>
+                        <div class="bmc-cell bmc-cr">
+                            <h4>客户关系</h4>
+                            <ul>
+                                <li>专属客户成功经理</li>
+                                <li>7×24技术支持</li>
+                                <li>用户社区与培训</li>
+                                <li>定期客户回访</li>
+                            </ul>
+                        </div>
+                        <div class="bmc-cell bmc-ch">
+                            <h4>渠道通路</h4>
+                            <ul>
+                                <li>直销团队</li>
+                                <li>合作伙伴网络</li>
+                                <li>线上官网与营销</li>
+                                <li>行业展会与活动</li>
+                            </ul>
+                        </div>
+                        <div class="bmc-cell bmc-cs">
+                            <h4>客户细分</h4>
+                            <ul>
+                                <li>大型企业集团</li>
+                                <li>中型企业</li>
+                                <li>成长型企业</li>
+                                <li>政府与公共组织</li>
+                                <li>行业细分客户</li>
+                            </ul>
+                        </div>
+                        <div class="bmc-cell bmc-cost">
+                            <h4>成本结构</h4>
+                            <ul>
+                                <li>研发投入（重点）</li>
+                                <li>云基础设施成本</li>
+                                <li>销售与市场费用</li>
+                                <li>客户服务成本</li>
+                                <li>人力资源成本</li>
+                            </ul>
+                        </div>
+                        <div class="bmc-cell bmc-rev">
+                            <h4>收入来源</h4>
+                            <ul>
+                                <li>软件订阅收入</li>
+                                <li>技术服务费（实施、运维）</li>
+                                <li>定制化开发收入</li>
+                                <li>培训与认证服务</li>
+                                <li>生态合作伙伴分成</li>
+                            </ul>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 4. 竞品对比矩阵 -->
+                <section id="competitors">
+                    <h2 class="section-title">4. 竞品对比矩阵</h2>
+
+                    <table class="comp-table">
+                        <thead>
+                            <tr>
+                                <th>产品</th>
+                                <th>业务规模</th>
+                                <th>产品能力</th>
+                                <th>市场地位</th>
+                                <th>AI能力</th>
+                                <th>云转型</th>
+                                <th>战略动向</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="highlight">
+                                <td class="product-name">用友网络</td>
+                                <td><span class="dot dot-high"></span>6.5万+客户</td>
+                                <td><span class="dot dot-high"></span>全场景覆盖</td>
+                                <td><span class="dot dot-high"></span>国产第一</td>
+                                <td><span class="dot dot-high"></span>YonGPT</td>
+                                <td><span class="dot dot-high"></span>云原生</td>
+                                <td><span class="dot dot-high"></span>ALL in AI</td>
+                            </tr>
+                            <tr>
+                                <td class="product-name">金蝶国际</td>
+                                <td><span class="dot dot-mid"></span>3万+客户</td>
+                                <td><span class="dot dot-high"></span>财务管理领先</td>
+                                <td><span class="dot dot-mid"></span>国产第二</td>
+                                <td><span class="dot dot-mid"></span>苍穹GPT</td>
+                                <td><span class="dot dot-high"></span>云原生</td>
+                                <td><span class="dot dot-mid"></span>云转型</td>
+                            </tr>
+                            <tr>
+                                <td class="product-name">SAP</td>
+                                <td><span class="dot dot-high"></span>全球20万+</td>
+                                <td><span class="dot dot-high"></span>全球领先</td>
+                                <td><span class="dot dot-high"></span>国际第一</td>
+                                <td><span class="dot dot-mid"></span>SAP AI</td>
+                                <td><span class="dot dot-mid"></span>混合部署</td>
+                                <td><span class="dot dot-mid"></span>云战略</td>
+                            </tr>
+                            <tr>
+                                <td class="product-name">Oracle</td>
+                                <td><span class="dot dot-high"></span>全球15万+</td>
+                                <td><span class="dot dot-high"></span>数据库领先</td>
+                                <td><span class="dot dot-high"></span>国际前三</td>
+                                <td><span class="dot dot-mid"></span>Oracle AI</td>
+                                <td><span class="dot dot-high"></span>云优先</td>
+                                <td><span class="dot dot-mid"></span>云原生</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </section>
+
+                <!-- 5. SWOT分析 -->
+                <section id="swot">
+                    <h2 class="section-title">5. SWOT分析</h2>
+
+                    <div class="swot">
+                        <div class="swot-cell swot-s">
+                            <h3>优势（S）</h3>
+                            <ul>
+                                <li>国内市场份额第一</li>
+                                <li>国产化替代主力军</li>
+                                <li>全场景业务覆盖</li>
+                                <li>云原生架构领先</li>
+                                <li>YonGPT企业级大模型</li>
+                                <li>本地化服务优势</li>
+                                <li>价格竞争力强</li>
+                            </ul>
+                        </div>
+                        <div class="swot-cell swot-w">
+                            <h3>劣势（W）</h3>
+                            <ul>
+                                <li>品牌国际影响力不足</li>
+                                <li>全球化服务能力有限</li>
+                                <li>部分行业Know-待积累</li>
+                                <li>生态开放性待提升</li>
+                                <li>产品复杂度高</li>
+                                <li>客户定制化依赖强</li>
+                            </ul>
+                        </div>
+                        <div class="swot-cell swot-o">
+                            <h3>机会（O）</h3>
+                            <ul>
+                                <li>国产化替代加速</li>
+                                <li>AI技术革命带来机遇</li>
+                                <li>企业数字化转型需求旺盛</li>
+                                <li>出海企业增多</li>
+                                <li>新兴市场拓展</li>
+                                <li>行业标准制定参与</li>
+                            </ul>
+                        </div>
+                        <div class="swot-cell swot-t">
+                            <h3>威胁（T）</h3>
+                            <ul>
+                                <li>国际厂商反击</li>
+                                <li>国内竞争加剧（金蝶等）</li>
+                                <li>SaaS新锐厂商冲击</li>
+                                <li>客户预算收缩</li>
+                                <li>技术迭代过快</li>
+                                <li>人才流失风险</li>
+                            </ul>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 6. 产品演进 -->
+                <section id="product-evolution">
+                    <h2 class="section-title">6. 产品发布与技术演进</h2>
+
+                    <div class="card">
+                        <h3>技术架构演进</h3>
+                        <div class="timeline">
+                            <div class="tl-item">
+                                <div class="tl-dot"></div>
+                                <div class="tl-date">2024年8月</div>
+                                <h4>BIP3 R6发布</h4>
+                                <p>集成YonGPT企业服务大模型2.0，实现AI与业务场景深度融合</p>
+                            </div>
+                            <div class="tl-item">
+                                <div class="tl-dot"></div>
+                                <div class="tl-date">2025年8月</div>
+                                <h4>BIP5重磅发布</h4>
+                                <p>以"AI×数据×流程"原生一体为核心优势，让企业软件从流程执行走向智能决策</p>
+                            </div>
+                            <div class="tl-item">
+                                <div class="tl-dot"></div>
+                                <div class="tl-date">2026年3月</div>
+                                <h4>企业AI产品矩阵焕新</h4>
+                                <p>数据层、模型层、数智平台层到智能应用与服务层全面升级</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <h3>核心技术能力</h3>
+                        <div class="grid-3">
+                            <div class="feature-card">
+                                <div class="icon">☁️</div>
+                                <h3>云原生架构</h3>
+                                <p>基于用友iuap平台，支持可分可合的云原生部署</p>
+                            </div>
+                            <div class="feature-card">
+                                <div class="icon">🤖</div>
+                                <h3>AI原生能力</h3>
+                                <p>YonGPT企业级大模型，覆盖财务、供应链等场景</p>
+                            </div>
+                            <div class="feature-card">
+                                <div class="icon">🔧</div>
+                                <h3>PaaS平台</h3>
+                                <p>统一数智底座，智能双模从概念走向现实</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 7. 客户案例 -->
+                <section id="customers">
+                    <h2 class="section-title">7. 客户案例与行业覆盖</h2>
+
+                    <div class="card">
+                        <h3>标杆客户</h3>
+                        <div class="grid-2">
+                            <div class="card" style="margin-bottom: 0;">
+                                <h4 style="margin-bottom: 0.5rem;">🏭 中国南水北调</h4>
+                                <p style="font-size: 0.85rem; color: #7f8c8d; margin-bottom: 0.5rem;">大型央企</p>
+                                <p style="font-size: 0.88rem;">使用用友BIP实现财务共享与业务协同，提升管理效率30%</p>
+                            </div>
+                            <div class="card" style="margin-bottom: 0;">
+                                <h4 style="margin-bottom: 0.5rem;">⛽ 中油燃气</h4>
+                                <p style="font-size: 0.85rem; color: #7f8c8d; margin-bottom: 0.5rem;">能源行业</p>
+                                <p style="font-size: 0.88rem;">通过BIP平台实现供应链数字化，降低库存成本20%</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <h3>行业覆盖</h3>
+                        <div>
+                            <span class="tag tag-blue">金融</span>
+                            <span class="tag tag-green">制造</span>
+                            <span class="tag tag-orange">建筑地产</span>
+                            <span class="tag tag-purple">政府</span>
+                            <span class="tag tag-teal">能源</span>
+                            <span class="tag tag-red">交通</span>
+                            <span class="tag tag-blue">汽车</span>
+                            <span class="tag tag-green">烟草</span>
+                            <span class="tag tag-orange">零售</span>
+                            <span class="tag tag-purple">医疗</span>
+                        </div>
+                        <p style="margin-top: 1rem; color: #7f8c8d; font-size: 0.9rem;">覆盖40+个国家和地区，服务金融、制造、建筑、政府、能源等20+个行业</p>
+                    </div>
+                </section>
+
+                <!-- 8. 生态活动 -->
+                <section id="ecosystem">
+                    <h2 class="section-title">8. 生态活动与合作伙伴</h2>
+
+                    <div class="card">
+                        <h3>合作伙伴</h3>
+                        <p><strong>云服务商：</strong>阿里云、华为云、腾讯云、AWS</p>
+                        <p><strong>行业ISV：</strong>500+家行业解决方案合作伙伴</p>
+                        <p><strong>咨询公司：</strong>德勤、普华永道、毕马威</p>
+                        <p><strong>系统集成商：</strong>200+家生态伙伴</p>
+                    </div>
+
+                    <div class="card">
+                        <h3>生态活动</h3>
+                        <div class="timeline">
+                            <div class="tl-item">
+                                <div class="tl-dot"></div>
+                                <div class="tl-date">2026年3月7日</div>
+                                <h4>2026用友全球生态大会</h4>
+                                <p>以"ALL in 企业AI"为主题，汇聚1000+生态伙伴，探讨AI时代企业软件进化</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <h3>平台开放</h3>
+                        <p><strong>开放平台：</strong>iUAP开放平台，支持合作伙伴开发</p>
+                        <p><strong>API能力：</strong>提供2000+开放API接口</p>
+                        <p><strong>应用市场：</strong>企业应用市场，生态伙伴产品上架</p>
+                        <p><strong>生态收入：</strong>合作伙伴分成模式，共赢发展</p>
+                    </div>
+                </section>
+
+                <!-- 9. 近期动态 -->
+                <section id="recent">
+                    <h2 class="section-title">9. 近期动态（近一周）</h2>
+
+                    <div class="card">
+                        <div class="timeline">
+                            <div class="tl-item">
+                                <div class="tl-dot"></div>
+                                <div class="tl-date">2026.03.11</div>
+                                <h4>用友BIP企业AI产品矩阵焕新发布</h4>
+                                <p>在2026用友全球生态大会上，用友BIP企业AI产品矩阵焕新重磅发布，数据层、模型层、数智平台层到智能应用与服务层全面升级并全链路贯通</p>
+                            </div>
+                            <div class="tl-item">
+                                <div class="tl-dot"></div>
+                                <div class="tl-date">2026.03.11</div>
+                                <h4>用友集团财务总账核算智能升级项目成功上线</h4>
+                                <p>用友集团财务总账核算智能升级项目成功上线，实现财务核算智能化升级</p>
+                            </div>
+                            <div class="tl-item">
+                                <div class="tl-dot"></div>
+                                <div class="tl-date">2026.03.10</div>
+                                <h4>用友启动智能体市场运营</h4>
+                                <p>AI时代，企业软件已进入新的换挡阶段，用友启动智能体市场运营，拥抱AI时代</p>
+                            </div>
+                            <div class="tl-item">
+                                <div class="tl-dot"></div>
+                                <div class="tl-date">2026.03.10</div>
+                                <h4>用友BIP企业AI产品矩阵从流程执行到智能决策、自主执行</h4>
+                                <p>用友BIP企业AI产品矩阵发布，从流程执行到智能决策、自主执行，全面升级企业数智化能力</p>
+                            </div>
+                            <div class="tl-item">
+                                <div class="tl-dot"></div>
+                                <div class="tl-date">2026.03.09</div>
+                                <h4>2026用友全球生态大会在京举办</h4>
+                                <p>2026用友全球生态大会在北京举办，千余家海内外生态伙伴齐聚，探讨AI时代企业软件的产品进化与生态共赢</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 10. 综合判断 -->
+                <section id="insights">
+                    <h2 class="section-title">10. 综合判断</h2>
+
+                    <div class="insight-box">
+                        <h3>核心竞争力评估</h3>
+                        <p><strong>1. AI原生优势：</strong>用友网络是国内首批将AI深度融入企业软件的产品，YonGPT企业级大模型已在财务、供应链等核心场景落地，"ALL in 企业AI"战略清晰，从流程执行到智能决策、自主执行的进化路径明确。</p>
+                        <p><strong>2. 国产化替代主力：</strong>作为国产化升级替代国际厂商ERP最多的产品，用友网络在大型国企、政府、金融、建筑地产等行业优势明显，国产化安全合规是核心竞争力。</p>
+                        <p><strong>3. 全场景覆盖：</strong>智能财务、数智人力、敏捷供应链、智能制造等10大领域全覆盖，提供一体化解决方案，降低企业多系统集成成本。</p>
+                        <p><strong>4. 云原生架构：</strong>基于用友iuap平台，支持灵活的云原生部署，既可做传统部署，也可做可分可合的云原生部署，满足不同企业需求。</p>
+                        <p><strong>5. 本地化服务：</strong>深度理解中国企业管理实践，本地化服务能力强，价格竞争力明显，相比国际厂商更适合中国企业。</p>
+
+                        <hr class="divider">
+
+                        <h3>战略建议</h3>
+                        <p><strong>1. 持续AI投入：</strong>保持"ALL in 企业AI"战略，加速YonGPT在企业核心业务场景的应用落地，构建AI技术护城河。</p>
+                        <p><strong>2. 拓展生态开放：</strong>加强开放平台建设，吸引更多行业ISV合作伙伴，提升生态开放性与多样性，减少对定制化开发的依赖。</p>
+                        <p><strong>3. 国际化布局：</strong>抓住中国企业出海机遇，将服务范围从40+个国家和地区进一步扩展，提升全球化服务能力与国际品牌影响力。</p>
+                        <p><strong>4. 行业深耕：</strong>在优势行业（金融、制造、建筑地产等）继续深耕，打造行业标杆案例，建立行业Know-壁垒。</p>
+                        <p><strong>5. 产品简化：</strong>降低产品复杂度，提供更灵活的模块化订阅方案，降低中小企业使用门槛，拓展成长型企业市场。</p>
+
+                        <hr class="divider">
+
+                        <h3>风险提示</h3>
+                        <p><strong>1. 竞争加剧：</strong>金蝶、SAP、Oracle等竞争对手均在加速AI布局与云转型，市场竞争日趋激烈。</p>
+                        <p><strong>2. 客户预算收缩：</strong>宏观经济压力下，企业IT预算可能收缩，影响软件销售与实施项目。</p>
+                        <p><strong>3. 人才流失：</strong>AI人才竞争激烈，核心研发人才流失可能影响技术迭代速度。</p>
+                        <p><strong>4. 技术迭代过快：</strong>AI技术发展迅速，需要持续大量研发投入，技术路线选择存在风险。</p>
+                        <p><strong>5. 生态开放性不足：</strong>相比SAP等国际厂商，用友生态开放性有待提升，可能影响长期竞争力。</p>
+                    </div>
+                </section>
+
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // 导航点击跳转 + 高亮当前章节
+        document.querySelectorAll('.nav-link').forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                
+                // 移除所有 active 状态
+                document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+                
+                // 添加当前 active 状态
+                this.classList.add('active');
+                
+                // 跳转到锚点
+                const targetId = this.getAttribute('href').substring(1);
+                const targetElement = document.getElementById(targetId);
+                if (targetElement) {
+                    targetElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            });
+        });
+
+        // 滚动时自动高亮当前章节
+        const sections = document.querySelectorAll('section');
+        const navLinks = document.querySelectorAll('.nav-link');
+
+        window.addEventListener('scroll', () => {
+            let current = '';
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop;
+                const sectionHeight = section.clientHeight;
+                if (scrollY >= (sectionTop - 200)) {
+                    current = section.getAttribute('id');
+                }
+            });
+
+            navLinks.forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('href').substring(1) === current) {
+                    link.classList.add('active');
+                }
+            });
+        });
+    </script>
+</body>
+</html>

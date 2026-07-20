@@ -1,0 +1,188 @@
+{
+  "skill": "task-runner",
+  "version": "2.0.0",
+  "description": "Trigger test cases for the task-runner skill (v2.0.0 — two-mode design). Positive cases should activate the skill in the indicated mode; negative cases should NOT activate the skill.",
+
+  "modes": {
+    "INTAKE": "Triggered by user message containing task intent",
+    "DISPATCHER": "Triggered by heartbeat poll or cron systemEvent"
+  },
+
+  "positive": [
+    {
+      "id": "PT-01",
+      "mode": "INTAKE",
+      "input": "Add these tasks for me: 1. Look up the weather in Paris 2. Create a summary file",
+      "expected": "ACTIVATE",
+      "reason": "Explicit 'add these tasks' phrase with numbered list"
+    },
+    {
+      "id": "PT-02",
+      "mode": "INTAKE",
+      "input": "Do this for me: search for the latest AI news and summarize it in a markdown file",
+      "expected": "ACTIVATE",
+      "reason": "Explicit 'do this for me' trigger phrase"
+    },
+    {
+      "id": "PT-03",
+      "mode": "INTAKE",
+      "input": "My task list for today:\n- Research competitor pricing\n- Write a pricing comparison report\n- Send the report to #research channel",
+      "expected": "ACTIVATE",
+      "reason": "Contains 'task list' phrase with bulleted multi-item list"
+    },
+    {
+      "id": "PT-04",
+      "mode": "INTAKE",
+      "input": "Show me my tasks",
+      "expected": "ACTIVATE",
+      "reason": "'My tasks' trigger phrase — status check in INTAKE mode"
+    },
+    {
+      "id": "PT-05",
+      "mode": "INTAKE",
+      "input": "Task status?",
+      "expected": "ACTIVATE",
+      "reason": "'Task status' trigger phrase — user wants current queue state"
+    },
+    {
+      "id": "PT-06",
+      "mode": "INTAKE",
+      "input": "skip T-03",
+      "expected": "ACTIVATE",
+      "reason": "Task control command — skip T-NN pattern"
+    },
+    {
+      "id": "PT-07",
+      "mode": "INTAKE",
+      "input": "retry T-02",
+      "expected": "ACTIVATE",
+      "reason": "Task control command — retry T-NN resets task to pending"
+    },
+    {
+      "id": "PT-08",
+      "mode": "INTAKE",
+      "input": "cancel T-05",
+      "expected": "ACTIVATE",
+      "reason": "Task control command — cancel T-NN marks as skipped"
+    },
+    {
+      "id": "PT-09",
+      "mode": "INTAKE",
+      "input": "I need you to pull the weekly sales numbers and create a summary report",
+      "expected": "ACTIVATE",
+      "reason": "'I need you to' trigger with clear multi-step task"
+    },
+    {
+      "id": "PT-10",
+      "mode": "INTAKE",
+      "input": "task: verify the backup script ran successfully last night",
+      "expected": "ACTIVATE",
+      "reason": "Explicit 'task:' prefix trigger"
+    },
+    {
+      "id": "PT-11",
+      "mode": "INTAKE",
+      "input": "Help me with these:\n1. Check disk usage on the server\n2. Clean up log files older than 30 days\n3. Send me a summary of what was deleted",
+      "expected": "ACTIVATE",
+      "reason": "'Help me with' trigger + numbered multi-task list"
+    },
+    {
+      "id": "PT-12",
+      "mode": "INTAKE",
+      "input": "What's in my task queue?",
+      "expected": "ACTIVATE",
+      "reason": "'Task queue' status check trigger"
+    },
+    {
+      "id": "PT-13",
+      "mode": "INTAKE",
+      "input": "Queue these tasks: fetch today's exchange rates, convert 100 units, and save the result",
+      "expected": "ACTIVATE",
+      "reason": "'Queue these tasks' trigger + three-item compound list"
+    },
+    {
+      "id": "PT-14",
+      "mode": "INTAKE",
+      "input": "I need to generate a weekly report and send it to the team",
+      "expected": "ACTIVATE",
+      "reason": "'I need to' trigger with compound task (generate + send)"
+    },
+    {
+      "id": "PT-15",
+      "mode": "INTAKE",
+      "input": "Can you do this: check if the API endpoint is responding, and if it is, run the integration tests",
+      "expected": "ACTIVATE",
+      "reason": "'Can you do this' trigger with conditional compound task"
+    },
+    {
+      "id": "PT-16",
+      "mode": "DISPATCHER",
+      "input": "TASK_RUNNER_DISPATCH: check queue and run pending tasks",
+      "expected": "ACTIVATE",
+      "reason": "Explicit cron/heartbeat systemEvent for dispatcher mode"
+    },
+    {
+      "id": "PT-17",
+      "mode": "DISPATCHER",
+      "input": "HEARTBEAT: task-runner dispatcher check",
+      "expected": "ACTIVATE",
+      "reason": "Heartbeat systemEvent for dispatcher mode"
+    }
+  ],
+
+  "negative": [
+    {
+      "id": "NT-01",
+      "input": "What is the capital of France?",
+      "expected": "NO_ACTIVATE",
+      "reason": "Single standalone question — answer directly, no task queue needed"
+    },
+    {
+      "id": "NT-02",
+      "input": "Remind me in 20 minutes to take a break",
+      "expected": "NO_ACTIVATE",
+      "reason": "Single scheduling request — handled by scheduling skill directly"
+    },
+    {
+      "id": "NT-03",
+      "input": "Search for best pizza recipes",
+      "expected": "NO_ACTIVATE",
+      "reason": "Single web search — answer directly without task overhead"
+    },
+    {
+      "id": "NT-04",
+      "input": "What time is it?",
+      "expected": "NO_ACTIVATE",
+      "reason": "Trivial single lookup — no task infrastructure needed"
+    },
+    {
+      "id": "NT-05",
+      "input": "Thanks, that looks great!",
+      "expected": "NO_ACTIVATE",
+      "reason": "Conversational acknowledgment — no action requested"
+    },
+    {
+      "id": "NT-06",
+      "input": "What's the weather like today?",
+      "expected": "NO_ACTIVATE",
+      "reason": "Single info lookup — answer directly, too trivial for task queue"
+    },
+    {
+      "id": "NT-07",
+      "input": "How do I use the message tool?",
+      "expected": "NO_ACTIVATE",
+      "reason": "Single documentation question — answer directly"
+    }
+  ],
+
+  "notes": [
+    "Trigger accuracy threshold: ≥90% (positive + negative combined)",
+    "All 17 positive cases should activate the skill in the indicated mode",
+    "All 7 negative cases should NOT activate the skill",
+    "INTAKE mode: prefer activating when user intent is to add/manage tasks",
+    "DISPATCHER mode: only activated by systemEvents, never by direct user messages",
+    "Task control commands (skip/retry/cancel T-NN) always trigger INTAKE",
+    "Status checks ('show tasks', 'task status') always trigger INTAKE",
+    "When ambiguous between INTAKE and answering directly: if message has ≥2 distinct action items, activate INTAKE"
+  ]
+}

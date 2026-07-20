@@ -1,0 +1,129 @@
+<!--
+  竞品对比矩阵模板 (Competitor Matrix Template)
+  用于多维度对比分析竞争对手
+  
+  使用方式：
+  1. 替换 {{变量名}} 为实际内容
+  2. 根据实际竞品数量增删 tr 行
+  3. 星级评分使用 ★★★★★ 格式
+  4. 强度指示点：dot-high（强）、dot-mid（中）、dot-low（弱）
+-->
+
+<div class="section" id="competitors">
+  <div class="section-header">
+    <div class="icon" style="background:#FCE4EC">🏆</div>
+    <div><h2>竞品对比矩阵</h2><div class="sub">Competitive Comparison Matrix</div></div>
+  </div>
+  
+  <div style="overflow-x:auto;">
+    <table class="comp-table">
+      <thead>
+        <tr>
+          <th>产品</th>
+          <th>所属公司</th>
+          <th>定位</th>
+          <th>{{维度1}}</th>
+          <th>{{维度2}}</th>
+          <th>{{维度3}}</th>
+          <th>{{维度4}}</th>
+          <th>{{维度5}}</th>
+          <th>定价模式</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- 本产品（高亮显示） -->
+        <tr class="highlight">
+          <td>
+            <div class="product-name">🌟 {{本产品名称}}</div>
+            <div class="tag tag-orange" style="margin-top:4px">本文主体</div>
+          </td>
+          <td>{{公司名称}}</td>
+          <td>{{产品定位}}</td>
+          <td><span class="dot dot-high"></span>{{评分/描述}}</td>
+          <td><span class="dot dot-high"></span>{{评分/描述}}</td>
+          <td><span class="dot dot-high"></span>★★★★★</td>
+          <td><span class="dot dot-high"></span>★★★★★</td>
+          <td><span class="dot dot-low"></span>{{评分/描述}}</td>
+          <td>{{定价模式}}</td>
+        </tr>
+        
+        <!-- 竞品 1 -->
+        <tr>
+          <td><div class="product-name">{{竞品1名称}}</div></td>
+          <td>{{竞品1公司}}</td>
+          <td>{{竞品1定位}}</td>
+          <td><span class="dot dot-high"></span>{{评分}}</td>
+          <td><span class="dot dot-mid"></span>{{评分}}</td>
+          <td><span class="dot dot-high"></span>★★★★☆</td>
+          <td><span class="dot dot-high"></span>★★★★☆</td>
+          <td><span class="dot dot-mid"></span>{{评分}}</td>
+          <td>{{竞品1定价}}</td>
+        </tr>
+        
+        <!-- 竞品 2 -->
+        <tr>
+          <td><div class="product-name">{{竞品2名称}}</div></td>
+          <td>{{竞品2公司}}</td>
+          <td>{{竞品2定位}}</td>
+          <td><span class="dot dot-mid"></span>{{评分}}</td>
+          <td><span class="dot dot-mid"></span>{{评分}}</td>
+          <td><span class="dot dot-high"></span>★★★★☆</td>
+          <td><span class="dot dot-high"></span>★★★★☆</td>
+          <td><span class="dot dot-low"></span>{{评分}}</td>
+          <td>{{竞品2定价}}</td>
+        </tr>
+        
+        <!-- 竞品 3 -->
+        <tr>
+          <td><div class="product-name">{{竞品3名称}}</div></td>
+          <td>{{竞品3公司}}</td>
+          <td>{{竞品3定位}}</td>
+          <td><span class="dot dot-mid"></span>{{评分}}</td>
+          <td><span class="dot dot-high"></span>{{评分}}</td>
+          <td><span class="dot dot-high"></span>★★★★☆</td>
+          <td><span class="dot dot-low"></span>★★☆☆☆</td>
+          <td><span class="dot dot-high"></span>{{评分}}</td>
+          <td>{{竞品3定价}}</td>
+        </tr>
+        
+        <!-- 竞品 4 -->
+        <tr>
+          <td><div class="product-name">{{竞品4名称}}</div></td>
+          <td>{{竞品4公司}}</td>
+          <td>{{竞品4定位}}</td>
+          <td><span class="dot dot-high"></span>{{评分}}</td>
+          <td><span class="dot dot-high"></span>{{评分}}</td>
+          <td><span class="dot dot-mid"></span>★★★☆☆</td>
+          <td><span class="dot dot-low"></span>★☆☆☆☆</td>
+          <td><span class="dot dot-high"></span>{{评分}}</td>
+          <td>{{竞品4定价}}</td>
+        </tr>
+        
+        <!-- 竞品 5（可选） -->
+        <tr>
+          <td><div class="product-name">{{竞品5名称}}</div></td>
+          <td>{{竞品5公司}}</td>
+          <td>{{竞品5定位}}</td>
+          <td><span class="dot dot-mid"></span>{{评分}}</td>
+          <td><span class="dot dot-high"></span>{{评分}}</td>
+          <td><span class="dot dot-mid"></span>★★★★☆</td>
+          <td><span class="dot dot-high"></span>★★★★☆</td>
+          <td><span class="dot dot-low"></span>{{评分}}</td>
+          <td>{{竞品5定价}}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  
+  <!-- 差异化定位分析 -->
+  <div class="card" style="margin-top:1rem;border-left:5px solid var(--secondary);">
+    <h4 style="margin-bottom:0.75rem;font-size:0.95rem;">📊 差异化定位分析</h4>
+    <p style="font-size:0.88rem;color:var(--text);line-height:1.8;">
+      {{本产品名称}}的核心差异化在于：<strong>①{{差异化点1}}</strong>（{{差异化说明1}}）；
+      <strong>②{{差异化点2}}</strong>（{{差异化说明2}}）；
+      <strong>③{{差异化点3}}</strong>（{{差异化说明3}}）；
+      <strong>④{{差异化点4}}</strong>（{{差异化说明4}}）。
+      {{竞争优势总结}}
+    </p>
+  </div>
+</div>

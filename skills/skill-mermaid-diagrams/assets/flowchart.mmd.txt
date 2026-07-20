@@ -1,0 +1,19 @@
+%%{init: {'theme':'base', 'themeVariables': { 'primaryColor':'#4A90E2','primaryTextColor':'#fff','primaryBorderColor':'#2E5C8A','lineColor':'#333','secondaryColor':'#7B68EE','tertiaryColor':'#90EE90'}}}%%
+flowchart TD
+    Start([{{START_LABEL}}]) --> Decision1{{{DECISION_1}}}
+    Decision1 -->|{{CHOICE_1_YES}}| Action1[{{ACTION_1}}]
+    Decision1 -->|{{CHOICE_1_NO}}| Action2[{{ACTION_2}}]
+    Action1 --> Decision2{{{DECISION_2}}}
+    Action2 --> Decision2
+    Decision2 -->|{{CHOICE_2_YES}}| Action3[{{ACTION_3}}]
+    Decision2 -->|{{CHOICE_2_NO}}| Action4[{{ACTION_4}}]
+    Action3 --> End([{{END_LABEL}}])
+    Action4 --> End
+    
+    classDef startEnd fill:#90EE90,stroke:#6DBE6D,stroke-width:3px,color:#333
+    classDef decision fill:#FFD700,stroke:#DAA520,stroke-width:2px,color:#333
+    classDef action fill:#4A90E2,stroke:#2E5C8A,stroke-width:2px,color:#fff
+    
+    class Start,End startEnd
+    class Decision1,Decision2 decision
+    class Action1,Action2,Action3,Action4 action

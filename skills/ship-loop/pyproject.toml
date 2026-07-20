@@ -1,0 +1,45 @@
+[build-system]
+requires = ["setuptools>=68.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "shiploop"
+version = "5.0.0"
+description = "Self-healing multi-segment build pipeline with three nested loops"
+readme = "README.md"
+license = "MIT"
+requires-python = ">=3.10"
+authors = [
+    { name = "Fernando Fernandez", email = "fernando.fernandez90@outlook.com" },
+]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Programming Language :: Python :: 3",
+    "Topic :: Software Development",
+]
+dependencies = [
+    "pyyaml>=6.0",
+    "pydantic>=2.0",
+]
+
+[project.scripts]
+shiploop = "shiploop.cli:main"
+
+[project.urls]
+Homepage = "https://github.com/fernando-fernandez3/ship-loop"
+Repository = "https://github.com/fernando-fernandez3/ship-loop"
+Issues = "https://github.com/fernando-fernandez3/ship-loop/issues"
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0",
+    "pytest-asyncio>=0.21",
+]
+
+[tool.setuptools.packages.find]
+include = ["shiploop*"]
+
+[tool.pytest.ini_options]
+
+[tool.pytest-asyncio]
+mode = "auto"

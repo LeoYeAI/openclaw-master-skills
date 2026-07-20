@@ -1,0 +1,710 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{REPORT_TITLE}} - 咨询研究报告</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: "PingFang SC", "Microsoft YaHei", -apple-system, BlinkMacSystemFont, sans-serif;
+            background-color: #f5f7fa;
+            color: #2c3e50;
+            line-height: 1.8;
+        }
+
+        /* 主容器 - 左右布局 */
+        .container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* 左侧导航 */
+        .sidebar {
+            width: 280px;
+            background: linear-gradient(135deg, #1a2332 0%, #2d3e50 100%);
+            color: #ffffff;
+            padding: 30px 20px;
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .sidebar-header {
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .sidebar-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: #ff7d00;
+            margin-bottom: 8px;
+        }
+
+        .sidebar-subtitle {
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .nav-menu {
+            list-style: none;
+        }
+
+        .nav-item {
+            margin-bottom: 5px;
+        }
+
+        .nav-link {
+            display: block;
+            padding: 12px 15px;
+            color: rgba(255, 255, 255, 0.85);
+            text-decoration: none;
+            border-radius: 6px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .nav-link:hover {
+            background: rgba(255, 125, 0, 0.15);
+            color: #ff7d00;
+        }
+
+        .nav-link.active {
+            background: linear-gradient(90deg, rgba(255, 125, 0, 0.25) 0%, rgba(255, 125, 0, 0.1) 100%);
+            color: #ff7d00;
+            font-weight: 600;
+            border-left: 3px solid #ff7d00;
+        }
+
+        .nav-section {
+            margin-top: 25px;
+            margin-bottom: 15px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .nav-section-title {
+            font-size: 12px;
+            text-transform: uppercase;
+            color: rgba(255, 255, 255, 0.5);
+            letter-spacing: 1px;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        /* 右侧内容区 */
+        .main-content {
+            flex: 1;
+            margin-left: 280px;
+            padding: 40px 50px;
+            background: #ffffff;
+            min-height: 100vh;
+        }
+
+        .content-wrapper {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        /* Tab 内容 */
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* 报告头部 */
+        .report-header {
+            margin-bottom: 40px;
+            padding-bottom: 30px;
+            border-bottom: 2px solid #e8eef3;
+        }
+
+        .report-title {
+            font-size: 32px;
+            color: #1a2332;
+            margin-bottom: 15px;
+            font-weight: 700;
+        }
+
+        .report-meta {
+            display: flex;
+            gap: 20px;
+            font-size: 14px;
+            color: #7f8c8d;
+        }
+
+        .report-meta-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        /* 章节标题 */
+        .section-title {
+            font-size: 26px;
+            color: #1a2332;
+            margin: 40px 0 20px 0;
+            padding-bottom: 12px;
+            border-bottom: 2px solid #ff7d00;
+            font-weight: 700;
+        }
+
+        .subsection-title {
+            font-size: 20px;
+            color: #2d3e50;
+            margin: 30px 0 15px 0;
+            font-weight: 600;
+        }
+
+        .subsubsection-title {
+            font-size: 17px;
+            color: #34495e;
+            margin: 20px 0 12px 0;
+            font-weight: 600;
+        }
+
+        /* 段落 */
+        p {
+            margin-bottom: 15px;
+            color: #34495e;
+            line-height: 1.8;
+        }
+
+        /* 强调文本 */
+        strong {
+            color: #1a2332;
+            font-weight: 600;
+        }
+
+        /* 列表 */
+        ul, ol {
+            margin: 15px 0 15px 20px;
+        }
+
+        li {
+            margin-bottom: 8px;
+            color: #34495e;
+        }
+
+        /* 表格 */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 25px 0;
+            background: #ffffff;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        thead {
+            background: linear-gradient(135deg, #1a2332 0%, #2d3e50 100%);
+            color: #ffffff;
+        }
+
+        th {
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #e8eef3;
+            color: #2c3e50;
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        tr:hover {
+            background: #f8f9fa;
+        }
+
+        /* 引用块 */
+        blockquote {
+            border-left: 4px solid #ff7d00;
+            padding: 15px 20px;
+            margin: 20px 0;
+            background: linear-gradient(90deg, rgba(255, 125, 0, 0.08) 0%, rgba(255, 125, 0, 0.02) 100%);
+            border-radius: 0 6px 6px 0;
+            font-style: italic;
+        }
+
+        blockquote p {
+            margin-bottom: 0;
+            color: #2d3e50;
+        }
+
+        /* 关键发现框 */
+        .key-findings {
+            background: linear-gradient(135deg, rgba(255, 125, 0, 0.1) 0%, rgba(255, 125, 0, 0.05) 100%);
+            border: 2px solid #ff7d00;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 25px 0;
+        }
+
+        .key-findings-title {
+            font-size: 18px;
+            color: #ff7d00;
+            margin-bottom: 12px;
+            font-weight: 700;
+        }
+
+        /* 参考文献区 */
+        .references-section {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 8px;
+            margin-top: 40px;
+        }
+
+        .reference-item {
+            margin-bottom: 10px;
+            padding-left: 20px;
+            text-indent: -20px;
+            font-size: 14px;
+            color: #5a6c7d;
+        }
+
+        /* 分隔线 */
+        hr {
+            border: none;
+            height: 2px;
+            background: linear-gradient(90deg, transparent 0%, #e8eef3 50%, transparent 100%);
+            margin: 40px 0;
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 1024px) {
+            .sidebar {
+                width: 250px;
+            }
+            .main-content {
+                margin-left: 250px;
+                padding: 30px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+            }
+            .sidebar {
+                position: relative;
+                width: 100%;
+                height: auto;
+            }
+            .main-content {
+                margin-left: 0;
+                padding: 20px;
+            }
+        }
+
+        /* 打印样式 */
+        @media print {
+            .sidebar {
+                display: none;
+            }
+            .main-content {
+                margin-left: 0;
+            }
+        }
+
+        /* ====== 可视化组件样式 ====== */
+
+        /* Section Header */
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 1.5rem;
+        }
+        .section-header .icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+            flex-shrink: 0;
+        }
+        .section-header h2 {
+            font-size: 1.45rem;
+            font-weight: 700;
+            color: #1a2332;
+        }
+        .section-header .sub {
+            font-size: 0.82rem;
+            color: #7f8c8d;
+            margin-top: 0.1rem;
+        }
+
+        /* Card */
+        .card {
+            background: #ffffff;
+            border-radius: 14px;
+            padding: 1.5rem;
+            box-shadow: 0 1px 8px rgba(0,0,0,0.06);
+            border: 1px solid #e8eef3;
+        }
+
+        /* Grid layouts */
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; }
+        .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1.25rem; }
+        .grid-4 { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 1rem; }
+
+        @media (max-width: 768px) {
+            .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; }
+        }
+
+        /* Tags */
+        .tag { display: inline-block; border-radius: 6px; padding: 0.2rem 0.6rem; font-size: 0.75rem; font-weight: 600; }
+        .tag-orange { background: #FFF3E0; color: #E65100; }
+        .tag-blue { background: #E3F2FD; color: #1565C0; }
+        .tag-green { background: #E8F5E9; color: #2E7D32; }
+        .tag-red { background: #FFEBEE; color: #C62828; }
+        .tag-purple { background: #F3E5F5; color: #6A1B9A; }
+        .tag-teal { background: #E0F2F1; color: #00695C; }
+
+        /* Feature Cards */
+        .feature-card {
+            background: #ffffff;
+            border-radius: 14px;
+            padding: 1.4rem;
+            border: 1px solid #e8eef3;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .feature-card:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0,0,0,0.1); }
+        .feature-card .icon { font-size: 1.8rem; margin-bottom: 0.75rem; }
+        .feature-card h3 { font-size: 1rem; font-weight: 700; margin-bottom: 0.5rem; color: #1a2332; }
+        .feature-card p { font-size: 0.88rem; color: #7f8c8d; line-height: 1.6; margin: 0; }
+
+        /* ====== 商业模式画布 (Business Model Canvas) ====== */
+        .bmc { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr 1fr; grid-template-rows: auto auto auto; gap: 0.75rem; }
+        .bmc-cell {
+            background: #ffffff;
+            border-radius: 12px;
+            padding: 1.1rem;
+            border: 1px solid #e8eef3;
+            min-height: 130px;
+        }
+        .bmc-cell h4 { font-size: 0.78rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 0.6rem; }
+        .bmc-cell ul { list-style: none; padding: 0; margin: 0; }
+        .bmc-cell ul li { font-size: 0.82rem; color: #2c3e50; padding: 0.18rem 0; padding-left: 0.9rem; position: relative; line-height: 1.5; }
+        .bmc-cell ul li::before { content: '▸'; position: absolute; left: 0; color: #ff7d00; }
+
+        .bmc-kp { grid-column: 1; grid-row: 1 / 3; border-left: 4px solid #805AD5; }
+        .bmc-kp h4 { color: #805AD5; }
+        .bmc-ka { grid-column: 2; grid-row: 1; border-left: 4px solid #3182CE; }
+        .bmc-ka h4 { color: #3182CE; }
+        .bmc-kr { grid-column: 2; grid-row: 2; border-left: 4px solid #3182CE; }
+        .bmc-kr h4 { color: #3182CE; }
+        .bmc-vp { grid-column: 3; grid-row: 1 / 3; background: linear-gradient(135deg, #fff8f0, #fff3e0); border-left: 4px solid #ff7d00; }
+        .bmc-vp h4 { color: #ff7d00; }
+        .bmc-cr { grid-column: 4; grid-row: 1; border-left: 4px solid #38A169; }
+        .bmc-cr h4 { color: #38A169; }
+        .bmc-ch { grid-column: 4; grid-row: 2; border-left: 4px solid #38A169; }
+        .bmc-ch h4 { color: #38A169; }
+        .bmc-cs { grid-column: 5; grid-row: 1 / 3; border-left: 4px solid #E53E3E; }
+        .bmc-cs h4 { color: #E53E3E; }
+        .bmc-cost { grid-column: 1 / 3; grid-row: 3; border-top: 4px solid #718096; }
+        .bmc-cost h4 { color: #718096; }
+        .bmc-rev { grid-column: 3 / 6; grid-row: 3; border-top: 4px solid #ff7d00; }
+        .bmc-rev h4 { color: #ff7d00; }
+
+        @media (max-width: 900px) {
+            .bmc { grid-template-columns: 1fr 1fr; grid-template-rows: none; }
+            .bmc-kp, .bmc-vp, .bmc-cs { grid-column: auto; grid-row: auto; }
+            .bmc-cost, .bmc-rev { grid-column: auto; }
+        }
+
+        /* ====== 波特五力 (Porter's Five Forces) ====== */
+        .porter-wrap { display: flex; justify-content: center; align-items: center; margin: 1.5rem 0; }
+        .porter-grid { display: grid; grid-template-columns: 1fr 1.5fr 1fr; grid-template-rows: 1fr 1.5fr 1fr; gap: 0.75rem; max-width: 780px; width: 100%; }
+        .porter-cell {
+            background: #ffffff;
+            border-radius: 12px;
+            padding: 1rem;
+            border: 1px solid #e8eef3;
+            text-align: center;
+        }
+        .porter-cell.center {
+            background: linear-gradient(135deg, #1a2332, #0f3460);
+            color: white;
+            border-radius: 16px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        .porter-cell h4 { font-size: 0.82rem; font-weight: 700; margin-bottom: 0.4rem; }
+        .porter-cell p { font-size: 0.78rem; color: #7f8c8d; line-height: 1.5; margin: 0; }
+        .porter-cell.center h4 { color: #ff7d00; font-size: 1rem; }
+        .porter-cell.center p { color: rgba(255,255,255,0.7); }
+
+        .intensity { display: inline-block; border-radius: 6px; padding: 0.15rem 0.5rem; font-size: 0.72rem; font-weight: 700; margin-top: 0.4rem; }
+        .intensity-high { background: #FFEBEE; color: #C62828; }
+        .intensity-med { background: #FFF3E0; color: #E65100; }
+        .intensity-low { background: #E8F5E9; color: #2E7D32; }
+
+        /* ====== SWOT 分析 ====== */
+        .swot { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+        .swot-cell { border-radius: 14px; padding: 1.4rem; }
+        .swot-s { background: linear-gradient(135deg, #E8F5E9, #C8E6C9); border-left: 5px solid #2E7D32; }
+        .swot-w { background: linear-gradient(135deg, #FFEBEE, #FFCDD2); border-left: 5px solid #C62828; }
+        .swot-o { background: linear-gradient(135deg, #E3F2FD, #BBDEFB); border-left: 5px solid #1565C0; }
+        .swot-t { background: linear-gradient(135deg, #FFF3E0, #FFE0B2); border-left: 5px solid #E65100; }
+        .swot-cell h3 { font-size: 1rem; font-weight: 800; margin-bottom: 0.8rem; }
+        .swot-cell ul { list-style: none; padding: 0; margin: 0; }
+        .swot-cell ul li { font-size: 0.85rem; padding: 0.25rem 0; padding-left: 1rem; position: relative; line-height: 1.55; color: #2c3e50; }
+        .swot-cell ul li::before { content: '●'; position: absolute; left: 0; font-size: 0.55rem; top: 0.45rem; }
+        .swot-s li::before { color: #2E7D32; }
+        .swot-w li::before { color: #C62828; }
+        .swot-o li::before { color: #1565C0; }
+        .swot-t li::before { color: #E65100; }
+
+        /* ====== PESTEL 分析 ====== */
+        .pestel { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; }
+        .pestel-cell { border-radius: 12px; padding: 1.2rem; }
+        .pestel-cell h4 { font-size: 0.88rem; font-weight: 700; margin-bottom: 0.6rem; display: flex; align-items: center; gap: 0.4rem; }
+        .pestel-cell p, .pestel-cell li { font-size: 0.82rem; color: #2c3e50; line-height: 1.6; }
+        .pestel-cell ul { list-style: none; padding: 0; margin: 0; }
+        .pestel-cell ul li { padding: 0.15rem 0; padding-left: 0.9rem; position: relative; }
+        .pestel-cell ul li::before { content: '→'; position: absolute; left: 0; color: inherit; }
+        .p-cell { background: #F3E5F5; } .p-cell h4 { color: #6A1B9A; }
+        .e-cell { background: #E3F2FD; } .e-cell h4 { color: #1565C0; }
+        .s-cell { background: #E8F5E9; } .s-cell h4 { color: #2E7D32; }
+        .t-cell { background: #FFF3E0; } .t-cell h4 { color: #E65100; }
+        .en-cell { background: #F1F8E9; } .en-cell h4 { color: #558B2F; }
+        .l-cell { background: #FCE4EC; } .l-cell h4 { color: #880E4F; }
+
+        /* ====== 竞品对比表格 ====== */
+        .comp-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+        .comp-table th { background: #1a2332; color: white; padding: 0.8rem 1rem; text-align: left; font-weight: 600; }
+        .comp-table th:first-child { border-radius: 10px 0 0 0; }
+        .comp-table th:last-child { border-radius: 0 10px 0 0; }
+        .comp-table td { padding: 0.8rem 1rem; border-bottom: 1px solid #e8eef3; vertical-align: middle; }
+        .comp-table tr:hover td { background: #f8f9ff; }
+        .comp-table tr.highlight td { background: linear-gradient(135deg, #fff8f0, #fff3e0); }
+        .comp-table .product-name { font-weight: 700; color: #1a2332; }
+
+        .dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; margin-right: 4px; }
+        .dot-high { background: #38A169; }
+        .dot-mid { background: #F59E0B; }
+        .dot-low { background: #E53E3E; }
+
+        /* ====== 用户画像卡片 ====== */
+        .persona-card {
+            background: #ffffff;
+            border-radius: 16px;
+            padding: 1.5rem;
+            border: 1px solid #e8eef3;
+            display: flex;
+            gap: 1.5rem;
+            align-items: flex-start;
+        }
+        .persona-avatar {
+            width: 64px;
+            height: 64px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            flex-shrink: 0;
+        }
+        .persona-content h3 { font-size: 1rem; font-weight: 700; margin-bottom: 0.2rem; }
+        .persona-content .role { font-size: 0.8rem; color: #7f8c8d; margin-bottom: 0.8rem; }
+        .persona-pills { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-bottom: 0.7rem; }
+        .persona-content p { font-size: 0.85rem; color: #2c3e50; line-height: 1.6; margin: 0; }
+
+        /* ====== 时间线 ====== */
+        .timeline { position: relative; padding-left: 2rem; }
+        .timeline::before { content: ''; position: absolute; left: 0.5rem; top: 0; bottom: 0; width: 2px; background: linear-gradient(to bottom, #ff7d00, #1565C0); }
+        .tl-item { position: relative; margin-bottom: 1.5rem; }
+        .tl-dot {
+            position: absolute;
+            left: -1.75rem;
+            top: 0.2rem;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #ff7d00;
+            border: 2px solid white;
+            box-shadow: 0 0 0 2px #ff7d00;
+        }
+        .tl-item h4 { font-size: 0.92rem; font-weight: 700; margin-bottom: 0.3rem; }
+        .tl-item p { font-size: 0.85rem; color: #7f8c8d; margin: 0; }
+        .tl-date { font-size: 0.75rem; color: #ff7d00; font-weight: 700; text-transform: uppercase; margin-bottom: 0.15rem; }
+
+        /* ====== 指标卡片 ====== */
+        .metric-card {
+            background: #ffffff;
+            border-radius: 14px;
+            padding: 1.3rem;
+            border: 1px solid #e8eef3;
+            text-align: center;
+        }
+        .metric-card .number { font-size: 2rem; font-weight: 800; color: #ff7d00; line-height: 1.2; }
+        .metric-card .unit { font-size: 0.8rem; color: #7f8c8d; }
+        .metric-card .desc { font-size: 0.82rem; color: #2c3e50; margin-top: 0.4rem; }
+
+        /* ====== 步骤卡片 ====== */
+        .step-card {
+            background: #ffffff;
+            border-radius: 14px;
+            padding: 1.4rem;
+            border: 1px solid #e8eef3;
+            display: flex;
+            gap: 1rem;
+            align-items: flex-start;
+        }
+        .step-num {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: #ff7d00;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            font-size: 0.95rem;
+            flex-shrink: 0;
+        }
+        .step-content h4 { font-size: 0.95rem; font-weight: 700; margin-bottom: 0.4rem; }
+        .step-content p { font-size: 0.85rem; color: #7f8c8d; line-height: 1.6; margin: 0; }
+
+        /* ====== 洞察框 ====== */
+        .insight-box {
+            background: linear-gradient(135deg, #1a2332, #0f3460);
+            color: white;
+            border-radius: 16px;
+            padding: 2rem;
+            margin-top: 2rem;
+        }
+        .insight-box h3 { font-size: 1.2rem; font-weight: 700; color: #ff7d00; margin-bottom: 1rem; }
+        .insight-box p { font-size: 0.9rem; color: rgba(255,255,255,0.8); line-height: 1.8; margin-bottom: 0.75rem; }
+
+        /* Divider */
+        .divider { border: none; border-top: 1px solid #e8eef3; margin: 2rem 0; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- 左侧导航 -->
+        <nav class="sidebar">
+            <div class="sidebar-header">
+                <div class="sidebar-title">{{REPORT_TITLE}}</div>
+                <div class="sidebar-subtitle">咨询研究报告</div>
+            </div>
+
+            <ul class="nav-menu">
+                <!-- 主要章节导航 -->
+                {{NAV_ITEMS}}
+                
+                <div class="nav-section">
+                    <div class="nav-section-title">附录</div>
+                </div>
+                
+                <li class="nav-item">
+                    <a class="nav-link" data-tab="references">参考文献</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" data-tab="appendix">附录信息</a>
+                </li>
+            </ul>
+        </nav>
+
+        <!-- 右侧内容区 -->
+        <main class="main-content">
+            <div class="content-wrapper">
+                
+                <!-- 执行摘要 -->
+                <div id="abstract" class="tab-content active">
+                    <div class="report-header">
+                        <h1 class="report-title">{{REPORT_TITLE}}</h1>
+                        <div class="report-meta">
+                            <div class="report-meta-item">
+                                <span>📅 生成日期：{{DATE}}</span>
+                            </div>
+                            <div class="report-meta-item">
+                                <span>📊 数据来源：{{DATA_SOURCES}} 个来源</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    {{ABSTRACT_CONTENT}}
+                </div>
+
+                <!-- Introduction -->
+                <div id="introduction" class="tab-content">
+                    {{INTRODUCTION_CONTENT}}
+                </div>
+
+                <!-- 正文章节 -->
+                {{MAIN_SECTIONS}}
+
+                <!-- 参考文献 -->
+                <div id="references" class="tab-content">
+                    <h2 class="section-title">参考文献</h2>
+                    <div class="references-section">
+                        {{REFERENCES_LIST}}
+                    </div>
+                </div>
+
+                <!-- 附录 -->
+                <div id="appendix" class="tab-content">
+                    <h2 class="section-title">附录信息</h2>
+                    {{APPENDIX_CONTENT}}
+                </div>
+
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // Tab 切换功能
+        document.querySelectorAll('.nav-link').forEach(link => {
+            link.addEventListener('click', function() {
+                // 移除所有 active 状态
+                document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+                document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+
+                // 添加 active 状态
+                this.classList.add('active');
+                const tabId = this.getAttribute('data-tab');
+                document.getElementById(tabId).classList.add('active');
+
+                // 滚动到顶部
+                document.querySelector('.main-content').scrollTop = 0;
+            });
+        });
+
+        // 默认选中第一个导航项
+        document.querySelector('.nav-link').classList.add('active');
+    </script>
+</body>
+</html>

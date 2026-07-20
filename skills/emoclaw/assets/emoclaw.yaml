@@ -1,0 +1,202 @@
+# emoclaw.yaml — Configuration template for emoclaw (emotion skill)
+#
+# Copy this file to your project root and customize for your agent.
+# The emotion_model package searches for this file at:
+#   1. $EMOCLAW_CONFIG (env var)
+#   2. ./emoclaw.yaml (project root)
+#   3. ./skills/emoclaw/emoclaw.yaml
+#
+# Any values you omit will fall back to built-in defaults.
+
+# Agent name — used in socket paths and logging
+name: my-agent
+
+# --- File Paths ---
+# Relative to project root
+paths:
+  state_file: memory/emotional-state.json
+  checkpoint_dir: emotion_model/checkpoints
+  data_dir: emotion_model/data
+  memory_dir: memory
+  socket_path: /tmp/{name}-emotion.sock   # {name} is replaced with agent name
+
+# --- Emotion Dimensions ---
+# Each dimension defines a spectrum from "low" to "high" with a resting baseline.
+# decay_hours: how many hours for a deviation to halve toward baseline.
+# loss_weight: relative importance during training.
+#
+# You can add, remove, or reorder dimensions. The model adjusts automatically.
+dimensions:
+  - name: valence
+    low: negative
+    high: positive
+    baseline: 0.55
+    decay_hours: 6.0
+    loss_weight: 1.0
+
+  - name: arousal
+    low: calm
+    high: activated
+    baseline: 0.35
+    decay_hours: 3.0
+    loss_weight: 0.8
+
+  - name: dominance
+    low: yielding
+    high: in-control
+    baseline: 0.50
+    decay_hours: 8.0
+    loss_weight: 0.6
+
+  - name: safety
+    low: guarded
+    high: open
+    baseline: 0.70
+    decay_hours: 12.0
+    loss_weight: 1.2
+
+  - name: desire
+    low: neutral
+    high: wanting
+    baseline: 0.20
+    decay_hours: 4.0
+    loss_weight: 1.2
+
+  - name: connection
+    low: distant
+    high: intimate
+    baseline: 0.50
+    decay_hours: 8.0
+    loss_weight: 1.5
+
+  - name: playfulness
+    low: serious
+    high: playful
+    baseline: 0.40
+    decay_hours: 3.0
+    loss_weight: 0.8
+
+  - name: curiosity
+    low: settled
+    high: fascinated
+    baseline: 0.50
+    decay_hours: 6.0
+    loss_weight: 0.8
+
+  - name: warmth
+    low: cool
+    high: warm
+    baseline: 0.45
+    decay_hours: 3.0
+    loss_weight: 0.7
+
+  - name: tension
+    low: relaxed
+    high: tense
+    baseline: 0.20
+    decay_hours: 2.0
+    loss_weight: 0.7
+
+  - name: groundedness
+    low: floating
+    high: grounded
+    baseline: 0.60
+    decay_hours: 10.0
+    loss_weight: 0.8
+
+# --- Relationships ---
+# Maps sender names to embedding indices. The model learns a vector per relationship.
+# Add new relationships by assigning the next sequential index.
+relationships:
+  known:
+    primary: 0       # Your primary relationship
+    stranger: 1      # Unknown sender
+    group: 2         # Group conversations
+  embedding_dim: 8
+  default_sender: primary   # Used when sender is not specified
+
+# --- Communication Channels ---
+# Each channel gets a one-hot slot in the context vector.
+# Add/remove channels as needed — the model adapts automatically.
+channels:
+  - chat
+  - voice
+  - email
+
+# --- Longing Mechanism ---
+# When enabled, certain dimensions grow during extended absence from the primary relationship.
+# Set enabled: false to disable entirely.
+longing:
+  enabled: true
+  growth_rate: 0.02         # Per-hour growth rate
+  cap: 0.3                  # Maximum boost
+  threshold_hours: 2        # Hours before longing starts
+  connection_factor: 0.5    # Secondary dimensions get boost * this factor
+  target_dimensions:
+    - desire
+  secondary_dimensions:
+    - connection
+
+# --- Model Architecture ---
+model:
+  encoder_model: all-MiniLM-L6-v2    # Sentence transformer model
+  embed_dim: 384                      # Must match encoder output dim
+  hidden_dim: 128                     # GRU hidden size
+  head_dim: 64                        # Emotion head intermediate size
+  dropout: 0.1
+  max_context_chars: 500              # Max chars for context window
+  device: cpu                         # cpu recommended (MPS has compatibility issues)
+
+# --- Training ---
+training:
+  epochs: 100
+  learning_rate: 0.001
+  batch_size: 16
+  weight_decay: 0.01
+  grad_clip: 1.0
+  patience: 15              # Early stopping patience (epochs)
+  val_split: 0.2            # Fraction held out for testing
+
+# --- State Persistence ---
+state:
+  max_trajectory_points: 50           # Rolling window of emotion history
+  default_absence_seconds: 28800      # 8 hours — assumed if no timestamp exists
+
+# --- Summary Templates ---
+# Point to a YAML file with custom summary phrases.
+# Set to null to use built-in defaults.
+summary:
+  templates_file: null
+  # templates_file: skills/emoclaw/assets/summary-templates.yaml
+
+# --- Timezone ---
+# Used to convert UTC to local hour for the time-of-day feature.
+timezone_offset_hours: 0    # UTC. Set to your agent's timezone offset.
+
+# --- Self-Calibration ---
+# When enabled, the emotional baseline slowly drifts toward observed patterns.
+# This lets the agent's resting state adapt over time without retraining.
+# Disabled by default — enable once you have a stable training corpus.
+calibration:
+  enabled: false              # Set to true to enable baseline drift
+  drift_rate: 0.05            # How fast baseline moves toward observed mean (0-1)
+  min_trajectory_points: 20   # Minimum data points before calibration triggers
+  clamp_range: 0.15           # Max drift from original config baseline (+/-)
+
+# --- Bootstrap ---
+# Files to extract training passages from.
+bootstrap:
+  source_files:
+    - SOUL.md
+    - IDENTITY.md
+    - MEMORY.md
+  memory_patterns:
+    - "memory/20*.md"
+  # Regex patterns to redact from extracted passages before writing to JSONL.
+  # Matched content is replaced with [REDACTED].
+  redact_patterns:
+    - '(?i)sk-ant-[a-zA-Z0-9_-]{20,}'          # Anthropic API keys
+    - '(?i)(?:api[_-]?key|token|secret|password|credential)\s*[:=]\s*\S+'
+    - '(?i)bearer\s+[a-zA-Z0-9._~+/=-]+'       # Bearer tokens
+    - 'ghp_[a-zA-Z0-9]{36}'                     # GitHub personal access tokens
+    - '(?i)ssh-(?:rsa|ed25519)\s+\S+'           # SSH keys

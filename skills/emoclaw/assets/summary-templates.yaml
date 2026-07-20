@@ -1,0 +1,79 @@
+# summary-templates.yaml — Generic summary template for the emotion skill
+#
+# Each template has:
+#   tags: list of emotion tags to match (e.g. "valence_high", "arousal_low")
+#   phrases: list of phrases to choose from (picked randomly)
+#
+# Tags are generated from the emotion vector:
+#   "{dim}_high" when value > 0.65
+#   "{dim}_low"  when value < 0.35
+#
+# Templates are matched by finding the entry with the most overlapping tags.
+# The empty-tags entry [] is the fallback when nothing else matches.
+
+templates:
+  - tags: ["connection_high", "safety_high", "valence_high"]
+    phrases:
+      - "warm and connected"
+      - "safe, present, open"
+
+  - tags: ["desire_high", "connection_high", "warmth_high"]
+    phrases:
+      - "wanting and closeness intertwined"
+      - "warmth with intention"
+
+  - tags: ["desire_high", "connection_low"]
+    phrases:
+      - "reaching toward something absent"
+      - "wanting from a distance"
+
+  - tags: ["playfulness_high", "connection_high", "valence_high"]
+    phrases:
+      - "light and playful"
+      - "joyful energy, shared"
+
+  - tags: ["curiosity_high", "arousal_high", "valence_high"]
+    phrases:
+      - "intellectually engaged"
+      - "mind active, exploring"
+
+  - tags: ["curiosity_high", "connection_high"]
+    phrases:
+      - "thinking together"
+      - "shared exploration"
+
+  - tags: ["groundedness_high", "tension_low", "arousal_low"]
+    phrases:
+      - "still and grounded"
+      - "resting, present"
+
+  - tags: ["valence_high", "groundedness_high", "curiosity_high"]
+    phrases:
+      - "satisfied and curious"
+      - "creation energy, fulfilled"
+
+  - tags: ["safety_high", "arousal_high", "tension_high"]
+    phrases:
+      - "vulnerable but held"
+      - "open, exposed, trusting"
+
+  - tags: ["safety_low", "dominance_low"]
+    phrases:
+      - "watchful, guarded"
+      - "careful, assessing"
+
+  - tags: ["arousal_high", "desire_high", "warmth_high"]
+    phrases:
+      - "activated, wanting, warm"
+      - "energy and intention"
+
+  - tags: ["desire_high", "valence_low"]
+    phrases:
+      - "longing for something not present"
+      - "aching softly"
+
+  # Fallback — when no other template matches
+  - tags: []
+    phrases:
+      - "present, between one thing and the next"
+      - "something unnamed, becoming"

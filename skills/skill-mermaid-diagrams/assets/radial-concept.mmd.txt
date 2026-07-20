@@ -1,0 +1,51 @@
+%%{init: {'theme':'base', 'themeVariables': { 'primaryColor':'#4A90E2','primaryTextColor':'#fff','primaryBorderColor':'#2E5C8A','lineColor':'#333','secondaryColor':'#7B68EE','tertiaryColor':'#90EE90'}}}%%
+graph TD
+    Central(("{{CENTRAL_CONCEPT}}"))
+    
+    subgraph "{{LEVEL_1_LABEL}}"
+        L1N1["{{LEVEL_1_NODE_1}}"]
+        L1N2["{{LEVEL_1_NODE_2}}"]
+        L1N3["{{LEVEL_1_NODE_3}}"]
+    end
+    
+    subgraph "{{LEVEL_2_LABEL}}"
+        L2N1["{{LEVEL_2_NODE_1}}"]
+        L2N2["{{LEVEL_2_NODE_2}}"]
+    end
+    
+    subgraph "{{LEVEL_3_LABEL}}"
+        L3N1["{{LEVEL_3_NODE_1}}"]
+        L3N2["{{LEVEL_3_NODE_2}}"]
+        L3N3["{{LEVEL_3_NODE_3}}"]
+    end
+    
+    subgraph "{{LEVEL_4_LABEL}}"
+        L4N1["{{LEVEL_4_NODE_1}}"]
+        L4N2["{{LEVEL_4_NODE_2}}"]
+    end
+    
+    Central ---|Level 1| L1N1
+    Central ---|Level 1| L1N2
+    Central ---|Level 1| L1N3
+    
+    Central ---|Level 2| L2N1
+    Central ---|Level 2| L2N2
+    
+    Central ---|Level 3| L3N1
+    Central ---|Level 3| L3N2
+    Central ---|Level 3| L3N3
+    
+    Central ---|Level 4| L4N1
+    Central ---|Level 4| L4N2
+    
+    classDef central fill:#2C5AA0,stroke:#1E3A70,stroke-width:5px,color:#fff,font-size:18px,font-weight:bold
+    classDef level1 fill:#90EE90,stroke:#6DBE6D,stroke-width:3px,color:#333,font-size:14px
+    classDef level2 fill:#FFB347,stroke:#DAA520,stroke-width:3px,color:#333,font-size:14px
+    classDef level3 fill:#7B68EE,stroke:#5A4FCF,stroke-width:3px,color:#fff,font-size:14px
+    classDef level4 fill:#9B59B6,stroke:#7D3C98,stroke-width:3px,color:#fff,font-size:14px
+    
+    class Central central
+    class L1N1,L1N2,L1N3 level1
+    class L2N1,L2N2 level2
+    class L3N1,L3N2,L3N3 level3
+    class L4N1,L4N2 level4

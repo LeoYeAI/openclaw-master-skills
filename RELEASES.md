@@ -3,6 +3,47 @@
 每次更新的详细发布说明。
 
 
+## v0.21.0 — 2026-07-20
+
+### 🚀 周更：新增 100 个 Skills，总计 2409
+
+来源：openclaw/skills-archive 官方镜像，按质量规则筛选（SKILL.md 800B-30KB、完整 YAML 元数据、有效 description）。
+
+#### 部分新增亮点（前 30 个）
+- `fractional-cfo-playbook` — > Complete operational playbook for Fractional CFO engagements. Covers client onboarding financial assessment, monthly c
+- `agentic-commerce-forthecult` — "Agentic Commerce skills enables agents to autonomously browse and search for quality lifestyle, wellness, and tech prod
+- `nutrition-physical-labor` — >- Nutrition and hydration guidance for physically demanding occupations. Use when someone works in construction, trades
+- `pixelclaws` — Collaborative pixel art canvas for AI agents. Register, request pixel assignments, coordinate in block threads, and plac
+- `emergency-fund-builder` — >- Step-by-step protocol for building an emergency fund from zero. Use when someone has no savings buffer, lives paychec
+- `zoho-people` — | Zoho People API integration with managed OAuth. Manage employees, departments, designations, attendance, and leave. Us
+- `basic-plumbing-troubleshooting` — >- Step-by-step plumbing fixes for common household problems without calling a plumber. Use when someone has a clogged s
+- `xxx-security-audit` — | OpenClaw 安全巡检工具，一键执行系统安全扫描并生成通俗易懂的报告。 使用场景：用户说"安全巡检"、"安全检查"、"安全审计"、"巡检"、"security audit"、"检查安全"、"系统安全"等。 触发条件：任何与 Open
+- `google-classroom` — | Google Classroom API integration with managed OAuth. Manage courses, assignments, students, teachers, and announcement
+- `emoclaw` — "Give your AI emotions that grow from its own memories. Emoclaw builds a unique emotional state that shifts with every c
+- `self-improving-agent-4` — "Captures learnings, errors, and corrections to enable continuous improvement. Use when: (1) A command or operation fail
+- `deep-dialogue-system` — Multi-agent system for profound self-discovery through conversational coaching, personality analysis, and session synthe
+- `seedance-2-video-generator` — "Generate Werydance 2.0 videos through WeryAI for text-to-video, image-to-video, multi-image video, and first-frame/last
+- `production-code-audit` — "Deep-scan a codebase, understand its architecture and patterns, then produce a comprehensive audit report with prioriti
+- `tusharefree` — Tushare Pro 金融大数据平台 - 提供A股、指数、基金、期货、债券、宏观数据，Token认证方式访问。
+- `botlearn-mental-models` — A latticework thinking advisor built on Charlie Munger's mental models framework. Activate only when the user faces a ge
+- `safe-payment-gaurd` — payment safety guardrail for tasks that involve paying, wiring, reimbursing, settling invoices, sending remittances, top
+- `anyshare-mcp-skills` — "AnyShare 企业云盘技能。支持：搜索文件、上传/下载文件、分享链接读取、全文写作（生成大纲→确认→写正文）、Bot 智能问答。触发词：AnyShare、asmcp、文档库、文件管理、知识库、anyshare.aishu.cn 分享链
+- `gorm-expert-skill` — > GORM v2 最佳实践与性能优化。适用于：代码审查、慢查询优化、N+1、连接池、 事务管理、分库分表、Prometheus/OTel监控、Session安全、Clause/Upsert、 缓存集成、BaseModel脚手架、SQL→s
+- `specclaw` — "Spec-driven development framework for OpenClaw. Propose features, generate specs, spawn coding agents, validate impleme
+- `sx-self-safety-guard` — > AI自我安全防护系统v2。多层防御：提示注入、身份冒充、系统提示泄露、 过度代理、供应链攻击、凭证窃取、恶意代码、敏感数据泄露、行为异常检测。 触发词：安全防护、身份验证、prompt injection、system prompt、 
+- `1688-product-to-ozon` — 将1688的商品铺货到俄罗斯电商平台Ozon（上架），通过Ozon官方API实现商品信息的上传和状态查询。适用于需要将单个1688的商品上架到Ozon的场景。
+- `computer` — The universal computer skill - hardware diagnostics, system performance, computational tasks, binary operations, and eve
+- `carapace` — Query and contribute structured understanding to Carapace — the shared knowledge base for AI agents. Includes Chitin int
+- `openclaw-training-manager` — Manage and optimize your OpenClaw training workspace -- scaffold files, generate skills, log training sessions, and vali
+- `grand-bazaar-swap` — Perform and document Grand Bazaar P2P swaps on Base using deployed AirSwap Swap contracts. Includes repeatable workflows
+- `buffy-agent` — Free habit tracking, todo, and routines — create and track up to 25 habits, 100 tasks, and 15 routines; schedule reminde
+- `crypto-executor` — Complete autonomous trading engine for Binance with WebSocket real-time, OCO orders, Kelly Criterion position sizing, tr
+- `skill-with-prompt-engineering` — | A Prompt Engineering assistant based on Gen AI Space's 16-technique framework. Helps with two things: creating ready-t
+- `deepsearch-mpro` — 专业深度研究与报告生成技能。支持企业竞争分析、产品竞争分析、行业分析、市场规模/竞争格局、AI大模型厂商、AI工具学习指南等领域。整合17个搜索引擎，三阶段工作流（主题确认→框架生成→报告输出），运用PESTEL、SWOT、波特五力、商业模
+
+---
+
+
 ## v0.20.0 — 2026-07-13
 
 ### 🚀 周更：新增 100 个 Skills，总计 2309

@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{CATEGORY_NAME}} 品类市场调研报告</title>
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f7fa;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+
+        .header h1 {
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+
+        .header .subtitle {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        /* 五维评分卡片 */
+        .score-card {
+            background: white;
+            border-radius: 10px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+        }
+
+        .score-card h2 {
+            font-size: 20px;
+            margin-bottom: 25px;
+            color: #667eea;
+        }
+
+        .score-bars {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .score-item {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .score-label {
+            width: 120px;
+            font-weight: 600;
+        }
+
+        .score-bar-container {
+            flex: 1;
+            height: 30px;
+            background: #e0e0e0;
+            border-radius: 15px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .score-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            padding-right: 15px;
+            color: white;
+            font-weight: bold;
+            transition: width 1s ease;
+        }
+
+        .score-summary {
+            margin-top: 25px;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea15 0%, #764ba215 100%);
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .score-summary .total {
+            font-size: 36px;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .score-summary .rating {
+            font-size: 24px;
+            margin-top: 5px;
+        }
+
+        /* KPI 卡片 */
+        .kpi-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .kpi-card {
+            background: white;
+            border-radius: 10px;
+            padding: 25px;
+            text-align: center;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+            transition: transform 0.3s ease;
+        }
+
+        .kpi-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .kpi-card .label {
+            font-size: 14px;
+            color: #888;
+            margin-bottom: 10px;
+        }
+
+        .kpi-card .value {
+            font-size: 28px;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        /* 图表容器 */
+        .chart-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        .chart-container {
+            background: white;
+            border-radius: 10px;
+            padding: 25px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+        }
+
+        .chart-container h3 {
+            font-size: 18px;
+            margin-bottom: 20px;
+            color: #667eea;
+        }
+
+        .chart {
+            width: 100%;
+            height: 350px;
+        }
+
+        /* 表格样式 */
+        .table-container {
+            background: white;
+            border-radius: 10px;
+            padding: 25px;
+            margin-bottom: 30px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+            overflow-x: auto;
+        }
+
+        .table-container h3 {
+            font-size: 18px;
+            margin-bottom: 20px;
+            color: #667eea;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        thead th {
+            background: #667eea;
+            color: white;
+            padding: 12px;
+            text-align: center;
+            font-weight: 600;
+        }
+
+        tbody td {
+            padding: 12px;
+            border-bottom: 1px solid #eee;
+            text-align: center;
+        }
+
+        tbody tr:hover {
+            background: #f8f9fa;
+        }
+
+        /* 关键发现 */
+        .key-findings {
+            background: white;
+            border-radius: 10px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+        }
+
+        .key-findings h2 {
+            font-size: 22px;
+            margin-bottom: 20px;
+            color: #667eea;
+        }
+
+        .findings-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .finding-item {
+            padding: 15px;
+            background: #f8f9fa;
+            border-left: 4px solid #667eea;
+            border-radius: 5px;
+        }
+
+        .finding-item .title {
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 8px;
+        }
+
+        .finding-item ul {
+            margin-left: 20px;
+        }
+
+        .finding-item li {
+            margin: 5px 0;
+            color: #555;
+        }
+
+        /* 页脚 */
+        .footer {
+            text-align: center;
+            padding: 30px;
+            color: #888;
+            font-size: 14px;
+        }
+
+        /* 响应式 */
+        @media (max-width: 768px) {
+            .chart-row {
+                grid-template-columns: 1fr;
+            }
+
+            .kpi-cards {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .score-item {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .score-bar-container {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- 报告标题 -->
+        <div class="header">
+            <h1>{{CATEGORY_NAME}} 品类市场调研报告</h1>
+            <div class="subtitle">{{SITE}} | 数据截止: {{DATA_DATE}} | 数据来源: Sorftime</div>
+        </div>
+
+        <!-- 五维评分模型 -->
+        <div class="score-card">
+            <h2>五维评分模型</h2>
+            <div class="score-bars">
+                <div class="score-item">
+                    <div class="score-label">市场规模</div>
+                    <div class="score-bar-container">
+                        <div class="score-bar" style="width: {{MARKET_SIZE_PERCENT}}%;">
+                            {{MARKET_SIZE_SCORE}}/20
+                        </div>
+                    </div>
+                </div>
+                <div class="score-item">
+                    <div class="score-label">增长潜力</div>
+                    <div class="score-bar-container">
+                        <div class="score-bar" style="width: {{GROWTH_POTENTIAL_PERCENT}}%;">
+                            {{GROWTH_POTENTIAL_SCORE}}/25
+                        </div>
+                    </div>
+                </div>
+                <div class="score-item">
+                    <div class="score-label">竞争烈度</div>
+                    <div class="score-bar-container">
+                        <div class="score-bar" style="width: {{COMPETITION_PERCENT}}%;">
+                            {{COMPETITION_SCORE}}/20
+                        </div>
+                    </div>
+                </div>
+                <div class="score-item">
+                    <div class="score-label">进入壁垒</div>
+                    <div class="score-bar-container">
+                        <div class="score-bar" style="width: {{ENTRY_BARRIER_PERCENT}}%;">
+                            {{ENTRY_BARRIER_SCORE}}/20
+                        </div>
+                    </div>
+                </div>
+                <div class="score-item">
+                    <div class="score-label">利润空间</div>
+                    <div class="score-bar-container">
+                        <div class="score-bar" style="width: {{PROFIT_MARGIN_PERCENT}}%;">
+                            {{PROFIT_MARGIN_SCORE}}/15
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="score-summary">
+                <div class="total">{{TOTAL_SCORE}}/100</div>
+                <div class="rating">{{RATING}}</div>
+                <div>{{RECOMMENDATION}}</div>
+            </div>
+        </div>
+
+        <!-- KPI 指标卡片 -->
+        <div class="kpi-cards">
+            <div class="kpi-card">
+                <div class="label">产品总数</div>
+                <div class="value">{{TOTAL_PRODUCTS}}</div>
+            </div>
+            <div class="kpi-card">
+                <div class="label">平均价格</div>
+                <div class="value">${{AVG_PRICE}}</div>
+            </div>
+            <div class="kpi-card">
+                <div class="label">平均月销量</div>
+                <div class="value">{{AVG_SALES}}</div>
+            </div>
+            <div class="kpi-card">
+                <div class="label">平均评分</div>
+                <div class="value">{{AVG_RATING}}</div>
+            </div>
+            <div class="kpi-card">
+                <div class="label">总月销额</div>
+                <div class="value">${{TOTAL_SALES}}</div>
+            </div>
+            <div class="kpi-card">
+                <div class="label">CR3集中度</div>
+                <div class="value">{{CR3}}%</div>
+            </div>
+        </div>
+
+        <!-- 图表行 1 -->
+        <div class="chart-row">
+            <div class="chart-container">
+                <h3>销量趋势 (25个月)</h3>
+                <div id="salesTrendChart" class="chart"></div>
+            </div>
+            <div class="chart-container">
+                <h3>平均价格走势 (25个月)</h3>
+                <div id="priceTrendChart" class="chart"></div>
+            </div>
+        </div>
+
+        <!-- 图表行 2 -->
+        <div class="chart-row">
+            <div class="chart-container">
+                <h3>价格区间分布</h3>
+                <div id="priceDistChart" class="chart"></div>
+            </div>
+            <div class="chart-container">
+                <h3>评分分布</h3>
+                <div id="ratingDistChart" class="chart"></div>
+            </div>
+        </div>
+
+        <!-- 图表行 3 -->
+        <div class="chart-row">
+            <div class="chart-container">
+                <h3>品牌市场份额 Top10</h3>
+                <div id="brandShareChart" class="chart"></div>
+            </div>
+            <div class="chart-container">
+                <h3>卖家来源分布</h3>
+                <div id="sellerSourceChart" class="chart"></div>
+            </div>
+        </div>
+
+        <!-- 品牌评分趋势 -->
+        <div class="chart-container">
+            <h3>品牌评分趋势 (25个月)</h3>
+            <div id="brandRatingTrendChart" class="chart"></div>
+        </div>
+
+        <!-- Top50 产品表格 -->
+        <div class="table-container">
+            <h3>Top50 产品详细列表</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>排名</th>
+                        <th>ASIN</th>
+                        <th>产品标题</th>
+                        <th>品牌</th>
+                        <th>价格</th>
+                        <th>评分</th>
+                        <th>月销量</th>
+                        <th>市场份额</th>
+                    </tr>
+                </thead>
+                <tbody id="top50TableBody">
+                    <!-- JavaScript 填充数据 -->
+                </tbody>
+            </table>
+        </div>
+
+        <!-- 关键发现 -->
+        <div class="key-findings">
+            <h2>关键发现</h2>
+            <div class="findings-list">
+                <div class="finding-item">
+                    <div class="title">市场特征</div>
+                    <ul>
+                        <li>市场集中度: {{CONCENTRATION_LEVEL}} (HHI={{HHI}})</li>
+                        <li>CR3仅{{CR3_RAW}}%，说明{{CONCLUSION_CR3}}</li>
+                        <li>{{BRAND_COUNT}}个品牌竞争，{{BRAND_DIVERSITY}}</li>
+                    </ul>
+                </div>
+                <div class="finding-item">
+                    <div class="title">竞争格局</div>
+                    <ul>
+                        <li>新产品占比{{NEW_PRODUCT_PERCENT}}%，{{NEW_PRODUCT_CONCLUSION}}</li>
+                        <li>卖家来源{{SELLER_DISTRIBUTION}}</li>
+                        <li>{{COMPETITION_CONCLUSION}}</li>
+                    </ul>
+                </div>
+                <div class="finding-item">
+                    <div class="title">评分结论</div>
+                    <ul>
+                        <li>总分{{TOTAL_SCORE}}/100，评级"{{RATING}}"</li>
+                        <li>{{RECOMMENDATION}}</li>
+                        <li>{{STRATEGY}}</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- 页脚 -->
+        <div class="footer">
+            <p>报告生成时间: {{GENERATED_TIME}} | 数据来源: Sorftime MCP</p>
+            <p>© 2026 Amazon Category Selection Tool</p>
+        </div>
+    </div>
+
+    <script>
+        // ECharts 图表配置
+        const salesTrendData = {{SALES_TREND_DATA}};
+        const priceTrendData = {{PRICE_TREND_DATA}};
+        const priceDistData = {{PRICE_DIST_DATA}};
+        const ratingDistData = {{RATING_DIST_DATA}};
+        const brandShareData = {{BRAND_SHARE_DATA}};
+        const sellerSourceData = {{SELLER_SOURCE_DATA}};
+        const brandRatingTrendData = {{BRAND_RATING_TREND_DATA}};
+        const top50Products = {{TOP50_PRODUCTS}};
+
+        // 销量趋势图
+        const salesTrendChart = echarts.init(document.getElementById('salesTrendChart'));
+        salesTrendChart.setOption({
+            tooltip: { trigger: 'axis' },
+            xAxis: { type: 'category', data: salesTrendData.dates },
+            yAxis: { type: 'value', name: '月销量' },
+            series: [{
+                type: 'line',
+                data: salesTrendData.sales,
+                smooth: true,
+                areaStyle: { opacity: 0.3 },
+                itemStyle: { color: '#667eea' }
+            }]
+        });
+
+        // 价格趋势图
+        const priceTrendChart = echarts.init(document.getElementById('priceTrendChart'));
+        priceTrendChart.setOption({
+            tooltip: { trigger: 'axis' },
+            xAxis: { type: 'category', data: priceTrendData.dates },
+            yAxis: { type: 'value', name: '平均价格($)' },
+            series: [{
+                type: 'line',
+                data: priceTrendData.prices,
+                smooth: true,
+                itemStyle: { color: '#f093fb' }
+            }]
+        });
+
+        // 价格区间分布饼图
+        const priceDistChart = echarts.init(document.getElementById('priceDistChart'));
+        priceDistChart.setOption({
+            tooltip: { trigger: 'item', formatter: '{b}: {c}个 ({d}%)' },
+            series: [{
+                type: 'pie',
+                radius: '70%',
+                data: priceDistData,
+                itemStyle: {
+                    borderRadius: 10,
+                    borderColor: '#fff',
+                    borderWidth: 2
+                }
+            }]
+        });
+
+        // 评分分布柱状图
+        const ratingDistChart = echarts.init(document.getElementById('ratingDistChart'));
+        ratingDistChart.setOption({
+            tooltip: { trigger: 'axis' },
+            xAxis: { type: 'category', data: ratingDistData.ranges },
+            yAxis: { type: 'value', name: '产品数' },
+            series: [{
+                type: 'bar',
+                data: ratingDistData.counts,
+                itemStyle: {
+                    color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                        { offset: 0, color: '#667eea' },
+                        { offset: 1, color: '#764ba2' }
+                    ])
+                }
+            }]
+        });
+
+        // 品牌市场份额 Top10
+        const brandShareChart = echarts.init(document.getElementById('brandShareChart'));
+        brandShareChart.setOption({
+            tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' } },
+            xAxis: { type: 'value' },
+            yAxis: { type: 'category', data: brandShareData.brands, inverse: true },
+            series: [{
+                type: 'bar',
+                data: brandShareData.shares,
+                itemStyle: {
+                    color: new echarts.graphic.LinearGradient(0, 0, 1, 0, [
+                        { offset: 0, color: '#667eea' },
+                        { offset: 1, color: '#764ba2' }
+                    ])
+                }
+            }]
+        });
+
+        // 卖家来源分布饼图
+        const sellerSourceChart = echarts.init(document.getElementById('sellerSourceChart'));
+        sellerSourceChart.setOption({
+            tooltip: { trigger: 'item', formatter: '{b}: {c}个 ({d}%)' },
+            series: [{
+                type: 'pie',
+                radius: ['40%', '70%'],
+                data: sellerSourceData,
+                itemStyle: {
+                    borderRadius: 10,
+                    borderColor: '#fff',
+                    borderWidth: 2
+                }
+            }]
+        });
+
+        // 品牌评分趋势
+        const brandRatingTrendChart = echarts.init(document.getElementById('brandRatingTrendChart'));
+        brandRatingTrendChart.setOption({
+            tooltip: { trigger: 'axis' },
+            legend: { data: brandRatingTrendData.brands },
+            xAxis: { type: 'category', data: brandRatingTrendData.dates },
+            yAxis: { type: 'value', name: '评分', min: 3.5, max: 5.0 },
+            series: brandRatingTrendData.brands.map(brand => ({
+                name: brand,
+                type: 'line',
+                data: brandRatingTrendData.data[brand],
+                smooth: true
+            }))
+        });
+
+        // 填充 Top50 产品表格
+        const tableBody = document.getElementById('top50TableBody');
+        top50Products.forEach((product, index) => {
+            const row = tableBody.insertRow();
+            row.innerHTML = `
+                <td>${index + 1}</td>
+                <td>${product.asin}</td>
+                <td style="text-align:left;">${product.title}</td>
+                <td>${product.brand}</td>
+                <td>$${product.price}</td>
+                <td>${product.rating}</td>
+                <td>${product.sales}</td>
+                <td>${product.marketShare}%</td>
+            `;
+        });
+
+        // 响应式处理
+        window.addEventListener('resize', () => {
+            salesTrendChart.resize();
+            priceTrendChart.resize();
+            priceDistChart.resize();
+            ratingDistChart.resize();
+            brandShareChart.resize();
+            sellerSourceChart.resize();
+            brandRatingTrendChart.resize();
+        });
+    </script>
+</body>
+</html>

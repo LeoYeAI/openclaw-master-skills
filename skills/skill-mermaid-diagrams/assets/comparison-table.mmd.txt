@@ -1,0 +1,23 @@
+%%{init: {'theme':'base', 'themeVariables': { 'primaryColor':'#4A90E2','primaryTextColor':'#fff','primaryBorderColor':'#2E5C8A','lineColor':'#333','secondaryColor':'#7B68EE','tertiaryColor':'#90EE90'}}}%%
+graph LR
+    subgraph "{{OPTION_1_TITLE}}"
+        direction TB
+        O1C1["{{OPTION_1_CRITERION_1}}"]
+        O1C2["{{OPTION_1_CRITERION_2}}"]
+        O1C3["{{OPTION_1_CRITERION_3}}"]
+        O1C4["{{OPTION_1_CRITERION_4}}"]
+    end
+    
+    subgraph "{{OPTION_2_TITLE}}"
+        direction TB
+        O2C1["{{OPTION_2_CRITERION_1}}"]
+        O2C2["{{OPTION_2_CRITERION_2}}"]
+        O2C3["{{OPTION_2_CRITERION_3}}"]
+        O2C4["{{OPTION_2_CRITERION_4}}"]
+    end
+    
+    classDef option1 fill:#4A90E2,stroke:#2E5C8A,stroke-width:2px,color:#fff
+    classDef option2 fill:#7B68EE,stroke:#5A4FCF,stroke-width:2px,color:#fff
+    
+    class O1C1,O1C2,O1C3,O1C4 option1
+    class O2C1,O2C2,O2C3,O2C4 option2

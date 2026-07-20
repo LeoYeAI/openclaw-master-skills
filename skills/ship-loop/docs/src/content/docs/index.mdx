@@ -1,0 +1,49 @@
+---
+title: Ship Loop
+description: Self-healing build pipeline for AI coding agents
+template: splash
+hero:
+  tagline: Define your features. Point it at your agent. Ship Loop builds, tests, deploys, and verifies each one. When something breaks, it fixes itself.
+  image:
+    dark: ../../assets/houston.webp
+    light: ../../assets/houston.webp
+  actions:
+    - text: Get Started
+      link: /ship-loop/getting-started/introduction/
+      icon: right-arrow
+      variant: primary
+    - text: View on GitHub
+      link: https://github.com/fernando-fernandez3/ship-loop
+      icon: external
+---
+
+import { Card, CardGrid } from '@astrojs/starlight/components';
+
+## Install
+
+```bash
+pip install shiploop
+```
+
+## Key Features
+
+<CardGrid stagger>
+  <Card title="Three Nested Loops" icon="rocket">
+    Ship → Repair → Meta-Experiment. Each loop handles a different class of failure, escalating only when the simpler approach is exhausted.
+  </Card>
+  <Card title="Learnings Engine" icon="open-book">
+    Every failure creates a lesson. Future runs load relevant lessons into the agent prompt automatically. Your pipeline gets smarter over time.
+  </Card>
+  <Card title="Budget Tracking" icon="seti:salesforce">
+    Monitor token usage and costs per segment. Set limits, halt on breach. Never wake up to a surprise bill.
+  </Card>
+  <Card title="Agent Agnostic" icon="puzzle">
+    Works with Claude Code, Codex, Aider, or any CLI that accepts a prompt. One config field to switch agents.
+  </Card>
+  <Card title="Crash Recovery" icon="approve-check-circle">
+    State checkpointed after every transition. Restart anytime and pick up exactly where you left off.
+  </Card>
+  <Card title="Security First" icon="warning">
+    Explicit file staging only. Built-in blocked patterns for secrets, keys, and credentials. Prompts via temp files, never shell arguments.
+  </Card>
+</CardGrid>

@@ -1,0 +1,147 @@
+{
+  "name": "clawsec-scanner",
+  "version": "0.0.2",
+  "description": "Automated vulnerability scanner for agent platforms. Performs dependency scanning (npm audit, pip-audit), multi-database CVE lookup (OSV, NVD, GitHub Advisory), SAST analysis (Semgrep, Bandit), and agent-specific DAST hook execution testing for OpenClaw hooks.",
+  "author": "prompt-security",
+  "license": "AGPL-3.0-or-later",
+  "homepage": "https://clawsec.prompt.security/",
+  "keywords": [
+    "security",
+    "vulnerability",
+    "scanner",
+    "dependency",
+    "cve",
+    "sast",
+    "dast",
+    "audit",
+    "agents",
+    "ai",
+    "openclaw",
+    "semgrep",
+    "bandit",
+    "osv",
+    "nvd"
+  ],
+  "sbom": {
+    "files": [
+      {
+        "path": "SKILL.md",
+        "required": true,
+        "description": "Scanner skill documentation and usage guide"
+      },
+      {
+        "path": "CHANGELOG.md",
+        "required": true,
+        "description": "Version history and feature changelog"
+      },
+      {
+        "path": "scripts/runner.sh",
+        "required": true,
+        "description": "Main orchestration script for running all scanner engines"
+      },
+      {
+        "path": "scripts/scan_dependencies.mjs",
+        "required": true,
+        "description": "Dependency scanner using npm audit and pip-audit with JSON parsing"
+      },
+      {
+        "path": "scripts/query_cve_databases.mjs",
+        "required": true,
+        "description": "Multi-database CVE lookup (OSV primary, NVD/GitHub fallback)"
+      },
+      {
+        "path": "scripts/sast_analyzer.mjs",
+        "required": true,
+        "description": "Static analysis engine running Semgrep and Bandit as subprocesses"
+      },
+      {
+        "path": "scripts/dast_runner.mjs",
+        "required": true,
+        "description": "Dynamic analysis harness executing OpenClaw hook handlers with malicious-input and timeout checks"
+      },
+      {
+        "path": "scripts/dast_hook_executor.mjs",
+        "required": true,
+        "description": "Isolated hook execution helper used by DAST for real OpenClaw harness testing"
+      },
+      {
+        "path": "scripts/setup_scanner_hook.mjs",
+        "required": false,
+        "description": "Hook installer for continuous monitoring integration"
+      },
+      {
+        "path": "lib/report.mjs",
+        "required": true,
+        "description": "Unified vulnerability report generator (JSON and human-readable formats)"
+      },
+      {
+        "path": "lib/utils.mjs",
+        "required": true,
+        "description": "Shared utility functions for subprocess execution and JSON parsing"
+      },
+      {
+        "path": "lib/types.ts",
+        "required": true,
+        "description": "TypeScript type definitions for Vulnerability and ScanReport schemas"
+      },
+      {
+        "path": "hooks/clawsec-scanner-hook/HOOK.md",
+        "required": false,
+        "description": "OpenClaw hook metadata for continuous scanning integration"
+      },
+      {
+        "path": "hooks/clawsec-scanner-hook/handler.ts",
+        "required": false,
+        "description": "OpenClaw hook handler for periodic vulnerability scanning"
+      },
+      {
+        "path": "test/dependency_scanner.test.mjs",
+        "required": false,
+        "description": "Unit tests for dependency scanning (npm audit, pip-audit)"
+      },
+      {
+        "path": "test/cve_integration.test.mjs",
+        "required": false,
+        "description": "Integration tests for CVE database API queries"
+      },
+      {
+        "path": "test/sast_engine.test.mjs",
+        "required": false,
+        "description": "Unit tests for SAST analysis (Semgrep, Bandit)"
+      },
+      {
+        "path": "test/dast_harness.test.mjs",
+        "required": false,
+        "description": "DAST harness tests for real hook execution and malicious-input failure detection"
+      }
+    ]
+  },
+  "openclaw": {
+    "emoji": "🔍",
+    "category": "security",
+    "requires": {
+      "bins": [
+        "node",
+        "npm",
+        "python3",
+        "pip-audit",
+        "semgrep",
+        "bandit",
+        "jq",
+        "curl"
+      ]
+    },
+    "triggers": [
+      "vulnerability scan",
+      "security scan",
+      "dependency scan",
+      "cve scan",
+      "sast scan",
+      "run scanner",
+      "scan vulnerabilities",
+      "check vulnerabilities",
+      "audit dependencies",
+      "security check"
+    ]
+  }
+}

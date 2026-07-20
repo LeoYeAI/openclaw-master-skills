@@ -1,0 +1,67 @@
+<!--
+  关键时间线模板 (Timeline Template)
+  用于展示关键事件、里程碑、发展历程
+  
+  使用方式：
+  1. 替换 {{变量名}} 为实际内容
+  2. 根据实际事件数量增删 tl-item 区块
+  3. 最后一个事件可使用不同颜色（灰色）表示未来规划
+  4. 时间格式：年月日 或 时间段
+-->
+
+<div class="section" id="timeline">
+  <div class="section-header">
+    <div class="icon" style="background:#FFF3E0">📅</div>
+    <div><h2>关键时间线</h2><div class="sub">Key Milestones</div></div>
+  </div>
+  
+  <div class="timeline">
+  
+    <!-- 事件 1：起始点 -->
+    <div class="tl-item">
+      <div class="tl-dot"></div>
+      <div class="tl-date">{{时间1}}</div>
+      <h4>{{事件1标题}}</h4>
+      <p>{{事件1详细描述：发生了什么、影响是什么}}</p>
+    </div>
+    
+    <!-- 事件 2 -->
+    <div class="tl-item">
+      <div class="tl-dot"></div>
+      <div class="tl-date">{{时间2}}</div>
+      <h4>{{事件2标题}}</h4>
+      <p>{{事件2详细描述}}</p>
+    </div>
+    
+    <!-- 事件 3：重要里程碑 -->
+    <div class="tl-item">
+      <div class="tl-dot"></div>
+      <div class="tl-date">{{时间3}}</div>
+      <h4>{{事件3标题}}</h4>
+      <p>{{事件3详细描述}}</p>
+    </div>
+    
+    <!-- 事件 4 -->
+    <div class="tl-item">
+      <div class="tl-dot"></div>
+      <div class="tl-date">{{时间4}}</div>
+      <h4>{{事件4标题}}</h4>
+      <p>{{事件4详细描述}}</p>
+    </div>
+    
+    <!-- 事件 5：未来规划（使用灰色） -->
+    <div class="tl-item">
+      <div class="tl-dot" style="background:var(--text-light);box-shadow:0 0 0 2px var(--text-light)"></div>
+      <div class="tl-date">{{时间5}}</div>
+      <h4>{{事件5标题}}</h4>
+      <p>{{事件5详细描述（未来规划内容）}}</p>
+    </div>
+    
+  </div>
+  
+  <!-- 时间线总结（可选） -->
+  <div class="insight-box" style="margin-top:2rem;">
+    <h3>💡 发展路径总结</h3>
+    <p>{{时间线核心洞察：发展阶段、关键转折点、未来趋势}}</p>
+  </div>
+</div>
