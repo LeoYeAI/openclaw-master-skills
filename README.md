@@ -1,3 +1,5 @@
+[![MseeP.ai Security Assessment Badge](https://mseep.net/pr/leoyeai-openclaw-master-skills-badge.png)](https://mseep.ai/app/leoyeai-openclaw-master-skills)
+
 <div align="center">
 
 # 🧠 OpenClaw Master Skills
