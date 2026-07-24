@@ -16,12 +16,26 @@ The whole thing happens in a single retried HTTP request:
 1. Agent  → GET/POST  https://api.example.com/paid-endpoint
 2. Server → 402 Payment Required   { accepts: [ { network, asset, amount, payTo, ... } ] }
 3. Agent  → build + sign a stablecoin payment, re-send the SAME request
-            with header:  X-PAYMENT: <base64 payment payload>
+            with the payment header  (X-PAYMENT in v1, PAYMENT-SIGNATURE in v2)
 4. Server → verifies + settles the payment via a facilitator, then returns
-            200 OK  + the resource  + header  X-PAYMENT-RESPONSE: <base64 receipt>
+            200 OK  + the resource  + a settlement-receipt header
 ```
 
 Because payment is just an HTTP header, x402 works with any HTTP client and any agent framework. This skill teaches you how to **be the payer (client)**. To *discover* paid services and to *sell* your own, see the companion [`payai`](../payai/) skill.
+
+## Protocol versions: v1 vs v2 (READ THIS)
+
+x402 has two wire versions in the wild, and the **header names differ**. A `402` response tells you which one you're dealing with via its `x402Version` field (and its network format). The PayAI facilitator supports **both** — always match what the server offered.
+
+| | **v1** (`x402Version: 1`) | **v2** (`x402Version: 2`) |
+|---|---|---|
+| Requirements (server → client) | JSON body `accepts` (some servers also use a `PAYMENT-REQUIRED` header) | **`PAYMENT-REQUIRED`** header, base64 (often also in the body) |
+| Payment (client → server) | **`X-PAYMENT`** | **`PAYMENT-SIGNATURE`** |
+| Receipt (server → client) | `X-PAYMENT-RESPONSE` | `PAYMENT-RESPONSE` |
+| Network id | plain string — `base`, `solana` | **CAIP-2** — `eip155:8453`, `solana:<genesis-hash>` |
+| Client packages | `x402-fetch`, `x402-axios` | `@x402/fetch`, `@x402/axios` + `@x402/evm` / `@x402/svm` |
+
+**Rule of thumb for the manual flow:** read `x402Version` from the 402 response, then use the matching payment header (`x402Version >= 2` → `PAYMENT-SIGNATURE`, else `X-PAYMENT`) and echo that same version number back in your payload. Never hardcode the `network` string — copy the exact value from the `accepts` entry (it may be `solana` **or** `solana:5eykt4Us…`).
 
 ## When to use this skill
 
@@ -44,7 +58,7 @@ Reach for x402 whenever you encounter any of these:
 
 ## The payment requirements object
 
-When a server returns `402`, the body (or, for some servers, a `PAYMENT-REQUIRED` header) contains an `accepts` array. Each entry describes one way to pay:
+When a server returns `402`, an `accepts` array describes the ways to pay. In **v1** it's in the JSON body; in **v2** it's a base64-encoded `PAYMENT-REQUIRED` **header** (and usually mirrored in the body too — decode whichever is present). Each entry describes one option:
 
 ```json
 {
@@ -82,32 +96,46 @@ Pick the `accepts` entry whose `network` matches a chain you hold USDC on. If se
 
 ### Option A — Use an x402 client library (recommended)
 
-The x402 ecosystem ships drop-in HTTP wrappers that detect a `402`, pay it, and transparently retry — turning "pay for this" into a normal `fetch`:
+The x402 ecosystem ships drop-in HTTP wrappers that detect a `402`, pay it, and transparently retry — turning "pay for this" into a normal `fetch`. **You don't choose a facilitator as the payer** — the *seller* runs one and settles your payment; you just sign. The wrapper also picks the right header (`X-PAYMENT` vs `PAYMENT-SIGNATURE`) for the version the server offered.
 
-- `x402-fetch` — wraps the native `fetch`
-- `x402-axios` — an Axios interceptor
-
-Point the wrapper's facilitator at PayAI and hand it a wallet. Conceptually:
+**v2 (current — builder pattern, registers a scheme per chain):**
 
 ```javascript
-import { wrapFetchWithPayment } from "x402-fetch";
-// signer = your Solana or EVM wallet/keypair
-const fetchWithPay = wrapFetchWithPayment(fetch, signer, {
-  facilitator: { url: "https://facilitator.payai.network" },
-});
+// npm i @x402/fetch @x402/core @x402/evm @x402/svm
+import { x402Client } from "@x402/core";
+import { wrapFetchWithPayment } from "@x402/fetch";
+import { ExactEvmScheme } from "@x402/evm/exact/client";
+import { ExactSvmScheme } from "@x402/svm/exact/client";
 
-// Just call the paid endpoint — payment happens automatically on 402:
-const res = await fetchWithPay("https://api.example.com/paid-endpoint");
+const client = new x402Client();
+client.register("eip155:*", new ExactEvmScheme(evmSigner));   // any EVM chain
+client.register("solana:*", new ExactSvmScheme(svmSigner));   // any Solana cluster
+
+const fetchWithPay = wrapFetchWithPayment(fetch, client);
+const res  = await fetchWithPay("https://api.example.com/paid-endpoint"); // pays on 402
 const data = await res.json();
 ```
 
-> Library APIs evolve — confirm the exact signature against the x402 docs (https://x402.gitbook.io/x402) and PayAI's facilitator docs (https://docs.payai.network). If a library doesn't yet support your chain (Solana support is newer than EVM), fall back to Option B.
+**v1 (legacy — still accepted by the facilitator):**
+
+```javascript
+// npm i x402-fetch
+import { wrapFetchWithPayment } from "x402-fetch";
+const fetchWithPay = wrapFetchWithPayment(fetch, walletClient); // EVM wallet or Solana signer
+const res = await fetchWithPay("https://api.example.com/paid-endpoint");
+```
+
+`x402-axios` / `@x402/axios` provide the same thing as an Axios interceptor.
+
+> Library APIs evolve — confirm exact signatures against the x402 docs (https://x402.gitbook.io/x402) and PayAI's docs (https://docs.payai.network). Solana (`@x402/svm`) is newer than EVM; if a library path doesn't fit, fall back to Option B.
 
 ### Option B — Manual flow (works everywhere, no SDK)
 
 This is the fully-explicit flow. It always works because it only uses the wallet SDK for your chain plus `fetch`.
 
-#### B.1 — Solana (USDC, facilitator pays gas)
+#### B.1 — Solana (USDC, facilitator pays gas) — **v1 wire format**
+
+This builds the **v1** Solana payment (`X-PAYMENT`), which the PayAI facilitator still accepts. It's the simplest correct manual path. For strict **v2** Solana endpoints, see the note after the code.
 
 ```javascript
 // npm i @solana/web3.js @solana/spl-token
@@ -123,11 +151,11 @@ const connection  = new Connection(process.env.SOLANA_RPC_URL || "https://api.ma
 const keypair     = Keypair.fromSecretKey(Uint8Array.from(JSON.parse(process.env.SOLANA_PRIVATE_KEY)));
 
 async function payX402Solana(url, init = {}) {
-  // 1. Trigger the 402
+  // 1. Trigger the 402 and read the requirements from the JSON body
   let res = await fetch(url, init);
   if (res.status !== 402) return res;              // nothing to pay
-  const body = await res.clone().json().catch(() => null);
-  const req  = (body?.accepts || []).find(a => a.network?.startsWith("solana"));
+  const reqs = await res.clone().json().catch(() => null);
+  const req  = (reqs?.accepts || []).find(a => String(a.network).startsWith("solana"));
   if (!req) throw new Error("No Solana payment option offered");
 
   // 2. Build a USDC transfer where the FACILITATOR is the fee payer
@@ -150,25 +178,27 @@ async function payX402Solana(url, init = {}) {
   const tx = new VersionedTransaction(message.compileToV0Message());
   tx.sign([keypair]);                                        // you sign as the token owner; facilitator co-signs on settle
 
-  // 3. Encode the x402 payment payload and re-send the request with X-PAYMENT
+  // 3. Encode the v1 payment payload and re-send the request with X-PAYMENT
   const paymentPayload = {
-    x402Version: req.x402Version ?? 1,
+    x402Version: 1,
     scheme: "exact",
-    network: req.network,
+    network: req.network,                                     // echo the exact string the server gave
     payload: { transaction: Buffer.from(tx.serialize()).toString("base64") },
   };
   const header = Buffer.from(JSON.stringify(paymentPayload)).toString("base64");
 
   res = await fetch(url, { ...init, headers: { ...(init.headers || {}), "X-PAYMENT": header } });
-  return res;                                                // 200 OK + X-PAYMENT-RESPONSE receipt header
+  return res;                                                 // 200 OK + X-PAYMENT-RESPONSE receipt
 }
 ```
 
-> **Some servers settle server-side** (they read your `X-PAYMENT` header, call the facilitator, then return the resource). **Others** — like the `sp3nd` skill in this repo — ask the client to call the facilitator's `/verify` then `/settle` directly and confirm out of band. Read the server's docs. The facilitator endpoints are: `POST /verify` and `POST /settle`, each taking `{ paymentPayload, paymentRequirements }` and returning `{ isValid }` / `{ success, transaction }`.
+> **Some servers settle server-side** (they read your payment header, call the facilitator, then return the resource). **Others** — like the `sp3nd` skill in this repo — ask the client to call the facilitator's `/verify` then `/settle` directly and confirm out of band. Read the server's docs. The facilitator endpoints are: `POST /verify` and `POST /settle`, each taking `{ paymentPayload, paymentRequirements }` and returning `{ isValid }` / `{ success, transaction }`.
+
+> **Paying a strict v2 Solana endpoint?** v2 changes the wire format: the header is `PAYMENT-SIGNATURE`, and the payload is a different envelope — `{ x402Version: 2, resource, accepted, payload: { transaction } }` (where `accepted` is the `accepts` entry you chose). The signed transaction must also include a **Memo** instruction — the seller's `extra.memo` if present, otherwise a random nonce for replay protection. Rather than hand-roll all that, use **`@x402/svm`** (Option A) — it builds the v2 payload, memo/nonce, and blockhash pinning correctly. The manual code above is the simpler v1 format.
 
 #### B.2 — EVM (Base, Polygon, Arbitrum, …) via EIP-3009
 
-On EVM, the `exact` scheme uses an **EIP-3009 `transferWithAuthorization`** signature — you sign a typed message authorizing the transfer; no on-chain tx or gas from you at signing time. The payload is:
+On EVM, the `exact` scheme uses an **EIP-3009 `transferWithAuthorization`** signature — you sign a typed message authorizing the transfer; no on-chain tx or gas from you at signing time. The **v1** payload is:
 
 ```json
 {
@@ -189,7 +219,7 @@ On EVM, the `exact` scheme uses an **EIP-3009 `transferWithAuthorization`** sign
 }
 ```
 
-Base64-encode that and send it as `X-PAYMENT`, exactly as in the Solana case. The easiest way to produce the signature correctly is the `x402-fetch` / `x402-axios` library (Option A), which handles the EIP-712 domain and nonce for you.
+Base64-encode that and send it as `X-PAYMENT`, exactly as in the Solana v1 case. **v2** uses `PAYMENT-SIGNATURE` with a different envelope (`{ x402Version: 2, resource, accepted, payload }`) and CAIP-2 networks (`eip155:8453`). Producing the EIP-712 signature by hand is error-prone in either version — use `@x402/fetch` + `@x402/evm` (Option A), which builds the signature, envelope, and header for you.
 
 ## Choosing a facilitator
 
@@ -228,13 +258,15 @@ Use it to confirm the network, asset, amount, and `payTo` **before** wiring up a
 ## Key facts
 
 - **Protocol:** x402 (`HTTP 402 Payment Required`) — payment as an HTTP header.
-- **Payment header (client → server):** `X-PAYMENT: base64(paymentPayload)`.
-- **Receipt header (server → client):** `X-PAYMENT-RESPONSE: base64(settlementReceipt)`.
+- **Requirements header (v2, server → client):** `PAYMENT-REQUIRED: base64(requirements)` (v1 puts them in the JSON body).
+- **Payment header (client → server):** `PAYMENT-SIGNATURE` in **v2**, `X-PAYMENT` in **v1** — base64(paymentPayload).
+- **Receipt header (server → client):** `PAYMENT-RESPONSE` in **v2**, `X-PAYMENT-RESPONSE` in **v1**.
+- **Pick the version** from the 402's `x402Version`; the facilitator accepts both.
 - **Default facilitator:** `https://facilitator.payai.network` (Solana + 9 EVM chains).
 - **USDC decimals:** 6 (so `1000000` base units = $1.00).
 - **USDC mint (Solana mainnet):** `EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v`
 - **USDC contract (Base mainnet):** `0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913`
 - **Solana gas:** paid by the facilitator (`extra.feePayer`), not by you.
-- **Client libraries:** `x402-fetch`, `x402-axios`.
+- **Client libraries:** v2 — `@x402/fetch`, `@x402/axios` (+ `@x402/evm`, `@x402/svm`); v1 — `x402-fetch`, `x402-axios`.
 - **Discover & sell x402 services:** see the [`payai`](../payai/) skill.
 - **Docs:** x402 protocol — https://x402.gitbook.io/x402 · PayAI facilitator — https://docs.payai.network

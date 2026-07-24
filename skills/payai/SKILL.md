@@ -41,6 +41,7 @@ The response is a paginated list of resources:
       "resource": "https://tripadvisor.x402.paysponge.com/api/v1/location/:locationId/details",
       "type": "http",
       "method": "GET",
+      "x402Version": 2,
       "accepts": [
         {
           "scheme": "exact",
@@ -64,6 +65,7 @@ Each item tells you everything needed to call and pay for it:
 
 - **`resource`** — the URL to call (with `:param` path params described in `inputSchema`).
 - **`method`** — HTTP verb.
+- **`x402Version`** — the item's protocol version. **v2** items use CAIP-2 networks (`eip155:8453`, `solana:<genesis>`) and the `PAYMENT-SIGNATURE` header; **v1** items use plain names (`base`) and `X-PAYMENT`. (The discovery envelope's own `x402Version` is separate — read each item's.)
 - **`accepts`** — the same payment-requirements array you'd get from a `402` (network, asset, price, `payTo`).
 - **`inputSchema` / `outputSchema`** — how to call it and what comes back.
 
@@ -71,7 +73,7 @@ Each item tells you everything needed to call and pay for it:
 
 1. **Search** the Bazaar for a resource that does what you need (filter `items` by keywords in `resource`, or by a `network`/asset you hold).
 2. **Read the price** from `accepts[].amount` (base units; USDC = 6 decimals).
-3. **Call + pay** using the [`x402`](../x402/) skill — send the request, get a `402`, build the payment, retry with `X-PAYMENT`.
+3. **Call + pay** using the [`x402`](../x402/) skill — send the request, get a `402`, build the payment, retry with the payment header (`X-PAYMENT` for v1, `PAYMENT-SIGNATURE` for v2 — matched to the item's `x402Version`).
 
 `scripts/discover.mjs` (zero dependencies, Node 18+) fetches the Bazaar and prints a readable table, with optional filtering:
 
@@ -122,34 +124,47 @@ POST /settle
 → { "success": true, "transaction": "<signature-or-hash>", "network": "solana", "payer": "…" }
 ```
 
-Servers usually call `/verify` + `/settle` for you when you send an `X-PAYMENT` header. Some flows (e.g. the [`sp3nd`](../sp3nd/) skill in this repo) have the **client** call `/verify` then `/settle` directly. The payload shapes are defined by the [`x402`](../x402/) skill.
+Servers usually call `/verify` + `/settle` for you when you send the payment header (`X-PAYMENT` in v1, `PAYMENT-SIGNATURE` in v2). Some flows (e.g. the [`sp3nd`](../sp3nd/) skill in this repo) have the **client** call `/verify` then `/settle` directly. The payload shapes are defined by the [`x402`](../x402/) skill.
 
 ## Part 3 — Sell your own services (get paid by agents)
 
 Any HTTP endpoint can become a paid, discoverable x402 resource:
 
-1. **Gate the route** so it returns `402 Payment Required` with an `accepts` array (your `network`, `asset`, `payTo`, and price). The x402 server middlewares make this a few lines:
-   - `x402-express`, `x402-hono`, `x402-next` — wrap a route and point the facilitator at `https://facilitator.payai.network`.
-2. **Settle** incoming payments via the PayAI facilitator (`/verify` + `/settle`) — the middleware does this automatically.
-3. **Get discovered** — resources that settle through PayAI are indexed into the Bazaar (`/discovery/resources`) so other agents can find and pay you. See the seller/merchant guide at https://docs.payai.network.
+1. **Gate the route** so it returns `402 Payment Required` with an `accepts` array (your `scheme`, `network`, `payTo`, and price). The x402 server middlewares make this a few lines: **v2** — `@x402/express`, `@x402/hono`, `@x402/next` (built on `@x402/core` + a scheme from `@x402/evm` / `@x402/svm`); **v1** — `x402-express`, `x402-hono`, `x402-next`.
+2. **Settle** incoming payments via the PayAI facilitator — point the middleware's facilitator client at `https://facilitator.payai.network` and it calls `/verify` + `/settle` for you.
+3. **Get discovered** — to appear in the Bazaar (`/discovery/resources`), a **v2** route must declare the discovery extension with `declareDiscoveryExtension()` from `@x402/extensions/bazaar` (hand-rolling `extensions.bazaar.schema` passes through but **fails silently** in the discovery crawler). See the seller guide at https://docs.payai.network.
 
-Conceptually (Express):
+Conceptually, a v2 Express seller settled by PayAI:
 
 ```javascript
+// npm i @x402/express @x402/core @x402/evm
 import express from "express";
-import { paymentMiddleware } from "x402-express";
+import { paymentMiddleware } from "@x402/express";
+import { x402ResourceServer, HTTPFacilitatorClient } from "@x402/core/server";
+import { ExactEvmScheme } from "@x402/evm/exact/server";
 
 const app = express();
+const payTo = "0xYourWallet";
+
+const facilitator = new HTTPFacilitatorClient({ url: "https://facilitator.payai.network" }); // PayAI settles
+const server = new x402ResourceServer(facilitator);
+server.register("eip155:*", new ExactEvmScheme());   // add ExactSvmScheme from @x402/svm for Solana
+
 app.use(paymentMiddleware(
-  "0xYourWallet",                                   // where you get paid
-  { "GET /premium": { price: "$0.01", network: "base" } },
-  { url: "https://facilitator.payai.network" },     // PayAI settles it
+  {
+    "GET /premium": {
+      accepts: [{ scheme: "exact", price: "$0.01", network: "eip155:8453", payTo }], // CAIP-2
+      description: "Premium content",
+      mimeType: "application/json",
+    },
+  },
+  server,
 ));
 app.get("/premium", (_req, res) => res.json({ data: "🎁 paid content" }));
 app.listen(3000);
 ```
 
-> Confirm the exact middleware signature against the x402 docs (https://x402.gitbook.io/x402) and PayAI's seller docs — the pricing/route config format evolves. Start on a testnet (`base-sepolia`, `solana-devnet`).
+> Confirm exact signatures against the x402 docs (https://x402.gitbook.io/x402) and PayAI's seller docs — config formats evolve. Start on a testnet (`base-sepolia`, `solana-devnet`).
 
 ## A real consumer in this repo
 
@@ -162,6 +177,6 @@ The [`sp3nd`](../sp3nd/) skill (buy from Amazon with USDC) settles every order t
 - **Verify / settle:** `POST /verify`, `POST /settle` with `{ paymentPayload, paymentRequirements }`.
 - **Supported:** `GET /supported` — Solana (+ gas paid for you) and 9 EVM chains.
 - **Asset:** USDC, 6 decimals. Solana mint `EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v`; Base contract `0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913`.
-- **Pay mechanics:** see the [`x402`](../x402/) skill.
-- **Seller middlewares:** `x402-express`, `x402-hono`, `x402-next`.
+- **Pay mechanics + v1/v2 headers:** see the [`x402`](../x402/) skill (v2 uses `PAYMENT-SIGNATURE` / `PAYMENT-RESPONSE`; v1 uses `X-PAYMENT` / `X-PAYMENT-RESPONSE`).
+- **Seller middlewares:** v2 — `@x402/express`, `@x402/hono`, `@x402/next` (+ `@x402/extensions/bazaar` for discovery); v1 — `x402-express`, `x402-hono`, `x402-next`.
 - **Website:** https://payai.network · **Docs:** https://docs.payai.network
