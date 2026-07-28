@@ -92,7 +92,7 @@ cp -r openclaw-master-skills/skills/<skill-name> ~/.openclaw/workspace/skills/
 | [`sglang-diffusion-video`](skills/sglang-diffusion-video/) | Generate videos using local SGLang-Diffusion server (Wan2.2, Hunyuan) |
 | [`turing-pyramid`](skills/turing-pyramid/) | Prioritized action selection — 10 needs with time-decay and tension scoring |
 
-### 🔍 Search & Web (21)
+### 🔍 Search & Web (22)
 
 | Skill | Description |
 |---|---|
@@ -117,6 +117,7 @@ cp -r openclaw-master-skills/skills/<skill-name> ~/.openclaw/workspace/skills/
 | [`tavily`](skills/tavily/) | AI-optimized web search using Tavily Search API. Use when you need comprehensive web research, curre |
 | [`tavily-search-1-0-0`](skills/tavily-search-1-0-0/) | AI-optimized web search via Tavily API. Returns concise, relevant results for AI agents. |
 | [`web-search-plus`](skills/web-search-plus/) | Unified search skill with Intelligent Auto-Routing. Uses multi-signal analysis to automatically sele |
+| [`xquik-apify-x-actors`](skills/xquik-apify-x-actors/) | Collect public X posts and audiences with Xquik's Apify Actors. |
 
 ### 📋 Productivity & Office (43)
 
