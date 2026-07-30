@@ -277,6 +277,12 @@ for filename in ['README.md', 'SKILL.md', 'README.zh-CN.md', 'README.fr.md', 'RE
     path.write_text(content, encoding='utf-8')
 PY
 
+  # skill_index.md used to be hand-maintained and rotted badly (last written at
+  # v0.7.0: 560 rows for 2400+ skills, 540 of them showing "name: <slug>").
+  # Regenerate it every run so it cannot drift again.
+  info "Rebuilding skill_index.md"
+  python3 "$REPO_ROOT/scripts/build-index.py" | tee -a "$LOG_FILE"
+
   cat > "$TMP_RELEASE_BODY" <<EOF
 ## 🚀 周更：新增 ${NEW_COUNT} 个 Skills，总计 ${TOTAL_COUNT}
 
