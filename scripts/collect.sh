@@ -109,6 +109,23 @@ for publisher in sorted(os.listdir(root)):
         except Exception:
             continue
 
+# Reject throwaway uploads. v0.22.0 imported agent-autopilot-bak and
+# qveris-test alongside their canonical siblings before this filter existed.
+JUNK_SUFFIX = re.compile(r'-(bak|backup|old|copy|test|tmp|temp|deprecated)$')
+best_by_slug = {s: r for s, r in best_by_slug.items() if not JUNK_SUFFIX.search(s)}
+
+# Collapse re-uploads of the same skill. Publishers ship the same SKILL.md under
+# several slugs (lovetago / lovetago-skill / lovetago-bot-tinder), which used to
+# consume import budget and pad the release notes with repeats. Keep one per
+# identical description, preferring the shortest slug as the canonical name.
+by_desc = {}
+for size, publisher, slug, desc in best_by_slug.values():
+    key = (publisher, desc)
+    cur = by_desc.get(key)
+    if cur is None or (len(slug), slug) < (len(cur[2]), cur[2]):
+        by_desc[key] = (size, publisher, slug, desc)
+best_by_slug = {r[2]: r for r in by_desc.values()}
+
 rows = sorted(best_by_slug.values(), key=lambda x: (-x[0], x[2]))
 limit = int(os.environ.get('MAX_WEEKLY_IMPORTS', '100'))
 for size, publisher, slug, desc in rows[:limit]:
