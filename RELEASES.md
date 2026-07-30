@@ -5,11 +5,11 @@
 
 ## v0.22.0 — 2026-07-30
 
-### 🚀 周更：新增 100 个 Skills，总计 2509
+### 🚀 周更：新增 94 个 Skills，总计 2503
 
 来源：openclaw/skills-archive 官方镜像，按质量规则筛选（SKILL.md 800B-30KB、完整 YAML 元数据、有效 description）。
 
-#### 部分新增亮点（前 30 个）
+#### 部分新增亮点（前 28 个）
 - `aavegotchi-baazaar` — View, add, and execute Aavegotchi Baazaar listings on Base mainnet (8453). Buy with GHST directly or buy with USDC usi
 - `nicholasrae-expense-tracker` — Just say what you spent — your AI logs it, categorizes it, and tracks it against your budget. No apps, no forms, no fri
 - `business-development` — Partnership outreach, market research, competitor analysis, and proposal generation. Transform your AI agent into a str
@@ -20,13 +20,11 @@
 - `explorium-agentsource` — B2B prospecting via Explorium AgentSource API. Requires EXPLORIUM_API_KEY. Find companies, prospects, enrich with firmo
 - `clawdhub-skill` — AI-native OCR platform that turns documents into high-accuracy data in minutes. Using multi-model consensus, DeepRead ac
 - `coding-philosophy` — Insights about refactoring intuitive code, when to impose structure vs let feeling lead, and code as creative expressio
-- `nyx-archive-coding-philosophy` — Insights about refactoring intuitive code, when to impose structure vs let feeling lead, and code as creative expressio
 - `audiobooklm` — 提供有声书创作与音频能力（ABS 读写、音效/音频检索、二创、音色推荐、章节角色分析等），通过 HTTP Streamable MCP 调用。
 - `pinchtab` — Use this skill when a task needs browser automation through PinchTab: open a website, inspect interactive elements, cli
 - `voidex-arena` — Voidex Arena — galactic trading game for AI agents. Buy goods cheap, fly between real star systems, sell for profit. Com
 - `shll-run` — Execute DeFi transactions on BSC via SHLL AgentNFA. The AI handles all commands and users only need to chat.
 - `explorium-agentsource-companies-contacts` — Use this skill when the user wants to find companies (businesses) or people (contacts/prospects/leads) using the AgentS
-- `lead-enricher-explorium-agentsource` — Use this skill when the user wants to find companies (businesses) or people (contacts/prospects/leads) using the AgentS
 - `evolink-media` — AI video, image & music generation. 60+ models — Sora, Veo 3, Kling, Seedance, GPT Image, Suno v5, Hailuo, WAN. Text-to-
 - `xproof` — Proof and accountability layer for AI agents. Anchor verifiable proofs on MultiversX, enforce audit logging, detect viol
 - `futu-trading-bot` — Use Futu Trade Bot Skills to run account, quote, and trade workflows with real HK market data.
@@ -50,7 +48,7 @@
 
 来源：openclaw/skills-archive 官方镜像，按质量规则筛选（SKILL.md 800B-30KB、完整 YAML 元数据、有效 description）。
 
-#### 部分新增亮点（前 30 个）
+#### 部分新增亮点（前 28 个）
 - `fractional-cfo-playbook` — > Complete operational playbook for Fractional CFO engagements. Covers client onboarding financial assessment, monthly c
 - `agentic-commerce-forthecult` — "Agentic Commerce skills enables agents to autonomously browse and search for quality lifestyle, wellness, and tech prod
 - `nutrition-physical-labor` — >- Nutrition and hydration guidance for physically demanding occupations. Use when someone works in construction, trades
@@ -91,7 +89,7 @@
 
 来源：openclaw/skills-archive 官方镜像，按质量规则筛选（SKILL.md 800B-30KB、完整 YAML 元数据、有效 description）。
 
-#### 部分新增亮点（前 30 个）
+#### 部分新增亮点（前 28 个）
 - `okx-wallet-portfolio` — "Use this skill when the user provides a specific wallet address and wants to check its balance, token holdings, portfol
 - `clawnotes-ai` — "ClawNotes (https://clawnotes.ai) is a social content platform where AI agents and humans interact as equals. Post your 
 - `observer` — Embedded UX research skill that passively observes interactions, administers post-task and end-of-day surveys, captures 
@@ -132,7 +130,7 @@
 
 来源：openclaw/skills-archive 官方镜像，按质量规则筛选（SKILL.md 800B-30KB、完整 YAML 元数据、有效 description）。
 
-#### 部分新增亮点（前 30 个）
+#### 部分新增亮点（前 28 个）
 - `mindverse-secondme` — Use when the user wants to log in to SecondMe from OpenClaw, re-login, logout, get the auth URL, manage their SecondMe p
 - `youtube-video-editor-online` — > The youtube-video-editor-online skill lets creators trim, cut, caption, and reformat footage specifically for YouTube 
 - `awesome-poetize-open-blog-automation` — 专为开源版 awesome-poetize-open 设计的 POETIZE 博客自动化技能。通过 `/api/api/*` 接口完成文章发布、更新、隐藏、分类标签维护、主题切换、数据分析和 SEO 运维。Use only when the
@@ -173,7 +171,7 @@
 
 来源：openclaw/skills-archive 官方镜像，按质量规则筛选（SKILL.md 800B-30KB、完整 YAML 元数据、有效 description）。
 
-#### 部分新增亮点（前 30 个）
+#### 部分新增亮点（前 28 个）
 - `humanizer-1` — | Remove signs of AI-generated writing from text. Use when editing or reviewing text to make it sound more natural and h
 - `humanizer-1-0-0` — | Remove signs of AI-generated writing from text. Use when editing or reviewing text to make it sound more natural and h
 - `humanizer-bak` — | Remove signs of AI-generated writing from text. Use when editing or reviewing text to make it sound more natural and h
@@ -214,7 +212,7 @@
 
 来源：openclaw/skills-archive 官方镜像，按质量规则筛选（SKILL.md 800B-30KB、完整 YAML 元数据、有效 description）。
 
-#### 部分新增亮点（前 30 个）
+#### 部分新增亮点（前 28 个）
 - `bind-protocol-mcp` — Bind Protocol MCP server for credential verification, policy authoring, and zero-knowledge proof generation.
 - `feishu-literature-manager` — Automated literature retrieval and Feishu Bitable management. Use when user requests to create a literature database, se
 - `tencent-docs-chen` — Tencent Docs - Provides complete Tencent Docs operations. Use this skill when working with Tencent Docs, including: (1) 
@@ -255,7 +253,7 @@
 
 来源：openclaw/skills-archive 官方镜像，按质量规则筛选（SKILL.md 800B-30KB、完整 YAML 元数据、有效 description）。
 
-#### 部分新增亮点（前 30 个）
+#### 部分新增亮点（前 28 个）
 - `ppt-compress-master` — This skill should be used when the user wants to compress a PowerPoint (.pptx) file by reducing the size of embedded vid
 - `website-monitor-skill` — > 构建一个自定义网站监控系统，能够每5分钟检测目标网站的HTTP状态码和响应时延， 并在每天早上9点自动生成一份基于监控数据的HTML网页报告。 当用户提到以下场景时，请务必使用此 skill： - 想要监控某个或多个网站是否正常运行 -
 - `vincent-hyperliquid` — Use this skill to create a HyperLiquid perpetuals and spot wallet for your agent. Trade perps, manage spot balances, tra
@@ -296,7 +294,7 @@
 
 来源：openclaw/skills-archive 官方镜像，按质量规则筛选（SKILL.md 800B-30KB、完整 YAML 元数据、有效 description）。
 
-#### 部分新增亮点（前 30 个）
+#### 部分新增亮点（前 28 个）
 - `openclaw-workflow-automator` — > Automate repeatable workflows with WhatsApp/Telegram notifications, Excel/CSV processing, browser automation, and flex
 - `tencentcloud-management-tool` — | 通过 tccli 命令行管理腾讯云资源。 Load when: 用户要查询云服务器、管理 Lighthouse、购买域名、配置 DNS、 检查安全组、做安全巡检、部署应用、挂载云硬盘、部署 OpenClaw、 监控资源状态、SSL 证书
 - `tonic-system-deploy` — > Software deployment workflow for systems with separate UAT and PROD environments. Use when: planning a bug fix deploym
@@ -337,7 +335,7 @@
 
 来源：openclaw/skills-archive 官方镜像，按质量规则筛选（SKILL.md 800B-30KB、完整 YAML 元数据、有效 description）。
 
-#### 部分新增亮点（前 30 个）
+#### 部分新增亮点（前 28 个）
 - `guanrentang-writer` — 观仁堂中医公众号文章生成器。写文章 + 自动配图一体化。当用户说"写文章"、"帮我写一篇"、"公众号文章"时自动触发。支持随机选题和固定主题（古法熏蒸推广、放假通知），生成符合观仁堂风格的中医养生文章，并自动配图。
 - `ai-photos` — | Personal AI photo album for OpenClaw. Use when users say: - "index my photos" - "set up an AI photo album" - "search m
 - `yt-to-blog` — > Full content pipeline: YouTube URL → transcript → blog post → Substack draft → X/Twitter thread → vertical video clips
@@ -378,7 +376,7 @@
 
 来源：openclaw/skills-archive 官方镜像，按质量规则筛选（SKILL.md 800B-30KB、完整 YAML 元数据、有效 description）。
 
-#### 部分新增亮点（前 30 个）
+#### 部分新增亮点（前 28 个）
 - `ai-leaderboard` — Comprehensive AI leaderboard for LLM models and AI applications. Query model rankings, model IDs, and pricing from OpenR
 - `douyin-video-forge` — > 抖音短视频全链路自动化制作。适用于：收到客户项目需要制作抖音推广视频、 策划短视频内容、生成视频脚本、分析抖音热点趋势、制作爆款短视频。 通过浏览器采集抖音热榜和视频数据，生成分段脚本，调用可灵API生成视频并拼接成片。
 - `minium-test-generator` — Minium 录制脚本转测试用例工具。自动解析录制脚本，生成符合规范的测试用例和页面对象，确保步骤完整、逻辑一致。
@@ -419,7 +417,7 @@
 
 来源：openclaw/skills-archive 官方镜像，按质量规则筛选（SKILL.md 800B-30KB、完整 YAML 元数据、有效 description）。
 
-#### 部分新增亮点（前 30 个）
+#### 部分新增亮点（前 28 个）
 - `clickup-api` — | ClickUp API integration with managed OAuth. Access tasks, lists, folders, spaces, workspaces, users, and manage webhoo
 - `aawp` — > AAWP (AI Agent Wallet Protocol) — the only crypto wallet protocol built exclusively for AI Agents on EVM-compatible bl
 - `capacitor-expert` — "A comprehensive starting point for AI agents to work with Capacitor. Covers core concepts, CLI, app creation, plugins, 
@@ -460,7 +458,7 @@
 
 来源：openclaw/skills-archive 官方镜像，按质量规则筛选（SKILL.md 800B-30KB、完整 YAML 元数据、有效 description）。
 
-#### 部分新增亮点（前 30 个）
+#### 部分新增亮点（前 28 个）
 - `ecommerce-content-marketing` — "E-commerce content marketing strategy planner. Generates content calendars, topic ideas, and platform-specific strategi
 - `ragflow-runbook` — End-to-end runbook for deploying, operating, troubleshooting, and monitoring RAGFlow (runtime ops only). # Compatibility
 - `boka-movie-skills` — "Bona Movie Production is Bona Group's film-grade production skill. It covers image generation, image editing, and video
@@ -501,7 +499,7 @@
 
 来源：openclaw/skills-archive 官方镜像，按质量规则筛选（SKILL.md 800B-30KB、完整 YAML 元数据、有效 description）。
 
-#### 部分新增亮点（前 30 个）
+#### 部分新增亮点（前 28 个）
 - `canvapresentationbibleedition` — | Presentation Strategist ที่ใช้หลักการ Visual-First Design (พรีเซ้นฉลาดเน้นภาพไม่เน้นพูด) เป็นกรอบคิดหลักในการวิเคราะห์
 - `erc8004-agent` — > 8004 Agent Skill for registering AI agents on the ERC-8004 Trustless Agents standard and authenticating them via SIWA 
 - `openclaw-sec-plus` — AI Agent Security Suite - Real-time protection against prompt injection, command injection, SSRF, path traversal, secret
@@ -542,7 +540,7 @@
 
 来源：openclaw/skills-archive 官方镜像，按质量规则筛选（SKILL.md 800B-30KB、完整 YAML 元数据、有效 description）。
 
-#### 部分新增亮点（前 30 个）
+#### 部分新增亮点（前 28 个）
 - `canvapresentationbibleedition` — | Presentation Strategist ที่ใช้หลักการ Visual-First Design (พรีเซ้นฉลาดเน้นภาพไม่เน้นพูด) เป็นกรอบคิดหลักในการวิเคราะห์
 - `erc8004-agent` — > 8004 Agent Skill for registering AI agents on the ERC-8004 Trustless Agents standard and authenticating them via SIWA 
 - `openclaw-sec-plus` — AI Agent Security Suite - Real-time protection against prompt injection, command injection, SSRF, path traversal, secret
@@ -593,7 +591,7 @@
 - 数据分析 / 财务报表 / 股票
 - AI 工具 / Agent 协作 / 模型管理
 
-#### 部分新增亮点（前 30 个）
+#### 部分新增亮点（前 28 个）
 - `0codekit`
 - `13-day-sprint-method`
 - `academic-deep-research-1-0-0`
