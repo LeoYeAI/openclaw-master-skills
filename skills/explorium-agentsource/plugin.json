@@ -1,0 +1,31 @@
+{
+  "name": "agentsource-plugin",
+  "version": "1.0.3",
+  "description": "Find and export B2B companies or contacts using AgentSource filters with options for enrichment, events, and CSV export.",
+  "homepage": "https://github.com/explorium-ai/agentsource-plugin",
+  "author": {
+    "name": "Yossi Golan"
+  },
+  "primary_credential": "EXPLORIUM_API_KEY",
+  "required_env_vars": ["EXPLORIUM_API_KEY"],
+  "credentials": {
+    "EXPLORIUM_API_KEY": {
+      "description": "Your Explorium AgentSource API key",
+      "required": true,
+      "url": "https://developers.explorium.ai/reference/setup/getting_your_api_key",
+      "storage": "~/.agentsource/config.json (mode 600) or environment variable"
+    }
+  },
+  "install": {
+    "script": "setup.sh",
+    "description": "Copies bin/agentsource.py to ~/.agentsource/bin/ and optionally saves API key to ~/.agentsource/config.json (mode 600). No external downloads."
+  },
+  "data_privacy": {
+    "remote_endpoints": ["https://api.explorium.ai/v1/"],
+    "data_sent": "API key (header), search filters, entity IDs. Free-text call_reasoning is opt-in only.",
+    "local_storage": [
+      "~/.agentsource/config.json (API key, mode 600, owner read-only)",
+      "/tmp/agentsource_*.json (result data, auto-cleaned by OS)"
+    ]
+  }
+}

@@ -1,0 +1,27 @@
+{
+  "version": "1.0.0",
+  "organization": "consensus.tools",
+  "date": "March 2026",
+  "abstract": "AI solution architect for consensus-tools. Interactive multi-step skill that analyzes your project, recommends consensus-tools integration (guards, wrapper, or MCP), scaffolds setup with custom templates, and proves it works with auditability. Supports LangChain, Vercel AI SDK, and 29 MCP tools across 7 guard domains and 9 consensus policies.",
+  "license": {
+    "engine": "Apache-2.0",
+    "skill": "MIT"
+  },
+  "instructionScope": "The SKILL.md references llms.txt (a structured system reference) and guides users through installing @consensus-tools packages, creating guard templates, policy templates, and wrapper templates. No network side effects by default — all evaluation is local-first.",
+  "requiredEnvVars": [],
+  "optionalEnvVars": [
+    "LANGCHAIN_API_KEY",
+    "LANGCHAIN_TRACING_V2",
+    "OPENAI_API_KEY",
+    "ANTHROPIC_API_KEY"
+  ],
+  "networkSideEffects": {
+    "default": "disabled",
+    "note": "Guard evaluation and wrapper gating are fully local. LangSmith tracing requires LANGCHAIN_API_KEY. LLM-based evaluation requires provider API keys."
+  },
+  "trustedExternalSources": [
+    "https://www.npmjs.com/org/consensus-tools",
+    "https://github.com/consensus-tools/consensus-tools",
+    "https://smith.langchain.com"
+  ]
+}

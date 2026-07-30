@@ -1,0 +1,27 @@
+{
+  "name": "Companies & Contacts enrichment - Explorium AgentSource",
+  "version": "1.0.0",
+  "description": "Find B2B companies & contacts using the Explorium API. Enrich with contact info, intent data, technographics, firmographics, live events, and more. Export as CSV.",
+  "author": {
+    "name": "Yossi Golan"
+  },
+  "required_credentials": [
+    {
+      "name": "EXPLORIUM_API_KEY",
+      "type": "env_var",
+      "description": "Your Explorium AgentSource API key. Get one at https://developers.explorium.ai/reference/setup/getting_your_api_key",
+      "required": true,
+      "storage": "~/.agentsource/config.json (mode 600) or EXPLORIUM_API_KEY environment variable"
+    }
+  ],
+  "data_privacy": {
+    "remote_endpoints": [
+      "https://api.explorium.ai/v1/"
+    ],
+    "data_sent": "API key (header), search filters, entity IDs. Free-text call_reasoning is opt-in only.",
+    "local_storage": [
+      "~/.agentsource/config.json (API key, mode 600, owner read-only)",
+      "/tmp/agentsource_*.json (result data, auto-cleaned by OS)"
+    ]
+  }
+}

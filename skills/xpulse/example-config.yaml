@@ -1,0 +1,42 @@
+# Example Xpulse Configuration
+# Copy to ~/.openclaw/config.yaml and fill in your credentials
+#
+# CODEX: synchronized example config with the runtime default model.
+
+kalshi:
+  enabled: true
+  api_key_id: "your-kalshi-api-key-id"
+  private_key_file: "/path/to/kalshi/private.key"
+  # Get these from https://kalshi.com → Settings → API
+
+ollama:
+  enabled: true
+  model: "qwen3:latest"
+  timeout_seconds: 30
+
+xpulse:
+  enabled: true
+  check_interval_minutes: 30       # Run every 30 minutes
+
+  # Topics to scan (site:x.com queries)
+  topics:
+    - "Trump tariff"
+    - "Ukraine"
+    - "inflation CPI"
+    - "Fed rate decision"
+    - "election 2028"
+    - "crypto SEC"
+    - "AI regulation"
+    - "tech earnings"
+
+  # Stage 1: Signal Detection
+  min_confidence: 0.7             # Keep signals with ≥70% confidence
+
+  # Stage 2: Materiality Gate
+  materiality_gate: true          # Enable 48h deduplication
+
+  # Stage 3: Position Matching
+  position_gate: true             # Only alert on matched positions
+
+  # History management
+  max_history_entries: 200        # Auto-trim oldest signals

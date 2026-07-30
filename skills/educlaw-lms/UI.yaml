@@ -1,0 +1,871 @@
+ocui_version: "1.0"
+skill: educlaw-lms
+skill_version: "1.0.0"
+display_name: EduClaw LMS Integration
+icon: link-2
+color: "#6366f1"
+default_entity: lms_connection
+
+domains:
+  - key: lms_sync
+    label: LMS Connections & Sync
+    entities: [lms_connection, sync_log]
+  - key: assignments
+    label: Assignments
+    entities: [lms_assignment]
+  - key: online_gradebook
+    label: Online Gradebook
+    entities: [grade_sync, oneroster_export]
+  - key: course_materials
+    label: Course Materials
+    entities: [course_material]
+
+dashboard:
+  kpis:
+    - key: active_connections
+      label: "Active Connections"
+      type: count
+      action: list-lms-connections
+      filter: { connection_status: active }
+      icon: plug
+      drill_action: list-lms-connections
+      drill_filter: { connection_status: active }
+    - key: sync_errors
+      label: "Sync Errors"
+      type: count
+      action: list-sync-logs
+      filter: { sync_status: failed }
+      severity: error
+      icon: alert-triangle
+      drill_action: list-sync-logs
+      drill_filter: { sync_status: failed }
+    - key: grade_conflicts
+      label: "Grade Conflicts"
+      type: count
+      action: list-grade-conflicts
+      severity: warning
+      icon: git-merge
+      drill_action: list-grade-conflicts
+    - key: lms_assignments
+      label: "Mapped Assignments"
+      type: count
+      action: list-lms-assignments
+      icon: file-check
+      drill_action: list-lms-assignments
+  quick_actions:
+    - action: add-lms-connection
+      label: "New LMS Connection"
+      icon: plug
+    - action: apply-course-sync
+      label: "Sync Courses"
+      icon: refresh-cw
+    - action: import-grades
+      label: "Import Grades"
+      icon: download
+    - action: add-course-material
+      label: "Add Material"
+      icon: folder-plus
+
+workflows:
+  - after: add-lms-connection
+    suggest:
+      - action: activate-lms-connection
+        label: "Test & activate connection"
+        pass: { connection-id: id }
+  - after: activate-lms-connection
+    suggest:
+      - action: apply-course-sync
+        label: "Sync course roster to LMS"
+        pass: { connection-id: connection_id }
+  - after: apply-course-sync
+    suggest:
+      - action: get-sync-log
+        label: "Review sync results"
+        pass: { sync-log-id: sync_log_id }
+      - action: submit-assessment-to-lms
+        label: "Push assessments to LMS"
+        pass: { connection-id: connection_id }
+  - after: import-grades
+    suggest:
+      - action: list-grade-conflicts
+        label: "Review grade conflicts"
+        pass: { connection-id: connection_id }
+      - action: get-online-gradebook
+        label: "View unified gradebook"
+        pass: { connection-id: connection_id }
+  - after: submit-assessment-to-lms
+    suggest:
+      - action: import-grades
+        label: "Pull grades back from LMS"
+        pass: { connection-id: connection_id }
+
+action_map:
+
+  # ── LMS Sync Domain ───────────────────────────────────────────────────────
+
+  add-lms-connection:
+    label: "Add LMS Connection"
+    description: "Create a new LMS connection in draft status. Credentials are AES-256 encrypted."
+    icon: plug
+    domain: lms_sync
+    fields:
+      - key: lms-type
+        label: "LMS Type"
+        type: select
+        required: true
+        options:
+          - { value: canvas, label: "Canvas (Instructure)" }
+          - { value: moodle, label: "Moodle (3.9+)" }
+          - { value: google_classroom, label: "Google Classroom" }
+          - { value: oneroster_csv, label: "OneRoster 1.1 CSV" }
+      - key: display-name
+        label: "Display Name"
+        type: text
+        required: true
+        placeholder: "e.g. Jefferson High — Canvas"
+      - key: company-id
+        label: "Company ID"
+        type: text
+        required: true
+      - key: endpoint-url
+        label: "Endpoint URL"
+        type: text
+        placeholder: "https://canvas.yourschool.edu"
+        help: "Required for Canvas and Moodle. Leave blank for Google Classroom and OneRoster CSV."
+      - key: client-id
+        label: "Client ID"
+        type: text
+        help: "Canvas OAuth client ID."
+      - key: client-secret
+        label: "Client Secret"
+        type: password
+        help: "Canvas OAuth client secret. Stored AES-256 encrypted."
+      - key: site-token
+        label: "Site Token"
+        type: password
+        help: "Moodle web services token. Stored AES-256 encrypted."
+      - key: google-credentials
+        label: "Google Service Account JSON"
+        type: textarea
+        help: "Service account key JSON for Google Classroom."
+      - key: grade-direction
+        label: "Grade Direction"
+        type: select
+        default: lms_to_sis
+        options:
+          - { value: lms_to_sis, label: "LMS → SIS (default)" }
+          - { value: sis_to_lms, label: "SIS → LMS" }
+          - { value: manual, label: "Manual review" }
+      - key: has-dpa-signed
+        label: "DPA Signed"
+        type: select
+        required: true
+        options:
+          - { value: "1", label: "Yes" }
+          - { value: "0", label: "No" }
+        help: "A signed Data Processing Agreement is required for all sync operations."
+      - key: dpa-signed-date
+        label: "DPA Signed Date"
+        type: date
+        placeholder: "YYYY-MM-DD"
+      - key: is-coppa-verified
+        label: "COPPA Verified"
+        type: select
+        options:
+          - { value: "0", label: "No" }
+          - { value: "1", label: "Yes" }
+        help: "Set to Yes if COPPA consent is verified for under-13 students."
+      - key: coppa-cert-url
+        label: "COPPA Certificate URL"
+        type: text
+      - key: default-course-prefix
+        label: "Default Course Prefix"
+        type: text
+        placeholder: "e.g. JHS-"
+      - key: auto-push-assignments
+        label: "Auto-Push Assignments"
+        type: select
+        options:
+          - { value: "0", label: "No" }
+          - { value: "1", label: "Yes" }
+
+  update-lms-connection:
+    label: "Update LMS Connection"
+    description: "Update connection settings. Re-encrypts credentials if provided."
+    icon: settings
+    domain: lms_sync
+    fields:
+      - key: connection-id
+        label: "Connection ID"
+        type: text
+        required: true
+      - key: display-name
+        label: "Display Name"
+        type: text
+      - key: endpoint-url
+        label: "Endpoint URL"
+        type: text
+      - key: client-id
+        label: "Client ID"
+        type: text
+      - key: client-secret
+        label: "Client Secret"
+        type: password
+      - key: site-token
+        label: "Site Token"
+        type: password
+      - key: google-credentials
+        label: "Google Service Account JSON"
+        type: textarea
+      - key: grade-direction
+        label: "Grade Direction"
+        type: select
+        options:
+          - { value: lms_to_sis, label: "LMS → SIS" }
+          - { value: sis_to_lms, label: "SIS → LMS" }
+          - { value: manual, label: "Manual review" }
+      - key: has-dpa-signed
+        label: "DPA Signed"
+        type: select
+        options:
+          - { value: "1", label: "Yes" }
+          - { value: "0", label: "No" }
+      - key: dpa-signed-date
+        label: "DPA Signed Date"
+        type: date
+      - key: is-coppa-verified
+        label: "COPPA Verified"
+        type: select
+        options:
+          - { value: "0", label: "No" }
+          - { value: "1", label: "Yes" }
+      - key: connection-status
+        label: "Connection Status"
+        type: select
+        options:
+          - { value: draft, label: "Draft" }
+          - { value: active, label: "Active" }
+          - { value: inactive, label: "Inactive" }
+          - { value: error, label: "Error" }
+      - key: auto-push-assignments
+        label: "Auto-Push Assignments"
+        type: select
+        options:
+          - { value: "0", label: "No" }
+          - { value: "1", label: "Yes" }
+      - key: company-id
+        label: "Company ID"
+        type: text
+
+  get-lms-connection:
+    label: "Get LMS Connection"
+    description: "View full connection record. Credentials are masked (last 4 chars only)."
+    icon: eye
+    domain: lms_sync
+    type: lookup
+    fields:
+      - key: connection-id
+        label: "Connection ID"
+        type: text
+        required: true
+
+  list-lms-connections:
+    label: "List LMS Connections"
+    description: "List all connections. Returns id, display_name, lms_type, status, last_sync_at."
+    icon: list
+    domain: lms_sync
+    type: list
+    fields:
+      - key: company-id
+        label: "Company ID"
+        type: text
+      - key: lms-type
+        label: "LMS Type"
+        type: select
+        options:
+          - { value: canvas, label: "Canvas" }
+          - { value: moodle, label: "Moodle" }
+          - { value: google_classroom, label: "Google Classroom" }
+          - { value: oneroster_csv, label: "OneRoster CSV" }
+      - key: connection-status
+        label: "Status"
+        type: select
+        options:
+          - { value: draft, label: "Draft" }
+          - { value: active, label: "Active" }
+          - { value: inactive, label: "Inactive" }
+          - { value: error, label: "Error" }
+      - key: limit
+        label: "Limit"
+        type: number
+        default: 50
+      - key: offset
+        label: "Offset"
+        type: number
+        default: 0
+
+  activate-lms-connection:
+    label: "Activate LMS Connection"
+    description: "Test credentials via live API call. On success sets status=active and populates lms_version/lms_site_name."
+    icon: zap
+    domain: lms_sync
+    type: action
+    fields:
+      - key: connection-id
+        label: "Connection ID"
+        type: text
+        required: true
+
+  apply-course-sync:
+    label: "Sync Courses"
+    description: "Full roster push for a term. Syncs term → sections → users → enrollments. FERPA disclosure per student. COPPA students skipped if unverified."
+    icon: refresh-cw
+    domain: lms_sync
+    type: action
+    fields:
+      - key: connection-id
+        label: "Connection ID"
+        type: text
+        required: true
+      - key: academic-term-id
+        label: "Academic Term ID"
+        type: text
+        required: true
+      - key: company-id
+        label: "Company ID"
+        type: text
+        required: true
+      - key: section-id
+        label: "Section ID"
+        type: text
+        help: "Optional: sync only one section instead of full term."
+
+  list-sync-logs:
+    label: "List Sync Logs"
+    description: "List sync run history with summary stats per run."
+    icon: clock
+    domain: lms_sync
+    type: list
+    fields:
+      - key: connection-id
+        label: "Connection ID"
+        type: text
+        required: true
+      - key: sync-type
+        label: "Sync Type"
+        type: select
+        options:
+          - { value: roster_push, label: "Roster Push" }
+          - { value: grade_pull, label: "Grade Pull" }
+          - { value: assignment_push, label: "Assignment Push" }
+          - { value: full_sync, label: "Full Sync" }
+          - { value: oneroster_export, label: "OneRoster Export" }
+      - key: sync-status
+        label: "Status"
+        type: select
+        options:
+          - { value: pending, label: "Pending" }
+          - { value: running, label: "Running" }
+          - { value: completed, label: "Completed" }
+          - { value: completed_with_errors, label: "Completed with Errors" }
+          - { value: failed, label: "Failed" }
+      - key: from-date
+        label: "From Date"
+        type: date
+        placeholder: "YYYY-MM-DD"
+      - key: to-date
+        label: "To Date"
+        type: date
+        placeholder: "YYYY-MM-DD"
+      - key: limit
+        label: "Limit"
+        type: number
+        default: 50
+
+  get-sync-log:
+    label: "Get Sync Log"
+    description: "Full sync run details including error_summary JSON array."
+    icon: file-text
+    domain: lms_sync
+    type: lookup
+    fields:
+      - key: sync-log-id
+        label: "Sync Log ID"
+        type: text
+        required: true
+
+  apply-sync-resolution:
+    label: "Resolve Sync Conflict"
+    description: "Resolve user/course mapping conflict. Resolution: sis_wins (re-push), lms_wins (accept LMS state), dismiss (mark reviewed)."
+    icon: git-merge
+    domain: lms_sync
+    type: action
+    fields:
+      - key: connection-id
+        label: "Connection ID"
+        type: text
+        required: true
+      - key: entity-type
+        label: "Entity Type"
+        type: select
+        required: true
+        options:
+          - { value: user, label: "User" }
+          - { value: course, label: "Course" }
+      - key: entity-id
+        label: "Entity ID"
+        type: text
+        required: true
+      - key: resolution
+        label: "Resolution"
+        type: select
+        required: true
+        options:
+          - { value: sis_wins, label: "SIS Wins (re-push SIS record)" }
+          - { value: lms_wins, label: "LMS Wins (accept LMS state)" }
+          - { value: dismiss, label: "Dismiss (mark reviewed)" }
+
+  # ── Assignments Domain ─────────────────────────────────────────────────────
+
+  submit-assessment-to-lms:
+    label: "Push Assessment to LMS"
+    description: "Push SIS assessment to LMS as assignment. Idempotent — skips if already mapped. Logs FERPA disclosure."
+    icon: upload
+    domain: assignments
+    type: action
+    fields:
+      - key: assessment-id
+        label: "Assessment ID"
+        type: text
+        required: true
+      - key: connection-id
+        label: "Connection ID"
+        type: text
+        required: true
+      - key: section-id
+        label: "Section ID"
+        type: text
+        help: "Optional: restrict push to one section."
+
+  import-lms-assignments:
+    label: "Import LMS Assignments"
+    description: "Pull LMS assignments not yet in EduClaw. Optionally creates stub educlaw_assessment records."
+    icon: download
+    domain: assignments
+    type: action
+    fields:
+      - key: connection-id
+        label: "Connection ID"
+        type: text
+        required: true
+      - key: section-id
+        label: "Section ID"
+        type: text
+        required: true
+      - key: create-assessments
+        label: "Create SIS Assessment Stubs"
+        type: checkbox
+        help: "Check to auto-create educlaw_assessment records for imported assignments."
+      - key: plan-id
+        label: "Assessment Plan ID"
+        type: text
+        help: "Required if create-assessments is checked."
+      - key: category-id
+        label: "Grading Category ID"
+        type: text
+        help: "Required if create-assessments is checked."
+
+  apply-assessment-update:
+    label: "Sync Assessment Update"
+    description: "Push updated assessment fields (name, max_points, due_date, is_published) to LMS."
+    icon: refresh-cw
+    domain: assignments
+    type: action
+    fields:
+      - key: assessment-id
+        label: "Assessment ID"
+        type: text
+        required: true
+      - key: connection-id
+        label: "Connection ID"
+        type: text
+        required: true
+
+  list-lms-assignments:
+    label: "List LMS Assignments"
+    description: "List assessments with LMS mappings showing SIS details + LMS URL, is_published_in_lms, sync_status."
+    icon: list
+    domain: assignments
+    type: list
+    fields:
+      - key: connection-id
+        label: "Connection ID"
+        type: text
+        required: true
+      - key: section-id
+        label: "Section ID"
+        type: text
+      - key: assignment-sync-status
+        label: "Sync Status"
+        type: text
+      - key: limit
+        label: "Limit"
+        type: number
+        default: 50
+
+  delete-lms-assignment:
+    label: "Unlink LMS Assignment"
+    description: "Remove LMS mapping (soft delete via sync_status=error). Does NOT delete the LMS assignment."
+    icon: unlink
+    domain: assignments
+    type: action
+    destructive: true
+    fields:
+      - key: assessment-id
+        label: "Assessment ID"
+        type: text
+        required: true
+      - key: connection-id
+        label: "Connection ID"
+        type: text
+        required: true
+
+  # ── Online Gradebook Domain ────────────────────────────────────────────────
+
+  import-grades:
+    label: "Import Grades from LMS"
+    description: "Pull LMS grades into staging. Auto-applies new grades if grade_direction=lms_to_sis and no SIS score. Submitted grades create conflicts — never auto-overwritten."
+    icon: download
+    domain: online_gradebook
+    type: action
+    fields:
+      - key: connection-id
+        label: "Connection ID"
+        type: text
+        required: true
+      - key: section-id
+        label: "Section ID"
+        type: text
+        help: "Required if academic-term-id is not provided."
+      - key: academic-term-id
+        label: "Academic Term ID"
+        type: text
+        help: "Optional: bulk pull for entire term."
+      - key: assessment-id
+        label: "Assessment ID"
+        type: text
+        help: "Optional: single assignment pull."
+
+  get-online-gradebook:
+    label: "Get Online Gradebook"
+    description: "Unified SIS+LMS gradebook matrix. Student rows × Assessment columns with SIS score, LMS score, conflict flag, LMS URL."
+    icon: table
+    domain: online_gradebook
+    type: lookup
+    fields:
+      - key: section-id
+        label: "Section ID"
+        type: text
+        required: true
+      - key: connection-id
+        label: "Connection ID"
+        type: text
+        required: true
+
+  list-grade-conflicts:
+    label: "List Grade Conflicts"
+    description: "List grade conflicts for review. Shows student name, assessment, SIS score, LMS score, is_grade_submitted."
+    icon: alert-circle
+    domain: online_gradebook
+    type: list
+    fields:
+      - key: connection-id
+        label: "Connection ID"
+        type: text
+        required: true
+      - key: section-id
+        label: "Section ID"
+        type: text
+      - key: conflict-type
+        label: "Conflict Type"
+        type: select
+        options:
+          - { value: score_mismatch, label: "Score Mismatch" }
+          - { value: submitted_grade_locked, label: "Submitted Grade Locked" }
+          - { value: student_not_found, label: "Student Not Found" }
+          - { value: assignment_not_found, label: "Assignment Not Found" }
+      - key: conflict-status
+        label: "Conflict Status"
+        type: select
+        options:
+          - { value: pulled, label: "Pulled" }
+          - { value: conflict, label: "Conflict" }
+          - { value: applied, label: "Applied" }
+          - { value: skipped, label: "Skipped" }
+      - key: limit
+        label: "Limit"
+        type: number
+        default: 50
+
+  apply-grade-resolution:
+    label: "Resolve Grade Conflict"
+    description: "Resolve grade conflict. Options: lms_wins (apply LMS score), sis_wins (dismiss; optionally push SIS back), manual (enter custom score)."
+    icon: check-circle
+    domain: online_gradebook
+    type: action
+    fields:
+      - key: grade-sync-id
+        label: "Grade Sync ID"
+        type: text
+        required: true
+      - key: resolution
+        label: "Resolution"
+        type: select
+        required: true
+        options:
+          - { value: lms_wins, label: "LMS Wins (apply LMS score)" }
+          - { value: sis_wins, label: "SIS Wins (dismiss; optionally push back)" }
+          - { value: manual, label: "Manual (enter custom score)" }
+      - key: resolved-by
+        label: "Resolved By (User ID)"
+        type: text
+        required: true
+      - key: new-score
+        label: "New Score"
+        type: text
+        help: "Required when resolution=manual."
+      - key: push-to-lms
+        label: "Push to LMS"
+        type: checkbox
+        help: "For sis_wins: also push the SIS score back to LMS."
+
+  generate-oneroster-csv:
+    label: "Export OneRoster CSV"
+    description: "Generate OneRoster 1.1 CSV zip package. Base: 6 files. With --include-grades: adds lineItems.csv + results.csv. COPPA minimization applied."
+    icon: archive
+    domain: online_gradebook
+    type: action
+    fields:
+      - key: academic-term-id
+        label: "Academic Term ID"
+        type: text
+        required: true
+      - key: output-dir
+        label: "Output Directory"
+        type: text
+        required: true
+        placeholder: "/tmp/oneroster_export"
+      - key: company-id
+        label: "Company ID"
+        type: text
+        required: true
+      - key: include-grades
+        label: "Include Grades"
+        type: checkbox
+        help: "Adds lineItems.csv + results.csv to the zip."
+
+  complete-lms-course:
+    label: "Close LMS Course"
+    description: "Mark LMS course mapping as closed. Blocks further grade pulls. Call after submit-grades in educlaw."
+    icon: lock
+    domain: online_gradebook
+    type: action
+    fields:
+      - key: section-id
+        label: "Section ID"
+        type: text
+        required: true
+      - key: connection-id
+        label: "Connection ID"
+        type: text
+        required: true
+
+  # ── Course Materials Domain ────────────────────────────────────────────────
+
+  add-course-material:
+    label: "Add Course Material"
+    description: "Create course material. For url: requires external-url. For file_attachment: requires file-path. For lms_linked: requires lms-connection-id."
+    icon: folder-plus
+    domain: course_materials
+    fields:
+      - key: section-id
+        label: "Section ID"
+        type: text
+        required: true
+      - key: name
+        label: "Material Name"
+        type: text
+        required: true
+        placeholder: "e.g. Course Syllabus Fall 2026"
+      - key: material-type
+        label: "Material Type"
+        type: select
+        required: true
+        options:
+          - { value: syllabus, label: "Syllabus" }
+          - { value: reading, label: "Reading" }
+          - { value: video_link, label: "Video Link" }
+          - { value: assignment_guide, label: "Assignment Guide" }
+          - { value: rubric, label: "Rubric" }
+          - { value: other, label: "Other" }
+      - key: access-type
+        label: "Access Type"
+        type: select
+        required: true
+        options:
+          - { value: url, label: "URL" }
+          - { value: file_attachment, label: "File Attachment" }
+          - { value: lms_linked, label: "LMS Linked" }
+      - key: company-id
+        label: "Company ID"
+        type: text
+        required: true
+      - key: external-url
+        label: "External URL"
+        type: text
+        placeholder: "https://..."
+        help: "Required when access-type=url."
+      - key: file-path
+        label: "File Path"
+        type: text
+        help: "Required when access-type=file_attachment. Relative to data directory."
+      - key: lms-connection-id
+        label: "LMS Connection ID"
+        type: text
+        help: "Required when access-type=lms_linked."
+      - key: assessment-id
+        label: "Assessment ID"
+        type: text
+        help: "Optional: link material to a specific assessment."
+      - key: is-visible-to-students
+        label: "Visible to Students"
+        type: select
+        default: "1"
+        options:
+          - { value: "1", label: "Yes" }
+          - { value: "0", label: "No" }
+      - key: available-from
+        label: "Available From"
+        type: date
+        placeholder: "YYYY-MM-DD"
+      - key: available-until
+        label: "Available Until"
+        type: date
+        placeholder: "YYYY-MM-DD"
+      - key: sort-order
+        label: "Sort Order"
+        type: number
+      - key: description
+        label: "Description"
+        type: textarea
+
+  update-course-material:
+    label: "Update Course Material"
+    description: "Update material metadata. Cannot change section_id."
+    icon: edit
+    domain: course_materials
+    fields:
+      - key: material-id
+        label: "Material ID"
+        type: text
+        required: true
+      - key: name
+        label: "Name"
+        type: text
+      - key: material-type
+        label: "Material Type"
+        type: select
+        options:
+          - { value: syllabus, label: "Syllabus" }
+          - { value: reading, label: "Reading" }
+          - { value: video_link, label: "Video Link" }
+          - { value: assignment_guide, label: "Assignment Guide" }
+          - { value: rubric, label: "Rubric" }
+          - { value: other, label: "Other" }
+      - key: external-url
+        label: "External URL"
+        type: text
+      - key: is-visible-to-students
+        label: "Visible to Students"
+        type: select
+        options:
+          - { value: "1", label: "Yes" }
+          - { value: "0", label: "No" }
+      - key: available-from
+        label: "Available From"
+        type: date
+      - key: available-until
+        label: "Available Until"
+        type: date
+      - key: sort-order
+        label: "Sort Order"
+        type: number
+      - key: description
+        label: "Description"
+        type: textarea
+
+  list-course-materials:
+    label: "List Course Materials"
+    description: "List materials for a section. Ordered by sort_order ASC. Excludes archived by default."
+    icon: list
+    domain: course_materials
+    type: list
+    fields:
+      - key: section-id
+        label: "Section ID"
+        type: text
+        required: true
+      - key: material-type
+        label: "Material Type"
+        type: select
+        options:
+          - { value: syllabus, label: "Syllabus" }
+          - { value: reading, label: "Reading" }
+          - { value: video_link, label: "Video Link" }
+          - { value: assignment_guide, label: "Assignment Guide" }
+          - { value: rubric, label: "Rubric" }
+          - { value: other, label: "Other" }
+      - key: is-visible-to-students
+        label: "Visible to Students"
+        type: select
+        options:
+          - { value: "1", label: "Yes" }
+          - { value: "0", label: "No" }
+      - key: include-archived
+        label: "Include Archived"
+        type: checkbox
+
+  get-course-material:
+    label: "Get Course Material"
+    description: "Get full material record including LMS link details."
+    icon: eye
+    domain: course_materials
+    type: lookup
+    fields:
+      - key: material-id
+        label: "Material ID"
+        type: text
+        required: true
+
+  delete-course-material:
+    label: "Delete Course Material"
+    description: "Archive material (soft delete). Sets status=archived. Idempotent."
+    icon: trash
+    domain: course_materials
+    type: action
+    destructive: true
+    fields:
+      - key: material-id
+        label: "Material ID"
+        type: text
+        required: true
+
+  # ── System ─────────────────────────────────────────────────────────────────
+
+  status:
+    label: "Status"
+    description: "Check educlaw-lms installation status and available actions."
+    icon: info
+    domain: lms_sync
+    type: lookup
+    fields: []

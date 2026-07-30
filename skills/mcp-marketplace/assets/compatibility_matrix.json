@@ -1,0 +1,38 @@
+{
+  "clients": {
+    "openclaw": {
+      "displayName": "OpenClaw",
+      "supportedTransports": ["stdio", "http"],
+      "envResolution": true,
+      "notes": null
+    },
+    "claude-desktop": {
+      "displayName": "Claude Desktop",
+      "supportedTransports": ["stdio", "http"],
+      "envResolution": true,
+      "notes": null
+    },
+    "claude-code": {
+      "displayName": "Claude Code",
+      "supportedTransports": ["stdio", "http"],
+      "envResolution": true,
+      "notes": null
+    },
+    "cursor": {
+      "displayName": "Cursor",
+      "supportedTransports": ["stdio"],
+      "envResolution": false,
+      "notes": "Cursor does not support HTTP transport. Environment variable resolution may require manual substitution."
+    }
+  },
+  "serverOverrides": {
+    "common-room": {
+      "incompatible": ["cursor"],
+      "reason": "Requires HTTP transport not supported by Cursor"
+    },
+    "composio": {
+      "incompatible": ["cursor"],
+      "reason": "Requires HTTP transport not supported by Cursor"
+    }
+  }
+}

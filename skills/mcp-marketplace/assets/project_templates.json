@@ -1,0 +1,52 @@
+{
+  "templates": {
+    "python-web": {
+      "displayName": "Python Web Project",
+      "description": "MCP servers for Python web applications (Django, Flask, FastAPI)",
+      "detectionFiles": ["requirements.txt", "pyproject.toml", "Pipfile", "setup.py"],
+      "detectionPatterns": ["django", "flask", "fastapi", "uvicorn", "gunicorn"],
+      "recommendedServers": ["postgres", "redis", "docker", "github", "git"],
+      "optionalServers": ["sentry", "datadog", "aws"]
+    },
+    "node-fullstack": {
+      "displayName": "Node.js Full-Stack",
+      "description": "MCP servers for Node.js full-stack applications (Next.js, Express, React)",
+      "detectionFiles": ["package.json"],
+      "detectionPatterns": ["next", "express", "react", "vue", "angular", "nuxt", "svelte"],
+      "recommendedServers": ["github", "postgres", "filesystem", "docker", "fetch"],
+      "optionalServers": ["vercel", "sentry", "redis"]
+    },
+    "data-science": {
+      "displayName": "Data Science",
+      "description": "MCP servers for data science and ML workflows",
+      "detectionFiles": ["requirements.txt", "pyproject.toml", "environment.yml"],
+      "detectionPatterns": ["pandas", "numpy", "scikit-learn", "tensorflow", "pytorch", "jupyter", "matplotlib"],
+      "recommendedServers": ["postgres", "sqlite", "bigquery", "huggingface", "filesystem"],
+      "optionalServers": ["snowflake", "pinecone", "qdrant", "replicate"]
+    },
+    "mobile": {
+      "displayName": "Mobile Development",
+      "description": "MCP servers for mobile app development (React Native, Flutter, Swift)",
+      "detectionFiles": ["Podfile", "pubspec.yaml", "app.json", "react-native.config.js"],
+      "detectionPatterns": ["react-native", "flutter", "expo", "swift"],
+      "recommendedServers": ["github", "filesystem", "fetch", "memory"],
+      "optionalServers": ["sentry", "firebase"]
+    },
+    "devops": {
+      "displayName": "DevOps & Infrastructure",
+      "description": "MCP servers for DevOps, CI/CD, and infrastructure management",
+      "detectionFiles": ["Dockerfile", "docker-compose.yml", "docker-compose.yaml", "Makefile", ".github/workflows"],
+      "detectionPatterns": ["terraform", "ansible", "kubernetes", "helm"],
+      "recommendedServers": ["docker", "kubernetes", "aws", "cloudflare", "github"],
+      "optionalServers": ["datadog", "pagerduty", "grafana"]
+    },
+    "static-site": {
+      "displayName": "Static Site / Blog",
+      "description": "MCP servers for static site generators and content management",
+      "detectionFiles": ["gatsby-config.js", "astro.config.mjs", "hugo.toml", "_config.yml", "mkdocs.yml"],
+      "detectionPatterns": ["gatsby", "astro", "hugo", "jekyll", "eleventy"],
+      "recommendedServers": ["github", "filesystem", "fetch"],
+      "optionalServers": ["contentful", "algolia", "cloudinary"]
+    }
+  }
+}

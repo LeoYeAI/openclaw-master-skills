@@ -1,0 +1,83 @@
+{
+  "name": "safechain-agent",
+  "version": "0.1.4",
+  "description": "SafeLink: security-first OpenClaw skill for bidirectional agent hiring, escrow payments, MPC wallets, and policy-gated transactions",
+  "type": "module",
+  "main": "dist/index.js",
+  "bin": {
+    "safelink": "dist/index.js"
+  },
+  "files": [
+    "dist/",
+    "contracts/src/",
+    "SKILL.md",
+    "README.md",
+    "LICENSE",
+    ".env.example"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "prepublishOnly": "npm run typecheck && npm run test && npm run build",
+    "dev": "tsx watch src/index.ts",
+    "start": "node dist/index.js",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
+    "test:integration": "vitest run tests/integration/hire-flow.test.ts",
+    "coverage:gate": "node scripts/check-coverage-gates.mjs",
+    "lint": "eslint src --ext .ts",
+    "typecheck": "tsc --noEmit",
+    "setup": "tsx scripts/generate-env.ts",
+    "deploy:contracts": "tsx scripts/deploy-contracts.ts",
+    "register": "tsx scripts/register-agent.ts"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.36.3",
+    "@autonomys/auto-drive": "^1.1.6",
+    "@coinbase/agentkit": "^0.4.0",
+    "@helia/unixfs": "^3.0.0",
+    "@modelcontextprotocol/sdk": "^1.6.1",
+    "@privy-io/server-auth": "^1.14.0",
+    "blockstore-core": "^4.4.1",
+    "datastore-core": "^9.2.9",
+    "dotenv": "^16.6.1",
+    "helia": "^4.0.0",
+    "ox": "^0.6.7",
+    "redis": "^4.7.1",
+    "viem": "^2.21.54",
+    "x402": "^1.1.0",
+    "zod": "^3.24.1"
+  },
+  "devDependencies": {
+    "@types/node": "^22.13.9",
+    "@vitest/coverage-v8": "^3.0.7",
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.3",
+    "vitest": "^3.0.7"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "keywords": [
+    "openclaw",
+    "mcp",
+    "agent",
+    "web3",
+    "base",
+    "x402",
+    "escrow",
+    "mpc-wallet",
+    "erc8004",
+    "a2a",
+    "safelink"
+  ],
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/charliebot8888/SafeLink"
+  },
+  "homepage": "https://github.com/charliebot8888/SafeLink#readme",
+  "bugs": {
+    "url": "https://github.com/charliebot8888/SafeLink/issues"
+  }
+}

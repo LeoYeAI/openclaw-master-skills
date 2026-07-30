@@ -1,0 +1,1123 @@
+{
+  "servers": [
+    {
+      "id": "github",
+      "displayName": "GitHub",
+      "description": "Interact with GitHub repositories, issues, pull requests, and code search",
+      "categories": ["developer-tools", "version-control"],
+      "transport": "stdio",
+      "installMethod": "npx",
+      "package": "@github/mcp-server",
+      "args": [],
+      "requiredEnv": ["GITHUB_TOKEN"],
+      "requiredEnvLinks": {
+        "GITHUB_TOKEN": "https://github.com/settings/tokens/new?scopes=repo"
+      },
+      "requiredEnvDescriptions": {
+        "GITHUB_TOKEN": "Personal access token with 'repo' scope"
+      },
+      "optionalEnv": [],
+      "verified": true,
+      "popularity": 9500,
+      "tags": ["github", "git", "repos", "issues", "pull-requests", "code-search", "version-control"]
+    },
+    {
+      "id": "filesystem",
+      "displayName": "Filesystem",
+      "description": "Secure file operations with configurable access controls for reading, writing, and managing files",
+      "categories": ["developer-tools"],
+      "transport": "stdio",
+      "installMethod": "npx",
+      "package": "@modelcontextprotocol/server-filesystem",
+      "args": ["{ALLOWED_DIR}"],
+      "requiredEnv": [],
+      "requiredEnvLinks": {},
+      "requiredEnvDescriptions": {},
+      "optionalEnv": [],
+      "verified": true,
+      "popularity": 8000,
+      "tags": ["filesystem", "files", "directories", "read", "write", "file-management"]
+    },
+    {
+      "id": "slack",
+      "displayName": "Slack",
+      "description": "Search Slack messages, read channels, post messages, and manage canvases in your workspace",
+      "categories": ["communication"],
+      "transport": "stdio",
+      "installMethod": "npx",
+      "package": "@modelcontextprotocol/server-slack",
+      "args": [],
+      "requiredEnv": ["SLACK_BOT_TOKEN", "SLACK_TEAM_ID"],
+      "requiredEnvLinks": {
+        "SLACK_BOT_TOKEN": "https://api.slack.com/apps",
+        "SLACK_TEAM_ID": "https://slack.com/help/articles/221769328"
+      },
+      "requiredEnvDescriptions": {
+        "SLACK_BOT_TOKEN": "Bot User OAuth Token starting with xoxb-",
+        "SLACK_TEAM_ID": "Your Slack workspace Team ID (starts with T)"
+      },
+      "optionalEnv": [],
+      "verified": true,
+      "popularity": 7500,
+      "tags": ["slack", "messaging", "chat", "channels", "communication", "workspace"]
+    },
+    {
+      "id": "postgres",
+      "displayName": "PostgreSQL",
+      "description": "Connect to PostgreSQL databases for querying, schema inspection, and data analysis",
+      "categories": ["database"],
+      "transport": "stdio",
+      "installMethod": "npx",
+      "package": "@modelcontextprotocol/server-postgres",
+      "args": ["${POSTGRES_CONNECTION_STRING}"],
+      "requiredEnv": ["POSTGRES_CONNECTION_STRING"],
+      "requiredEnvLinks": {},
+      "requiredEnvDescriptions": {
+        "POSTGRES_CONNECTION_STRING": "PostgreSQL connection URI, e.g. postgresql://user:pass@localhost:5432/mydb"
+      },
+      "optionalEnv": [],
+      "verified": true,
+      "popularity": 7000,
+      "tags": ["postgres", "postgresql", "database", "sql", "query", "data"]
+    },
+    {
+      "id": "notion",
+      "displayName": "Notion",
+      "description": "Read, create, and modify Notion pages, databases, and blocks through the Notion API",
+      "categories": ["productivity"],
+      "transport": "stdio",
+      "installMethod": "npx",
+      "package": "@notionhq/notion-mcp-server",
+      "args": [],
+      "requiredEnv": ["NOTION_TOKEN"],
+      "requiredEnvLinks": {
+        "NOTION_TOKEN": "https://www.notion.so/my-integrations"
+      },
+      "requiredEnvDescriptions": {
+        "NOTION_TOKEN": "Internal integration token starting with ntn_"
+      },
+      "optionalEnv": [],
+      "verified": true,
+      "popularity": 7200,
+      "tags": ["notion", "notes", "wiki", "database", "productivity", "knowledge-base"]
+    },
+    {
+      "id": "memory",
+      "displayName": "Memory",
+      "description": "Knowledge graph-based persistent memory system for maintaining context across conversations",
+      "categories": ["ai-ml"],
+      "transport": "stdio",
+      "installMethod": "npx",
+      "package": "@modelcontextprotocol/server-memory",
+      "args": [],
+      "requiredEnv": [],
+      "requiredEnvLinks": {},
+      "requiredEnvDescriptions": {},
+      "optionalEnv": [],
+      "verified": true,
+      "popularity": 6800,
+      "tags": ["memory", "knowledge-graph", "persistence", "context", "recall"]
+    },
+    {
+      "id": "fetch",
+      "displayName": "Fetch",
+      "description": "Fetch web content and convert HTML to markdown for efficient LLM consumption",
+      "categories": ["browser"],
+      "transport": "stdio",
+      "installMethod": "uvx",
+      "package": "mcp-server-fetch",
+      "args": [],
+      "requiredEnv": [],
+      "requiredEnvLinks": {},
+      "requiredEnvDescriptions": {},
+      "optionalEnv": [],
+      "verified": true,
+      "popularity": 6500,
+      "tags": ["fetch", "web", "http", "scrape", "html", "markdown", "browser"]
+    },
+    {
+      "id": "sqlite",
+      "displayName": "SQLite",
+      "description": "Query and manage SQLite databases with schema inspection and safe read/write operations",
+      "categories": ["database"],
+      "transport": "stdio",
+      "installMethod": "uvx",
+      "package": "mcp-server-sqlite",
+      "args": ["--db-path", "${SQLITE_DB_PATH}"],
+      "requiredEnv": ["SQLITE_DB_PATH"],
+      "requiredEnvLinks": {},
+      "requiredEnvDescriptions": {
+        "SQLITE_DB_PATH": "Absolute path to your SQLite database file"
+      },
+      "optionalEnv": [],
+      "verified": true,
+      "popularity": 5500,
+      "tags": ["sqlite", "database", "sql", "local", "embedded", "query"]
+    },
+    {
+      "id": "git",
+      "displayName": "Git",
+      "description": "Read, search, and manipulate Git repositories including log, diff, blame, and branch operations",
+      "categories": ["developer-tools", "version-control"],
+      "transport": "stdio",
+      "installMethod": "uvx",
+      "package": "mcp-server-git",
+      "args": [],
+      "requiredEnv": [],
+      "requiredEnvLinks": {},
+      "requiredEnvDescriptions": {},
+      "optionalEnv": [],
+      "verified": true,
+      "popularity": 6000,
+      "tags": ["git", "version-control", "repository", "diff", "log", "blame", "branch"]
+    },
+    {
+      "id": "sentry",
+      "displayName": "Sentry",
+      "description": "Pull error context, correlate with releases, and analyze issues from your Sentry projects",
+      "categories": ["observability", "developer-tools"],
+      "transport": "stdio",
+      "installMethod": "npx",
+      "package": "@sentry/mcp-server",
+      "args": [],
+      "requiredEnv": ["SENTRY_AUTH_TOKEN"],
+      "requiredEnvLinks": {
+        "SENTRY_AUTH_TOKEN": "https://sentry.io/settings/auth-tokens/"
+      },
+      "requiredEnvDescriptions": {
+        "SENTRY_AUTH_TOKEN": "Sentry auth token with project:read and event:read scopes"
+      },
+      "optionalEnv": ["SENTRY_ORG"],
+      "verified": true,
+      "popularity": 5000,
+      "tags": ["sentry", "errors", "monitoring", "debugging", "observability", "issues"]
+    },
+    {
+      "id": "stripe",
+      "displayName": "Stripe",
+      "description": "Interact with Stripe APIs for payments, customers, subscriptions, and billing management",
+      "categories": ["finance"],
+      "transport": "stdio",
+      "installMethod": "npx",
+      "package": "@stripe/mcp",
+      "args": [],
+      "requiredEnv": ["STRIPE_SECRET_KEY"],
+      "requiredEnvLinks": {
+        "STRIPE_SECRET_KEY": "https://dashboard.stripe.com/apikeys"
+      },
+      "requiredEnvDescriptions": {
+        "STRIPE_SECRET_KEY": "Stripe secret API key (use test key sk_test_ for development)"
+      },
+      "optionalEnv": [],
+      "verified": true,
+      "popularity": 4500,
+      "tags": ["stripe", "payments", "billing", "subscriptions", "finance", "api"]
+    },
+    {
+      "id": "cloudflare",
+      "displayName": "Cloudflare",
+      "description": "Deploy, configure, and manage Cloudflare Workers, KV, R2, and D1 resources",
+      "categories": ["cloud-infra"],
+      "transport": "stdio",
+      "installMethod": "npx",
+      "package": "@cloudflare/mcp-server-cloudflare",
+      "args": [],
+      "requiredEnv": ["CLOUDFLARE_API_TOKEN"],
+      "requiredEnvLinks": {
+        "CLOUDFLARE_API_TOKEN": "https://dash.cloudflare.com/profile/api-tokens"
+      },
+      "requiredEnvDescriptions": {
+        "CLOUDFLARE_API_TOKEN": "Cloudflare API token with appropriate permissions"
+      },
+      "optionalEnv": ["CLOUDFLARE_ACCOUNT_ID"],
+      "verified": true,
+      "popularity": 4200,
+      "tags": ["cloudflare", "workers", "cdn", "dns", "r2", "kv", "d1", "cloud"]
+    },
+    {
+      "id": "supabase",
+      "displayName": "Supabase",
+      "description": "Create tables, query data, deploy edge functions, and manage your Supabase project",
+      "categories": ["database", "cloud-infra"],
+      "transport": "stdio",
+      "installMethod": "npx",
+      "package": "@supabase/mcp-server-supabase",
+      "args": [],
+      "requiredEnv": ["SUPABASE_ACCESS_TOKEN"],
+      "requiredEnvLinks": {
+        "SUPABASE_ACCESS_TOKEN": "https://supabase.com/dashboard/account/tokens"
+      },
+      "requiredEnvDescriptions": {
+        "SUPABASE_ACCESS_TOKEN": "Supabase personal access token from dashboard"
+      },
+      "optionalEnv": ["SUPABASE_PROJECT_REF"],
+      "verified": true,
+      "popularity": 4800,
+      "tags": ["supabase", "postgres", "database", "auth", "storage", "edge-functions", "backend"]
+    },
+    {
+      "id": "sequential-thinking",
+      "displayName": "Sequential Thinking",
+      "description": "Dynamic and reflective problem-solving through structured thinking sequences",
+      "categories": ["ai-ml"],
+      "transport": "stdio",
+      "installMethod": "npx",
+      "package": "@modelcontextprotocol/server-sequential-thinking",
+      "args": [],
+      "requiredEnv": [],
+      "requiredEnvLinks": {},
+      "requiredEnvDescriptions": {},
+      "optionalEnv": [],
+      "verified": true,
+      "popularity": 5550,
+      "tags": ["thinking", "reasoning", "problem-solving", "sequential", "reflection"]
+    },
+    {
+      "id": "puppeteer",
+      "displayName": "Puppeteer",
+      "description": "Control a browser for web scraping, screenshots, PDF generation, and automated testing",
+      "categories": ["browser", "developer-tools"],
+      "transport": "stdio",
+      "installMethod": "npx",
+      "package": "@modelcontextprotocol/server-puppeteer",
+      "args": [],
+      "requiredEnv": [],
+      "requiredEnvLinks": {},
+      "requiredEnvDescriptions": {},
+      "optionalEnv": [],
+      "verified": true,
+      "popularity": 4000,
+      "tags": ["puppeteer", "browser", "scraping", "screenshots", "pdf", "automation", "testing"]
+    },
+    {
+      "id": "redis",
+      "displayName": "Redis",
+      "description": "Manage and search data in Redis, including keys, hashes, sets, and sorted sets",
+      "categories": ["database"],
+      "transport": "stdio",
+      "installMethod": "npx",
+      "package": "@redis/mcp-server",
+      "args": [],
+      "requiredEnv": ["REDIS_URL"],
+      "requiredEnvLinks": {},
+      "requiredEnvDescriptions": {
+        "REDIS_URL": "Redis connection URL, e.g. redis://localhost:6379"
+      },
+      "optionalEnv": [],
+      "verified": true,
+      "popularity": 3500,
+      "tags": ["redis", "cache", "database", "key-value", "pub-sub", "search"]
+    },
+    {
+      "id": "linear",
+      "displayName": "Linear",
+      "description": "Manage Linear issues, projects, and cycles for project tracking and team coordination",
+      "categories": ["developer-tools", "productivity"],
+      "transport": "stdio",
+      "installMethod": "npx",
+      "package": "@linear/mcp-server",
+      "args": [],
+      "requiredEnv": ["LINEAR_API_KEY"],
+      "requiredEnvLinks": {
+        "LINEAR_API_KEY": "https://linear.app/settings/api"
+      },
+      "requiredEnvDescriptions": {
+        "LINEAR_API_KEY": "Linear personal API key from Settings > API"
+      },
+      "optionalEnv": [],
+      "verified": true,
+      "popularity": 4000,
+      "tags": ["linear", "issues", "project-management", "tracking", "agile", "tasks"]
+    },
+    {
+      "id": "google-drive",
+      "displayName": "Google Drive",
+      "description": "Access and manage Google Docs, Sheets, and Slides in your Google Drive",
+      "categories": ["productivity"],
+      "transport": "stdio",
+      "installMethod": "npx",
+      "package": "@modelcontextprotocol/server-gdrive",
+      "args": [],
+      "requiredEnv": ["GOOGLE_CLIENT_ID", "GOOGLE_CLIENT_SECRET"],
+      "requiredEnvLinks": {
+        "GOOGLE_CLIENT_ID": "https://console.cloud.google.com/apis/credentials",
+        "GOOGLE_CLIENT_SECRET": "https://console.cloud.google.com/apis/credentials"
+      },
+      "requiredEnvDescriptions": {
+        "GOOGLE_CLIENT_ID": "OAuth 2.0 client ID from Google Cloud Console",
+        "GOOGLE_CLIENT_SECRET": "OAuth 2.0 client secret from Google Cloud Console"
+      },
+      "optionalEnv": [],
+      "authType": "oauth",
+      "oauthConfig": {
+        "provider": "google",
+        "scopes": ["https://www.googleapis.com/auth/drive.readonly"],
+        "setupSteps": [
+          "Go to Google Cloud Console (https://console.cloud.google.com/)",
+          "Create or select a project",
+          "Enable the Google Drive API",
+          "Create a service account or OAuth 2.0 credentials",
+          "Download the credentials JSON file",
+          "Set GOOGLE_APPLICATION_CREDENTIALS to the file path"
+        ]
+      },
+      "verified": true,
+      "popularity": 3800,
+      "tags": ["google", "drive", "docs", "sheets", "slides", "productivity", "cloud-storage"]
+    },
+    {
+      "id": "mongodb",
+      "displayName": "MongoDB",
+      "description": "Query and manage MongoDB databases with schema inspection and document operations",
+      "categories": ["database"],
+      "transport": "stdio",
+      "installMethod": "npx",
+      "package": "@mongodb-js/mongodb-mcp-server",
+      "args": [],
+      "requiredEnv": ["MONGODB_URI"],
+      "requiredEnvLinks": {},
+      "requiredEnvDescriptions": {
+        "MONGODB_URI": "MongoDB connection string, e.g. mongodb://localhost:27017/mydb"
+      },
+      "optionalEnv": [],
+      "verified": true,
+      "popularity": 3500,
+      "tags": ["mongodb", "nosql", "database", "documents", "collections", "query"]
+    },
+    {
+      "id": "context7",
+      "displayName": "Context7",
+      "description": "Reference the latest documentation for major SDKs, frameworks, and libraries directly in your AI workflow",
+      "categories": ["developer-tools"],
+      "transport": "stdio",
+      "installMethod": "npx",
+      "package": "@upstash/context7-mcp",
+      "args": [],
+      "requiredEnv": [],
+      "requiredEnvLinks": {},
+      "requiredEnvDescriptions": {},
+      "optionalEnv": [],
+      "verified": true,
+      "popularity": 6000,
+      "tags": ["context7", "documentation", "docs", "sdk", "framework", "reference", "library"]
+    },
+    {
+      "id": "gitlab",
+      "displayName": "GitLab",
+      "description": "Manage GitLab repositories, merge requests, issues, and pipelines",
+      "categories": ["developer-tools", "version-control"],
+      "transport": "stdio",
+      "installMethod": "npx",
+      "package": "@modelcontextprotocol/server-gitlab",
+      "args": [],
+      "requiredEnv": ["GITLAB_PERSONAL_ACCESS_TOKEN"],
+      "requiredEnvLinks": {
+        "GITLAB_PERSONAL_ACCESS_TOKEN": "https://gitlab.com/-/user_settings/personal_access_tokens"
+      },
+      "requiredEnvDescriptions": {
+        "GITLAB_PERSONAL_ACCESS_TOKEN": "GitLab personal access token with API scope"
+      },
+      "optionalEnv": ["GITLAB_API_URL"],
+      "verified": true,
+      "popularity": 3200,
+      "tags": ["gitlab", "git", "merge-requests", "issues", "pipelines", "ci-cd", "version-control"]
+    },
+    {
+      "id": "atlassian",
+      "displayName": "Atlassian (Jira + Confluence)",
+      "description": "Manage Jira issues, search Confluence pages, and interact with Atlassian products",
+      "categories": ["developer-tools", "productivity"],
+      "transport": "stdio",
+      "installMethod": "uvx",
+      "package": "mcp-atlassian",
+      "args": [],
+      "requiredEnv": ["JIRA_URL", "JIRA_USERNAME", "JIRA_API_TOKEN"],
+      "requiredEnvLinks": {
+        "JIRA_API_TOKEN": "https://id.atlassian.com/manage-profile/security/api-tokens"
+      },
+      "requiredEnvDescriptions": {
+        "JIRA_URL": "Your Atlassian instance URL (e.g. https://your-company.atlassian.net)",
+        "JIRA_USERNAME": "Your Atlassian account email",
+        "JIRA_API_TOKEN": "Atlassian API token from account settings"
+      },
+      "optionalEnv": [],
+      "verified": true,
+      "popularity": 3000,
+      "tags": ["jira", "confluence", "atlassian", "issues", "project-management", "wiki"]
+    },
+    {
+      "id": "mysql",
+      "displayName": "MySQL",
+      "description": "Query and manage MySQL databases with schema inspection and data operations",
+      "categories": ["database"],
+      "transport": "stdio",
+      "installMethod": "npx",
+      "package": "@f4ww4z/mcp-mysql-server",
+      "args": [],
+      "requiredEnv": ["MYSQL_HOST", "MYSQL_USER", "MYSQL_PASSWORD", "MYSQL_DATABASE"],
+      "requiredEnvLinks": {},
+      "requiredEnvDescriptions": {
+        "MYSQL_HOST": "MySQL server hostname (e.g. localhost)",
+        "MYSQL_USER": "MySQL username",
+        "MYSQL_PASSWORD": "MySQL password",
+        "MYSQL_DATABASE": "MySQL database name"
+      },
+      "optionalEnv": [],
+      "verified": true,
+      "popularity": 2500,
+      "tags": ["mysql", "database", "sql", "query", "relational"]
+    },
+    {
+      "id": "neon",
+      "displayName": "Neon",
+      "description": "Manage Neon serverless Postgres projects, branches, and databases",
+      "categories": ["database", "cloud-infra"],
+      "transport": "stdio",
+      "installMethod": "npx",
+      "package": "@neondatabase/mcp-server-neon",
+      "args": [],
+      "requiredEnv": ["NEON_API_KEY"],
+      "requiredEnvLinks": {
+        "NEON_API_KEY": "https://console.neon.tech/app/settings/api-keys"
+      },
+      "requiredEnvDescriptions": {
+        "NEON_API_KEY": "Neon API key for managing projects and databases"
+      },
+      "optionalEnv": [],
+      "verified": true,
+      "popularity": 3000,
+      "tags": ["neon", "postgres", "serverless", "database", "branching", "cloud"]
+    },
+    {
+      "id": "discord",
+      "displayName": "Discord",
+      "description": "Send messages, manage channels, and interact with Discord servers via bot",
+      "categories": ["communication"],
+      "transport": "stdio",
+      "installMethod": "npx",
+      "package": "mcp-discord",
+      "args": [],
+      "requiredEnv": ["DISCORD_TOKEN"],
+      "requiredEnvLinks": {
+        "DISCORD_TOKEN": "https://discord.com/developers/applications"
+      },
+      "requiredEnvDescriptions": {
+        "DISCORD_TOKEN": "Discord bot token from the Developer Portal"
+      },
+      "optionalEnv": [],
+      "verified": true,
+      "popularity": 2000,
+      "tags": ["discord", "messaging", "chat", "bot", "communication", "community"]
+    },
+    {
+      "id": "gmail",
+      "displayName": "Gmail",
+      "description": "Read, search, and send emails through Gmail using OAuth or service account credentials",
+      "categories": ["communication", "productivity"],
+      "transport": "stdio",
+      "installMethod": "uvx",
+      "package": "mcp-gmail",
+      "args": [],
+      "requiredEnv": ["GOOGLE_APPLICATION_CREDENTIALS"],
+      "requiredEnvLinks": {
+        "GOOGLE_APPLICATION_CREDENTIALS": "https://console.cloud.google.com/apis/credentials"
+      },
+      "requiredEnvDescriptions": {
+        "GOOGLE_APPLICATION_CREDENTIALS": "Path to Google OAuth credentials JSON file with Gmail API enabled"
+      },
+      "optionalEnv": [],
+      "authType": "oauth",
+      "oauthConfig": {
+        "provider": "google",
+        "scopes": ["https://www.googleapis.com/auth/gmail.readonly"],
+        "setupSteps": [
+          "Go to Google Cloud Console (https://console.cloud.google.com/)",
+          "Create or select a project",
+          "Enable the Gmail API",
+          "Create a service account or OAuth 2.0 credentials",
+          "Download the credentials JSON file",
+          "Set GOOGLE_APPLICATION_CREDENTIALS to the file path"
+        ]
+      },
+      "verified": true,
+      "popularity": 2000,
+      "tags": ["gmail", "email", "google", "communication", "productivity"]
+    },
+    {
+      "id": "google-calendar",
+      "displayName": "Google Calendar",
+      "description": "Create, read, and manage Google Calendar events and schedules",
+      "categories": ["productivity"],
+      "transport": "stdio",
+      "installMethod": "uvx",
+      "package": "google-calendar-mcp",
+      "args": [],
+      "requiredEnv": ["GOOGLE_APPLICATION_CREDENTIALS"],
+      "requiredEnvLinks": {
+        "GOOGLE_APPLICATION_CREDENTIALS": "https://console.cloud.google.com/apis/credentials"
+      },
+      "requiredEnvDescriptions": {
+        "GOOGLE_APPLICATION_CREDENTIALS": "Path to Google service account JSON key with Calendar API enabled"
+      },
+      "optionalEnv": ["GOOGLE_CALENDAR_ID"],
+      "authType": "oauth",
+      "oauthConfig": {
+        "provider": "google",
+        "scopes": ["https://www.googleapis.com/auth/calendar.readonly"],
+        "setupSteps": [
+          "Go to Google Cloud Console (https://console.cloud.google.com/)",
+          "Create or select a project",
+          "Enable the Google Calendar API",
+          "Create a service account or OAuth 2.0 credentials",
+          "Download the credentials JSON file",
+          "Set GOOGLE_APPLICATION_CREDENTIALS to the file path"
+        ]
+      },
+      "verified": true,
+      "popularity": 1800,
+      "tags": ["google", "calendar", "events", "scheduling", "productivity"]
+    },
+    {
+      "id": "aws",
+      "displayName": "AWS",
+      "description": "Interact with AWS services via the API for managing cloud infrastructure and resources",
+      "categories": ["cloud-infra"],
+      "transport": "stdio",
+      "installMethod": "uvx",
+      "package": "awslabs.aws-api-mcp-server",
+      "args": [],
+      "requiredEnv": ["AWS_REGION"],
+      "requiredEnvLinks": {
+        "AWS_ACCESS_KEY_ID": "https://console.aws.amazon.com/iam/home#/security_credentials"
+      },
+      "requiredEnvDescriptions": {
+        "AWS_REGION": "AWS region (e.g. us-east-1)"
+      },
+      "optionalEnv": ["AWS_ACCESS_KEY_ID", "AWS_SECRET_ACCESS_KEY", "AWS_PROFILE"],
+      "verified": true,
+      "popularity": 3500,
+      "tags": ["aws", "amazon", "cloud", "infrastructure", "s3", "lambda", "ec2"]
+    },
+    {
+      "id": "vercel",
+      "displayName": "Vercel",
+      "description": "Manage Vercel deployments, projects, domains, and environment variables",
+      "categories": ["cloud-infra"],
+      "transport": "stdio",
+      "installMethod": "npx",
+      "package": "vercel-mcp",
+      "args": [],
+      "requiredEnv": ["VERCEL_TOKEN"],
+      "requiredEnvLinks": {
+        "VERCEL_TOKEN": "https://vercel.com/account/tokens"
+      },
+      "requiredEnvDescriptions": {
+        "VERCEL_TOKEN": "Vercel access token for managing deployments and projects"
+      },
+      "optionalEnv": [],
+      "verified": true,
+      "popularity": 2200,
+      "tags": ["vercel", "deployment", "hosting", "serverless", "cloud", "frontend"]
+    },
+    {
+      "id": "docker",
+      "displayName": "Docker",
+      "description": "Manage Docker containers, images, volumes, and networks",
+      "categories": ["developer-tools", "cloud-infra"],
+      "transport": "stdio",
+      "installMethod": "npx",
+      "package": "mcp-server-docker",
+      "args": [],
+      "requiredEnv": [],
+      "requiredEnvLinks": {},
+      "requiredEnvDescriptions": {},
+      "optionalEnv": ["DOCKER_HOST"],
+      "verified": true,
+      "popularity": 2500,
+      "tags": ["docker", "containers", "images", "devops", "infrastructure"]
+    },
+    {
+      "id": "kubernetes",
+      "displayName": "Kubernetes",
+      "description": "Manage Kubernetes clusters, pods, deployments, and services via kubectl",
+      "categories": ["cloud-infra"],
+      "transport": "stdio",
+      "installMethod": "npx",
+      "package": "kubectl-mcp-server",
+      "args": [],
+      "requiredEnv": [],
+      "requiredEnvLinks": {},
+      "requiredEnvDescriptions": {},
+      "optionalEnv": ["KUBECONFIG"],
+      "verified": true,
+      "popularity": 2000,
+      "tags": ["kubernetes", "k8s", "kubectl", "pods", "deployments", "cluster", "devops"]
+    },
+    {
+      "id": "todoist",
+      "displayName": "Todoist",
+      "description": "Create, manage, and organize tasks and projects in Todoist",
+      "categories": ["productivity"],
+      "transport": "stdio",
+      "installMethod": "npx",
+      "package": "@abhiz123/todoist-mcp-server",
+      "args": [],
+      "requiredEnv": ["TODOIST_API_TOKEN"],
+      "requiredEnvLinks": {
+        "TODOIST_API_TOKEN": "https://app.todoist.com/app/settings/integrations/developer"
+      },
+      "requiredEnvDescriptions": {
+        "TODOIST_API_TOKEN": "Todoist API token from Integrations > Developer settings"
+      },
+      "optionalEnv": [],
+      "verified": true,
+      "popularity": 1500,
+      "tags": ["todoist", "tasks", "todo", "productivity", "project-management"]
+    },
+    {
+      "id": "obsidian",
+      "displayName": "Obsidian",
+      "description": "Read, search, and manage notes in your Obsidian vault via the Local REST API plugin",
+      "categories": ["productivity"],
+      "transport": "stdio",
+      "installMethod": "npx",
+      "package": "obsidian-mcp-server",
+      "args": [],
+      "requiredEnv": ["OBSIDIAN_API_KEY"],
+      "requiredEnvLinks": {},
+      "requiredEnvDescriptions": {
+        "OBSIDIAN_API_KEY": "API key from Obsidian's Local REST API community plugin (Settings > Community Plugins > Local REST API)"
+      },
+      "optionalEnv": [],
+      "verified": true,
+      "popularity": 1500,
+      "tags": ["obsidian", "notes", "markdown", "knowledge-base", "vault", "productivity"]
+    },
+    {
+      "id": "huggingface",
+      "displayName": "Hugging Face",
+      "description": "Search models, datasets, and spaces on Hugging Face Hub",
+      "categories": ["ai-ml"],
+      "transport": "stdio",
+      "installMethod": "uvx",
+      "package": "huggingface-mcp-server",
+      "args": [],
+      "requiredEnv": ["HF_TOKEN"],
+      "requiredEnvLinks": {
+        "HF_TOKEN": "https://huggingface.co/settings/tokens"
+      },
+      "requiredEnvDescriptions": {
+        "HF_TOKEN": "Hugging Face user access token"
+      },
+      "optionalEnv": [],
+      "verified": true,
+      "popularity": 2000,
+      "tags": ["huggingface", "models", "datasets", "ai", "ml", "transformers"]
+    },
+    {
+      "id": "datadog",
+      "displayName": "Datadog",
+      "description": "Query metrics, logs, and monitors from your Datadog account",
+      "categories": ["observability"],
+      "transport": "stdio",
+      "installMethod": "npx",
+      "package": "@winor30/mcp-server-datadog",
+      "args": [],
+      "requiredEnv": ["DATADOG_API_KEY", "DATADOG_APP_KEY"],
+      "requiredEnvLinks": {
+        "DATADOG_API_KEY": "https://app.datadoghq.com/organization-settings/api-keys",
+        "DATADOG_APP_KEY": "https://app.datadoghq.com/organization-settings/application-keys"
+      },
+      "requiredEnvDescriptions": {
+        "DATADOG_API_KEY": "Datadog API key",
+        "DATADOG_APP_KEY": "Datadog Application key"
+      },
+      "optionalEnv": [],
+      "verified": true,
+      "popularity": 2000,
+      "tags": ["datadog", "monitoring", "metrics", "logs", "observability", "apm"]
+    },
+    {
+      "id": "grafana",
+      "displayName": "Grafana",
+      "description": "Query dashboards, data sources, and alerts from your Grafana instance",
+      "categories": ["observability"],
+      "transport": "stdio",
+      "installMethod": "npx",
+      "package": "@leval/mcp-grafana",
+      "args": [],
+      "requiredEnv": ["GRAFANA_URL", "GRAFANA_SERVICE_ACCOUNT_TOKEN"],
+      "requiredEnvLinks": {},
+      "requiredEnvDescriptions": {
+        "GRAFANA_URL": "URL of your Grafana instance",
+        "GRAFANA_SERVICE_ACCOUNT_TOKEN": "Grafana service account token (Administration > Service Accounts)"
+      },
+      "optionalEnv": [],
+      "verified": true,
+      "popularity": 1500,
+      "tags": ["grafana", "dashboards", "monitoring", "observability", "alerts", "metrics"]
+    },
+    {
+      "id": "airtable",
+      "displayName": "Airtable",
+      "description": "Read, create, and manage records in Airtable bases and tables",
+      "categories": ["data", "productivity"],
+      "transport": "stdio",
+      "installMethod": "npx",
+      "package": "airtable-mcp-server",
+      "args": [],
+      "requiredEnv": ["AIRTABLE_API_KEY"],
+      "requiredEnvLinks": {
+        "AIRTABLE_API_KEY": "https://airtable.com/create/tokens"
+      },
+      "requiredEnvDescriptions": {
+        "AIRTABLE_API_KEY": "Airtable Personal Access Token"
+      },
+      "optionalEnv": [],
+      "verified": true,
+      "popularity": 1800,
+      "tags": ["airtable", "spreadsheet", "database", "records", "tables", "data"]
+    },
+    {
+      "id": "bigquery",
+      "displayName": "BigQuery",
+      "description": "Query and explore Google BigQuery datasets and tables",
+      "categories": ["data", "cloud-infra"],
+      "transport": "stdio",
+      "installMethod": "uvx",
+      "package": "mcp-server-bigquery",
+      "args": [],
+      "requiredEnv": ["BIGQUERY_PROJECT", "BIGQUERY_LOCATION"],
+      "requiredEnvLinks": {
+        "BIGQUERY_PROJECT": "https://console.cloud.google.com/project"
+      },
+      "requiredEnvDescriptions": {
+        "BIGQUERY_PROJECT": "Google Cloud project ID",
+        "BIGQUERY_LOCATION": "BigQuery dataset location/region (e.g. US)"
+      },
+      "optionalEnv": [],
+      "verified": true,
+      "popularity": 2000,
+      "tags": ["bigquery", "google", "data", "sql", "analytics", "warehouse", "cloud"]
+    },
+    {
+      "id": "contentful",
+      "displayName": "Contentful",
+      "description": "Manage content entries, assets, and content types in Contentful spaces",
+      "categories": ["cms-content"],
+      "transport": "stdio",
+      "installMethod": "npx",
+      "package": "@contentful/mcp-server",
+      "args": [],
+      "requiredEnv": ["CONTENTFUL_HOST", "CONTENTFUL_SPACE_ID", "CONTENTFUL_ENVIRONMENT_ID", "CONTENTFUL_CMA_TOKEN"],
+      "requiredEnvLinks": {
+        "CONTENTFUL_CMA_TOKEN": "https://app.contentful.com/account/profile/cma_tokens"
+      },
+      "requiredEnvDescriptions": {
+        "CONTENTFUL_HOST": "Contentful API host (e.g. api.contentful.com)",
+        "CONTENTFUL_SPACE_ID": "Contentful Space ID",
+        "CONTENTFUL_ENVIRONMENT_ID": "Contentful Environment ID (e.g. master)",
+        "CONTENTFUL_CMA_TOKEN": "Contentful Content Management API token"
+      },
+      "optionalEnv": [],
+      "verified": true,
+      "popularity": 1500,
+      "tags": ["contentful", "cms", "content", "headless-cms", "content-management"]
+    },
+    {
+      "id": "elasticsearch",
+      "displayName": "Elasticsearch",
+      "description": "Search, index, and manage data in Elasticsearch clusters",
+      "categories": ["search", "data"],
+      "transport": "stdio",
+      "installMethod": "npx",
+      "package": "@elastic/mcp-server-elasticsearch",
+      "args": [],
+      "requiredEnv": ["ES_URL", "ES_API_KEY"],
+      "requiredEnvLinks": {
+        "ES_API_KEY": "https://cloud.elastic.co/"
+      },
+      "requiredEnvDescriptions": {
+        "ES_URL": "Elasticsearch cluster URL",
+        "ES_API_KEY": "Elasticsearch API key (Elastic Cloud Console > API Keys)"
+      },
+      "optionalEnv": [],
+      "verified": true,
+      "popularity": 2500,
+      "tags": ["elasticsearch", "elastic", "search", "indexing", "full-text", "analytics"]
+    },
+    {
+      "id": "replicate",
+      "displayName": "Replicate",
+      "description": "Run and manage AI models on Replicate's cloud infrastructure",
+      "categories": ["ai-ml"],
+      "transport": "stdio",
+      "installMethod": "npx",
+      "package": "replicate-mcp",
+      "args": [],
+      "requiredEnv": ["REPLICATE_API_TOKEN"],
+      "requiredEnvLinks": {
+        "REPLICATE_API_TOKEN": "https://replicate.com/account/api-tokens"
+      },
+      "requiredEnvDescriptions": {
+        "REPLICATE_API_TOKEN": "Replicate API token"
+      },
+      "optionalEnv": [],
+      "verified": true,
+      "popularity": 1800,
+      "tags": ["replicate", "ai", "ml", "models", "inference", "cloud"]
+    },
+    {
+      "id": "snowflake",
+      "displayName": "Snowflake",
+      "description": "Query and manage Snowflake data warehouses, schemas, and tables",
+      "categories": ["data", "cloud-infra"],
+      "transport": "stdio",
+      "installMethod": "uvx",
+      "package": "snowflake-labs-mcp",
+      "args": [],
+      "requiredEnv": ["SNOWFLAKE_ACCOUNT", "SNOWFLAKE_USER", "SNOWFLAKE_PASSWORD"],
+      "requiredEnvLinks": {},
+      "requiredEnvDescriptions": {
+        "SNOWFLAKE_ACCOUNT": "Snowflake account identifier",
+        "SNOWFLAKE_USER": "Snowflake username",
+        "SNOWFLAKE_PASSWORD": "Snowflake password"
+      },
+      "optionalEnv": [],
+      "verified": true,
+      "popularity": 2000,
+      "tags": ["snowflake", "data-warehouse", "sql", "analytics", "cloud", "data"]
+    },
+    {
+      "id": "pagerduty",
+      "displayName": "PagerDuty",
+      "description": "Manage PagerDuty incidents, services, and on-call schedules",
+      "categories": ["observability"],
+      "transport": "stdio",
+      "installMethod": "uvx",
+      "package": "pagerduty-mcp-server",
+      "args": [],
+      "requiredEnv": ["PAGERDUTY_USER_API_KEY"],
+      "requiredEnvLinks": {},
+      "requiredEnvDescriptions": {
+        "PAGERDUTY_USER_API_KEY": "PagerDuty user API key (My Profile > User Settings > Create API User Token)"
+      },
+      "optionalEnv": [],
+      "verified": true,
+      "popularity": 1500,
+      "tags": ["pagerduty", "incidents", "on-call", "alerting", "observability"]
+    },
+    {
+      "id": "algolia",
+      "displayName": "Algolia",
+      "description": "Manage Algolia search indices, records, and search configuration",
+      "categories": ["search"],
+      "transport": "stdio",
+      "installMethod": "npx",
+      "package": "algolia-mcp",
+      "args": [],
+      "requiredEnv": ["ALGOLIA_APPLICATION_ID", "ALGOLIA_API_KEY"],
+      "requiredEnvLinks": {
+        "ALGOLIA_APPLICATION_ID": "https://dashboard.algolia.com/account/api-keys",
+        "ALGOLIA_API_KEY": "https://dashboard.algolia.com/account/api-keys"
+      },
+      "requiredEnvDescriptions": {
+        "ALGOLIA_APPLICATION_ID": "Algolia Application ID",
+        "ALGOLIA_API_KEY": "Algolia Admin API key"
+      },
+      "optionalEnv": [],
+      "verified": true,
+      "popularity": 1500,
+      "tags": ["algolia", "search", "indexing", "full-text", "autocomplete"]
+    },
+    {
+      "id": "typesense",
+      "displayName": "Typesense",
+      "description": "Manage Typesense search collections, documents, and search configuration",
+      "categories": ["search"],
+      "transport": "stdio",
+      "installMethod": "npx",
+      "package": "typesense-mcp-server",
+      "args": [],
+      "requiredEnv": ["TYPESENSE_API_KEY", "TYPESENSE_HOST", "TYPESENSE_PORT", "TYPESENSE_PROTOCOL"],
+      "requiredEnvLinks": {},
+      "requiredEnvDescriptions": {
+        "TYPESENSE_API_KEY": "Typesense API key",
+        "TYPESENSE_HOST": "Typesense server host",
+        "TYPESENSE_PORT": "Typesense server port (default 8108)",
+        "TYPESENSE_PROTOCOL": "Protocol (http or https)"
+      },
+      "optionalEnv": [],
+      "verified": true,
+      "popularity": 1000,
+      "tags": ["typesense", "search", "indexing", "full-text", "open-source"]
+    },
+    {
+      "id": "auth0",
+      "displayName": "Auth0",
+      "description": "Manage Auth0 tenants, applications, users, and authentication configurations",
+      "categories": ["auth"],
+      "transport": "stdio",
+      "installMethod": "npx",
+      "package": "@auth0/auth0-mcp-server",
+      "args": [],
+      "requiredEnv": [],
+      "requiredEnvLinks": {},
+      "requiredEnvDescriptions": {},
+      "optionalEnv": [],
+      "verified": true,
+      "popularity": 2000,
+      "tags": ["auth0", "authentication", "identity", "oauth", "users", "auth"]
+    },
+    {
+      "id": "clerk",
+      "displayName": "Clerk",
+      "description": "Manage Clerk users, organizations, and authentication for your applications",
+      "categories": ["auth"],
+      "transport": "stdio",
+      "installMethod": "npx",
+      "package": "@clerk/agent-toolkit",
+      "args": ["-p", "local-mcp"],
+      "requiredEnv": ["CLERK_SECRET_KEY"],
+      "requiredEnvLinks": {
+        "CLERK_SECRET_KEY": "https://dashboard.clerk.com/"
+      },
+      "requiredEnvDescriptions": {
+        "CLERK_SECRET_KEY": "Clerk secret key (starts with sk_, from Dashboard > API Keys)"
+      },
+      "optionalEnv": [],
+      "verified": true,
+      "popularity": 1800,
+      "tags": ["clerk", "authentication", "users", "identity", "auth"]
+    },
+    {
+      "id": "cloudinary",
+      "displayName": "Cloudinary",
+      "description": "Upload, transform, and manage media assets in Cloudinary",
+      "categories": ["storage", "cms-content"],
+      "transport": "stdio",
+      "installMethod": "npx",
+      "package": "@cloudinary/asset-management-mcp",
+      "args": [],
+      "requiredEnv": ["CLOUDINARY_CLOUD_NAME", "CLOUDINARY_API_KEY", "CLOUDINARY_API_SECRET"],
+      "requiredEnvLinks": {
+        "CLOUDINARY_API_KEY": "https://console.cloudinary.com/settings/api-keys"
+      },
+      "requiredEnvDescriptions": {
+        "CLOUDINARY_CLOUD_NAME": "Cloudinary cloud name",
+        "CLOUDINARY_API_KEY": "Cloudinary API key",
+        "CLOUDINARY_API_SECRET": "Cloudinary API secret"
+      },
+      "optionalEnv": [],
+      "verified": true,
+      "popularity": 1500,
+      "tags": ["cloudinary", "images", "media", "cdn", "storage", "assets"]
+    },
+    {
+      "id": "pinecone",
+      "displayName": "Pinecone",
+      "description": "Manage and query Pinecone vector database indexes for similarity search",
+      "categories": ["storage", "ai-ml"],
+      "transport": "stdio",
+      "installMethod": "npx",
+      "package": "@pinecone-database/mcp",
+      "args": [],
+      "requiredEnv": ["PINECONE_API_KEY"],
+      "requiredEnvLinks": {
+        "PINECONE_API_KEY": "https://app.pinecone.io/"
+      },
+      "requiredEnvDescriptions": {
+        "PINECONE_API_KEY": "Pinecone API key from the Pinecone Console"
+      },
+      "optionalEnv": [],
+      "verified": true,
+      "popularity": 2000,
+      "tags": ["pinecone", "vector-database", "embeddings", "similarity-search", "ai"]
+    },
+    {
+      "id": "qdrant",
+      "displayName": "Qdrant",
+      "description": "Store and search vector embeddings in Qdrant for semantic search and RAG",
+      "categories": ["storage", "ai-ml"],
+      "transport": "stdio",
+      "installMethod": "uvx",
+      "package": "mcp-server-qdrant",
+      "args": [],
+      "requiredEnv": ["QDRANT_URL", "COLLECTION_NAME"],
+      "requiredEnvLinks": {
+        "QDRANT_API_KEY": "https://cloud.qdrant.io/"
+      },
+      "requiredEnvDescriptions": {
+        "QDRANT_URL": "URL of your Qdrant instance",
+        "COLLECTION_NAME": "Name of the Qdrant collection to use"
+      },
+      "optionalEnv": ["QDRANT_API_KEY", "EMBEDDING_MODEL"],
+      "verified": true,
+      "popularity": 1500,
+      "tags": ["qdrant", "vector-database", "embeddings", "similarity-search", "rag", "ai"]
+    },
+    {
+      "id": "plaid",
+      "displayName": "Plaid",
+      "description": "Access financial data, transactions, and account information through Plaid's API",
+      "categories": ["finance"],
+      "transport": "stdio",
+      "installMethod": "uvx",
+      "package": "mcp-server-plaid",
+      "args": [],
+      "requiredEnv": ["PLAID_CLIENT_ID", "PLAID_SECRET"],
+      "requiredEnvLinks": {
+        "PLAID_CLIENT_ID": "https://dashboard.plaid.com/developers/keys",
+        "PLAID_SECRET": "https://dashboard.plaid.com/developers/keys"
+      },
+      "requiredEnvDescriptions": {
+        "PLAID_CLIENT_ID": "Plaid client ID",
+        "PLAID_SECRET": "Plaid secret key (sandbox, development, or production)"
+      },
+      "optionalEnv": [],
+      "verified": true,
+      "popularity": 1500,
+      "tags": ["plaid", "finance", "banking", "transactions", "accounts", "fintech"]
+    },
+    {
+      "id": "mcp-docker",
+      "displayName": "Docker",
+      "description": "Manage Docker containers, images, volumes, and networks",
+      "categories": ["cloud-infra"],
+      "transport": "stdio",
+      "installMethod": "docker",
+      "package": "mcp/docker",
+      "dockerImage": "mcp/docker:latest",
+      "dockerPorts": [],
+      "dockerVolumes": ["/var/run/docker.sock:/var/run/docker.sock"],
+      "args": [],
+      "requiredEnv": [],
+      "requiredEnvLinks": {},
+      "requiredEnvDescriptions": {},
+      "optionalEnv": [],
+      "verified": false,
+      "popularity": 3000,
+      "tags": ["docker", "containers", "images", "devops"]
+    },
+    {
+      "id": "chromadb",
+      "displayName": "ChromaDB",
+      "description": "Vector database for AI embeddings with collection management and similarity search",
+      "categories": ["storage", "ai-ml"],
+      "transport": "stdio",
+      "installMethod": "docker",
+      "package": "chromadb/chroma",
+      "dockerImage": "chromadb/chroma:latest",
+      "dockerPorts": ["8000:8000"],
+      "dockerVolumes": [],
+      "args": [],
+      "requiredEnv": [],
+      "requiredEnvLinks": {},
+      "requiredEnvDescriptions": {},
+      "optionalEnv": [],
+      "verified": false,
+      "popularity": 4000,
+      "tags": ["chromadb", "vector-database", "embeddings", "ai", "similarity-search"]
+    }
+  ]
+}

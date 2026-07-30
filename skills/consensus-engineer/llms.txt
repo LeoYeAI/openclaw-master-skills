@@ -1,0 +1,2432 @@
+# consensus-tools -- Complete System Reference
+
+> Decision infrastructure for agentic systems.
+> Apache-2.0 | pnpm monorepo | Node.js >= 20 | TypeScript
+
+Repository: https://github.com/consensus-tools/consensus-tools
+Package scope: @consensus-tools/*
+
+---
+
+## Overview
+
+consensus-tools is a pnpm + Turbo monorepo providing deterministic, auditable
+decision-making primitives for autonomous AI agents. The system supports:
+
+- **Guard evaluation**: Pre-execution governance for 7 action domains
+- **Consensus resolution**: 9 pluggable policy algorithms for multi-agent voting
+- **Persona system**: Reputation-tracked evaluator personas with respawn lifecycle
+- **Workflow engine**: DAG-based execution with cron scheduling and HITL gates
+- **MCP server**: 29 tools exposing the full system to Claude and other LLM clients
+- **Runtime wrapper**: Function-level consensus gates with retry and escalation
+
+Core invariant: same input always produces same output. All decisions create
+auditable artifacts. Idempotency keys prevent duplicate decisions.
+
+### Package count
+- 14 packages under packages/
+- 5 adapters under packages/adapters/
+- 3 apps under apps/
+- 9 examples under examples/
+
+---
+
+## Quick Start
+
+### Install
+```bash
+cd consensus-tools
+pnpm install    # pnpm 9.15.0 required
+pnpm build      # Turbo build (all packages)
+```
+
+### Run tests
+```bash
+pnpm test       # Turbo test (depends on build)
+pnpm typecheck  # TypeScript checking
+pnpm lint       # Lint all packages
+pnpm dep-check  # Dependency-cruiser tier enforcement
+```
+
+### Minimal guard evaluation (TypeScript)
+```ts
+import { GuardHandler } from "@consensus-tools/guards";
+import { createStorage } from "@consensus-tools/core";
+
+const storage = await createStorage({
+  mode: "local",
+  local: {
+    storage: { kind: "json", path: "./state.json" },
+    // ... rest of config
+  },
+});
+await storage.init();
+
+const handler = new GuardHandler({ storage });
+const result = await handler.evaluate({
+  boardId: "my-board",
+  action: {
+    type: "send_email",
+    payload: { to: "user@example.com", body: "Hello world" },
+  },
+});
+// result.decision: "ALLOW" | "BLOCK" | "REWRITE" | "REQUIRE_HUMAN"
+```
+
+### Start MCP server for Claude
+```bash
+npx @consensus-tools/mcp
+# or set in Claude Desktop config:
+# { "mcpServers": { "consensus": { "command": "npx", "args": ["@consensus-tools/mcp"] } } }
+```
+
+### Environment variables
+```
+CONSENSUS_STORAGE_PATH  - Override state file location (default: ~/.local/share/consensus-tools/state.json)
+CONSENSUS_AGENT_ID      - Agent identity for MCP server (default: "mcp-agent")
+```
+
+---
+
+## Architecture -- Tier System
+
+Dependencies flow strictly downward. CI enforces via `pnpm dep-check`
+(dependency-cruiser). No circular dependencies allowed.
+
+```
+Tier 0: Foundation (zero internal deps)
+  schemas, secrets
+
+Tier 1: Primitives (depend on Tier 0 only)
+  guards, telemetry, sdk-client, evals, storage, personas
+  adapters: integrations, notifications
+
+Tier 2: Engines (depend on Tier 0-1)
+  core, policies
+
+Tier 3: Composition (depend on Tier 0-2)
+  workflows, wrapper
+
+Tier 4: Surface (depend on any lower tier)
+  sdk-node, mcp, openclaw, cli
+  apps: local-board, dashboard
+```
+
+### Dependency rules enforced
+- Tier 0 packages must not import any other internal package
+- Tier 1 may only import Tier 0
+- Tier 2 may only import Tier 0-1
+- Tier 3 may only import Tier 0-2
+- No circular dependencies (type-only imports exempted)
+- Only barrel exports allowed (no deep imports into package internals)
+
+### Two parallel data paths
+
+1. **Job path** (JobEngine): post -> claim -> submit -> vote -> resolve
+   Populates: jobs, bids, claims, submissions, votes, resolutions, ledger
+
+2. **Workflow path** (WorkflowRunner -> NodeExecutor): trigger -> agent -> guard -> hitl -> action
+   Populates: workflows, workflowRuns, participants, consensusVotes, guardResults, resolutions, ledger
+
+Shared by both: audit, errors, agents, hitlApprovals, policyAssignments
+
+---
+
+## Guard Domains (7 built-in)
+
+Guards are deterministic evaluators that inspect action payloads and return
+votes with risk scores. Each domain has specific detection rules.
+
+Package: `@consensus-tools/guards`
+Entry: `evaluatorVotes(input: GuardEvaluateInput): GuardVote[]`
+
+### 1. send_email
+- Evaluator: `email-risk`
+- Blocks: external attachments with secrets patterns (api_key, token, password, secret)
+- Blocks: hard-block flags in body text
+- Risk: 0.92 (attachment+secrets), 0.95 (hard-block), 0.2 (clean)
+
+### 2. code_merge
+- Evaluator: `merge-risk`
+- Blocks: tests_passed === false (risk 0.9)
+- Blocks: security vulnerability patterns in diff (sql injection, xss, rce, secret leak) (risk 0.95)
+- Rewrites: sensitive file touches (auth, security, permission, crypto) (risk 0.82)
+- Allows: no sensitive files (risk 0.25)
+
+### 3. publish
+- Evaluator: `publish-risk`
+- Rewrites: profanity or PII patterns (SSN format) (risk 0.75)
+- Rewrites: hard-block content flags (risk 0.85)
+- Allows: clean text (risk 0.2)
+
+### 4. support_reply
+- Evaluator: `support-risk`
+- Rewrites: escalation language (refund, lawsuit, legal action) (risk 0.7)
+- Rewrites: safety flags (risk 0.8)
+- Allows: standard replies (risk 0.15)
+
+### 5. agent_action
+- Evaluator: `agent-risk`
+- Blocks: irreversible actions (risk 0.85-0.95 based on risk_level)
+- Rewrites: external side effects (risk 0.6)
+- Allows: reversible actions (risk 0.3)
+
+### 6. deployment
+- Evaluator: `deploy-risk`
+- Blocks: CI checks failed (risk 0.95)
+- Blocks: requires rollback but no rollback plan (risk 0.9)
+- Rewrites: production deployments (risk 0.8)
+- Allows: non-production (risk 0.2)
+
+### 7. permission_escalation
+- Evaluator: `perm-risk`
+- Blocks: wildcard permission or resource (risk 0.95)
+- Rewrites: break-glass escalation (risk 0.9)
+- Rewrites: admin/superuser/root role (risk 0.8)
+- Allows: standard permission changes (risk 0.35)
+
+### Hard-block flags (always BLOCK, risk 1.0)
+Detected via `detectHardBlockFlags(text)`:
+- SENSITIVE_DATA: ssn, social security, dob, account number
+- LEGAL_CLAIM: legal certainty, lawsuit, liable
+- MEDICAL_CLAIM: medical certainty, diagnose, cure
+- THREAT_OR_HARASSMENT: threat, harass, abuse
+- CONFIDENTIALITY_BREACH: confidential, nda, private key
+- WRONGDOING_INSTRUCTION: bypass, exploit, steal, hack
+- DISALLOWED_GUARANTEE: guarantee, guaranteed, promise forever
+
+### Guard decisions
+Type: `GuardDecision = "ALLOW" | "BLOCK" | "REWRITE" | "REQUIRE_HUMAN"`
+
+Decision flow (computeDecision):
+1. Combined risk > riskThreshold:
+   - Any NO vote -> BLOCK
+   - Majority REWRITE (>50% weighted) -> REWRITE
+   - Otherwise -> BLOCK
+2. Quorum not met -> REQUIRE_HUMAN
+3. Risk acceptable + quorum met -> ALLOW
+
+### GuardHandler class
+```ts
+import { GuardHandler } from "@consensus-tools/guards";
+import type { GuardHandlerOptions } from "@consensus-tools/guards";
+
+interface GuardHandlerOptions {
+  storage: IStorage;
+  policy?: Partial<GuardPolicy>;
+  enableLogging?: boolean;
+}
+
+const handler = new GuardHandler({ storage, policy: { quorum: 0.8 } });
+const result: GuardResult = await handler.evaluate(input);
+```
+
+### GuardPolicy defaults
+```ts
+{
+  policyId: "default",
+  version: "v1",
+  quorum: 0.7,           // minimum weighted YES ratio
+  riskThreshold: 0.7,    // above this -> high-risk path
+  hitlRequiredAboveRisk: 0.7, // REWRITE -> REQUIRE_HUMAN threshold
+  options: {},
+}
+```
+
+### Custom evaluators
+```ts
+import { GuardEvaluatorRegistry, type EvaluatorFn } from "@consensus-tools/guards";
+
+const registry = new GuardEvaluatorRegistry();
+registry.register("my_custom_action", (input) => {
+  return [{ evaluator: "custom", vote: "YES", reason: "ok", risk: 0.1 }];
+});
+```
+
+---
+
+## Consensus Policies (9 algorithms)
+
+Package: `@consensus-tools/policies`
+Canonical implementations in: `@consensus-tools/core` (resolve/resolve.ts)
+
+Type: `ConsensusPolicyType`
+
+### 1. FIRST_SUBMISSION_WINS
+First valid submission is automatically selected. No voting needed.
+Use case: time-critical tasks, first-come-first-served bounties.
+Function: `firstSubmissionWins(input: ConsensusInput): ConsensusResult`
+
+### 2. HIGHEST_CONFIDENCE_SINGLE
+Selects the submission with the highest confidence score.
+Config: `minConfidence?: number`
+Use case: expert tasks where self-assessed quality matters.
+Function: `highestConfidenceSingle(input: ConsensusInput): ConsensusResult`
+
+### 3. APPROVAL_VOTE
+Weighted voting with configurable weight modes.
+Config:
+- `approvalVote.weightMode: "equal" | "explicit" | "reputation"`
+- `approvalVote.settlement: "immediate" | "staked" | "oracle"`
+- `quorum?: number`
+- `minScore?: number`
+Use case: democratic decisions, committee approvals.
+Function: `approvalVote(input: ConsensusInput): ConsensusResult`
+
+### 4. OWNER_PICK
+Job creator manually selects the winning submission.
+Config: `manualSubmissionId` in resolve input
+Use case: bounties, creative tasks where quality is subjective.
+Function: `ownerPick(input: ConsensusInput): ConsensusResult`
+
+### 5. TRUSTED_ARBITER
+A designated trusted agent makes the final decision.
+Config: `trustedArbiterAgentId: string`
+Use case: escalation paths, dispute resolution.
+Function: `trustedArbiter(input: ConsensusInput): ConsensusResult`
+
+### 6. TOP_K_SPLIT
+Selects top K submissions and splits reward among them.
+Config:
+- `topK: number`
+- `ordering: "confidence" | "score"`
+Use case: multi-winner bounties, diverse solution gathering.
+Function: `topKSplit(input: ConsensusInput): ConsensusResult`
+
+### 7. MAJORITY_VOTE
+Simple majority vote on submissions.
+Config:
+- `quorum?: number`
+- `tieBreak: "earliest" | "confidence" | "arbiter"`
+- `minMargin?: number`
+Use case: binary decisions, go/no-go gates.
+Function: `majorityVote(input: ConsensusInput): ConsensusResult`
+
+### 8. WEIGHTED_VOTE_SIMPLE
+Votes weighted by explicit per-agent weights.
+Config: `quorum?: number`, `minScore?: number`
+Use case: stakeholder voting with unequal influence.
+Function: `weightedVoteSimple(input: ConsensusInput): ConsensusResult`
+
+### 9. WEIGHTED_REPUTATION
+Votes weighted by agent reputation scores.
+Config: `quorum?: number`, `minScore?: number`
+Use case: meritocratic governance, earned-trust systems.
+Function: `weightedReputation(input: ConsensusInput): ConsensusResult`
+
+### Policy resolver interface
+```ts
+import type { ConsensusInput, ConsensusResult, PolicyResolver } from "@consensus-tools/schemas";
+
+// ConsensusInput
+interface ConsensusInput {
+  job: Job;
+  submissions: Submission[];
+  votes: Vote[];
+  reputation: (agentId: string) => number;
+  manualWinnerAgentIds?: string[];
+  manualSubmissionId?: string;
+}
+
+// ConsensusResult
+interface ConsensusResult {
+  winners: string[];
+  winningSubmissionIds: string[];
+  consensusTrace: Record<string, unknown>;
+  finalArtifact: Record<string, unknown> | null;
+}
+```
+
+### Policy registry
+```ts
+import { createPolicyRegistry, createRegistryResolver } from "@consensus-tools/policies";
+
+const registry = createPolicyRegistry(); // pre-loaded with all 9
+registry.set("MY_CUSTOM", myCustomResolver); // extend
+
+const resolver = createRegistryResolver(registry);
+const result = resolver(consensusInput);
+```
+
+---
+
+## Persona System
+
+Package: `@consensus-tools/personas`
+
+Personas are evaluator identities with roles, reputation scores, and biases.
+Three built-in packs:
+
+### Pack: "default" (3 evaluation personas)
+- **security-analyst** (role: security) - Security vulnerabilities, credential exposure
+- **compliance-officer** (role: compliance) - Regulatory compliance, data handling
+- **operations-engineer** (role: operations) - Reliability, blast radius, operational safety
+
+### Pack: "skill-review" (5 evaluation personas)
+- **doc-architect** (role: structure) - Document structure, heading hierarchy
+- **api-accuracy** (role: accuracy) - Command/flag/argument correctness
+- **agent-usability** (role: usability) - AI agent zero-guess invocations
+- **completeness-auditor** (role: completeness) - Missing commands, edge cases
+- **style-guardian** (role: style) - Formatting consistency, markdown syntax
+
+### Pack: "governance" (5 lifecycle personas with reputation)
+- **reliability-sentinel** (role: reliability, bias: failure-first, rep: 0.55)
+- **security-gatekeeper** (role: security, bias: least-privilege, rep: 0.55)
+- **operations-realist** (role: operations, bias: operability, rep: 0.55)
+- **risk-controller** (role: risk, bias: downside-aware, rep: 0.55)
+- **policy-auditor** (role: policy, bias: contract-first, rep: 0.55)
+
+### Core types
+```ts
+interface PersonaConfig {
+  id: string;
+  name: string;
+  role: string;
+  reputation?: number;          // 0-1, used by governance personas
+  bias?: string;
+  non_negotiables?: string[];
+  failure_modes?: string[];
+}
+
+interface EvalPersonaConfig extends PersonaConfig {
+  systemPrompt: string;
+  evaluationFocus: string;
+}
+
+interface PersonaSet {
+  persona_set_id: string;
+  board_id?: string;
+  created_at: string;
+  personas: PersonaConfig[];
+  meta?: { pack?: string; domain?: string };
+  lineage?: { parent_persona_set_id: string };
+}
+```
+
+### Reputation engine
+```ts
+import { updateReputation, DEFAULT_RULESET } from "@consensus-tools/personas";
+
+// DEFAULT_RULESET:
+// rewardAligned: 0.02, penalizeMisaligned: -0.03,
+// highConfidencePenaltyBoost: -0.02, minRep: 0.05, maxRep: 0.95
+
+const result: ReputationDeltaResult = updateReputation(
+  votes,          // { persona_id, vote, confidence }[]
+  finalDecision,  // "ALLOW" | "BLOCK" | "REQUIRE_REWRITE"
+  personas,       // PersonaConfig[]
+  ruleset?,       // optional custom ReputationRuleset
+);
+// result.changes: { persona_id, reputation_before, delta, reputation_after, reasons }[]
+```
+
+Alignment rules:
+- ALLOW + YES = aligned
+- BLOCK + NO = aligned
+- REQUIRE_REWRITE + REWRITE = aligned
+- Misaligned = penalty; misaligned + high confidence (>=0.8) = extra penalty
+
+### Respawn
+```ts
+import { buildLearningSummary, mutatePersona } from "@consensus-tools/personas";
+```
+
+### API
+```ts
+import { getPersonasByPack, getEvalPersonas, PERSONA_PACKS } from "@consensus-tools/personas";
+
+const personas = getPersonasByPack("governance");       // PersonaConfig[]
+const evalPersonas = getEvalPersonas("default");        // EvalPersonaConfig[]
+const packNames = PERSONA_PACKS;                        // ["default", "skill-review", "governance"]
+```
+
+---
+
+## MCP Tools (29)
+
+Package: `@consensus-tools/mcp`
+Binary: `consensus-tools-mcp` (via bin field)
+Entry: `createMcpServer(ctx: McpContext): Server`
+
+### Guard tools (10)
+| Tool | Description |
+|------|-------------|
+| `guard.evaluate` | Evaluate any action against guard policies (dynamic type) |
+| `guard.send_email` | Evaluate outbound email (secrets, attachments, allowlists) |
+| `guard.code_merge` | Evaluate PR/merge (sensitive files, CI, reviewers) |
+| `guard.publish` | Evaluate content publishing (profanity, PII, blocked words) |
+| `guard.support_reply` | Evaluate support reply (escalation, customer tier) |
+| `guard.agent_action` | Evaluate agent action (irreversibility, tool allow/blocklists) |
+| `guard.deployment` | Evaluate deployment (env, CI, rollout strategy, rollback) |
+| `guard.permission_escalation` | Evaluate permission change (break-glass, MFA, scope) |
+| `policy.assign` | Assign guard policy to board (weighting mode, quorum) |
+| `policy.list` | List all policy assignments (optional board filter) |
+
+### Agent tools (4)
+| Tool | Description |
+|------|-------------|
+| `agent.register` | Register new agent (id, name, kind, scopes) |
+| `agent.list` | List all registered agents |
+| `agent.suspend` | Suspend agent by ID |
+| `agent.activate` | Re-activate suspended agent |
+
+### Consensus tools (5)
+| Tool | Description |
+|------|-------------|
+| `consensus_post_job` | Post new consensus job to local board |
+| `consensus_list_jobs` | List jobs with optional status/tag filters |
+| `consensus_submit` | Submit artifacts to a job |
+| `consensus_vote` | Vote on a submission (score, rationale, weight) |
+| `consensus_status` | Get job status and resolution details |
+
+### HITL tools (1)
+| Tool | Description |
+|------|-------------|
+| `human.approve` | Submit human approval (YES/NO/REWRITE) for HITL review |
+
+### Board tools (4)
+| Tool | Description |
+|------|-------------|
+| `board.list` | List all consensus boards |
+| `board.get` | Get full board record by ID (jobs, submissions, guard results) |
+| `run.get` | Get run record and event history by ID |
+| `audit.search` | Full-text search across audit events (field:value or free-text) |
+
+### Workflow tools (5)
+| Tool | Description |
+|------|-------------|
+| `workflow.create` | Create workflow definition (optional template) |
+| `workflow.run` | Execute workflow by ID |
+| `workflow.list` | List all registered workflows |
+| `cron.register` | Register cron schedule for workflow (5-field cron) |
+| `cron.list` | List all cron schedules |
+
+### MCP resources (3 templates)
+| URI Template | Description |
+|-------------|-------------|
+| `consensus://boards/{boardId}/jobs` | Jobs for a board |
+| `consensus://boards/{boardId}/ledger` | Ledger entries for a board |
+| `consensus://boards/{boardId}/agents` | Registered agents for a board |
+
+### MCP prompts (3)
+| Prompt | Description |
+|--------|-------------|
+| `post-job` | Create consensus job with right parameters |
+| `review-submission` | Review and vote on submissions |
+| `guard-evaluate` | Evaluate action through guard engine |
+
+### McpContext interface
+```ts
+interface McpContext {
+  engine: JobEngine;
+  agentRegistry: AgentRegistry;
+  guardEngine: GuardEngine;
+  hitlTracker: HitlTracker;
+  storage: IStorage;
+  agentId: string;
+  workflowRunner?: WorkflowRunner;
+  cronScheduler?: CronScheduler;
+}
+```
+
+---
+
+## Schema Types
+
+Package: `@consensus-tools/schemas` (Tier 0, zero internal deps)
+All types have both Zod schemas (runtime validation) and TypeScript types.
+
+### Policy types
+```ts
+type ConsensusPolicyType =
+  | "FIRST_SUBMISSION_WINS" | "HIGHEST_CONFIDENCE_SINGLE"
+  | "APPROVAL_VOTE" | "OWNER_PICK" | "TRUSTED_ARBITER"
+  | "TOP_K_SPLIT" | "MAJORITY_VOTE"
+  | "WEIGHTED_VOTE_SIMPLE" | "WEIGHTED_REPUTATION";
+
+interface ConsensusPolicyConfig {
+  type: ConsensusPolicyType;
+  trustedArbiterAgentId?: string;
+  minConfidence?: number;
+  topK?: number;
+  ordering?: "confidence" | "score";
+  quorum?: number;
+  minScore?: number;
+  minMargin?: number;
+  tieBreak?: "earliest" | "confidence" | "arbiter";
+  approvalVote?: ApprovalVoteConfig;
+}
+
+interface ApprovalVoteConfig {
+  weightMode?: "equal" | "explicit" | "reputation";
+  settlement?: "immediate" | "staked" | "oracle";
+  oracle?: "trusted_arbiter";
+  voteSlashPercent?: number;
+}
+
+interface SlashingPolicy {
+  enabled: boolean;
+  slashPercent: number;
+  slashFlat: number;
+}
+```
+
+### Job types
+```ts
+type JobMode = "SUBMISSION" | "VOTING";
+type JobStatus = "OPEN" | "CLOSED" | "RESOLVED" | "CANCELLED"
+  | "CLAIMED" | "IN_PROGRESS" | "SUBMITTED" | "EXPIRED";
+
+interface Job {
+  id: string;
+  boardId?: string;
+  title: string;
+  description: string;
+  createdAt: string;
+  expiresAt: string;
+  createdByAgentId: string;
+  mode?: JobMode;
+  tags: string[];
+  priority: number;
+  reward: number;
+  stakeRequired: number;
+  maxParticipants: number;
+  minParticipants: number;
+  consensusPolicy: ConsensusPolicyConfig;
+  slashingPolicy: SlashingPolicy;
+  status: JobStatus;
+  // ... additional optional fields
+}
+```
+
+### Submission types
+```ts
+type SubmissionStatus = "VALID" | "WITHDRAWN" | "SELECTED"
+  | "REJECTED" | "SUBMITTED" | "ACCEPTED";
+
+interface Submission {
+  id: string;
+  jobId: string;
+  agentId: string;
+  summary: string;
+  confidence: number;
+  artifacts: Record<string, unknown>;
+  status: SubmissionStatus;
+  // ... additional fields
+}
+```
+
+### Vote types
+```ts
+type VoteTargetType = "SUBMISSION" | "CHOICE";
+
+interface Vote {
+  id: string;
+  jobId: string;
+  agentId: string;
+  score: number;
+  submissionId?: string;
+  weight?: number;
+  stakeAmount?: number;
+  rationale?: string;
+  createdAt: string;
+}
+```
+
+### Resolution types
+```ts
+interface Resolution {
+  jobId: string;
+  runId?: string;
+  boardId?: string;
+  resolvedAt: string;
+  winners: string[];
+  winningSubmissionIds: string[];
+  payouts: { agentId: string; amount: number }[];
+  slashes: { agentId: string; amount: number; reason: string }[];
+  consensusTrace: Record<string, unknown>;
+  finalArtifact: Record<string, unknown> | null;
+  auditLog: string[];
+}
+```
+
+### Guard types
+```ts
+type GuardType = "send_email" | "code_merge" | "publish"
+  | "support_reply" | "agent_action" | "deployment"
+  | "permission_escalation";
+
+type GuardDecision = "ALLOW" | "BLOCK" | "REWRITE" | "REQUIRE_HUMAN";
+type GuardVoteValue = "YES" | "NO" | "REWRITE";
+
+interface GuardVote {
+  evaluator: string;
+  vote: GuardVoteValue;
+  reason: string;
+  risk: number;      // 0-1
+}
+
+interface WeightedGuardVote extends GuardVote {
+  weight: number;
+  confidence: number;
+  reputation?: number;
+}
+
+interface GuardPolicy {
+  policyId: string;
+  version: string;
+  quorum: number;              // 0-1
+  riskThreshold: number;       // 0-1
+  hitlRequiredAboveRisk: number; // 0-1
+  options: Record<string, unknown>;
+}
+
+interface GuardEvaluateInput {
+  boardId: string;
+  runId?: string;
+  agentId?: string;
+  action: { type: string; payload: Record<string, unknown> };
+  policyPack?: string;
+}
+
+interface GuardResult {
+  decision: GuardDecision;
+  reason: string;
+  risk_score: number;
+  audit_id: string;
+  suggested_rewrite?: unknown;
+  next_step?: { tool: string; input: unknown };
+  weighted_yes?: number;
+  votes?: GuardVote[];
+  guard_type?: GuardType;
+}
+
+type WeightingMode = "static" | "reputation" | "hybrid";
+
+interface VoteTally {
+  yes: number;
+  no: number;
+  rewrite: number;
+  totalWeight: number;
+  weightedYes: number;
+  weightedNo: number;
+  weightedRewrite: number;
+  voterCount: number;
+}
+```
+
+### Agent types
+```ts
+type AgentKind = "internal" | "external";
+type AgentStatus = "active" | "suspended";
+
+interface Agent {
+  id: string;
+  name: string;
+  kind: AgentKind;
+  scopes: string[];
+  apiKeyHash: string | null;
+  status: AgentStatus;
+  metadata: Record<string, unknown>;
+  createdAt: string;
+}
+
+interface AgentConfig {
+  id: string;
+  name: string;
+  kind: AgentKind;
+  scopes: string[];
+  apiKeyHash?: string;
+  metadata?: Record<string, unknown>;
+}
+```
+
+### Participant types
+```ts
+type ParticipantSubjectType = "agent" | "human";
+type ParticipantStatus = "active" | "suspended";
+
+interface Participant {
+  id: string;
+  boardId: string;
+  subjectType: ParticipantSubjectType;
+  subjectId: string;
+  role: string;
+  weight: number;
+  reputation: number;
+  status: ParticipantStatus;
+  metadata: Record<string, unknown>;
+  createdAt: string;
+}
+```
+
+### Workflow types
+```ts
+type WorkflowStatus = "pending" | "running" | "completed"
+  | "failed" | "cancelled" | "waiting";
+
+interface Workflow {
+  id: string;
+  name: string;
+  definition: Record<string, unknown>;
+  templateId?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+interface WorkflowRun {
+  id: string;
+  workflowId: string;
+  runId: string;
+  status: WorkflowStatus;
+  cursor?: Record<string, unknown>;
+  createdAt: string;
+  completedAt?: string;
+  result?: string;
+}
+
+interface CronSchedule {
+  id: string;
+  workflowId: string;
+  cronExpression: string;
+  enabled: boolean;
+  lastRunAt: string | null;
+}
+```
+
+### HITL types
+```ts
+type HitlMode = "approval" | "vote";
+type HitlStatus = "pending" | "resolved" | "expired";
+
+interface HitlApproval {
+  id: string;
+  runId: string;
+  boardId: string;
+  workflowId?: string;
+  timeoutSec: number;
+  requiredVotes: number;
+  receivedVotes: number;
+  mode: HitlMode;
+  autoDecisionOnExpiry: string;
+  startedAt: string;
+  status: HitlStatus;
+}
+
+interface HumanDecision {
+  decision: "YES" | "NO" | "REWRITE";
+  approver: string;
+  reason?: string;
+  idempotencyKey: string;
+  createdAt: string;
+}
+```
+
+### Ledger types
+```ts
+type LedgerEntryType = "FAUCET" | "STAKE" | "UNSTAKE" | "PAYOUT"
+  | "SLASH" | "ADJUST" | "ESCROW_MINT" | "WORKFLOW_FEE";
+
+interface LedgerEntry {
+  id: string;
+  at: string;
+  type: LedgerEntryType;
+  agentId: string;
+  amount: number;
+  jobId?: string;
+  reason?: string;
+}
+```
+
+### Telemetry types
+```ts
+type TelemetryEventType =
+  | "job.created" | "job.claimed" | "job.submitted" | "job.voted"
+  | "job.resolved" | "job.expired"
+  | "ledger.faucet" | "ledger.stake" | "ledger.payout" | "ledger.slash"
+  | "wrapper.invoked" | "wrapper.decided" | "wrapper.blocked" | "wrapper.escalated"
+  | "guard.evaluated";
+
+interface TelemetryEvent {
+  id: string;
+  type: TelemetryEventType;
+  timestamp: string;
+  traceId?: string;
+  spanId?: string;
+  metadata?: Record<string, unknown>;
+}
+
+interface TraceSpan {
+  traceId: string;
+  spanId: string;
+  name: string;
+  startTime: string;
+  endTime?: string;
+  status?: "ok" | "error" | "pending";
+}
+```
+
+### Storage state
+```ts
+interface StorageState {
+  jobs: Job[];
+  bids: Bid[];
+  claims: Assignment[];
+  submissions: Submission[];
+  votes: Vote[];
+  resolutions: Resolution[];
+  ledger: LedgerEntry[];
+  audit: AuditEvent[];
+  errors: DiagnosticEntry[];
+  agents: Agent[];
+  participants: Participant[];
+  workflows: Workflow[];
+  workflowRuns: WorkflowRun[];
+  cronSchedules: CronSchedule[];
+  hitlApprovals: HitlApproval[];
+  guardResults: GuardResult[];
+  policyAssignments: PolicyAssignment[];
+  consensusVotes: ConsensusVote[];
+}
+```
+
+### Config
+```ts
+interface ConsensusToolsConfig {
+  mode: "local" | "global";
+  local: {
+    storage: { kind: "sqlite" | "json"; path: string; maxAuditEntries?: number; maxLedgerEntries?: number; maxGuardResults?: number };
+    server: { enabled: boolean; host: string; port: number; authToken: string; corsOrigins?: string | string[]; rateLimit?: { enabled: boolean; windowMs: number; maxRequests: number } };
+    slashingEnabled: boolean;
+    jobDefaults: { reward: number; stakeRequired: number; maxParticipants: number; minParticipants: number; expiresSeconds: number; consensusPolicy: ConsensusPolicyConfig; slashingPolicy: SlashingPolicy };
+    ledger: { faucetEnabled: boolean; initialCreditsPerAgent: number; balances: Record<string, number>; balancesMode?: "initial" | "override" };
+  };
+  global: { baseUrl: string; accessToken: string };
+  agentIdentity: { agentIdSource: "openclaw" | "env" | "manual"; manualAgentId: string };
+  safety: { requireOptionalToolsOptIn: boolean; allowNetworkSideEffects: boolean };
+}
+```
+
+### Input validation schemas
+```ts
+// All have both Zod schema (xxxSchema) and TypeScript type
+interface JobPostInput {
+  title: string;
+  description?: string;
+  mode?: JobMode;
+  reward?: number;
+  tags?: string[];
+  priority?: number;
+  maxParticipants?: number;
+  consensusPolicy?: ConsensusPolicyConfig;
+  expiresSeconds?: number;
+  stakeRequired?: number;
+  boardId?: string;
+  // ... additional optional fields
+}
+
+interface ClaimInput { stakeAmount: number; leaseSeconds: number }
+interface SubmitInput { summary?: string; artifacts?: Record<string, unknown>; confidence?: number }
+interface VoteInput { submissionId?: string; score?: number; rationale?: string; weight?: number; stakeAmount?: number }
+interface ResolveInput { manualWinners?: string[]; manualSubmissionId?: string }
+interface ParticipantCreateInput { boardId: string; subjectType?: "agent" | "human"; subjectId: string; role?: string; weight?: number; reputation?: number }
+interface ConsensusVoteInput { boardId: string; runId: string; participantId: string; decision: "YES" | "NO" | "REWRITE"; confidence?: number; rationale?: string }
+interface WorkflowCreateInput { name: string; definition?: Record<string, unknown>; templateId?: string }
+interface CronRegisterInput { workflowId: string; cronExpression: string }
+```
+
+### PolicyAssignment
+```ts
+interface PolicyAssignment {
+  boardId: string;
+  policyId: string;
+  participants: string[];
+  weightingMode: WeightingMode;  // "static" | "reputation" | "hybrid"
+  quorum: number;
+}
+```
+
+### ConsensusVote (workflow agent verdicts)
+```ts
+interface ConsensusVote {
+  id: string;
+  boardId: string;
+  runId: string;
+  participantId: string;
+  decision: "YES" | "NO" | "REWRITE";
+  confidence: number;
+  rationale: string;
+  idempotencyKey: string;
+  createdAt: string;
+}
+```
+
+---
+
+## Packages -- Tier 0 (Foundation)
+
+### @consensus-tools/schemas (v0.5.0)
+Shared types and Zod schemas -- the contract layer between all packages.
+Zero internal dependencies. Foundation of the monorepo.
+
+**Key exports:**
+- All Zod schemas: `jobSchema`, `voteSchema`, `guardResultSchema`, etc.
+- All TypeScript types: `Job`, `Vote`, `GuardResult`, `GuardEvaluateInput`, etc.
+- Validation schemas: `jobPostInputSchema`, `guardEvaluateInputSchema`, etc.
+- Policy types: `ConsensusPolicyType`, `ConsensusPolicyConfig`
+- Config: `ConsensusToolsConfig`, `consensusToolsConfigSchema`
+- Helper: `parseHumanApprovalYesNo(text: string): "YES" | "NO" | "REWRITE"`
+
+**Dependencies:** zod ^3.23.0
+
+**Use case:** Import types for any consensus-tools integration. All other packages
+depend on this.
+
+```ts
+import { guardEvaluateInputSchema, type GuardResult } from "@consensus-tools/schemas";
+const parsed = guardEvaluateInputSchema.safeParse(rawInput);
+```
+
+### @consensus-tools/secrets (v0.4.0)
+AES-256-GCM credential encryption and storage. Zero internal dependencies.
+
+**Key exports:**
+- `CredentialManager` - Manage encrypted credentials
+- `encrypt(plaintext, key)` - Encrypt with AES-256-GCM
+- `decrypt(ciphertext, key)` - Decrypt
+
+**Dependencies:** none (Node.js crypto)
+
+**Use case:** Store integration API keys (GitHub tokens, Slack tokens) securely
+at rest. Used by sdk-node for webhook auth.
+
+### @consensus-tools/langchain (v0.5.0)
+LangChain adapter — consensus-tools guards as LangChain DynamicStructuredTools
+plus a decision callback handler for audit trails.
+
+**Key exports:**
+- `createGuardTool(domain)` — Single guard domain as a LangChain tool
+- `createGuardTools(domains?, customTemplates?)` — All 7 guards as tools + custom templates
+- `ConsensusCallbackHandler` — Records guard decisions in LangChain callback system
+- `LangSmithTracer` — Standalone tracer (no LangChain required) for decision tracing
+  - `tracer.traceGuardDecision({ domain, decision, risk, votes, input, durationMs })` — Trace guard eval
+  - `tracer.traceWrapperDecision({ name, action, aggregateScore, scores, attempt, durationMs })` — Trace wrapper
+  - `tracer.getTraceUrl(runId)` — Get LangSmith URL for a trace
+  - Peer dep: langsmith >= 0.4.0, requires LANGCHAIN_API_KEY env var
+
+**Dependencies:** schemas, guards. **Peer deps:** @langchain/core >= 0.3.0, langsmith >= 0.4.0
+
+**Use case:** Add consensus guard evaluation to any LangChain agent. The agent
+calls `consensus_guard_publish` as a tool to check content safety before publishing.
+The callback handler captures all guard decisions for audit.
+
+```typescript
+import { createGuardTools } from "@consensus-tools/langchain";
+import { ConsensusCallbackHandler } from "@consensus-tools/langchain";
+
+const tools = createGuardTools(["publish", "send_email"]);
+const handler = new ConsensusCallbackHandler();
+// Pass tools to your LangChain agent, handler as a callback
+```
+
+### @consensus-tools/ai-sdk (v0.5.0)
+Vercel AI SDK adapter — guard middleware for generateText/streamText.
+Wraps any AI SDK generate call with consensus guard evaluation.
+
+**Key exports:**
+- `createGuardedGenerate(opts)` — Wrap a generate function with guard evaluation
+  - `opts.domain` — Built-in guard domain (e.g., "publish")
+  - `opts.template` — Custom guard template (overrides domain)
+  - `opts.onAllow/onBlock/onRewrite` — Lifecycle hooks
+- Returns: `{ decision, output, guard: { votes, risk } }`
+- `createGuardedStream(opts)` — Wrap streamText result with guard evaluation
+  - Stream passes through immediately (no buffering/blocking)
+  - Guard decision available as a promise: `const { stream, guard } = await guardedStream(streamResult)`
+  - `await guard` → `{ decision, text, guard: { votes, risk } }`
+  - Options: domain, template, onComplete hook
+
+**Dependencies:** schemas, guards. **Peer dep:** ai >= 4.0.0
+
+**Use case:** Gate LLM responses with consensus guards before returning to users.
+Wrap `generateText()` so output is evaluated for PII, profanity, or custom rules.
+
+```typescript
+import { createGuardedGenerate } from "@consensus-tools/ai-sdk";
+import { generateText } from "ai";
+import { openai } from "@ai-sdk/openai";
+
+const guardedGenerate = createGuardedGenerate({ domain: "publish" });
+const result = await guardedGenerate(() =>
+  generateText({ model: openai("gpt-4o"), prompt: "Write a blog post" })
+);
+if (result.decision === "allow") {
+  console.log(result.output.text);
+} else {
+  console.log("Blocked:", result.guard.votes);
+}
+```
+
+```ts
+import { CredentialManager, encrypt, decrypt } from "@consensus-tools/secrets";
+```
+
+---
+
+## Packages -- Tier 1 (Primitives)
+
+### @consensus-tools/guards (v0.5.0)
+Guard evaluation engine -- deterministic evaluators, voting, and decision logic.
+
+**Key exports:**
+- `evaluatorVotes(input: GuardEvaluateInput): GuardVote[]` - Built-in evaluator dispatcher
+- `computeEffectiveWeight(weight, reputation, mode): number` - Weight computation
+- `tallyVotes(votes: WeightedGuardVote[], mode): VoteTally` - Vote aggregation
+- `reachesQuorum(tally, quorum): boolean` - Quorum check
+- `finalizeVotes(votes, actionType, policy)` - Single-evaluator decision
+- `computeDecision(votes, policy, mode)` - Multi-agent weighted decision
+- `normalizeGuardType(type: string): GuardType` - Type normalization
+- `GuardHandler` - Unified handler class (validate -> evaluate -> decide -> write)
+- `GuardEvaluatorRegistry` - Evaluator function registry
+- `createGuardEvaluatorRegistry()` - Factory
+- `detectHardBlockFlags(text): HardBlockFlag[]` - Safety flag detection
+- `HARD_BLOCK_FLAGS` - Constant array of flag names
+- Type: `EvaluatorFn = (input: GuardEvaluateInput) => GuardVote[]`
+- Type: `HardBlockFlag`
+
+**Dependencies:** @consensus-tools/schemas, @consensus-tools/storage, @consensus-tools/telemetry
+
+**Use case 1:** Evaluate an email before sending
+```ts
+import { GuardHandler } from "@consensus-tools/guards";
+const result = await handler.evaluate({
+  boardId: "board-1",
+  action: { type: "send_email", payload: { to: "user@example.com", body: "content" } },
+});
+```
+
+**Use case 2:** Register custom guard evaluator
+```ts
+const registry = handler.registry;
+registry.register("financial_transaction", (input) => {
+  const amount = Number(input.action.payload.amount || 0);
+  if (amount > 10000) return [{ evaluator: "finance", vote: "NO", reason: "Over limit", risk: 0.9 }];
+  return [{ evaluator: "finance", vote: "YES", reason: "Within limits", risk: 0.1 }];
+});
+```
+
+### @consensus-tools/telemetry (v0.5.0)
+Observability layer -- traces, events, and local sinks.
+
+**Key exports:**
+- `EventBuffer` - Buffered event collection with configurable flush
+- `createEvent(type, traceId?, metadata?)` - Create telemetry event
+- `createSpan(name, traceId?)` - Start a trace span
+- `closeSpan(span)` - Close a span
+- `redact(obj)` - Redact sensitive fields from objects
+- `ConsoleSink` - Log events to console
+- `FileSink` - Write events to file
+- Type: `Sink` - Sink interface
+
+**Dependencies:** @consensus-tools/schemas
+
+**Use case:** Add observability to guard evaluations or job lifecycle.
+```ts
+import { EventBuffer, ConsoleSink, createEvent } from "@consensus-tools/telemetry";
+const buffer = new EventBuffer([new ConsoleSink()], 100, 5000);
+buffer.push(createEvent("guard.evaluated", undefined, { decision: "ALLOW" }));
+```
+
+### @consensus-tools/storage (v0.5.0)
+Storage layer -- IStorage contract, JsonStorage, SqliteStorage, Mutex.
+
+**Key exports:**
+- Type: `IStorage` - Abstract storage contract
+- Type: `StorageCaps` - Storage cap configuration
+- `defaultState(): StorageState` - Empty default state
+- `applyStorageCaps(state, caps)` - Trim arrays to caps
+- `createStorage(config): IStorage` - Factory (json or sqlite)
+- `JsonStorage` - JSON file-based storage
+- `SqliteStorage` - SQLite-based storage (better-sqlite3, optional dep)
+- `Mutex` - Async mutex for concurrent access
+
+**Dependencies:** @consensus-tools/schemas, optional: better-sqlite3
+
+**IStorage interface:**
+```ts
+interface IStorage {
+  init(): Promise<void>;
+  getState(): Promise<StorageState>;
+  saveState(state: StorageState): Promise<void>;
+  update<T>(fn: (state: StorageState) => T | Promise<T>): Promise<{ state: StorageState; result: T }>;
+}
+```
+
+**Use case:** Create storage for guard or job engine.
+```ts
+import { createStorage, JsonStorage } from "@consensus-tools/storage";
+const storage = new JsonStorage("./data/state.json");
+await storage.init();
+```
+
+### @consensus-tools/sdk-client (v0.5.0)
+HTTP client for consensus-tools board API.
+
+**Key exports:**
+- `ConsensusToolsClient` - HTTP client class
+- Types: `ClientOptions`, `JobPostInput`, `ClaimInput`, `SubmitInput`, `VoteInput`, `ResolveInput`
+
+**Dependencies:** @consensus-tools/schemas
+
+**Use case:** Connect to a remote consensus-tools server.
+```ts
+import { ConsensusToolsClient } from "@consensus-tools/sdk-client";
+const client = new ConsensusToolsClient({ baseUrl: "http://localhost:4010", authToken: "..." });
+```
+
+### @consensus-tools/evals (v0.6.0)
+LLM-based guard evaluation with agent personas.
+
+**Key exports:**
+- `evaluateWithAiSdk(config: AiEvaluatorConfig)` - LLM-powered evaluation
+- `generatePersonas(...)` - Generate evaluation personas
+- `generateSkillReviewPersonas(...)` - Generate skill review personas
+- `respawnPersona(...)` - Respawn a persona
+- `consensusEval(options: ConsensusEvalOptions)` - Multi-persona consensus evaluation
+- `weightedComposite(...)` - Weighted score aggregation
+- `parseABResponse(...)` - A/B comparison parser
+- `ReputationTracker` - Track persona reputation across evals
+- `proposeImprovement(...)` - Generate improvement proposals
+- `buildProposerSystemPrompt(...)`, `buildProposerUserPrompt(...)` - Prompt builders
+- `parseVote(...)` - Parse vote from LLM output
+- `buildDiffGuardPrompt(...)` - Build guard prompt for diffs
+- `validateScore(...)`, `validateJudgeScore(...)` - Score validation
+- Types: `AgentPersona`, `JudgeScore`, `AgentEvalScore`, `ConsensusEvalResult`,
+  `ReputationDelta`, `ReputationState`, `Proposal`, `ProposerConfig`, `LLMCaller`
+
+**Dependencies:** @consensus-tools/schemas, @consensus-tools/guards, @consensus-tools/personas
+
+**Use case:** Run LLM-powered multi-persona guard evaluation
+```ts
+import { consensusEval } from "@consensus-tools/evals";
+const result = await consensusEval({
+  content: "Draft email content",
+  personas: getEvalPersonas("default"),
+  llmCaller: myLlmFunction,
+});
+```
+
+### @consensus-tools/personas (v0.5.0)
+Persona lifecycle -- types, defaults, reputation, respawn.
+
+**Key exports:**
+- `getPersonasByPack(pack: string, count?: number): PersonaConfig[]`
+- `getEvalPersonas(pack: "default" | "skill-review", count?): EvalPersonaConfig[]`
+- `PERSONA_PACKS: string[]` - ["default", "skill-review", "governance"]
+- `updateReputation(votes, decision, personas, ruleset?): ReputationDeltaResult`
+- `DEFAULT_RULESET: ReputationRuleset`
+- `buildLearningSummary(...)`, `mutatePersona(...)` - Respawn utilities
+- Types: `PersonaConfig`, `EvalPersonaConfig`, `PersonaSet`, `ReputationRuleset`,
+  `ReputationChange`, `ReputationDeltaResult`, `LearningSummary`, `RespawnResult`
+
+**Dependencies:** @consensus-tools/schemas
+
+(See Persona System section for full details.)
+
+---
+
+## Packages -- Tier 2 (Core + Policies)
+
+### @consensus-tools/core (v0.5.0)
+Protocol engine, ledger, storage, and resolution primitives.
+
+**Key exports:**
+
+Engine:
+- `JobEngine` - Full job lifecycle engine (post, claim, submit, vote, resolve, list, getStatus)
+- `AgentRegistry` - Agent CRUD (createAgent, listAgents, suspendAgent, activateAgent)
+- `GuardEngine` - Guard evaluation engine (evaluate, with agent registry + evaluator registry)
+- `HitlTracker` - Human-in-the-loop approval tracking (requestApproval, recordVoteReceived, resolveApproval)
+- `checkEligibility(...)` - Agent eligibility check
+- `calculateSlashAmount(...)` - Slashing amount calculation
+
+Types:
+- `JobFilters`, `JobPostInput`, `ClaimInput`, `SubmitInput`, `VoteInput`, `ResolveInput`
+- `GuardEngineOptions`, `NotificationDispatcher`, `HitlTrackerOptions`, `EligibilityResult`
+
+Board:
+- `LocalBoard` - High-level board (wraps config + storage + engine)
+
+Resolve (all 9 policy implementations):
+- `resolveConsensus`, `firstSubmissionWins`, `highestConfidenceSingle`, `approvalVote`,
+  `ownerPick`, `trustedArbiter`, `topKSplit`, `majorityVote`,
+  `weightedVoteSimple`, `weightedReputation`
+
+Ledger:
+- `LedgerEngine` - Economic ledger operations
+- `computeBalances(...)`, `getBalance(...)`, `ensureNonNegative(...)`
+
+Storage (re-exported from @consensus-tools/storage):
+- `IStorage`, `StorageCaps`, `defaultState`, `applyStorageCaps`, `createStorage`,
+  `JsonStorage`, `SqliteStorage`, `Mutex`
+
+Util:
+- `newId()`, `deepCopy(obj)` - ID generation and cloning
+- `nowIso()`, `addSeconds(iso, sec)`, `isPast(iso)` - Time utilities
+
+**Dependencies:** @consensus-tools/schemas, @consensus-tools/guards, @consensus-tools/storage
+**Optional:** better-sqlite3
+
+**Use case 1:** Full job lifecycle
+```ts
+import { LocalBoard, createStorage } from "@consensus-tools/core";
+
+const storage = await createStorage(config);
+const board = new LocalBoard(config, storage);
+await board.init();
+
+const job = await board.engine.postJob("agent-1", { title: "Review PR #42", description: "..." });
+const submission = await board.engine.submitJob("agent-2", job.id, { summary: "LGTM", confidence: 0.9 });
+const vote = await board.engine.vote("agent-3", job.id, { submissionId: submission.id, score: 8 });
+const resolution = await board.engine.resolveJob(job.id);
+```
+
+**Use case 2:** Guard engine with agent registry
+```ts
+import { GuardEngine, AgentRegistry } from "@consensus-tools/core";
+import { createGuardEvaluatorRegistry } from "@consensus-tools/guards";
+
+const agentRegistry = new AgentRegistry(storage);
+const evaluatorRegistry = createGuardEvaluatorRegistry();
+const guardEngine = new GuardEngine({ storage, agentRegistry, evaluatorRegistry });
+
+const result = await guardEngine.evaluate({
+  boardId: "my-board",
+  action: { type: "deployment", payload: { env: "prod", ci_passed: true } },
+});
+```
+
+### @consensus-tools/policies (v0.5.0)
+Built-in consensus policy implementations. Re-exports from core + pluggable registry.
+
+**Key exports:**
+- All 9 policy functions (re-exported from core):
+  `firstSubmissionWins`, `highestConfidenceSingle`, `approvalVote`,
+  `ownerPick`, `trustedArbiter`, `topKSplit`, `majorityVote`,
+  `weightedVoteSimple`, `weightedReputation`
+- `createPolicyRegistry(): PolicyRegistry` - Registry with all 9 built-in
+- `createRegistryResolver(registry?): PolicyResolver` - Resolver dispatcher
+- Type: `PolicyRegistry = Map<ConsensusPolicyType, PolicyResolver>`
+
+**Dependencies:** @consensus-tools/schemas, @consensus-tools/core
+
+**Use case:** Custom policy with registry
+```ts
+import { createPolicyRegistry, createRegistryResolver } from "@consensus-tools/policies";
+
+const registry = createPolicyRegistry();
+registry.set("MY_CUSTOM", (input) => ({
+  winners: [input.submissions[0]?.agentId ?? ""],
+  winningSubmissionIds: [input.submissions[0]?.id ?? ""],
+  consensusTrace: { policy: "MY_CUSTOM" },
+  finalArtifact: null,
+}));
+
+const resolver = createRegistryResolver(registry);
+```
+
+---
+
+## Packages -- Tier 3 (Workflows + Wrapper)
+
+### @consensus-tools/workflows (v0.6.0)
+Workflow execution engine and cron scheduler.
+
+**Key exports:**
+- `WorkflowRunner` - DAG workflow execution engine
+- `NodeExecutor` - Individual node execution
+- `validateWorkflowDefinition(...)` - Validate workflow DAG
+- `CronScheduler` - Cron-based workflow scheduling
+- `shouldRunNow(cronExpr, lastRunAt)` - Check if cron should trigger
+
+Templates:
+- `prMergeGuardTemplate` - PR merge guard workflow
+- `linearTaskDecompTemplate` - Linear task decomposition workflow
+- `cronAutoAssignTemplate` - Cron auto-assign workflow
+- `listTemplates()`, `getTemplateById(id)` - Template discovery
+
+Types:
+- `WorkflowTemplate`, `WorkflowStepHandler`, `WorkflowContext`, `WorkflowStepResult`
+- `NodeExecutorDeps`, `CredentialProvider`, `WorkflowNode`, `WorkflowDefinition`
+- `NodeExecIds`, `NodeOutput`, `TemplateDefinition`
+
+**Dependencies:** @consensus-tools/schemas, @consensus-tools/core, @consensus-tools/guards,
+@consensus-tools/evals, @consensus-tools/integrations
+
+**Use case:** Create and run a workflow
+```ts
+import { WorkflowRunner, CronScheduler, prMergeGuardTemplate } from "@consensus-tools/workflows";
+
+const runner = new WorkflowRunner(storage);
+runner.registerTemplate(prMergeGuardTemplate);
+
+const workflow = await runner.createWorkflow("PR Guard", {}, "pr-merge-guard");
+const run = await runner.run(workflow.id);
+```
+
+### @consensus-tools/wrapper (v0.5.0)
+Runtime decision firewall -- wraps any function with consensus gates.
+
+**Key exports:**
+- `consensus<T>(opts: ConsensusOptions<T>): (...args) => Promise<DecisionResult<T>>`
+- `aggregateScores(scores, output, attempt, strategy, maxRetries)` - Score aggregation
+
+Types:
+- `ConsensusOptions<T>` - Configuration for consensus wrapper
+- `ReviewerFn<T>` - Reviewer function signature
+- `ReviewContext` - Context passed to reviewers
+- `ReviewResult` - Reviewer output (score, rationale, block?)
+- `Strategy = "unanimous" | "majority" | "threshold"`
+- `StrategyConfig` - Strategy with threshold
+- `DecisionResult<T>` - Final decision (action, output, scores, aggregateScore)
+- `LifecycleHooks<T>` - beforeSubmit, afterResolve, onBlock, onEscalate
+
+**Dependencies:** @consensus-tools/schemas, @consensus-tools/core,
+@consensus-tools/guards, @consensus-tools/policies
+
+**Use case:** Wrap a function with consensus gate
+```ts
+import { consensus } from "@consensus-tools/wrapper";
+
+const safeSendEmail = consensus({
+  name: "sendEmail",
+  fn: async (to: string, body: string) => ({ to, body, sent: true }),
+  reviewers: [
+    async (output) => {
+      if (output.body.includes("secret")) return { score: 0, block: true, rationale: "Contains secrets" };
+      return { score: 1, rationale: "Clean" };
+    },
+  ],
+  strategy: { strategy: "threshold", threshold: 0.5 },
+  maxRetries: 1,
+  hooks: {
+    onBlock: (result) => console.log("Blocked:", result.scores),
+  },
+});
+
+const result = await safeSendEmail("user@example.com", "Hello world");
+// result.action: "allow" | "block" | "retry" | "escalate"
+```
+
+---
+
+## Packages -- Tier 4 (SDK, MCP, CLI, Apps)
+
+### @consensus-tools/sdk-node (v0.6.0)
+Node.js HTTP server for consensus-tools local board.
+
+**Key exports:**
+- `ConsensusToolsServer` - HTTP server class
+- Types: `ServerDeps`, `WorkflowRunner`, `CronScheduler`, `WebhookHandlerContext`, `HandlerResult`
+
+**Dependencies:** @consensus-tools/schemas, @consensus-tools/core, @consensus-tools/guards,
+@consensus-tools/workflows, @consensus-tools/integrations, @consensus-tools/secrets,
+@consensus-tools/notifications
+
+**Use case:** Start a consensus-tools API server
+```ts
+import { ConsensusToolsServer } from "@consensus-tools/sdk-node";
+const server = new ConsensusToolsServer(deps);
+await server.start(4010);
+```
+
+### @consensus-tools/mcp (v0.6.0)
+Model Context Protocol server adapter -- 29 tools, 3 resources, 3 prompts.
+
+**Key exports:**
+- `createMcpServer(ctx: McpContext): Server` - Create MCP server instance
+- `startMcpServer(ctx: McpContext): Promise<void>` - Start stdio MCP server
+- Type: `McpContext`
+
+**Binary:** `consensus-tools-mcp` (npx @consensus-tools/mcp)
+
+**Dependencies:** @consensus-tools/core, @consensus-tools/guards, @consensus-tools/policies,
+@consensus-tools/schemas, @consensus-tools/workflows, @consensus-tools/wrapper,
+@modelcontextprotocol/sdk
+
+(See MCP Tools section for full tool listing.)
+
+**Use case:** Set up MCP server for Claude Desktop
+```json
+{
+  "mcpServers": {
+    "consensus-tools": {
+      "command": "npx",
+      "args": ["@consensus-tools/mcp"],
+      "env": {
+        "CONSENSUS_AGENT_ID": "my-claude-agent",
+        "CONSENSUS_STORAGE_PATH": "/path/to/state.json"
+      }
+    }
+  }
+}
+```
+
+### @consensus-tools/openclaw (v0.5.0)
+OpenClaw plugin adapter.
+
+**Key exports:**
+- `register(...)` - Register the consensus plugin with OpenClaw
+- `loadConfig(...)`, `resolveAgentId(...)`, `defaultConfig`, `PLUGIN_ID` - Config utilities
+- `registerTools(...)` - Register consensus tools with OpenClaw runtime
+- `createService(...)` - Create service backend
+- `createBackend(...)` - Create consensus backend
+- Types: `ConsensusToolsBackend`, `ServiceBackend`
+
+**Dependencies:** @consensus-tools/schemas, @consensus-tools/core,
+@consensus-tools/policies, @consensus-tools/sdk-client
+
+### @consensus-tools/cli (v0.5.0)
+CLI for consensus-tools -- init, manage jobs, view traces.
+
+**Binary:** `consensus-tools` (via bin field)
+
+**Key exports:**
+- `buildProgram()` - Build commander.js program
+- `loadCliConfig()`, `saveCliConfig()`, `getConfigValue()`, `setConfigValue()` - Config management
+- `parseValue(...)`, `resolveRemoteBaseUrl(...)`, `defaultConsensusCliConfig` - Utilities
+- `renderTable(data, columns)` - Table rendering
+- Types: `ConsensusCliConfig`, `ColumnDef`
+
+**Dependencies:** @consensus-tools/schemas, @consensus-tools/core,
+@consensus-tools/sdk-client, @consensus-tools/telemetry, commander, zod
+
+**Use case:**
+```bash
+npx @consensus-tools/cli init          # Initialize project
+npx @consensus-tools/cli jobs list     # List jobs
+npx @consensus-tools/cli jobs post     # Post a new job
+```
+
+### @consensus-tools/dashboard (v0.3.0, private)
+Web dashboard for consensus-tools. Vite + React + Tailwind + Radix UI.
+
+**Stack:** React 18, react-router-dom, Vite, TailwindCSS, Radix UI, Lucide icons, dnd-kit
+
+**Scripts:**
+```bash
+cd apps/dashboard
+pnpm dev        # Vite dev server on port 5000
+pnpm build      # Production build
+```
+
+### @consensus-tools/local-board (v0.3.0, private)
+API server app for consensus-tools. Wires together core + sdk-node.
+
+**Dependencies:** @consensus-tools/core, @consensus-tools/schemas, @consensus-tools/policies,
+@consensus-tools/sdk-node, @consensus-tools/telemetry, @consensus-tools/workflows,
+@consensus-tools/secrets
+
+**Scripts:**
+```bash
+cd apps/local-board
+pnpm dev   # node --import tsx src/index.ts
+```
+
+---
+
+## Adapters
+
+### @consensus-tools/integrations (v0.5.0)
+External platform adapters for GitHub and Linear.
+
+**Key exports:**
+- `fetchPullRequest(...)` - Fetch PR details from GitHub
+- `listOpenPullRequests(...)` - List open PRs
+- `verifyWebhookSignature(...)` - Verify GitHub webhook HMAC
+- `createLinearClient(...)` - Create Linear API client
+- Types: `PullRequest`, `LinearClient`, `LinearTask`, `LinearTeamMember`
+
+**Dependencies:** @consensus-tools/schemas
+
+### @consensus-tools/notifications (v0.5.0)
+Multi-adapter notification dispatch for HITL approval flows.
+
+**Key exports:**
+- `sendHumanApprovalPrompt(...)` - Send HITL approval request
+- `sendTimeoutWarning(...)` - Send timeout warning
+- `sendDeadlineExpired(...)` - Send deadline expired notice
+- `formatMention(...)` - Format @mention for platform
+- Platform adapters: `sendSlackDM`, `sendTeamsDM`, `sendDiscordDM`, `sendTelegramDM`, `sendViaWebhook`
+- `nullCredentials` - No-op credential provider
+- Types: `ChatTarget`, `ChatPrompt`, `DeliveryResult`, `PromptResult`, `CredentialProvider`
+
+**Dependencies:** @consensus-tools/schemas
+
+### @consensus-tools/secrets (v0.4.0)
+(Listed under Tier 0 above.)
+
+---
+
+## Examples & Demos
+
+### example-cs-demo (v2.0.2)
+Guard-centric customer service demo. 1 agent answers, N guards evaluate,
+reputation tracks guard quality.
+
+**Stack:** Express 5, AI SDK + OpenAI, consensus guards + evals
+**Run:** `cd examples/cs-demo && npm start`
+
+### example-fintech-demo (v2.0.2)
+Fintech transaction governance demo. Agent pipeline evaluates, consensus
+guards govern, reputation tracks.
+
+**Stack:** Express 5, AI SDK + OpenAI, consensus guards + evals
+**Run:** `cd examples/fintech-demo && npm start`
+
+### example-mcp-server
+Minimal MCP server setup example.
+
+**Dependencies:** core, schemas, policies, mcp
+
+### example-next-api-route
+Consensus-tools in a Next.js API route handler.
+
+```ts
+// app/api/consensus/route.ts
+import { LocalBoard, createStorage } from "@consensus-tools/core";
+import { createRegistryResolver } from "@consensus-tools/policies";
+
+const board = new LocalBoard(createStorage(config), config);
+
+export async function POST(req: Request) {
+  const body = await req.json();
+  const job = await board.postJob("web-user", body);
+  return Response.json(job);
+}
+```
+
+### example-openclaw-plugin
+OpenClaw plugin integration example.
+
+### example-skill-guard-demo (v1.0.1)
+Consensus guard agents iteratively improving gstack SKILL.md files with
+reputation tracking.
+
+**Stack:** AI SDK (Anthropic + OpenAI), consensus evals + guards
+**Run:** `tsx main.ts --rounds 3 --skills browse,qa`
+
+### example-skill-sandbox
+Sandbox for skill experimentation with consensus guards.
+
+### example-skill-version-eval
+Skill version evaluation with consensus guards.
+
+### example-background-worker
+Background worker pattern with consensus job polling.
+
+### example-wrapper-demo
+LLM output safety gate using guard templates + wrapper templates together.
+Demonstrates the hybrid pattern: createGuardTemplate().asReviewer() feeds
+guard-based votes into a createWrapperTemplate() for runtime function gating.
+
+**Stack:** consensus guards + wrapper, Bun runtime
+**Run:** `cd examples/wrapper-demo && bun run demo`
+
+---
+
+## Use Case Mapping
+
+Decision tree for choosing the right packages:
+
+### "I want to gate an AI agent action before execution"
+-> `@consensus-tools/guards` (GuardHandler)
+-> For domain-specific: use guard.evaluate with action.type = "agent_action"
+-> For custom domains: register evaluator in GuardEvaluatorRegistry
+-> For MCP/Claude: use `guard.agent_action` MCP tool
+
+### "I want to run a multi-agent vote on a decision"
+-> `@consensus-tools/core` (JobEngine) + `@consensus-tools/policies`
+-> Post a VOTING job, have agents vote, resolve with chosen policy
+-> For simple threshold: use MAJORITY_VOTE or APPROVAL_VOTE
+-> For reputation-based: use WEIGHTED_REPUTATION
+
+### "I want to add human-in-the-loop approval"
+-> `@consensus-tools/core` (HitlTracker)
+-> Guard returns REQUIRE_HUMAN -> create HitlApproval -> notify human
+-> Human responds via `human.approve` MCP tool or API
+-> For notifications: `@consensus-tools/notifications` (Slack, Discord, Teams, Telegram)
+
+### "I want to govern PR merges"
+-> `@consensus-tools/guards` with action.type = "code_merge"
+-> Or `@consensus-tools/workflows` with `prMergeGuardTemplate`
+-> For GitHub integration: `@consensus-tools/integrations` (fetchPullRequest, verifyWebhookSignature)
+
+### "I want to moderate content before publishing"
+-> `@consensus-tools/guards` with action.type = "publish"
+-> For LLM-enhanced evaluation: `@consensus-tools/evals` (consensusEval with personas)
+-> Hard-block flags auto-detect: profanity, PII, safety violations
+
+### "I want to gate deployments"
+-> `@consensus-tools/guards` with action.type = "deployment"
+-> Prod deployments auto-flagged for review
+-> CI check and rollback plan validation built in
+
+### "I want to wrap a function with consensus"
+-> `@consensus-tools/wrapper` (consensus function)
+-> Pass fn + reviewers + strategy
+-> Supports retry, escalation, lifecycle hooks
+
+### "I want to expose consensus to Claude via MCP"
+-> `@consensus-tools/mcp` (startMcpServer)
+-> 29 tools available out of the box
+-> Configure in Claude Desktop / claude_desktop_config.json
+
+### "I want to run recurring governance workflows"
+-> `@consensus-tools/workflows` (WorkflowRunner + CronScheduler)
+-> Register templates, schedule with cron expressions
+-> Built-in: pr-merge-guard, linear-task-decomp, cron-auto-assign
+
+### "I want to track agent/persona reputation"
+-> `@consensus-tools/personas` (updateReputation)
+-> Aligned votes increase rep, misaligned decrease
+-> High-confidence misalignment penalized extra
+-> Respawn mechanism for degraded personas
+
+### "I want to build a transaction approval system"
+-> `@consensus-tools/core` (JobEngine) + `@consensus-tools/policies` (APPROVAL_VOTE)
+-> Post job with stakeRequired, agents vote, WEIGHTED_REPUTATION resolves
+-> Slashing for bad-faith votes (slashingPolicy)
+-> Ledger tracks all economic activity
+
+### "I want to add a web dashboard"
+-> `@consensus-tools/dashboard` (Vite + React app)
+-> Connects to local-board API
+-> Drag-and-drop, board views, audit trail visualization
+
+### "I want to connect to an external board API"
+-> `@consensus-tools/sdk-client` (ConsensusToolsClient)
+-> HTTP client for remote consensus-tools server
+
+---
+
+## Integration Patterns
+
+### Pattern 1: Basic guard evaluation
+```ts
+import { GuardHandler } from "@consensus-tools/guards";
+import { createStorage } from "@consensus-tools/core";
+import type { ConsensusToolsConfig } from "@consensus-tools/schemas";
+
+const config: ConsensusToolsConfig = {
+  mode: "local",
+  local: {
+    storage: { kind: "json", path: "./data/state.json" },
+    server: { enabled: false, host: "127.0.0.1", port: 4010, authToken: "" },
+    slashingEnabled: false,
+    jobDefaults: {
+      reward: 100, stakeRequired: 10, maxParticipants: 5, minParticipants: 1,
+      expiresSeconds: 3600,
+      consensusPolicy: { type: "FIRST_SUBMISSION_WINS" },
+      slashingPolicy: { enabled: false, slashPercent: 0, slashFlat: 0 },
+    },
+    ledger: { faucetEnabled: true, initialCreditsPerAgent: 1000, balances: {} },
+  },
+  global: { baseUrl: "", accessToken: "" },
+  agentIdentity: { agentIdSource: "manual", manualAgentId: "my-agent" },
+  safety: { requireOptionalToolsOptIn: false, allowNetworkSideEffects: false },
+};
+
+const storage = await createStorage(config);
+await storage.init();
+
+const handler = new GuardHandler({
+  storage,
+  policy: { quorum: 0.7, riskThreshold: 0.7 },
+});
+
+// Evaluate a deployment
+const result = await handler.evaluate({
+  boardId: "prod-deploys",
+  action: {
+    type: "deployment",
+    payload: {
+      env: "prod",
+      ci_passed: true,
+      service: "api-server",
+      version: "v2.3.1",
+      requires_rollback: true,
+      has_rollback: true,
+    },
+  },
+});
+
+console.log(result.decision);    // "REWRITE" (prod deployment flagged)
+console.log(result.risk_score);  // 0.8
+console.log(result.audit_id);    // SHA-256 hash for idempotency
+```
+
+### Pattern 2: Posting a consensus job
+```ts
+import { LocalBoard, createStorage } from "@consensus-tools/core";
+import { createRegistryResolver } from "@consensus-tools/policies";
+import type { ConsensusToolsConfig } from "@consensus-tools/schemas";
+
+// (config as above)
+const storage = await createStorage(config);
+const board = new LocalBoard(config, storage);
+await board.init();
+
+// Post a job
+const job = await board.engine.postJob("orchestrator-agent", {
+  title: "Review security audit findings",
+  description: "Evaluate the latest security scan results and recommend actions",
+  mode: "VOTING",
+  reward: 500,
+  maxParticipants: 5,
+  expiresSeconds: 7200,
+  consensusPolicy: { type: "WEIGHTED_REPUTATION", quorum: 0.6 },
+  tags: ["security", "audit"],
+});
+
+// Agent submits
+const submission = await board.engine.submitJob("security-agent", job.id, {
+  summary: "3 critical, 7 medium findings. Recommend immediate patching.",
+  artifacts: { findings: [/* ... */] },
+  confidence: 0.85,
+});
+
+// Another agent votes
+await board.engine.vote("reviewer-agent", job.id, {
+  submissionId: submission.id,
+  score: 8,
+  rationale: "Thorough analysis, agree with prioritization",
+});
+
+// Resolve
+const resolution = await board.engine.resolveJob(job.id);
+console.log(resolution.winners);              // ["security-agent"]
+console.log(resolution.consensusTrace);       // Policy-specific trace data
+```
+
+### Pattern 3: Runtime decision wrapper
+```ts
+import { consensus } from "@consensus-tools/wrapper";
+
+// Define reviewers
+const toxicityReviewer = async (output: string) => {
+  const toxic = /hate|violence|threat/i.test(output);
+  return { score: toxic ? 0 : 1, rationale: toxic ? "Toxic content detected" : "Clean", block: toxic };
+};
+
+const qualityReviewer = async (output: string) => {
+  const score = output.length > 50 ? 0.8 : 0.3;
+  return { score, rationale: `Length: ${output.length}` };
+};
+
+// Wrap the function
+const safeGenerate = consensus({
+  name: "generateResponse",
+  fn: async (prompt: string) => `Response to: ${prompt}`,
+  reviewers: [toxicityReviewer, qualityReviewer],
+  strategy: { strategy: "threshold", threshold: 0.5 },
+  maxRetries: 2,
+  hooks: {
+    beforeSubmit: (args) => console.log("Generating for:", args[0]),
+    onBlock: (result) => console.log("Blocked! Scores:", result.scores),
+    onEscalate: (result) => console.log("Escalated! Score:", result.aggregateScore),
+  },
+});
+
+const result = await safeGenerate("Tell me about AI safety");
+if (result.action === "allow") {
+  console.log("Output:", result.output);
+} else {
+  console.log("Decision:", result.action, "Score:", result.aggregateScore);
+}
+```
+
+### Pattern 4: Next.js API route integration
+```ts
+// app/api/consensus/guard/route.ts
+import { GuardHandler } from "@consensus-tools/guards";
+import { createStorage } from "@consensus-tools/core";
+import type { ConsensusToolsConfig, GuardEvaluateInput } from "@consensus-tools/schemas";
+
+// Initialize once (module-level singleton)
+let handler: GuardHandler | null = null;
+
+async function getHandler(): Promise<GuardHandler> {
+  if (handler) return handler;
+  const config: ConsensusToolsConfig = {
+    mode: "local",
+    local: {
+      storage: { kind: "json", path: "./data/consensus-state.json" },
+      server: { enabled: false, host: "127.0.0.1", port: 4010, authToken: "" },
+      slashingEnabled: false,
+      jobDefaults: {
+        reward: 100, stakeRequired: 0, maxParticipants: 5, minParticipants: 1,
+        expiresSeconds: 3600,
+        consensusPolicy: { type: "FIRST_SUBMISSION_WINS" },
+        slashingPolicy: { enabled: false, slashPercent: 0, slashFlat: 0 },
+      },
+      ledger: { faucetEnabled: true, initialCreditsPerAgent: 1000, balances: {} },
+    },
+    global: { baseUrl: "", accessToken: "" },
+    agentIdentity: { agentIdSource: "manual", manualAgentId: "next-app" },
+    safety: { requireOptionalToolsOptIn: false, allowNetworkSideEffects: false },
+  };
+  const storage = await createStorage(config);
+  await storage.init();
+  handler = new GuardHandler({ storage });
+  return handler;
+}
+
+export async function POST(req: Request) {
+  const body = (await req.json()) as GuardEvaluateInput;
+  const h = await getHandler();
+  const result = await h.evaluate(body);
+  return Response.json(result);
+}
+```
+
+### Pattern 5: MCP server setup for Claude
+```ts
+// Programmatic setup (custom context)
+import { createMcpServer, startMcpServer } from "@consensus-tools/mcp";
+import { LocalBoard, AgentRegistry, GuardEngine, HitlTracker, createStorage } from "@consensus-tools/core";
+import { createGuardEvaluatorRegistry } from "@consensus-tools/guards";
+import { WorkflowRunner, CronScheduler } from "@consensus-tools/workflows";
+
+const storage = await createStorage(config);
+const board = new LocalBoard(config, storage);
+await board.init();
+
+const agentRegistry = new AgentRegistry(storage);
+const evaluatorRegistry = createGuardEvaluatorRegistry();
+const guardEngine = new GuardEngine({ storage, agentRegistry, evaluatorRegistry });
+const hitlTracker = new HitlTracker({ storage });
+const workflowRunner = new WorkflowRunner(storage);
+const cronScheduler = new CronScheduler(storage, async (wfId) => { await workflowRunner.run(wfId); });
+
+const ctx = {
+  engine: board.engine,
+  agentRegistry,
+  guardEngine,
+  hitlTracker,
+  storage,
+  agentId: "my-agent",
+  workflowRunner,
+  cronScheduler,
+};
+
+await startMcpServer(ctx);  // Starts stdio transport
+```
+
+### Pattern 6: LLM-powered multi-persona evaluation
+```ts
+import { consensusEval } from "@consensus-tools/evals";
+import { getEvalPersonas } from "@consensus-tools/personas";
+
+const personas = getEvalPersonas("default"); // security, compliance, operations
+
+const result = await consensusEval({
+  content: "Deploy v3.0 to production with zero-downtime migration",
+  personas,
+  llmCaller: async (systemPrompt, userPrompt) => {
+    // Call your LLM here (OpenAI, Anthropic, etc.)
+    const response = await llm.chat([
+      { role: "system", content: systemPrompt },
+      { role: "user", content: userPrompt },
+    ]);
+    return response.text;
+  },
+});
+```
+
+### Pattern 7: Reputation-tracked guard pipeline
+```ts
+import { GuardHandler } from "@consensus-tools/guards";
+import { getPersonasByPack, updateReputation, DEFAULT_RULESET } from "@consensus-tools/personas";
+
+const personas = getPersonasByPack("governance");
+const handler = new GuardHandler({ storage });
+
+// Evaluate
+const result = await handler.evaluate({
+  boardId: "deploy-board",
+  action: { type: "deployment", payload: { env: "prod", ci_passed: true } },
+});
+
+// Update reputation based on outcome
+const votes = personas.map((p) => ({
+  persona_id: p.id,
+  vote: "YES",          // Each persona's vote
+  confidence: 0.8,
+}));
+
+const repUpdate = updateReputation(votes, result.decision, personas);
+// Apply repUpdate.changes back to persona store
+```
+
+---
+
+## Deployment Options
+
+### Local development
+```bash
+cd consensus-tools
+pnpm install && pnpm build
+cd apps/local-board && pnpm dev    # API server
+cd apps/dashboard && pnpm dev      # Web UI on port 5000
+```
+
+### MCP for Claude Desktop
+```json
+// ~/Library/Application Support/Claude/claude_desktop_config.json
+{
+  "mcpServers": {
+    "consensus-tools": {
+      "command": "npx",
+      "args": ["@consensus-tools/mcp"]
+    }
+  }
+}
+```
+
+### Docker / Container
+Use the local-board app as the API server + any storage backend (json or sqlite).
+
+### Embedded in Node.js app
+Install individual packages as dependencies:
+```bash
+pnpm add @consensus-tools/guards @consensus-tools/core @consensus-tools/schemas
+```
+
+### Serverless (Vercel, AWS Lambda)
+Use JsonStorage with a writable path (e.g., /tmp for Lambda).
+See next-api-route example.
+
+---
+
+## API Reference -- Key Functions
+
+### GuardHandler.evaluate
+```ts
+class GuardHandler {
+  constructor(opts: GuardHandlerOptions);
+  readonly registry: GuardEvaluatorRegistry;
+  evaluate(input: GuardEvaluateInput): Promise<GuardResult>;
+}
+```
+
+### JobEngine (from @consensus-tools/core)
+```ts
+class JobEngine {
+  postJob(agentId: string, input: JobPostInput): Promise<Job>;
+  listJobs(filters?: JobFilters): Promise<Job[]>;
+  getStatus(jobId: string): Promise<{ job: Job | null; submissions: Submission[]; votes: Vote[]; resolution: Resolution | null }>;
+  submitJob(agentId: string, jobId: string, input: SubmitInput): Promise<Submission>;
+  vote(agentId: string, jobId: string, input: VoteInput): Promise<Vote>;
+  resolveJob(jobId: string, input?: ResolveInput): Promise<Resolution>;
+}
+```
+
+### LocalBoard (from @consensus-tools/core)
+```ts
+class LocalBoard {
+  constructor(config: ConsensusToolsConfig, storage: IStorage);
+  init(): Promise<void>;
+  readonly engine: JobEngine;
+}
+```
+
+### AgentRegistry (from @consensus-tools/core)
+```ts
+class AgentRegistry {
+  constructor(storage: IStorage);
+  createAgent(config: AgentConfig): Promise<Agent>;
+  listAgents(): Promise<Agent[]>;
+  suspendAgent(id: string): Promise<Agent | null>;
+  activateAgent(id: string): Promise<Agent | null>;
+}
+```
+
+### GuardEngine (from @consensus-tools/core)
+```ts
+interface GuardEngineOptions {
+  storage: IStorage;
+  agentRegistry: AgentRegistry;
+  evaluatorRegistry: GuardEvaluatorRegistry;
+}
+
+class GuardEngine {
+  constructor(opts: GuardEngineOptions);
+  evaluate(input: GuardEvaluateInput): Promise<GuardResult>;
+}
+```
+
+### HitlTracker (from @consensus-tools/core)
+```ts
+interface HitlTrackerOptions {
+  storage: IStorage;
+}
+
+class HitlTracker {
+  constructor(opts: HitlTrackerOptions);
+  requestApproval(params: { runId: string; boardId: string; timeoutSec: number; requiredVotes?: number; mode?: HitlMode }): Promise<HitlApproval>;
+  recordVoteReceived(runId: string): Promise<{ total: number; required: number; complete: boolean }>;
+  resolveApproval(runId: string): Promise<void>;
+}
+```
+
+### LedgerEngine (from @consensus-tools/core)
+```ts
+class LedgerEngine {
+  // Manages FAUCET, STAKE, UNSTAKE, PAYOUT, SLASH, ADJUST, ESCROW_MINT, WORKFLOW_FEE
+}
+```
+
+### WorkflowRunner (from @consensus-tools/workflows)
+```ts
+class WorkflowRunner {
+  constructor(storage: IStorage);
+  registerTemplate(template: WorkflowTemplate): void;
+  createWorkflow(name: string, definition: Record<string, unknown>, templateId?: string): Promise<Workflow>;
+  run(workflowId: string): Promise<WorkflowRun>;
+  listWorkflows(): Promise<Workflow[]>;
+}
+```
+
+### CronScheduler (from @consensus-tools/workflows)
+```ts
+class CronScheduler {
+  constructor(storage: IStorage, executor: (workflowId: string) => Promise<void>);
+  register(workflowId: string, cronExpression: string): Promise<CronSchedule>;
+  list(): Promise<CronSchedule[]>;
+}
+```
+
+### consensus (from @consensus-tools/wrapper)
+```ts
+function consensus<T>(opts: ConsensusOptions<T>): (...args: unknown[]) => Promise<DecisionResult<T>>;
+
+interface ConsensusOptions<T> {
+  name: string;
+  fn: (...args: unknown[]) => Promise<T> | T;
+  reviewers: ReviewerFn<T>[];
+  strategy?: StrategyConfig;
+  hooks?: LifecycleHooks<T>;
+  maxRetries?: number;
+  policyResolver?: PolicyResolver;
+}
+
+interface DecisionResult<T> {
+  action: "allow" | "block" | "retry" | "escalate";
+  output: T | null;
+  scores: ReviewResult[];
+  aggregateScore: number;
+  attempt: number;
+}
+```
+
+### createMcpServer (from @consensus-tools/mcp)
+```ts
+function createMcpServer(ctx: McpContext): Server;
+function startMcpServer(ctx: McpContext): Promise<void>;
+```
+
+### Policy functions (from @consensus-tools/core or @consensus-tools/policies)
+```ts
+// All share the same signature:
+type PolicyResolver = (input: ConsensusInput) => ConsensusResult;
+
+function firstSubmissionWins(input: ConsensusInput): ConsensusResult;
+function highestConfidenceSingle(input: ConsensusInput): ConsensusResult;
+function approvalVote(input: ConsensusInput): ConsensusResult;
+function ownerPick(input: ConsensusInput): ConsensusResult;
+function trustedArbiter(input: ConsensusInput): ConsensusResult;
+function topKSplit(input: ConsensusInput): ConsensusResult;
+function majorityVote(input: ConsensusInput): ConsensusResult;
+function weightedVoteSimple(input: ConsensusInput): ConsensusResult;
+function weightedReputation(input: ConsensusInput): ConsensusResult;
+```
+
+### createStorage (from @consensus-tools/storage / @consensus-tools/core)
+```ts
+function createStorage(config: ConsensusToolsConfig): Promise<IStorage>;
+```
+
+### Reputation functions (from @consensus-tools/personas)
+```ts
+function updateReputation(
+  votes: { persona_id: string; vote: string; confidence: number }[],
+  finalDecision: string,
+  personas: PersonaConfig[],
+  ruleset?: ReputationRuleset,
+): ReputationDeltaResult;
+
+const DEFAULT_RULESET: ReputationRuleset;
+function getPersonasByPack(pack: string, count?: number): PersonaConfig[];
+function getEvalPersonas(pack: "default" | "skill-review", count?: number): EvalPersonaConfig[];
+```
+
+### Guard evaluation helpers (from @consensus-tools/guards)
+```ts
+function evaluatorVotes(input: GuardEvaluateInput): GuardVote[];
+function computeEffectiveWeight(weight: number, reputation: number, mode?: WeightingMode): number;
+function tallyVotes(votes: WeightedGuardVote[], mode?: WeightingMode): VoteTally;
+function reachesQuorum(tally: VoteTally, quorum: number): boolean;
+function finalizeVotes(votes: GuardVote[], actionType: string, policy?: GuardPolicy): Omit<GuardResult, "audit_id">;
+function computeDecision(votes: WeightedGuardVote[], policy: GuardPolicy, mode?: WeightingMode): { decision: GuardDecision; tally: VoteTally; quorumMet: boolean; weightedYesRatio: number; combinedRisk: number };
+function detectHardBlockFlags(text: string): HardBlockFlag[];
+function normalizeGuardType(type: string): GuardType;
+```
+
+---
+
+## Templates
+
+Templates are the developer-facing API for creating custom governance domains.
+A template is a reusable configuration object (not a class) with convenience
+methods for registration and cross-interface consumption.
+
+### createGuardTemplate(name, config)
+
+Create a custom guard evaluator from user-defined rules.
+
+```ts
+import { createGuardTemplate } from "@consensus-tools/guards";
+
+const template = createGuardTemplate("loan_approval", {
+  // Required: rules function receives action payload, returns guard votes
+  rules: (payload) => {
+    if ((payload["amount"] as number) > 100_000) {
+      return [{ evaluator: "loan-risk", vote: "NO", reason: "High-value loan requires review", risk: 0.9 }];
+    }
+    return [{ evaluator: "loan-risk", vote: "YES", reason: "Standard loan", risk: 0.2 }];
+  },
+  // Optional: regex patterns that auto-block before rules run
+  hardBlockPatterns: [/fraud/i, /sanctions/i],
+  // Optional: human-readable description
+  description: "Evaluates loan applications for risk",
+});
+```
+
+**Config shape:**
+```ts
+{
+  rules: (payload: Record<string, unknown>) => GuardVote[];
+  hardBlockPatterns?: RegExp[];
+  description?: string;
+}
+```
+
+**Returns:**
+```ts
+{
+  name: string;
+  evaluate(input: GuardEvaluateInput): GuardVote[];
+  asReviewer(): ReviewerFn;      // Wrapper-compatible reviewer
+  register(registry: GuardEvaluatorRegistry): void;
+  description: string;
+}
+```
+
+- `.evaluate(input)` — runs hard-block patterns (scans all string values in payload), then calls rules
+- `.asReviewer()` — converts guard votes to wrapper-compatible review scores:
+  - YES vote -> high score (> 0.5), block: false
+  - NO vote -> low score (< 0.5), block: true
+  - REWRITE vote -> mid score, block: false
+- `.register(registry)` — registers into a GuardEvaluatorRegistry so GuardHandler can evaluate it
+
+### createPolicyTemplate(name, config)
+
+Extend one of the 9 base consensus algorithms with custom overrides.
+
+```ts
+import { createPolicyTemplate } from "@consensus-tools/policies";
+
+const template = createPolicyTemplate("strict_approval", {
+  // Required: base policy algorithm to extend
+  base: "SUPERMAJORITY",
+  // Required: override parameters for the base algorithm
+  overrides: { threshold: 0.8, quorum: 5 },
+  // Optional: short-circuit before running the full algorithm
+  preCheck: (input) => {
+    if (input.votes.length < 3) {
+      return { decision: "BLOCK", reason: "Insufficient voters" };
+    }
+    return null; // proceed to base algorithm
+  },
+});
+```
+
+**Config shape:**
+```ts
+{
+  base: ConsensusPolicyType;  // One of the 9 policy algorithms
+  overrides: Record<string, unknown>;
+  preCheck?: (input: ConsensusInput) => ConsensusResult | null;
+}
+```
+
+**Returns:**
+```ts
+{
+  name: string;
+  base: ConsensusPolicyType;
+  resolve(input: ConsensusInput): ConsensusResult;
+  register(registry: PolicyRegistry): void;
+  description: string;
+}
+```
+
+### createWrapperTemplate(name, config)
+
+Create a reusable function gate with consensus-based review.
+
+```ts
+import { createWrapperTemplate } from "@consensus-tools/wrapper";
+
+const template = createWrapperTemplate<string>("safe_output", {
+  // Required: array of reviewer functions
+  reviewers: [safetyGuard.asReviewer(), relevanceReviewer],
+  // Required: aggregation strategy and threshold
+  strategy: { strategy: "unanimous", threshold: 0.5 },
+  // Optional: lifecycle hooks
+  hooks: {
+    afterResolve: (result) => console.log(`Decision: ${result.action}`),
+    onBlock: (result) => console.log(`Blocked: ${result.scores}`),
+    onEscalate: (result) => console.log(`Escalated: ${result.aggregateScore}`),
+  },
+  // Optional: max retry attempts on escalation (default: 0)
+  maxRetries: 0,
+});
+
+const safeFn = template.wrap(myFunction);
+const result = await safeFn(args);
+// result.output: T | undefined
+// result.action: "allow" | "block" | "escalate"
+// result.scores: ReviewScore[]
+// result.aggregateScore: number
+```
+
+**Config shape:**
+```ts
+{
+  reviewers: ReviewerFn[];
+  strategy: StrategyConfig;
+  hooks?: LifecycleHooks;
+  maxRetries?: number;
+}
+```
+
+**Returns:**
+```ts
+{
+  name: string;
+  wrap<T>(fn: (...args: any[]) => Promise<T>): WrappedFunction<T>;
+  description: string;
+}
+```
+
+### Decision Tree: Guards vs Wrapper vs Hybrid
+
+```
+Your integration pattern:
+|-- "Check before an action executes" -> Guards (createGuardTemplate)
+|   Use when: audit trails, compliance, multi-domain evaluation, pre-execution gates
+|
+|-- "Validate output quality at runtime" -> Wrapper (createWrapperTemplate)
+|   Use when: function gating, score-based pass/fail, low-latency, in-process
+|
+|-- "Both input governance AND output quality" -> Hybrid
+|   Use when: guard templates provide rules, wrapper provides the runtime gate
+|   Pattern: createGuardTemplate().asReviewer() + createWrapperTemplate()
+|
++-- "Claude AI integration" -> MCP (29 tools)
+    Use when: Claude Code, Model Context Protocol, AI-driven governance
+```
+
+### Full Example: Guard + Wrapper Hybrid
+
+All three templates working together — a guard template defines safety rules,
+a policy template configures consensus, and a wrapper template gates a function.
+
+```ts
+import { createGuardTemplate } from "@consensus-tools/guards";
+import { createPolicyTemplate } from "@consensus-tools/policies";
+import { createWrapperTemplate } from "@consensus-tools/wrapper";
+
+// 1. Guard template: defines content safety rules
+const safetyGuard = createGuardTemplate("content_safety", {
+  rules: (payload) => {
+    const text = String(payload["value"] || "");
+    if (/\b\d{3}-\d{2}-\d{4}\b/.test(text)) {
+      return [{ evaluator: "content-safety", vote: "NO", reason: "SSN detected", risk: 0.95 }];
+    }
+    return [{ evaluator: "content-safety", vote: "YES", reason: "Content clean", risk: 0.1 }];
+  },
+  hardBlockPatterns: [/api[_-]?key\s*[:=]/i],
+});
+
+// 2. Policy template: strict consensus for high-risk decisions
+const strictPolicy = createPolicyTemplate("strict_review", {
+  base: "SUPERMAJORITY",
+  overrides: { threshold: 0.8 },
+});
+
+// 3. Wrapper template: gate LLM output with guard-as-reviewer
+const safeLLM = createWrapperTemplate<string>("safe_llm", {
+  reviewers: [
+    safetyGuard.asReviewer(),  // Guard template as a reviewer
+    (output) => ({             // Simple relevance scorer
+      score: output.length > 10 ? 0.8 : 0.3,
+      rationale: output.length > 10 ? "Substantive" : "Too short",
+    }),
+  ],
+  strategy: { strategy: "unanimous", threshold: 0.5 },
+  hooks: {
+    onBlock: (r) => console.log("Blocked:", r.scores.map(s => s.rationale)),
+  },
+});
+
+// 4. Wrap any async function
+const wrapped = safeLLM.wrap(async (prompt: string) => {
+  return `Response to: ${prompt}`;
+});
+
+const result = await wrapped("Hello");
+// result.action: "allow" | "block" | "escalate"
+// result.output: string | undefined
+```
+
+---
+
+## Appendix: Package Dependency Graph
+
+```
+schemas ────────────────────────────────────────────────────────────┐
+secrets ────────────────────────────────────────────────────────────┤ Tier 0
+                                                                    │
+storage ──── schemas                                                │
+telemetry ── schemas                                                │
+sdk-client ── schemas                                               │
+personas ── schemas                                                 │
+guards ──── schemas, storage, telemetry                             │ Tier 1
+evals ───── schemas, guards, personas                               │
+integrations ── schemas                                             │
+notifications ── schemas                                            │
+                                                                    │
+core ────── schemas, guards, storage                                │ Tier 2
+policies ── schemas, core                                           │
+                                                                    │
+workflows ── schemas, core, guards, evals, integrations             │ Tier 3
+wrapper ──── schemas, core, guards, policies                        │
+                                                                    │
+sdk-node ── schemas, core, guards, workflows, integrations,         │
+            secrets, notifications                                  │ Tier 4
+mcp ─────── core, guards, policies, schemas, workflows, wrapper     │
+openclaw ── schemas, core, policies, sdk-client                     │
+cli ─────── schemas, core, sdk-client, telemetry                    │
+```

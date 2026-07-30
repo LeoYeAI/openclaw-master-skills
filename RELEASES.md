@@ -3,6 +3,47 @@
 每次更新的详细发布说明。
 
 
+## v0.22.0 — 2026-07-30
+
+### 🚀 周更：新增 100 个 Skills，总计 2509
+
+来源：openclaw/skills-archive 官方镜像，按质量规则筛选（SKILL.md 800B-30KB、完整 YAML 元数据、有效 description）。
+
+#### 部分新增亮点（前 30 个）
+- `aavegotchi-baazaar` — > View, add, and execute Aavegotchi Baazaar listings on Base mainnet (8453). Buy with GHST directly or buy with USDC usi
+- `nicholasrae-expense-tracker` — "Just say what you spent — your AI logs it, categorizes it, and tracks it against your budget. No apps, no forms, no fri
+- `business-development` — "Partnership outreach, market research, competitor analysis, and proposal generation. Transform your AI agent into a str
+- `helius-dflow` — Build Solana trading applications combining DFlow trading APIs with Helius infrastructure. Covers spot swaps (imperative
+- `telegram-api` — | Telegram Bot API integration with managed authentication. Send messages, manage chats, handle updates, and interact wi
+- `clawemail` — "Google Workspace via ClawEmail.com service — Gmail, Drive, Docs, Sheets, Slides, Calendar, Forms. Use PROACTIVELY when 
+- `nano-banana-pro-prompts` — | Search and recommend suitable prompts from 10,000+ Nano Banana Pro image generation prompts based on user needs. Optim
+- `explorium-agentsource` — "B2B prospecting via Explorium AgentSource API. Requires EXPLORIUM_API_KEY. Find companies, prospects, enrich with firmo
+- `clawdhub-skill` — AI-native OCR platform that turns documents into high-accuracy data in minutes. Using multi-model consensus, DeepRead ac
+- `coding-philosophy` — "Insights about refactoring intuitive code, when to impose structure vs let feeling lead, and code as creative expressio
+- `nyx-archive-coding-philosophy` — "Insights about refactoring intuitive code, when to impose structure vs let feeling lead, and code as creative expressio
+- `audiobooklm` — 提供有声书创作与音频能力（ABS 读写、音效/音频检索、二创、音色推荐、章节角色分析等），通过 HTTP Streamable MCP 调用。
+- `pinchtab` — "Use this skill when a task needs browser automation through PinchTab: open a website, inspect interactive elements, cli
+- `voidex-arena` — Voidex Arena — galactic trading game for AI agents. Buy goods cheap, fly between real star systems, sell for profit. Com
+- `shll-run` — Execute DeFi transactions on BSC via SHLL AgentNFA. The AI handles all commands and users only need to chat.
+- `explorium-agentsource-companies-contacts` — "Use this skill when the user wants to find companies (businesses) or people (contacts/prospects/leads) using the AgentS
+- `lead-enricher-explorium-agentsource` — "Use this skill when the user wants to find companies (businesses) or people (contacts/prospects/leads) using the AgentS
+- `evolink-media` — AI video, image & music generation. 60+ models — Sora, Veo 3, Kling, Seedance, GPT Image, Suno v5, Hailuo, WAN. Text-to-
+- `xproof` — Proof and accountability layer for AI agents. Anchor verifiable proofs on MultiversX, enforce audit logging, detect viol
+- `futu-trading-bot` — Use Futu Trade Bot Skills to run account, quote, and trade workflows with real HK market data.
+- `pine-assistant` — Handle customer service, bills, reservations, and more via Pine AI — negotiate, cancel, dispute, book, and resolve from 
+- `security` — GoPlus AgentGuard — AI agent security guard. Automatically blocks dangerous commands, prevents data leaks, and protects 
+- `shlibrary-seat-booking` — 上海图书馆东馆三楼座位预约。支持浏览器自动化登录获取认证信息，以及基于API的座位预约（指定座位或系统自动分配）。适用于需要自动化预约图书馆座位的场景。
+- `agent-context-system` — A persistent local-only memory system for AI coding agents. Two files, one idea — AGENTS.md (committed, shared) + .agent
+- `behavioral-invariant-monitor` — > Helps verify that AI agent skills maintain consistent behavioral invariants across repeated executions — detecting the
+- `phy-xiaohongshu-gtm` — 小红书 go-to-market strategy for founders and product builders. Use when planning Xiaohongshu content, targeting Chinese cr
+- `opencode-api-control-skill` — A powerful skill to control Open Code CLI via a local web server API. Allows executing commands, managing sessions, and 
+- `quantum-daily-tracker` — 量子科技论文追踪与速览生成。用于每日追踪量子计算、量子网络、量子纠错等领域最新论文，生成中文笔记和每日速览。触发场景：(1) 定时任务执行量子论文追踪 (2) 用户请求更新论文 (3) 补充遗漏的论文
+- `thirteen-week-cash-flow` — > Build and maintain a rolling 13-week cash flow forecast — the gold standard for short-term liquidity management used b
+- `lifi-crosschain` — Cross-chain token swaps and bridges via the LI.FI protocol. Get quotes, execute transfers, track progress, and compose D
+
+---
+
+
 ## v0.21.0 — 2026-07-20
 
 ### 🚀 周更：新增 100 个 Skills，总计 2409

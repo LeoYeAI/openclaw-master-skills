@@ -1,0 +1,31 @@
+version: "1"
+defaults:
+  trials: 3
+  timeout: 600
+  threshold: 0.75
+skill: "cinematic-story-video-gen"
+trigger_tests:
+  - id: explicit-invoke
+    should_trigger: true
+    prompt: "Use the cinematic-story-video-gen skill for a 16:9 emotional scene with KLING and orange-teal grade."
+  - id: implicit-domain
+    should_trigger: true
+    prompt: "Slow push-in, shallow depth of field, cinematic lighting, piano underscore for a brand mood film."
+  - id: implicit-moody-film
+    should_trigger: true
+    prompt: "I need a moody film-look clip—rack focus, bokeh, orange and teal, no dialogue."
+  - id: implicit-image-to-video
+    should_trigger: true
+    prompt: "Turn this portrait into a 16:9 cinematic scene with gentle push-in and ambient score."
+  - id: negative-control
+    should_trigger: false
+    prompt: "Refactor my Rust crate and add property-based tests only."
+  - id: negative-kubernetes
+    should_trigger: false
+    prompt: "Deploy this Helm chart to my GKE cluster and fix the ingress TLS."
+outcome_tests:
+  - id: layout
+    type: deterministic
+    checks:
+      - file_exists: "SKILL.md"
+      - file_exists: "references/WERYAI_VIDEO_API.md"

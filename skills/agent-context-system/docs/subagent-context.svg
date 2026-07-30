@@ -1,0 +1,55 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 780 560" width="780" height="560" font-family="'Segoe UI', system-ui, -apple-system, sans-serif">
+  <rect width="780" height="560" fill="white"/>
+
+  <!-- Title -->
+  <text x="390" y="35" text-anchor="middle" font-size="24" font-weight="600" fill="#1e1e1e">What Subagents Actually See</text>
+
+  <!-- AGENTS.md box -->
+  <rect x="250" y="65" width="260" height="60" rx="10" fill="#b2f2bb" stroke="#22c55e" stroke-width="2"/>
+  <text x="380" y="102" text-anchor="middle" font-size="20" font-weight="600" fill="#1e1e1e">AGENTS.md</text>
+  <text x="380" y="145" text-anchor="middle" font-size="13" fill="#22c55e">Loaded automatically by every agent</text>
+
+  <!-- Green arrows from AGENTS.md to subagents -->
+  <defs>
+    <marker id="arrow-green" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#22c55e"/>
+    </marker>
+    <marker id="arrow-amber-up" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#f59e0b"/>
+    </marker>
+  </defs>
+
+  <line x1="310" y1="125" x2="155" y2="235" stroke="#22c55e" stroke-width="2" marker-end="url(#arrow-green)"/>
+  <line x1="380" y1="125" x2="380" y2="235" stroke="#22c55e" stroke-width="2" marker-end="url(#arrow-green)"/>
+  <line x1="450" y1="125" x2="615" y2="235" stroke="#22c55e" stroke-width="2" marker-end="url(#arrow-green)"/>
+
+  <!-- Subagent boxes -->
+  <rect x="50" y="240" width="170" height="50" rx="10" fill="#a5d8ff" stroke="#4a9eed" stroke-width="2"/>
+  <text x="135" y="271" text-anchor="middle" font-size="17" font-weight="500" fill="#1e1e1e">Explore</text>
+
+  <rect x="290" y="240" width="180" height="50" rx="10" fill="#a5d8ff" stroke="#4a9eed" stroke-width="2"/>
+  <text x="380" y="271" text-anchor="middle" font-size="17" font-weight="500" fill="#1e1e1e">Code Review</text>
+
+  <rect x="540" y="240" width="170" height="50" rx="10" fill="#a5d8ff" stroke="#4a9eed" stroke-width="2"/>
+  <text x="625" y="271" text-anchor="middle" font-size="17" font-weight="500" fill="#1e1e1e">Debug</text>
+
+  <!-- Divider label -->
+  <text x="390" y="330" text-anchor="middle" font-size="15" font-weight="600" fill="#ef4444">What does NOT flow to subagents:</text>
+
+  <!-- Conversation History (red, blocked) -->
+  <rect x="60" y="360" width="260" height="48" rx="10" fill="#ffc9c9" stroke="#ef4444" stroke-width="2"/>
+  <text x="190" y="390" text-anchor="middle" font-size="16" font-weight="500" fill="#1e1e1e">Conversation History</text>
+  <text x="340" y="392" font-size="26" font-weight="700" fill="#ef4444">✕</text>
+
+  <!-- .agents.local.md (yellow, conditional) -->
+  <rect x="410" y="360" width="280" height="48" rx="10" fill="#fff3bf" stroke="#f59e0b" stroke-width="2"/>
+  <text x="550" y="390" text-anchor="middle" font-size="16" font-weight="500" fill="#1e1e1e">.agents.local.md</text>
+
+  <!-- Dashed arrow from scratchpad up to subagents -->
+  <line x1="550" y1="360" x2="550" y2="300" stroke="#f59e0b" stroke-width="2" stroke-dasharray="6,4" marker-end="url(#arrow-amber-up)"/>
+  <text x="550" y="428" text-anchor="middle" font-size="13" fill="#f59e0b">Only if AGENTS.md tells them to read it</text>
+
+  <!-- Bottom line -->
+  <text x="390" y="490" text-anchor="middle" font-size="15" fill="#1e1e1e">AGENTS.md is the only shared context across all parallel agents.</text>
+  <text x="390" y="515" text-anchor="middle" font-size="15" fill="#1e1e1e">That's why instruction budget discipline matters ×5.</text>
+</svg>
