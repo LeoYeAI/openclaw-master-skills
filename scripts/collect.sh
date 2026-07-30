@@ -92,6 +92,14 @@ for publisher in sorted(os.listdir(root)):
             if not desc_match:
                 continue
             desc = ' '.join(desc_match.group(1).strip().split())
+            # Strip YAML scalar artifacts. Block indicators (>, |) and wrapping
+            # quotes leak straight into RELEASES.md otherwise — every release
+            # up to v0.22.0 shipped lines like '- `slug` — > View, add, ...'.
+            desc = re.sub(r'^[>|][+\-]?\s*', '', desc)
+            if len(desc) >= 2 and desc[0] == desc[-1] and desc[0] in '"\'':
+                desc = desc[1:-1].strip()
+            else:
+                desc = desc.lstrip('"\'').strip()
             if len(desc) < 50 or len(desc) > 1024:
                 continue
             prev = best_by_slug.get(slug)
