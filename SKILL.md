@@ -7,7 +7,7 @@ metadata:
 
 # OpenClaw Master Skills
 
-A curated, weekly-updated collection of **11211+ best skills** for OpenClaw agents.
+A curated, weekly-updated collection of **2509+ best skills** for OpenClaw agents.
 
 ## Categories
 

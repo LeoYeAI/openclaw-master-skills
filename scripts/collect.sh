@@ -240,9 +240,15 @@ for filename in ['README.md', 'SKILL.md', 'README.zh-CN.md', 'README.fr.md', 'RE
     if not path.exists():
         continue
     content = path.read_text(encoding='utf-8', errors='ignore')
-    content = re.sub(r'Skills-[0-9]+%2B', f"Skills-{os.environ['TOTAL_COUNT']}%2B", content)
-    content = re.sub(r'collection of [0-9]+\+ best OpenClaw skills', f"collection of {os.environ['TOTAL_COUNT']}+ best OpenClaw skills", content)
-    content = re.sub(r'[0-9]+\+ best OpenClaw skills', f"{os.environ['TOTAL_COUNT']}+ best OpenClaw skills", content)
+    total = os.environ['TOTAL_COUNT']
+    # Badge URL count
+    content = re.sub(r'Skills-[0-9]+%2B', f"Skills-{total}%2B", content)
+    # Badge alt text (was never updated before, drifted to stale values)
+    content = re.sub(r'alt="[0-9]+\+ Skills"', f'alt="{total}+ Skills"', content)
+    # Prose counts. Match "best skills" too, not just "best OpenClaw skills":
+    # SKILL.md's body uses the shorter phrasing and silently went stale at
+    # v0.13.0 (560 -> 11211), shipping a wrong number to ClawHub for months.
+    content = re.sub(r'[0-9]+\+ best (OpenClaw )?skills', lambda m: f"{total}+ best {m.group(1) or ''}skills", content)
     path.write_text(content, encoding='utf-8')
 PY
 
