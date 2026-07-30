@@ -54,6 +54,23 @@ Your Request → Analyze → Select Model
 | CLI interface | ✓ |
 | **Core code size** | **~200 lines** |
 
+## MiniMax Provider
+
+The cloud registry includes the [MiniMax](https://platform.minimax.io/docs) text
+models below. Set `MINIMAX_API_KEY` to enable them.
+
+| Model | Context | Input | Thinking | Price (in/out $/M) |
+|-------|---------|-------|----------|--------------------|
+| MiniMax M3 | 1,000,000 | text, image, video | adaptive, disabled | 0.6 / 2.4 |
+| MiniMax M2.7 | 204,800 | text | always on | 0.3 / 1.2 |
+
+Both an OpenAI-compatible and an Anthropic-compatible endpoint are available per region:
+
+| Region | OpenAI base URL | Anthropic base URL |
+|--------|-----------------|--------------------|
+| Global (`global_en`) | `https://api.minimax.io/v1` | `https://api.minimax.io/anthropic` |
+| China (`cn_zh`) | `https://api.minimaxi.com/v1` | `https://api.minimaxi.com/anthropic` |
+
 ## CLI
 
 ```bash

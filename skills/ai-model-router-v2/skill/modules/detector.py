@@ -11,7 +11,7 @@ Security:
 import json
 import os
 from dataclasses import dataclass
-from typing import List
+from typing import List, Optional
 
 
 @dataclass
@@ -24,10 +24,33 @@ class ModelInfo:
     cost_score: float = 0
     power_score: float = 50
     capabilities: List[str] = None
+    # Optional cloud metadata (populated for providers that publish it)
+    context_window: Optional[int] = None
+    input_modalities: List[str] = None
+    thinking: List[str] = None
+    pricing_usd_per_million_tokens: Optional[dict] = None
+    openai_base_url: Optional[str] = None
+    anthropic_base_url: Optional[str] = None
 
     def __post_init__(self):
         if self.capabilities is None:
             self.capabilities = ["chat"]
+
+
+# Regional API endpoints for cloud providers that expose both an
+# OpenAI-compatible and an Anthropic-compatible interface per region.
+MINIMAX_ENDPOINTS = {
+    "global_en": {
+        "openai_base_url": "https://api.minimax.io/v1",
+        "anthropic_base_url": "https://api.minimax.io/anthropic",
+        "docs_root": "https://platform.minimax.io/docs",
+    },
+    "cn_zh": {
+        "openai_base_url": "https://api.minimaxi.com/v1",
+        "anthropic_base_url": "https://api.minimaxi.com/anthropic",
+        "docs_root": "https://platform.minimaxi.com/docs",
+    },
+}
 
 
 class ModelDetector:
@@ -102,7 +125,35 @@ class ModelDetector:
             ModelInfo("anthropic:claude-opus-4", "Claude Opus 4", "Anthropic", "cloud", 8, 95),
             ModelInfo("openai:gpt-4o-mini", "GPT-4o Mini", "OpenAI", "cloud", 1, 50),
             ModelInfo("openai:gpt-4o", "GPT-4o", "OpenAI", "cloud", 5, 85),
+            ModelInfo(
+                "minimax:MiniMax-M3", "MiniMax M3", "MiniMax", "cloud", 2, 90,
+                capabilities=["chat", "vision"],
+                context_window=1_000_000,
+                input_modalities=["text", "image", "video"],
+                thinking=["adaptive", "disabled"],
+                pricing_usd_per_million_tokens={
+                    "input": 0.6, "output": 2.4, "cache_read": 0.12, "cache_write": None,
+                },
+                openai_base_url=MINIMAX_ENDPOINTS["global_en"]["openai_base_url"],
+                anthropic_base_url=MINIMAX_ENDPOINTS["global_en"]["anthropic_base_url"],
+            ),
+            ModelInfo(
+                "minimax:MiniMax-M2.7", "MiniMax M2.7", "MiniMax", "cloud", 1, 70,
+                capabilities=["chat"],
+                context_window=204_800,
+                input_modalities=["text"],
+                thinking=["always_on"],
+                pricing_usd_per_million_tokens={
+                    "input": 0.3, "output": 1.2, "cache_read": 0.06, "cache_write": 0.375,
+                },
+                openai_base_url=MINIMAX_ENDPOINTS["global_en"]["openai_base_url"],
+                anthropic_base_url=MINIMAX_ENDPOINTS["global_en"]["anthropic_base_url"],
+            ),
         ]
+
+    def get_cloud_endpoints(self) -> dict:
+        """Return per-region API endpoints for multi-region cloud providers."""
+        return {"MiniMax": MINIMAX_ENDPOINTS}
 
     def detect_all(self) -> List[ModelInfo]:
         """Detect all available models"""
