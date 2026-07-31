@@ -481,6 +481,20 @@ print(m.group(1) if m else '')
 PY
 )
   [ -n "$NEW_COUNT" ] || fail "could not determine new-skill count for v$NEW_VERSION from CHANGELOG.md"
+
+  # Date the tag from the release itself, not from today. A publish-only run
+  # usually happens days after the commit was built (v0.22.0 was built
+  # 2026-07-30 and published later), so $WEEK would stamp the wrong date.
+  local release_date
+  release_date=$(python3 - "$CHANGELOG" "$NEW_VERSION" <<'PY'
+import re, sys
+from pathlib import Path
+text = Path(sys.argv[1]).read_text(encoding='utf-8', errors='ignore')
+m = re.search(r'##\s*\[?v' + re.escape(sys.argv[2]) + r'\]?\s*[—-]\s*(\d{4}-\d{2}-\d{2})', text)
+print(m.group(1) if m else '')
+PY
+)
+  [ -n "$release_date" ] && WEEK="$release_date"
   export NEW_COUNT TOTAL_COUNT NEW_VERSION
 
   # Idempotency is keyed on the published GitHub Release, not the local tag.
