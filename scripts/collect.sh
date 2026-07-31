@@ -65,6 +65,7 @@ find_new_candidates() {
   SKILLS_DIR="$SKILLS_DIR" ARCHIVE_DIR="$ARCHIVE_DIR" MAX_WEEKLY_IMPORTS="$MAX_WEEKLY_IMPORTS" python3 <<'PY' > "$TMP_NEW_LIST"
 import os
 import re
+import hashlib
 
 skills_dir = os.environ['SKILLS_DIR']
 archive_dir = os.environ['ARCHIVE_DIR']
@@ -105,18 +106,46 @@ def read_desc(skill_md):
     return normalize_desc(match.group(1)) if match else None
 
 
+def body_hash(skill_md):
+    """Fingerprint of the instructions, ignoring the frontmatter.
+
+    Description keying alone is not enough: publishers reword the description
+    while shipping a byte-identical body (ad-ready / product-to-ads,
+    ding-skills / dingtalk-skills), so 56 redundant copies slipped past the
+    desc-keyed dedup and into the collection.
+    """
+    try:
+        with open(skill_md, 'r', encoding='utf-8', errors='ignore') as f:
+            content = f.read()
+    except OSError:
+        return None
+    body = re.sub(r'^---\s*\n.*?\n---\s*\n', '',
+                  content.replace('\r\n', '\n'), flags=re.S).strip()
+    # Short bodies are stubs; hashing them would collapse unrelated skills.
+    if len(body) < 200:
+        return None
+    return hashlib.sha1(' '.join(body.split()).encode()).hexdigest()
+
+
 # Descriptions already in the collection. Candidate dedup has to compare against
 # these, not just against other candidates: once a duplicate is removed by hand,
 # its canonical sibling is installed and drops out of the candidate set, so the
 # duplicate looks brand new and gets re-imported next run. That is exactly how
 # the v0.22.0 cleanup regressed in end-to-end testing.
 existing_descs = set()
+existing_bodies = set()
 for name in existing:
     for fn in ('SKILL.md', 'skill.md'):
-        desc = read_desc(os.path.join(skills_dir, name, fn))
+        path = os.path.join(skills_dir, name, fn)
+        if not os.path.isfile(path):
+            continue
+        desc = read_desc(path)
         if desc:
             existing_descs.add(desc)
-            break
+        h = body_hash(path)
+        if h:
+            existing_bodies.add(h)
+        break
 
 best_by_slug = {}
 root = os.path.join(archive_dir, 'skills')
@@ -149,8 +178,11 @@ for publisher in sorted(os.listdir(root)):
             # Already in the collection under another slug.
             if desc in existing_descs:
                 continue
+            bh = body_hash(skill_md)
+            if bh and bh in existing_bodies:
+                continue
             prev = best_by_slug.get(slug)
-            row = (size, publisher, slug, desc)
+            row = (size, publisher, slug, desc, bh)
             if prev is None or row[0] > prev[0]:
                 best_by_slug[slug] = row
         except Exception:
@@ -165,17 +197,39 @@ best_by_slug = {s: r for s, r in best_by_slug.items() if not JUNK_SUFFIX.search(
 # several slugs (lovetago / lovetago-skill / lovetago-bot-tinder), which used to
 # consume import budget and pad the release notes with repeats. Keep one per
 # identical description, preferring the shortest slug as the canonical name.
-by_desc = {}
-for size, publisher, slug, desc in best_by_slug.values():
-    key = (publisher, desc)
-    cur = by_desc.get(key)
-    if cur is None or (len(slug), slug) < (len(cur[2]), cur[2]):
-        by_desc[key] = (size, publisher, slug, desc)
-best_by_slug = {r[2]: r for r in by_desc.values()}
+# Two keys, because a re-upload can diverge in either field. Keying on
+# (publisher, desc) alone missed both directions: the same body reworded under
+# one publisher, and the same body republished verbatim by a different publisher
+# (713 archive groups / 1335 redundant candidates). Body hash is deliberately
+# publisher-independent.
+key_winner = {}
+
+
+def row_keys(row):
+    _size, publisher, _slug, desc, bh = row
+    keys = [('desc', publisher, desc)]
+    if bh:
+        keys.append(('body', bh))
+    return keys
+
+
+for row in best_by_slug.values():
+    slug = row[2]
+    for key in row_keys(row):
+        cur = key_winner.get(key)
+        if cur is None or (len(slug), slug) < (len(cur[2]), cur[2]):
+            key_winner[key] = row
+# A row can win on one key and lose on another, so keep only rows that win every
+# key they participate in. No two survivors share a description or a body.
+best_by_slug = {
+    row[2]: row
+    for row in best_by_slug.values()
+    if all(key_winner[k][2] == row[2] for k in row_keys(row))
+}
 
 rows = sorted(best_by_slug.values(), key=lambda x: (-x[0], x[2]))
 limit = int(os.environ.get('MAX_WEEKLY_IMPORTS', '100'))
-for size, publisher, slug, desc in rows[:limit]:
+for size, publisher, slug, desc, _bh in rows[:limit]:
     print(f"{slug}\t{publisher}\t{size}\t{desc}")
 PY
   local total
