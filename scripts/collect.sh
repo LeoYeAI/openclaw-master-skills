@@ -369,9 +369,21 @@ git_publish() {
   git -C "$REPO_ROOT" push "$remote_url" main >> "$LOG_FILE" 2>&1 || fail "git push failed"
   ok "GitHub push succeeded"
 
-  GH_TOKEN="$GH_TOKEN" NEW_VERSION="$NEW_VERSION" TMP_RELEASE_BODY="$TMP_RELEASE_BODY" python3 <<'PY'
+  # Create and push the tag explicitly. The Releases API would create it
+  # implicitly, but then no local tag exists and the --publish-only
+  # "already tagged" guard can never trip, so a repeat run would try to
+  # republish an already-shipped version.
+  if [ -z "$(git -C "$REPO_ROOT" tag -l "v$NEW_VERSION")" ]; then
+    git -C "$REPO_ROOT" tag -a "v$NEW_VERSION" -m "v${NEW_VERSION} — weekly update ${WEEK}" >> "$LOG_FILE" 2>&1 || fail "git tag failed"
+  fi
+  git -C "$REPO_ROOT" push "$remote_url" "refs/tags/v$NEW_VERSION" >> "$LOG_FILE" 2>&1 || fail "tag push failed"
+  ok "Tag v$NEW_VERSION pushed"
+
+  GH_TOKEN="$GH_TOKEN" NEW_VERSION="$NEW_VERSION" TMP_RELEASE_BODY="$TMP_RELEASE_BODY" python3 <<'PY' || fail "GitHub Release creation failed"
 import json
 import os
+import sys
+import urllib.error
 import urllib.request
 
 version = os.environ['NEW_VERSION']
@@ -395,10 +407,21 @@ req = urllib.request.Request(
 )
 try:
     with urllib.request.urlopen(req) as resp:
-        print(resp.status)
+        print(f'release created: HTTP {resp.status}')
+except urllib.error.HTTPError as exc:
+    detail = exc.read().decode('utf-8', 'replace')
+    # A release for this tag already existing is not a failure: the tag and
+    # commit are already public, so let the run continue to ClawHub.
+    if exc.code == 422 and 'already_exists' in detail:
+        print('release already exists; continuing')
+    else:
+        print(f'release creation failed: HTTP {exc.code} {detail}', file=sys.stderr)
+        sys.exit(1)
 except Exception as exc:
-    print(f'WARN release creation failed: {exc}')
+    print(f'release creation failed: {exc}', file=sys.stderr)
+    sys.exit(1)
 PY
+  ok "GitHub Release ready"
 }
 
 publish_clawhub() {
@@ -459,9 +482,55 @@ PY
 )
   [ -n "$NEW_COUNT" ] || fail "could not determine new-skill count for v$NEW_VERSION from CHANGELOG.md"
   export NEW_COUNT TOTAL_COUNT NEW_VERSION
-  local tag_exists
-  tag_exists=$(git -C "$REPO_ROOT" tag -l "v$NEW_VERSION")
-  [ -z "$tag_exists" ] || fail "v$NEW_VERSION is already tagged; nothing to publish"
+
+  # Idempotency is keyed on the published GitHub Release, not the local tag.
+  # Keying it on the tag created a dead end: if the Release call fails after the
+  # tag is pushed, every retry refuses as "already tagged" while nothing is
+  # actually published. git_publish tolerates a pre-existing tag and an
+  # already_exists Release, so resuming mid-flight is safe.
+  local release_state
+  release_state=$(GH_TOKEN="$GH_TOKEN" NEW_VERSION="$NEW_VERSION" python3 <<'PY'
+import os
+import urllib.error
+import urllib.request
+
+token = os.environ.get('GH_TOKEN', '')
+version = os.environ['NEW_VERSION']
+url = ('https://api.github.com/repos/LeoYeAI/openclaw-master-skills/'
+       f'releases/tags/v{version}')
+
+
+def probe(auth):
+    headers = {'Accept': 'application/vnd.github+json'}
+    if auth and token:
+        headers['Authorization'] = f'token {token}'
+    try:
+        urllib.request.urlopen(urllib.request.Request(url, headers=headers))
+        return 'published'
+    except urllib.error.HTTPError as exc:
+        return 'absent' if exc.code == 404 else f'unknown:{exc.code}'
+    except Exception:
+        return 'unknown:network'
+
+
+# The repo is public, so read the release list anonymously. Sending a dead PAT
+# turns a definitive 200/404 into an inconclusive 401 and the guard would let a
+# duplicate publish through. Retry with the token only if anonymous fails, in
+# case the repo is ever made private.
+state = probe(auth=False)
+if state.startswith('unknown') and token:
+    state = probe(auth=True)
+print(state)
+PY
+)
+  case "$release_state" in
+    published) fail "v$NEW_VERSION is already released on GitHub; nothing to publish" ;;
+    absent)    : ;;
+    *)         warn "could not confirm release state ($release_state); proceeding" ;;
+  esac
+  if [ -n "$(git -C "$REPO_ROOT" tag -l "v$NEW_VERSION")" ]; then
+    warn "tag v$NEW_VERSION exists locally but no release found; resuming publish"
+  fi
 
   # update_docs normally writes this; it is skipped on a publish-only run.
   cat > "$TMP_RELEASE_BODY" <<EOF
