@@ -400,6 +400,13 @@ PY
   info "Validating skill frontmatter"
   python3 "$REPO_ROOT/scripts/check-frontmatter.py" | tail -20 | tee -a "$LOG_FILE" || fail "frontmatter validation failed"
 
+  # Nothing checked the version history, so eight consecutive weekly entries
+  # shipped labelled v0.13.0 while the tag for each of those dates carried a
+  # distinct version. Duplicates also make publish_release ambiguous: it takes
+  # the first version match in CHANGELOG.md.
+  info "Validating version history"
+  python3 "$REPO_ROOT/scripts/check-changelog.py" | tee -a "$LOG_FILE" || fail "version history validation failed"
+
   # Report skills already installed under several directory names. collect.sh
   # only dedups incoming candidates, so 83 groups / 174 redundant directories
   # predate that filter. Reporting only: collapsing them deletes directories and
