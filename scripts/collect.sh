@@ -404,8 +404,13 @@ PY
   # only dedups incoming candidates, so 83 groups / 174 redundant directories
   # predate that filter. Reporting only: collapsing them deletes directories and
   # changes published slugs, which is Leo's call, not the weekly run's.
+  #
+  # grep the two headline lines rather than head -n: the report now ends with a
+  # name-collision summary, and a positional filter would drop it.
   info "Checking for duplicate installed skills"
-  python3 "$REPO_ROOT/scripts/find-duplicates.py" 2>&1 | head -3 | tee -a "$LOG_FILE" || true
+  python3 "$REPO_ROOT/scripts/find-duplicates.py" 2>&1 \
+    | grep -E '^(scanned|duplicate groups|name collisions)' \
+    | tee -a "$LOG_FILE" || true
 
   cat > "$TMP_RELEASE_BODY" <<EOF
 ## 🚀 周更：新增 ${NEW_COUNT} 个 Skills，总计 ${TOTAL_COUNT}

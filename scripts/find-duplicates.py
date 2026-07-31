@@ -13,7 +13,9 @@ payment / amazon-checkout, each with its own name and description, which are
 deliberate discovery aliases rather than accidents.
 
 Read-only. Prints a report and exits 0; use --json for machine-readable output
-and --strict to exit 1 when any duplicate group is found.
+and --strict to exit 1 when any duplicate group is found. The report also lists
+name collisions: directories with different bodies that share a frontmatter
+name, which cannot be collapsed but do make name-keyed lookups ambiguous.
 """
 
 import argparse
@@ -140,6 +142,30 @@ def find_groups(skills):
     return groups
 
 
+def find_name_collisions(skills, groups):
+    """Frontmatter names claimed by more than one surviving directory.
+
+    Distinct from a duplicate group: these have different bodies, so collapsing
+    them would lose content. They still matter because anything that keys on the
+    frontmatter name rather than the directory (a loader, an index, a registry)
+    has to pick one arbitrarily. 155 names are shared by 451 directories, led by
+    50 directories all calling themselves self-improvement.
+
+    Directories that are already reported as redundant are excluded, so this
+    counts only collisions that survive a full duplicate cleanup.
+    """
+    redundant = {s for g in groups for s in g['redundant']}
+    by_name = collections.defaultdict(list)
+    for slug, meta in skills.items():
+        if slug in redundant or not meta['name']:
+            continue
+        by_name[meta['name']].append(slug)
+    out = [{'name': n, 'dirs': sorted(v)}
+           for n, v in by_name.items() if len(v) > 1]
+    out.sort(key=lambda c: (-len(c['dirs']), c['name']))
+    return out
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument('--json', action='store_true')
@@ -150,10 +176,14 @@ def main():
     skills = load_skills()
     groups = find_groups(skills)
     redundant = sum(len(g['redundant']) for g in groups)
+    collisions = find_name_collisions(skills, groups)
+    colliding_dirs = sum(len(c['dirs']) for c in collisions)
 
     if args.json:
         print(json.dumps({'scanned': len(skills), 'groups': groups,
-                          'redundant': redundant}, indent=2, ensure_ascii=False))
+                          'redundant': redundant,
+                          'name_collisions': collisions}, indent=2,
+                         ensure_ascii=False))
     else:
         print(f'scanned {len(skills)} skills with a real body')
         print(f'duplicate groups: {len(groups)}  redundant directories: {redundant}')
@@ -163,6 +193,16 @@ def main():
             for g in groups:
                 print(f"  keep {g['keep']}  ({len(g['redundant'])} redundant)")
                 print(f"       {', '.join(g['redundant'])}")
+        print(f'\nname collisions after cleanup: {len(collisions)} names '
+              f'across {colliding_dirs} directories')
+        print('  (different bodies, same frontmatter name: not safe to collapse)')
+        for c in collisions[:15]:
+            shown = ', '.join(c['dirs'][:6])
+            more = f" (+{len(c['dirs']) - 6} more)" if len(c['dirs']) > 6 else ''
+            print(f"  {len(c['dirs']):3}x  {c['name']}")
+            print(f"        {shown}{more}")
+        if len(collisions) > 15:
+            print(f'  ... {len(collisions) - 15} more names')
 
     return 1 if (args.strict and groups) else 0
 
