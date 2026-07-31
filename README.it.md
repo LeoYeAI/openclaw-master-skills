@@ -3,6 +3,7 @@
 # 🧠 OpenClaw Master Skills
 
 <a href="https://myclaw.ai"><img src="https://img.shields.io/badge/Powered%20by-MyClaw.ai-blue?style=for-the-badge" /></a>
+<img src="https://img.shields.io/badge/Skills-2503%2B-orange?style=for-the-badge" alt="2503+ Competenze" />
 <img src="https://img.shields.io/badge/Aggiornato%20settimanalmente-green?style=for-the-badge" />
 
 **Lingue:**

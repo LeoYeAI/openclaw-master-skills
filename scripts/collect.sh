@@ -306,8 +306,10 @@ for filename in ['README.md', 'SKILL.md', 'README.zh-CN.md', 'README.fr.md', 'RE
     total = os.environ['TOTAL_COUNT']
     # Badge URL count
     content = re.sub(r'Skills-[0-9]+%2B', f"Skills-{total}%2B", content)
-    # Badge alt text (was never updated before, drifted to stale values)
-    content = re.sub(r'alt="[0-9]+\+ Skills"', f'alt="{total}+ Skills"', content)
+    # Badge alt text (was never updated before, drifted to stale values).
+    # The translated READMEs localize the noun ("2503+ Navyki", "2503+ スキル"),
+    # so match any trailing label rather than a literal "Skills".
+    content = re.sub(r'alt="[0-9]+\+ ([^"]*)"', lambda m: f'alt="{total}+ {m.group(1)}"', content)
     # Prose counts. Match "best skills" too, not just "best OpenClaw skills":
     # SKILL.md's body uses the shorter phrasing and silently went stale at
     # v0.13.0 (560 -> 11211), shipping a wrong number to ClawHub for months.
