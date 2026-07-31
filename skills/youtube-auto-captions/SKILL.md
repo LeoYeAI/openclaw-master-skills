@@ -1,3 +1,8 @@
+---
+name: youtube-auto-captions
+description: "自动为 YouTube 视频生成字幕，支持多语言翻译、时间轴校准。提升视频可访问性和 SEO。"
+---
+
 # youtube-auto-captions - YouTube 自动字幕
 
 ## 描述

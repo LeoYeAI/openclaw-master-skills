@@ -1,3 +1,8 @@
+---
+name: ai-prompt-generator
+description: "专业 AI 提示词生成工具，帮助用户创建高效、精准的 AI 提示词。内置多种框架和模板，让 AI 输出质量提升 10 倍。"
+---
+
 # AI Prompt Generator - AI 提示词生成器
 
 ## Description

@@ -1,3 +1,8 @@
+---
+name: shopify-seo-optimizer
+description: "专为 Shopify 店铺设计的 SEO 优化工具。优化产品标题、描述、元标签、图片 Alt、URL 结构，提升店铺在 Google 的搜索排名和自然流量。"
+---
+
 # Shopify SEO Optimizer - Shopify SEO 优化
 
 ## Description

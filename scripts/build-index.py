@@ -99,6 +99,11 @@ def restates_slug(desc: str, slug: str) -> bool:
     """
     if len(desc) >= 40:
         return False
+    # Non-ASCII text is never a slug restatement: slugs are ASCII, so stripping
+    # CJK collapsed "自动化 Web 任务执行服务。" to "web", which matched inside
+    # "ai-web-automation" and threw away a perfectly good description.
+    if any(ord(ch) > 127 for ch in desc):
+        return False
     filler = r'(skill|powerful|tier|cs)'
     norm = lambda s: re.sub(filler, '', re.sub(r'[^a-z0-9]', '', s.lower()))
     d, s = norm(desc), norm(slug)

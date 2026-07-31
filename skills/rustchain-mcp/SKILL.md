@@ -1,3 +1,8 @@
+---
+name: rustchain-mcp
+description: "MCP server giving AI agents access to the RustChain Proof-of-Antiquity blockchain, BoTTube AI-native video platform, and Beacon agent-to-agent communication protocol."
+---
+
 # RustChain + BoTTube + Beacon MCP Server
 
 MCP server giving AI agents access to the RustChain Proof-of-Antiquity blockchain, BoTTube AI-native video platform, and Beacon agent-to-agent communication protocol.

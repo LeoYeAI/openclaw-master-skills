@@ -1,3 +1,8 @@
+---
+name: browser
+description: "This skill uses a headless browser (Puppeteer) to render web pages and extract clean, readable content."
+---
+
 # SKILL: Browser
 
 This skill uses a headless browser (Puppeteer) to render web pages and extract clean, readable content.

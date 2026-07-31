@@ -1,3 +1,8 @@
+---
+name: document-parser
+description: "高精度文档解析技能，从 PDF、图片、Word 文档中提取结构化数据。"
+---
+
 # document-parser
 
 高精度文档解析技能，从 PDF、图片、Word 文档中提取结构化数据。

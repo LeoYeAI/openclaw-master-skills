@@ -1,3 +1,8 @@
+---
+name: amazon-price-tracker
+description: "实时监控亚马逊商品价格，设置降价提醒，追踪历史价格曲线。帮助买家低价购入，卖家竞品监控。"
+---
+
 # amazon-price-tracker - 亚马逊价格追踪
 
 ## 描述

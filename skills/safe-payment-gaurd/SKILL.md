@@ -1,4 +1,3 @@
-
 ---
 name: safe-payment-guard
 description: payment safety guardrail for tasks that involve paying, wiring, reimbursing, settling invoices, sending remittances, topping up balances, or moving money or stored value. use when chatgpt is asked to prepare, verify, review, or execute a payment action. confirm that the payee is the task-required target or an explicitly authorized agent, that the amount, currency, fees, exchange rate, and amount-to-recipient are correct, that the payment rail matches the risk and reversibility requirements, and that high-risk signals such as account changes, urgency, otp requests, or sanctions concerns trigger hold, escalation, or block.

@@ -1,3 +1,8 @@
+---
+name: shopify-seo-bot
+description: "自动优化 Shopify 店铺 SEO，包括产品标题、描述、meta 标签、图片 ALT 等。提升 Google 搜索排名，增加自然流量。"
+---
+
 # shopify-seo-bot - Shopify SEO 优化
 
 ## 描述

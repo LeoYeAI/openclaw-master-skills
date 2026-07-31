@@ -1,3 +1,8 @@
+---
+name: weibo-trending-bot
+description: "实时监控微博热搜榜，追踪热点话题、明星八卦、社会新闻。自动生成蹭热点文案。"
+---
+
 # weibo-trending-bot - 微博热搜机器人
 
 ## 描述

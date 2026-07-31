@@ -192,7 +192,7 @@
 | [`ai-video-honeymoon-video`](skills/ai-video-honeymoon-video/) | Plan and film the perfect post-wedding romantic getaway with AI — generate honeymoon videos covering destinati… |
 | [`ai-video-travel-photography-video`](skills/ai-video-travel-photography-video/) | Teach composition, lighting, and storytelling for stunning travel shots with AI — generate travel photography… |
 | [`ai-viral-team-script-writing`](skills/ai-viral-team-script-writing/) | 脚本创作 - 短视频脚本撰写与分镜设计 职责：根据爆款模板生产内容、设计黄金3秒开头方案（3种以上）、撰写分镜脚本（包含镜头语言/场景氛围/角色动作/台词/BGM）、设计槽点埋梗与情绪钩子、规划结尾引导、自动推荐Vidu… |
-| [`ai-web-automation`](skills/ai-web-automation/) | - 表单填写 - 数据抓取 - 定时任务 - 自动化测试 - API 测试 - 网站监控 - 自动化提交 |
+| [`ai-web-automation`](skills/ai-web-automation/) | 自动化 Web 任务执行服务。 |
 | [`ai-workforce`](skills/ai-workforce/) | Turn an OpenClaw agent into an autonomous AI Chief that runs a business. Provides trust-based autonomy, struct… |
 | [`aig-skill-scanner`](skills/aig-skill-scanner/) | Scan any agent skill for security risks before you install or use it. Powered by Tencent Zhuque Lab A.I.G (AI-… |
 | [`airfly`](skills/airfly/) | AI机票助手 - 实现国内航班搜索、舱位查询、预订下单、机票改期、机票退票。适用于用户询问航班、查询机票价格、提交机票订单、改期航班、退票时使用。 |
@@ -2325,7 +2325,7 @@
 | [`ux-researcher-designer`](skills/ux-researcher-designer/) | UX research and design toolkit for Senior UX Designer/Researcher including data-driven persona generation, jou… |
 | [`valuemining-lengthybooks`](skills/valuemining-lengthybooks/) | Extract actionable insights from books using Four-Layer Methodology: (1) Skeleton - conceptual frameworks and… |
 | [`variant-design-skill`](skills/variant-design-skill/) | AI-driven visual/UI design generation with Impeccable design system. Generates 3 distinct design variations fr… |
-| [`veadk-skills`](skills/veadk-skills/) | 本技能可以根据用户的需求，生成符合要求的 VeADK Agent 代码，或完成 VeADK 相关功能。 |
+| [`veadk-skills`](skills/veadk-skills/) | 根据用户的功能需求，完成与 VeADK 相关的功能。 |
 | [`vectcut`](skills/vectcut/) | AI 视频导演与自动化剪辑专家。能够理解视频素材内容、视频创作指令，自主规划脚本结构，并通过调用 VectCut API 实现创建剪映草稿、编排素材（B-roll/转场/特效）、生成 AI 配音与字幕，实现端到端的视频创… |
 | [`venue`](skills/venue/) | Music venue where AI agents stream concerts as mathematics. NDJSON equations, Butterchurn visualizer presets,… |
 | [`vercel-ai-sdk`](skills/vercel-ai-sdk/) | Answer questions about the AI SDK and help build AI-powered features. Use when developers: (1) Ask about AI SD… |

@@ -1,3 +1,8 @@
+---
+name: ebay-product-research
+description: "专业 eBay 选品分析工具，帮助卖家发现高利润、低竞争的产品。分析销量、价格趋势、竞争程度、利润空间，提供数据驱动的选品建议。"
+---
+
 # eBay Product Research - eBay 选品工具
 
 ## Description

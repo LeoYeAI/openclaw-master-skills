@@ -1,3 +1,8 @@
+---
+name: tiktok-viral-predictor
+description: "AI 预测 TikTok 视频爆款潜力，分析热门元素、BGM、标签。提供优化建议，提高视频上推荐概率。"
+---
+
 # tiktok-viral-predictor - TikTok 爆款预测
 
 ## 描述

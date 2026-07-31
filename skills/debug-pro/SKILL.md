@@ -1,3 +1,8 @@
+---
+name: debug-pro
+description: "Systematic debugging methodology and language-specific debugging commands."
+---
+
 # debug-pro
 
 Systematic debugging methodology and language-specific debugging commands.
