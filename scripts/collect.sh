@@ -332,6 +332,13 @@ PY
   info "Rebuilding skill_index.md"
   python3 "$REPO_ROOT/scripts/build-index.py" | tee -a "$LOG_FILE"
 
+  # The curated README tables are hand-maintained, so nothing caught 27 rows
+  # whose description was a bare YAML block indicator, an empty clawsec cell, or
+  # a row broken into 4 columns by unescaped pipes. Fail the run instead of
+  # shipping that to GitHub and ClawHub.
+  info "Validating README skill tables"
+  python3 "$REPO_ROOT/scripts/check-readme-table.py" | tee -a "$LOG_FILE" || fail "README table validation failed"
+
   cat > "$TMP_RELEASE_BODY" <<EOF
 ## 🚀 周更：新增 ${NEW_COUNT} 个 Skills，总计 ${TOTAL_COUNT}
 

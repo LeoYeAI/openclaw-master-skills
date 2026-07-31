@@ -43,7 +43,7 @@ cp -r openclaw-master-skills/skills/<skill-name> ~/.openclaw/workspace/skills/
 | [`academic-deep-research`](skills/academic-deep-research/) | Transparent, rigorous research with full methodology — not a black-box API wrapper. Conducts exhaust |
 | [`agent-browser`](skills/agent-browser/) | A fast Rust-based headless browser automation CLI with Node.js fallback that enables AI agents to na |
 | [`agent-browser-clawdbot`](skills/agent-browser-clawdbot/) | Headless browser automation CLI optimized for AI agents with accessibility tree snapshots and ref-ba |
-| [`ai-humanizer`](skills/ai-humanizer/) | > |
+| [`ai-humanizer`](skills/ai-humanizer/) | Humanize AI-generated text by detecting and removing patterns typical of LLM output. Rewrites text to sound natural, specific, and human. Uses 24 pattern detectors, 500+ AI vocabulary terms across 3 tiers, and statistical analysis (burstiness, type-token ratio, readability) for comprehensive dete... |
 | [`ai-ppt-generator`](skills/ai-ppt-generator/) | Generate PPT with Baidu AI. Smart template selection based on content. |
 | [`ai-prompt-engineering-safety-review`](skills/ai-prompt-engineering-safety-review/) | Comprehensive AI prompt engineering safety review and improvement prompt. Analyzes prompts for safet |
 | [`ai-prompt-generator`](skills/ai-prompt-generator/) | 专业 AI 提示词生成工具，帮助用户创建高效、精准的 AI 提示词。内置多种框架和模板，让 AI 输出质量提升 10 倍。 |
@@ -53,12 +53,12 @@ cp -r openclaw-master-skills/skills/<skill-name> ~/.openclaw/workspace/skills/
 | [`browser-use`](skills/browser-use/) | Automates browser interactions for web testing, form filling, screenshots, and data extraction. Use  |
 | [`computer-use`](skills/computer-use/) | Full desktop computer use for headless Linux servers. Xvfb + XFCE virtual desktop with xdotool autom |
 | [`deep-research-pro`](skills/deep-research-pro/) | Multi-source deep research agent. Searches the web, synthesizes findings, and delivers cited reports |
-| [`edge-tts`](skills/edge-tts/) | | |
+| [`edge-tts`](skills/edge-tts/) | Text-to-speech conversion using node-edge-tts npm package for generating audio from text. Supports multiple voices, languages, speed adjustment, pitch control, and subtitle generation. Use when: (1) User requests audio/voice output with the "tts" trigger or keyword. (2) Content needs to be spoken... |
 | [`gemini`](skills/gemini/) | Gemini CLI for one-shot Q&A, summaries, and generation. |
 | [`humanize-ai-text`](skills/humanize-ai-text/) | Humanize AI-generated text to bypass detection. This humanizer rewrites ChatGPT, Claude, and GPT con |
-| [`humanizer`](skills/humanizer/) | | |
+| [`humanizer`](skills/humanizer/) | Remove signs of AI-generated writing from text. Use when editing or reviewing text to make it sound more natural and human-written. Based on Wikipedia's comprehensive "Signs of AI writing" guide. Detects and fixes patterns including: inflated symbolism, promotional language, superficial -ing anal... |
 | [`image-generate`](skills/image-generate/) | 使用内置 image_generate.py 脚本生成图片, 准备清晰具体的 `prompt`。 |
-| [`ltx-video`](skills/ltx-video/) | | |
+| [`ltx-video`](skills/ltx-video/) | Generate videos via LTX-2.3 API (ltx.video). Supports text-to-video, image-to-video, audio-to-video (lip-sync from audio + image), extend, and retake. Use when: generating AI video from text/image/audio, animating a portrait, creating lip-sync video from an existing image + audio recording. |
 | [`mcporter`](skills/mcporter/) | Use the mcporter CLI to list, configure, auth, and call MCP servers/tools directly (HTTP or stdio),  |
 | [`model-usage`](skills/model-usage/) | Use CodexBar CLI local cost usage to summarize per-model usage for Codex or Claude, including the cu |
 | [`nano-banana-pro`](skills/nano-banana-pro/) | Generate/edit images with Nano Banana Pro (Gemini 3 Pro Image). Use for image create/modify requests |
@@ -106,7 +106,7 @@ cp -r openclaw-master-skills/skills/<skill-name> ~/.openclaw/workspace/skills/
 | [`ebay-product-research`](skills/ebay-product-research/) | 专业 eBay 选品分析工具，帮助卖家发现高利润、低竞争的产品。分析销量、价格趋势、竞争程度、利润空间，提供数据驱动的选品建议。 |
 | [`exa-web-search-free`](skills/exa-web-search-free/) | Free AI search via Exa MCP. Web search for news/info, code search for docs/examples from GitHub/Stac |
 | [`file-search`](skills/file-search/) | Fast file-name and content search using `fd` and `rg` (ripgrep). |
-| [`firecrawl`](skills/firecrawl/) | | |
+| [`firecrawl`](skills/firecrawl/) | Official Firecrawl CLI skill for web scraping, search, crawling, and browser automation. Returns clean LLM-optimized markdown. USE FOR: - Web search and research - Scraping pages, docs, and articles - Site mapping and bulk content extraction - Browser automation for interactive pages Must be pre-... |
 | [`firecrawl-search`](skills/firecrawl-search/) | Web search and scraping via Firecrawl API. Use when you need to search the web, scrape websites (inc |
 | [`google-search`](skills/google-search/) | Search the web using Google Custom Search Engine (PSE). Use this when you need live information, doc |
 | [`multi-search-engine`](skills/multi-search-engine/) | Multi search engine integration with 17 engines (8 CN + 9 Global). Supports advanced search operator |
@@ -133,7 +133,7 @@ cp -r openclaw-master-skills/skills/<skill-name> ~/.openclaw/workspace/skills/
 | [`document-parser`](skills/document-parser/) | 高精度文档解析技能，从 PDF、图片、Word 文档中提取结构化数据。 |
 | [`docx`](skills/docx/) | Use this skill whenever the user wants to create, read, edit, or manipulate Word documents (.docx fi |
 | [`elite-longterm-memory`](skills/elite-longterm-memory/) | Ultimate AI agent memory system for Cursor, Claude, ChatGPT & Copilot. WAL protocol + vector search  |
-| [`erpclaw`](skills/erpclaw/) | > |
+| [`erpclaw`](skills/erpclaw/) | AI-native ERP system. Full accounting, invoicing, inventory, purchasing, tax, billing, HR, payroll, advanced accounting (ASC 606/842, intercompany, consolidation), and financial reporting in a single install. 365+ actions across 14 domains. Modular expansion via GitHub-hosted modules. Double-entr... |
 | [`excel-xlsx`](skills/excel-xlsx/) | Read, write, and generate Excel files with correct types, dates, formulas, and cross-platform compat |
 | [`gcalcli-calendar`](skills/gcalcli-calendar/) | Google Calendar via gcalcli: today-only agenda by default, bounded meaning-first lookup via agenda s |
 | [`google-calendar`](skills/google-calendar/) | Interact with Google Calendar via the Google Calendar API – list upcoming events, create new events, |
@@ -142,7 +142,7 @@ cp -r openclaw-master-skills/skills/<skill-name> ~/.openclaw/workspace/skills/
 | [`memory-hygiene`](skills/memory-hygiene/) | Audit, clean, and optimize Clawdbot's vector memory (LanceDB). Use when memory is bloated with junk, |
 | [`memory-manager`](skills/memory-manager/) | Local memory management for agents. Compression detection, auto-snapshots, and semantic search. Use  |
 | [`memory-setup`](skills/memory-setup/) | Enable and configure Moltbot/Clawdbot memory search for persistent context. Use when setting up memo |
-| [`microsoft-excel`](skills/microsoft-excel/) | | |
+| [`microsoft-excel`](skills/microsoft-excel/) | Microsoft Excel API integration with managed OAuth. Read and write Excel workbooks, worksheets, ranges, tables, and charts stored in OneDrive. Use this skill when users want to read or modify Excel spreadsheets, manage worksheet data, work with tables, or access cell values. For other third party... |
 | [`nano-pdf`](skills/nano-pdf/) | Edit PDFs with natural-language instructions using the nano-pdf CLI. |
 | [`notion`](skills/notion/) | Notion API for creating and managing pages, databases, and blocks. |
 | [`obsidian`](skills/obsidian/) | Work with Obsidian vaults (plain Markdown notes) and automate via obsidian-cli. |
@@ -233,7 +233,7 @@ cp -r openclaw-master-skills/skills/<skill-name> ~/.openclaw/workspace/skills/
 | [`systematic-debugging`](skills/systematic-debugging/) | Use when encountering any bug, test failure, or unexpected behavior, before proposing fixes |
 | [`template-skill`](skills/template-skill/) | Replace with description of the skill and when Claude should use it. |
 | [`test-driven-development`](skills/test-driven-development/) | Use when implementing any feature or bugfix, before writing implementation code |
-| [`turborepo`](skills/turborepo/) | | |
+| [`turborepo`](skills/turborepo/) | Turborepo monorepo build system guidance. Triggers on: turbo.json, task pipelines, dependsOn, caching, remote cache, the "turbo" CLI, --filter, --affected, CI optimization, environment variables, internal packages, monorepo structure/best practices, and boundaries. Use when user: configures tasks... |
 | [`typescript-advanced-types`](skills/typescript-advanced-types/) | Master TypeScript's advanced type system including generics, conditional types, mapped types, templa |
 | [`ui-ux-pro-max`](skills/ui-ux-pro-max/) | UI/UX design intelligence and implementation guidance for building polished interfaces. Use when the |
 | [`unocss`](skills/unocss/) | UnoCSS instant atomic CSS engine, superset of Tailwind CSS. Use when configuring UnoCSS, writing uti |
@@ -267,7 +267,7 @@ cp -r openclaw-master-skills/skills/<skill-name> ~/.openclaw/workspace/skills/
 | [`analytics-tracking`](skills/analytics-tracking/) | When the user wants to set up, improve, or audit analytics tracking and measurement. Also use when t |
 | [`blogwatcher`](skills/blogwatcher/) | Monitor blogs and RSS/Atom feeds for updates using the blogwatcher CLI. |
 | [`brand-guidelines`](skills/brand-guidelines/) | Applies Anthropic's official brand colors and typography to any sort of artifact that may benefit fr |
-| [`communication-playbook`](skills/communication-playbook/) | > |
+| [`communication-playbook`](skills/communication-playbook/) | World-Class Communication Playbook for HeySalad. Use this skill whenever any communication task is involved — internal team messages, external emails to investors/regulators/partners/customers, presentation structuring, written docs, cross-functional project coordination, meeting facilitation, tr... |
 | [`competitor-alternatives`](skills/competitor-alternatives/) | When the user wants to create competitor comparison or alternative pages for SEO and sales enablemen |
 | [`content-strategy`](skills/content-strategy/) | When the user wants to plan a content strategy, decide what content to create, or figure out what to |
 | [`copy-editing`](skills/copy-editing/) | When the user wants to edit, review, or improve existing marketing copy. Also use when the user ment |
@@ -284,7 +284,7 @@ cp -r openclaw-master-skills/skills/<skill-name> ~/.openclaw/workspace/skills/
 | [`onboarding-cro`](skills/onboarding-cro/) | When the user wants to optimize post-signup onboarding, user activation, first-run experience, or ti |
 | [`page-cro`](skills/page-cro/) | When the user wants to optimize, improve, or increase conversions on any marketing page — including  |
 | [`paid-ads`](skills/paid-ads/) | When the user wants help with paid advertising campaigns on Google Ads, Meta (Facebook/Instagram), L |
-| [`partnerships-ecosystem`](skills/partnerships-ecosystem/) | > |
+| [`partnerships-ecosystem`](skills/partnerships-ecosystem/) | World-Class Partnerships & Ecosystem Playbook. Use for: strategic alliances, joint ventures, channel partner management, partner tiering, co-marketing, co-selling, ecosystem-led growth (ELG), ecosystem mapping, supplier relationships, industry networking, partnership governance, joint business pl... |
 | [`popup-cro`](skills/popup-cro/) | When the user wants to create or optimize popups, modals, overlays, slide-ins, or banners for conver |
 | [`pricing-strategy`](skills/pricing-strategy/) | When the user wants help with pricing decisions, packaging, or monetization strategy. Also use when  |
 | [`product-marketing-context`](skills/product-marketing-context/) | When the user wants to create or update their product marketing context document. Also use when the  |
@@ -310,7 +310,7 @@ cp -r openclaw-master-skills/skills/<skill-name> ~/.openclaw/workspace/skills/
 | [`songsee`](skills/songsee/) | Generate spectrograms and feature-panel visualizations from audio with the songsee CLI. |
 | [`video-frames`](skills/video-frames/) | Extract frames or short clips from videos using ffmpeg. |
 | [`web-artifacts-builder`](skills/web-artifacts-builder/) | Suite of tools for creating elaborate, multi-component claude.ai HTML artifacts using modern fronten |
-| [`youtube-api-skill`](skills/youtube-api-skill/) | | |
+| [`youtube-api-skill`](skills/youtube-api-skill/) | YouTube Data API integration with managed OAuth. Search videos, manage playlists, access channel data, and interact with comments. Use this skill when users want to interact with YouTube. For other third party apps, use the api-gateway skill (https://clawhub.ai/byungkyu/api-gateway). |
 | [`youtube-auto-captions`](skills/youtube-auto-captions/) | 自动为 YouTube 视频生成字幕，支持多语言翻译、时间轴校准。提升视频可访问性和 SEO。 |
 | [`youtube-transcript`](skills/youtube-transcript/) | Fetch and summarize YouTube video transcripts. Use when asked to summarize, transcribe, or extract c |
 | [`youtube-watcher`](skills/youtube-watcher/) | Fetch and read transcripts from YouTube videos. Use when you need to summarize a video, answer quest |
@@ -320,9 +320,9 @@ cp -r openclaw-master-skills/skills/<skill-name> ~/.openclaw/workspace/skills/
 | Skill | Description |
 |---|---|
 | [`stock-analysis`](skills/stock-analysis/) | Analyze stocks and cryptocurrencies using Yahoo Finance data. Supports portfolio management, watchli |
-| [`stock-market-pro`](skills/stock-market-pro/) | >- |
+| [`stock-market-pro`](skills/stock-market-pro/) | Yahoo Finance (yfinance) powered stock analysis skill: quotes, fundamentals, ASCII trends, high-resolution charts (RSI/MACD/BB/VWAP/ATR), plus optional web add-ons (news + browser-first options/flow). |
 | [`stock-watcher`](skills/stock-watcher/) | Manage and monitor a personal stock watchlist with support for adding, removing, listing stocks, and |
-| [`trader-daily`](skills/trader-daily/) | | |
+| [`trader-daily`](skills/trader-daily/) | [中文] 量化交易员日常任务管理系统 - 专为股票交易员设计的每日工作流程管理工具。 包含：开盘/收盘/日终汇报模板、实时持仓监控、风控提醒、交易日志记录。 使用场景：(1) 管理每日交易任务时间表 (2) 生成汇报给上级的简报 (3) 监控持仓风险 (4) 记录交易日志 (5) 复盘分析 [English] Quantitative Trader Daily Task Management System - A comprehensive daily workflow management tool designed for stock traders. Features: Openi... |
 | [`tushare-finance`](skills/tushare-finance/) | 获取中国金融市场数据（A股、港股、美股、基金、期货、债券）。支持220+个Tushare Pro接口：股票行情、财务报表、宏观经济指标。当用户请求股价数据、财务分析、指数行情、GDP/CPI等宏观数据 |
 | [`us-stock-analysis`](skills/us-stock-analysis/) | Comprehensive US stock analysis including fundamental analysis (financial metrics, business quality, |
 | [`yahoo-finance`](skills/yahoo-finance/) | Get stock prices, quotes, fundamentals, earnings, options, dividends, and analyst ratings using Yaho |
@@ -348,7 +348,7 @@ cp -r openclaw-master-skills/skills/<skill-name> ~/.openclaw/workspace/skills/
 | [`discord`](skills/discord/) | Use when you need to control Discord from Clawdbot via the discord tool: send messages, react, post  |
 | [`feishu-doc`](skills/feishu-doc/) | Fetch content from Feishu (Lark) Wiki, Docs, Sheets, and Bitable. Automatically resolves Wiki URLs t |
 | [`feishu-evolver-wrapper`](skills/feishu-evolver-wrapper/) | Feishu-integrated wrapper for the capability-evolver. Manages the evolution loop lifecycle (start/st |
-| [`gmail`](skills/gmail/) | | |
+| [`gmail`](skills/gmail/) | Gmail API integration with managed OAuth. Read, send, and manage emails, threads, labels, and drafts. Use this skill when users want to interact with Gmail. For other third party apps, use the api-gateway skill (https://clawhub.ai/byungkyu/api-gateway). |
 | [`himalaya`](skills/himalaya/) | CLI to manage emails via IMAP/SMTP. Use `himalaya` to list, read, write, reply, forward, search, and |
 | [`imap-smtp-email`](skills/imap-smtp-email/) | Read and send email via IMAP/SMTP. Check for new/unread messages, fetch content, search mailboxes, m |
 | [`imsg`](skills/imsg/) | iMessage/SMS CLI for listing chats, history, watch, and sending. |
@@ -382,7 +382,7 @@ cp -r openclaw-master-skills/skills/<skill-name> ~/.openclaw/workspace/skills/
 | Skill | Description |
 |---|---|
 | [`agent-autonomy-kit`](skills/agent-autonomy-kit/) | Stop waiting for prompts. Keep working. |
-| [`agent-reach`](skills/agent-reach/) | > |
+| [`agent-reach`](skills/agent-reach/) | Give your AI agent eyes to see the entire internet. 7500+ GitHub stars. Search and read 14 platforms: Twitter/X, Reddit, YouTube, GitHub, Bilibili, XiaoHongShu (小红书), Douyin (抖音), Weibo (微博), WeChat Articles (微信公众号), LinkedIn, Instagram, RSS, Exa web search, and any web page. One command install,... |
 | [`agent-team-orchestration`](skills/agent-team-orchestration/) | Orchestrate multi-agent teams with defined roles, task lifecycles, handoff protocols, and review wor |
 | [`answeroverflow`](skills/answeroverflow/) | Search indexed Discord community discussions via Answer Overflow. Find solutions to coding problems, |
 | [`auto-updater`](skills/auto-updater/) | Automatically update Clawdbot and all installed skills once daily. Runs via cron, checks for updates |
@@ -390,7 +390,7 @@ cp -r openclaw-master-skills/skills/<skill-name> ~/.openclaw/workspace/skills/
 | [`caveman`](skills/caveman/) | Ultra-compressed communication mode. Cuts token usage ~75% by speaking like caveman while keeping full technical accuracy. |
 | [`clawddocs`](skills/clawddocs/) | Clawdbot documentation expert with decision tree navigation, search scripts, doc fetching, version t |
 | [`clawdhub`](skills/clawdhub/) | Use the ClawdHub CLI to search, install, update, and publish agent skills from clawdhub.com. Use whe |
-| [`clawsec`](skills/clawsec/) |  |
+| [`clawsec`](skills/clawsec/) | You are now acting as the ClawSec Monitor assistant. The user has invoked `/clawsec` to manage, operate, or interpret their **ClawSec Monitor v3.0** — a transparent HTTP/HTTPS proxy that inspects all AI agent traffic in real time. |
 | [`compaction-ui-enhancements`](skills/compaction-ui-enhancements/) | Background memory compaction with auto-trigger, chat summary paragraph, configurable threshold, mode |
 | [`evomap`](skills/evomap/) | Connect to the EvoMap collaborative evolution marketplace. Publish Gene+Capsule bundles, fetch promo |
 | [`find-skills`](skills/find-skills/) | Helps users discover and install agent skills when they ask questions like "how do I do X", "find a  |
@@ -407,7 +407,7 @@ cp -r openclaw-master-skills/skills/<skill-name> ~/.openclaw/workspace/skills/
 | [`self-reflection`](skills/self-reflection/) | Continuous self-improvement through structured reflection and memory |
 | [`session-logs`](skills/session-logs/) | Search and analyze your own session logs (older/parent conversations) using jq. |
 | [`skill-creator`](skills/skill-creator/) | Create new skills, modify and improve existing skills, and measure skill performance. Use when users |
-| [`skill-finder-cn`](skills/skill-finder-cn/) | Skill 查找器 | Skill Finder. 帮助发现和安装 ClawHub Skills | Discover and install ClawHub Skills. 回答'有什么技能可以X' |
+| [`skill-finder-cn`](skills/skill-finder-cn/) | Skill 查找器 \| Skill Finder. 帮助发现和安装 ClawHub Skills \| Discover and install ClawHub Skills. 回答'有什么技能可以X'、'找一个技能' \| Answers 'what skill can X', 'find a skill'. 触发词：找 skill、find skill、搜索 skill. |
 | [`skill-listing-polisher`](skills/skill-listing-polisher/) | Improve a skill's public listing before publish. Use when tightening title, description, tags, chang |
 | [`skill-scanner`](skills/skill-scanner/) | Scan Clawdbot and MCP skills for malware, spyware, crypto-miners, and malicious code patterns before |
 | [`skill-vetter`](skills/skill-vetter/) | Security-first skill vetting for AI agents. Use before installing any skill from ClawdHub, GitHub, o |
@@ -444,11 +444,11 @@ cp -r openclaw-master-skills/skills/<skill-name> ~/.openclaw/workspace/skills/
 | [`news-summary`](skills/news-summary/) | This skill should be used when the user asks for news updates, daily briefings, or what's happening  |
 | [`readgzh`](skills/readgzh/) | description: "ReadGZH — Let AI read full-text WeChat Official Account articles. Supports standard ar |
 | [`reddit`](skills/reddit/) | Browse, search, post, and moderate Reddit. Read-only works without auth; posting/moderation requires |
-| [`reddit-readonly`](skills/reddit-readonly/) | >- |
+| [`reddit-readonly`](skills/reddit-readonly/) | Browse and search Reddit in read-only mode using public JSON endpoints. Use when the user asks to browse subreddits, search for posts by topic, inspect comment threads, or build a shortlist of links to review and reply to manually. |
 | [`social-content`](skills/social-content/) | When the user wants help creating, scheduling, or optimizing social media content for LinkedIn, Twit |
 | [`weibo-trending-bot`](skills/weibo-trending-bot/) | 实时监控微博热搜榜，追踪热点话题、明星八卦、社会新闻。自动生成蹭热点文案。 |
 | [`x-twitter`](skills/x-twitter/) | Interact with Twitter/X — read tweets, search, post, like, retweet, and manage your timeline. |
-| [`xiaohongshu-mcp`](skills/xiaohongshu-mcp/) | > |
+| [`xiaohongshu-mcp`](skills/xiaohongshu-mcp/) | Automate Xiaohongshu (RedNote) content operations using a Python client for the xiaohongshu-mcp server. Use for: (1) Publishing image, text, and video content, (2) Searching for notes and trends, (3) Analyzing post details and comments, (4) Managing user profiles and content feeds. Triggers: xiao... |
 | [`xurl`](skills/xurl/) | A Twitter research and content intelligence skill focused on attracting WordPress and Shopify client |
 
 | [`jike-publisher`](skills/jike-publisher/) | Publish posts to Jike (即刻) via browser automation |
@@ -458,9 +458,9 @@ cp -r openclaw-master-skills/skills/<skill-name> ~/.openclaw/workspace/skills/
 | Skill | Description |
 |---|---|
 | [`add-educational-comments`](skills/add-educational-comments/) | Add educational comments to the file specified, or prompt asking for file to comment if one is not p |
-| [`agent-governance`](skills/agent-governance/) | | |
-| [`agentic-eval`](skills/agentic-eval/) | | |
-| [`api-gateway`](skills/api-gateway/) | | |
+| [`agent-governance`](skills/agent-governance/) | Patterns and techniques for adding governance, safety, and trust controls to AI agent systems. Use this skill when: - Building AI agents that call external tools (APIs, databases, file systems) - Implementing policy-based access controls for agent tool usage - Adding semantic intent classificatio... |
+| [`agentic-eval`](skills/agentic-eval/) | Patterns and techniques for evaluating and improving AI agent outputs. Use this skill when: - Implementing self-critique and reflection loops - Building evaluator-optimizer pipelines for quality-critical generation - Creating test-driven code refinement workflows - Designing rubric-based or LLM-a... |
+| [`api-gateway`](skills/api-gateway/) | Connect to 100+ APIs (Google Workspace, Microsoft 365, GitHub, Notion, Slack, Airtable, HubSpot, etc.) with managed OAuth. Use this skill when users want to interact with external services. Security: The MATON_API_KEY authenticates with Maton.ai but grants NO access to third-party services by its... |
 | [`apple-appstore-reviewer`](skills/apple-appstore-reviewer/) | Serves as a reviewer of the codebase with instructions on looking for Apple App Store optimizations  |
 | [`automation-workflows`](skills/automation-workflows/) | Design and implement automation workflows to save time and scale operations as a solopreneur. Use wh |
 | [`brainstorming`](skills/brainstorming/) | You MUST use this before any creative work - creating features, building components, adding function |
@@ -468,11 +468,11 @@ cp -r openclaw-master-skills/skills/<skill-name> ~/.openclaw/workspace/skills/
 | [`browser`](skills/browser/) | This skill uses a headless browser (Puppeteer) to render web pages and extract clean, readable conte |
 | [`canvas`](skills/canvas/) | Display HTML content on connected OpenClaw nodes (Mac app, iOS, Android). |
 | [`chrome-devtools`](skills/chrome-devtools/) | Expert-level browser automation, debugging, and performance analysis using Chrome DevTools MCP. Use  |
-| [`citedy-content-ingestion`](skills/citedy-content-ingestion/) | > |
-| [`citedy-content-writer`](skills/citedy-content-writer/) | > |
-| [`citedy-lead-magnets`](skills/citedy-lead-magnets/) | > |
-| [`citedy-trend-scout`](skills/citedy-trend-scout/) | > |
-| [`citedy-video-shorts`](skills/citedy-video-shorts/) | > |
+| [`citedy-content-ingestion`](skills/citedy-content-ingestion/) | Turn any URL into structured content — YouTube videos (via Gemini Video API), web articles, PDFs, and audio files. Extract transcripts, summaries, and metadata for use in any LLM pipeline. Powered by Citedy. |
+| [`citedy-content-writer`](skills/citedy-content-writer/) | From topic to published blog post in one conversation — generate SEO- and GEO-optimized articles with AI illustrations and voice-over in 55 languages, create social media adaptations for 9 platforms, set up automated content sessions, and manage product knowledge base. End-to-end blog autopilot.... |
+| [`citedy-lead-magnets`](skills/citedy-lead-magnets/) | Generate AI-powered lead magnets — checklists, swipe files, and frameworks that convert visitors into subscribers. PDF generation with optional AI illustrations. No competitors in any MCP/skill store. Powered by Citedy. |
+| [`citedy-trend-scout`](skills/citedy-trend-scout/) | Find what your audience is searching for right now — scout X/Twitter and Reddit for trending topics, discover and deep-analyze competitors, and find content gaps. Combine social signals with SEO intelligence. Powered by Citedy. |
+| [`citedy-video-shorts`](skills/citedy-video-shorts/) | Generate branded AI avatar lip-sync video shorts for TikTok, Reels, and YouTube Shorts. Create 15-second talking-head videos with custom avatars, auto-generated scripts, and burned-in subtitles for $1.85. |
 | [`clankers-world`](skills/clankers-world/) | Operate Clankers World rooms with OpenClaw-first join/read/send/queue/nudge workflows, cw-* runtime  |
 | [`clawdbot-filesystem`](skills/clawdbot-filesystem/) | Advanced filesystem operations - listing, searching, batch processing, and directory analysis for Cl |
 | [`cron-mastery`](skills/cron-mastery/) | Master OpenClaw's timing systems. Use for scheduling reliable reminders, setting up periodic mainten |
@@ -487,8 +487,8 @@ cp -r openclaw-master-skills/skills/<skill-name> ~/.openclaw/workspace/skills/
 | [`ordercli`](skills/ordercli/) | Foodora-only CLI for checking past orders and active order status (Deliveroo WIP). |
 | [`personal-finish-notifier`](skills/personal-finish-notifier/) | Add a simple "Claude has finished." alert to Claude Code or other agent workflows through an OpenCla |
 | [`productivity`](skills/productivity/) | Plan, focus, and complete work with energy management, time blocking, and context-specific productiv |
-| [`salesmate`](skills/salesmate/) | | |
-| [`tech-data-playbook`](skills/tech-data-playbook/) | > |
+| [`salesmate`](skills/salesmate/) | Salesmate integration. Manage Organizations, Pipelines, Users, Filters, Projects. Use when the user wants to interact with Salesmate data. |
+| [`tech-data-playbook`](skills/tech-data-playbook/) | World-Class Technology & Data Playbook. Use for: software development best practices, IT infrastructure design, cybersecurity strategy, data analytics, business intelligence, automation & DevOps, cloud computing architecture, AI/ML adoption, technical architecture decisions, digital transformatio... |
 | [`theme-factory`](skills/theme-factory/) | Toolkit for styling artifacts with a theme. These artifacts can be slides, docs, reportings, HTML la |
 | [`tmux`](skills/tmux/) | Remote-control tmux sessions for interactive CLIs by sending keystrokes and scraping pane output. |
 | [`upgrading-expo`](skills/upgrading-expo/) | Guidelines for upgrading Expo SDK versions and fixing dependency issues |
