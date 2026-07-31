@@ -449,7 +449,7 @@ cp -r openclaw-master-skills/skills/<skill-name> ~/.openclaw/workspace/skills/
 
 ## 🤝 贡献
 
-发现了好技能？[在 ClawHub 上提交](https://clawhub.com) 或发起 PR！
+发现了好技能？[在 ClawHub 上提交](https://clawhub.ai) 或发起 PR！
 
 ## 📄 许可证
 

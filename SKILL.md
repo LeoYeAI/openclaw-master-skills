@@ -34,5 +34,5 @@ clawhub install openclaw-master-skills
 ## Source
 
 - GitHub: https://github.com/LeoYeAI/openclaw-master-skills
-- ClawHub: https://clawhub.com/skills/openclaw-master-skills
+- ClawHub: https://clawhub.ai/skills/openclaw-master-skills
 - Powered by: https://myclaw.ai

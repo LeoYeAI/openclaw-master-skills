@@ -503,7 +503,7 @@ cp -r openclaw-master-skills/skills/<skill-name> ~/.openclaw/workspace/skills/
 
 ## 🤝 Contributing
 
-Found a great skill? [Submit it on ClawHub](https://clawhub.com) or open a PR!
+Found a great skill? [Submit it on ClawHub](https://clawhub.ai) or open a PR!
 
 ## 📄 License
 
