@@ -339,6 +339,13 @@ PY
   info "Validating README skill tables"
   python3 "$REPO_ROOT/scripts/check-readme-table.py" | tee -a "$LOG_FILE" || fail "README table validation failed"
 
+  # Report skills already installed under several directory names. collect.sh
+  # only dedups incoming candidates, so 83 groups / 174 redundant directories
+  # predate that filter. Reporting only: collapsing them deletes directories and
+  # changes published slugs, which is Leo's call, not the weekly run's.
+  info "Checking for duplicate installed skills"
+  python3 "$REPO_ROOT/scripts/find-duplicates.py" 2>&1 | head -3 | tee -a "$LOG_FILE" || true
+
   cat > "$TMP_RELEASE_BODY" <<EOF
 ## 🚀 周更：新增 ${NEW_COUNT} 个 Skills，总计 ${TOTAL_COUNT}
 
