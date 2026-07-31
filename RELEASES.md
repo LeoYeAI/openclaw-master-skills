@@ -247,7 +247,7 @@
 ---
 
 
-## v0.13.0 — 2026-06-15
+## v0.16.0 — 2026-06-15
 
 ### 🚀 周更：新增 100 个 Skills，总计 1909
 
@@ -288,7 +288,7 @@
 ---
 
 
-## v0.13.0 — 2026-06-08
+## v0.15.0 — 2026-06-08
 
 ### 🚀 周更：新增 100 个 Skills，总计 1809
 
@@ -329,7 +329,7 @@
 ---
 
 
-## v0.13.0 — 2026-06-08
+## untagged — 2026-06-08
 
 ### 🚀 周更：新增 100 个 Skills，总计 1709
 
@@ -370,7 +370,7 @@
 ---
 
 
-## v0.13.0 — 2026-06-01
+## v0.14.0 — 2026-06-01
 
 ### 🚀 周更：新增 100 个 Skills，总计 1609
 
@@ -452,7 +452,7 @@
 ---
 
 
-## v0.13.0 — 2026-05-18
+## v0.13.2 — 2026-05-18
 
 ### 🚀 周更：新增 100 个 Skills，总计 1409
 
@@ -493,7 +493,7 @@
 ---
 
 
-## v0.13.0 — 2026-05-11
+## v0.13.1 — 2026-05-11
 
 ### 🚀 周更：新增 100 个 Skills，总计 1309
 
@@ -534,7 +534,7 @@
 ---
 
 
-## v0.13.0 — 2026-05-06
+## untagged — 2026-05-06
 
 ### 🚀 周更：新增 32832 个 Skills，总计 1209
 
@@ -737,6 +737,35 @@
 本周扫描来源：GitHub `openclaw-skill` topic（30+ 个仓库）+ skills.sh top 200
 
 扫描结果：候选 `audit-website` 已于 v0.6.0 收录，无净新增。README skill index 已全量刷新，确认当前收录 **560 个精选 Skills**。
+
+---
+
+## v0.7.0 — 2026-03-31
+
+### 🚀 Weekly Update — 560+ Skills (+173)
+
+Sources: ClawHub Archive (openclaw/skills repo) + GitHub curation
+
+#### New from steipete (OpenClaw creator) — 13 skills
+- `bird` — Bluesky social protocol CLI
+- `coding-agent` — AI coding agent best practices
+- `create-cli` — CLI tool creation guide
+- `domain-dns-ops` — Domain DNS operations
+- `frontend-design` — Frontend design guidelines
+- `instruments-profiling` — Xcode Instruments profiling
+- `native-app-performance` — Native app performance optimization
+- `swift-concurrency-expert` — Swift concurrency patterns
+- `swiftui-liquid-glass` — SwiftUI Liquid Glass effects
+- `swiftui-performance-audit` — SwiftUI performance auditing
+- `swiftui-view-refactor` — SwiftUI view refactoring
+- `video-transcript-downloader` — Video transcript download
+- `wacli` — WhatsApp CLI
+
+#### New from alirezarezvani — 159 enterprise-grade skills
+Categories: C-Suite advisors (CEO/CFO/CTO/CMO/CISO), Senior engineers (Frontend/Backend/ML/DevOps/Security), Product management, Project management, UI/UX design, Content creation, SEO/SEM, Social media, Data analytics, Terraform/K8s/Docker, Stripe integration, and more.
+
+#### Other additions
+- `para-second-brain` — PARA method second brain system
 
 ---
 
@@ -1151,33 +1180,3 @@
 - `vercel-react-best-practices` — React and Next.js performance optimization guidelines from Vercel Engineering. This skill should be used when writing, r
 - `web-design-guidelines` — Review UI code for Web Interface Guidelines compliance. Use when asked to "review my UI", "check accessibility", "audit 
 - `supabase-postgres-best-practices` — Postgres performance optimization and best practices from Supabase. Use this skill when writing, reviewing, or optimizin
-
----
-
-## v0.7.0 — 2026-03-31
-
-### 🚀 Weekly Update — 560+ Skills (+173)
-
-Sources: ClawHub Archive (openclaw/skills repo) + GitHub curation
-
-#### New from steipete (OpenClaw creator) — 13 skills
-- `bird` — Bluesky social protocol CLI
-- `coding-agent` — AI coding agent best practices
-- `create-cli` — CLI tool creation guide
-- `domain-dns-ops` — Domain DNS operations
-- `frontend-design` — Frontend design guidelines
-- `instruments-profiling` — Xcode Instruments profiling
-- `native-app-performance` — Native app performance optimization
-- `swift-concurrency-expert` — Swift concurrency patterns
-- `swiftui-liquid-glass` — SwiftUI Liquid Glass effects
-- `swiftui-performance-audit` — SwiftUI performance auditing
-- `swiftui-view-refactor` — SwiftUI view refactoring
-- `video-transcript-downloader` — Video transcript download
-- `wacli` — WhatsApp CLI
-
-#### New from alirezarezvani — 159 enterprise-grade skills
-Categories: C-Suite advisors (CEO/CFO/CTO/CMO/CISO), Senior engineers (Frontend/Backend/ML/DevOps/Security), Product management, Project management, UI/UX design, Content creation, SEO/SEM, Social media, Data analytics, Terraform/K8s/Docker, Stripe integration, and more.
-
-#### Other additions
-- `para-second-brain` — PARA method second brain system
-
