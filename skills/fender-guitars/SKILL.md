@@ -1,5 +1,6 @@
 ---
 name: fender-guitars
+description: "The guitar brand that defined rock and roll — Telecaster, Stratocaster, and Precision Bass — instruments played by Hendrix, Clapton, and every generation since."
 summary: The guitar brand that defined rock and roll — Telecaster, Stratocaster, and Precision Bass — instruments played by Hendrix, Clapton, and every generation since.
 read_when:
 - Researching electric guitar history and Leo Fender's innovations

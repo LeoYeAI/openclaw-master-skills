@@ -1,5 +1,6 @@
 ---
 name: "VMware"
+description: "虚拟化技术和云基础设施的开创者，被Broadcom收购后开启新篇章"
 slug: "vmware-company"
 version: "1.0.0"
 summary: "虚拟化技术和云基础设施的开创者，被Broadcom收购后开启新篇章"

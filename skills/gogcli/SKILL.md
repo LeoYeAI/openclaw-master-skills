@@ -1,6 +1,7 @@
 ---
 name: gogcli
 description: Google Workspace CLI for Gmail, Calendar, Drive, Sheets, Docs, Slides, Contacts, Tasks, People, Groups, Keep. Use when user asks to interact with Google services.
+---
 
 # gogcli - Google Workspace CLI
 

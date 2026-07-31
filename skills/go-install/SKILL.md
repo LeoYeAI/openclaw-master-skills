@@ -1,7 +1,3 @@
---------------------------0aa845c205f28859
-Content-Disposition: form-data; name="file"; filename="SKILL.md"
-Content-Type: application/octet-stream
-
 ---
 name: go-install
 version: 1.0.0
@@ -117,4 +113,3 @@ go mod tidy
 | go1.23.x | Latest |
 
 Download: https://go.dev/dl/
---------------------------0aa845c205f28859--

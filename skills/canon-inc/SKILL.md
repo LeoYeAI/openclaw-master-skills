@@ -1,5 +1,6 @@
 ---
 name: canon-inc
+description: "World's #1 camera and printer manufacturer — from 35mm rangefinders to industrial inkjet — a $35B imaging technology empire."
 summary: World's #1 camera and printer manufacturer — from 35mm rangefinders to industrial inkjet — a $35B imaging technology empire.
 read_when:
 - Researching camera industry dynamics (Canon vs. Nikon vs. Sony mirrorless)

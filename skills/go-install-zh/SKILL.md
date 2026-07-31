@@ -1,7 +1,3 @@
---------------------------80187b9f2f8945b5
-Content-Disposition: form-data; name="file"; filename="SKILL.md"
-Content-Type: application/octet-stream
-
 ---
 name: go-install-zh
 version: 1.0.0
@@ -117,4 +113,3 @@ go mod tidy
 | go1.23.x | 最新版 |
 
 下载地址: https://go.dev/dl/
---------------------------80187b9f2f8945b5--

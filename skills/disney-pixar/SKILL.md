@@ -1,5 +1,6 @@
 ---
 name: disney-pixar
+description: "The creative partnership that revolutionized animation — from Toy Story to Inside Out — blending Pixar's technical genius with Disney's storytelling legacy."
 summary: The creative partnership that revolutionized animation — from Toy Story to Inside Out — blending Pixar's technical genius with Disney's storytelling legacy.
 read_when:
 - Researching animation studio history and the Pixar-Disney acquisition

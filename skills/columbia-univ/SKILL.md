@@ -1,5 +1,6 @@
 ---
 name: columbia-univ
+description: "Ivy League institution in Manhattan's Morningside Heights — birthplace of FM radio, the atomic pile, and 103 Nobel laureates."
 summary: Ivy League institution in Manhattan's Morningside Heights — birthplace of FM radio, the atomic pile, and 103 Nobel laureates.
 read_when:
 - Researching Ivy League universities and their academic specializations
