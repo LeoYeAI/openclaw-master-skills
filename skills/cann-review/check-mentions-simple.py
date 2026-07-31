@@ -5,12 +5,16 @@
 """
 
 import json
+import os
 import subprocess
 import sys
 from datetime import datetime
 
 # 配置
-TOKEN = "5_EtXLq3jGyQvb6tWwrN3byz"
+TOKEN = os.environ.get("GITCODE_API_TOKEN", "")
+if not TOKEN:
+    sys.exit("GITCODE_API_TOKEN is not set. "
+             "Export it before running: export GITCODE_API_TOKEN=<your token>")
 API_BASE = "https://api.gitcode.com/api/v5"
 USER = "newstarzj"
 REPOS = [

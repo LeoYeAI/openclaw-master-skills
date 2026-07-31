@@ -6,7 +6,7 @@
 
 set -e
 
-TOKEN="5_EtXLq3jGyQvb6tWwrN3byz"
+TOKEN="${GITCODE_API_TOKEN:?GITCODE_API_TOKEN is not set. Export it before running: export GITCODE_API_TOKEN=<your token>}"
 API_BASE="https://api.gitcode.com/api/v5"
 USER="newstarzj"
 STATE_FILE="$HOME/.openclaw/workspace/skills/cann-review/.mention-state.json"

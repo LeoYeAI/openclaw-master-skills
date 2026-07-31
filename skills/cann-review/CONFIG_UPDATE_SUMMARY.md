@@ -77,7 +77,7 @@ export GITCODE_API_TOKEN=your_token_here
 
 **之前**：
 ```bash
-API_TOKEN="5_EtXLq3jGyQvb6tWwrN3byz"  # 硬编码在脚本中
+API_TOKEN="<token 硬编码在脚本中>"  # 硬编码在脚本中
 ```
 
 **现在**：

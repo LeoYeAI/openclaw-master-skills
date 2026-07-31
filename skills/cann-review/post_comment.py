@@ -1,7 +1,13 @@
 #!/usr/bin/env python3
 import json
-import sys
+import os
 import subprocess
+import sys
+
+TOKEN = os.environ.get("GITCODE_API_TOKEN", "")
+if not TOKEN:
+    sys.exit("GITCODE_API_TOKEN is not set. "
+             "Export it before running: export GITCODE_API_TOKEN=<your token>")
 
 comment = sys.argv[1]
 pr_url = sys.argv[2]
@@ -12,7 +18,7 @@ json_body = json.dumps({"body": comment})
 # 构建 curl 命令
 cmd = [
     "curl", "-s", "-X", "POST",
-    "-H", "Authorization: Bearer 5_EtXLq3jGyQvb6tWwrN3byz",
+    "-H", f"Authorization: Bearer {TOKEN}",
     "-H", "Content-Type: application/json",
     "-d", json_body,
     pr_url

@@ -91,7 +91,7 @@ PR 编号: 628
 
 使用 API 获取 PR 基本信息：
 ```bash
-curl -H "Authorization: Bearer 5_EtXLq3jGyQvb6tWwrN3byz" \
+curl -H "Authorization: Bearer $GITCODE_API_TOKEN" \
   "https://api.gitcode.com/api/v5/repos/cann/runtime/pulls/628"
 ```
 
@@ -106,7 +106,7 @@ curl -H "Authorization: Bearer 5_EtXLq3jGyQvb6tWwrN3byz" \
 
 使用 API 获取所有变更的文件：
 ```bash
-curl -H "Authorization: Bearer 5_EtXLq3jGyQvb6tWwrN3byz" \
+curl -H "Authorization: Bearer $GITCODE_API_TOKEN" \
   "https://api.gitcode.com/api/v5/repos/cann/runtime/pulls/628/files"
 ```
 
@@ -237,7 +237,7 @@ curl -H "Authorization: Bearer 5_EtXLq3jGyQvb6tWwrN3byz" \
 
 ```bash
 curl -X POST \
-  -H "Authorization: Bearer 5_EtXLq3jGyQvb6tWwrN3byz" \
+  -H "Authorization: Bearer $GITCODE_API_TOKEN" \
   -H "Content-Type: application/json" \
   -d '{"body":"<审查报告内容>"}' \
   "https://api.gitcode.com/api/v5/repos/cann/runtime/pulls/628/comments"
@@ -264,7 +264,7 @@ EOF
 
 # 发布评论
 curl -X POST \
-  -H "Authorization: Bearer 5_EtXLq3jGyQvb6tWwrN3byz" \
+  -H "Authorization: Bearer $GITCODE_API_TOKEN" \
   -H "Content-Type: application/json" \
   -d "{\"body\":\"$(echo "$COMMENT" | sed 's/"/\\"/g' | sed ':a;N;$!ba;s/\n/\\n/g')\"}" \
   "https://api.gitcode.com/api/v5/repos/cann/runtime/pulls/628/comments"

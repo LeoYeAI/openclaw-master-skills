@@ -1,6 +1,8 @@
 #!/bin/bash
 # 测试脚本 - 验证 CANN 代码审查技能
 
+: "${GITCODE_API_TOKEN:?GITCODE_API_TOKEN is not set. Export it before running: export GITCODE_API_TOKEN=<your token>}"
+
 set -e
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -13,7 +15,7 @@ echo ""
 # 测试 1: API 连接
 echo "📡 测试 1: API 连接"
 echo "-------------------"
-if curl -s -H "Authorization: Bearer 5_EtXLq3jGyQvb6tWwrN3byz" \
+if curl -s -H "Authorization: Bearer $GITCODE_API_TOKEN" \
    "https://api.gitcode.com/api/v5/user" | grep -q "login"; then
     echo "✅ API 连接成功"
 else
