@@ -12,6 +12,15 @@ RELEASES="$REPO_ROOT/RELEASES.md"
 README="$REPO_ROOT/README.md"
 LOG_FILE="/tmp/openclaw-master-skills-collect-$(date +%Y-%m-%d).log"
 DRY_RUN="${1:-}"
+# --publish-only ships an already-built local commit: skip archive/import/docs and
+# go straight to push + Release + ClawHub. v0.22.0 was committed locally on
+# 2026-07-30 and blocked at push by a dead PAT, and there was no way to resume
+# the last three steps without re-importing and creating a second commit.
+PUBLISH_ONLY="no"
+if [ "$DRY_RUN" = "--publish-only" ]; then
+  PUBLISH_ONLY="yes"
+  DRY_RUN=""
+fi
 WEEK="$(date -u +%Y-%m-%d)"
 ARCHIVE_DIR="${OPENCLAW_SKILLS_ARCHIVE_DIR:-/tmp/openclaw-skills-archive}"
 TMP_NEW_LIST="/tmp/openclaw-master-skills-new-slugs.txt"
@@ -338,17 +347,22 @@ git_publish() {
     return
   fi
 
-  info "Committing changes"
-  git -C "$REPO_ROOT" add -A
-  if git -C "$REPO_ROOT" diff --cached --quiet; then
-    warn "No changes to commit"
-    return
-  fi
+  if [ "$PUBLISH_ONLY" = "yes" ]; then
+    info "Publish-only: reusing existing local commit(s)"
+    git -C "$REPO_ROOT" diff --quiet || fail "working tree is dirty; commit or stash before --publish-only"
+  else
+    info "Committing changes"
+    git -C "$REPO_ROOT" add -A
+    if git -C "$REPO_ROOT" diff --cached --quiet; then
+      warn "No changes to commit"
+      return
+    fi
 
-  git -C "$REPO_ROOT" config user.name "The Doctor (MyClaw)"
-  git -C "$REPO_ROOT" config user.email "doctor@myclaw.ai"
-  git -C "$REPO_ROOT" commit -m "feat(v${NEW_VERSION}): weekly update ${WEEK} — ${NEW_COUNT} new skills (${TOTAL_COUNT} total)" >> "$LOG_FILE" 2>&1 || fail "git commit failed"
-  ok "Commit created"
+    git -C "$REPO_ROOT" config user.name "The Doctor (MyClaw)"
+    git -C "$REPO_ROOT" config user.email "doctor@myclaw.ai"
+    git -C "$REPO_ROOT" commit -m "feat(v${NEW_VERSION}): weekly update ${WEEK} — ${NEW_COUNT} new skills (${TOTAL_COUNT} total)" >> "$LOG_FILE" 2>&1 || fail "git commit failed"
+    ok "Commit created"
+  fi
 
   [ -n "$GH_TOKEN" ] || fail "GITHUB_TOKEN is required for push"
   local remote_url="https://${GH_TOKEN}@github.com/LeoYeAI/openclaw-master-skills.git"
@@ -417,8 +431,61 @@ EOF
   ok "ClawHub publish succeeded"
 }
 
+# Recover version/count values from the already-built commit instead of the
+# import lists, which are empty on a --publish-only run.
+load_built_release() {
+  info "Publish-only: reading release metadata from CHANGELOG.md"
+  TOTAL_COUNT=$(find "$SKILLS_DIR" -mindepth 1 -maxdepth 1 -type d | wc -l | tr -d ' ')
+  NEW_VERSION=$(python3 - "$CHANGELOG" <<'PY'
+import re, sys
+from pathlib import Path
+text = Path(sys.argv[1]).read_text(encoding='utf-8', errors='ignore')
+m = re.search(r'v(\d+\.\d+\.\d+)', text)
+print(m.group(1) if m else '')
+PY
+)
+  [ -n "$NEW_VERSION" ] || fail "could not determine version from CHANGELOG.md"
+  # Read the count from the release heading, not by counting bullet lines:
+  # RELEASES.md only lists the top ~30 imports as highlights, so counting
+  # bullets reported 28 instead of 94.
+  NEW_COUNT=$(python3 - "$CHANGELOG" "$NEW_VERSION" <<'PY'
+import re, sys
+from pathlib import Path
+text = Path(sys.argv[1]).read_text(encoding='utf-8', errors='ignore')
+version = re.escape(sys.argv[2])
+m = re.search(r'##\s*\[?v' + version + r'\]?.*?新增\s*(\d+)\s*个 Skills', text, re.S)
+print(m.group(1) if m else '')
+PY
+)
+  [ -n "$NEW_COUNT" ] || fail "could not determine new-skill count for v$NEW_VERSION from CHANGELOG.md"
+  export NEW_COUNT TOTAL_COUNT NEW_VERSION
+  local tag_exists
+  tag_exists=$(git -C "$REPO_ROOT" tag -l "v$NEW_VERSION")
+  [ -z "$tag_exists" ] || fail "v$NEW_VERSION is already tagged; nothing to publish"
+
+  # update_docs normally writes this; it is skipped on a publish-only run.
+  cat > "$TMP_RELEASE_BODY" <<EOF
+## 🚀 周更：新增 ${NEW_COUNT} 个 Skills，总计 ${TOTAL_COUNT}
+
+来源：openclaw/skills-archive 官方镜像，按质量规则筛选。
+
+详见仓库内 RELEASES.md。
+EOF
+
+  ok "Publishing v$NEW_VERSION (+$NEW_COUNT => $TOTAL_COUNT total)"
+}
+
 main() {
   setup
+
+  if [ "$PUBLISH_ONLY" = "yes" ]; then
+    load_built_release
+    git_publish
+    publish_clawhub
+    ok "Done. Log: $LOG_FILE"
+    return
+  fi
+
   refresh_archive
   find_new_candidates
   import_candidates >/tmp/openclaw-master-skills-import-count.txt
