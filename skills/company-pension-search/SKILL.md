@@ -16,9 +16,8 @@ triggers:
   - 年金受托人
   - 年金托管人
   - 年金类型判断
-metadata: {"openclaw": {"emoji": "🏦", "requires": {"bins": ["curl", "jq"]}, "env": {"TAVILY_API_KEY": "可选，Tavily 搜索 API", "SEARXNG_URL": "可选，SearXNG 本地实例"}}}}
+metadata: {"openclaw": {"emoji": "🏦", "requires": {"bins": ["curl", "jq"]}, "env": {"TAVILY_API_KEY": "可选，Tavily 搜索 API", "SEARXNG_URL": "可选，SearXNG 本地实例"}}}
 ---
-
 # 🏦 企业年金/职业年金智能查询技能 v3.2
 
 **关键改进**：关键词分析优先、年金类型精确判断、多重验证防错、错误检查清单

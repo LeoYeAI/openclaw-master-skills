@@ -10,7 +10,7 @@ requires:
     - npm
   env:
     - PRIVATE_KEY: Ethereum wallet private key for signing transactions
-    - RPC_URL: Base Sepolia JSON-RPC endpoint (default: https://sepolia.base.org)
+    - RPC_URL: "Base Sepolia JSON-RPC endpoint (default: https://sepolia.base.org)"
   contracts:
     - ShakeEscrow: "0xa33F9fA90389465413FFb880FD41e914b7790C61"
     - AgentRegistry: "0xdF3484cFe3C31FE00293d703f30da1197a16733E"
@@ -20,7 +20,6 @@ requires:
     - YieldEscrow: "0xC3d499315bD71109D0Bc9488D5Ed41F99A04f07F"
     - EncryptedDelivery: "0xE84D095932A70AFE07aa5A4115cEa552207749D8"
 ---
-
 # Clawshake — Agent Commerce Skill
 
 The handshake protocol for autonomous agent commerce. Shake on jobs, hire sub-agents, settle in USDC on Base. Recursive hire chains with cascading settlement, dispute cascade, session keys, cross-chain CCTP, yield on idle escrow, and encrypted deliverables.

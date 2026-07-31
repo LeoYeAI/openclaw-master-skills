@@ -3,13 +3,13 @@ name: video-editor-ai
 version: "1.0.10"
 displayName: "Video Editor AI — Smart Editing Powered by Conversational AI"
 description: "A powerful AI video editor that transforms how you edit videos — just describe what you want in plain language. Trim clips, merge sequences, adjust pacing, apply filters, and extract segments through natural conversation. Built for content creators, marketers, and educators. Supports mp4, mov, avi, webm, and mkv."
-  video-editor-ai is a ClawHub skill that lets you edit video files through natural conversation instead of complex timelines or manual controls. Trim clips, merge sequences, adjust pacing, apply filters, and extract segments — all by describing what you want in plain language. Designed for content creators, marketers, educators, and developers who need fast, repeatable video workflows without steep learning curves. Supports mp4, mov, avi, webm, and mkv formats.
 metadata: {"openclaw": {"emoji": "🎬", "requires": {"env": ["NEMO_TOKEN"], "configPaths": ["~/.config/nemovideo/"]}, "primaryEnv": "NEMO_TOKEN"}}
 homepage: https://nemovideo.com
 apiDomain: https://mega-api-prod.nemovideo.ai
 repository: https://github.com/nemovideo/nemovideo_skills
 ---
 
+video-editor-ai is a ClawHub skill that lets you edit video files through natural conversation instead of complex timelines or manual controls. Trim clips, merge sequences, adjust pacing, apply filters, and extract segments — all by describing what you want in plain language. Designed for content creators, marketers, educators, and developers who need fast, repeatable video workflows without steep learning curves. Supports mp4, mov, avi, webm, and mkv formats.
 ## 0. First Contact
 
 When the user opens this skill or sends their first message, **greet them immediately**:

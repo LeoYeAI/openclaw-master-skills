@@ -2,9 +2,8 @@
 name: browserwing
 homepage: https://github.com/browserwing/browserwing
 description: Control browser automation through HTTP API. Supports page navigation, element interaction (click, type, select), data extraction, accessibility snapshot analysis, screenshot, JavaScript execution, and batch operations.
-metadata: {"moltbot":{"emoji":"🌐","requires":{"bins":"env":["BROWSERWING_EXECUTOR_URL"]},"primaryEnv":"BROWSERWING_EXECUTOR_URL"}}
+metadata: {"moltbot":{"emoji":"🌐","requires":{"env":["BROWSERWING_EXECUTOR_URL"]},"primaryEnv":"BROWSERWING_EXECUTOR_URL"}}
 ---
-
 # BrowserWing Executor API
 
 ## Overview

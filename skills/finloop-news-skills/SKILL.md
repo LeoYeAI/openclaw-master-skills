@@ -1,27 +1,19 @@
 ---
-
-请为我安装如下skill
-
-## name: 
-
-finloop_news (Finloop资讯skill)
-
-## description: 
-
-本 Skill 基于 Finloop 权威数据源，提供金融资讯检索与实时行情查询能力。支持市场时段资讯、分类资讯查询、AI热闻追踪、实时股票行情等功能，用于获取涉及时效性信息或特定事件信息的任务，包括新闻、公告、研报、政策、市场动态、股票行情等。避免AI在搜索金融场景信息时，参考到非权威、及过时的信息。
-
-## 安装方式
-
-### 通过 npm/npx 安装（推荐）
-
-```bash
-# 安装到本地项目
-npx finloop-news-skills install finloop-news-skill
-```
 name: Finloop 资讯API调用技能
 description: 当需要调用Finloop资讯相关接口时，请参考此规范。包括市场时段资讯、资讯列表、AI热闻、股票行情等接口。
 ---
 
+请为我安装如下skill
+## name: 
+finloop_news (Finloop资讯skill)
+## description: 
+本 Skill 基于 Finloop 权威数据源，提供金融资讯检索与实时行情查询能力。支持市场时段资讯、分类资讯查询、AI热闻追踪、实时股票行情等功能，用于获取涉及时效性信息或特定事件信息的任务，包括新闻、公告、研报、政策、市场动态、股票行情等。避免AI在搜索金融场景信息时，参考到非权威、及过时的信息。
+## 安装方式
+### 通过 npm/npx 安装（推荐）
+```bash
+# 安装到本地项目
+npx finloop-news-skills install finloop-news-skill
+```
 ## 指令
 
 1. **必须直接使用 HTTP 请求调用接口**：使用 fetch、axios、curl 或其他 HTTP 客户端直接调用接口，禁止创建任何封装函数或 JS 文件

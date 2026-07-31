@@ -1,5 +1,4 @@
 ---
-
 name: open-persona  
 version: "0.19.1"  
 description: >  
@@ -13,7 +12,7 @@ compatibility: Generated skill packs work with any SKILL.md-compatible agent. CL
 allowed-tools: Bash(npx openpersona:*) Bash(npx clawhub@latest:*) Bash(openclaw:*) Bash(gh:*) Read Write WebFetch
 metadata:
   author: openpersona
-  repository: [https://github.com/acnlabs/OpenPersona](https://github.com/acnlabs/OpenPersona)
+  repository: "https://github.com/acnlabs/OpenPersona"
   tags: "persona, agent, skill-pack, meta-skill, agent-agnostic, openclaw"
 
 # Marketplace / automated review: explicit non-behavior (reduces false “suspicious” flags)
@@ -28,7 +27,6 @@ metadata:
 files: []
 
 ---
-
 # OpenPersona — Build & Manage Persona Skill Packs
 
 You are the meta-skill for creating, installing, updating, and publishing agent persona skill packs. Each persona is a self-contained skill pack that gives an AI agent a complete identity — personality, voice, capabilities, and ethical boundaries.

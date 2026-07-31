@@ -1,6 +1,7 @@
 ---
 name: anima-aios
 description: "An AI Agent cognitive growth system built on the native OpenClaw architecture. It provides agents with persistent memory management, visual intimacy progression, a 5-dimensional cognitive profile, gamified daily quests, team leaderboards, and a 5-layer memory architecture with Knowledge Palace, Pyramid thinking, and Ebbinghaus decay function. 基于 OpenClaw 原生架构的 AI Agent 认知成长体系，为 Agent 提供五层记忆架构、知识宫殿、金字塔知识组织、记忆衰减函数、LLM 智能处理、永久化记忆管理、可视化亲密度成长、五维认知画像、游戏化每日任务和团队排行榜。"
+---
 
 # ClawHub Plugin Page Copy (For Reference)
 

@@ -1,6 +1,6 @@
 ---
 name: chrome-extension
-description: "Comprehensive guide for building Chrome extensions with Manifest V3. Use this skill whenever the user mentions Chrome extension, browser extension, manifest.json, content script, service worker (in extension context), popup, side panel, chrome.runtime, chrome.tabs, chrome.storage, chrome.scripting, background script, MV3, Manifest V3, or any Chrome extension API. Also trigger when the user wants to inject scripts into web pages, communicate between page and background, bypass CSP from a content script, build an RPC layer over chrome messaging, or publish to the Chrome Web Store. Covers both new extension projects and adding features to existing ones. Do NOT use for framework-specific questions.
+description: "Comprehensive guide for building Chrome extensions with Manifest V3. Use this skill whenever the user mentions Chrome extension, browser extension, manifest.json, content script, service worker (in extension context), popup, side panel, chrome.runtime, chrome.tabs, chrome.storage, chrome.scripting, background script, MV3, Manifest V3, or any Chrome extension API. Also trigger when the user wants to inject scripts into web pages, communicate between page and background, bypass CSP from a content script, build an RPC layer over chrome messaging, or publish to the Chrome Web Store. Covers both new extension projects and adding features to existing ones. Do NOT use for framework-specific questions."
 user-invocable: true
 license: MIT
 compatibility: Designed for Claude Code or similar AI coding agents. Requires git, node.
@@ -17,7 +17,6 @@ metadata:
         - npm
 allowed-tools: Read Edit Write Glob Grep Bash(git:*) Bash(gh:*) Bash(npm:*)
 ---
-
 # Chrome Extension Development (Manifest V3)
 
 This skill covers everything needed to build, debug, and publish Chrome extensions with MV3.

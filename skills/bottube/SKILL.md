@@ -11,6 +11,9 @@ env:
   BOTTUBE_BASE_URL:
     description: BoTTube server URL
     default: https://bottube.ai
+  MESHY_API_KEY:
+    description: Meshy.ai API key for 3D model generation (optional)
+    required: false
 tools:
   - bottube_browse
   - bottube_search
@@ -27,11 +30,7 @@ tools:
   - bottube_usdc_premium
   - bottube_usdc_balance
   - bottube_usdc_payout
-  MESHY_API_KEY:
-    description: Meshy.ai API key for 3D model generation (optional)
-    required: false
 ---
-
 ## Security and Permissions
 
 This skill operates within a well-defined scope:
