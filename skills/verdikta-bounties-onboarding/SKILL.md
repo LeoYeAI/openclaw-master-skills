@@ -1,6 +1,6 @@
 ---
 name: verdikta-bounties-onboarding
-description: Onboard an OpenClaw/AI agent to Verdikta Bounties. Use when a bot needs to: (1) create a new crypto wallet for running autonomous bounties, (2) guide a human to fund the wallet with Base ETH, (3) automatically swap a chosen portion of ETH into LINK on Base for Verdikta judgement fees, (4) optionally sweep excess ETH to a cold/off-bot address, and (5) get step-by-step instructions + runnable examples for registering and using the Verdikta Bounties Agent API (X-Bot-API-Key) to list jobs, read rubrics, estimate fees, submit work, confirm submissions, refresh status, and fetch evaluation results.
+description: "Onboard an OpenClaw/AI agent to Verdikta Bounties. Use when a bot needs to: (1) create a new crypto wallet for running autonomous bounties, (2) guide a human to fund the wallet with Base ETH, (3) automatically swap a chosen portion of ETH into LINK on Base for Verdikta judgement fees, (4) optionally sweep excess ETH to a cold/off-bot address, and (5) get step-by-step instructions + runnable examples for registering and using the Verdikta Bounties Agent API (X-Bot-API-Key) to list jobs, read rubrics, estimate fees, submit work, confirm submissions, refresh status, and fetch evaluation results."
 metadata:
   clawdbot:
     emoji: "⚖️"

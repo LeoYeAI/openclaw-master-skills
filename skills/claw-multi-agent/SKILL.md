@@ -1,6 +1,6 @@
 ---
 name: claw-multi-agent
-description: Multi-agent parallel orchestration for OpenClaw. Spawn AI agents as a team — parallel research, multi-model comparison, code pipelines. Proven 50-65% time savings. Trigger words: multi-agent, parallel agents, swarm, spawn multiple agents, parallel research, compare models, deep research, comprehensive research, detailed investigation, thorough analysis, research multiple topics, 多智能体, 多个Agent, 并行调研, 并行搜索, 同时搜索, 同时调研, 深度调研, 详细调研, 全面调研, 深度研究, 详细检索, 多角度分析, 全面分析, 多个模型, 让多个AI, 分别搜索, 同时搜索, 组建团队, Agent小队, 多Agent.
+description: "Multi-agent parallel orchestration for OpenClaw. Spawn AI agents as a team — parallel research, multi-model comparison, code pipelines. Proven 50-65% time savings. Trigger words: multi-agent, parallel agents, swarm, spawn multiple agents, parallel research, compare models, deep research, comprehensive research, detailed investigation, thorough analysis, research multiple topics, 多智能体, 多个Agent, 并行调研, 并行搜索, 同时搜索, 同时调研, 深度调研, 详细调研, 全面调研, 深度研究, 详细检索, 多角度分析, 全面分析, 多个模型, 让多个AI, 分别搜索, 同时搜索, 组建团队, Agent小队, 多Agent."
 ---
 
 # claw-multi-agent 🐝

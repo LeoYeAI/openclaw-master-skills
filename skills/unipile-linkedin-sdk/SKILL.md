@@ -1,6 +1,6 @@
 ---
 name: unipile-linkedin-sdk
-description: LinkedIn integration via Unipile's official Node.js SDK. Send messages, InMail, view profiles, manage connections, create posts, and interact with content. Use for LinkedIn automation, messaging, profile retrieval, connection requests, or post interactions. Trigger phrases: "linkedin api", "scrape linkedin", "linkedin profile", "linkedin posts", "send linkedin message".
+description: "LinkedIn integration via Unipile's official Node.js SDK. Send messages, InMail, view profiles, manage connections, create posts, and interact with content. Use for LinkedIn automation, messaging, profile retrieval, connection requests, or post interactions. Trigger phrases: \"linkedin api\", \"scrape linkedin\", \"linkedin profile\", \"linkedin posts\", \"send linkedin message\"."
 version: 1.5.0
 metadata:
   openclaw:

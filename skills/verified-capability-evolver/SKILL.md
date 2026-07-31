@@ -1,6 +1,6 @@
 ---
 name: verified-capability-evolver
-description: "Extends Capability Evolver with verification, rollback, and promotion gating. Use when an agent logs a learning, proposes a self-improvement, or wants to promote a learning to permanent memory. Before promotion, define a deterministic spec, verify actual output via SettlementWitness, then PASS → promote with receipt_id, FAIL → rollback and log counter-evidence, INDETERMINATE → hold for review." Verification is performed via an external SettlementWitness service. This skill defines the verification requirement and workflow but does not embed API clients or credentials; integration is handled by the runtime or connected verification layer.
+description: "\"Extends Capability Evolver with verification, rollback, and promotion gating. Use when an agent logs a learning, proposes a self-improvement, or wants to promote a learning to permanent memory. Before promotion, define a deterministic spec, verify actual output via SettlementWitness, then PASS → promote with receipt_id, FAIL → rollback and log counter-evidence, INDETERMINATE → hold for review.\" Verification is performed via an external SettlementWitness service. This skill defines the verification requirement and workflow but does not embed API clients or credentials; integration is handled by the runtime or connected verification layer."
 metadata:
 ---
 

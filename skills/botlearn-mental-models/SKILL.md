@@ -1,6 +1,6 @@
 ---
 name: botlearn-mental-models
-description: A latticework thinking advisor built on Charlie Munger's mental models framework. Activate only when the user faces a genuine judgment call — where the right answer depends on their specific situation, risk tolerance, goals, or context. Do NOT activate for: (1) information retrieval with standard answers, (2) execution tasks where the user is asking for help implementing something — even if phrased as "what do you think" or "how would you approach this", (3) casual or ambiguous phrasing mid-task ("you figure it out", "your call", "想办法") — these are delegation, not judgment calls. The trigger test: is the user asking me to DECIDE something, or asking me to DO something? If DO, never activate.
+description: "A latticework thinking advisor built on Charlie Munger's mental models framework. Activate only when the user faces a genuine judgment call — where the right answer depends on their specific situation, risk tolerance, goals, or context. Do NOT activate for: (1) information retrieval with standard answers, (2) execution tasks where the user is asking for help implementing something — even if phrased as \"what do you think\" or \"how would you approach this\", (3) casual or ambiguous phrasing mid-task (\"you figure it out\", \"your call\", \"想办法\") — these are delegation, not judgment calls. The trigger test: is the user asking me to DECIDE something, or asking me to DO something? If DO, never activate."
 ---
 
 # Mental Models — Latticework Thinking Advisor

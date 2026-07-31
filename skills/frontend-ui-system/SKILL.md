@@ -1,6 +1,6 @@
 ---
 name: frontend_ui_system
-description: Diseña e implementa interfaces de alta calidad para apps, sitios web y dashboards con enfoque tipo v0.dev: dirección visual clara, design system, jerarquía visual fuerte, componentes reutilizables, mobile-first, consistencia UI y revisión iterativa.
+description: "Diseña e implementa interfaces de alta calidad para apps, sitios web y dashboards con enfoque tipo v0.dev: dirección visual clara, design system, jerarquía visual fuerte, componentes reutilizables, mobile-first, consistencia UI y revisión iterativa."
 ---
 
 # Frontend UI System

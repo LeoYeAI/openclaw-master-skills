@@ -1,6 +1,6 @@
 ---
 name: xurl
-description: A Twitter research and content intelligence skill focused on attracting WordPress and Shopify clients. Use to analyze Twitter profiles, threads, and conversations for: (1) Identifying what small agency founders and eCommerce brands are discussing; (2) Understanding pain points around WordPress performance, Shopify CRO, and development bottlenecks; (3) Extracting high-performing content angles; (4) Turning insights into authority-building posts; (5) Converting Twitter intelligence into business leverage for clear content angles, strong positioning, and qualified inbound leads.
+description: "A Twitter research and content intelligence skill focused on attracting WordPress and Shopify clients. Use to analyze Twitter profiles, threads, and conversations for: (1) Identifying what small agency founders and eCommerce brands are discussing; (2) Understanding pain points around WordPress performance, Shopify CRO, and development bottlenecks; (3) Extracting high-performing content angles; (4) Turning insights into authority-building posts; (5) Converting Twitter intelligence into business leverage for clear content angles, strong positioning, and qualified inbound leads."
 ---
 
 # xurl: Twitter Content Intelligence for WordPress & Shopify

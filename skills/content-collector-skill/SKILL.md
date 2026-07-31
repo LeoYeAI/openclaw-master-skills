@@ -1,6 +1,6 @@
 ---
 name: content-collector
-description: Automatically collect and archive content from shared links in group chats. When a user shares a link (WeChat articles, Feishu docs, web pages, etc.) in any group chat and asks to archive/collect/save it, this skill triggers to fetch the content, create a Feishu document, and update the knowledge base table. Use when: (1) User shares a link and asks to "收录/转存/保存" content, (2) Need to archive web content to Feishu docs, (3) Building a personal knowledge base from shared links, (4) Organizing learning materials from various sources.
+description: "Automatically collect and archive content from shared links in group chats. When a user shares a link (WeChat articles, Feishu docs, web pages, etc.) in any group chat and asks to archive/collect/save it, this skill triggers to fetch the content, create a Feishu document, and update the knowledge base table. Use when: (1) User shares a link and asks to \"收录/转存/保存\" content, (2) Need to archive web content to Feishu docs, (3) Building a personal knowledge base from shared links, (4) Organizing learning materials from various sources."
 ---
 
 # Content Collector - 链接内容自动收录技能

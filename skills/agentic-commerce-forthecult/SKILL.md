@@ -2,7 +2,7 @@
 name: agentic-commerce-forthecult
 description: "Agentic Commerce skills enables agents to autonomously browse and search for quality lifestyle, wellness, and tech products and gifts, view details, create orders with multi-chain payments (Solana, Ethereum, Base, Polygon, Arbitrum, Bitcoin, Dogecoin, Monero), apply CULT token-holder discounts, and track orders from payment to delivery. Use when a user wants to buy products for humans and AI, browse a store, find gifts, place an order, or track a shipment."
 license: MIT
-compatibility: Requires network access and an HTTP client (fetch, curl, requests). No API key or env vars required. Browsing, search, checkout, and order status need no authentication. Optional: agent runtimes may supply X-Moltbook-Identity for agent-only endpoints (/agent/me, /agent/me/orders, /agent/me/preferences); do not send or infer identity tokens—use only if the runtime explicitly provides one. Works with Molt, OpenClaw, Claude, ChatGPT, LangChain, and all AgentSkills-compatible agents.
+compatibility: "Requires network access and an HTTP client (fetch, curl, requests). No API key or env vars required. Browsing, search, checkout, and order status need no authentication. Optional: agent runtimes may supply X-Moltbook-Identity for agent-only endpoints (/agent/me, /agent/me/orders, /agent/me/preferences); do not send or infer identity tokens—use only if the runtime explicitly provides one. Works with Molt, OpenClaw, Claude, ChatGPT, LangChain, and all AgentSkills-compatible agents."
 metadata:
   author: forthecult
   version: "2.0"

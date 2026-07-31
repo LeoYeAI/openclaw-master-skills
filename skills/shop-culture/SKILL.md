@@ -2,7 +2,7 @@
 name: shop-culture
 description: "Agentic Commerce skills for the For the Cult store. Enables agents to browse and search for quality lifestyle, wellness, smart home, and longevity products, view details and variants, create orders with multi-chain payments (Solana, Ethereum, Base, Polygon, Arbitrum, Bitcoin, Dogecoin, Monero) or x402 checkout (USDC), apply CULT token-holder discounts, and track orders from payment to delivery. Use when a user wants to buy products, browse a store, find gifts, place an order, or track a shipment."
 license: MIT
-compatibility: Requires network access and an HTTP client (fetch, curl, requests). No API key or env vars required. Browsing, search, checkout, and order status need no authentication. Optional: agent runtimes may supply X-Moltbook-Identity for agent-only endpoints (/agent/me, /agent/me/orders, /agent/me/preferences); do not send or infer identity tokens—use only if the runtime explicitly provides one. Works with Claude, ChatGPT, Cursor, GitHub Copilot, Gemini, Windsurf, Goose, Cline, Roo Code, Molt, OpenClaw, LangChain, and all AgentSkills-compatible agents.
+compatibility: "Requires network access and an HTTP client (fetch, curl, requests). No API key or env vars required. Browsing, search, checkout, and order status need no authentication. Optional: agent runtimes may supply X-Moltbook-Identity for agent-only endpoints (/agent/me, /agent/me/orders, /agent/me/preferences); do not send or infer identity tokens—use only if the runtime explicitly provides one. Works with Claude, ChatGPT, Cursor, GitHub Copilot, Gemini, Windsurf, Goose, Cline, Roo Code, Molt, OpenClaw, LangChain, and all AgentSkills-compatible agents."
 metadata:
   author: forthecult
   version: "1.0.8"

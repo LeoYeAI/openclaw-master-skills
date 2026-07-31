@@ -1,6 +1,6 @@
 ---
 name: activity-campaign-from-ui
-description: Turn campaign UI references into a new H5/Web campaign proposal, page architecture, and HTML/CSS/JavaScript high-fidelity front-end draft. Supports mode-based responses: analysis, proposal, architecture, delivery, and full.
+description: "Turn campaign UI references into a new H5/Web campaign proposal, page architecture, and HTML/CSS/JavaScript high-fidelity front-end draft. Supports mode-based responses: analysis, proposal, architecture, delivery, and full."
 metadata:
   openclaw:
     homepage: "https://github.com/bigin58/activity-campaign-from-ui"

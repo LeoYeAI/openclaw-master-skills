@@ -1,6 +1,6 @@
 ---
 name: memory-fortress
-description: Complete memory management system for OpenClaw agents. Combines compaction-aware saving, a formalized boot sequence, domain-based organization, memory scoring, and bloat prevention. Use when: a session starts, an important decision is made, a task arrives, compaction is approaching, memory needs reorganization, or a "do you remember" question arises.
+description: "Complete memory management system for OpenClaw agents. Combines compaction-aware saving, a formalized boot sequence, domain-based organization, memory scoring, and bloat prevention. Use when: a session starts, an important decision is made, a task arrives, compaction is approaching, memory needs reorganization, or a \"do you remember\" question arises."
 ---
 
 # Memory Fortress 🏰

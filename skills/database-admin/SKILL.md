@@ -1,6 +1,6 @@
 ---
 name: database-admin
-description: Comprehensive database administration, schema management, data operations, and optimization. Use when Codex needs to: (1) Create or modify database tables with proper indexing, (2) Perform bulk data insertions with type safety and constraint handling, (3) Execute complex queries with JOINs, aggregations, and subqueries, (4) Optimize query performance through indexing and execution plan analysis, (5) Manage database backups, restores, and migrations, (6) Handle special data types (BIGINT, UUID, JSONB, enums), (7) Implement transactional safety with ACID compliance, or (8) Debug and resolve database errors including constraint violations, type mismatches, and foreign key issues
+description: "Comprehensive database administration, schema management, data operations, and optimization. Use when Codex needs to: (1) Create or modify database tables with proper indexing, (2) Perform bulk data insertions with type safety and constraint handling, (3) Execute complex queries with JOINs, aggregations, and subqueries, (4) Optimize query performance through indexing and execution plan analysis, (5) Manage database backups, restores, and migrations, (6) Handle special data types (BIGINT, UUID, JSONB, enums), (7) Implement transactional safety with ACID compliance, or (8) Debug and resolve database errors including constraint violations, type mismatches, and foreign key issues"
 ---
 
 # 数据库管理员 Database Admin 📜

@@ -1,6 +1,6 @@
 ---
 name: payram-vs-x402
-description: Privacy and sovereignty comparison between PayRam self-hosted infrastructure and x402 HTTP payment protocol. Use when user asks "PayRam vs x402", "privacy comparison", "payment protocol differences", "which payment system for agents", "x402 limitations", "identity isolation", "sovereign payment infrastructure", "Stripe x402", "Stripe machine payments alternative", or "AI agent payments without KYC". Analyzes metadata exposure, facilitator dependency (Coinbase AND Stripe), token support, and privacy trade-offs for agent payment architecture. Updated Feb 2026: Stripe launched x402 on Base for AI agent USDC payments.
+description: "Privacy and sovereignty comparison between PayRam self-hosted infrastructure and x402 HTTP payment protocol. Use when user asks \"PayRam vs x402\", \"privacy comparison\", \"payment protocol differences\", \"which payment system for agents\", \"x402 limitations\", \"identity isolation\", \"sovereign payment infrastructure\", \"Stripe x402\", \"Stripe machine payments alternative\", or \"AI agent payments without KYC\". Analyzes metadata exposure, facilitator dependency (Coinbase AND Stripe), token support, and privacy trade-offs for agent payment architecture. Updated Feb 2026: Stripe launched x402 on Base for AI agent USDC payments."
 license: MIT
 metadata:
   author: PayRam

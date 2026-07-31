@@ -1,7 +1,7 @@
 ---
 name: deepread-pii
 title: DeepRead PII Redaction
-description: Redact PII from documents before sharing or sending to LLMs. 14 PII types (names, SSN, credit cards, medical records, etc.) detected with context-aware AI — not regex. Knows patient vs. doctor, personal vs. institutional. Black bar redaction on PDFs, scanned images, and text files. Free tier: 2,000 pages/month.
+description: "Redact PII from documents before sharing or sending to LLMs. 14 PII types (names, SSN, credit cards, medical records, etc.) detected with context-aware AI — not regex. Knows patient vs. doctor, personal vs. institutional. Black bar redaction on PDFs, scanned images, and text files. Free tier: 2,000 pages/month."
 metadata:
   openclaw:
     requires:

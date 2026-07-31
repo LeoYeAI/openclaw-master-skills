@@ -1,6 +1,6 @@
 ---
 name: variant-design
-description: AI-driven visual/UI design generation with Impeccable design system. Generates 3 distinct design variations from a prompt with built-in scenario materials, design system references (typography, color, spatial, motion, interaction, responsive, UX writing), and anti-AI-slop quality gates. Supports variation actions: Vary strong/subtle, Distill, Change style, Remix colors, Shuffle layout, Polish, Critique, Extract tokens, See other views. Exports to HTML or React. Triggers on: "design options for X", "show me variations", "give me UI directions", "vary this design", "distill this", "change the style", "remix colors", "shuffle layout", "polish this", "critique this", "extract tokens", "design a dashboard/landing page/app/editorial".
+description: "AI-driven visual/UI design generation with Impeccable design system. Generates 3 distinct design variations from a prompt with built-in scenario materials, design system references (typography, color, spatial, motion, interaction, responsive, UX writing), and anti-AI-slop quality gates. Supports variation actions: Vary strong/subtle, Distill, Change style, Remix colors, Shuffle layout, Polish, Critique, Extract tokens, See other views. Exports to HTML or React. Triggers on: \"design options for X\", \"show me variations\", \"give me UI directions\", \"vary this design\", \"distill this\", \"change the style\", \"remix colors\", \"shuffle layout\", \"polish this\", \"critique this\", \"extract tokens\", \"design a dashboard/landing page/app/editorial\"."
 ---
 
 # Variant Design

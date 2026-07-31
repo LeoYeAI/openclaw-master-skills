@@ -1,6 +1,6 @@
 ---
 name: opencli
-description: Use OpenCLI to fetch data from websites like Twitter, Reddit, Bilibili, Zhihu, Xiaohongshu, YouTube, etc. Triggers: opencli, social media, twitter, reddit, bilibili, zhihu, xiaohongshu, youtube, weibo, hackernews, fetch website data.
+description: "Use OpenCLI to fetch data from websites like Twitter, Reddit, Bilibili, Zhihu, Xiaohongshu, YouTube, etc. Triggers: opencli, social media, twitter, reddit, bilibili, zhihu, xiaohongshu, youtube, weibo, hackernews, fetch website data."
 license: MIT
 version: 1.0.0
 config:

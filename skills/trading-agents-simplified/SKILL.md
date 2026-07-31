@@ -1,6 +1,6 @@
 ---
 name: trading-agents
-description: Multi-agent stock trading signal analysis framework with two-round debate mechanism. Triggered when users provide a stock ticker for investment analysis. Input a stock ticker, analyze through 7 SubAgents in 4 layers (Information Gathering → Opinion Formation → Two-Round Debate → Final Decision), output BUY/SELL/HOLD recommendation with rationale. Trigger phrases: "analyze this stock", "give me investment advice", "is this stock worth buying", "analyze XX stock", "stock investment analysis".
+description: "Multi-agent stock trading signal analysis framework with two-round debate mechanism. Triggered when users provide a stock ticker for investment analysis. Input a stock ticker, analyze through 7 SubAgents in 4 layers (Information Gathering → Opinion Formation → Two-Round Debate → Final Decision), output BUY/SELL/HOLD recommendation with rationale. Trigger phrases: \"analyze this stock\", \"give me investment advice\", \"is this stock worth buying\", \"analyze XX stock\", \"stock investment analysis\"."
 license: MIT
 author: laigen
 requires:

@@ -1,6 +1,6 @@
 ---
 name: tencent-docs
-description: Tencent Docs - Provides complete Tencent Docs operations. Use this skill when working with Tencent Docs, including: (1) Create various online documents (documents, Word, Excel, slides, mind maps, flowcharts) (2) Manage knowledge base spaces (create spaces, query space lists) (3) Manage space nodes and folder structure (4) Read document content (5) Edit smart sheets (6) Edit documents.
+description: "Tencent Docs - Provides complete Tencent Docs operations. Use this skill when working with Tencent Docs, including: (1) Create various online documents (documents, Word, Excel, slides, mind maps, flowcharts) (2) Manage knowledge base spaces (create spaces, query space lists) (3) Manage space nodes and folder structure (4) Read document content (5) Edit smart sheets (6) Edit documents."
 homepage: https://docs.qq.com/home
 version: 1.0.11
 author: tencent-docs

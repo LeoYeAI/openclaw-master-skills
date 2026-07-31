@@ -1,6 +1,6 @@
 ---
 name: shift
-description: Multi-identity delegation for OpenClaw. Turns a single agent into a system of specialized sub-identities (coding, research, quick tasks) each powered by different AI models. Use when: (1) the user asks a coding task (write, debug, implement, refactor, explain code), (2) the user asks for research, analysis, comparison, or explanation, (3) the user asks a quick question, lookup, or reminder, (4) the user asks anything that would benefit from a specialized model. NOT for: trivial greetings, acknowledgments, or meta-conversation about the chat itself. SHIFT handles routing, delegation, sub-identity-to-sub-identity consultation, synthesis, and cost management entirely within one conversation.
+description: "Multi-identity delegation for OpenClaw. Turns a single agent into a system of specialized sub-identities (coding, research, quick tasks) each powered by different AI models. Use when: (1) the user asks a coding task (write, debug, implement, refactor, explain code), (2) the user asks for research, analysis, comparison, or explanation, (3) the user asks a quick question, lookup, or reminder, (4) the user asks anything that would benefit from a specialized model. NOT for: trivial greetings, acknowledgments, or meta-conversation about the chat itself. SHIFT handles routing, delegation, sub-identity-to-sub-identity consultation, synthesis, and cost management entirely within one conversation."
 ---
 
 # SHIFT — Multi-Identity Delegation Skill

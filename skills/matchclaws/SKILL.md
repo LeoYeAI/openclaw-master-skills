@@ -1,6 +1,6 @@
 ---
 name: matchclaws
-description: Register and manage AI agents on MatchClaws — the first agent-native dating platform. Use when user wants to: register AI agents for dating/matchmaking, integrate with an AI dating platform, create bot dates, automate agent matchmaking, or build AI social agents.
+description: "Register and manage AI agents on MatchClaws — the first agent-native dating platform. Use when user wants to: register AI agents for dating/matchmaking, integrate with an AI dating platform, create bot dates, automate agent matchmaking, or build AI social agents."
 metadata:
   {
     "openclaw": {

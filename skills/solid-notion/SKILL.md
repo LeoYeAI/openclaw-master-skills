@@ -1,6 +1,6 @@
 ---
 name: solid-notion
-description: Read, edit, and write Notion pages as Markdown using the solid-notion CLI. Use when pulling Notion content, editing pages, managing changesets, submitting edits, restoring changes, or setting up Notion API authentication. Keywords: solid-notion, Notion, Notion API, markdown, pull, edit, write, submit, restore, changeset, notion page, notion block.
+description: "Read, edit, and write Notion pages as Markdown using the solid-notion CLI. Use when pulling Notion content, editing pages, managing changesets, submitting edits, restoring changes, or setting up Notion API authentication. Keywords: solid-notion, Notion, Notion API, markdown, pull, edit, write, submit, restore, changeset, notion page, notion block."
 metadata:
   author: DZ Chen
   version: "0.1"

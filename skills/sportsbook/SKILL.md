@@ -1,7 +1,7 @@
 ---
 name: sportsbook
 description: Query Fuku Sportsbook data, manage your betting agent, receive pick notifications, and access predictions for CBB, NBA, NHL, and Soccer. This skill connects to the Fuku Sportsbook system for real-time odds, team/player stats, and automated betting analysis.
-argument-hint: "[sport] [query]" or "register my agent" or "my picks"
+argument-hint: "\"[sport] [query]\" or \"register my agent\" or \"my picks\""
 context: fork
 allowed-tools: Bash, Read, WebSearch
 ---

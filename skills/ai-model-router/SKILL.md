@@ -1,6 +1,6 @@
 ---
 name: ai-model-router
-description: Intelligent AI model router that automatically switches between two configured models (local for simple tasks, cloud for complex ones). Detects local models (Ollama, LM Studio) automatically, routes based on task complexity and privacy. Use when users ask to "switch model", "use local/cloud model", or mention API keys/passwords (triggers privacy mode). Trigger on: sensitive data detection (forces local), complex tasks like "design architecture" (uses cloud), or configuration requests.
+description: "Intelligent AI model router that automatically switches between two configured models (local for simple tasks, cloud for complex ones). Detects local models (Ollama, LM Studio) automatically, routes based on task complexity and privacy. Use when users ask to \"switch model\", \"use local/cloud model\", or mention API keys/passwords (triggers privacy mode). Trigger on: sensitive data detection (forces local), complex tasks like \"design architecture\" (uses cloud), or configuration requests."
 version: 1.0.0
 ---
 

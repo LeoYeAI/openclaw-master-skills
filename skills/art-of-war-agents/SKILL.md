@@ -1,6 +1,6 @@
 ---
 name: art-of-war-agents
-description: Apply Sun Tzu's Art of War to AI agent orchestration. Use for: task assessment (五事七计), deployment decisions, multi-agent strategy, token cost optimization, risk management, and agent collaboration patterns. Maps all 13 chapters to practical agent workflows with decision trees and troubleshooting.
+description: "Apply Sun Tzu's Art of War to AI agent orchestration. Use for: task assessment (五事七计), deployment decisions, multi-agent strategy, token cost optimization, risk management, and agent collaboration patterns. Maps all 13 chapters to practical agent workflows with decision trees and troubleshooting."
 ---
 
 # 📜 Art of War Agents

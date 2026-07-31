@@ -1,6 +1,6 @@
 ---
 name: new-visitor-cold-start
-description: Convert first-time store visitors with behavior-based personalization — browse path → preference segment → matched first-order incentive → popup timing including exit intent. Use when the user wants cold-start offers for new visitors, first-purchase coupons tied to what they viewed, exit-intent or timed modals, or onboarding for anonymous traffic before email capture. Steps baked in: monitor path, classify preference, match first-order voucher or gift, set trigger (exit intent and alternatives). Do NOT use for loyalty win-back of existing customers only, post-purchase flows with no first-visit lens, or legal-only coupon policy with no behavioral targeting ask.
+description: "Convert first-time store visitors with behavior-based personalization — browse path → preference segment → matched first-order incentive → popup timing including exit intent. Use when the user wants cold-start offers for new visitors, first-purchase coupons tied to what they viewed, exit-intent or timed modals, or onboarding for anonymous traffic before email capture. Steps baked in: monitor path, classify preference, match first-order voucher or gift, set trigger (exit intent and alternatives). Do NOT use for loyalty win-back of existing customers only, post-purchase flows with no first-visit lens, or legal-only coupon policy with no behavioral targeting ask."
 compatibility:
   required: []
 ---

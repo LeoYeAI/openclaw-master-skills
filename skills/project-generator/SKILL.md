@@ -1,6 +1,6 @@
 ---
 name: project-generator
-description: Automatically transform requirement documents or natural language descriptions into complete full-stack projects (Java backend + Vue frontend) with MANDATORY interactive tech stack selection. Supports database schema design, REST API generation, CRUD operations, user authentication, and project scaffolding. ⚠️ TECH STACK SELECTION IS MANDATORY - Users MUST explicitly select or confirm each option, cannot skip by pressing Enter. Use when: (1) Converting PRD/requirements into working code, (2) Rapid prototyping of web applications, (3) Generating boilerplate projects from descriptions, (4) Bootstrapping CRUD applications, (5) Creating MVP projects from text specifications.
+description: "Automatically transform requirement documents or natural language descriptions into complete full-stack projects (Java backend + Vue frontend) with MANDATORY interactive tech stack selection. Supports database schema design, REST API generation, CRUD operations, user authentication, and project scaffolding. ⚠️ TECH STACK SELECTION IS MANDATORY - Users MUST explicitly select or confirm each option, cannot skip by pressing Enter. Use when: (1) Converting PRD/requirements into working code, (2) Rapid prototyping of web applications, (3) Generating boilerplate projects from descriptions, (4) Bootstrapping CRUD applications, (5) Creating MVP projects from text specifications."
 ---
 
 # Project Generator Skill

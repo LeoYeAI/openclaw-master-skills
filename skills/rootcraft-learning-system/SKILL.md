@@ -6,7 +6,7 @@ author_website: https://www.luckydesigner.space
 author_brand: Luckydesigner（行运设计师）
 author_pen_name: 伯衡君
 name_display: 格物本质赋能学习法
-description: RootCraft Learning System - An integrated learning methodology combining First Principles Thinking, Taxonomy-Based Classification, Feynman Technique, and Recursive Questioning for deep knowledge mastery and "aha moment" discovery. Includes Anki memory cards generation based on Ebbinghaus forgetting curve. Chinese name: 格物本质赋能学习法.
+description: "RootCraft Learning System - An integrated learning methodology combining First Principles Thinking, Taxonomy-Based Classification, Feynman Technique, and Recursive Questioning for deep knowledge mastery and \"aha moment\" discovery. Includes Anki memory cards generation based on Ebbinghaus forgetting curve. Chinese name: 格物本质赋能学习法."
 trigger_keywords: learning method, first principles, taxonomy classification, feynman technique, recursive questioning, aha moment, efficient learning, study system, knowledge mastery, how to learn, learn about, 格物致知, 学习方法, 啊哈时刻, 如何学习, 想学习, 帮我学习, 我想学习, 学习教程, 教学, 培训
 ---
 

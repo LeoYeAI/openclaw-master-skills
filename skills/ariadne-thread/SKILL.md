@@ -1,6 +1,6 @@
 ---
 name: ariadne-thread
-description: Create AI-friendly project structures using progressive disclosure indexing (AGENTS.md, module INDEX.md files, file intent headers). ALWAYS use this skill when the user wants to: create or update AGENTS.md or llms.txt, add INDEX.md files to modules, set up project navigation for AI agents, retrofit an existing codebase with AI-friendly indexes, design module boundaries with explicit dependency and modification-risk documentation, or mentions "AI-friendly project", "progressive disclosure", "project index", "codebase navigation", or "ariadne". Also use when the user asks how to structure a new project so AI tools can navigate it efficiently, even if they don't use these exact terms.
+description: "Create AI-friendly project structures using progressive disclosure indexing (AGENTS.md, module INDEX.md files, file intent headers). ALWAYS use this skill when the user wants to: create or update AGENTS.md or llms.txt, add INDEX.md files to modules, set up project navigation for AI agents, retrofit an existing codebase with AI-friendly indexes, design module boundaries with explicit dependency and modification-risk documentation, or mentions \"AI-friendly project\", \"progressive disclosure\", \"project index\", \"codebase navigation\", or \"ariadne\". Also use when the user asks how to structure a new project so AI tools can navigate it efficiently, even if they don't use these exact terms."
 ---
 
 # Ariadne Thread

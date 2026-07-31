@@ -5,7 +5,7 @@ metadata:
   openclaw:
     emoji: "📊"
     category: "business-analysis"
-    author: "Zhang Zaiwang"    capers@qq.com
+    author: "\"Zhang Zaiwang\"    capers@qq.com"
     book: "Effective Competitive Analysis: Essential Methodology for Good Products"
     version: "1.0.0"
 ---
