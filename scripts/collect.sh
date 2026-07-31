@@ -66,6 +66,49 @@ for name in os.listdir(skills_dir):
     if os.path.isdir(path):
         existing.add(name)
 
+
+def normalize_desc(raw):
+    """Frontmatter description, cleaned of YAML scalar artifacts.
+
+    Block indicators (>, |) and wrapping quotes leak straight into RELEASES.md
+    otherwise — every release up to v0.22.0 shipped lines like
+    '- `slug` — > View, add, ...'.
+    """
+    desc = ' '.join(raw.strip().split())
+    desc = re.sub(r'^[>|][+\-]?\s*', '', desc)
+    if len(desc) >= 2 and desc[0] == desc[-1] and desc[0] in '"\'':
+        desc = desc[1:-1].strip()
+    else:
+        desc = desc.lstrip('"\'').strip()
+    return desc
+
+
+def read_desc(skill_md):
+    try:
+        with open(skill_md, 'r', encoding='utf-8', errors='ignore') as f:
+            content = f.read(5000)
+    except OSError:
+        return None
+    if not content.lstrip().startswith('---'):
+        return None
+    match = re.search(r'^description:\s*(.+?)(?=\n[a-zA-Z_]+:|\n---|\Z)',
+                      content, re.M | re.S)
+    return normalize_desc(match.group(1)) if match else None
+
+
+# Descriptions already in the collection. Candidate dedup has to compare against
+# these, not just against other candidates: once a duplicate is removed by hand,
+# its canonical sibling is installed and drops out of the candidate set, so the
+# duplicate looks brand new and gets re-imported next run. That is exactly how
+# the v0.22.0 cleanup regressed in end-to-end testing.
+existing_descs = set()
+for name in existing:
+    for fn in ('SKILL.md', 'skill.md'):
+        desc = read_desc(os.path.join(skills_dir, name, fn))
+        if desc:
+            existing_descs.add(desc)
+            break
+
 best_by_slug = {}
 root = os.path.join(archive_dir, 'skills')
 for publisher in sorted(os.listdir(root)):
@@ -91,16 +134,11 @@ for publisher in sorted(os.listdir(root)):
             desc_match = re.search(r'^description:\s*(.+?)(?=\n[a-zA-Z_]+:|\n---|\Z)', content, re.M | re.S)
             if not desc_match:
                 continue
-            desc = ' '.join(desc_match.group(1).strip().split())
-            # Strip YAML scalar artifacts. Block indicators (>, |) and wrapping
-            # quotes leak straight into RELEASES.md otherwise — every release
-            # up to v0.22.0 shipped lines like '- `slug` — > View, add, ...'.
-            desc = re.sub(r'^[>|][+\-]?\s*', '', desc)
-            if len(desc) >= 2 and desc[0] == desc[-1] and desc[0] in '"\'':
-                desc = desc[1:-1].strip()
-            else:
-                desc = desc.lstrip('"\'').strip()
+            desc = normalize_desc(desc_match.group(1))
             if len(desc) < 50 or len(desc) > 1024:
+                continue
+            # Already in the collection under another slug.
+            if desc in existing_descs:
                 continue
             prev = best_by_slug.get(slug)
             row = (size, publisher, slug, desc)
