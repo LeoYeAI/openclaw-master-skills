@@ -339,6 +339,13 @@ PY
   info "Validating README skill tables"
   python3 "$REPO_ROOT/scripts/check-readme-table.py" | tee -a "$LOG_FILE" || fail "README table validation failed"
 
+  # The regex checks above only prove a description: line exists; they pass on
+  # frontmatter no YAML loader can read. That is how 70 skills shipped with an
+  # unquoted scalar containing ": ", 11 with structural damage and 2 wrapped in a
+  # raw HTTP multipart envelope.
+  info "Validating skill frontmatter"
+  python3 "$REPO_ROOT/scripts/check-frontmatter.py" | tail -20 | tee -a "$LOG_FILE" || fail "frontmatter validation failed"
+
   # Report skills already installed under several directory names. collect.sh
   # only dedups incoming candidates, so 83 groups / 174 redundant directories
   # predate that filter. Reporting only: collapsing them deletes directories and
