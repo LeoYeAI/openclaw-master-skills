@@ -34,7 +34,7 @@ git clone https://github.com/LeoYeAI/openclaw-master-skills.git
 cp -r openclaw-master-skills/skills/<skill-name> ~/.openclaw/workspace/skills/
 ```
 
-## 📦 Skill Index (561 skills)
+## 📦 Skill Index (388 curated skills)
 
 ### 🤖 AI & LLM Tools (50)
 

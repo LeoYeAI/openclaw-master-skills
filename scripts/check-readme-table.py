@@ -24,13 +24,62 @@ TARGETS = ['README.md', 'README.zh-CN.md']
 
 ROW_RE = re.compile(r'^\| \[`([^`]+)`\]\(([^)]+)\) \| (.*)$')
 ARTIFACT_RE = re.compile(r'^[>|][-+]?$')
+# "## 📦 Skill Index (388 curated skills)" / "## 📦 技能索引 (339 个精选技能)".
+# The number is the only part that has to be right, so the surrounding words are
+# left free for each translation.
+INDEX_HEADER_RE = re.compile(r'^## .*?\((\d+)[^)]*\)\s*$')
+SECTION_RE = re.compile(r'^### (.+?) \((\d+)\)\s*$')
 MIN_DESC = 12
+
+
+def check_counts(path: Path, lines: list[str]) -> list[str]:
+    """The index header and per-section counts must match the rows present.
+
+    Nothing regenerates these numbers, so they rot silently: the header claimed
+    561 skills against 388 rows in README.md and 560 against 339 in
+    README.zh-CN.md. The per-section counts happened to be right, but only by
+    luck, so both are checked.
+    """
+    problems: list[str] = []
+    header_claim = header_line = None
+    sections: list[tuple[str, int, int, int]] = []   # title, claimed, actual, lineno
+    cur: list | None = None
+
+    for lineno, line in enumerate(lines, 1):
+        if header_claim is None:
+            m = INDEX_HEADER_RE.match(line)
+            if m:
+                header_claim, header_line = int(m.group(1)), lineno
+                continue
+        m = SECTION_RE.match(line)
+        if m:
+            if cur:
+                sections.append(tuple(cur))
+            cur = [m.group(1), int(m.group(2)), 0, lineno]
+            continue
+        if ROW_RE.match(line) and cur:
+            cur[2] += 1
+    if cur:
+        sections.append(tuple(cur))
+
+    total = sum(s[2] for s in sections)
+    for title, claimed, actual, lineno in sections:
+        if claimed != actual:
+            problems.append(f'{path.name}:{lineno} section {title!r} claims '
+                            f'{claimed} skills but has {actual} rows')
+    if header_claim is None:
+        problems.append(f'{path.name}: no "## ... (N skills)" index header found')
+    elif header_claim != total:
+        problems.append(f'{path.name}:{header_line} index header claims '
+                        f'{header_claim} skills but the table has {total} rows')
+    return problems
 
 
 def check(path: Path) -> list[str]:
     problems: list[str] = []
     rows = 0
-    for lineno, line in enumerate(path.read_text(encoding='utf-8').split('\n'), 1):
+    lines = path.read_text(encoding='utf-8').split('\n')
+    for lineno, line in enumerate(lines, 1):
         m = ROW_RE.match(line)
         if not m:
             continue
@@ -56,6 +105,7 @@ def check(path: Path) -> list[str]:
     if rows == 0:
         problems.append(f'{path.name}: no skill rows matched — table format changed?')
     else:
+        problems.extend(check_counts(path, lines))
         print(f'{path.name}: {rows} rows checked')
     return problems
 
