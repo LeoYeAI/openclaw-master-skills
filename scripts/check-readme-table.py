@@ -101,6 +101,15 @@ def check(path: Path) -> list[str]:
 
         if not (REPO_ROOT / link.rstrip('/')).is_dir():
             problems.append(f'{where} link points at missing directory: {link}')
+        else:
+            # A row that keeps the previous row's link still points at a real
+            # directory, so the existence check above passes and the README
+            # quietly sends readers to the wrong skill. The row label and the
+            # link have to name the same directory.
+            linked = link.rstrip('/').split('/')[-1]
+            if linked != slug:
+                problems.append(f'{where} row is labelled `{slug}` but links to '
+                                f'{link} (expected skills/{slug}/)')
 
     if rows == 0:
         problems.append(f'{path.name}: no skill rows matched — table format changed?')
