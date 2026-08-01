@@ -11,6 +11,8 @@ import re
 import sys
 from pathlib import Path
 
+import yaml
+
 REPO_ROOT = Path(__file__).resolve().parent.parent
 SKILLS_DIR = REPO_ROOT / 'skills'
 INDEX_FILE = REPO_ROOT / 'skill_index.md'
@@ -50,43 +52,111 @@ def first_paragraph(content: str) -> str:
     return ''
 
 
-def read_skill_md(skill_dir: Path) -> str:
-    """Read SKILL.md, tolerating the lowercase spelling (e.g. clawsec/skill.md)."""
+def read_skill_md(skill_dir: Path, limit: int = 5000) -> str:
+    """Read SKILL.md, tolerating the lowercase spelling (e.g. clawsec/skill.md).
+
+    The limit caps how much body text is read for the first_paragraph fallback.
+    Pass limit=None when the whole frontmatter block is needed: 5 skills
+    (lumi-diary at 14011 chars, agent-bom, doubao-asr, judge-human,
+    research-swarm) have frontmatter longer than 5000 chars, and a parser that
+    needs the closing --- would silently fall back to body prose for them.
+    """
     for name in ('SKILL.md', 'skill.md'):
         path = skill_dir / name
         if path.is_file():
             try:
-                return path.read_text(encoding='utf-8', errors='ignore')[:5000]
+                text = path.read_text(encoding='utf-8', errors='ignore')
             except OSError:
                 return ''
+            return text if limit is None else text[:limit]
     return ''
 
 
+FRONTMATTER_RE = re.compile(
+    r'^\ufeff?\s*---[ \t]*\r?\n(.*?)\r?\n---[ \t]*(?:\r?\n|$)', re.S)
+
+
+def frontmatter_description(content: str):
+    """Description via a real YAML parse, or None if that is not possible.
+
+    This used to be a regex that stripped the outer quotes by hand. It got the
+    answer wrong two ways, both of which shipped:
+
+      * it never unescaped the scalar, so a quoted value containing an escaped
+        quote rendered as a literal \\" in the table (5 rows, e.g.
+        agent-anti-false-completion, qr-code-generator);
+      * its lookahead for the next key was `\\n[a-zA-Z_]+:`, which does not match
+        a hyphenated key, so the description swallowed everything up to the next
+        underscored key -- "user-invocable: true",
+        "disable-model-invocation: ...", even a trailing `# comment` (11 rows,
+        e.g. x-twitter, btpanel, tushare-finance).
+
+    A YAML loader gets block scalars, quoting and key boundaries right for free.
+    Returns None on unparseable frontmatter so the caller keeps its old
+    behaviour; check-frontmatter.py is the gate that makes that case fatal.
+    """
+    match = FRONTMATTER_RE.match(content)
+    if not match:
+        return None
+    try:
+        data = yaml.safe_load(match.group(1))
+    except yaml.YAMLError:
+        return None
+    if not isinstance(data, dict):
+        return None
+    desc = data.get('description')
+    if not isinstance(desc, str):
+        return None
+    return ' '.join(dequote(desc).split())
+
+
+def dequote(desc: str) -> str:
+    """Drop quoting that wraps the description text itself.
+
+    Two skills write the value as "\\"real text\\"...", so a correct YAML parse
+    yields text whose first character is a literal quote. That is faithful to
+    the file but reads as a defect in the table, and the old regex path hid it
+    by stripping leading quotes unconditionally.
+
+    Handled in two steps:
+      * a matched outer pair is removed (agent-anti-false-completion, where the
+        quote closes at the very end);
+      * otherwise a lone leading quote is dropped only when the text contains a
+        later closing quote (verified-capability-evolver, where the quoted span
+        ends mid-description and unbalanced prose follows).
+    A description that merely opens a quoted phrase and never closes it keeps
+    its quote.
+    """
+    desc = desc.strip()
+    pairs = (('"', '"'), ("'", "'"), ('“', '”'), ('‘', '’'))
+    for open_q, close_q in pairs:
+        if len(desc) > 2 and desc.startswith(open_q) and desc.endswith(close_q):
+            inner = desc[len(open_q):-len(close_q)].strip()
+            if inner:
+                return inner
+    for open_q, close_q in pairs:
+        if desc.startswith(open_q) and close_q in desc[len(open_q):]:
+            inner = desc[len(open_q):].strip()
+            if inner:
+                return inner
+    return desc
+
+
 def extract_description(skill_dir: Path) -> str:
-    content = read_skill_md(skill_dir)
+    content = read_skill_md(skill_dir, limit=None)
     if not content:
         return ''
     if not content.lstrip().startswith('---'):
-        return clip(first_paragraph(content))
-    match = re.search(
-        r'^description:\s*(.+?)(?=\n[a-zA-Z_]+:|\n---|\Z)',
-        content, re.M | re.S,
-    )
-    if not match:
-        return clip(first_paragraph(content))
-    desc = ' '.join(match.group(1).strip().split())
-    # Same YAML scalar cleanup as collect.sh
-    desc = re.sub(r'^[>|][+\-]?\s*', '', desc)
-    if len(desc) >= 2 and desc[0] == desc[-1] and desc[0] in '"\'':
-        desc = desc[1:-1].strip()
-    else:
-        desc = desc.lstrip('"\'').strip()
+        return clip(first_paragraph(content[:5000]))
+    desc = frontmatter_description(content)
+    if not desc:
+        return clip(first_paragraph(content[:5000]))
     # A description that just restates the name is noise, not information.
     if re.match(r'^name:', desc):
-        return clip(first_paragraph(content))
+        return clip(first_paragraph(content[:5000]))
     # Same for ones that merely title-case the slug ("API Design Reviewer").
     if restates_slug(desc, skill_dir.name):
-        return clip(first_paragraph(content) or desc)
+        return clip(first_paragraph(content[:5000]) or desc)
     return clip(desc)
 
 

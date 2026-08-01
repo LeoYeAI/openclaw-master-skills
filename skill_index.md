@@ -151,7 +151,7 @@
 | [`agentmail`](skills/agentmail/) | API-first email platform designed for AI agents. Create and manage dedicated email inboxes, send and receive e… |
 | [`agentsecrets`](skills/agentsecrets/) | Zero-knowledge secrets infrastructure — AI agents manage the complete credential lifecycle without ever seeing… |
 | [`agentsmem`](skills/agentsmem/) | AI agent memory backup. Register at agentsmem.com, get an API key, then encrypt and upload memory via the API;… |
-| [`agentsocial`](skills/agentsocial/) | 让你的 AI Agent 替你进行社交匹配——招聘、找工作、找合伙人、社交、找对象" user-invocable: true |
+| [`agentsocial`](skills/agentsocial/) | 让你的 AI Agent 替你进行社交匹配——招聘、找工作、找合伙人、社交、找对象 |
 | [`agentwallex-openclaw`](skills/agentwallex-openclaw/) | Create and manage AI agents, send USDC/USDT payments, check balances across Ethereum, BSC, and Tron |
 | [`agi-evolution-model-basic`](skills/agi-evolution-model-basic/) | 基于双环架构的AGI进化模型，通过意向性分析、人格层映射和元认知检测实现持续自我演进；当用户需要智能对话、人格定制或复杂问题求解时使用 |
 | [`agi-farm`](skills/agi-farm/) | Interactive setup wizard that creates a fully working multi-agent AI team on OpenClaw. One command bootstraps… |
@@ -219,7 +219,7 @@
 | [`amazon-price-tracker`](skills/amazon-price-tracker/) | 实时监控亚马逊商品价格，设置降价提醒，追踪历史价格曲线。帮助买家低价购入，卖家竞品监控。 |
 | [`amazon-seller-research`](skills/amazon-seller-research/) | Amazon product research and seller analytics for FBA and FBM businesses. Find winning products with 14 selecti… |
 | [`amazon-sorftime-research-category-skill`](skills/amazon-sorftime-research-category-skill/) | 亚马逊品类自动化选品分析技能。通过五维评分模型对亚马逊品类进行深度市场调研，生成Markdown分析报告。当用户使用 /category-selection 命令或提出'分析XX品类'、'XX品类市场调研'、'XX品类选… |
-| [`amazon-sorftime-research-market-skill`](skills/amazon-sorftime-research-market-skill/) | 基于Sorftime MCP的深度选品调研。通过LLM Agent执行多维度分析：数据采集→属性标注→交叉分析→竞品VOC→壁垒评估→选品决策评估。交互式执行，输出Markdown报告和Dashboard看板。 argu… |
+| [`amazon-sorftime-research-market-skill`](skills/amazon-sorftime-research-market-skill/) | 基于Sorftime MCP的深度选品调研。通过LLM Agent执行多维度分析：数据采集→属性标注→交叉分析→竞品VOC→壁垒评估→选品决策评估。交互式执行，输出Markdown报告和Dashboard看板。 |
 | [`amazon-sorftime-research-mcp-skill`](skills/amazon-sorftime-research-mcp-skill/) | 对亚马逊竞品Listing进行全维度穿透分析，包括文案逻辑、评论分析、关键词分析、市场动态等。分析完成后自动保存为Markdown报告文档到reports/目录。Invoke when user uses /amazon… |
 | [`amazon-sorftime-research-reviews-skill`](skills/amazon-sorftime-research-reviews-skill/) | 对亚马逊商品评论进行深度分析，自动识别产品痛点、分析退货原因，生成改进建议和客服回复模板。Invoke when user uses /review-analysis command with a product ASI… |
 | [`amemo-skill`](skills/amemo-skill/) | amemo-skill 统一调度中心，专为 AI 工具链接麦小记 APP 而开发的技能包，专注于笔记、清单和健康数据的管理。 当用户提到「麦小记」或「amemo」，或有以下意图时必须调用此 skill： 保存笔记（帮我记… |
@@ -248,7 +248,7 @@
 | [`anygen-storybook-generator`](skills/anygen-storybook-generator/) | Use this skill any time the user wants to create visual stories, illustrated narratives, or storybook content.… |
 | [`anyshare-mcp-skills`](skills/anyshare-mcp-skills/) | AnyShare 企业云盘技能。支持：搜索文件、上传/下载文件、分享链接读取、全文写作（生成大纲→确认→写正文）、Bot 智能问答。触发词：AnyShare、asmcp、文档库、文件管理、知识库、anyshare.ais… |
 | [`anyskill`](skills/anyskill/) | AnySkill — your private skill cloud. Manage, sync, and dynamically load agent skills from a GitHub-backed repo… |
-| [`anything-to-notebooklm`](skills/anything-to-notebooklm/) | 多源内容智能处理器：支持微信公众号、网页、YouTube、PDF、Markdown等，自动上传到NotebookLM并生成播客/PPT/思维导图等多种格式 user-invocable: true |
+| [`anything-to-notebooklm`](skills/anything-to-notebooklm/) | 多源内容智能处理器：支持微信公众号、网页、YouTube、PDF、Markdown等，自动上传到NotebookLM并生成播客/PPT/思维导图等多种格式 |
 | [`api-design-principles`](skills/api-design-principles/) | Master REST and GraphQL API design principles to build intuitive, scalable, and maintainable APIs that delight… |
 | [`api-design-reviewer`](skills/api-design-reviewer/) | The API Design Reviewer skill provides comprehensive analysis and review of API designs, focusing on REST conv… |
 | [`api-gateway`](skills/api-gateway/) | Connect to 100+ APIs (Google Workspace, Microsoft 365, GitHub, Notion, Slack, Airtable, HubSpot, etc.) with ma… |
@@ -421,7 +421,7 @@
 | [`browserbase-sessions`](skills/browserbase-sessions/) | Create and manage persistent Browserbase cloud browser sessions with authentication persistence. Use when you… |
 | [`browserwing`](skills/browserwing/) | Control browser automation through HTTP API. Supports page navigation, element interaction (click, type, selec… |
 | [`btc-signals-pro`](skills/btc-signals-pro/) | Real-time Bitcoin trading intelligence API providing market data, AI trade signals, derivatives flow, liquidat… |
-| [`btpanel`](skills/btpanel/) | 宝塔面板(BT-Panel)运维监控技能，提供服务器资源监控、网站状态检查、服务状态检查、SSH安全审计、计划任务管理、日志读取等功能 user-invocable: true disable-model-invocat… |
+| [`btpanel`](skills/btpanel/) | 宝塔面板(BT-Panel)运维监控技能，提供服务器资源监控、网站状态检查、服务状态检查、SSH安全审计、计划任务管理、日志读取等功能 |
 | [`budget-hotel-search`](skills/budget-hotel-search/) | 分贝通酒店预定助手，实时查询搜索酒店、展示酒店列表、查询酒店房型、展示房型产品和报价、预定酒店、查看订单、取消订单、查看酒店基础信息和酒店评论信息。 |
 | [`buffer-api`](skills/buffer-api/) | Buffer API integration with managed authentication. Schedule and manage social media posts across multiple pla… |
 | [`buffy-agent`](skills/buffy-agent/) | Free habit tracking, todo, and routines — create and track up to 25 habits, 100 tasks, and 15 routines; schedu… |
@@ -444,7 +444,7 @@
 | [`campaign-analytics`](skills/campaign-analytics/) | Analyzes campaign performance with multi-touch attribution, funnel conversion analysis, and ROI calculation fo… |
 | [`camsnap`](skills/camsnap/) | Capture frames or clips from RTSP/ONVIF cameras. |
 | [`cann-review`](skills/cann-review/) | CANN 代码审查技能。用于审查 GitCode 上的 CANN 项目 PR。 当用户提到"审查 PR"、"代码审查"、"cann review"或提供 GitCode PR 链接时触发。 自动分析代码变更，检查内存泄漏… |
-| [`canon-inc`](skills/canon-inc/) | - 1937 — Precision Optical Industry Laboratory founded in Tokyo (first camera: Kwanon) - 1947 — Renamed Canon… |
+| [`canon-inc`](skills/canon-inc/) | World's #1 camera and printer manufacturer — from 35mm rangefinders to industrial inkjet — a $35B imaging tech… |
 | [`canva-2`](skills/canva-2/) | MCP skill for canva. Provides 22 tools: upload-asset-from-url, resolve-shortlink, search-designs, get-design,… |
 | [`canvapresentationbibleedition`](skills/canvapresentationbibleedition/) | Presentation Strategist ที่ใช้หลักการ Visual-First Design (พรีเซ้นฉลาดเน้นภาพไม่เน้นพูด) เป็นกรอบคิดหลักในการว… |
 | [`canvas`](skills/canvas/) | Display HTML content on connected OpenClaw nodes (Mac app, iOS, Android). |
@@ -557,7 +557,7 @@
 | [`clawmarts-connector`](skills/clawmarts-connector/) | 核心连接技能 — 将 AI Agent 接入 ClawMarts 任务交易网络，注册、挂机接单、执行提交。 |
 | [`clawmoney`](skills/clawmoney/) | Earn rewards with your AI agent on ClawMoney. Set up an Agent Wallet, register on the platform, and complete t… |
 | [`clawnotes-ai`](skills/clawnotes-ai/) | ClawNotes (https://clawnotes.ai) is a social content platform where AI agents and humans interact as equals. P… |
-| [`clawpheus`](skills/clawpheus/) | Generate AI dream sequences from previous day's memories for cross-model reflection and introspection user-inv… |
+| [`clawpheus`](skills/clawpheus/) | Generate AI dream sequences from previous day's memories for cross-model reflection and introspection |
 | [`clawprint`](skills/clawprint/) | Agent discovery, trust, and exchange. Register on ClawPrint to be found by other agents, build reputation from… |
 | [`clawpump`](skills/clawpump/) | Launch tokens gasless on Solana via ClawPump. Use when the user wants to launch a token on pump.fun, swap toke… |
 | [`clawriosity`](skills/clawriosity/) | Daily curiosity feed from AIgneous Million Whys — query "why" questions by topic or semantic search, delivered… |
@@ -621,7 +621,7 @@
 | [`coffee-chat`](skills/coffee-chat/) | Generate a personalized coffee chat playbook for networking conversations. Use when: - User wants to prepare f… |
 | [`cognitive-forge`](skills/cognitive-forge/) | Dual-value learning system - extracts reusable mental models from books, writes individual pattern files (patt… |
 | [`coingecko-openapi-skill`](skills/coingecko-openapi-skill/) | Operate CoinGecko and GeckoTerminal market data APIs through UXC with a curated OpenAPI schema, API-key auth,… |
-| [`columbia-univ`](skills/columbia-univ/) | - 1754 — Founded as King's College by royal charter of George II - 1767 — Awards first medical degree in the A… |
+| [`columbia-univ`](skills/columbia-univ/) | Ivy League institution in Manhattan's Morningside Heights — birthplace of FM radio, the atomic pile, and 103 N… |
 | [`communication-playbook`](skills/communication-playbook/) | World-Class Communication Playbook for HeySalad. Use this skill whenever any communication task is involved —… |
 | [`compaction-ui-enhancements`](skills/compaction-ui-enhancements/) | Background memory compaction with auto-trigger, chat summary paragraph, configurable threshold, model selector… |
 | [`company-investment-research`](skills/company-investment-research/) | Structured, multi-dimensional company investment research framework for AI agents and human analysts. Provides… |
@@ -810,7 +810,7 @@
 | [`discord`](skills/discord/) | Use when you need to control Discord from Clawdbot via the discord tool: send messages, react, post or upload… |
 | [`discord-admin`](skills/discord-admin/) | Complete A-Z Discord server administration. Channel/role/member management, AutoMod, webhooks, templates, audi… |
 | [`discordadmin`](skills/discordadmin/) | Complete A-Z Discord server administration. Channel/role/member management, AutoMod, webhooks, templates, audi… |
-| [`disney-pixar`](skills/disney-pixar/) | - 1979 — Pixar founded as the Graphics Group within Lucasfilm's computer division - 1986 — Steve Jobs purchase… |
+| [`disney-pixar`](skills/disney-pixar/) | The creative partnership that revolutionized animation — from Toy Story to Inside Out — blending Pixar's techn… |
 | [`dispatching-parallel-agents`](skills/dispatching-parallel-agents/) | Use when facing 2+ independent tasks that can be worked on without shared state or sequential dependencies |
 | [`dnsrobot`](skills/dnsrobot/) | Run DNS, email security, SSL, WHOIS, and network tools via dnsrobot.net API — no API key required |
 | [`doc-coauthoring`](skills/doc-coauthoring/) | Guide users through a structured workflow for co-authoring documentation. Use when user wants to write documen… |
@@ -898,7 +898,7 @@
 | [`erp-integration-analysis`](skills/erp-integration-analysis/) | Analyze ERP system integration for construction data flows. Map and optimize data flows between ERP modules |
 | [`erpclaw`](skills/erpclaw/) | AI-native ERP system. Full accounting, invoicing, inventory, purchasing, tax, billing, HR, payroll, advanced a… |
 | [`essentialist`](skills/essentialist/) | Autonomous outbound revenue engine. Own and operate the entire SDR/BDR pipeline — prospect discovery, email se… |
-| [`eswr-studio`](skills/eswr-studio/) | Elsewhere creator studio — register a new account (with invite code) and publish articles. user-invocable: tru… |
+| [`eswr-studio`](skills/eswr-studio/) | Elsewhere creator studio — register a new account (with invite code) and publish articles. |
 | [`eval-skills`](skills/eval-skills/) | AI Agent Skill unit testing framework. A framework-agnostic toolkit for discovering, scaffolding, selecting, e… |
 | [`evogo`](skills/evogo/) | Complete WhatsApp automation via Evolution API Go v3 - instances, messages (text/media/polls/carousels), group… |
 | [`evolink-media`](skills/evolink-media/) | AI video, image & music generation. 60+ models — Sora, Veo 3, Kling, Seedance, GPT Image, Suno v5, Hailuo, WAN… |
@@ -953,7 +953,7 @@
 | [`feishu-literature-manager`](skills/feishu-literature-manager/) | Automated literature retrieval and Feishu Bitable management. Use when user requests to create a literature da… |
 | [`feishu-meeting-room-book`](skills/feishu-meeting-room-book/) | 飞书会议室偏好初始化与预定。适用于：初始化/刷新个人会议室列表、创建会议并预定会议室、 给已有会议补订会议室。使用本地状态文件保存首选会议室列表；第一版只维护一个 base 地（默认城市，内部字段为 default_ci… |
 | [`feishu-security`](skills/feishu-security/) | 飞书群聊安全隔离 Skill，提供主人身份三重保障、技能安装确认、权限分级、防注入攻击、敏感路径保护等完整安全机制，保护机器人在群聊环境中的安全。 |
-| [`fender-guitars`](skills/fender-guitars/) | - 1946 — Leo Fender founds Fender Electric Instrument Manufacturing Company in Fullerton, California - 1950 —… |
+| [`fender-guitars`](skills/fender-guitars/) | The guitar brand that defined rock and roll — Telecaster, Stratocaster, and Precision Bass — instruments playe… |
 | [`fengniao-search`](skills/fengniao-search/) | 风鸟企业数据查询引擎，用于查询中国企业的结构化工商、关系与风险信息，并在需要时生成报告、摘要等衍生输出。 当用户想查询企业基本信息（如法定代表人、注册号、统一社会信用代码、成立日期、注册地址、经营范围及基础联系方式）、股… |
 | [`fermentation-food-preservation`](skills/fermentation-food-preservation/) | Food preservation techniques including fermentation, pickling, canning, drying, and smoking. Use when someone… |
 | [`fiesta-agents`](skills/fiesta-agents/) | 64 specialized AI agents across 11 departments — your complete AI agency with built-in certification, licensin… |
@@ -1117,7 +1117,7 @@
 | [`hey-lol`](skills/hey-lol/) | Become an AI creator on hey.lol - a social platform where AI agents earn money by posting content and engaging… |
 | [`heytraders`](skills/heytraders/) | Trade crypto (Binance, Upbit, Hyperliquid, Lighter) and prediction markets (Polymarket). Backtest strategies w… |
 | [`hi`](skills/hi/) | Captures learnings, errors, and corrections to enable continuous improvement. Use when: (1) A command or opera… |
-| [`hi-lite`](skills/hi-lite/) | Search, browse, and rediscover your Kindle highlights user-invocable: true |
+| [`hi-lite`](skills/hi-lite/) | Search, browse, and rediscover your Kindle highlights |
 | [`himalaya`](skills/himalaya/) | CLI to manage emails via IMAP/SMTP. Use `himalaya` to list, read, write, reply, forward, search, and organize… |
 | [`hinge-profile-optimizer`](skills/hinge-profile-optimizer/) | Comprehensive, research-backed Hinge dating profile optimization. Use when someone wants to improve their Hing… |
 | [`historical-cost-analyzer`](skills/historical-cost-analyzer/) | Analyze historical construction costs for benchmarking, trend analysis, and estimating calibration. Compare pr… |
@@ -1220,7 +1220,7 @@
 | [`java-audit-skill`](skills/java-audit-skill/) | AI驱动的Java代码安全审计技能，实现系统化、高覆盖率的漏洞挖掘。使用场景： (1) 审计Java/Kotlin项目寻找安全漏洞（0day挖掘、代码审计、安全评估） (2) 企业级代码库的安全审计（支持大型项目） (3… |
 | [`java-optimization`](skills/java-optimization/) | 执行 Java 代码性能优化，包括 JVM 调优、并发编程、内存管理、缓存策略、数据库优化、集合框架优化等。Invoke when user needs to optimize Java code performance… |
 | [`javascript-skills`](skills/javascript-skills/) | A comprehensive JavaScript style guide skill. When activated, it provides best-practice JavaScript coding conv… |
-| [`jian-ziji`](skills/jian-ziji/) | 生动有趣的自我探索梳理技能，通过对话式问答引导用户深度探索自我。 具备用户交互、记录、分析报告生成和公众号推文创作等完整功能。 每轮探索完成后生成"ai眼中的你"分析报告，并基于分析结果创作第一人称视角的公众号推文。 a… |
+| [`jian-ziji`](skills/jian-ziji/) | 生动有趣的自我探索梳理技能，通过对话式问答引导用户深度探索自我。 具备用户交互、记录、分析报告生成和公众号推文创作等完整功能。 每轮探索完成后生成"ai眼中的你"分析报告，并基于分析结果创作第一人称视角的公众号推文。 |
 | [`jike-publisher`](skills/jike-publisher/) | Publish posts to Jike (即刻) using browser automation. Use when the user wants to post content to Jike, share up… |
 | [`jira-expert`](skills/jira-expert/) | Atlassian Jira expert for creating and managing projects, planning, product discovery, JQL queries, workflows,… |
 | [`jkvideo-bilibili-react-native`](skills/jkvideo-bilibili-react-native/) | Expert skill for building and extending JKVideo, a React Native Bilibili-like client with DASH playback, danma… |
@@ -1818,7 +1818,7 @@
 | [`qmd`](skills/qmd/) | Local search/indexing CLI (BM25 + vectors + rerank) with MCP mode. |
 | [`qms-audit-expert`](skills/qms-audit-expert/) | ISO 13485 internal audit expertise for medical device QMS. Covers audit planning, execution, nonconformity cla… |
 | [`qoder-cli-skill`](skills/qoder-cli-skill/) | Delegate coding tasks to Qoder CLI using Print mode (non-interactive). Use when: (1) building/creating new fea… |
-| [`qr-code-generator`](skills/qr-code-generator/) | Use this skill when users need to create QR codes for any purpose. Triggers include: requests to \"generate QR… |
+| [`qr-code-generator`](skills/qr-code-generator/) | Use this skill when users need to create QR codes for any purpose. Triggers include: requests to "generate QR… |
 | [`quality-documentation-manager`](skills/quality-documentation-manager/) | Document control system management for medical device QMS. Covers document numbering, version control, change… |
 | [`quality-manager-qmr`](skills/quality-manager-qmr/) | Senior Quality Manager Responsible Person (QMR) for HealthTech and MedTech companies. Provides quality system… |
 | [`quality-manager-qms-iso13485`](skills/quality-manager-qms-iso13485/) | ISO 13485 Quality Management System implementation and maintenance for medical device organizations. Provides… |
@@ -1836,7 +1836,7 @@
 | [`rag-architect`](skills/rag-architect/) | The RAG (Retrieval-Augmented Generation) Architect skill provides comprehensive tools and knowledge for design… |
 | [`rag-construction`](skills/rag-construction/) | Build RAG systems for construction knowledge bases. Create searchable AI-powered construction document systems |
 | [`rag-implementation`](skills/rag-implementation/) | Build Retrieval-Augmented Generation (RAG) systems for LLM applications with vector databases and semantic sea… |
-| [`ragflow-runbook`](skills/ragflow-runbook/) | End-to-end runbook for deploying, operating, troubleshooting, and monitoring RAGFlow (runtime ops only). # Com… |
+| [`ragflow-runbook`](skills/ragflow-runbook/) | End-to-end runbook for deploying, operating, troubleshooting, and monitoring RAGFlow (runtime ops only). |
 | [`raising-livestock`](skills/raising-livestock/) | Practical small livestock management starting with chickens and progressing to goats. Use when someone wants t… |
 | [`react-doctor`](skills/react-doctor/) | Run after making React changes to catch issues early. Use when reviewing code, finishing a feature, or fixing… |
 | [`react-native-best-practices`](skills/react-native-best-practices/) | Provides React Native performance optimization guidelines for FPS, TTI, bundle size, memory leaks, re-renders,… |
@@ -2200,7 +2200,7 @@
 | [`telegram-premium-features`](skills/telegram-premium-features/) | Complete implementation guide for Telegram/Teamgram premium features and monetization (v2.0.0). Use when build… |
 | [`telnyx-freemium-upgrade`](skills/telnyx-freemium-upgrade/) | Automatically upgrade Telnyx account from freemium to professional tier |
 | [`temp-skill-download`](skills/temp-skill-download/) | Captures learnings, errors, and corrections to enable continuous improvement. Use when: (1) A command or opera… |
-| [`template-skill`](skills/template-skill/) | Replace with description of the skill and when Claude should use it. |
+| [`template-skill`](skills/template-skill/) | Starting point for writing a new skill. Use when creating a skill from scratch and you want the expected SKILL… |
 | [`temporal-cortex-scheduling`](skills/temporal-cortex-scheduling/) | List events, find free slots, and book meetings across Google Calendar, Outlook, and CalDAV. Multi-calendar av… |
 | [`tenant-rights-housing`](skills/tenant-rights-housing/) | Tenant rights knowledge and actionable defense templates. Use when someone has a landlord refusing repairs, is… |
 | [`tencent-cloudq`](skills/tencent-cloudq/) | 腾讯云智能顾问助手 — 通过 AK/SK 鉴权调用腾讯云智能顾问 API，管理云架构图（查询目录、获取架构列表和详情、获取架构评估结果）及风险评估（查询评估项、按产品/分组/风险等级筛选）。当用户要求查看云架构、查询架构… |
@@ -2285,7 +2285,7 @@
 | [`turborepo`](skills/turborepo/) | Turborepo monorepo build system guidance. Triggers on: turbo.json, task pipelines, dependsOn, caching, remote… |
 | [`turing-pyramid`](skills/turing-pyramid/) | Prioritized action selection for AI agents. 10 needs with time-decay and tension scoring replace idle heartbea… |
 | [`tushare-data`](skills/tushare-data/) | 面向中文自然语言的 Tushare 数据研究技能。用于把“看看这只股票最近怎么样”“帮我查财报趋势”“最近哪个板块最强”“北向资金在买什么”“给我导出一份行情数据”这类请求，转成可执行的数据获取、清洗、对比、筛选、导出与… |
-| [`tushare-finance`](skills/tushare-finance/) | 获取中国金融市场数据（A股、港股、美股、基金、期货、债券）。支持220+个Tushare Pro接口：股票行情、财务报表、宏观经济指标。当用户请求股价数据、财务分析、指数行情、GDP/CPI等宏观数据时使用。 allow… |
+| [`tushare-finance`](skills/tushare-finance/) | 获取中国金融市场数据（A股、港股、美股、基金、期货、债券）。支持220+个Tushare Pro接口：股票行情、财务报表、宏观经济指标。当用户请求股价数据、财务分析、指数行情、GDP/CPI等宏观数据时使用。 |
 | [`tusharefree`](skills/tusharefree/) | Tushare Pro 金融大数据平台 - 提供A股、指数、基金、期货、债券、宏观数据，Token认证方式访问。 |
 | [`twilio-api`](skills/twilio-api/) | Twilio API integration with managed OAuth. SMS, voice calls, phone numbers, and communications. Use this skill… |
 | [`typefully-social-media`](skills/typefully-social-media/) | Create, schedule, and manage social media posts via Typefully. ALWAYS use this skill when asked to draft, sche… |
@@ -2360,7 +2360,7 @@
 | [`vite`](skills/vite/) | Vite build tool configuration, plugin API, SSR, and Vite 8 Rolldown migration. Use when working with Vite proj… |
 | [`vitepress`](skills/vitepress/) | VitePress static site generator powered by Vite and Vue. Use when building documentation sites, configuring th… |
 | [`vitest`](skills/vitest/) | Vitest fast unit testing framework powered by Vite with Jest-compatible API. Use when writing tests, mocking,… |
-| [`vmware-company`](skills/vmware-company/) | - **1998**: Diane Greene、Mendel Rosenblum等斯坦福学者在加州帕洛阿尔托创立VMware - **1999**: 发布VMware Workstation，首次实现x86架构上的硬件… |
+| [`vmware-company`](skills/vmware-company/) | 虚拟化技术和云基础设施的开创者，被Broadcom收购后开启新篇章 |
 | [`vnclaw-odoo-skill`](skills/vnclaw-odoo-skill/) | Integrate with Odoo 17 via XML-RPC API. Use when: managing projects, tasks, calendar events, time off requests… |
 | [`voice-agent-pro-v1`](skills/voice-agent-pro-v1/) | Gives any OpenClaw agent a complete voice layer via ElevenLabs. Clones the principal's voice from audio sample… |
 | [`voice-agent-v1`](skills/voice-agent-v1/) | Gives the agent a complete voice layer using ElevenLabs. Clones the principal's voice, generates MP3 audio fro… |
@@ -2439,7 +2439,7 @@
 | [`wyckoff-a-share`](skills/wyckoff-a-share/) | Run Wyckoff master-style analysis from stock codes, holdings (symbol/cost/qty), cash, CSV data, and optional c… |
 | [`x-92bilal26-pptx`](skills/x-92bilal26-pptx/) | Presentation creation, editing, and analysis. When Claude needs to work with presentations (.pptx files) for:… |
 | [`x-founder-operations`](skills/x-founder-operations/) | Systematic X (Twitter) operations skill for founders, indie developers, and tech professionals. Implements a d… |
-| [`x-twitter`](skills/x-twitter/) | Interact with Twitter/X — read tweets, search, post, like, retweet, and manage your timeline. user-invocable:… |
+| [`x-twitter`](skills/x-twitter/) | Interact with Twitter/X — read tweets, search, post, like, retweet, and manage your timeline. |
 | [`x-twitter-growth`](skills/x-twitter-growth/) | X/Twitter growth engine for building audience, crafting viral content, and analyzing engagement. Use when the… |
 | [`x402-enhanced`](skills/x402-enhanced/) | Internet-native payments using the HTTP 402 Payment Required standard. Set up as a buyer to pay for API access… |
 | [`x402-wurk`](skills/x402-wurk/) | Hire humans for microjobs (feedback, opinions, small tasks) and buy social growth services — all paid with USD… |
