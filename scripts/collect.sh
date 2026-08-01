@@ -419,6 +419,16 @@ PY
     | grep -E '^(scanned|duplicate groups|name collisions)' \
     | tee -a "$LOG_FILE" || true
 
+  # Nothing ever looked at file contents for credentials, so cann-review shipped
+  # a live GitCode token hardcoded in five scripts while its own README told
+  # users to export GITCODE_API_TOKEN. Report-only for the same reason as the
+  # duplicate check: rewriting an upstream author's code on a schedule is Leo's
+  # call. New occurrences should get triaged before publish.
+  info "Scanning for hardcoded credentials"
+  python3 "$REPO_ROOT/scripts/check-secrets.py" 2>&1 \
+    | grep -E '^(scanned|hardcoded credentials)' \
+    | tee -a "$LOG_FILE" || true
+
   cat > "$TMP_RELEASE_BODY" <<EOF
 ## 🚀 周更：新增 ${NEW_COUNT} 个 Skills，总计 ${TOTAL_COUNT}
 
