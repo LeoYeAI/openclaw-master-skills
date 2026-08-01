@@ -42,7 +42,7 @@ mmVoice_Maker/
     ├── script-examples.md         # Runnable code snippets
     ├── troubleshooting.md         # Common issues
     ├── api_documentation.md       # Complete API reference
-    └── voice_catalog.md           # Voice selection guide
+    └── voice-catalog.md           # Voice selection guide
 ```
 
 
@@ -201,15 +201,15 @@ Quoted speech in narration stays in narrator's voice (no need to split):
 
 **Step 2.2: Voice Selection**
 
-After segmenting and labeling roles, analyze all detected characters in your text. Consult [voice_catalog.md](reference/voice_catalog.md) **Section 1 "How to Choose a Voice"** to match voices to characters.
+After segmenting and labeling roles, analyze all detected characters in your text. Consult [voice-catalog.md](reference/voice-catalog.md) **Section 1 "How to Choose a Voice"** to match voices to characters.
 
 **⚠️ CRITICAL: Follow the two-step selection process below**
 
 **Path A — Professional domains (Story/Narration, News/Announcements, Documentary):**
-If the content belongs to one of these three professional domains, prioritize selecting from the recommended voices in **voice_catalog.md Section 2.1** (filter by scenario + gender). These voices are specifically optimized for their professional use cases.
+If the content belongs to one of these three professional domains, prioritize selecting from the recommended voices in **voice-catalog.md Section 2.1** (filter by scenario + gender). These voices are specifically optimized for their professional use cases.
 
 **Path B — All other scenarios:**
-Select from **voice_catalog.md Section 2.2**, following this strict priority hierarchy:
+Select from **voice-catalog.md Section 2.2**, following this strict priority hierarchy:
 
 1. **First: Match Gender** (non-negotiable) — Male characters MUST use male voices, female characters MUST use female voices
 2. **Second: Match Language** — The voice MUST match the content language (Chinese content → Chinese voice, Korean content → Korean voice, English content → English voice, etc.). Never assign a voice from the wrong language.
@@ -310,7 +310,7 @@ Before proceeding to validation and generation, present the segmentation plan to
 
 **Present to the user:**
 - **Roles identified**: List all characters/speakers in the text
-- **Voice assignments**: Show which voice_id is assigned to each role (include voice characteristics from voice_catalog.md)
+- **Voice assignments**: Show which voice_id is assigned to each role (include voice characteristics from voice-catalog.md)
 - **Model being used**: Explain why this model was selected
 - **Language**: Confirm the primary language of the content
 - **Emotion approach**: Auto-matched (speech-2.8) or manual tags (older models)
@@ -529,7 +529,7 @@ Open these when you need concrete usage, parameters, or troubleshooting. Paths a
 | **reference/script-examples.md** | Copy-paste runnable examples for sync TTS, async TTS, segment-based TTS, audio processing, voice clone/design/management. Use for quick Python snippets. |
 | **reference/troubleshooting.md** | Environment (API key, FFmpeg), API errors, segment-based TTS, audio, voice. Use when an error message or unexpected behavior appears. |
 | **reference/api_documentation.md** | Full API reference: config, sync/async TTS, emotion parameter, segment-based TTS, voice clone/design/management, audio processing, common parameters, error handling. Use for exact function signatures and parameter details. |
-| **reference/voice_catalog.md** | System voices list (male/female/beta), selection guide, voice parameters, custom voices, voice IDs. Use to choose or look up `voice_id`. |
+| **reference/voice-catalog.md** | System voices list (male/female/beta), selection guide, voice parameters, custom voices, voice IDs. Use to choose or look up `voice_id`. |
 
 
 ## Important notes

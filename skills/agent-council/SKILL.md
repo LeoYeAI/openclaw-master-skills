@@ -169,7 +169,7 @@ scripts/create-agent.sh \
 #### Quick Start
 
 ```bash
-python3 scripts/setup-channel.py \
+python3 scripts/setup_channel.py \
   --name research \
   --context "Deep research and competitive analysis"
 ```
@@ -178,7 +178,7 @@ python3 scripts/setup-channel.py \
 
 1. Run setup script:
 ```bash
-python3 scripts/setup-channel.py \
+python3 scripts/setup_channel.py \
   --name <channel-name> \
   --context "<channel-purpose>" \
   [--category-id <discord-category-id>]
@@ -193,7 +193,7 @@ openclaw gateway config.patch --raw '{"channels": {...}}'
 
 **With category:**
 ```bash
-python3 scripts/setup-channel.py \
+python3 scripts/setup_channel.py \
   --name research \
   --context "Deep research and competitive analysis" \
   --category-id "1234567890"
@@ -201,7 +201,7 @@ python3 scripts/setup-channel.py \
 
 **Use existing channel:**
 ```bash
-python3 scripts/setup-channel.py \
+python3 scripts/setup_channel.py \
   --name personal-finance \
   --id 1466184336901537897 \
   --context "Personal finance management"
@@ -212,7 +212,7 @@ python3 scripts/setup-channel.py \
 #### Quick Start
 
 ```bash
-python3 scripts/rename-channel.py \
+python3 scripts/rename_channel.py \
   --id 1234567890 \
   --old-name old-name \
   --new-name new-name
@@ -222,7 +222,7 @@ python3 scripts/rename-channel.py \
 
 1. Run rename script:
 ```bash
-python3 scripts/rename-channel.py \
+python3 scripts/rename_channel.py \
   --id <channel-id> \
   --old-name <old-name> \
   --new-name <new-name> \
@@ -236,7 +236,7 @@ python3 scripts/rename-channel.py \
 #### With Workspace Search
 
 ```bash
-python3 scripts/rename-channel.py \
+python3 scripts/rename_channel.py \
   --id 1234567890 \
   --old-name old-name \
   --new-name new-name \
@@ -255,7 +255,7 @@ This will:
 
 ```bash
 # 1. Create Discord channel
-python3 scripts/setup-channel.py \
+python3 scripts/setup_channel.py \
   --name research \
   --context "Deep research and competitive analysis" \
   --category-id "1234567890"
@@ -284,7 +284,7 @@ scripts/create-agent.sh \
 
 **Option 1: Command line**
 ```bash
-python3 scripts/setup-channel.py \
+python3 scripts/setup_channel.py \
   --name channel-name \
   --context "Purpose" \
   --category-id "1234567890"
@@ -293,7 +293,7 @@ python3 scripts/setup-channel.py \
 **Option 2: Environment variable**
 ```bash
 export DISCORD_CATEGORY_ID="1234567890"
-python3 scripts/setup-channel.py --name channel-name --context "Purpose"
+python3 scripts/setup_channel.py --name channel-name --context "Purpose"
 ```
 
 ### Finding Discord IDs
@@ -324,7 +324,7 @@ python3 scripts/setup-channel.py --name channel-name --context "Purpose"
 - Updates gateway config
 - Optionally creates daily memory cron
 
-### setup-channel.py
+### setup_channel.py
 
 **Arguments:**
 - `--name` (required) - Channel name
@@ -336,7 +336,7 @@ python3 scripts/setup-channel.py --name channel-name --context "Purpose"
 - Creates Discord channel (if doesn't exist)
 - Generates gateway config.patch command
 
-### rename-channel.py
+### rename_channel.py
 
 **Arguments:**
 - `--id` (required) - Channel ID

@@ -429,6 +429,18 @@ PY
     | grep -E '^(scanned|hardcoded credentials)' \
     | tee -a "$LOG_FILE" || true
 
+  # A SKILL.md is an instruction sheet: when it says "run scripts/analyze.py" and
+  # that file was never shipped, the agent follows the instruction and fails at
+  # runtime. Frontmatter validation only parses the YAML block and the
+  # README-table check never opens the body, so 44 such instructions shipped.
+  # Report-only: the file is genuinely absent upstream and fixing it means
+  # inventing content. The "fixable" line counts near-misses whose target ships
+  # under a hyphen/underscore variant, which are worth correcting by hand.
+  info "Validating SKILL.md file references"
+  python3 "$REPO_ROOT/scripts/check-references.py" 2>&1 \
+    | grep -E '^(scanned|broken references)' \
+    | tee -a "$LOG_FILE" || true
+
   cat > "$TMP_RELEASE_BODY" <<EOF
 ## 🚀 周更：新增 ${NEW_COUNT} 个 Skills，总计 ${TOTAL_COUNT}
 
