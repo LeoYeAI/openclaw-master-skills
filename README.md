@@ -231,7 +231,7 @@ cp -r openclaw-master-skills/skills/<skill-name> ~/.openclaw/workspace/skills/
 | [`supabase-postgres-best-practices`](skills/supabase-postgres-best-practices/) | Postgres performance optimization and best practices from Supabase. Use this skill when writing, rev |
 | [`superdesign`](skills/superdesign/) | Expert frontend design guidelines for creating beautiful, modern UIs. Use when building landing page |
 | [`systematic-debugging`](skills/systematic-debugging/) | Use when encountering any bug, test failure, or unexpected behavior, before proposing fixes |
-| [`template-skill`](skills/template-skill/) | Replace with description of the skill and when Claude should use it. |
+| [`template-skill`](skills/template-skill/) | Starting point for writing a new skill. Use when creating a skill from scratch and you want the expected SKILL.md structure, frontmatter fields, and description conventions to copy from. |
 | [`test-driven-development`](skills/test-driven-development/) | Use when implementing any feature or bugfix, before writing implementation code |
 | [`turborepo`](skills/turborepo/) | Turborepo monorepo build system guidance. Triggers on: turbo.json, task pipelines, dependsOn, caching, remote cache, the "turbo" CLI, --filter, --affected, CI optimization, environment variables, internal packages, monorepo structure/best practices, and boundaries. Use when user: configures tasks... |
 | [`typescript-advanced-types`](skills/typescript-advanced-types/) | Master TypeScript's advanced type system including generics, conditional types, mapped types, templa |
