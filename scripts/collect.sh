@@ -441,6 +441,17 @@ PY
     | grep -E '^(scanned|broken references)' \
     | tee -a "$LOG_FILE" || true
 
+  # The repo is authored and validated on Linux, so git happily records SKILL.md
+  # next to skill.md. A clone on macOS or Windows cannot check out both: the
+  # second overwrites the first and the working tree is dirty on arrival. 16 such
+  # pairs across 11 skills already ship. Report-only: 15 of them hold genuinely
+  # different content (skills/payment/ carries two unrelated skills), so
+  # resolving one deletes shipped content and can change what a skill loads.
+  info "Checking for case-insensitive path collisions"
+  python3 "$REPO_ROOT/scripts/check-case-collisions.py" 2>&1 \
+    | grep -E '^(scanned|case-insensitive collisions)' \
+    | tee -a "$LOG_FILE" || true
+
   cat > "$TMP_RELEASE_BODY" <<EOF
 ## 🚀 周更：新增 ${NEW_COUNT} 个 Skills，总计 ${TOTAL_COUNT}
 
