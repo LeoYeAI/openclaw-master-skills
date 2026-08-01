@@ -28,6 +28,10 @@ from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
 SKILLS_DIR = REPO_ROOT / 'skills'
+README = REPO_ROOT / 'README.md'
+
+# A row of the curated table in README.md: | [`slug`](skills/slug/) | desc |
+CURATED_ROW = re.compile(r'^\|\s*\[`[^`]+`\]\(skills/([^)/]+)/\)\s*\|')
 
 # Personal forks, numbered re-uploads and scratch names. Used only to pick which
 # member of a group is canonical, never to delete anything.
@@ -57,6 +61,29 @@ def frontmatter_field(block, key):
     if len(value) >= 2 and value[0] == value[-1] and value[0] in '"\'':
         value = value[1:-1]
     return value.strip().strip('"\'').strip()
+
+
+def load_curated():
+    """Directory slugs listed in README.md's curated table.
+
+    A name collision between two mirror forks (`agent-browser-5` vs
+    `agent-browser-6`) is expected in a collection assembled from thousands of
+    publishers. A collision between two rows of the curated table is different:
+    that table is the index a user reads and installs from, so both spellings
+    are advertised and whichever loads second wins. Separating the two lets the
+    report lead with the part that reaches users.
+
+    Returns an empty set if README.md is missing, so the check degrades to its
+    previous repo-wide behaviour rather than failing.
+    """
+    if not README.is_file():
+        return set()
+    out = set()
+    for line in README.read_text(encoding='utf-8', errors='replace').splitlines():
+        m = CURATED_ROW.match(line)
+        if m:
+            out.add(m.group(1))
+    return out
 
 
 def load_skills():
@@ -153,6 +180,11 @@ def find_name_collisions(skills, groups):
 
     Directories that are already reported as redundant are excluded, so this
     counts only collisions that survive a full duplicate cleanup.
+
+    Each collision records whether more than one of its directories appears in
+    README.md's curated table (`curated`). Those are the ones a user can hit
+    from the published index: both spellings are advertised as separate skills,
+    yet a name-keyed loader can only resolve one.
     """
     redundant = {s for g in groups for s in g['redundant']}
     by_name = collections.defaultdict(list)
@@ -160,9 +192,18 @@ def find_name_collisions(skills, groups):
         if slug in redundant or not meta['name']:
             continue
         by_name[meta['name']].append(slug)
-    out = [{'name': n, 'dirs': sorted(v)}
-           for n, v in by_name.items() if len(v) > 1]
-    out.sort(key=lambda c: (-len(c['dirs']), c['name']))
+    curated = load_curated()
+    out = []
+    for n, v in by_name.items():
+        if len(v) < 2:
+            continue
+        dirs = sorted(v)
+        in_curated = sorted(s for s in dirs if s in curated)
+        out.append({'name': n, 'dirs': dirs, 'curated_dirs': in_curated,
+                    'curated': len(in_curated) > 1})
+    # Collisions inside the curated table first: those are the ones a user can
+    # actually hit from the published index.
+    out.sort(key=lambda c: (not c['curated'], -len(c['dirs']), c['name']))
     return out
 
 
@@ -178,12 +219,14 @@ def main():
     redundant = sum(len(g['redundant']) for g in groups)
     collisions = find_name_collisions(skills, groups)
     colliding_dirs = sum(len(c['dirs']) for c in collisions)
+    curated_collisions = [c for c in collisions if c['curated']]
 
     if args.json:
         print(json.dumps({'scanned': len(skills), 'groups': groups,
                           'redundant': redundant,
-                          'name_collisions': collisions}, indent=2,
-                         ensure_ascii=False))
+                          'name_collisions': collisions,
+                          'curated_name_collisions': len(curated_collisions)},
+                         indent=2, ensure_ascii=False))
     else:
         print(f'scanned {len(skills)} skills with a real body')
         print(f'duplicate groups: {len(groups)}  redundant directories: {redundant}')
@@ -196,13 +239,24 @@ def main():
         print(f'\nname collisions after cleanup: {len(collisions)} names '
               f'across {colliding_dirs} directories')
         print('  (different bodies, same frontmatter name: not safe to collapse)')
-        for c in collisions[:15]:
-            shown = ', '.join(c['dirs'][:6])
-            more = f" (+{len(c['dirs']) - 6} more)" if len(c['dirs']) > 6 else ''
-            print(f"  {len(c['dirs']):3}x  {c['name']}")
-            print(f"        {shown}{more}")
-        if len(collisions) > 15:
-            print(f'  ... {len(collisions) - 15} more names')
+        # Lead with the collisions a user can hit from the published table.
+        print(f'curated-index collisions: {len(curated_collisions)} names where '
+              f'2+ colliding directories are both listed in README.md')
+        for c in curated_collisions:
+            print(f"  {c['name']}")
+            print(f"        {', '.join(c['curated_dirs'])}")
+        rest = [c for c in collisions if not c['curated']]
+        if rest:
+            print(f'\nmirror-only collisions: {len(rest)} names '
+                  f'(at most one side is in the curated index)')
+            for c in rest[:10]:
+                shown = ', '.join(c['dirs'][:6])
+                more = (f" (+{len(c['dirs']) - 6} more)"
+                        if len(c['dirs']) > 6 else '')
+                print(f"  {len(c['dirs']):3}x  {c['name']}")
+                print(f"        {shown}{more}")
+            if len(rest) > 10:
+                print(f'  ... {len(rest) - 10} more names')
 
     return 1 if (args.strict and groups) else 0
 

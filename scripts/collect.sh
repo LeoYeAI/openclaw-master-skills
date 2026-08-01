@@ -412,11 +412,14 @@ PY
   # predate that filter. Reporting only: collapsing them deletes directories and
   # changes published slugs, which is Leo's call, not the weekly run's.
   #
-  # grep the two headline lines rather than head -n: the report now ends with a
-  # name-collision summary, and a positional filter would drop it.
+  # grep the headline lines rather than head -n: the report ends with a
+  # name-collision summary, and a positional filter would drop it. The
+  # curated-index line is the one worth reading in a run log -- those
+  # collisions are reachable from the published table, not just between
+  # mirror forks.
   info "Checking for duplicate installed skills"
   python3 "$REPO_ROOT/scripts/find-duplicates.py" 2>&1 \
-    | grep -E '^(scanned|duplicate groups|name collisions)' \
+    | grep -E '^(scanned|duplicate groups|name collisions|curated-index|mirror-only)' \
     | tee -a "$LOG_FILE" || true
 
   # Nothing ever looked at file contents for credentials, so cann-review shipped
