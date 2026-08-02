@@ -111,7 +111,7 @@ Updated every Monday.
 
 ## [untagged] — 2026-05-06
 
-### 🚀 周更：新增 32832 个 Skills，总计 1209
+### 🚀 收集器切换：扫描 32832 个候选，无净新增，总计 1209
 
 来源：openclaw/skills-archive 官方镜像，按质量规则筛选。详见 RELEASES.md。
 
