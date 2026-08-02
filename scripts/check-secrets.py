@@ -11,8 +11,13 @@ rewriting an author's code on a schedule is Leo's call, not the weekly run's.
 The run should surface new occurrences so they get triaged before publish.
 
 Scope is deliberately narrow to keep the signal usable:
-  - executable extensions only, since a key in a README is a lesser problem
+  - executable extensions, since a key in a README is a lesser problem
     than one baked into code that runs
+  - plus config and env files, which carry credentials as data rather than as
+    code: skills/agentaudit/config/credentials.json shipped a 40-char api_key
+    that the executable-only scan could not see, both because .json is not an
+    executable extension and because the assignment regex requires '=', which
+    JSON never uses
   - assignment to a credential-named variable
   - value must look like a credential, not a placeholder or an env reference
 
@@ -31,6 +36,32 @@ REPO_ROOT = Path(__file__).resolve().parent.parent
 SKILLS = REPO_ROOT / 'skills'
 
 EXEC_EXT = {'.py', '.sh', '.bash', '.js', '.mjs', '.cjs', '.ts', '.rb', '.go', '.php'}
+
+# Files that carry credentials as data. Included because a key sitting in
+# config/credentials.json is handed to every user just as surely as one in a
+# script, and the executable-only scan was blind to it.
+CONFIG_EXT = {'.json', '.yaml', '.yml', '.toml', '.ini', '.cfg', '.conf',
+              '.properties', '.env', '.txt'}
+# .env, .env.local, .npmrc and friends have no useful suffix to match on.
+CONFIG_NAME = re.compile(
+    r'(?i)^(\.env(\..+)?|\.npmrc|\.netrc|\.pypirc|credentials|secrets)$')
+
+
+def is_scannable(path: Path) -> bool:
+    suffix = path.suffix.lower()
+    if suffix in EXEC_EXT or suffix in CONFIG_EXT:
+        return True
+    # '.env.txt' has suffix '.txt' and is caught above; bare '.env' has none.
+    return bool(CONFIG_NAME.match(path.name))
+
+
+# JSON/YAML/TOML write 'key: value' or 'key = value'; shell env files write
+# 'KEY=value'. The executable pattern below requires '=', so a colon form needs
+# its own expression or every JSON credential stays invisible.
+CONFIG_ASSIGN = re.compile(
+    r'(?i)["\']?([A-Z0-9_]*(?:API[_-]?KEY|SECRET|TOKEN|PASSWORD|PASSWD|'
+    r'ACCESS[_-]?KEY|PRIVATE[_-]?KEY|CREDENTIAL)[A-Z0-9_]*)["\']?\s*[:=]\s*'
+    r'["\']([^"\'\n]{12,})["\']')
 
 ASSIGN = re.compile(
     r'(?i)\b([A-Z0-9_]*(?:API[_-]?KEY|SECRET|TOKEN|PASSWORD|PASSWD|'
@@ -91,7 +122,7 @@ def main():
     scanned = 0
 
     for f in sorted(SKILLS.rglob('*')):
-        if not f.is_file() or f.suffix.lower() not in EXEC_EXT:
+        if not f.is_file() or not is_scannable(f):
             continue
         try:
             text = f.read_text(encoding='utf-8', errors='ignore')
@@ -101,8 +132,14 @@ def main():
             continue
         scanned += 1
         rel = f.relative_to(REPO_ROOT)
-        for m in ASSIGN.finditer(text):
-            name, val = m.group(1), m.group(3)
+        # Config files assign with ':' as often as '=', so they need the wider
+        # pattern; scripts keep the narrower one to avoid matching dict literals
+        # and keyword arguments as credentials.
+        is_config = f.suffix.lower() not in EXEC_EXT
+        pattern = CONFIG_ASSIGN if is_config else ASSIGN
+        for m in pattern.finditer(text):
+            name = m.group(1)
+            val = m.group(2) if is_config else m.group(3)
             if PLACEHOLDER.search(val) or is_benign(name, val):
                 continue
             if FIXTURE.search(str(rel)):
@@ -112,7 +149,7 @@ def main():
             fp = hashlib.sha1(val.encode()).hexdigest()[:8]
             findings.append((str(rel), line, name, len(val), fp))
 
-    print(f'scanned {scanned} executable files under skills/')
+    print(f'scanned {scanned} executable and config files under skills/')
     print(f'hardcoded credentials: {len(findings)} '
           f'({fixtures} test fixtures excluded)')
     for rel, line, name, n, fp in findings:
