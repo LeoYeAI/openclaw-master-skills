@@ -483,6 +483,16 @@ PY
     | grep -E '^(scanned|case-insensitive collisions)' \
     | tee -a "$LOG_FILE" || true
 
+  # A CRLF shebang is not a style issue: the kernel takes everything after '#!'
+  # up to the newline as the interpreter path, so '#!/bin/sh\r' resolves to
+  # '/bin/sh\r' and the script dies with ENOENT. 15 shipped that way, each
+  # invoked by its own skill's instructions. Hard failure, since the count is now
+  # zero. CRLF in SKILL.md is reported but tolerated: it parses correctly here.
+  info "Checking line endings"
+  python3 "$REPO_ROOT/scripts/check-line-endings.py" 2>&1 \
+    | grep -E '^(scanned|SKILL.md with CRLF|shell scripts with CRLF|FAILED|  - )' \
+    | tee -a "$LOG_FILE" || fail "shell scripts with a CRLF shebang cannot execute"
+
   cat > "$TMP_RELEASE_BODY" <<EOF
 ## 🚀 周更：新增 ${NEW_COUNT} 个 Skills，总计 ${TOTAL_COUNT}
 
