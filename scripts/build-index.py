@@ -5,6 +5,12 @@ The index was last written by hand at v0.7.0 and rotted: 540 of its 560 rows
 carried "name: <slug>" as the description (a broken frontmatter parse) and
 ~1940 skills were missing entirely. This uses the same description extraction
 rules as scripts/collect.sh so the two stay consistent.
+
+With --check, compares the committed file against a fresh build and exits 1 on
+any difference instead of writing. collect.sh regenerates the index every run,
+but commits made outside that path can leave it stale -- editing the parsing in
+this script without rebuilding is enough -- and a published index that disagrees
+with the skills it describes is exactly the failure v0.7.0 shipped.
 """
 
 import re
@@ -192,6 +198,7 @@ def clip(desc: str) -> str:
 
 
 def main() -> int:
+    check_only = '--check' in sys.argv
     if not SKILLS_DIR.is_dir():
         print(f'skills dir not found: {SKILLS_DIR}', file=sys.stderr)
         return 1
@@ -216,7 +223,42 @@ def main() -> int:
         '|---|---|',
     ]
     lines += [f'| [`{slug}`](skills/{slug}/) | {desc} |' for slug, desc in rows]
-    INDEX_FILE.write_text('\n'.join(lines) + '\n', encoding='utf-8')
+    content = '\n'.join(lines) + '\n'
+
+    if check_only:
+        # collect.sh regenerates the index every run, but any commit made outside
+        # that path can leave it stale -- editing this script's parsing without
+        # rebuilding is enough to do it, and the result is a published index that
+        # disagrees with the skills it describes. Compare without writing so the
+        # weekly run can fail instead of shipping the mismatch.
+        current = (INDEX_FILE.read_text(encoding='utf-8')
+                   if INDEX_FILE.is_file() else '')
+        if current == content:
+            print(f'skill_index.md is up to date ({len(rows)} rows)')
+            return 0
+        if not current:
+            print(f'{INDEX_FILE.name} is missing; run scripts/build-index.py')
+            return 1
+
+        old = current.splitlines()
+        new = content.splitlines()
+        print(f'{INDEX_FILE.name} is stale: '
+              f'{len(old)} lines committed vs {len(new)} regenerated')
+        shown = 0
+        for i, (a, b) in enumerate(zip(old, new), 1):
+            if a != b:
+                print(f'  line {i}:')
+                print(f'    committed:   {a[:120]}')
+                print(f'    regenerated: {b[:120]}')
+                shown += 1
+                if shown == 5:
+                    break
+        if len(old) != len(new):
+            print(f'  ...and a length difference of {abs(len(old) - len(new))} lines')
+        print('run scripts/build-index.py and commit the result')
+        return 1
+
+    INDEX_FILE.write_text(content, encoding='utf-8')
 
     print(f'skill_index.md: {len(rows)} rows ({missing} without a usable description)')
     return 0

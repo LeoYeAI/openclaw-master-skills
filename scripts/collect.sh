@@ -386,6 +386,13 @@ PY
   info "Rebuilding skill_index.md"
   python3 "$REPO_ROOT/scripts/build-index.py" | tee -a "$LOG_FILE"
 
+  # Confirm the file on disk now matches a fresh build. This catches two things
+  # the rebuild above cannot: a commit made outside this script that left the
+  # index stale (editing build-index.py's parsing without rebuilding is enough),
+  # and a builder whose output is not stable across consecutive runs.
+  info "Verifying skill_index.md matches a fresh build"
+  python3 "$REPO_ROOT/scripts/build-index.py" --check | tee -a "$LOG_FILE" || fail "skill_index.md is stale"
+
   # The curated README tables are hand-maintained, so nothing caught 27 rows
   # whose description was a bare YAML block indicator, an empty clawsec cell, or
   # a row broken into 4 columns by unescaped pipes. Fail the run instead of
