@@ -256,13 +256,13 @@ These slot-fill constructions signal that a sentence was generated, not written.
 - "While X is impressive, Y remains a challenge" or "Although X has made strides, Y is still an open question." AI uses this to sound balanced without actually weighing anything. Both halves are vague. Either make the concession specific (name what's impressive, name the actual challenge) or pick a side and argue it.
 
 ### Rhetorical question openers
-- "But what does this mean for developers?" / "So why should you care?" / "What's next?" — AI uses rhetorical questions to stall before the actual point. If you know the answer, just say it. Rhetorical questions are earned by strong setup, not dropped as section transitions.
+- "But what does this mean for developers?" / "So why should you care?" / "What's next?" â€” AI uses rhetorical questions to stall before the actual point. If you know the answer, just say it. Rhetorical questions are earned by strong setup, not dropped as section transitions.
 
 ### Parenthetical hedging
-- "(and, increasingly, Z)" / "(or, more precisely, Y)" / "(and perhaps more importantly, W)" — AI inserts parenthetical asides to sound nuanced without committing. If the aside matters, give it its own sentence. If it doesn't, cut it.
+- "(and, increasingly, Z)" / "(or, more precisely, Y)" / "(and perhaps more importantly, W)" â€” AI inserts parenthetical asides to sound nuanced without committing. If the aside matters, give it its own sentence. If it doesn't, cut it.
 
 ### Numbered list inflation
-- "Three key takeaways" / "Five things to know" / "Here are the top seven" — AI defaults to numbered lists because they're structurally safe. Only use numbered lists when the content genuinely has that many discrete, parallel items. If you're padding to hit a number, the list shouldn't exist.
+- "Three key takeaways" / "Five things to know" / "Here are the top seven" â€” AI defaults to numbered lists because they're structurally safe. Only use numbered lists when the content genuinely has that many discrete, parallel items. If you're padding to hit a number, the list shouldn't exist.
 
 ### Reasoning chain artifacts
 - "Let me think step by step," "Breaking this down," "To approach this systematically," "Step 1:," "Here's my thought process," "First, let's consider," "Working through this logically" â€” these are artifacts of chain-of-thought reasoning leaking into published prose. The reader doesn't need to see the scaffolding. State the conclusion, then the evidence.
@@ -305,13 +305,13 @@ If the text has 5+ flagged vocabulary hits across multiple categories, 3+ distin
 
 Not all AI-isms are equal. When doing a quick pass or triaging a large document, prioritize by tier:
 
-### P0 — Credibility killers (fix immediately)
+### P0 â€” Credibility killers (fix immediately)
 - Cutoff disclaimers ("As of my last update")
 - Chatbot artifacts ("I hope this helps!", "Great question!")
 - Vague attributions without sources ("Experts believe")
 - Significance inflation on routine events
 
-### P1 — Obvious AI smell (fix before publishing)
+### P1 â€” Obvious AI smell (fix before publishing)
 - Word-list violations (delve, leverage, harness, robust, etc.)
 - Template phrases and slot-fill constructions
 - "Let's" transition openers
@@ -320,7 +320,7 @@ Not all AI-isms are equal. When doing a quick pass or triaging a large document,
 - Bold overuse
 - Em dash frequency (above 1 per 1,000 words)
 
-### P2 — Stylistic polish (fix when time allows)
+### P2 â€” Stylistic polish (fix when time allows)
 - Generic conclusions ("The future looks bright")
 - Compulsive rule of three
 - Uniform paragraph length
@@ -343,12 +343,12 @@ Pass an optional context hint to adjust rule strictness. If no context is specif
 
 ### Profile definitions
 
-**`linkedin`** — Short-form social. Punchy fragments, visual formatting matter.
-**`blog`** — Default. Standard long-form prose. All rules apply at full strength.
-**`technical-blog`** — Long-form with code, architecture, APIs. Technical terms get a pass.
-**`investor-email`** — High-trust audience. Tighten everything; promotional language is the biggest risk.
-**`docs`** — Documentation, READMEs, guides. Clarity over voice.
-**`casual`** — Slack messages, internal notes, quick replies. Only catch the worst offenders.
+**`linkedin`** â€” Short-form social. Punchy fragments, visual formatting matter.
+**`blog`** â€” Default. Standard long-form prose. All rules apply at full strength.
+**`technical-blog`** â€” Long-form with code, architecture, APIs. Technical terms get a pass.
+**`investor-email`** â€” High-trust audience. Tighten everything; promotional language is the biggest risk.
+**`docs`** â€” Documentation, READMEs, guides. Clarity over voice.
+**`casual`** â€” Slack messages, internal notes, quick replies. Only catch the worst offenders.
 
 ### Tolerance matrix
 
@@ -387,7 +387,7 @@ When no context is specified, infer from these signals:
 | Code blocks, API references, or technical architecture | `technical-blog` |
 | Salutation ("Hi [name]", "Dear") + investor/fundraising language | `investor-email` |
 | Step-by-step instructions, parameter docs, README structure | `docs` |
-| No strong signals | `blog` (safest default — all rules apply) |
+| No strong signals | `blog` (safest default â€” all rules apply) |
 
 If auto-detection feels wrong, say which profile you're using and why. The user can override.
 

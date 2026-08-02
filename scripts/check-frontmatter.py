@@ -6,9 +6,14 @@ on frontmatter that no YAML-based loader can read, which is how 70 skills shippe
 with an unquoted scalar containing ': ', 11 with structural damage, 3 with no
 closing delimiter and 2 wrapped in a raw HTTP multipart envelope.
 
-Requires: a closed `---` block, parseable as a YAML mapping, with a non-empty
-`name` and `description` that is not unedited scaffold text. Exits 1 and lists
-every offender when violated.
+Requires: valid UTF-8 with no BOM, a closed `---` block, parseable as a YAML
+mapping, with a non-empty `name` and `description` that is not unedited scaffold
+text. Exits 1 and lists every offender when violated.
+
+The encoding check exists because every read in this repo used
+errors='ignore', which discards undecodable bytes instead of reporting them:
+`avoid-ai-writing` shipped 13 cp1252 em dashes that way, so '### P0 - Credibility
+killers' published as '### P0  Credibility killers' with the dash gone.
 
 The placeholder check is deliberately frontmatter-only. Scanning bodies for the
 same phrasings produced 144 hits of which nearly all were legitimate: "Replace
@@ -20,6 +25,7 @@ a defect. `template-skill` shipped in the curated index described as "Replace
 with description of the skill and when Claude should use it."
 """
 
+import codecs
 import re
 import sys
 from pathlib import Path
@@ -61,7 +67,25 @@ def main():
             continue
 
         checked += 1
-        text = f.read_text(encoding='utf-8', errors='ignore')
+        raw = f.read_bytes()
+
+        # Encoding first: every read below uses errors='ignore', which silently
+        # discards undecodable bytes. avoid-ai-writing shipped 13 cp1252 em
+        # dashes that way -- '### P0 - Credibility killers' rendered as
+        # '### P0  Credibility killers', the dash simply gone from the published
+        # file, and no gate said a word.
+        if raw.startswith(codecs.BOM_UTF8):
+            problems.append(f'{d.name}: starts with a UTF-8 BOM; a loader that '
+                            f'does not strip it sees no frontmatter')
+            continue
+        try:
+            text = raw.decode('utf-8')
+        except UnicodeDecodeError as e:
+            line = raw[:e.start].count(b'\n') + 1
+            problems.append(f'{d.name}: not valid UTF-8 at byte {e.start} '
+                            f'(line {line}): {e.reason}')
+            continue
+
         m = FM.match(text.replace('\r\n', '\n'))
         if not m:
             problems.append(f'{d.name}: no closed --- frontmatter block')
