@@ -30,6 +30,12 @@ GH_TOKEN="${GITHUB_TOKEN:-}"
 CLAWHUB_TOKEN="${CLAWHUB_TOKEN:-}"
 CLAWHUB_REGISTRY="${CLAWHUB_REGISTRY:-https://clawhub.ai}"
 MAX_WEEKLY_IMPORTS="${MAX_WEEKLY_IMPORTS:-100}"
+# The import quality filter. These bounds are stated verbatim in every RELEASES.md
+# entry ("SKILL.md 800B-30KB"), so they were hardcoded twice: once in the filter
+# and once in the release-note text. Define them once and derive both, or the
+# published claim silently stops matching the code that enforces it.
+MIN_SKILL_BYTES="${MIN_SKILL_BYTES:-800}"
+MAX_SKILL_BYTES="${MAX_SKILL_BYTES:-30000}"
 NEW_VERSION=""
 NEW_COUNT="0"
 TOTAL_COUNT="0"
@@ -62,13 +68,16 @@ refresh_archive() {
 
 find_new_candidates() {
   info "Finding new candidate skills"
-  SKILLS_DIR="$SKILLS_DIR" ARCHIVE_DIR="$ARCHIVE_DIR" MAX_WEEKLY_IMPORTS="$MAX_WEEKLY_IMPORTS" python3 <<'PY' > "$TMP_NEW_LIST"
+  SKILLS_DIR="$SKILLS_DIR" ARCHIVE_DIR="$ARCHIVE_DIR" MAX_WEEKLY_IMPORTS="$MAX_WEEKLY_IMPORTS" MIN_SKILL_BYTES="$MIN_SKILL_BYTES" MAX_SKILL_BYTES="$MAX_SKILL_BYTES" python3 <<'PY' > "$TMP_NEW_LIST"
 import os
 import re
 import hashlib
 
 skills_dir = os.environ['SKILLS_DIR']
 archive_dir = os.environ['ARCHIVE_DIR']
+# Same bounds the release notes advertise; see MIN/MAX_SKILL_BYTES at the top.
+min_bytes = int(os.environ['MIN_SKILL_BYTES'])
+max_bytes = int(os.environ['MAX_SKILL_BYTES'])
 
 existing = set()
 for name in os.listdir(skills_dir):
@@ -161,7 +170,7 @@ for publisher in sorted(os.listdir(root)):
             continue
         try:
             size = os.path.getsize(skill_md)
-            if size < 800 or size > 30000:
+            if size < min_bytes or size > max_bytes:
                 continue
             with open(skill_md, 'r', encoding='utf-8', errors='ignore') as f:
                 content = f.read(5000)
@@ -303,7 +312,7 @@ PY
 
   info "Updating docs for v$NEW_VERSION (+$NEW_COUNT => $TOTAL_COUNT total)"
 
-  RELEASES="$RELEASES" WEEK="$WEEK" NEW_COUNT="$NEW_COUNT" TOTAL_COUNT="$TOTAL_COUNT" TMP_IMPORT_LIST="$TMP_IMPORT_LIST" NEW_VERSION="$NEW_VERSION" python3 <<'PY'
+  RELEASES="$RELEASES" WEEK="$WEEK" NEW_COUNT="$NEW_COUNT" TOTAL_COUNT="$TOTAL_COUNT" TMP_IMPORT_LIST="$TMP_IMPORT_LIST" NEW_VERSION="$NEW_VERSION" MIN_SKILL_BYTES="$MIN_SKILL_BYTES" MAX_SKILL_BYTES="$MAX_SKILL_BYTES" python3 <<'PY'
 import os
 from pathlib import Path
 
@@ -313,6 +322,18 @@ new_count = os.environ['NEW_COUNT']
 total_count = os.environ['TOTAL_COUNT']
 import_file = Path(os.environ['TMP_IMPORT_LIST'])
 version = os.environ['NEW_VERSION']
+# Render the advertised bounds from the same values the filter uses, so the
+# published claim cannot drift from the code that enforces it.
+min_bytes = int(os.environ['MIN_SKILL_BYTES'])
+max_bytes = int(os.environ['MAX_SKILL_BYTES'])
+
+
+def human_bytes(n):
+    """800 -> '800B', 30000 -> '30KB'. Matches the historical wording exactly."""
+    return f'{n // 1000}KB' if n >= 1000 and n % 1000 == 0 else f'{n}B'
+
+
+size_rule = f'SKILL.md {human_bytes(min_bytes)}-{human_bytes(max_bytes)}'
 
 items = []
 if import_file.exists():
@@ -322,7 +343,7 @@ if import_file.exists():
             if idx < 30:
                 items.append(f"- `{slug}` — {desc[:120]}")
 
-body = f"## v{version} — {week}\n\n### 🚀 周更：新增 {new_count} 个 Skills，总计 {total_count}\n\n来源：openclaw/skills-archive 官方镜像，按质量规则筛选（SKILL.md 800B-30KB、完整 YAML 元数据、有效 description）。\n\n#### 部分新增亮点（前 30 个）\n" + ("\n".join(items) if items else "- 本周无新增") + "\n\n---\n\n"
+body = f"## v{version} — {week}\n\n### 🚀 周更：新增 {new_count} 个 Skills，总计 {total_count}\n\n来源：openclaw/skills-archive 官方镜像，按质量规则筛选（{size_rule}、完整 YAML 元数据、有效 description）。\n\n#### 部分新增亮点（前 30 个）\n" + ("\n".join(items) if items else "- 本周无新增") + "\n\n---\n\n"
 content = releases.read_text(encoding='utf-8', errors='ignore')
 if content.startswith('# Release Notes'):
     parts = content.split('\n', 4)
