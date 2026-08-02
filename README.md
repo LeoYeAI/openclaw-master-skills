@@ -166,6 +166,7 @@ cp -r openclaw-master-skills/skills/<skill-name> ~/.openclaw/workspace/skills/
 | [`product-dev-ops-package`](skills/product-dev-ops-package/) | 产品研发运营协作（PM/架构/开发/运营四角色） |
 | [`todo-tracker-safe`](skills/todo-tracker-safe/) | Secure TODO tracker with input validation and safe file operations |
 | [`hengheng-system-time`](skills/hengheng-system-time/) | Precise system time in various formats and timezones |
+- [WeekLife](https://letmethink.cc/app/weeklife/) - A lightweight life check-in tool for reclaiming everyday life beyond work.
 
 ### 💻 Development & DevOps (87)
 
