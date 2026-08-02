@@ -536,11 +536,11 @@
 
 ## untagged — 2026-05-06
 
-### 🚀 周更：新增 32832 个 Skills，总计 1209
+### 🚀 收集器切换：扫描 32832 个候选，无净新增，总计 1209
 
 来源：openclaw/skills-archive 官方镜像，按质量规则筛选（SKILL.md 800B-30KB、完整 YAML 元数据、有效 description）。
 
-#### 部分新增亮点（前 28 个）
+#### 通过筛选的候选示例（前 28 个，实际收录见 v0.13.1）
 - `canvapresentationbibleedition` — | Presentation Strategist ที่ใช้หลักการ Visual-First Design (พรีเซ้นฉลาดเน้นภาพไม่เน้นพูด) เป็นกรอบคิดหลักในการวิเคราะห์
 - `erc8004-agent` — > 8004 Agent Skill for registering AI agents on the ERC-8004 Trustless Agents standard and authenticating them via SIWA 
 - `openclaw-sec-plus` — AI Agent Security Suite - Real-time protection against prompt injection, command injection, SSRF, path traversal, secret
@@ -629,7 +629,7 @@
 
 ## v0.12.0 — 2026-05-04
 
-### 本周新增 51 个 Skills（总计 611 个）
+### 本周新增 50 个 Skills（总计 611 个）
 
 - `aes-cart-abandonment-analyzer` — Identify reasons for cart abandonment and build multi-touch recovery sequences a
 - `aes-landing-page-builder` — Design high-converting ecommerce landing page structures with headline copy, her
