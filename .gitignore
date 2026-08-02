@@ -1,0 +1,42 @@
+# The repo had no .gitignore at all, which is how three .pyc files for a single
+# Python version ended up tracked under skills/cann-review/. Everything below is
+# derived or machine-local: it is never part of a skill, and every file under
+# skills/ is cloned by every user.
+
+# Python bytecode and tool caches
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.ipynb_checkpoints/
+
+# OS and editor metadata
+.DS_Store
+.AppleDouble
+Thumbs.db
+desktop.ini
+*.swp
+*.swo
+*~
+*.orig
+*.rej
+
+# Credentials. Skills legitimately ship .env.example files documenting what a
+# user must supply, so those stay; a populated .env never should.
+.env
+.env.*
+!.env.example
+!.env.example.*
+!.env.sample
+.netrc
+.npmrc
+.pypirc
+id_rsa
+id_ed25519
+
+# Weekly-run scratch files, written to /tmp by scripts/collect.sh but easy to
+# redirect into the tree by accident.
+*.log
+oms-*.bundle
