@@ -493,6 +493,16 @@ PY
     | grep -E '^(scanned|SKILL.md with CRLF|shell scripts with CRLF|FAILED|  - )' \
     | tee -a "$LOG_FILE" || fail "shell scripts with a CRLF shebang cannot execute"
 
+  # The upstream archive stores all 274208 of its files as mode 100644, so no
+  # imported skill ever arrives executable. Harmless until a SKILL.md says to run
+  # './setup.sh', which then fails the execve with EACCES. Only the './x' form
+  # cares about the bit; 'bash x.sh' works at 644, so the check is scoped to
+  # command-position invocations of files that carry a shebang.
+  info "Checking exec bits on ./-invoked scripts"
+  python3 "$REPO_ROOT/scripts/check-exec-bits.py" 2>&1 \
+    | grep -E '^(scanned|FAIL|OK:|  )' \
+    | tee -a "$LOG_FILE" || fail "scripts invoked as ./x are not executable"
+
   cat > "$TMP_RELEASE_BODY" <<EOF
 ## 🚀 周更：新增 ${NEW_COUNT} 个 Skills，总计 ${TOTAL_COUNT}
 
