@@ -9,6 +9,11 @@ collect.sh never rewrites, so nothing caught these defects for months:
   - `clawsec` with an empty description cell
   - `skill-finder-cn` whose description contains unescaped `|`, silently turning
     that row into 4 columns and breaking the table render
+  - 48 rows that were appended rather than inserted, so they sat outside any
+    table: 46 after a blank line mid-body (which closes a table in GFM) and 2
+    stranded past `## License` at end of file. Each row was individually well
+    formed, which is why row-by-row validation passed them for months, while
+    GitHub rendered them as a paragraph of literal `| [`slug`](path) | ... |`.
 
 Exits non-zero with a per-row report so a bad edit fails the weekly run instead
 of shipping to GitHub and ClawHub.
@@ -29,7 +34,38 @@ ARTIFACT_RE = re.compile(r'^[>|][-+]?$')
 # left free for each translation.
 INDEX_HEADER_RE = re.compile(r'^## .*?\((\d+)[^)]*\)\s*$')
 SECTION_RE = re.compile(r'^### (.+?) \((\d+)\)\s*$')
+SEPARATOR_RE = re.compile(r'^\|-+\|-+\|\s*$')
 MIN_DESC = 12
+
+
+def check_rows_in_tables(path: Path, lines: list[str]) -> list[str]:
+    """Every skill row must sit inside a live table body.
+
+    A blank line terminates a table in GitHub-flavoured markdown. Rows after one
+    have no header row or separator above them, so GitHub renders them as a
+    paragraph of literal pipe text rather than table rows -- 48 rows in
+    README.md shipped that way.
+
+    The row regex matches such a line perfectly, so this is the only check that
+    can see the defect: track whether a separator has opened a table, and treat
+    any blank line as closing it again.
+    """
+    problems: list[str] = []
+    in_table = False
+    for lineno, line in enumerate(lines, 1):
+        if SEPARATOR_RE.match(line):
+            in_table = True
+            continue
+        if SECTION_RE.match(line) or line.strip() == '':
+            in_table = False
+            continue
+        m = ROW_RE.match(line)
+        if m and not in_table:
+            problems.append(
+                f'{path.name}:{lineno} [{m.group(1)}] row is outside any table '
+                f'(no header/separator above it); GitHub renders it as literal '
+                f'text, not a table row')
+    return problems
 
 
 def check_counts(path: Path, lines: list[str]) -> list[str]:
@@ -115,6 +151,7 @@ def check(path: Path) -> list[str]:
         problems.append(f'{path.name}: no skill rows matched — table format changed?')
     else:
         problems.extend(check_counts(path, lines))
+        problems.extend(check_rows_in_tables(path, lines))
         print(f'{path.name}: {rows} rows checked')
     return problems
 

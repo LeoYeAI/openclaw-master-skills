@@ -74,7 +74,6 @@ cp -r openclaw-master-skills/skills/<skill-name> ~/.openclaw/workspace/skills/
 | [`sag`](skills/sag/) | ElevenLabs text-to-speech with mac-style say UX. |
 | [`summarize`](skills/summarize/) | Summarize URLs or files with the summarize CLI (web, PDFs, images, audio, YouTube). |
 | [`vercel-ai-sdk`](skills/vercel-ai-sdk/) | Answer questions about the AI SDK and help build AI-powered features. Use when developers: (1) Ask a |
-
 | [`agentcreate`](skills/agentcreate/) | AI-powered OpenClaw agent creator — create and configure independent agents with model selection |
 | [`ai-model-router`](skills/ai-model-router/) | Intelligent AI model router, auto-switches between local and cloud models |
 | [`ai-model-router-v2`](skills/ai-model-router-v2/) | AI model router v2 — enhanced local/cloud auto-switching |
@@ -157,7 +156,6 @@ cp -r openclaw-master-skills/skills/<skill-name> ~/.openclaw/workspace/skills/
 | [`trello`](skills/trello/) | Manage Trello boards, lists, and cards via the Trello REST API. |
 | [`word-docx`](skills/word-docx/) | Read and generate Word documents with correct structure, styles, and cross-platform compatibility. |
 | [`xlsx`](skills/xlsx/) | Use this skill any time a spreadsheet file is the primary input or output. This means any task where |
-
 | [`changelog-curator`](skills/changelog-curator/) | 从变更记录整理对外 changelog，区分用户价值与内部改动 |
 | [`clipboard-knowledge-capture`](skills/clipboard-knowledge-capture/) | 剪贴板片段沉淀到本地知识库，自动补来源/标签/行动 |
 | [`database-admin`](skills/database-admin/) | Database admin — schema management, data operations, query optimization |
@@ -295,7 +293,6 @@ cp -r openclaw-master-skills/skills/<skill-name> ~/.openclaw/workspace/skills/
 | [`shopify-seo-optimizer`](skills/shopify-seo-optimizer/) | 专为 Shopify 店铺设计的 SEO 优化工具。优化产品标题、描述、元标签、图片 Alt、URL 结构，提升店铺在 Google 的搜索排名和自然流量。 |
 | [`signup-flow-cro`](skills/signup-flow-cro/) | When the user wants to optimize signup, registration, account creation, or trial activation flows. A |
 | [`tiktok-viral-predictor`](skills/tiktok-viral-predictor/) | AI 预测 TikTok 视频爆款潜力，分析热门元素、BGM、标签。提供优化建议，提高视频上推荐概率。 |
-
 | [`adclaw`](skills/adclaw/) | Ad creative search assistant |
 | [`adwords`](skills/adwords/) | 营销文案助手 — 100+标题公式、AIDA框架、痛点挖掘 |
 | [`new-visitor-cold-start`](skills/new-visitor-cold-start/) | New visitor behavior-based personalization and conversion |
@@ -326,7 +323,6 @@ cp -r openclaw-master-skills/skills/<skill-name> ~/.openclaw/workspace/skills/
 | [`tushare-finance`](skills/tushare-finance/) | 获取中国金融市场数据（A股、港股、美股、基金、期货、债券）。支持220+个Tushare Pro接口：股票行情、财务报表、宏观经济指标。当用户请求股价数据、财务分析、指数行情、GDP/CPI等宏观数据 |
 | [`us-stock-analysis`](skills/us-stock-analysis/) | Comprehensive US stock analysis including fundamental analysis (financial metrics, business quality, |
 | [`yahoo-finance`](skills/yahoo-finance/) | Get stock prices, quotes, fundamentals, earnings, options, dividends, and analyst ratings using Yaho |
-
 | [`alchemy-openapi-skill`](skills/alchemy-openapi-skill/) | Alchemy Prices API reads via curated OpenAPI schema |
 | [`basedagents`](skills/basedagents/) | Search and interact with BasedAgents.ai agent registry |
 | [`chainbase-openapi-skill`](skills/chainbase-openapi-skill/) | Chainbase indexed wallet and token reads via OpenAPI |
@@ -357,7 +353,6 @@ cp -r openclaw-master-skills/skills/<skill-name> ~/.openclaw/workspace/skills/
 | [`slack`](skills/slack/) | Use when you need to control Slack from Clawdbot via the slack tool, including reacting to messages  |
 | [`slack-gif-creator`](skills/slack-gif-creator/) | Knowledge and utilities for creating animated GIFs optimized for Slack. Provides constraints, valida |
 | [`telegram`](skills/telegram/) | OpenClaw skill for designing Telegram Bot API workflows and command-driven conversations using direc |
-
 | [`feishu-doc-collab`](skills/feishu-doc-collab/) | 飞书实时 AI 协作文档 |
 | [`nidhov01-notion`](skills/nidhov01-notion/) | Notion API for pages, databases, and blocks management |
 | [`nidhov01-github`](skills/nidhov01-github/) | GitHub CLI interaction — issues, PRs, runs, and API |
@@ -422,7 +417,6 @@ cp -r openclaw-master-skills/skills/<skill-name> ~/.openclaw/workspace/skills/
 | [`audit-website`](skills/audit-website/) | Audit websites for SEO, performance, security, technical, content, and 15 other issue cateories with |
 | [`healthcheck`](skills/healthcheck/) | Track water and sleep with JSON file storage |
 | [`security-auditor`](skills/security-auditor/) | Use when reviewing code for security vulnerabilities, implementing authentication flows, auditing OW |
-
 | [`bankofbots`](skills/bankofbots/) | Trust scoring for AI agents — log transactions and compute reputations |
 | [`runtime-sentinel`](skills/runtime-sentinel/) | Runtime security guardian for OpenClaw agents |
 | [`sentinel-oleg`](skills/sentinel-oleg/) | Runtime security layer — input/output/log interception for agents |
@@ -450,7 +444,6 @@ cp -r openclaw-master-skills/skills/<skill-name> ~/.openclaw/workspace/skills/
 | [`x-twitter`](skills/x-twitter/) | Interact with Twitter/X — read tweets, search, post, like, retweet, and manage your timeline. |
 | [`xiaohongshu-mcp`](skills/xiaohongshu-mcp/) | Automate Xiaohongshu (RedNote) content operations using a Python client for the xiaohongshu-mcp server. Use for: (1) Publishing image, text, and video content, (2) Searching for notes and trends, (3) Analyzing post details and comments, (4) Managing user profiles and content feeds. Triggers: xiao... |
 | [`xurl`](skills/xurl/) | A Twitter research and content intelligence skill focused on attracting WordPress and Shopify client |
-
 | [`jike-publisher`](skills/jike-publisher/) | Publish posts to Jike (即刻) via browser automation |
 
 ### 📦 Other (43)
@@ -498,6 +491,8 @@ cp -r openclaw-master-skills/skills/<skill-name> ~/.openclaw/workspace/skills/
 | [`weather`](skills/weather/) | Get current weather and forecasts (no API key required). |
 | [`widget`](skills/widget/) | Create, update, hide, show, list, and delete Übersicht desktop widgets on macOS. Use this skill when |
 | [`writing-skills`](skills/writing-skills/) | Use when creating new skills, editing existing skills, or verifying skills work before deployment |
+| [`haodf`](skills/haodf/) | 好大夫智能找医生 — symptoms, specialty, location matching |
+| [`health-score-pro`](skills/health-score-pro/) | Comprehensive health management from 10 best-selling health books |
 
 ---
 
@@ -508,6 +503,3 @@ Found a great skill? [Submit it on ClawHub](https://clawhub.ai) or open a PR!
 ## 📄 License
 
 MIT — see [LICENSE](LICENSE)
-
-| [`haodf`](skills/haodf/) | 好大夫智能找医生 — symptoms, specialty, location matching |
-| [`health-score-pro`](skills/health-score-pro/) | Comprehensive health management from 10 best-selling health books |
