@@ -407,6 +407,20 @@ PY
   info "Rebuilding skill_index.md"
   python3 "$REPO_ROOT/scripts/build-index.py" | tee -a "$LOG_FILE"
 
+  run_gates
+  write_release_body
+}
+
+# Every validation gate, extracted from update_docs so a --publish-only run gets
+# the same checks. They all used to live inside update_docs, which --publish-only
+# skips wholesale: the resume path pushed a tag and cut a GitHub Release having
+# validated nothing. v0.22.0 is queued on exactly that path.
+#
+# Read-only by design. The index *rebuild* stays in update_docs; this function
+# only runs build-index.py --check, so a publish-only run cannot dirty the tree
+# it is about to publish (git_publish refuses a dirty tree, which would strand
+# the release).
+run_gates() {
   # Confirm the file on disk now matches a fresh build. This catches two things
   # the rebuild above cannot: a commit made outside this script that left the
   # index stale (editing build-index.py's parsing without rebuilding is enough),
@@ -502,7 +516,9 @@ PY
   python3 "$REPO_ROOT/scripts/check-exec-bits.py" 2>&1 \
     | grep -E '^(scanned|FAIL|OK:|  )' \
     | tee -a "$LOG_FILE" || fail "scripts invoked as ./x are not executable"
+}
 
+write_release_body() {
   cat > "$TMP_RELEASE_BODY" <<EOF
 ## 🚀 周更：新增 ${NEW_COUNT} 个 Skills，总计 ${TOTAL_COUNT}
 
@@ -734,6 +750,8 @@ main() {
 
   if [ "$PUBLISH_ONLY" = "yes" ]; then
     load_built_release
+    # Same gates as a full run. Without this the resume path published unchecked.
+    run_gates
     git_publish
     publish_clawhub
     ok "Done. Log: $LOG_FILE"
