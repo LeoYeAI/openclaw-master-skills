@@ -516,6 +516,18 @@ run_gates() {
   python3 "$REPO_ROOT/scripts/check-exec-bits.py" 2>&1 \
     | grep -E '^(scanned|FAIL|OK:|  )' \
     | tee -a "$LOG_FILE" || fail "scripts invoked as ./x are not executable"
+
+  # Same family as the CRLF shebangs: a script holding
+  # ROOT="/home/clawd/.openclaw/skills/brainx-v5" works only for clawd. Findings
+  # require a real username bound to a name the program dereferences, so
+  # placeholders (/Users/xxx/MyApp) and correct-by-target paths (/home/pi on
+  # Raspberry Pi hardware) stay out. Report-only: each fix means choosing a path
+  # policy for someone else's code, and guessing wrong breaks a skill that works
+  # for its author.
+  info "Checking for hardcoded home directories"
+  python3 "$REPO_ROOT/scripts/check-abs-paths.py" 2>&1 \
+    | grep -E '^(scanned|hardcoded home paths)' \
+    | tee -a "$LOG_FILE" || true
 }
 
 write_release_body() {
