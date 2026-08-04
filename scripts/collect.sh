@@ -539,6 +539,21 @@ run_gates() {
   python3 "$REPO_ROOT/scripts/check-abs-paths.py" 2>&1 \
     | grep -E '^(scanned|hardcoded home paths)' \
     | tee -a "$LOG_FILE" || true
+
+  # check-syntax.py covers .py and .sh; this covers the data files a skill's own
+  # code reads at runtime. Report-only, and the reason is the interesting part:
+  # whether a malformed config matters depends on something loading it, and a
+  # filename mention is not a load. ka88-agent-shield/config/patterns.yaml is
+  # named in quick-scan.sh only as an unused variable, and cann-review/skill.yaml
+  # appears solely inside a comment, so neither breaks at runtime today.
+  #
+  # Most of the work here is not finding failures but discarding false ones:
+  # tsconfig.json is JSONC, multi-document YAML needs safe_load_all, and several
+  # files are markdown or frontmatter+prose under a .json/.yaml name.
+  info "Checking shipped data files parse"
+  python3 "$REPO_ROOT/scripts/check-data-files.py" 2>&1 \
+    | grep -E '^(checked|unparseable data files|  excluded)' \
+    | tee -a "$LOG_FILE" || true
 }
 
 write_release_body() {
