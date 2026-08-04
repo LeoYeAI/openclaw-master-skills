@@ -48,7 +48,7 @@ class ForgettingTrigger(str, Enum):
     TIME_DECAY = "time_decay"                # 时间衰减
     LOW_ACCESS = "low_access"                # 低访问
     REDUNDANCY = "redundancy"                # 冗余
-    IRRELEVANCE = "irrelevance"              |  # 不相关
+    IRRELEVANCE = "irrelevance"  # 不相关
     CONFLICT = "conflict"                    # 冲突
     EXPLICIT = "explicit"                    # 显式标记
 
@@ -67,7 +67,7 @@ class MemoryState(str, Enum):
     """记忆状态"""
 
     ACTIVE = "active"            # 活跃
-    DORMANT = "dormant"          |  # 休眠
+    DORMANT = "dormant"  # 休眠
     ARCHIVED = "archived"        # 已归档
     DELETED = "deleted"          # 已删除
 

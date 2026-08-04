@@ -517,6 +517,17 @@ run_gates() {
     | grep -E '^(scanned|FAIL|OK:|  )' \
     | tee -a "$LOG_FILE" || fail "scripts invoked as ./x are not executable"
 
+  # Strongest member of the same family: a file that cannot be parsed fails for
+  # every user on every platform, however it is invoked. No gate covered this
+  # before -- check-frontmatter.py rejects a BOM but only on SKILL.md, so
+  # bug-fixing/scripts/generate_report_template.py shipped starting with
+  # ef bb bf, which python3 refuses outright. Two files are genuinely truncated
+  # upstream and are listed in the script as report-only; anything else is fatal.
+  info "Checking shipped scripts parse"
+  python3 "$REPO_ROOT/scripts/check-syntax.py" 2>&1 \
+    | grep -E '^(checked|unparseable|FAILED|KNOWN-TRUNCATED|PYTHON 2|  )' \
+    | tee -a "$LOG_FILE" || fail "shipped scripts with syntax errors cannot run"
+
   # Same family as the CRLF shebangs: a script holding
   # ROOT="/home/clawd/.openclaw/skills/brainx-v5" works only for clawd. Findings
   # require a real username bound to a name the program dereferences, so

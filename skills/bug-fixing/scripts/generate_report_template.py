@@ -1,4 +1,4 @@
-﻿#!/usr/bin/env python3
+#!/usr/bin/env python3
 """
 Generate a standard bug-fix report template.
 Outputs Markdown to stdout or a file.

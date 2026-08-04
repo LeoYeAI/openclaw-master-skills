@@ -119,7 +119,7 @@ def check_x_post(url: str, cookie_path: str | None = None) -> dict:
             page.wait_for_timeout(5000)
 
             # Check if post still exists
-            not_found = page.query_selector('span:has-text("doesn\\'t exist"), span:has-text("suspended")')
+            not_found = page.query_selector('span:has-text("doesn\'t exist"), span:has-text("suspended")')
             metrics["status"] = "removed" if not_found else "live"
 
             # Extract engagement metrics
