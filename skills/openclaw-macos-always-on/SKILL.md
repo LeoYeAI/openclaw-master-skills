@@ -32,7 +32,15 @@ Run OpenClaw as a system-level service (LaunchDaemon) with `caffeinate` to ensur
 ### One-Command Installation
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/YOUR_USERNAME/clawd/master/skills/macos-launchdaemon/install.sh | bash
+# install.sh ships with this skill -- run it directly, no download needed
+bash install.sh
+```
+
+If you are installing from outside the skill directory, fetch it from the
+upstream repository instead:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/happydog-intj/openclaw-macos-always-on/master/install.sh | bash
 ```
 
 Or manual setup below ⬇️
