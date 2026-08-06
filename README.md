@@ -434,7 +434,7 @@ cp -r openclaw-master-skills/skills/<skill-name> ~/.openclaw/workspace/skills/
 | [`data-analysis`](skills/data-analysis/) | Turn raw data into decisions with statistical rigor, proper methodology, and awareness of analytical |
 | [`data-analyst`](skills/data-analyst/) | Data visualization, report generation, SQL queries, and spreadsheet automation. Transform your AI ag |
 
-### 📱 Social & Content (13)
+### 📱 Social & Content (14)
 
 | Skill | Description |
 |---|---|
@@ -448,6 +448,7 @@ cp -r openclaw-master-skills/skills/<skill-name> ~/.openclaw/workspace/skills/
 | [`social-content`](skills/social-content/) | When the user wants help creating, scheduling, or optimizing social media content for LinkedIn, Twit |
 | [`weibo-trending-bot`](skills/weibo-trending-bot/) | 实时监控微博热搜榜，追踪热点话题、明星八卦、社会新闻。自动生成蹭热点文案。 |
 | [`x-twitter`](skills/x-twitter/) | Interact with Twitter/X — read tweets, search, post, like, retweet, and manage your timeline. |
+| [`x-twitter-scraper`](skills/x-twitter-scraper/) | X/Twitter workflow skill for agents. Search tweets, look up users, export followers, monitor accounts, run giveaway draws, post through Xquik, and use MCP tools and webhooks. |
 | [`xiaohongshu-mcp`](skills/xiaohongshu-mcp/) | > |
 | [`xurl`](skills/xurl/) | A Twitter research and content intelligence skill focused on attracting WordPress and Shopify client |
 
@@ -498,7 +499,6 @@ cp -r openclaw-master-skills/skills/<skill-name> ~/.openclaw/workspace/skills/
 | [`weather`](skills/weather/) | Get current weather and forecasts (no API key required). |
 | [`widget`](skills/widget/) | Create, update, hide, show, list, and delete Übersicht desktop widgets on macOS. Use this skill when |
 | [`writing-skills`](skills/writing-skills/) | Use when creating new skills, editing existing skills, or verifying skills work before deployment |
-
 ---
 
 ## 🤝 Contributing
