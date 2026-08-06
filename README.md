@@ -34,7 +34,7 @@ git clone https://github.com/LeoYeAI/openclaw-master-skills.git
 cp -r openclaw-master-skills/skills/<skill-name> ~/.openclaw/workspace/skills/
 ```
 
-## 📦 Skill Index (561 skills)
+## 📦 Skill Index (562 skills)
 
 ### 🤖 AI & LLM Tools (50)
 
@@ -259,7 +259,7 @@ cp -r openclaw-master-skills/skills/<skill-name> ~/.openclaw/workspace/skills/
 | [`webapp-testing`](skills/webapp-testing/) | Toolkit for interacting with and testing local web applications using Playwright. Supports verifying |
 | [`writing-plans`](skills/writing-plans/) | Use when you have a spec or requirements for a multi-step task, before touching code |
 
-### 📈 Marketing & Growth (35)
+### 📈 Marketing & Growth (36)
 
 | Skill | Description |
 |---|---|
@@ -273,6 +273,7 @@ cp -r openclaw-master-skills/skills/<skill-name> ~/.openclaw/workspace/skills/
 | [`copy-editing`](skills/copy-editing/) | When the user wants to edit, review, or improve existing marketing copy. Also use when the user ment |
 | [`copywriting`](skills/copywriting/) | When the user wants to write, rewrite, or improve marketing copy for any page — including homepage,  |
 | [`email-sequence`](skills/email-sequence/) | When the user wants to create or optimize an email sequence, drip campaign, automated email flow, or |
+| [`sequenzy-email-marketing`](skills/sequenzy-email-marketing/) | Operate Sequenzy lifecycle email marketing and transactional email workflows: subscribers, segments, campaigns, sequences, templates, and stats. |
 | [`form-cro`](skills/form-cro/) | When the user wants to optimize any form that is NOT signup/registration — including lead capture fo |
 | [`free-tool-strategy`](skills/free-tool-strategy/) | When the user wants to plan, evaluate, or build a free tool for marketing purposes — lead generation |
 | [`launch-strategy`](skills/launch-strategy/) | When the user wants to plan a product launch, feature announcement, or release strategy. Also use wh |
