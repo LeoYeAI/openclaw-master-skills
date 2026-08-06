@@ -47,12 +47,28 @@ Your Request → Analyze → Select Model
 | Feature | Status |
 |---------|--------|
 | Auto-detect local models | ✓ (Ollama, LM Studio) |
-| Cloud model registry | ✓ (7 built-in) |
+| Cloud model registry | ✓ (9 built-in: Anthropic, OpenAI, MiniMax) |
 | Privacy detection | ✓ (API keys, passwords) |
 | Context tracking | ✓ (conversations) |
 | JSON config | ✓ (optional) |
 | CLI interface | ✓ |
 | **Core code size** | **~200 lines** |
+
+## Cloud Models
+
+| Provider | Model | Power | Cost | Context |
+|----------|-------|-------|------|---------|
+| Anthropic | Claude Haiku 4 | 60 | 3 | — |
+| Anthropic | Claude Sonnet 4 | 80 | 5 | — |
+| Anthropic | Claude Opus 4 | 95 | 8 | — |
+| OpenAI | GPT-4o Mini | 50 | 1 | — |
+| OpenAI | GPT-4o | 85 | 5 | — |
+| [MiniMax](https://www.minimaxi.com) | MiniMax M2.7 | 85 | 3 | 1M |
+| [MiniMax](https://www.minimaxi.com) | MiniMax M2.7 Highspeed | 75 | 2 | 1M |
+| [MiniMax](https://www.minimaxi.com) | MiniMax M2.5 | 70 | 2 | 204K |
+| [MiniMax](https://www.minimaxi.com) | MiniMax M2.5 Highspeed | 60 | 1 | 204K |
+
+MiniMax models use an OpenAI-compatible API at `https://api.minimax.io/v1`. Set `MINIMAX_API_KEY` to enable.
 
 ## CLI
 

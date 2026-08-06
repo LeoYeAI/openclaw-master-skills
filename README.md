@@ -77,7 +77,7 @@ cp -r openclaw-master-skills/skills/<skill-name> ~/.openclaw/workspace/skills/
 
 | [`agentcreate`](skills/agentcreate/) | AI-powered OpenClaw agent creator — create and configure independent agents with model selection |
 | [`ai-model-router`](skills/ai-model-router/) | Intelligent AI model router, auto-switches between local and cloud models |
-| [`ai-model-router-v2`](skills/ai-model-router-v2/) | AI model router v2 — enhanced local/cloud auto-switching |
+| [`ai-model-router-v2`](skills/ai-model-router-v2/) | AI model router v2 — enhanced local/cloud auto-switching with Anthropic, OpenAI, and [MiniMax](https://www.minimaxi.com) support |
 | [`ai-news-aggregator-sl`](skills/ai-news-aggregator-sl/) | Fetches AI & tech news or custom topics via aggregated feeds |
 | [`ai-task-hub`](skills/ai-task-hub/) | AI task hub for image analysis, background removal, speech-to-text, TTS, and more |
 | [`creative-toolkit`](skills/creative-toolkit/) | Multi-provider image generation — Nanobanana, Seedream, GPT Image |
