@@ -60,6 +60,7 @@ cp -r openclaw-master-skills/skills/<skill-name> ~/.openclaw/workspace/skills/
 | [`image-generate`](skills/image-generate/) | 使用内置 image_generate.py 脚本生成图片, 准备清晰具体的 `prompt`。 |
 | [`ltx-video`](skills/ltx-video/) | | |
 | [`mcporter`](skills/mcporter/) | Use the mcporter CLI to list, configure, auth, and call MCP servers/tools directly (HTTP or stdio),  |
+| [`mmx-cli`](skills/mmx-cli/) | Generate text, images, video, speech, and music via MiniMax AI platform. |
 | [`model-usage`](skills/model-usage/) | Use CodexBar CLI local cost usage to summarize per-model usage for Codex or Claude, including the cu |
 | [`nano-banana-pro`](skills/nano-banana-pro/) | Generate/edit images with Nano Banana Pro (Gemini 3 Pro Image). Use for image create/modify requests |
 | [`openai-image-gen`](skills/openai-image-gen/) | Batch-generate images via OpenAI Images API. Random prompt sampler + `index.html` gallery. |

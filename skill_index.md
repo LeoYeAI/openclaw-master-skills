@@ -308,6 +308,7 @@
 | `migration-architect` | name: "migration-architect" |
 | `mindkeeper` | name: mindkeeper |
 | `miniade-agent-lifecycle-manager` | name: agent-lifecycle-manager |
+| `mmx-cli` | name: mmx-cli |
 | `model-usage` | name: model-usage |
 | `modern-javascript-patterns` | name: modern-javascript-patterns |
 | `moltbook-interact` | name: moltbook |
