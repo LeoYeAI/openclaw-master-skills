@@ -3,6 +3,47 @@
 每次更新的详细发布说明。
 
 
+## v0.22.1 — 2026-10-30
+
+### 🚀 日更：新增 100 个 Skills，总计 2603
+
+来源：头部技能仓库（obra/superpowers、addyosmani/agent-skills、wshobson/agents 等），按质量规则筛选（SKILL.md 800B-30KB、完整 YAML 元数据、有效 description）。
+
+#### 部分新增亮点（前 30 个）
+- `database-lookup` — Queries documented public database APIs with explicit endpoints, filters, pagination, and provenance. Used when a scient
+- `directory-submissions` — When the user wants to submit their product to startup, SaaS, AI, agent, MCP, no-code, or review directories for backlin
+- `ad-creative` — When the user wants to generate, iterate, or scale ad creative — headlines, descriptions, primary text, or full ad varia
+- `dotnet-backend-patterns` — Master C#/.NET backend development patterns for building robust APIs, MCP servers, and enterprise applications. Covers a
+- `paper-lookup` — Searches 18 scholarly APIs for papers, preprints, citations, open-access full text, repository records, and journal OA s
+- `cs-project-manager` — Project Manager agent for sprint planning, Jira/Confluence workflows, Scrum ceremonies, and stakeholder reporting. Orche
+- `marketing-plan` — When the user needs a comprehensive marketing plan for a client, a company they advise, or their own product. Also use w
+- `genomic-intelligence` — Predicts regulatory features, gene structure, and expression directly from DNA sequence using Genomic Intelligence's hos
+- `cs-ux-researcher` — UX research agent for research planning, persona generation, journey mapping, and usability test analysis. Use when prod
+- `scikit-bio` — Biological data toolkit. Sequence analysis, alignments, phylogenetic trees, diversity metrics (alpha/beta, UniFrac), ord
+- `statistical-analysis` — Guided statistical analysis for research data - test selection, assumption checking, effect sizes, power analysis, Bayes
+- `attribution` — When the user wants to figure out which marketing actually drives conversions and revenue, choose or interpret an attrib
+- `lab-hardware-cad` — Designs custom laboratory hardware as parametric build123d models and exports fabrication artifacts as STEP, STL, and DX
+- `onekgpd` — Queries the 1000 Genomes Project dataset (3,202 whole-genome-sequenced individuals, GRCh38) at the level of individual p
+- `torch-geometric` — Supports PyTorch Geometric (PyG) graph neural networks — node/link/graph classification, message passing (GCN, GAT, Grap
+- `uncertainty-and-units` — Tracks physical units and propagates measurement uncertainty in scientific calculations using pint and uncertainties. Us
+- `umap-learn` — Applies UMAP-learn to nonlinear dimensionality reduction, 2D/3D embeddings, clustering preprocessing, supervised or semi
+- `scientific-slides` — Builds slide decks and presentations for research talks. Used for making PowerPoint slides, conference presentations, se
+- `sales-enablement` — When the user wants to create sales collateral, pitch decks, one-pagers, objection handling docs, or demo scripts. Also 
+- `cs-product-strategist` — Product strategy agent for quarterly OKR planning, competitive landscape analysis, product vision development, and strat
+- `constraint-driven-development` — Establishes a project's quality bar as a written contract and stops agents quietly lowering it. Interviews the user on w
+- `relsa-severity-assessment` — Supports multivariate severity assessment and exploratory endpoint-time score forecasting for laboratory animal studies 
+- `code-review-and-quality` — Conducts multi-axis code review. Use before merging any change. Use when reviewing code written by yourself, another age
+- `influencer-marketing` — When the user wants to run influencer, creator, or ambassador partnerships to promote their product — finding and vettin
+- `prospecting` — When the user wants to find, qualify, and build a list of prospects to reach out to, across B2B SaaS, general B2B, or lo
+- `scientific-schematics` — Generates scientific diagram drafts using Nano Banana 2 AI with smart iterative refinement. Uses Gemini 3.7 Flash for qu
+- `scanpy` — Performs Scanpy single-cell RNA-seq QC, normalization, HVG selection, PCA/UMAP/t-SNE, clustering, exploratory marker ran
+- `neuropixels-analysis` — Analyzes Neuropixels extracellular recordings end-to-end with SpikeInterface. Covers loading SpikeGLX/Open Ephys/NWB dat
+- `churn-prevention` — When the user wants to reduce churn, build cancellation flows, set up save offers, recover failed payments, or implement
+- `analytical-method-validation` — Plans, executes, and documents validation, verification, and transfer of analytical procedures under the governing frame
+
+---
+
+
 ## v0.22.0 — 2026-07-30
 
 ### 🚀 周更：新增 94 个 Skills，总计 2503

@@ -5,6 +5,14 @@ Updated daily.
 
 ---
 
+## [v0.22.1] — 2026-10-30
+
+### 🚀 日更：新增 100 个 Skills，总计 2603
+
+来源：头部技能仓库（obra/superpowers、addyosmani/agent-skills、wshobson/agents 等），按质量规则筛选。详见 RELEASES.md。
+
+---
+
 ## [v0.22.0] — 2026-07-30
 
 ### 🚀 周更：新增 94 个 Skills，总计 2503

@@ -1,0 +1,533 @@
+#!/usr/bin/env python3
+"""
+deepTools Workflow Generator
+
+Generates bash script templates for common deepTools workflows.
+"""
+
+import argparse
+import re
+import shlex
+import sys
+
+
+SAFE_PATH_PATTERN = re.compile(r"^[A-Za-z0-9._/-]+$")
+
+
+WORKFLOWS = {
+    'chipseq_qc': {
+        'name': 'ChIP-seq Quality Control',
+        'description': 'Complete QC workflow for ChIP-seq experiments',
+    },
+    'chipseq_analysis': {
+        'name': 'ChIP-seq Complete Analysis',
+        'description': 'Full ChIP-seq analysis from BAM to heatmaps',
+    },
+    'rnaseq_coverage': {
+        'name': 'RNA-seq Coverage Tracks',
+        'description': 'Generate strand-specific RNA-seq coverage',
+    },
+    'atacseq': {
+        'name': 'ATAC-seq Analysis',
+        'description': 'ATAC-seq workflow with Tn5 correction',
+    },
+}
+
+
+def sanitize_path(value, default, label):
+    """Return a shell-safe path-like value for generated workflow scripts."""
+    value = default if value in (None, "") else str(value)
+    if not SAFE_PATH_PATTERN.fullmatch(value):
+        raise ValueError(
+            f"{label} contains unsupported characters. Use letters, numbers, '/', '.', '_' or '-'."
+        )
+    if any(part == ".." for part in value.split("/")):
+        raise ValueError(f"{label} must not contain '..' path segments.")
+    return value
+
+
+def sanitize_path_list(value, default, label):
+    """Parse and validate a space-separated list of path-like values."""
+    raw_values = default if value in (None, "") else shlex.split(str(value))
+    if not raw_values:
+        raise ValueError(f"{label} must contain at least one file path.")
+    return [sanitize_path(item, item, label) for item in raw_values]
+
+
+def sanitize_positive_int(value, label):
+    """Validate numeric workflow settings before script interpolation."""
+    try:
+        parsed = int(value)
+    except (TypeError, ValueError) as exc:
+        raise ValueError(f"{label} must be an integer.") from exc
+    if parsed < 1:
+        raise ValueError(f"{label} must be >= 1.")
+    return parsed
+
+
+def shell_literal(value):
+    """Quote a sanitized value for use in a generated bash assignment."""
+    return shlex.quote(str(value))
+
+
+def shell_array(values):
+    """Render sanitized values as a bash array literal."""
+    return " ".join(shell_literal(value) for value in values)
+
+
+def runnable_script_path(output_file):
+    """Return a quoted path suitable for the generated run hint."""
+    if output_file.startswith("/"):
+        return shell_literal(output_file)
+    return f"./{shell_literal(output_file)}"
+
+
+def generate_chipseq_qc_workflow(output_file, params):
+    """Generate ChIP-seq QC workflow script."""
+
+    script = f"""#!/bin/bash
+set -euo pipefail
+
+# deepTools ChIP-seq Quality Control Workflow
+# Generated for deepTools 4.0.0; review before running.
+# Inputs: coordinate-sorted, indexed BAMs with duplicates marked upstream.
+# --samFlagExclude 1024 removes marked duplicates, not identical coordinates.
+
+# Configuration
+INPUT_BAM={shell_literal(params['input_bam'])}
+CHIP_BAM=({shell_array(params['chip_bams'])})
+GENOME_SIZE={params.get('genome_size', '2913022398')}
+THREADS={params.get('threads', '8')}
+OUTPUT_DIR={shell_literal(params['output_dir'])}
+
+# Create output directory
+mkdir -p "$OUTPUT_DIR"
+
+echo "=== Starting ChIP-seq QC workflow ==="
+
+# Step 1: Correlation analysis
+echo "Step 1: Computing correlation matrix..."
+multiBamSummary bins \\
+    --bamfiles "$INPUT_BAM" "${{CHIP_BAM[@]}}" \\
+    --samFlagExclude 1024 \\
+    -o "$OUTPUT_DIR/readCounts.npz" \\
+    --numberOfProcessors "$THREADS"
+
+echo "Step 2: Generating correlation heatmap..."
+plotCorrelation \\
+    -in "$OUTPUT_DIR/readCounts.npz" \\
+    --corMethod pearson \\
+    --whatToPlot heatmap \\
+    --plotFile "$OUTPUT_DIR/correlation_heatmap.png" \\
+    --plotNumbers
+
+echo "Step 3: Generating PCA plot..."
+plotPCA \\
+    -in "$OUTPUT_DIR/readCounts.npz" \\
+    -o "$OUTPUT_DIR/PCA_plot.png" \\
+    -T "PCA of ChIP-seq samples"
+
+# Step 2: Coverage assessment
+echo "Step 4: Assessing coverage..."
+plotCoverage \\
+    --bamfiles "$INPUT_BAM" "${{CHIP_BAM[@]}}" \\
+    --plotFile "$OUTPUT_DIR/coverage.png" \\
+    --samFlagExclude 1024 \\
+    --numberOfProcessors "$THREADS"
+
+# Step 3: This QC template requires paired-end input for fragment-size analysis.
+echo "Step 5: Analyzing fragment sizes..."
+bamPEFragmentSize \\
+    --bamfiles "$INPUT_BAM" "${{CHIP_BAM[@]}}" \\
+    --histogram "$OUTPUT_DIR/fragmentSizes.png" \\
+    --plotTitle "Fragment Size Distribution"
+
+# Step 4: ChIP signal strength
+echo "Step 6: Evaluating ChIP enrichment..."
+plotFingerprint \\
+    --bamfiles "$INPUT_BAM" "${{CHIP_BAM[@]}}" \\
+    --plotFile "$OUTPUT_DIR/fingerprint.png" \\
+    --extendReads 200 \\
+    --samFlagExclude 1024 \\
+    --numberOfProcessors "$THREADS" \\
+    --outQualityMetrics "$OUTPUT_DIR/fingerprint_metrics.txt"
+
+echo "=== ChIP-seq QC workflow complete ==="
+echo "Results are in: $OUTPUT_DIR"
+"""
+
+    with open(output_file, 'w') as f:
+        f.write(script)
+
+    return f"[OK] Generated ChIP-seq QC workflow: {output_file}"
+
+
+def generate_chipseq_analysis_workflow(output_file, params):
+    """Generate complete ChIP-seq analysis workflow script."""
+
+    script = f"""#!/bin/bash
+set -euo pipefail
+
+# deepTools ChIP-seq Complete Analysis Workflow
+# Generated for deepTools 4.0.0; review before running.
+# Inputs: coordinate-sorted, indexed BAMs with duplicates marked upstream.
+# --samFlagExclude 1024 removes marked duplicates, not identical coordinates.
+
+# Configuration
+INPUT_BAM={shell_literal(params['input_bam'])}
+CHIP_BAM={shell_literal(params['chip_bam'])}
+GENES_BED={shell_literal(params['genes_bed'])}
+PEAKS_BED={shell_literal(params['peaks_bed'])}
+GENOME_SIZE={params.get('genome_size', '2913022398')}
+THREADS={params.get('threads', '8')}
+OUTPUT_DIR={shell_literal(params['output_dir'])}
+
+# Create output directory
+mkdir -p "$OUTPUT_DIR"
+
+echo "=== Starting ChIP-seq analysis workflow ==="
+
+# Step 1: Generate normalized coverage tracks
+echo "Step 1: Generating coverage tracks..."
+
+bamCoverage \\
+    --bam "$INPUT_BAM" \\
+    --outFileName "$OUTPUT_DIR/Input_coverage.bw" \\
+    --normalizeUsing RPGC \\
+    --effectiveGenomeSize "$GENOME_SIZE" \\
+    --binSize 10 \\
+    --extendReads 200 \\
+    --samFlagExclude 1024 \\
+    --numberOfProcessors "$THREADS"
+
+bamCoverage \\
+    --bam "$CHIP_BAM" \\
+    --outFileName "$OUTPUT_DIR/ChIP_coverage.bw" \\
+    --normalizeUsing RPGC \\
+    --effectiveGenomeSize "$GENOME_SIZE" \\
+    --binSize 10 \\
+    --extendReads 200 \\
+    --samFlagExclude 1024 \\
+    --numberOfProcessors "$THREADS"
+
+# Step 2: Create log2 ratio track
+echo "Step 2: Creating log2 ratio track..."
+bamCompare \\
+    --bamfile1 "$CHIP_BAM" \\
+    --bamfile2 "$INPUT_BAM" \\
+    --outFileName "$OUTPUT_DIR/ChIP_vs_Input_log2ratio.bw" \\
+    --operation log2 \\
+    --scaleFactorsMethod readCount \\
+    --binSize 10 \\
+    --extendReads 200 \\
+    --samFlagExclude 1024 \\
+    --numberOfProcessors "$THREADS"
+
+# Step 3: Compute matrix around TSS
+echo "Step 3: Computing matrix around TSS..."
+computeMatrix reference-point \\
+    --referencePoint TSS \\
+    --scoreFileName "$OUTPUT_DIR/ChIP_coverage.bw" \\
+    --regionsFileName "$GENES_BED" \\
+    --beforeRegionStartLength 3000 \\
+    --afterRegionStartLength 3000 \\
+    --binSize 10 \\
+    --sortRegions descend \\
+    --sortUsing mean \\
+    --outFileName "$OUTPUT_DIR/matrix_TSS.gz" \\
+    --numberOfProcessors "$THREADS"
+
+# Step 4: Generate heatmap
+echo "Step 4: Generating heatmap..."
+plotHeatmap \\
+    --matrixFile "$OUTPUT_DIR/matrix_TSS.gz" \\
+    --outFileName "$OUTPUT_DIR/heatmap_TSS.png" \\
+    --colorMap YlOrRd \\
+    --whatToShow 'plot, heatmap and colorbar' \\
+    --yAxisLabel "Genes" \\
+    --xAxisLabel "Distance from TSS (bp)" \\
+    --refPointLabel "TSS" \\
+    --heatmapHeight 15 \\
+    --kmeans 3
+
+# Step 5: Generate profile plot
+echo "Step 5: Generating profile plot..."
+plotProfile \\
+    --matrixFile "$OUTPUT_DIR/matrix_TSS.gz" \\
+    --outFileName "$OUTPUT_DIR/profile_TSS.png" \\
+    --plotType lines \\
+    --perGroup \\
+    --colors blue \\
+    --plotTitle "ChIP-seq signal around TSS" \\
+    --yAxisLabel "Average signal" \\
+    --refPointLabel "TSS"
+
+# Step 6: Enrichment at peaks (if peaks provided)
+if [ -f "$PEAKS_BED" ]; then
+    echo "Step 6: Calculating enrichment at peaks..."
+    plotEnrichment \\
+        --bamfiles "$INPUT_BAM" "$CHIP_BAM" \\
+        --BED "$PEAKS_BED" \\
+        --labels Input ChIP \\
+        --plotFile "$OUTPUT_DIR/enrichment.png" \\
+        --outRawCounts "$OUTPUT_DIR/enrichment_counts.tab" \\
+        --extendReads 200 \\
+        --samFlagExclude 1024
+fi
+
+echo "=== ChIP-seq analysis complete ==="
+echo "Results are in: $OUTPUT_DIR"
+"""
+
+    with open(output_file, 'w') as f:
+        f.write(script)
+
+    return f"[OK] Generated ChIP-seq analysis workflow: {output_file}"
+
+
+def generate_rnaseq_coverage_workflow(output_file, params):
+    """Generate RNA-seq coverage workflow script."""
+
+    script = f"""#!/bin/bash
+set -euo pipefail
+
+# deepTools RNA-seq Coverage Workflow
+# Generated for deepTools 4.0.0; review before running.
+# Inputs: coordinate-sorted, indexed BAMs with duplicates marked upstream.
+# --samFlagExclude 1024 removes marked duplicates, not identical coordinates.
+
+# Configuration
+RNASEQ_BAM={shell_literal(params['rnaseq_bam'])}
+THREADS={params.get('threads', '8')}
+OUTPUT_DIR={shell_literal(params['output_dir'])}
+
+# Create output directory
+mkdir -p "$OUTPUT_DIR"
+
+echo "=== Starting RNA-seq coverage workflow ==="
+
+# Assumes reverse-stranded dUTP libraries; forward/reverse are transcript strands.
+# Unstranded libraries cannot be resolved into transcript strands by this option.
+# Generate strand-specific coverage tracks
+echo "Step 1: Generating forward strand coverage..."
+bamCoverage \\
+    --bam "$RNASEQ_BAM" \\
+    --outFileName "$OUTPUT_DIR/forward_coverage.bw" \\
+    --filterRNAstrand forward \\
+    --normalizeUsing CPM \\
+    --binSize 1 \\
+    --numberOfProcessors "$THREADS"
+
+echo "Step 2: Generating reverse strand coverage..."
+bamCoverage \\
+    --bam "$RNASEQ_BAM" \\
+    --outFileName "$OUTPUT_DIR/reverse_coverage.bw" \\
+    --filterRNAstrand reverse \\
+    --normalizeUsing CPM \\
+    --binSize 1 \\
+    --numberOfProcessors "$THREADS"
+
+echo "=== RNA-seq coverage workflow complete ==="
+echo "Results are in: $OUTPUT_DIR"
+echo ""
+echo "Note: These bigWig files can be loaded into genome browsers"
+echo "for strand-specific visualization of RNA-seq data."
+"""
+
+    with open(output_file, 'w') as f:
+        f.write(script)
+
+    return f"[OK] Generated RNA-seq coverage workflow: {output_file}"
+
+
+def generate_atacseq_workflow(output_file, params):
+    """Generate ATAC-seq workflow script."""
+
+    script = f"""#!/bin/bash
+set -euo pipefail
+
+# deepTools ATAC-seq Analysis Workflow
+# Generated for deepTools 4.0.0; review before running.
+# Inputs: coordinate-sorted, indexed BAMs with duplicates marked upstream.
+# --samFlagExclude 1024 removes marked duplicates, not identical coordinates.
+
+# Configuration
+ATAC_BAM={shell_literal(params['atac_bam'])}
+PEAKS_BED={shell_literal(params['peaks_bed'])}
+THREADS={params.get('threads', '8')}
+OUTPUT_DIR={shell_literal(params['output_dir'])}
+
+# Create output directory
+mkdir -p "$OUTPUT_DIR"
+
+echo "=== Starting ATAC-seq analysis workflow ==="
+
+# Step 1: Shift reads for Tn5 correction
+echo "Step 1: Applying Tn5 offset correction..."
+alignmentSieve \\
+    --bam "$ATAC_BAM" \\
+    --outFile "$OUTPUT_DIR/atacseq_shifted.unsorted.bam" \\
+    --ATACshift \\
+    --minFragmentLength 38 \\
+    --maxFragmentLength 2000 \\
+    --samFlagExclude 1024
+
+# Shifting can change coordinate order; sort before indexing.
+samtools sort -@ "$THREADS" -o "$OUTPUT_DIR/atacseq_shifted.bam" "$OUTPUT_DIR/atacseq_shifted.unsorted.bam"
+samtools index "$OUTPUT_DIR/atacseq_shifted.bam"
+
+# Step 2: Coverage of shifted alignments, not single-base Tn5 insertions.
+echo "Step 2: Generating coverage track..."
+bamCoverage \\
+    --bam "$OUTPUT_DIR/atacseq_shifted.bam" \\
+    --outFileName "$OUTPUT_DIR/atacseq_coverage.bw" \\
+    --normalizeUsing CPM \\
+    --binSize 1 \\
+    --numberOfProcessors "$THREADS"
+
+# Step 3: Fragment size analysis
+echo "Step 3: Analyzing fragment sizes..."
+bamPEFragmentSize \\
+    --bamfiles "$ATAC_BAM" \\
+    --histogram "$OUTPUT_DIR/fragmentSizes.png" \\
+    --maxFragmentLength 1000
+
+# Step 4: Compute matrix at peaks (if peaks provided)
+if [ -f "$PEAKS_BED" ]; then
+    echo "Step 4: Computing matrix at peaks..."
+    computeMatrix reference-point \\
+        --referencePoint center \\
+        --scoreFileName "$OUTPUT_DIR/atacseq_coverage.bw" \\
+        --regionsFileName "$PEAKS_BED" \\
+        --beforeRegionStartLength 2000 \\
+        --afterRegionStartLength 2000 \\
+        --binSize 10 \\
+        --outFileName "$OUTPUT_DIR/matrix_peaks.gz" \\
+        --numberOfProcessors "$THREADS"
+
+    echo "Step 5: Generating heatmap..."
+    plotHeatmap \\
+        --matrixFile "$OUTPUT_DIR/matrix_peaks.gz" \\
+        --outFileName "$OUTPUT_DIR/heatmap_peaks.png" \\
+        --colorMap YlOrRd \\
+        --refPointLabel "Peak Center" \\
+        --heatmapHeight 15
+fi
+
+echo "=== ATAC-seq analysis complete ==="
+echo "Results are in: $OUTPUT_DIR"
+echo ""
+echo "Expected fragment size pattern:"
+echo "  ~50bp: nucleosome-free regions"
+echo "  ~200bp: mono-nucleosome"
+echo "  ~400bp: di-nucleosome"
+"""
+
+    with open(output_file, 'w') as f:
+        f.write(script)
+
+    return f"[OK] Generated ATAC-seq workflow: {output_file}"
+
+
+def main():
+    parser = argparse.ArgumentParser(
+        description="Generate deepTools workflow scripts",
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        epilog=f"""
+Available workflows:
+{chr(10).join(f"  {key}: {value['name']}" for key, value in WORKFLOWS.items())}
+
+Examples:
+  # Generate ChIP-seq QC workflow
+  python workflow_generator.py chipseq_qc -o chipseq_qc.sh
+
+  # Generate ChIP-seq analysis with custom parameters
+  python workflow_generator.py chipseq_analysis -o analysis.sh \\
+      --chip-bam H3K4me3.bam --input-bam Input.bam --genome-size 2913022398
+
+  # List all available workflows
+  python workflow_generator.py --list
+        """
+    )
+
+    parser.add_argument('workflow', nargs='?', choices=list(WORKFLOWS.keys()),
+                        help='Workflow type to generate')
+    parser.add_argument('-o', '--output', default='deeptools_workflow.sh',
+                        help='Output script filename (default: deeptools_workflow.sh)')
+    parser.add_argument('--list', action='store_true',
+                        help='List all available workflows')
+
+    # Common parameters
+    parser.add_argument('--threads', type=int, default=8,
+                        help='Number of threads (default: 8)')
+    parser.add_argument('--genome-size', type=int, default=None,
+                        help='Effective genome size for the exact reference/filter policy; required for RPGC workflows')
+    parser.add_argument('--output-dir', default=None,
+                        help='Output directory for results')
+
+    # Workflow-specific parameters
+    parser.add_argument('--input-bam', help='Input/control BAM file')
+    parser.add_argument('--chip-bam', help='ChIP BAM file')
+    parser.add_argument('--chip-bams', help='Multiple ChIP BAM files (space-separated)')
+    parser.add_argument('--rnaseq-bam', help='RNA-seq BAM file')
+    parser.add_argument('--atac-bam', help='ATAC-seq BAM file')
+    parser.add_argument('--genes-bed', help='Genes BED file')
+    parser.add_argument('--peaks-bed', help='Peaks BED file')
+
+    args = parser.parse_args()
+
+    # List workflows
+    if args.list:
+        print("\nAvailable deepTools workflows:\n")
+        for key, value in WORKFLOWS.items():
+            print(f"  {key}")
+            print(f"    {value['name']}")
+            print(f"    {value['description']}\n")
+        sys.exit(0)
+
+    # Check if workflow was specified
+    if not args.workflow:
+        parser.print_help()
+        sys.exit(1)
+
+    if args.workflow == 'chipseq_analysis' and args.genome_size is None:
+        parser.error('--genome-size is required for RPGC workflows; derive it for the actual reference')
+
+    # Prepare parameters. Values are validated before they are interpolated
+    # into generated bash so filenames cannot smuggle shell metacharacters.
+    try:
+        output_file = sanitize_path(args.output, 'deeptools_workflow.sh', 'output script')
+        params = {
+            'threads': sanitize_positive_int(args.threads, 'threads'),
+            'genome_size': sanitize_positive_int(args.genome_size if args.genome_size is not None else 2913022398, 'genome size'),
+            'output_dir': sanitize_path(args.output_dir, f"{args.workflow}_output", 'output directory'),
+            'input_bam': sanitize_path(args.input_bam, 'Input.bam', 'input BAM'),
+            'chip_bam': sanitize_path(args.chip_bam, 'ChIP.bam', 'ChIP BAM'),
+            'chip_bams': sanitize_path_list(args.chip_bams, ['ChIP1.bam', 'ChIP2.bam'], 'ChIP BAMs'),
+            'rnaseq_bam': sanitize_path(args.rnaseq_bam, 'rnaseq.bam', 'RNA-seq BAM'),
+            'atac_bam': sanitize_path(args.atac_bam, 'atacseq.bam', 'ATAC-seq BAM'),
+            'genes_bed': sanitize_path(args.genes_bed, 'genes.bed', 'genes BED'),
+            'peaks_bed': sanitize_path(args.peaks_bed, 'peaks.bed', 'peaks BED'),
+        }
+    except ValueError as exc:
+        parser.error(str(exc))
+
+    # Generate workflow
+    if args.workflow == 'chipseq_qc':
+        message = generate_chipseq_qc_workflow(output_file, params)
+    elif args.workflow == 'chipseq_analysis':
+        message = generate_chipseq_analysis_workflow(output_file, params)
+    elif args.workflow == 'rnaseq_coverage':
+        message = generate_rnaseq_coverage_workflow(output_file, params)
+    elif args.workflow == 'atacseq':
+        message = generate_atacseq_workflow(output_file, params)
+
+    print(message)
+    print(f"\nTo run the workflow:")
+    print(f"  chmod +x {shell_literal(output_file)}")
+    print(f"  {runnable_script_path(output_file)}")
+    print(f"\nNote: Edit the script to customize file paths and parameters.")
+
+
+if __name__ == "__main__":
+    main()

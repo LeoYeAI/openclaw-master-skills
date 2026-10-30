@@ -1,0 +1,433 @@
+# NetworkX Graph Algorithms
+
+The snippets are API patterns using a supplied graph `G`; choose the required graph class before each section. Use finite numeric weights with explicit units. Missing weight attributes generally default to one. See [review.md](review.md) for release sources and executed examples.
+
+## Shortest Paths
+
+### Single Source Shortest Paths
+```python
+# Dijkstra: distance/cost weights must be nonnegative
+path = nx.shortest_path(G, source=1, target=5, weight='weight')
+length = nx.shortest_path_length(G, source=1, target=5, weight='weight')
+
+# All shortest paths from source
+paths = nx.single_source_shortest_path(G, source=1)
+lengths = nx.single_source_shortest_path_length(G, source=1)
+
+# Bellman-Ford handles negative edges, but not a reachable negative cycle
+path = nx.bellman_ford_path(G, source=1, target=5, weight='weight')
+```
+
+### All Pairs Shortest Paths
+```python
+# All pairs (returns iterator)
+for source, paths in nx.all_pairs_shortest_path(G):
+    print(f"From {source}: {paths}")
+
+# Floyd-Warshall weighted distances (all-pairs unweighted BFS is different)
+lengths = dict(nx.floyd_warshall(G, weight="distance"))
+```
+
+### Specialized Shortest Path Algorithms
+```python
+# A* algorithm (with heuristic)
+def heuristic(u, v):
+    # Zero is admissible without a proven geometric lower bound
+    return 0
+
+path = nx.astar_path(G, source=1, target=5, heuristic=heuristic, weight='weight')
+
+# Average shortest path length
+avg_length = nx.average_shortest_path_length(G)
+```
+
+Average path length requires a connected undirected or strongly connected directed graph. For disconnected inputs, report component coverage and define whether component summaries are node- or pair-weighted; do not silently discard unreachable pairs.
+
+## Connectivity
+
+### Connected Components (Undirected)
+```python
+# Check if connected
+is_connected = nx.is_connected(G)
+
+# Number of components
+num_components = nx.number_connected_components(G)
+
+# Get all components (returns iterator of sets)
+components = list(nx.connected_components(G))
+largest_component = max(components, key=len, default=set())
+
+# Get component containing specific node
+component = nx.node_connected_component(G, n=1)
+```
+
+### Strong/Weak Connectivity (Directed)
+```python
+# Strong connectivity (mutually reachable)
+is_strongly_connected = nx.is_strongly_connected(G)
+strong_components = list(nx.strongly_connected_components(G))
+largest_scc = max(strong_components, key=len, default=set())
+
+# Weak connectivity (ignoring direction)
+is_weakly_connected = nx.is_weakly_connected(G)
+weak_components = list(nx.weakly_connected_components(G))
+
+# Condensation (DAG of strongly connected components)
+condensed = nx.condensation(G)
+```
+
+### Cuts and Connectivity
+```python
+# Minimum node/edge cut
+min_node_cut = nx.minimum_node_cut(G, s=1, t=5)
+min_edge_cut = nx.minimum_edge_cut(G, s=1, t=5)
+
+# Node/edge connectivity
+node_connectivity = nx.node_connectivity(G)
+edge_connectivity = nx.edge_connectivity(G)
+```
+
+## Centrality Measures
+
+### Degree Centrality
+```python
+# Fraction of nodes each node is connected to
+degree_cent = nx.degree_centrality(G)
+
+# For directed graphs
+in_degree_cent = nx.in_degree_centrality(G)
+out_degree_cent = nx.out_degree_centrality(G)
+```
+
+### Betweenness Centrality
+```python
+# Fraction of shortest paths passing through node
+betweenness = nx.betweenness_centrality(G, weight='weight')
+
+# Edge betweenness
+edge_betweenness = nx.edge_betweenness_centrality(G, weight='weight')
+
+# Approximate for large graphs
+approx_betweenness = nx.betweenness_centrality(
+    G, k=min(100, len(G)), weight="distance", seed=42
+)  # Repeat seeds to assess approximation variability
+```
+
+Weighted betweenness interprets weights as distances and requires strictly positive values. Zero distances permit infinitely many equal-length paths; floating-point ties can alter counts. Document any justified scaling to integer costs.
+
+### Closeness Centrality
+```python
+# Reciprocal of average shortest path length
+closeness = nx.closeness_centrality(G)
+
+# For disconnected graphs
+closeness = nx.closeness_centrality(G, wf_improved=True)
+```
+
+On a directed graph, closeness uses distances **into** each node. For outward reach use `nx.closeness_centrality(G.reverse(copy=False), distance="distance")`. `wf_improved=True` scales for the reachable fraction; it does not make disconnected graphs connected.
+
+### Eigenvector Centrality
+```python
+# Centrality based on connections to high-centrality nodes
+eigenvector = nx.eigenvector_centrality(G, max_iter=1000)
+
+# Katz centrality (variant with attenuation factor)
+katz = nx.katz_centrality(G, alpha=0.1, beta=1.0)
+```
+
+Eigenvector/Katz weights represent connection strength, unlike shortest-path costs. Directed eigenvector centrality uses incoming links; disconnected/reducible graphs can give nonunique or zero scores. Katz requires `alpha < 1 / spectral_radius(A)`, so 0.1 is only illustrative. Catch `PowerIterationFailedConvergence`; raising `max_iter` alone does not establish a meaningful solution.
+
+### PageRank
+```python
+# Google's PageRank algorithm
+pagerank = nx.pagerank(G, alpha=0.85)
+
+# Personalized PageRank
+personalization = {node: 1.0 if node in [1, 2] else 0.0 for node in G}
+if sum(personalization.values()) == 0:
+    raise ValueError("Personalization must include a node present in G")
+ppr = nx.pagerank(G, personalization=personalization)
+```
+
+PageRank uses outgoing transition strengths (nonnegative weights) and SciPy; it treats each undirected edge as two directed edges. Personalization must have positive total mass. Record `alpha`, weight, dangling-node handling and convergence tolerance.
+
+## Clustering
+
+### Clustering Coefficients
+```python
+# Clustering coefficient for each node
+clustering = nx.clustering(G)
+
+# Average clustering coefficient
+avg_clustering = nx.average_clustering(G)
+
+# Weighted clustering
+weighted_clustering = nx.clustering(G, weight='weight')
+```
+
+### Transitivity
+```python
+# Overall clustering (ratio of triangles to triads)
+transitivity = nx.transitivity(G)
+```
+
+### Triangles
+```python
+# Count triangles per node
+triangles = nx.triangles(G)
+
+# Total number of triangles
+total_triangles = sum(triangles.values()) // 3
+```
+
+Clustering/triangles are not supported for multigraphs. `triangles` and transitivity examples here use simple undirected graphs; weighted clustering uses strength, not distance. State whether low-degree nodes count in an average (`count_zeros`).
+
+## Community Detection
+
+### Modularity-Based
+```python
+from networkx.algorithms import community
+
+# Greedy modularity maximization
+communities = community.greedy_modularity_communities(G, weight="strength", resolution=1.0)
+
+# Evaluate with the same weight and resolution as optimization
+modularity = community.modularity(G, communities, weight="strength", resolution=1.0)
+```
+
+### Leiden (native in NetworkX 3.7)
+```python
+G = nx.barbell_graph(4, 1)
+communities = community.leiden_communities(
+    G, weight=None, metric="modularity", resolution=1.0, seed=42
+)
+assert set().union(*communities) == set(G)
+assert sum(map(len, communities)) == len(G)
+score = community.modularity(G, communities, weight=None, resolution=1.0)
+```
+
+Leiden defaults to the **Constant Potts Model** (`metric="cpm"`), so specify the metric when comparing with modularity methods. Seeds, graph ordering, resolution and self-loops affect partitions. Modularity compares against a degree-based expectation; its value is not a p-value or evidence of biological function. Repeat seeds/resolutions, assess stability and use a justified null model.
+
+### Label Propagation
+```python
+# Fast community detection
+communities = community.label_propagation_communities(G)
+```
+
+### Girvan-Newman
+```python
+# Hierarchical community detection via edge betweenness
+import itertools
+comp = community.girvan_newman(G)
+limited = itertools.takewhile(lambda c: len(c) <= 10, comp)
+for communities in limited:
+    print(tuple(sorted(c) for c in communities))
+```
+
+## Matching and Covering
+
+### Maximum Matching
+```python
+# Maximum cardinality, then maximum weight among equally large matchings
+matching = nx.max_weight_matching(G, maxcardinality=True)
+
+# Check if matching is valid
+is_matching = nx.is_matching(G, matching)
+is_perfect = nx.is_perfect_matching(G, matching)
+```
+
+### Minimum Vertex/Edge Cover
+```python
+# Approximate weighted vertex cover (not guaranteed minimum)
+min_vertex_cover = nx.approximation.min_weighted_vertex_cover(G)
+
+# Approximate edge dominating set (not guaranteed minimum)
+min_edge_dom = nx.approximation.min_edge_dominating_set(G)
+```
+
+## Tree Algorithms
+
+### Minimum Spanning Tree
+```python
+# Kruskal's or Prim's algorithm
+mst = nx.minimum_spanning_tree(G, weight='weight')
+
+# Maximum spanning tree
+mst_max = nx.maximum_spanning_tree(G, weight='weight')
+
+# Potentially exponential: bound consumption on large graphs
+# Iterate over spanning trees in order of increasing total weight
+for tree in nx.SpanningTreeIterator(G):
+    process(tree)
+```
+
+### Tree Properties
+```python
+# Check if graph is tree
+is_tree = nx.is_tree(G)
+is_forest = nx.is_forest(G)
+
+# For directed graphs
+T = nx.bfs_tree(G, source=1)
+is_arborescence = nx.is_arborescence(T)
+```
+
+Spanning-tree routines require undirected graphs; disconnected input yields a spanning **forest**. Do not interpret it as a connected route covering all nodes.
+
+## Flow and Capacity
+
+### Maximum Flow
+```python
+# Maximum flow value
+flow_value = nx.maximum_flow_value(G, 1, 5, capacity='capacity')
+
+# Maximum flow with flow dict
+flow_value, flow_dict = nx.maximum_flow(G, 1, 5, capacity='capacity')
+
+# Minimum cut
+cut_value, partition = nx.minimum_cut(G, 1, 5, capacity='capacity')
+```
+
+The maximum-flow/minimum-cut routines above do not accept multigraphs. Missing capacity means infinity; validate finite nonnegative capacities if that is the scientific model.
+
+### Cost Flow
+```python
+# Minimum cost flow on a directed graph with integer units
+G = nx.DiGraph()
+G.add_node("s", demand=-2)
+G.add_node("t", demand=2)
+G.add_edge("s", "t", capacity=3, weight=4)
+flow_dict = nx.min_cost_flow(G, demand='demand', capacity='capacity', weight='weight')
+cost = nx.cost_of_flow(G, flow_dict, weight='weight')
+```
+
+Minimum-cost flow demands must sum to zero (negative = supply; positive = consumption). Use justified integer units for demands, capacities and costs; floating-point min-cost flow is not guaranteed reliable.
+
+## Cycles
+
+### Finding Cycles
+```python
+# Simple cycles (directed or undirected; enumeration can be exponential)
+cycles = list(nx.simple_cycles(G))
+
+# Cycle basis (for undirected graphs)
+basis = nx.cycle_basis(G)
+
+# Check if acyclic
+is_dag = nx.is_directed_acyclic_graph(G)
+```
+
+### Topological Sorting
+```python
+# Only for DAGs
+try:
+    topo_order = list(nx.topological_sort(G))
+except nx.NetworkXUnfeasible:
+    print("Graph has cycles")
+
+# All topological sorts
+all_topo = nx.all_topological_sorts(G)
+```
+
+## Cliques
+
+### Finding Cliques
+```python
+# All maximal cliques
+cliques = list(nx.find_cliques(G))
+
+# Maximum clique (NP-complete, approximate)
+max_clique = nx.approximation.max_clique(G)
+
+# Clique number (nx.graph_clique_number was removed in NetworkX 3.0)
+clique_number = max((len(c) for c in nx.find_cliques(G)), default=0)
+
+# Size of the largest maximal clique containing each node
+clique_sizes = nx.node_clique_number(G)
+```
+
+## Graph Coloring
+
+### Node Coloring
+```python
+# Greedy coloring
+coloring = nx.greedy_color(G, strategy='largest_first')
+
+# Different strategies: 'largest_first', 'smallest_last', 'random_sequential'
+coloring = nx.greedy_color(G, strategy='smallest_last')
+```
+
+## Isomorphism
+
+### Graph Isomorphism
+```python
+# Check if graphs are isomorphic
+is_isomorphic = nx.is_isomorphic(G1, G2)
+
+# Get isomorphism mapping
+from networkx.algorithms import isomorphism
+GM = isomorphism.GraphMatcher(G1, G2)
+if GM.is_isomorphic():
+    mapping = GM.mapping
+```
+
+### Subgraph Isomorphism
+```python
+# Search for an induced copy of pattern G2 inside host G1
+GM = isomorphism.GraphMatcher(G1, G2)  # DiGraphMatcher for directed graphs
+is_subgraph_iso = GM.subgraph_is_isomorphic()
+# Use GM.subgraph_is_monomorphic() when extra host edges are allowed
+```
+
+By default isomorphism ignores attributes. Supply `node_match`/`edge_match` when identity depends on labels, types or weights; use the matching class for directed/multigraph inputs.
+
+## Traversal Algorithms
+
+### Depth-First Search (DFS)
+```python
+# DFS edges
+dfs_edges = list(nx.dfs_edges(G, source=1))
+
+# DFS tree
+dfs_tree = nx.dfs_tree(G, source=1)
+
+# DFS predecessors
+dfs_pred = nx.dfs_predecessors(G, source=1)
+
+# Preorder and postorder
+preorder = list(nx.dfs_preorder_nodes(G, source=1))
+postorder = list(nx.dfs_postorder_nodes(G, source=1))
+```
+
+### Breadth-First Search (BFS)
+```python
+# BFS edges
+bfs_edges = list(nx.bfs_edges(G, source=1))
+
+# BFS tree
+bfs_tree = nx.bfs_tree(G, source=1)
+
+# BFS predecessors and successors
+# bfs_predecessors is deprecated in 3.7; these are BFS tree parents
+bfs_pred = {child: parent for parent, child in nx.bfs_edges(G, source=1)}
+bfs_succ = nx.bfs_successors(G, source=1)
+```
+
+## Efficiency Considerations
+
+### Algorithm Complexity
+- Many algorithms have parameters to control computation time
+- For large graphs, consider approximate algorithms
+- Use `k` parameter to sample nodes in centrality calculations
+- Set `max_iter` for iterative algorithms
+
+### Memory Usage
+- Iterator-based functions (e.g., `nx.simple_cycles()`) save memory
+- Convert to list only when necessary
+- Use generators for large result sets
+
+### Numerical Precision
+When using weighted algorithms with floating-point numbers, results are approximate. Consider:
+- Using integer weights when possible
+- Setting appropriate tolerance parameters
+- Being aware of accumulated rounding errors in iterative algorithms

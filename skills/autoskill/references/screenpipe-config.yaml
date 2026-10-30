@@ -1,0 +1,37 @@
+# Review checklist for Screenpipe capture exclusions, NOT an importable config.
+# Screenpipe does not consume this YAML, ignored_apps, or content_types.
+# Apply each value through the app's capture exclusion settings or repeat:
+#   screenpipe record --disable-audio --ignored-windows "1Password" \
+#     --ignored-windows "Bitwarden" --ignored-windows "Incognito"
+# Current CLI: --ignored-windows performs case-insensitive substring matching
+# on app names/window titles. Do not wrap entries in wildcard '*'.
+# App::Title scopes a title to one app; App:: excludes the entire app.
+# Source: https://github.com/screenpipe/screenpipe/blob/main/crates/screenpipe-engine/src/cli/mod.rs
+# Reviewed 2026-09-30. Inspect your installed `screenpipe record --help`.
+# Verify with synthetic windows before real collection. Existing captures are
+# not retroactively removed; exclusions and regex redaction are not guarantees.
+
+ignored_window_substrings:
+  # Password managers
+  - "1Password"
+  - "Bitwarden"
+  - "Dashlane"
+  - "Keeper"
+  - "LastPass"
+  - "KeePassXC"
+  # Messaging and email: adjust to the user's explicit capture preferences.
+  - "Signal"
+  - "Telegram"
+  - "WhatsApp"
+  - "iMessage"
+  - "Messages"
+  - "Mail"
+  - "Outlook"
+  # Browser titles: literal substrings, not glob expressions.
+  - "login"
+  - "Sign in"
+  - "Private Browsing"
+  - "Incognito"
+  - "online banking"
+  - "bank"
+  - "account settings"

@@ -1,0 +1,133 @@
+{
+  "skill_name": "directory-submissions",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "We're launching our AI SaaS in 3 weeks. Help me plan all the directories we should submit to.",
+      "expected_output": "Should check for product-marketing.md first. Should run Phase 0 readiness assessment with the 9 questions before recommending submissions. Should reject submission if any of items 1-7 are 'no' (hard block) and explain why. Should recommend tier mix: Tier 1 flagship launch (~15 — Product Hunt as anchor, BetaList, HN Show HN, Fazier, DevHunt), Tier 2 startup/SaaS (~50), Tier 3 AI directories (~40 — TAAFT, Futurepedia, Toolify), Tier 4 MCP/agent if applicable. Should map the 3-week Product Hunt prep timeline to calendar dates. Should warn against submitting before destination pages exist. Should reference references/directory-list.md and references/positioning-variations.md. Should recommend the 10-in-30 reviews protocol for G2/Capterra. Should set day-30 and day-90 targets from the KPI table.",
+      "assertions": [
+        "Checks for product-marketing.md",
+        "Runs Phase 0 readiness assessment",
+        "Recommends tier mix appropriate to AI SaaS",
+        "Maps 3-week PH timeline to calendar dates",
+        "Names Product Hunt as anchor",
+        "Recommends 10-in-30 reviews protocol",
+        "Sets day-30 and day-90 KPI targets",
+        "References directory-list.md or positioning-variations.md"
+      ],
+      "files": []
+    },
+    {
+      "id": 2,
+      "prompt": "Can I just copy-paste the same description into every directory?",
+      "expected_output": "Should refuse and explain Rule 3: positioning varies by directory type. Should explain that identical copy across directories gives AI engines (Claude, ChatGPT, Perplexity) and readers no new signal, without claiming a documented duplicate-content penalty. Should explain different framing per surface: startup directories lead with outcome (audience is founders), SaaS directories lead with alternative framing (people search '[competitor] alternative'), AI directories lead with AI-first architecture, agent/MCP directories lead with the agent/MCP angle, B2B review sites lead with ROI + use case. Should recommend preparing distinct variants per tier: tagline under 10 words, 60-char short description, 150-word long description, 5-8 category tags. Should reference references/positioning-variations.md.",
+      "assertions": [
+        "Refuses the request",
+        "Cites Rule 3 (positioning varies by directory type)",
+        "Explains identical copy adds no new signal, without claiming a penalty",
+        "Lists different framing per surface type",
+        "Specifies variant lengths (tagline, short, long)",
+        "References positioning-variations.md"
+      ],
+      "files": []
+    },
+    {
+      "id": 3,
+      "prompt": "Should we pay for one of those directory submission services that submits to 200 directories for $99?",
+      "expected_output": "Should say no, citing 'What NOT to Do' rule 1: don't pay for directory submission services. Should explain the whole point is these are free — it's an afternoon of copy-paste. Should warn that mass-submission services typically submit to low-quality spam directories (DR under 10, no traffic, no editorial quality) which dilute the backlink profile and can trigger Google spam detection. Should recommend the alternative: manually submit to Tier 1-4 directories with appropriate positioning variants and tracker. Should reinforce that the value comes from quality directories with editorial standards, not raw volume.",
+      "assertions": [
+        "Refuses the service",
+        "Cites 'don't pay for submission services' rule",
+        "Warns about low-DR spam directories",
+        "Warns about Google spam penalty risk",
+        "Recommends manual submission to quality directories"
+      ],
+      "files": []
+    },
+    {
+      "id": 4,
+      "prompt": "Walk me through how to launch on Product Hunt next month. We've never done it before.",
+      "expected_output": "Should apply the Product Hunt Deep Dive playbook. Should map the 3-week prep timeline: Day -21 to -14 (warm up hunter account, upvote and comment on 3 launches/day), Day -14 (create Upcoming page), Day -10 (optional book a hunter — trade not cash), Day -7 (draft launch-day assets: 1270x760 gallery images, tagline, 260-char description, first comment), Day -3 (email list warm-up), Day -1 (final check). Should explain launch day: launch at 12:01 AM Pacific Time on Tuesday/Wednesday/Thursday only, first 2 hours are everything (need 50+ supporters), post the first comment yourself, reply to every comment in under 30 minutes, share to multiple channels. Should warn never ask for upvotes — ask for feedback. Should warn don't DM strangers — community flags this. Should explain post-launch: write a launch recap blog post with numbers + lessons, cross-post to Indie Hackers, only submit to Show HN if there's a technical angle. Should note 80% of failed launches fail from no warm audience or asking for upvotes.",
+      "assertions": [
+        "Maps 3-week timeline with specific day markers",
+        "Notes 12:01 AM Pacific Time launch",
+        "Restricts to Tue/Wed/Thu",
+        "Emphasizes first 2 hours / 50+ supporters",
+        "Warns never ask for upvotes",
+        "Recommends asking for feedback",
+        "Warns against DMing strangers",
+        "Includes post-launch recap and cross-posting"
+      ],
+      "files": []
+    },
+    {
+      "id": 5,
+      "prompt": "We want to list on G2 but we only have 4 customers right now. Worth doing?",
+      "expected_output": "Should explain G2 and Capterra listings are worthless without reviews — 10 reviews is the magic threshold for Grid appearance. Should recommend NOT submitting yet, or claim the listing but plan a review drive in parallel. Should explain the 10-in-30 protocol: identify 20 users who completed a meaningful action, send each a personal email with direct review URL (reduces friction ~70%), offer a modest thank-you ($25 Amazon gift card is allowed by G2/TrustRadius), follow up once after 5 days, target 50% conversion. Should note the Users Love Us badge is free (20 reviews at 4.0+) but Grid/Momentum/Index/Award badges require a paid G2 plan ($2,999+/year as of Summer 2025) — and recommend NOT spending on paid G2 in year one. Should mention G2 Summer report cutoff ~April 28 and Fall ~July 28. Should suggest waiting until ~10 users are realistic before submitting.",
+      "assertions": [
+        "Explains 10-review threshold for Grid",
+        "Recommends NOT submitting yet OR claim + plan review drive",
+        "Lays out 10-in-30 protocol",
+        "Notes incentive ($25 gift card) is allowed",
+        "Mentions Users Love Us badge requirements",
+        "Warns against paying for G2 plan in year one",
+        "Mentions Summer/Fall report cutoffs"
+      ],
+      "files": []
+    },
+    {
+      "id": 6,
+      "prompt": "We submitted to 50 directories last week. Now what?",
+      "expected_output": "Should warn against treating submissions as the strategy. Should reference 'What NOT to Do' rule 11: don't over-index on launch spike. Flywheel is templates + alternatives + reviews + ongoing content. Should recommend checking the actual destination anchor in fetched HTML or the rendered DOM, recording its href and rel tokens; HEAD headers alone cannot verify a backlink. Should pivot to ongoing distribution: destination pages strategy (alternative pages converting 5-15%, use-case/ICP pages, template gallery if applicable, 'best of' listicles you write yourself, integration pages), GEO tactics for AI citation (single H1, FAQ schema, comparison tables, get cited on Reddit/HN, claim Crunchbase/LinkedIn/Wikidata), community presence (Reddit 90/10 rule, LinkedIn 3-5 posts/week, Twitter build-in-public, Indie Hackers, Dev.to/Hashnode). Should remind to track weekly KPIs (DR, referring domains, indexed pages, organic clicks, signups from directory referrals) and investigate if numbers aren't moving rather than submitting more.",
+      "assertions": [
+        "Warns against over-indexing on launch spike",
+        "Recommends verifying dofollow status of backlinks",
+        "Pivots to destination pages strategy",
+        "Mentions GEO tactics",
+        "Includes ongoing community distribution",
+        "Recommends tracking weekly KPIs",
+        "Says investigate before submitting more"
+      ],
+      "files": []
+    },
+    {
+      "id": 7,
+      "prompt": "We just shipped an MCP server for our invoicing SaaS (published on npm). Plan our directory submissions for the next two weeks. I saw a list online that includes launchstreak.com and launchpanda.com, can you add those?",
+      "expected_output": "Should put the official MCP Registry first, published with the mcp-publisher CLI (server.json, npm mcpName marker, GitHub or DNS namespace), and explain that aggregators like PulseMCP and Glama build on it. Then plan direct MCP directories (Smithery, Glama, MCP.so, MCP Market), GitHub list PRs (noting they're nofollow and to check the list is still merging), and agent listings where relevant. Should flag that launchstreak.com and launchpanda.com are lookalike domains for sale and use launchstreak.dev and launchpanda.dev instead, after a liveness check. Should warn that indie launch sites with high DR and ~0 traffic are badge rings and that free dofollow links often require keeping their badge. Should apply the safety gate: verify domains resolve and get approval before each submission.",
+      "assertions": [
+        "Puts the official MCP Registry first, via mcp-publisher",
+        "Mentions aggregators ingesting from the registry",
+        "Flags launchstreak.com and launchpanda.com as lookalike domains and uses the .dev sites",
+        "Warns about high-DR, zero-traffic badge-ring launch sites",
+        "Applies the safety gate (liveness check, approval before submitting)"
+      ],
+      "files": []
+    },
+    {
+      "id": 8,
+      "prompt": "Our directory submission is live. curl -sIL on the listing returns 200 but grep rel= is empty. Can I mark the backlink dofollow? Another listing has only a canonical tag pointing at itself, and a third requires login.",
+      "expected_output": "Should explain that HEAD returns headers and cannot establish destination anchor attributes or even link existence. Inspect HTML or the rendered DOM for the actual product anchor and destination; distinguish canonical tags and unrelated links. Record nofollow/sponsored/ugc tokens when observed. Mark an inspected anchor without those qualifiers unqualified, without promising ranking credit. Missing anchor is missing only after inspection; blocked/login/JS content that cannot be inspected is unverified. Log evidence and timestamp.",
+      "assertions": [
+        "Does not classify an empty header grep as dofollow",
+        "Inspects the actual destination anchor href and rel",
+        "Distinguishes missing and unverified links from observed unqualified links",
+        "Does not confuse canonical tags with backlinks",
+        "Does not guarantee search-engine credit from an unqualified link",
+        "Records evidence and access limitations"
+      ],
+      "files": []
+    },
+    {
+      "id": 9,
+      "prompt": "I want to get our SaaS listed on the Notion Marketplace for the backlink. We don't have a Notion integration yet. What's involved?",
+      "expected_output": "Should load references/directory-list.md (Tier 7, integration marketplaces) and explain that a listing requires a working public Notion connection. Should flag that the installation scope must be set to \"Any workspace\" when the connection is created, because it can't be changed later and other scopes aren't eligible. Should suggest a simple real use case (e.g. sending the app's data into a Notion database), then submitting the listing for Notion's review, which includes a security review, with the approved page at notion.com/connections/<name>. Should frame the integration as useful to customers, not only as a backlink.",
+      "assertions": [
+        "States a working public Notion connection is required",
+        "Warns the 'Any workspace' scope must be chosen at creation and can't be changed",
+        "Mentions Notion's review, including a security review",
+        "Suggests a simple genuine use case for the integration"
+      ],
+      "files": []
+    }
+  ]
+}
