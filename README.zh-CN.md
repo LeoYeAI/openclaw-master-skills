@@ -6,7 +6,7 @@
   <img src="https://img.shields.io/badge/Powered%20by-MyClaw.ai-blue?style=for-the-badge" alt="Powered by MyClaw.ai" />
 </a>
 <img src="https://img.shields.io/badge/Skills-2503%2B-orange?style=for-the-badge" alt="2503+ Skills" />
-<img src="https://img.shields.io/badge/Updated-Weekly-green?style=for-the-badge" alt="Weekly Updates" />
+<img src="https://img.shields.io/badge/Updated-Daily-green?style=for-the-badge" alt="Daily Updates" />
 
 **语言：**
 [English](README.md) · [中文](README.zh-CN.md) · [Français](README.fr.md) · [Deutsch](README.de.md) · [Русский](README.ru.md) · [日本語](README.ja.md) · [Italiano](README.it.md) · [Español](README.es.md)

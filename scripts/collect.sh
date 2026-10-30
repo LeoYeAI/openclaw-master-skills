@@ -1,7 +1,9 @@
 #!/usr/bin/env bash
-# collect.sh - Weekly OpenClaw Master Skills collector
-# Source of truth: https://github.com/openclaw/skills-archive
-# Strategy: clone/update archive -> diff by slug -> quality filter -> import
+# collect.sh - Daily OpenClaw Master Skills collector
+# Source of truth: head skill repos (see scripts/oms-sources.txt, fetched into
+#   a common mirror by scripts/fetch-sources.sh). The old openclaw/skills-archive
+#   mirror stopped updating on 2026-03-31, so the collection froze at v0.22.0.
+# Strategy: read mirror -> diff by slug -> quality filter -> import
 
 set -euo pipefail
 
@@ -303,7 +305,10 @@ except Exception:
     pass
 if versions:
     major, minor, patch = max(versions)
-    print(f"{major}.{minor + 1}.0")
+    # Daily cadence: a weekly minor bump gave ~7x fewer digits than days, so
+    # releases would collide within a month (v0.23.0 on day 1 and day 8). Bump
+    # patch instead, and roll minor only at a yearly cadence.
+    print(f"{major}.{minor}.{patch + 1}")
 else:
     print('0.1.0')
 PY
@@ -343,7 +348,7 @@ if import_file.exists():
             if idx < 30:
                 items.append(f"- `{slug}` — {desc[:120]}")
 
-body = f"## v{version} — {week}\n\n### 🚀 周更：新增 {new_count} 个 Skills，总计 {total_count}\n\n来源：openclaw/skills-archive 官方镜像，按质量规则筛选（{size_rule}、完整 YAML 元数据、有效 description）。\n\n#### 部分新增亮点（前 30 个）\n" + ("\n".join(items) if items else "- 本周无新增") + "\n\n---\n\n"
+body = f"## v{version} — {week}\n\n### 🚀 日更：新增 {new_count} 个 Skills，总计 {total_count}\n\n来源：头部技能仓库（obra/superpowers、addyosmani/agent-skills、wshobson/agents 等），按质量规则筛选（{size_rule}、完整 YAML 元数据、有效 description）。\n\n#### 部分新增亮点（前 30 个）\n" + ("\n".join(items) if items else "- 今日无新增") + "\n\n---\n\n"
 content = releases.read_text(encoding='utf-8', errors='ignore')
 if content.startswith('# Release Notes'):
     parts = content.split('\n', 4)
@@ -363,8 +368,8 @@ total_count = os.environ['TOTAL_COUNT']
 version = os.environ['NEW_VERSION']
 entry = (
     f"## [v{version}] — {week}\n\n"
-    f"### 🚀 周更：新增 {new_count} 个 Skills，总计 {total_count}\n\n"
-    "来源：openclaw/skills-archive 官方镜像，按质量规则筛选。详见 RELEASES.md。\n\n"
+    f"### 🚀 日更：新增 {new_count} 个 Skills，总计 {total_count}\n\n"
+    "来源：头部技能仓库（obra/superpowers、addyosmani/agent-skills、wshobson/agents 等），按质量规则筛选。详见 RELEASES.md。\n\n"
     "---\n"
 )
 content = changelog.read_text(encoding='utf-8', errors='ignore')
@@ -558,9 +563,9 @@ run_gates() {
 
 write_release_body() {
   cat > "$TMP_RELEASE_BODY" <<EOF
-## 🚀 周更：新增 ${NEW_COUNT} 个 Skills，总计 ${TOTAL_COUNT}
+## 🚀 日更：新增 ${NEW_COUNT} 个 Skills，总计 ${TOTAL_COUNT}
 
-来源：openclaw/skills-archive 官方镜像，按质量规则筛选。
+来源：头部技能仓库（obra/superpowers、addyosmani/agent-skills、wshobson/agents 等），按质量规则筛选。
 
 详见仓库内 RELEASES.md。
 EOF
@@ -585,7 +590,7 @@ git_publish() {
 
     git -C "$REPO_ROOT" config user.name "The Doctor (MyClaw)"
     git -C "$REPO_ROOT" config user.email "doctor@myclaw.ai"
-    git -C "$REPO_ROOT" commit -m "feat(v${NEW_VERSION}): weekly update ${WEEK} — ${NEW_COUNT} new skills (${TOTAL_COUNT} total)" >> "$LOG_FILE" 2>&1 || fail "git commit failed"
+    git -C "$REPO_ROOT" commit -m "feat(v${NEW_VERSION}): daily update ${WEEK} — ${NEW_COUNT} new skills (${TOTAL_COUNT} total)" >> "$LOG_FILE" 2>&1 || fail "git commit failed"
     ok "Commit created"
   fi
 
@@ -599,7 +604,7 @@ git_publish() {
   # "already tagged" guard can never trip, so a repeat run would try to
   # republish an already-shipped version.
   if [ -z "$(git -C "$REPO_ROOT" tag -l "v$NEW_VERSION")" ]; then
-    git -C "$REPO_ROOT" tag -a "v$NEW_VERSION" -m "v${NEW_VERSION} — weekly update ${WEEK}" >> "$LOG_FILE" 2>&1 || fail "git tag failed"
+    git -C "$REPO_ROOT" tag -a "v$NEW_VERSION" -m "v${NEW_VERSION} — daily update ${WEEK}" >> "$LOG_FILE" 2>&1 || fail "git tag failed"
   fi
   git -C "$REPO_ROOT" push "$remote_url" "refs/tags/v$NEW_VERSION" >> "$LOG_FILE" 2>&1 || fail "tag push failed"
   ok "Tag v$NEW_VERSION pushed"
@@ -615,7 +620,7 @@ version = os.environ['NEW_VERSION']
 body = open(os.environ['TMP_RELEASE_BODY'], 'r', encoding='utf-8').read()
 payload = json.dumps({
     'tag_name': f'v{version}',
-    'name': f'v{version} — Weekly Update',
+    'name': f'v{version} — Daily Update',
     'body': body,
     'draft': False,
     'prerelease': False,
@@ -674,7 +679,7 @@ EOF
     --registry "$CLAWHUB_REGISTRY" \
     --slug openclaw-master-skills \
     --version "$NEW_VERSION" \
-    --changelog "Weekly update: +${NEW_COUNT} skills, total ${TOTAL_COUNT}. Source: openclaw/skills-archive." \
+    --changelog "Daily update: +${NEW_COUNT} skills, total ${TOTAL_COUNT}. Source: head skill repos." \
     >> "$LOG_FILE" 2>&1 || fail "ClawHub publish failed"
   ok "ClawHub publish succeeded"
 }
@@ -773,9 +778,9 @@ PY
 
   # update_docs normally writes this; it is skipped on a publish-only run.
   cat > "$TMP_RELEASE_BODY" <<EOF
-## 🚀 周更：新增 ${NEW_COUNT} 个 Skills，总计 ${TOTAL_COUNT}
+## 🚀 日更：新增 ${NEW_COUNT} 个 Skills，总计 ${TOTAL_COUNT}
 
-来源：openclaw/skills-archive 官方镜像，按质量规则筛选。
+来源：头部技能仓库（obra/superpowers、addyosmani/agent-skills、wshobson/agents 等），按质量规则筛选。
 
 详见仓库内 RELEASES.md。
 EOF

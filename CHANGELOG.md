@@ -1,7 +1,7 @@
 # Changelog
 
 All notable changes to the OpenClaw Master Skills collection are documented here.
-Updated every Monday.
+Updated daily.
 
 ---
 
