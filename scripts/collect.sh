@@ -690,12 +690,38 @@ EOF
     # error at 02:02:00, failing a run that had in fact published. Probe the
     # registry before treating it as a real failure, the same way git_publish
     # tolerates an already_exists GitHub Release.
+    local publish_state="failed"
     if curl -sf -o /dev/null \
         "${CLAWHUB_REGISTRY}/api/v1/skills/agent-master-skills/versions/${NEW_VERSION}"; then
-      warn "ClawHub reported an error but v${NEW_VERSION} is live on the registry; treating as published"
+      publish_state="live"
     else
-      fail "ClawHub publish failed and v${NEW_VERSION} is not live on the registry"
+      # A newly created or re-submitted skill is hidden from the public API
+      # while it sits in the moderation queue: the skill endpoint 404s and every
+      # version 404s with it. Without this branch a brand-new slug
+      # (agent-master-skills was created 2026-10-31 as pending.publication) is
+      # indistinguishable from a genuine failure, and every daily run would
+      # fail and re-upload the same version forever.
+      local moderation=""
+      moderation=$(clawhub inspect agent-master-skills 2>&1 \
+        | grep -o 'pending\.[a-z]*' | head -1 || true)
+      if [ -n "$moderation" ]; then
+        publish_state="pending:$moderation"
+      fi
     fi
+
+    case "$publish_state" in
+      live)
+        warn "ClawHub reported an error but v${NEW_VERSION} is live on the registry; treating as published"
+        ;;
+      pending:*)
+        # Uploaded into the review queue is success from our side: the package
+        # is on ClawHub awaiting moderation. Do not fail, do not re-publish.
+        warn "ClawHub v${NEW_VERSION} uploaded and awaiting moderation ($moderation); not a failure"
+        ;;
+      *)
+        fail "ClawHub publish failed and v${NEW_VERSION} is not live on the registry"
+        ;;
+    esac
   fi
   ok "ClawHub publish succeeded"
 }
