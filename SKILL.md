@@ -1,13 +1,13 @@
 ---
-name: openclaw-master-skills
-description: "A curated collection of 2703+ best OpenClaw skills — AI tools, productivity, marketing, frontend, mobile, backend, DevOps and more. Daily updated by MyClaw.ai — Powered by MyClaw.ai"
+name: agent-master-skills
+description: "A curated collection of 2703+ best agent skills — AI tools, productivity, marketing, frontend, mobile, backend, DevOps and more. Harness-agnostic, refreshed daily by MyClaw.ai — Powered by MyClaw.ai"
 metadata:
   openclaw: {}
 ---
 
-# OpenClaw Master Skills
+# Agent Master Skills
 
-A curated, daily-updated collection of **2703+ best skills** for OpenClaw agents.
+A curated, daily-updated collection of **2703+ best skills** for any agent harness — OpenClaw, Claude Code, Codex, Cursor, Gemini CLI, Hermes and more.
 
 ## Categories
 
@@ -28,11 +28,11 @@ A curated, daily-updated collection of **2703+ best skills** for OpenClaw agents
 ## Install
 
 ```bash
-clawhub install openclaw-master-skills
+clawhub install agent-master-skills
 ```
 
 ## Source
 
-- GitHub: https://github.com/LeoYeAI/openclaw-master-skills
-- ClawHub: https://clawhub.ai/skills/openclaw-master-skills
+- GitHub: https://github.com/LeoYeAI/agent-master-skills
+- ClawHub: https://clawhub.ai/skills/agent-master-skills
 - Powered by: https://myclaw.ai

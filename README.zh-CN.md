@@ -25,14 +25,47 @@
 
 ## 🚀 安装方式
 
-```bash
-# 通过 ClawHub 安装单个技能
-clawhub install openclaw-master-skills
+这是一个 **harness 无关** 的技能集合：每个技能都是纯 `SKILL.md` 文件夹，遵循 Agent
+Skills 规范，任何能读这个格式的 agent 运行时都能用。
 
-# 或手动克隆复制
-git clone https://github.com/LeoYeAI/openclaw-master-skills.git
-cp -r openclaw-master-skills/skills/<skill-name> ~/.openclaw/workspace/skills/
+### 安装整个集合（ClawHub）
+
+```bash
+clawhub install agent-master-skills
 ```
+
+### 复制单个技能
+
+```bash
+git clone https://github.com/LeoYeAI/agent-master-skills.git
+
+# Claude Code
+cp -r agent-master-skills/skills/<skill-name> ~/.claude/skills/
+
+# Codex CLI
+cp -r agent-master-skills/skills/<skill-name> ~/.agents/skills/
+
+# OpenClaw
+cp -r agent-master-skills/skills/<skill-name> ~/.openclaw/workspace/skills/
+```
+
+### 各 harness 的技能目录
+
+| Agent / Harness | 项目内目录 | 全局目录 |
+|---|---|---|
+| **OpenClaw** | `.openclaw/skills/` | `~/.openclaw/workspace/skills/` |
+| **Claude Code** | `.claude/skills/` | `~/.claude/skills/` |
+| **Codex CLI** / Replit Agent | `.agents/skills/` | `~/.agents/skills/` |
+| **Cursor** | `.cursor/skills/` | `~/.cursor/skills/` |
+| **Gemini CLI** | `.gemini/skills/` | — |
+| **Google Antigravity** | `.agent/skills/` | `~/.gemini/config/skills/` |
+| **Hermes Agent** | `.hermes/skills/` | `${HERMES_HOME:-$HOME/.hermes}/skills/` |
+| **Grok Build** | `.grok/skills/` | `~/.grok/skills/` |
+| **Devin** | `.devin/skills/` | `${XDG_CONFIG_HOME:-$HOME/.config}/devin/skills/` |
+| **DeepSeek Harness** | `.dsh/skills/` | `${DSH_HOME:-$HOME/.dsh}/skills/` |
+| **Pi** | `.pi/skills/` | `~/.pi/agent/skills/` |
+| **OpenCode** | `.opencode/skills/` | — |
+| **GitHub Copilot** | `.github/skills/` | — |
 
 ## 📦 技能索引 (388 个精选技能)
 

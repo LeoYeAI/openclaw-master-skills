@@ -1,6 +1,6 @@
 <div align="center">
 
-# 🧠 OpenClaw Master Skills
+# 🧠 Agent Master Skills
 
 <a href="https://myclaw.ai"><img src="https://img.shields.io/badge/Powered%20by-MyClaw.ai-blue?style=for-the-badge" /></a>
 <img src="https://img.shields.io/badge/Skills-2703%2B-orange?style=for-the-badge" alt="2703+ Compétences" />
@@ -15,19 +15,21 @@
 
 ## 🤖 Propulsé par [MyClaw.ai](https://myclaw.ai)
 
-**[MyClaw.ai](https://myclaw.ai)** est une plateforme d'assistant personnel IA offrant à chaque utilisateur un agent IA complet sur serveur dédié. OpenClaw Master Skills est notre collection curatée, mise à jour chaque semaine, des meilleures skills de l'écosystème.
+**[MyClaw.ai](https://myclaw.ai)** est une plateforme d'assistant personnel IA offrant à chaque utilisateur un agent IA complet sur serveur dédié. Agent Master Skills est notre collection curatée, mise à jour chaque semaine, des meilleures skills de l'écosystème.
 
 > 🌐 **Essayez MyClaw.ai** : [https://myclaw.ai](https://myclaw.ai)
 
 ## 🚀 Installation
 
 ```bash
-clawhub install openclaw-master-skills
+clawhub install agent-master-skills
 # ou
-git clone https://github.com/LeoYeAI/openclaw-master-skills.git
-cp -r openclaw-master-skills/skills/<skill-name> ~/.openclaw/workspace/skills/
+git clone https://github.com/LeoYeAI/agent-master-skills.git
+cp -r agent-master-skills/skills/<skill-name> ~/.openclaw/workspace/skills/
 ```
 
+
+> Toutes les harnesses compatibles et leurs dossiers : voir le tableau dans [README.md](README.md#-how-to-install).
 ## 📬 Soumettre une Skill
 
 [Ouvrir une issue](../../issues/new?template=submit-skill.md) ou une Pull Request avec votre dossier skill dans `skills/`.

@@ -1,6 +1,6 @@
 <div align="center">
 
-# 🧠 OpenClaw Master Skills
+# 🧠 Agent Master Skills
 
 <a href="https://myclaw.ai">
   <img src="https://img.shields.io/badge/Powered%20by-MyClaw.ai-blue?style=for-the-badge" alt="Powered by MyClaw.ai" />
@@ -17,7 +17,7 @@
 
 ## 🤖 Powered by [MyClaw.ai](https://myclaw.ai)
 
-**[MyClaw.ai](https://myclaw.ai)** is an AI personal assistant platform that gives every user a fully-featured AI agent running on a dedicated server. OpenClaw Master Skills is our curated, daily-updated collection of the best skills from across the ecosystem — hand-picked and refreshed daily to help your AI agent do more.
+**[MyClaw.ai](https://myclaw.ai)** is an AI personal assistant platform that gives every user a fully-featured AI agent running on a dedicated server. Agent Master Skills is our curated, daily-updated collection of the best skills from across the ecosystem — hand-picked and refreshed daily to help your AI agent do more.
 
 > 🌐 **Try MyClaw.ai**: [https://myclaw.ai](https://myclaw.ai)
 
@@ -25,14 +25,55 @@
 
 ## 🚀 How to Install
 
-```bash
-# Install a single skill via ClawHub
-clawhub install openclaw-master-skills
+This is a **harness-agnostic** collection: every skill is a plain `SKILL.md`
+folder following the Agent Skills spec, so it runs in any agent runtime that
+reads that format. Pick your tool below.
 
-# Or clone and copy manually
-git clone https://github.com/LeoYeAI/openclaw-master-skills.git
-cp -r openclaw-master-skills/skills/<skill-name> ~/.openclaw/workspace/skills/
+### Install the whole collection (ClawHub)
+
+```bash
+clawhub install agent-master-skills
 ```
+
+### Copy individual skills
+
+```bash
+git clone https://github.com/LeoYeAI/agent-master-skills.git
+
+# Claude Code
+cp -r agent-master-skills/skills/<skill-name> ~/.claude/skills/
+
+# Codex CLI / Replit Agent
+cp -r agent-master-skills/skills/<skill-name> ~/.agents/skills/
+
+# OpenClaw
+cp -r agent-master-skills/skills/<skill-name> ~/.openclaw/workspace/skills/
+```
+
+### Where each harness reads skills from
+
+Project folders are relative to your repository root; global folders live under
+your home directory.
+
+| Agent / Harness | Project folder | Global skills folder |
+|---|---|---|
+| **OpenClaw** | `.openclaw/skills/` | `~/.openclaw/workspace/skills/` |
+| **Claude Code** | `.claude/skills/` | `~/.claude/skills/` |
+| **Codex CLI** / Replit Agent | `.agents/skills/` | `~/.agents/skills/` |
+| **Cursor** | `.cursor/skills/` | `~/.cursor/skills/` |
+| **Gemini CLI** | `.gemini/skills/` | — |
+| **Google Antigravity** | `.agent/skills/` | `~/.gemini/config/skills/` |
+| **Hermes Agent** | `.hermes/skills/` | `${HERMES_HOME:-$HOME/.hermes}/skills/` |
+| **Grok Build** | `.grok/skills/` | `~/.grok/skills/` |
+| **Devin** | `.devin/skills/` | `${XDG_CONFIG_HOME:-$HOME/.config}/devin/skills/` |
+| **DeepSeek Harness** | `.dsh/skills/` | `${DSH_HOME:-$HOME/.dsh}/skills/` |
+| **Pi** | `.pi/skills/` | `~/.pi/agent/skills/` |
+| **OpenCode** | `.opencode/skills/` | — |
+| **GitHub Copilot** | `.github/skills/` | — |
+
+> Folder names follow what those projects use in their own repositories. Any
+> runtime that reads a `skills/<name>/SKILL.md` tree can consume this
+> collection.
 
 ## 📦 Skill Index (388 curated skills)
 

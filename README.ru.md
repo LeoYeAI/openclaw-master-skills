@@ -1,6 +1,6 @@
 <div align="center">
 
-# 🧠 OpenClaw Master Skills
+# 🧠 Agent Master Skills
 
 <a href="https://myclaw.ai"><img src="https://img.shields.io/badge/Powered%20by-MyClaw.ai-blue?style=for-the-badge" /></a>
 <img src="https://img.shields.io/badge/Skills-2703%2B-orange?style=for-the-badge" alt="2703+ Навыки" />
@@ -15,19 +15,21 @@
 
 ## 🤖 На базе [MyClaw.ai](https://myclaw.ai)
 
-**[MyClaw.ai](https://myclaw.ai)** — платформа ИИ-ассистента с выделенными серверами для каждого пользователя. OpenClaw Master Skills — это наша кураторская коллекция лучших skills экосистемы, обновляемая каждую неделю.
+**[MyClaw.ai](https://myclaw.ai)** — платформа ИИ-ассистента с выделенными серверами для каждого пользователя. Agent Master Skills — это наша кураторская коллекция лучших skills экосистемы, обновляемая каждую неделю.
 
 > 🌐 **Попробуйте MyClaw.ai**: [https://myclaw.ai](https://myclaw.ai)
 
 ## 🚀 Установка
 
 ```bash
-clawhub install openclaw-master-skills
+clawhub install agent-master-skills
 # или
-git clone https://github.com/LeoYeAI/openclaw-master-skills.git
-cp -r openclaw-master-skills/skills/<skill-name> ~/.openclaw/workspace/skills/
+git clone https://github.com/LeoYeAI/agent-master-skills.git
+cp -r agent-master-skills/skills/<skill-name> ~/.openclaw/workspace/skills/
 ```
 
+
+> Все поддерживаемые harness и их каталоги: см. таблицу в [README.md](README.md#-how-to-install).
 ## 📬 Предложить Skill
 
 [Открыть Issue](../../issues/new?template=submit-skill.md) или Pull Request с папкой вашего skill в `skills/`.

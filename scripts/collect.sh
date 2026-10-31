@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# collect.sh - Daily OpenClaw Master Skills collector
+# collect.sh - Daily Agent Master Skills collector (harness-agnostic)
 # Source of truth: head skill repos (see scripts/oms-sources.txt, fetched into
 #   a common mirror by scripts/fetch-sources.sh). The old openclaw/skills-archive
 #   mirror stopped updating on 2026-03-31, so the collection froze at v0.22.0.
@@ -12,7 +12,7 @@ SKILLS_DIR="$REPO_ROOT/skills"
 CHANGELOG="$REPO_ROOT/CHANGELOG.md"
 RELEASES="$REPO_ROOT/RELEASES.md"
 README="$REPO_ROOT/README.md"
-LOG_FILE="/tmp/openclaw-master-skills-collect-$(date +%Y-%m-%d).log"
+LOG_FILE="/tmp/agent-master-skills-collect-$(date +%Y-%m-%d).log"
 DRY_RUN="${1:-}"
 # --publish-only ships an already-built local commit: skip archive/import/docs and
 # go straight to push + Release + ClawHub. v0.22.0 was committed locally on
@@ -25,9 +25,9 @@ if [ "$DRY_RUN" = "--publish-only" ]; then
 fi
 WEEK="$(date -u +%Y-%m-%d)"
 ARCHIVE_DIR="${OPENCLAW_SKILLS_ARCHIVE_DIR:-/tmp/openclaw-skills-archive}"
-TMP_NEW_LIST="/tmp/openclaw-master-skills-new-slugs.txt"
-TMP_IMPORT_LIST="/tmp/openclaw-master-skills-imported-slugs.txt"
-TMP_RELEASE_BODY="/tmp/openclaw-master-skills-release-body.md"
+TMP_NEW_LIST="/tmp/agent-master-skills-new-slugs.txt"
+TMP_IMPORT_LIST="/tmp/agent-master-skills-imported-slugs.txt"
+TMP_RELEASE_BODY="/tmp/agent-master-skills-release-body.md"
 GH_TOKEN="${GITHUB_TOKEN:-}"
 CLAWHUB_TOKEN="${CLAWHUB_TOKEN:-}"
 CLAWHUB_REGISTRY="${CLAWHUB_REGISTRY:-https://clawhub.ai}"
@@ -399,10 +399,13 @@ for filename in ['README.md', 'SKILL.md', 'README.zh-CN.md', 'README.fr.md', 'RE
     # The translated READMEs localize the noun ("2503+ Navyki", "2503+ スキル"),
     # so match any trailing label rather than a literal "Skills".
     content = re.sub(r'alt="[0-9]+\+ ([^"]*)"', lambda m: f'alt="{total}+ {m.group(1)}"', content)
-    # Prose counts. Match "best skills" too, not just "best OpenClaw skills":
-    # SKILL.md's body uses the shorter phrasing and silently went stale at
-    # v0.13.0 (560 -> 11211), shipping a wrong number to ClawHub for months.
-    content = re.sub(r'[0-9]+\+ best (OpenClaw )?skills', lambda m: f"{total}+ best {m.group(1) or ''}skills", content)
+    # Prose counts. The qualifier moved over time ("best skills" ->
+    # "best OpenClaw skills" -> "best agent skills"), and each rename silently
+    # froze the published number: v0.13.0 shipped 11211 for months because the
+    # regex only knew one phrasing. Accept any qualifier word between "best"
+    # and "skills" so a future rebrand cannot strand the count again.
+    content = re.sub(r'[0-9]+\+ best ((?:[A-Za-z-]+ )*)skills',
+                     lambda m: f"{total}+ best {m.group(1)}skills", content)
     path.write_text(content, encoding='utf-8')
 PY
 
@@ -595,7 +598,7 @@ git_publish() {
   fi
 
   [ -n "$GH_TOKEN" ] || fail "GITHUB_TOKEN is required for push"
-  local remote_url="https://${GH_TOKEN}@github.com/LeoYeAI/openclaw-master-skills.git"
+  local remote_url="https://${GH_TOKEN}@github.com/LeoYeAI/agent-master-skills.git"
   git -C "$REPO_ROOT" push "$remote_url" main >> "$LOG_FILE" 2>&1 || fail "git push failed"
   ok "GitHub push succeeded"
 
@@ -626,7 +629,7 @@ payload = json.dumps({
     'prerelease': False,
 }).encode()
 req = urllib.request.Request(
-    'https://api.github.com/repos/LeoYeAI/openclaw-master-skills/releases',
+    'https://api.github.com/repos/LeoYeAI/agent-master-skills/releases',
     data=payload,
     headers={
         'Authorization': f"token {os.environ['GH_TOKEN']}",
@@ -660,24 +663,24 @@ publish_clawhub() {
   command -v clawhub >/dev/null 2>&1 || { warn "clawhub CLI missing: skipping ClawHub publish"; return; }
 
   info "Publishing lightweight package to ClawHub"
-  local pkg_dir="/tmp/openclaw-master-skills-clawhub-pkg"
+  local pkg_dir="/tmp/agent-master-skills-clawhub-pkg"
   rm -rf "$pkg_dir"
   mkdir -p "$pkg_dir/references"
   cp "$REPO_ROOT/SKILL.md" "$pkg_dir/"
   cp "$REPO_ROOT/README.md" "$pkg_dir/"
   [ -f "$REPO_ROOT/LICENSE" ] && cp "$REPO_ROOT/LICENSE" "$pkg_dir/"
   cat > "$pkg_dir/references/install-guide.md" <<EOF
-# Install OpenClaw Master Skills
+# Install Agent Master Skills
 
 Full collection:
-https://github.com/LeoYeAI/openclaw-master-skills
+https://github.com/LeoYeAI/agent-master-skills
 EOF
 
   clawhub logout >> "$LOG_FILE" 2>&1 || true
   clawhub login --token "$CLAWHUB_TOKEN" >> "$LOG_FILE" 2>&1 || fail "ClawHub login failed"
   if ! clawhub publish "$pkg_dir" \
     --registry "$CLAWHUB_REGISTRY" \
-    --slug openclaw-master-skills \
+    --slug agent-master-skills \
     --version "$NEW_VERSION" \
     --changelog "Daily update: +${NEW_COUNT} skills, total ${TOTAL_COUNT}. Source: head skill repos." \
     >> "$LOG_FILE" 2>&1; then
@@ -688,7 +691,7 @@ EOF
     # registry before treating it as a real failure, the same way git_publish
     # tolerates an already_exists GitHub Release.
     if curl -sf -o /dev/null \
-        "${CLAWHUB_REGISTRY}/api/v1/skills/openclaw-master-skills/versions/${NEW_VERSION}"; then
+        "${CLAWHUB_REGISTRY}/api/v1/skills/agent-master-skills/versions/${NEW_VERSION}"; then
       warn "ClawHub reported an error but v${NEW_VERSION} is live on the registry; treating as published"
     else
       fail "ClawHub publish failed and v${NEW_VERSION} is not live on the registry"
@@ -753,7 +756,7 @@ import urllib.request
 
 token = os.environ.get('GH_TOKEN', '')
 version = os.environ['NEW_VERSION']
-url = ('https://api.github.com/repos/LeoYeAI/openclaw-master-skills/'
+url = ('https://api.github.com/repos/LeoYeAI/agent-master-skills/'
        f'releases/tags/v{version}')
 
 
@@ -816,9 +819,9 @@ main() {
 
   refresh_archive
   find_new_candidates
-  import_candidates >/tmp/openclaw-master-skills-import-count.txt
+  import_candidates >/tmp/agent-master-skills-import-count.txt
   local import_count
-  import_count=$(tail -1 /tmp/openclaw-master-skills-import-count.txt)
+  import_count=$(tail -1 /tmp/agent-master-skills-import-count.txt)
   ok "Imported candidates: $import_count"
 
   if [ "$import_count" = "0" ]; then
