@@ -675,12 +675,25 @@ EOF
 
   clawhub logout >> "$LOG_FILE" 2>&1 || true
   clawhub login --token "$CLAWHUB_TOKEN" >> "$LOG_FILE" 2>&1 || fail "ClawHub login failed"
-  clawhub publish "$pkg_dir" \
+  if ! clawhub publish "$pkg_dir" \
     --registry "$CLAWHUB_REGISTRY" \
     --slug openclaw-master-skills \
     --version "$NEW_VERSION" \
     --changelog "Daily update: +${NEW_COUNT} skills, total ${TOTAL_COUNT}. Source: head skill repos." \
-    >> "$LOG_FILE" 2>&1 || fail "ClawHub publish failed"
+    >> "$LOG_FILE" 2>&1; then
+    # ClawHub's version check is eventually consistent and has reported
+    # "Version X already exists" for a version this very call had just created:
+    # on 2026-10-31 v0.22.2 was live at 02:01:23 while the CLI printed that
+    # error at 02:02:00, failing a run that had in fact published. Probe the
+    # registry before treating it as a real failure, the same way git_publish
+    # tolerates an already_exists GitHub Release.
+    if curl -sf -o /dev/null \
+        "${CLAWHUB_REGISTRY}/api/v1/skills/openclaw-master-skills/versions/${NEW_VERSION}"; then
+      warn "ClawHub reported an error but v${NEW_VERSION} is live on the registry; treating as published"
+    else
+      fail "ClawHub publish failed and v${NEW_VERSION} is not live on the registry"
+    fi
+  fi
   ok "ClawHub publish succeeded"
 }
 
