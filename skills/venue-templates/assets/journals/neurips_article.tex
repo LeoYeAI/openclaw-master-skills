@@ -1,0 +1,292 @@
+% NeurIPS Conference Paper Template
+% For submission to Neural Information Processing Systems (NeurIPS)
+% Reviewed: 2026-10-01
+% Note: Download the complete official NeurIPS 2026 package from:
+% https://neurips.cc/Conferences/2026/CallForPapers
+
+\documentclass{article}
+
+% Required package from the official NeurIPS 2026 author kit
+\usepackage{neurips_2026}
+
+% Recommended packages
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{amsthm}
+\usepackage{graphicx}
+\usepackage{algorithm}
+\usepackage{algorithmic}
+\usepackage{hyperref}
+\usepackage{url}
+\usepackage{booktabs}  % For better tables
+\usepackage{multirow}
+\usepackage{microtype}  % Improved typography
+\usepackage{xcolor}  % Required by the NeurIPS Paper Checklist
+
+% Theorems, lemmas, etc.
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}{Lemma}
+\newtheorem{proposition}{Proposition}
+\newtheorem{corollary}{Corollary}
+\newtheorem{definition}{Definition}
+
+% Title and Authors
+\title{Your Paper Title: Concise and Descriptive \\ (Maximum Two Lines)}
+
+% Authors - ANONYMIZED for initial submission
+% For initial submission (double-blind review):
+\author{
+  Anonymous Authors \\
+  Anonymous Institution(s) \\
+}
+
+% For camera-ready version (after acceptance):
+% \author{
+%   First Author \\
+%   Department of Computer Science \\
+%   University Name \\
+%   City, State, Postal Code \\
+%   \texttt{first.author@university.edu} \\
+%   \And
+%   Second Author \\
+%   Company/Institution Name \\
+%   Address \\
+%   \texttt{second.author@company.com} \\
+%   \And
+%   Third Author \\
+%   Institution \\
+%   \texttt{third.author@institution.edu}
+% }
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+Write a concise one-paragraph abstract under the current portal instructions summarizing your contributions. The abstract should clearly state: (1) the problem you address, (2) your approach/method, (3) key results/findings, and (4) significance/implications. Make it accessible to a broad machine learning audience.
+\end{abstract}
+
+\section{Introduction}
+\label{sec:introduction}
+
+Introduce the problem you're addressing and its significance in machine learning or AI. Motivate why this problem is important and challenging.
+
+\subsection{Background and Motivation}
+Provide necessary background for understanding your work. Explain the gap in current methods or knowledge.
+
+\subsection{Contributions}
+State the actual contributions. This optional list is a drafting aid, not a required section or quota:
+\begin{itemize}
+    \item {[Contribution and supporting evidence.]}
+    \item {[Additional contribution, if supported.]}
+    \item {[Scope and limitations of the contribution.]}
+\end{itemize}
+
+\subsection{Paper Organization}
+Briefly describe the structure of the remainder of the paper.
+
+\section{Related Work}
+\label{sec:related}
+
+Discuss relevant prior work and how your work differs. Organize by themes or approaches rather than chronologically. Be fair and accurate in describing others' work.
+
+Cite key papers \cite{lecun2015deep, vaswani2017attention, devlin2019bert} and explain how your work builds upon or differs from them.
+
+\section{Problem Formulation}
+\label{sec:problem}
+
+Formally define the problem you're solving. Include mathematical notation and definitions.
+
+\subsection{Notation}
+Define your notation clearly. For example:
+\begin{itemize}
+    \item $\mathcal{X}$: input space
+    \item $\mathcal{Y}$: output space
+    \item $f: \mathcal{X} \rightarrow \mathcal{Y}$: function to learn
+    \item $\mathcal{D} = \{(x_i, y_i)\}_{i=1}^n$: training dataset
+\end{itemize}
+
+\subsection{Objective}
+State your learning objective formally, e.g.:
+\begin{equation}
+\min_{\theta} \mathbb{E}_{(x,y) \sim \mathcal{D}} \left[ \mathcal{L}(f_\theta(x), y) \right]
+\end{equation}
+where $\mathcal{L}$ is the loss function and $\theta$ are model parameters.
+
+\section{Method}
+\label{sec:method}
+
+Adapt these illustrative method and experiment sections to the actual contribution; theoretical and other paper types need different evidence.
+
+\subsection{Model Architecture}
+Describe the architecture of your model with sufficient detail for reproduction. Include figures if helpful.
+
+\begin{figure}[t]
+\centering
+% \includegraphics[width=0.8\textwidth]{architecture.pdf}
+\caption{Model architecture diagram. Describe the key components and data flow. Use colorblind-safe colors.}
+\label{fig:architecture}
+\end{figure}
+
+\subsection{Training Procedure}
+If relevant, describe the actual training procedure. The following unexecuted SGD pseudocode is illustrative only, not evidence of a trained model:
+\begin{algorithm}[t]
+\caption{Training Algorithm}
+\label{alg:training}
+\begin{algorithmic}[1]
+\STATE \textbf{Input:} Training data $\mathcal{D}$, learning rate $\alpha$
+\STATE \textbf{Output:} Trained parameters $\theta$
+\STATE Initialize $\theta$ randomly
+\FOR{epoch $= 1$ to $T$}
+    \FOR{batch $(x, y)$ in $\mathcal{D}$}
+        \STATE Compute loss: $\mathcal{L} = \mathcal{L}(f_\theta(x), y)$
+        \STATE Update: $\theta \leftarrow \theta - \alpha \nabla_\theta \mathcal{L}$
+    \ENDFOR
+\ENDFOR
+\RETURN $\theta$
+\end{algorithmic}
+\end{algorithm}
+
+\subsection{Key Components}
+Describe key technical innovations or components in detail.
+
+\section{Theoretical Analysis}
+\label{sec:theory}
+
+If applicable, provide theoretical analysis of your method.
+
+\begin{theorem}
+\label{thm:main}
+State your main theoretical result here.
+\end{theorem}
+
+\begin{proof}
+Provide proof or sketch of proof. Full proofs can go in the appendix.
+\end{proof}
+
+\section{Experiments}
+\label{sec:experiments}
+
+Describe your experimental setup and results.
+
+\subsection{Experimental Setup}
+\textbf{Datasets:} Describe datasets used (e.g., ImageNet, CIFAR-10, etc.).
+
+\textbf{Baselines:} List baseline methods for comparison.
+
+\textbf{Implementation Details:} Provide implementation details including hyperparameters, hardware, training time.
+
+\textbf{Evaluation Metrics:} Define metrics used (accuracy, F1, AUC, etc.).
+
+\subsection{Main Results}
+Present your main experimental results.
+
+\begin{table}[t]
+\centering
+\caption{Illustrative layout only. Replace every numeric cell with actual results and specify the number of independent runs and the meaning of uncertainty. Bold should identify the prespecified comparison criterion.}
+\label{tab:main_results}
+\begin{tabular}{lcccc}
+\toprule
+Method & Dataset 1 & Dataset 2 & Dataset 3 & Average \\
+\midrule
+Baseline 1 & $85.3 \pm 0.5$ & $72.1 \pm 0.8$ & $90.2 \pm 0.3$ & 82.5 \\
+Baseline 2 & $87.2 \pm 0.4$ & $74.5 \pm 0.6$ & $91.1 \pm 0.5$ & 84.3 \\
+\textbf{Our Method} & $\mathbf{91.7 \pm 0.3}$ & $\mathbf{79.8 \pm 0.5}$ & $\mathbf{94.3 \pm 0.2}$ & \textbf{88.6} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Ablation Studies}
+When component-effect claims warrant ablations, report fair controlled comparisons and relevant interactions.
+
+\subsection{Analysis}
+Provide deeper analysis of results, failure cases, limitations, etc.
+
+\section{Discussion}
+\label{sec:discussion}
+
+Discuss your findings, limitations, and broader implications.
+
+\subsection{Limitations}
+Honestly acknowledge limitations of your work.
+
+\subsection{Broader Impacts}
+Discuss potential positive and negative societal impacts when relevant. NeurIPS 2026
+does not require a separately titled Broader Impacts section; ensure the required
+Paper Checklist points to the relevant discussion.
+
+\section{Conclusion}
+\label{sec:conclusion}
+
+Summarize your main contributions and findings. Suggest future research directions.
+
+% The official ack environment hides acknowledgments in submission mode.
+\begin{ack}
+Thank collaborators, funding sources (with grant numbers), and compute resources.
+\end{ack}
+
+% References
+\bibliographystyle{plainnat}  % or other NeurIPS-compatible style
+\bibliography{references}  % Your .bib file
+
+% Appendix (optional, unlimited pages)
+\appendix
+
+\section{Additional Proofs}
+\label{app:proofs}
+
+Provide full proofs of theorems here.
+
+\section{Additional Experimental Results}
+\label{app:experiments}
+
+Include additional experiments, more ablations, qualitative results, etc.
+
+\section{Hyperparameters}
+\label{app:hyperparameters}
+
+List all hyperparameters used in experiments for reproducibility.
+
+\begin{table}[h]
+\centering
+\caption{Illustrative hyperparameter fields; replace with the actual configuration}
+\begin{tabular}{ll}
+\toprule
+Hyperparameter & Value \\
+\midrule
+Learning rate & [value] \\
+Batch size & [value] \\
+Optimizer & [optimizer] \\
+Weight decay & [value] \\
+Epochs & [value] \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\section{Code and Data}
+\label{app:code}
+
+Provide links to code repository (anonymized for review, e.g., anonymous GitHub):
+\begin{itemize}
+    \item Code: [verified permitted anonymous artifact or repository]
+    \item Data: [actual access conditions and repository/accession, if applicable]
+\end{itemize}
+
+% Required for NeurIPS 2026. Keep checklist.tex from the official author kit.
+\input{checklist}
+
+\end{document}
+
+% Notes for Authors:
+% 1. Main content: 9 pages maximum, including figures
+% 2. References, checklist, and optional technical appendices are excluded.
+%    Omit acknowledgments during review; camera-ready main content permits 10 pages.
+% 3. Appendices are optional reading for reviewers
+% 4. Omit final and preprint options for the anonymized initial submission
+% 5. Keep the complete required NeurIPS Paper Checklist
+% 6. Anonymize submitted code, data, links, and supplementary material
+% 7. Use the complete official NeurIPS 2026 package; do not rename an old style
+% 8. Do not override formatting enforced by the style file
+% 9. Use accessible, color-independent figures
+% 10. Recheck the Call for Papers and Main Track Handbook before submission
+

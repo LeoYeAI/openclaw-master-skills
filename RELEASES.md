@@ -3,6 +3,47 @@
 每次更新的详细发布说明。
 
 
+## v0.22.2 — 2026-10-31
+
+### 🚀 日更：新增 100 个 Skills，总计 2703
+
+来源：头部技能仓库（obra/superpowers、addyosmani/agent-skills、wshobson/agents 等），按质量规则筛选（SKILL.md 800B-30KB、完整 YAML 元数据、有效 description）。
+
+#### 部分新增亮点（前 30 个）
+- `reverse-engineer-marketing` — When the user wants to reverse engineer how another company grew and copy what worked. Also use when the user mentions '
+- `customer-research` — When the user wants to conduct, analyze, or synthesize customer research. Use when the user mentions "customer research,
+- `eu-ai-act-specialist` — EU AI Act (Regulation (EU) 2024/1689) operational compliance for compliance teams. Three Article-level decisions: (1) Wh
+- `pulse` — Multi-source recency research skill that takes the pulse of any topic across Reddit, Hacker News, the open web, and opti
+- `landing` — Generates a premium single-page HTML landing page with 3D CSS animations, GSAP scroll effects, and mouse-parallax depth.
+- `interview-me` — Extracts what the user actually wants instead of what they think they should want. Achieves this through one-question-at
+- `gtars` — Supports Gtars for local genomic interval models and set algebra, overlaps and counts, consensus and coverage, tokenizat
+- `nextflow` — Builds, runs, and debugs Nextflow DSL2 pipelines and nf-core workflows. Use for Nextflow, nf-core, .nf files, nextflow.c
+- `api-and-interface-design` — Guides stable API and interface design. Use when designing APIs, module boundaries, or any public interface. Use when cr
+- `aeon` — This skill should be used for time series machine learning tasks including classification, regression, clustering, forec
+- `scientific-writing` — Drafts, revises, and audits scientific manuscripts or reports with explicit evidence provenance, reporting-guideline cov
+- `stable-baselines3` — Trains and evaluates single-agent reinforcement learning with Stable Baselines3 (PPO, SAC, DQN, TD3, DDPG, A2C), Gymnasi
+- `bids` — Organizes, queries, validates, and converts Brain Imaging Data Structure (BIDS) datasets. Supports organizing neuroscien
+- `grants` — NIH grant research skill for clinical researchers. Grill-me intake (research idea + career stage + preliminary data + en
+- `qutip` — Simulate and audit closed and open quantum-system models with QuTiP 5, including deterministic, trajectory, steady-state
+- `exploratory-data-analysis` — Performs bounded, local exploratory analysis of explicitly supported scientific files. Supports redacted CSV/TSV/JSON pr
+- `mcp-oauth-triage` — Diagnose why an MCP connector that used to authenticate now fails: classify the fault as envelope, expiry, rotation clob
+- `pytdc` — Provides Therapeutics Data Commons workflows through PyTDC for registry discovery, dataset access, task-aware splits, ev
+- `scientific-brainstorming` — Facilitates evidence-aware scientific ideation with independent generation, structured discussion, explicit assumptions,
+- `javascript-testing-patterns` — Implement comprehensive testing strategies using Jest, Vitest, and Testing Library for unit tests, integration tests, an
+- `ontology-term-resolution` — Resolves free-text scientific labels to ontology term IDs and validates existing CURIEs against the EBI Ontology Lookup 
+- `secrets-vault-manager` — Use when the user asks to set up secret management infrastructure, integrate HashiCorp Vault, configure cloud secret sto
+- `chief-ai-officer-advisor` — Chief AI Officer advisory for startups: model build-vs-buy decisions (API vs fine-tune vs in-house), AI risk classificat
+- `collab-proof` — Use when you want to understand what Claude contributed vs what you drove in a session. Triggers on: /collab-proof, sess
+- `browser-testing-with-devtools` — Tests in real browsers via Chrome DevTools MCP. Use when building or debugging anything that runs in a browser. Use when
+- `analytics` — When the user wants to set up, improve, or audit analytics tracking and measurement. Also use when the user mentions "se
+- `simpy` — Builds, inspects, tests, and analyzes bounded process-based discrete-event simulations with SimPy. Use for event schedul
+- `hypogenic` — Plans and audits use of ChicagoHAI HypoGeniC/HypoRefine for LLM-assisted hypothesis generation from labeled text dataset
+- `commercial-policy` — Use when designing or revising a company's commercial policy — the rules of engagement governing discounts off list pric
+- `fictiv` — Operates Fictiv (app.fictiv.com), the on-demand manufacturing platform, end to end in the user's browser. Covers uploadi
+
+---
+
+
 ## v0.22.1 — 2026-10-30
 
 ### 🚀 日更：新增 100 个 Skills，总计 2603

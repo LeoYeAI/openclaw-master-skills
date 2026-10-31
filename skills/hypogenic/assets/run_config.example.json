@@ -1,0 +1,46 @@
+{
+  "schema_version": "1.0",
+  "data": {
+    "task_config": "assets/task_config.example.yaml",
+    "dataset_manifest": "assets/dataset_manifest.example.json",
+    "output_directory": "outputs/reviewed-hypogenic-run",
+    "test_split_policy": "locked_until_final"
+  },
+  "provider": {
+    "type": "gpt",
+    "model": "REPLACE_WITH_REVIEWED_MODEL_ID",
+    "credential_env": "OPENAI_API_KEY",
+    "data_destination": "openai_api",
+    "local_model_path": null
+  },
+  "limits": {
+    "max_requests": 1000,
+    "max_input_tokens_per_request": 4096,
+    "max_output_tokens_per_request": 1024,
+    "max_total_tokens": 5120000,
+    "max_cost_usd": 25.0,
+    "max_concurrent": 1,
+    "train_examples": 200,
+    "validation_examples": 100,
+    "test_examples": 100,
+    "max_hypotheses": 20
+  },
+  "pricing": {
+    "input_usd_per_million_tokens": null,
+    "output_usd_per_million_tokens": null,
+    "reviewed_on": null,
+    "source": null
+  },
+  "execution": {
+    "mode": "plan_only",
+    "external_calls_authorized": false,
+    "require_separate_confirmation": true,
+    "send_test_split": false
+  },
+  "logging": {
+    "level": "INFO",
+    "redact_prompts": true,
+    "redact_responses": true,
+    "include_credentials": false
+  }
+}

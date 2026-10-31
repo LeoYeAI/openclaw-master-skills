@@ -1,0 +1,213 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://scientific-agent-skills.local/protocolsio/protocol-snapshot.schema.json",
+  "title": "Local protocols.io protocol snapshot envelope",
+  "description": "A conservative local validation contract for saved protocols.io protocol responses. This is not an official protocols.io schema.",
+  "$defs": {
+    "protocol": {
+      "type": "object",
+      "anyOf": [
+        {
+          "required": [
+            "id"
+          ]
+        },
+        {
+          "required": [
+            "guid"
+          ]
+        },
+        {
+          "required": [
+            "uri"
+          ]
+        },
+        {
+          "required": [
+            "doi"
+          ]
+        },
+        {
+          "required": [
+            "version_uri"
+          ]
+        }
+      ],
+      "properties": {
+        "id": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "guid": {
+          "type": "string",
+          "pattern": "^[A-Fa-f0-9]{32}$"
+        },
+        "uri": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2048
+        },
+        "doi": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 2048
+        },
+        "version_uri": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 2048
+        },
+        "version_id": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "type_id": {
+          "enum": [
+            1,
+            3,
+            4,
+            null
+          ]
+        },
+        "public": {
+          "oneOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "enum": [
+                0,
+                1,
+                null
+              ]
+            }
+          ]
+        },
+        "title": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 4096
+        },
+        "authors": {
+          "type": [
+            "array",
+            "null"
+          ],
+          "maxItems": 1000,
+          "items": {
+            "type": "object"
+          }
+        },
+        "steps": {
+          "type": [
+            "array",
+            "null"
+          ],
+          "maxItems": 10000,
+          "items": {
+            "type": "object",
+            "properties": {
+              "guid": {
+                "type": "string",
+                "pattern": "^[A-Fa-f0-9]{32}$"
+              },
+              "previous_guid": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "pattern": "^[A-Fa-f0-9]{32}$"
+              }
+            },
+            "additionalProperties": true
+          }
+        },
+        "materials": {
+          "type": [
+            "array",
+            "null"
+          ],
+          "maxItems": 10000
+        },
+        "versions": {
+          "type": [
+            "array",
+            "null"
+          ],
+          "maxItems": 1000,
+          "items": {
+            "type": "object"
+          }
+        }
+      },
+      "additionalProperties": true
+    }
+  },
+  "anyOf": [
+    {
+      "type": "object",
+      "required": [
+        "protocol"
+      ],
+      "properties": {
+        "status_code": {
+          "enum": [
+            0,
+            "0",
+            null
+          ]
+        },
+        "protocol": {
+          "$ref": "#/$defs/protocol"
+        }
+      },
+      "additionalProperties": true
+    },
+    {
+      "type": "object",
+      "required": [
+        "payload"
+      ],
+      "properties": {
+        "status_code": {
+          "enum": [
+            0,
+            "0",
+            null
+          ]
+        },
+        "payload": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/protocol"
+            },
+            {
+              "type": "object",
+              "required": [
+                "protocol"
+              ],
+              "properties": {
+                "protocol": {
+                  "$ref": "#/$defs/protocol"
+                }
+              }
+            }
+          ]
+        }
+      },
+      "additionalProperties": true
+    },
+    {
+      "$ref": "#/$defs/protocol"
+    }
+  ]
+}

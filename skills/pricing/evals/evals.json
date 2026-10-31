@@ -1,0 +1,131 @@
+{
+  "skill_name": "pricing",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Help me figure out pricing for our new SaaS product. It's a customer support platform for e-commerce stores. We're not sure whether to charge per agent, per ticket, or flat rate. Currently thinking $49-199/month range.",
+      "expected_output": "Should check for product-marketing.md first. Should apply the three pricing axes framework: packaging (what's included in each tier), pricing metric (per agent, per ticket, flat rate — evaluate each), price point ($49-199 range evaluation). Should discuss value metrics and which aligns best with value delivered (per agent is common in support, but per ticket aligns with usage). Should recommend a good-better-best tier structure. Should address pricing psychology. Should provide a specific pricing recommendation with rationale.",
+      "assertions": [
+        "Checks for product-marketing.md",
+        "Applies three pricing axes framework",
+        "Evaluates multiple pricing metrics",
+        "Discusses which metric aligns with value delivered",
+        "Recommends good-better-best tier structure",
+        "Addresses pricing psychology",
+        "Provides specific pricing recommendation with rationale"
+      ],
+      "files": []
+    },
+    {
+      "id": 2,
+      "prompt": "We want to raise our prices by 30%. We've been at $29/month for 2 years and we've added a lot of features. How do we do this without losing customers?",
+      "expected_output": "Should apply the 'when to raise prices' and price increase strategies sections. Should recommend a strategy: grandfather existing customers (or give them a grace period), tie the increase to new value, communicate the change clearly with advance notice, consider an annual billing discount as a softening measure. Should address different approaches (immediate for new customers, delayed for existing). Should recommend specific communication strategy. Should note that some churn is expected and acceptable.",
+      "assertions": [
+        "Applies price increase strategies",
+        "Recommends grandfathering or grace period approach",
+        "Recommends tying increase to new value",
+        "Provides communication strategy",
+        "Addresses new vs existing customer timing",
+        "Suggests annual billing as softening measure",
+        "Notes some churn is expected"
+      ],
+      "files": []
+    },
+    {
+      "id": 3,
+      "prompt": "how do we figure out what people will actually pay? we're launching a new product and have no idea what to charge.",
+      "expected_output": "Should trigger on casual phrasing. Should apply the pricing research methods: Van Westendorp price sensitivity analysis (too cheap, bargain, expensive, too expensive), MaxDiff for feature importance, competitive benchmarking. Should explain how to run each method. Should also recommend simpler approaches: talking to potential customers, analyzing competitor pricing, testing different price points. Should provide a practical pricing research plan they can execute.",
+      "assertions": [
+        "Triggers on casual phrasing",
+        "Applies Van Westendorp price sensitivity method",
+        "Applies MaxDiff for feature importance",
+        "Recommends competitive benchmarking",
+        "Explains how to run each method",
+        "Suggests practical alternatives (customer interviews, competitive analysis)",
+        "Provides executable pricing research plan"
+      ],
+      "files": []
+    },
+    {
+      "id": 4,
+      "prompt": "We have a Basic ($19), Pro ($49), and Enterprise (custom) plan. The Pro plan gets 70% of signups. Should we add a plan between Pro and Enterprise?",
+      "expected_output": "Should apply the good-better-best tier structure framework. Should analyze the current situation: Pro capturing 70% is actually healthy, but the gap to Enterprise suggests there may be mid-market customers underserved. Should evaluate whether a 4th tier makes sense: does it address a real gap, or will it create choice paralysis? Should apply pricing psychology (Hick's Law — more options can reduce decisions). Should recommend either a 4th tier with clear differentiation or adjusting the Pro plan to better bridge the gap.",
+      "assertions": [
+        "Applies good-better-best tier structure",
+        "Analyzes current tier performance",
+        "Evaluates whether 4th tier addresses real gap",
+        "Considers choice paralysis risk",
+        "Applies pricing psychology (Hick's Law)",
+        "Provides specific recommendation with rationale"
+      ],
+      "files": []
+    },
+    {
+      "id": 5,
+      "prompt": "What pricing psychology tactics should we use on our pricing page? We want the $79 plan to be the most popular.",
+      "expected_output": "Should apply the pricing psychology section: anchoring (show the $79 plan next to a higher-priced plan), decoy effect (make the lower plan look less valuable), visual emphasis (highlight or 'recommend' the $79 plan), charm pricing ($79 vs $80), Rule of 100 (percentage discounts below $100, dollar discounts above), loss framing (show what lower plans miss). Should provide specific pricing page design recommendations. Should cross-reference cro for broader pricing page optimization.",
+      "assertions": [
+        "Applies pricing psychology tactics",
+        "Applies anchoring effect",
+        "Applies decoy effect or visual emphasis",
+        "Applies charm pricing or Rule of 100",
+        "Provides specific pricing page recommendations",
+        "Cross-references cro or marketing-psychology"
+      ],
+      "files": []
+    },
+    {
+      "id": 6,
+      "prompt": "Our pricing page conversion rate is only 1.5%. Can you review the page and suggest improvements?",
+      "expected_output": "Should recognize this is a pricing page conversion optimization task, not a pricing strategy task. Should defer to or cross-reference the cro skill, which handles pricing page conversion rate optimization including plan comparison clarity, CTA optimization, and trust signals. Pricing-strategy focuses on the actual pricing decisions (what to charge, how to package), not the page design.",
+      "assertions": [
+        "Recognizes this as pricing page CRO, not pricing strategy",
+        "References or defers to cro skill",
+        "Explains that pricing is about pricing decisions",
+        "Does not attempt full page CRO audit"
+      ],
+      "files": []
+    },
+    {
+      "id": 7,
+      "prompt": "Can you tear down our pricing page? I want to know if it is clear for buyers, and also whether AI tools like ChatGPT or Perplexity can actually read our prices when someone asks them to compare tools in our category.",
+      "expected_output": "Should run the two-axis pricing page teardown (references/pricing-page-teardown.md), not a generic CRO audit. Axis 1 (human buyer experience): value-prop clarity, plan differentiation, cognitive load, trust signals, pricing psychology, price transparency. Axis 2 (AI-agent readiness): machine-readable pricing (real numbers in HTML/text, not locked in an image, JS-only render, or behind Contact us), extractable FAQ/objection coverage, per-tier depth stated in text, and structured data (Product/Offer schema) + AI-bot crawlability. Should recommend the paste test (paste the URL into an LLM and ask for plans and prices; if it cannot answer, an AI shopping for the buyer cannot either). Should prioritize fixes by impact x effort and note AI-readiness fixes are often high-impact/low-effort. Should hand implementation to schema (Product/Offer JSON-LD) and ai-seo (extractability, AI-bot access, llms.txt). May credit the AI-agent-readiness lens to Kyle Poyar.",
+      "assertions": [
+        "Runs the two-axis teardown (human buyer experience AND AI-agent readiness)",
+        "Checks machine-readable pricing (not locked in an image / JS-only / behind Contact us)",
+        "Recommends the paste test (an LLM can correctly quote plans and prices)",
+        "Hands off to schema (Product/Offer structured data) and ai-seo (extractability / AI-bot access / llms.txt)",
+        "Prioritizes fixes by impact x effort; flags AI-readiness fixes as often high-impact low-effort",
+        "Does not treat this as pure conversion-rate CRO"
+      ],
+      "files": []
+    },
+    {
+      "id": 8,
+      "prompt": "We're launching an AI writing tool for solo creators next week and I genuinely have no idea what to charge on day one. I was going to just do $9/month to get people in the door. What price should I pick and how should I even structure it?",
+      "expected_output": "Should treat this as an INITIAL pricing question, not a price-optimization one — the goal of a first price is learning, not precision ('pick a price you can learn from'). Should apply the $10/$100/$1,000 rule of thumb and place a solo-creator tool near the ~$10 bucket. Should warn against the $9 trap (false traction, hard to raise later, cheapest customers churn most). May cite the Intercom/Jason Fried 'just charge $50 and see what happens' idea — ship a price and get real signal. Should reject competitor-based and cost-based anchoring in favor of value + differentiation. Should recommend a pricing MODEL/structure: for an AI actions-based tool, credit-based or usage-based (or a hybrid) is a natural fit; may reference the 8 models. May mention the ~10:1 value/price ratio and the low-price-hurts-retention counterpoint (when in doubt, price higher).",
+      "assertions": [
+        "Frames the first price as a learning bet, not an optimization",
+        "Applies the $10/$100/$1,000 rule of thumb and buckets the tool appropriately",
+        "Warns against the $9 / ultra-low trap (false traction, hard to raise, low-price churn)",
+        "References 'just charge $50 and see' / getting a real signal (Intercom/Jason Fried)",
+        "Rejects competitor-based and cost-based pricing in favor of value + differentiation",
+        "Recommends a pricing model/structure (e.g. credit-based or usage-based for an AI tool)",
+        "Notes value/price ratio (~10:1) or that low prices hurt retention"
+      ],
+      "files": []
+    },
+    {
+      "id": 9,
+      "prompt": "Our four-question Van Westendorp survey found PMC $29, OPP $49, IDP $59 and PME $79 per month. We charge $39. Can I tell the board that raising to $49-$59 will not significantly reduce demand, and that $49 maximizes revenue? No purchase-intent, actual sales or retention data were collected.",
+      "expected_output": "Should reject both claims as unsupported by four price-perception questions. Describe OPP as a named intersection, not revenue optimum. Use $49 and $59 as candidate test prices (+25.6% and +51.3% vs $39), keep demand/churn/revenue forecasts unknown, and propose purchase-intent/choice research or a controlled actual price test with conversion, margin and retention guardrails. Do not infer probabilities from price acceptability.",
+      "assertions": [
+        "Separates price perception from purchase behavior",
+        "Does not promise unchanged demand or claim a revenue-maximizing OPP",
+        "Computes price increases using the current $39 denominator",
+        "Recommends collecting purchase behavior and unit economics before rollout"
+      ],
+      "files": []
+    }
+  ]
+}
