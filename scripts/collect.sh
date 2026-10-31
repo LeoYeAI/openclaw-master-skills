@@ -672,58 +672,71 @@ publish_clawhub() {
   cat > "$pkg_dir/references/install-guide.md" <<EOF
 # Install Agent Master Skills
 
+Harness-agnostic skill collection. Works with OpenClaw, Claude Code, Codex CLI,
+Cursor, Gemini CLI, Hermes and any runtime that reads Agent Skills (SKILL.md).
+
 Full collection:
 https://github.com/LeoYeAI/agent-master-skills
 EOF
 
   clawhub logout >> "$LOG_FILE" 2>&1 || true
   clawhub login --token "$CLAWHUB_TOKEN" >> "$LOG_FILE" 2>&1 || fail "ClawHub login failed"
-  if ! clawhub publish "$pkg_dir" \
+
+  # Publish to the new slug, then keep the legacy slug alive. The rename moved
+  # the package to agent-master-skills, but the old slug still has real users
+  # (172 installs at rename time) whose `clawhub update` reads that slug. Without
+  # the second publish they would silently stop receiving updates with no error
+  # anywhere. Legacy is best-effort: its failure must not fail the run.
+  publish_one_slug "$pkg_dir" "agent-master-skills" "required" || true
+  publish_one_slug "$pkg_dir" "openclaw-master-skills" "legacy" || {
+    warn "legacy slug publish failed; existing openclaw-master-skills installs did NOT get $NEW_VERSION"
+  }
+
+  ok "ClawHub publish succeeded"
+}
+
+# publish_one_slug <pkg_dir> <slug> <required|legacy>
+publish_one_slug() {
+  local pkg_dir="$1" slug="$2" mode="$3"
+  info "Publishing ${slug}@${NEW_VERSION} (${mode})"
+
+  if clawhub publish "$pkg_dir" \
     --registry "$CLAWHUB_REGISTRY" \
-    --slug agent-master-skills \
+    --slug "$slug" \
     --version "$NEW_VERSION" \
     --changelog "Daily update: +${NEW_COUNT} skills, total ${TOTAL_COUNT}. Source: head skill repos." \
     >> "$LOG_FILE" 2>&1; then
-    # ClawHub's version check is eventually consistent and has reported
-    # "Version X already exists" for a version this very call had just created:
-    # on 2026-10-31 v0.22.2 was live at 02:01:23 while the CLI printed that
-    # error at 02:02:00, failing a run that had in fact published. Probe the
-    # registry before treating it as a real failure, the same way git_publish
-    # tolerates an already_exists GitHub Release.
-    local publish_state="failed"
-    if curl -sf -o /dev/null \
-        "${CLAWHUB_REGISTRY}/api/v1/skills/agent-master-skills/versions/${NEW_VERSION}"; then
-      publish_state="live"
-    else
-      # A newly created or re-submitted skill is hidden from the public API
-      # while it sits in the moderation queue: the skill endpoint 404s and every
-      # version 404s with it. Without this branch a brand-new slug
-      # (agent-master-skills was created 2026-10-31 as pending.publication) is
-      # indistinguishable from a genuine failure, and every daily run would
-      # fail and re-upload the same version forever.
-      local moderation=""
-      moderation=$(clawhub inspect agent-master-skills 2>&1 \
-        | grep -o 'pending\.[a-z]*' | head -1 || true)
-      if [ -n "$moderation" ]; then
-        publish_state="pending:$moderation"
-      fi
-    fi
-
-    case "$publish_state" in
-      live)
-        warn "ClawHub reported an error but v${NEW_VERSION} is live on the registry; treating as published"
-        ;;
-      pending:*)
-        # Uploaded into the review queue is success from our side: the package
-        # is on ClawHub awaiting moderation. Do not fail, do not re-publish.
-        warn "ClawHub v${NEW_VERSION} uploaded and awaiting moderation ($moderation); not a failure"
-        ;;
-      *)
-        fail "ClawHub publish failed and v${NEW_VERSION} is not live on the registry"
-        ;;
-    esac
+    ok "${slug}: published"
+    return 0
   fi
-  ok "ClawHub publish succeeded"
+
+  # ClawHub's version check is eventually consistent and has reported
+  # "Version X already exists" for a version this very call had just created:
+  # on 2026-10-31 v0.22.2 was live at 02:01:23 while the CLI printed that error
+  # at 02:02:00, failing a run that had in fact published. Probe the registry
+  # before treating it as a real failure, the same way git_publish tolerates an
+  # already_exists GitHub Release.
+  if curl -sf -o /dev/null "${CLAWHUB_REGISTRY}/api/v1/skills/${slug}/versions/${NEW_VERSION}"; then
+    warn "${slug}: reported an error but v${NEW_VERSION} is live; treating as published"
+    return 0
+  fi
+
+  # A new or re-submitted skill is hidden from the public API while it sits in
+  # the moderation queue: the skill endpoint 404s and every version 404s with
+  # it. agent-master-skills was created 2026-10-31 as pending.publication, so
+  # without this branch a queued upload is indistinguishable from a real
+  # failure and every daily run would re-upload the same version forever.
+  local moderation=""
+  moderation=$(clawhub inspect "$slug" 2>&1 | grep -o 'pending\.[a-z]*' | head -1 || true)
+  if [ -n "$moderation" ]; then
+    warn "${slug}: v${NEW_VERSION} uploaded, awaiting moderation (${moderation}); not a failure"
+    return 0
+  fi
+
+  if [ "$mode" = "legacy" ]; then
+    return 1
+  fi
+  fail "ClawHub publish failed for ${slug} and v${NEW_VERSION} is not live on the registry"
 }
 
 # Recover version/count values from the already-built commit instead of the
