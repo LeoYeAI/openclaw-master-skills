@@ -1,0 +1,368 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:pylabrobot-skill:protocol-manifest:1.0",
+  "title": "Offline PyLabRobot protocol manifest",
+  "description": "Documentation schema for the dependency-free validator. The bundled Python validator additionally enforces numeric bounds, unique names, well bounds, allowlists, and safety invariants without fetching this URI or any remote reference.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "protocol_id",
+    "mode",
+    "units",
+    "deck",
+    "resources",
+    "constraints"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "1.0"
+    },
+    "protocol_id": {
+      "$ref": "#/$defs/name"
+    },
+    "mode": {
+      "const": "offline"
+    },
+    "units": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "volume",
+        "length",
+        "rate",
+        "time"
+      ],
+      "properties": {
+        "volume": {
+          "const": "uL"
+        },
+        "length": {
+          "const": "mm"
+        },
+        "rate": {
+          "const": "uL/s"
+        },
+        "time": {
+          "const": "s"
+        }
+      }
+    },
+    "deck": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "name",
+        "size_mm"
+      ],
+      "properties": {
+        "name": {
+          "$ref": "#/$defs/name"
+        },
+        "size_mm": {
+          "$ref": "#/$defs/positive_xyz"
+        }
+      }
+    },
+    "resources": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 256,
+      "items": {
+        "oneOf": [
+          {
+            "$ref": "#/$defs/liquid_resource"
+          },
+          {
+            "$ref": "#/$defs/tip_rack"
+          },
+          {
+            "$ref": "#/$defs/waste"
+          }
+        ]
+      }
+    },
+    "constraints": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "allowed_liquid_classes",
+        "allowed_tip_types",
+        "channels",
+        "requires_human_confirmation",
+        "max_transfer_uL",
+        "max_rate_uL_s"
+      ],
+      "properties": {
+        "allowed_liquid_classes": {
+          "$ref": "#/$defs/name_list"
+        },
+        "allowed_tip_types": {
+          "$ref": "#/$defs/name_list"
+        },
+        "channels": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 96
+        },
+        "requires_human_confirmation": {
+          "const": true
+        },
+        "max_transfer_uL": {
+          "$ref": "#/$defs/positive_volume"
+        },
+        "max_rate_uL_s": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "maximum": 10000
+        }
+      }
+    }
+  },
+  "$defs": {
+    "name": {
+      "type": "string",
+      "pattern": "^[A-Za-z][A-Za-z0-9_-]{0,63}$"
+    },
+    "well": {
+      "type": "string",
+      "pattern": "^[A-Z]{1,2}[1-9][0-9]{0,2}$"
+    },
+    "positive_volume": {
+      "type": "number",
+      "exclusiveMinimum": 0,
+      "maximum": 1000000
+    },
+    "name_list": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 256,
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/$defs/name"
+      }
+    },
+    "location_xyz": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "x",
+        "y",
+        "z"
+      ],
+      "properties": {
+        "x": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 5000
+        },
+        "y": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 5000
+        },
+        "z": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 5000
+        }
+      }
+    },
+    "positive_xyz": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "x",
+        "y",
+        "z"
+      ],
+      "properties": {
+        "x": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "maximum": 5000
+        },
+        "y": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "maximum": 5000
+        },
+        "z": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "maximum": 5000
+        }
+      }
+    },
+    "liquid_grid": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "rows",
+        "columns",
+        "well_capacity_uL",
+        "dead_volume_uL",
+        "well_depth_mm"
+      ],
+      "properties": {
+        "rows": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 384
+        },
+        "columns": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 384
+        },
+        "well_capacity_uL": {
+          "$ref": "#/$defs/positive_volume"
+        },
+        "dead_volume_uL": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1000000
+        },
+        "well_depth_mm": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "maximum": 5000
+        }
+      }
+    },
+    "tip_grid": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "rows",
+        "columns",
+        "tip_capacity_uL"
+      ],
+      "properties": {
+        "rows": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 384
+        },
+        "columns": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 384
+        },
+        "tip_capacity_uL": {
+          "$ref": "#/$defs/positive_volume"
+        }
+      }
+    },
+    "liquid_resource": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "name",
+        "kind",
+        "location_mm",
+        "size_mm",
+        "grid",
+        "initial_volumes_uL"
+      ],
+      "properties": {
+        "name": {
+          "$ref": "#/$defs/name"
+        },
+        "kind": {
+          "enum": [
+            "plate",
+            "reservoir",
+            "tube_rack"
+          ]
+        },
+        "location_mm": {
+          "$ref": "#/$defs/location_xyz"
+        },
+        "size_mm": {
+          "$ref": "#/$defs/positive_xyz"
+        },
+        "grid": {
+          "$ref": "#/$defs/liquid_grid"
+        },
+        "initial_volumes_uL": {
+          "type": "object",
+          "propertyNames": {
+            "$ref": "#/$defs/well"
+          },
+          "additionalProperties": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1000000
+          },
+          "description": "Declared initial volumes, including explicit zero for every empty destination. The planner rejects any source or destination well absent from this map."
+        }
+      }
+    },
+    "tip_rack": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "name",
+        "kind",
+        "location_mm",
+        "size_mm",
+        "grid",
+        "tip_type",
+        "tips_available"
+      ],
+      "properties": {
+        "name": {
+          "$ref": "#/$defs/name"
+        },
+        "kind": {
+          "const": "tip_rack"
+        },
+        "location_mm": {
+          "$ref": "#/$defs/location_xyz"
+        },
+        "size_mm": {
+          "$ref": "#/$defs/positive_xyz"
+        },
+        "grid": {
+          "$ref": "#/$defs/tip_grid"
+        },
+        "tip_type": {
+          "$ref": "#/$defs/name"
+        },
+        "tips_available": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/well"
+          }
+        }
+      }
+    },
+    "waste": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "name",
+        "kind",
+        "location_mm",
+        "size_mm"
+      ],
+      "properties": {
+        "name": {
+          "$ref": "#/$defs/name"
+        },
+        "kind": {
+          "const": "waste"
+        },
+        "location_mm": {
+          "$ref": "#/$defs/location_xyz"
+        },
+        "size_mm": {
+          "$ref": "#/$defs/positive_xyz"
+        }
+      }
+    }
+  }
+}

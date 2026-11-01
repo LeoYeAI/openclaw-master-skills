@@ -3,6 +3,47 @@
 每次更新的详细发布说明。
 
 
+## v0.22.3 — 2026-11-01
+
+### 🚀 日更：新增 100 个 Skills，总计 2803
+
+来源：头部技能仓库（obra/superpowers、addyosmani/agent-skills、wshobson/agents 等），按质量规则筛选（SKILL.md 800B-30KB、完整 YAML 元数据、有效 description）。
+
+#### 部分新增亮点（前 30 个）
+- `agent-protocol` — Use when C-suite advisor agents need to call each other or run a multi-role meeting. Defines invocation syntax, loop pre
+- `google-workspace-cli` — Use for Google Workspace admin or automation from the gws CLI (Gmail, Drive, Sheets, Calendar, Docs, Chat, Tasks). Sets 
+- `torchdrug` — Builds and troubleshoots TorchDrug 0.2.1 workflows for molecular graphs, property prediction, self-supervised pretrainin
+- `markitdown` — Converts heterogeneous documents and selected URIs to Markdown with Microsoft MarkItDown for text analysis, search, and 
+- `events` — When the user wants to plan, run, sponsor, speak at, or get pipeline from events — webinars, conferences, trade shows, m
+- `competitors` — When the user wants to create competitor comparison or alternative pages for SEO and buyer-facing use. Also use when the
+- `hivemind` — Use when delegating grunt work to free opencode workers instead of spending Claude tokens: one worker or a scout, coder 
+- `co-marketing` — When the user wants to find co-marketing partners, plan joint campaigns, or brainstorm partnership opportunities. Use wh
+- `impeccable` — Use when the user wants to design, redesign, shape, critique, audit, polish, simplify, harden, animate, or otherwise imp
+- `frontend-ui-engineering` — Builds production-quality, accessible, responsive user-facing UIs. Use when building or modifying interfaces and pages, 
+- `bioservices` — Provides a Python interface to bioinformatics services including UniProt, KEGG, ChEMBL, Reactome, QuickGO, and UniChem. 
+- `glycoengineering` — Analyzes and engineers protein glycosylation by scanning canonical N-glycosylation sequons, describing S/T-rich regions,
+- `pylabrobot` — Develops and reviews PyLabRobot lab-automation resources, liquid-handling plans, offline simulations, and supported-devi
+- `diffdock` — Predicts protein-small-molecule binding poses with DiffDock and DiffDock-L from PDB or sequence plus SMILES/SDF/MOL2. Co
+- `what-if-oracle` — Supports structured what-if scenario analysis for research planning, experimental contingencies, and scientific project 
+- `hugging-science` — Discovers and evaluates scientific datasets, models, methodology posts, and Spaces through the Hugging Science catalog. 
+- `adversarial-reviewer` — Use before merging a PR or when a self-review feels too agreeable and the change needs a genuinely critical read. Review
+- `meeting-analyzer` — Use when the user shares meeting transcripts (.vtt, .srt, .txt, Otter, Granola, Zoom) or asks how they come across in me
+- `popups` — When the user wants to create or optimize popups, modals, overlays, slide-ins, or banners for conversion purposes. Also 
+- `plugin-audit` — Comprehensive audit pipeline for skills, plugins, agents, and commands. Validates structure, quality, security, marketpl
+- `labarchive-integration` — Integrates with the official LabArchives ELN REST-like API and Inventory API v1. Supports regional endpoint selection, s
+- `get-available-resources` — Detects host inventory and effective CPU, memory, disk, scheduler, container, and accelerator limits when a user asks fo
+- `cobrapy` — Performs constraint-based metabolic modeling with COBRApy, including FBA, pFBA, FVA, gene knockouts, flux sampling, grow
+- `capacity-planner` — Use when sizing an ops or support team, building a headcount plan or checking utilization risk. Models queues with Erlan
+- `chief-customer-officer-advisor` — Use for retention strategy, customer segmentation or CS team sizing decisions (GRR vs NRR, churn causes, pooled vs named
+- `cs-demand-gen-specialist` — Demand generation and acquisition-funnel specialist orchestrating the marketing-demand-acquisition, paid-ads, and email-
+- `onboarding` — When the user wants to optimize post-signup onboarding, user activation, first-run experience, or time-to-value. Also us
+- `commercial-forecaster` — Use when building a bookings, ARR, pipeline or NRR forecast, or a commit, best-case and pipeline board number. Forecasts
+- `emails` — When the user wants to create or optimize an email sequence, drip campaign, automated email flow, or lifecycle email pro
+- `shipping-and-launch` — Prepares production launches. Use when preparing to deploy to production, or when asking what needs to be in place befor
+
+---
+
+
 ## v0.22.2 — 2026-10-31
 
 ### 🚀 日更：新增 100 个 Skills，总计 2703
