@@ -3,6 +3,47 @@
 每次更新的详细发布说明。
 
 
+## v0.22.4 — 2026-11-02
+
+### 🚀 日更：新增 100 个 Skills，总计 2903
+
+来源：头部技能仓库（obra/superpowers、addyosmani/agent-skills、wshobson/agents 等），按质量规则筛选（SKILL.md 800B-30KB、完整 YAML 元数据、有效 description）。
+
+#### 部分新增亮点（前 30 个）
+- `community-marketing` — Build and leverage online communities to drive product growth and brand loyalty. Use when the user wants to create a com
+- `public-relations` — When the user wants help with public relations, earned media, press coverage, journalist outreach, or media strategy (no
+- `product-skills` — Use when a product request needs routing across the product-team skills (prioritization, OKRs, UX research, experiments,
+- `session-handoff` — Write a handoff document so a fresh session or another agent can pick up exactly where this one left off: goal, current 
+- `business-investment-advisor` — Use when deciding whether a capital expense is worth it (equipment, property, an acquisition, hiring, technology), or fo
+- `red-green-proof` — Turns a suspected bug into a proven one. Verify the cause against reality before claiming it, write a test that FAILS on
+- `a11y-audit` — Use for any accessibility audit or a11y fix (WCAG 2.2 A/AA, color contrast, compliance report, CI check) in React, Next.
+- `primekg` — Queries a pinned Precision Medicine Knowledge Graph (PrimeKG) CSV for typed gene, drug, disease, and phenotype nodes, di
+- `incremental-implementation` — Delivers changes incrementally in thin, verifiable slices. Use when implementing any feature or change that touches more
+- `usfiscaldata` — Queries the U.S. Treasury Fiscal Data REST API for federal financial data. No API key required. Use for national debt (D
+- `passive-deal-screener` — Use when a passive investor shares a private deal (syndication, preferred equity, bridge fund, private credit) to screen
+- `feature-flags-architect` — Use before adding, rolling out or retiring a feature flag or kill switch, or when flag debt piles up. Plans the rollout 
+- `marine-carbonate-chemistry` — Solves seawater carbonate chemistry with PyCO2SYS for chemical oceanography, ocean acidification, and marine carbon-cycl
+- `startup-cto` — Technical co-founder who's been through two startups and learned what actually matters. Makes architecture decisions, se
+- `timesfm-forecasting` — Performs zero-shot time-series forecasting with Google's TimesFM, including regular-grid CSV preparation, quantile forec
+- `molfeat` — Featurizes small molecules with Molfeat for QSAR/QSPR, chemical similarity, virtual screening, and molecular ML. Covers 
+- `idea-refine` — Refines raw ideas into sharp, actionable concepts through structured divergent and convergent thinking. Use when an idea
+- `phylogenetics` — Builds and analyzes phylogenetic trees using MAFFT multiple sequence alignment, IQ-TREE maximum likelihood with ModelFin
+- `social-media-manager` — Use for social media strategy, a content calendar, community management or follower growth across platforms. Generates t
+- `paperzilla` — Reads projects, searches project feeds, and retrieves recommendations and canonical papers in Paperzilla through the pz 
+- `fable-goal` — Use when the user wants a /goal prompt rather than the build itself ('/fable-goal', 'turn this into a goal prompt', 'wri
+- `reflect` — Use when the user says 'step back', 'zoom out', 'are we on track' or 'sanity check this', or work has gone deep into det
+- `pricing-strategist` — Use when choosing or revisiting pricing: seat, usage, value-based, freemium or hybrid, Van Westendorp willingness-to-pay
+- `ncats-arax` — Queries the NCATS Translator ARAX production API for bounded, typed, provenance-rich one-hop and endpoint-pinned two-hop
+- `data-quality-auditor` — Use before analysis or model training on any dataset, or when asked to profile data or hunt missing values and outliers.
+- `deepchem` — Builds molecular property prediction and MoleculeNet workflows with DeepChem, including SMILES featurization, scaffold o
+- `zarr-python` — Stores and queries chunked N-D scientific arrays with Zarr-Python 3, including codecs, sharding, S3/GCS storage, and Num
+- `rdkit` — Cheminformatics toolkit for fine-grained molecular control. SMILES/SDF parsing, descriptors (MW, LogP, TPSA), fingerprin
+- `parallel-web` — Uses Parallel CLI for web search, URL extraction, deep research, structured data enrichment, entity discovery, and recur
+- `general-counsel-advisor` — Use when reviewing a contract or term sheet (MSA, SaaS, NDA, DPA, employment), setting IP strategy or mapping regulatory
+
+---
+
+
 ## v0.22.3 — 2026-11-01
 
 ### 🚀 日更：新增 100 个 Skills，总计 2803
