@@ -210,6 +210,7 @@ your home directory.
 
 | Skill | Description |
 |---|---|
+| [`agent-run-forensics`](skills/agent-run-forensics/) | Answer "why did it do that" about a past agent run from its recording instead of the agent's memory - which step changed a file, why a command ran - and replay that run offline with no model call. |
 | [`api-design-principles`](skills/api-design-principles/) | Master REST and GraphQL API design principles to build intuitive, scalable, and maintainable APIs th |
 | [`architecture-blueprint-generator`](skills/architecture-blueprint-generator/) | Comprehensive project architecture blueprint generator that analyzes codebases to create detailed ar |
 | [`architecture-patterns`](skills/architecture-patterns/) | Implement proven backend architecture patterns including Clean Architecture, Hexagonal Architecture, |
