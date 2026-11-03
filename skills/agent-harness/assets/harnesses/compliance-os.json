@@ -1,0 +1,199 @@
+{
+  "schema": "agent-harness/manifest.v1",
+  "domain": "compliance-os",
+  "skill_count": 9,
+  "loop_defaults": {
+    "max_attempts_per_task": 3,
+    "max_loop_iterations": 12,
+    "escalate_on": [
+      "attempts_exhausted",
+      "no_verification_available",
+      "destructive_or_irreversible_action",
+      "goal_drift_detected"
+    ]
+  },
+  "skills": [
+    {
+      "name": "ai-act-readiness",
+      "path": "compliance-os/skills/ai-act-readiness",
+      "description": "Use for /compliance-os:ai-act-readiness, or EU AI Act readiness questions during AI-system intake or before EU deployment.",
+      "tools": [],
+      "agentic_signals": {
+        "goal_intake": true,
+        "refusal_gate": false,
+        "verification": true,
+        "loop_discipline": false,
+        "close_out": false
+      },
+      "references": []
+    },
+    {
+      "name": "aims-audit",
+      "path": "compliance-os/skills/aims-audit",
+      "description": "Use for /compliance-os:aims-audit, or ISO 42001 readiness before stage 1 or an internal audit cycle.",
+      "tools": [],
+      "agentic_signals": {
+        "goal_intake": true,
+        "refusal_gate": false,
+        "verification": true,
+        "loop_discipline": false,
+        "close_out": false
+      },
+      "references": []
+    },
+    {
+      "name": "compliance-os",
+      "path": "compliance-os/skills/compliance-os",
+      "description": "Use when running several compliance frameworks at once: which apply, where controls overlap, a mock audit or one evidence checklist. Runs framework_selector.py, cross_framework_mapper.py, audit_simulator.py and evidence_pool_generator.py.",
+      "tools": [
+        {
+          "script": "compliance-os/skills/compliance-os/scripts/audit_simulator.py",
+          "wired": true,
+          "supports_sample": false,
+          "verification": [
+            {
+              "cmd": "python3 compliance-os/skills/compliance-os/scripts/audit_simulator.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            }
+          ]
+        },
+        {
+          "script": "compliance-os/skills/compliance-os/scripts/cross_framework_mapper.py",
+          "wired": true,
+          "supports_sample": false,
+          "verification": [
+            {
+              "cmd": "python3 compliance-os/skills/compliance-os/scripts/cross_framework_mapper.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            }
+          ]
+        },
+        {
+          "script": "compliance-os/skills/compliance-os/scripts/evidence_pool_generator.py",
+          "wired": true,
+          "supports_sample": false,
+          "verification": [
+            {
+              "cmd": "python3 compliance-os/skills/compliance-os/scripts/evidence_pool_generator.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            }
+          ]
+        },
+        {
+          "script": "compliance-os/skills/compliance-os/scripts/framework_selector.py",
+          "wired": true,
+          "supports_sample": false,
+          "verification": [
+            {
+              "cmd": "python3 compliance-os/skills/compliance-os/scripts/framework_selector.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            }
+          ]
+        }
+      ],
+      "agentic_signals": {
+        "goal_intake": false,
+        "refusal_gate": false,
+        "verification": true,
+        "loop_discipline": false,
+        "close_out": false
+      },
+      "references": [
+        "audit_simulation_methodology.md",
+        "compliance_os_pattern.md",
+        "cross_framework_overlap.md",
+        "evidence_artifact_reuse_index.md",
+        "evidence_management.md",
+        "multi_framework_audit_playbook.md"
+      ]
+    },
+    {
+      "name": "compliance-readiness",
+      "path": "compliance-os/skills/compliance-readiness",
+      "description": "Use for /compliance-os:compliance-readiness, or before adding a framework or planning the annual audit calendar.",
+      "tools": [],
+      "agentic_signals": {
+        "goal_intake": true,
+        "refusal_gate": false,
+        "verification": false,
+        "loop_discipline": false,
+        "close_out": false
+      },
+      "references": []
+    },
+    {
+      "name": "fda-qsr-audit-prep",
+      "path": "compliance-os/skills/fda-qsr-audit-prep",
+      "description": "Use for /compliance-os:fda-qsr-audit-prep, or before an FDA inspection, QMSR internal audit or Form 483 response.",
+      "tools": [],
+      "agentic_signals": {
+        "goal_intake": true,
+        "refusal_gate": false,
+        "verification": true,
+        "loop_discipline": false,
+        "close_out": false
+      },
+      "references": []
+    },
+    {
+      "name": "gdpr-audit-prep",
+      "path": "compliance-os/skills/gdpr-audit-prep",
+      "description": "Use for /compliance-os:gdpr-audit-prep, or before a GDPR review, post-breach audit or DPA investigation.",
+      "tools": [],
+      "agentic_signals": {
+        "goal_intake": true,
+        "refusal_gate": false,
+        "verification": true,
+        "loop_discipline": false,
+        "close_out": false
+      },
+      "references": []
+    },
+    {
+      "name": "iso13485-audit-prep",
+      "path": "compliance-os/skills/iso13485-audit-prep",
+      "description": "Use for /compliance-os:iso13485-audit-prep, or before an ISO 13485 internal audit or DHF closure.",
+      "tools": [],
+      "agentic_signals": {
+        "goal_intake": true,
+        "refusal_gate": false,
+        "verification": true,
+        "loop_discipline": false,
+        "close_out": false
+      },
+      "references": []
+    },
+    {
+      "name": "iso27001-audit-prep",
+      "path": "compliance-os/skills/iso27001-audit-prep",
+      "description": "Use for /compliance-os:iso27001-audit-prep, or before an ISO 27001 internal, surveillance or stage 1 audit.",
+      "tools": [],
+      "agentic_signals": {
+        "goal_intake": true,
+        "refusal_gate": false,
+        "verification": false,
+        "loop_discipline": false,
+        "close_out": false
+      },
+      "references": []
+    },
+    {
+      "name": "soc2-audit-prep",
+      "path": "compliance-os/skills/soc2-audit-prep",
+      "description": "Use for /compliance-os:soc2-audit-prep, or before or during a SOC 2 Type II observation period.",
+      "tools": [],
+      "agentic_signals": {
+        "goal_intake": true,
+        "refusal_gate": false,
+        "verification": false,
+        "loop_discipline": false,
+        "close_out": false
+      },
+      "references": []
+    }
+  ]
+}

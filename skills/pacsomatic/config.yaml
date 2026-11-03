@@ -1,0 +1,31 @@
+# Operator reference only. run_pacsomatic.py does not load this file.
+# CLI defaults are authoritative; use --help for all supported options.
+pipeline:
+  name: nf-core/pacsomatic
+  repo_url: https://github.com/nf-core/pacsomatic.git
+  default_version: "24c84cb371b0339c1d65a4de9451671945e19772"
+  status: development-commit-no-release-tag
+runtime:
+  conda_env: pacsomatic-nextflow
+  use_current_path: false
+  create_conda_env: false
+  conda_env_file: ""  # Must be supplied explicitly to create an environment.
+execution:
+  profile: singularity
+  executor: local  # Outer launcher only; pbs means PBS Pro/OpenPBS.
+  cpus: 16
+  memory_gb: 64
+  walltime: "48:00"  # Helper always interprets this as hours:minutes.
+  queue: ""
+  project: ""
+  job_name: pacsomatic
+outputs:
+  samplesheet_name: samplesheet.csv
+  generated_params_name: pacsomatic.params.generated.yaml
+  default_workdir_name: work
+validation:
+  require_exactly_one_reference_mode: true
+  require_distinct_nonempty_bam_files: true
+  min_nextflow: "24.04.2"
+  min_java_major: 17
+  max_java_major: 26

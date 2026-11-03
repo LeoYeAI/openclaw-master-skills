@@ -1,0 +1,325 @@
+{
+  "schema": "agent-harness/manifest.v1",
+  "domain": "c-level-agents",
+  "skill_count": 22,
+  "loop_defaults": {
+    "max_attempts_per_task": 3,
+    "max_loop_iterations": 12,
+    "escalate_on": [
+      "attempts_exhausted",
+      "no_verification_available",
+      "destructive_or_irreversible_action",
+      "goal_drift_detected"
+    ]
+  },
+  "skills": [
+    {
+      "name": "boardroom",
+      "path": "c-level-agents/skills/boardroom",
+      "description": "Use for /c-level-agents:boardroom, or a decision spanning several executive domains (a pricing change, raise vs cut). Runs a 6-phase C-suite deliberation and writes a board memo.",
+      "tools": [],
+      "agentic_signals": {
+        "goal_intake": false,
+        "refusal_gate": false,
+        "verification": false,
+        "loop_discipline": false,
+        "close_out": true
+      },
+      "references": []
+    },
+    {
+      "name": "brief",
+      "path": "c-level-agents/skills/brief",
+      "description": "Use for /c-level-agents:brief, or to frame a strategic question (options, assumptions, success criteria) as a one-page brief before deliberation.",
+      "tools": [],
+      "agentic_signals": {
+        "goal_intake": true,
+        "refusal_gate": false,
+        "verification": false,
+        "loop_discipline": true,
+        "close_out": true
+      },
+      "references": []
+    },
+    {
+      "name": "c-level-agents",
+      "path": "c-level-agents/skills/c-level-agents",
+      "description": "Use when the founder wants a virtual executive team or a /c-level-agents command. Lists the 13 C-suite agents and 21 commands and routes multi-role decisions.",
+      "tools": [],
+      "agentic_signals": {
+        "goal_intake": true,
+        "refusal_gate": false,
+        "verification": false,
+        "loop_discipline": false,
+        "close_out": false
+      },
+      "references": []
+    },
+    {
+      "name": "caio-review",
+      "path": "c-level-agents/skills/caio-review",
+      "description": "Use for /c-level-agents:caio-review, or to challenge a plan involving AI (no eval set, API vs fine-tune vs self-host, EU AI Act class).",
+      "tools": [],
+      "agentic_signals": {
+        "goal_intake": true,
+        "refusal_gate": true,
+        "verification": false,
+        "loop_discipline": false,
+        "close_out": false
+      },
+      "references": []
+    },
+    {
+      "name": "cco-review",
+      "path": "c-level-agents/skills/cco-review",
+      "description": "Use for /c-level-agents:cco-review, or to challenge a plan touching retention, segmentation or CS headcount.",
+      "tools": [],
+      "agentic_signals": {
+        "goal_intake": true,
+        "refusal_gate": false,
+        "verification": false,
+        "loop_discipline": false,
+        "close_out": true
+      },
+      "references": []
+    },
+    {
+      "name": "cdo-review",
+      "path": "c-level-agents/skills/cdo-review",
+      "description": "Use for /c-level-agents:cdo-review, or to challenge a plan touching training-data rights, data architecture or data monetization.",
+      "tools": [],
+      "agentic_signals": {
+        "goal_intake": true,
+        "refusal_gate": false,
+        "verification": false,
+        "loop_discipline": false,
+        "close_out": false
+      },
+      "references": []
+    },
+    {
+      "name": "cfo-review",
+      "path": "c-level-agents/skills/cfo-review",
+      "description": "Use for /c-level-agents:cfo-review, or to challenge a plan that commits real money (a hiring wave, a raise, a channel budget).",
+      "tools": [],
+      "agentic_signals": {
+        "goal_intake": true,
+        "refusal_gate": false,
+        "verification": false,
+        "loop_discipline": true,
+        "close_out": false
+      },
+      "references": []
+    },
+    {
+      "name": "ciso-review",
+      "path": "c-level-agents/skills/ciso-review",
+      "description": "Use for /c-level-agents:ciso-review, or to challenge a plan touching customer data, compliance or production access.",
+      "tools": [],
+      "agentic_signals": {
+        "goal_intake": true,
+        "refusal_gate": false,
+        "verification": false,
+        "loop_discipline": true,
+        "close_out": false
+      },
+      "references": []
+    },
+    {
+      "name": "cmo-review",
+      "path": "c-level-agents/skills/cmo-review",
+      "description": "Use for /c-level-agents:cmo-review, or to challenge positioning, ICP, messaging or channel mix before a launch.",
+      "tools": [],
+      "agentic_signals": {
+        "goal_intake": true,
+        "refusal_gate": false,
+        "verification": false,
+        "loop_discipline": true,
+        "close_out": false
+      },
+      "references": []
+    },
+    {
+      "name": "cpo-review",
+      "path": "c-level-agents/skills/cpo-review",
+      "description": "Use for /c-level-agents:cpo-review, or to challenge a roadmap, a PMF claim or a feature-kill decision.",
+      "tools": [],
+      "agentic_signals": {
+        "goal_intake": true,
+        "refusal_gate": false,
+        "verification": false,
+        "loop_discipline": true,
+        "close_out": false
+      },
+      "references": []
+    },
+    {
+      "name": "cro-review",
+      "path": "c-level-agents/skills/cro-review",
+      "description": "Use for /c-level-agents:cro-review, or to challenge a forecast, win-rate drop or sales-team scale-up.",
+      "tools": [],
+      "agentic_signals": {
+        "goal_intake": true,
+        "refusal_gate": false,
+        "verification": false,
+        "loop_discipline": false,
+        "close_out": false
+      },
+      "references": []
+    },
+    {
+      "name": "cross-eval",
+      "path": "c-level-agents/skills/cross-eval",
+      "description": "Use for /c-level-agents:cross-eval, or when a high-stakes memo needs independent review by several models before the boardroom.",
+      "tools": [],
+      "agentic_signals": {
+        "goal_intake": false,
+        "refusal_gate": false,
+        "verification": false,
+        "loop_discipline": true,
+        "close_out": false
+      },
+      "references": []
+    },
+    {
+      "name": "cto-review",
+      "path": "c-level-agents/skills/cto-review",
+      "description": "Use for /c-level-agents:cto-review, or to challenge an architecture commitment, a 10x scaling plan or rebuild vs buy.",
+      "tools": [],
+      "agentic_signals": {
+        "goal_intake": true,
+        "refusal_gate": false,
+        "verification": false,
+        "loop_discipline": true,
+        "close_out": false
+      },
+      "references": []
+    },
+    {
+      "name": "decide",
+      "path": "c-level-agents/skills/decide",
+      "description": "Use for /c-level-agents:decide, or right after the founder approves a boardroom memo, to log it as a durable decision.",
+      "tools": [],
+      "agentic_signals": {
+        "goal_intake": false,
+        "refusal_gate": false,
+        "verification": true,
+        "loop_discipline": false,
+        "close_out": false
+      },
+      "references": []
+    },
+    {
+      "name": "execute",
+      "path": "c-level-agents/skills/execute",
+      "description": "Use for /c-level-agents:execute, or to turn an approved decision into a 90-day plan with weekly milestones and owners.",
+      "tools": [],
+      "agentic_signals": {
+        "goal_intake": false,
+        "refusal_gate": false,
+        "verification": true,
+        "loop_discipline": false,
+        "close_out": false
+      },
+      "references": []
+    },
+    {
+      "name": "founder-mode",
+      "path": "c-level-agents/skills/founder-mode",
+      "description": "Use for /c-level-agents:founder-mode, or any founder strategy question that hasn't been routed yet. Sends it to the right C-suite advisor or the boardroom.",
+      "tools": [],
+      "agentic_signals": {
+        "goal_intake": true,
+        "refusal_gate": false,
+        "verification": false,
+        "loop_discipline": false,
+        "close_out": false
+      },
+      "references": []
+    },
+    {
+      "name": "freeze",
+      "path": "c-level-agents/skills/freeze",
+      "description": "Use for /c-level-agents:freeze, or to put a cooling-off lock on an irreversible decision made under pressure.",
+      "tools": [],
+      "agentic_signals": {
+        "goal_intake": false,
+        "refusal_gate": true,
+        "verification": false,
+        "loop_discipline": true,
+        "close_out": false
+      },
+      "references": []
+    },
+    {
+      "name": "gc-review",
+      "path": "c-level-agents/skills/gc-review",
+      "description": "Use for /c-level-agents:gc-review, or to challenge a term sheet, customer MSA, IP assignment or regulatory exposure before signing.",
+      "tools": [],
+      "agentic_signals": {
+        "goal_intake": true,
+        "refusal_gate": false,
+        "verification": false,
+        "loop_discipline": false,
+        "close_out": false
+      },
+      "references": []
+    },
+    {
+      "name": "office-hours",
+      "path": "c-level-agents/skills/office-hours",
+      "description": "Use for /c-level-agents:office-hours, or when a founder question is too vague to route. Asks six YC-style questions before any advice.",
+      "tools": [],
+      "agentic_signals": {
+        "goal_intake": true,
+        "refusal_gate": false,
+        "verification": false,
+        "loop_discipline": true,
+        "close_out": false
+      },
+      "references": []
+    },
+    {
+      "name": "onboard",
+      "path": "c-level-agents/skills/onboard",
+      "description": "Use for /cs-onboard, or when the virtual C-suite lacks company context. Interviews the founder and writes ~/.claude/company-context.md.",
+      "tools": [],
+      "agentic_signals": {
+        "goal_intake": true,
+        "refusal_gate": false,
+        "verification": false,
+        "loop_discipline": false,
+        "close_out": false
+      },
+      "references": []
+    },
+    {
+      "name": "post-mortem",
+      "path": "c-level-agents/skills/post-mortem",
+      "description": "Use for /c-level-agents:post-mortem, or when a decision hits its 90-day review or kill criteria. Scores it against the original assumptions and dissent.",
+      "tools": [],
+      "agentic_signals": {
+        "goal_intake": false,
+        "refusal_gate": false,
+        "verification": false,
+        "loop_discipline": false,
+        "close_out": false
+      },
+      "references": []
+    },
+    {
+      "name": "vpe-review",
+      "path": "c-level-agents/skills/vpe-review",
+      "description": "Use for /c-level-agents:vpe-review, or to challenge a plan touching delivery speed, eng hiring, team structure or on-call.",
+      "tools": [],
+      "agentic_signals": {
+        "goal_intake": true,
+        "refusal_gate": false,
+        "verification": false,
+        "loop_discipline": true,
+        "close_out": false
+      },
+      "references": []
+    }
+  ]
+}

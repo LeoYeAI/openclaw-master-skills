@@ -1,0 +1,4271 @@
+{
+  "schema": "agent-harness/manifest.v1",
+  "domain": "engineering",
+  "skill_count": 97,
+  "loop_defaults": {
+    "max_attempts_per_task": 3,
+    "max_loop_iterations": 12,
+    "escalate_on": [
+      "attempts_exhausted",
+      "no_verification_available",
+      "destructive_or_irreversible_action",
+      "goal_drift_detected"
+    ]
+  },
+  "skills": [
+    {
+      "name": "agent-harness",
+      "path": "engineering/agent-harness/skills/agent-harness",
+      "description": "Turn any domain folder of skills into a bounded agentic loop: compile a goal into a verifiable task plan, execute tasks with the domain's own tools, verify every task with machine-run checks, retry with caps, escalate to a human when budgets exhaust, and refuse to close until everything is verified or explicitly waived. Use when you want an agent or subagent to pick up a goal and drive it to a verified close across one of this repo's 18 domains ('run this goal through the engineering harness', 'set up an agentic loop for marketing work', 'make the finance domain self-verifying'). NOT for \u2026",
+      "tools": [
+        {
+          "script": "engineering/agent-harness/skills/agent-harness/scripts/goal_compiler.py",
+          "wired": true,
+          "supports_sample": true,
+          "verification": [
+            {
+              "cmd": "python3 engineering/agent-harness/skills/agent-harness/scripts/goal_compiler.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            },
+            {
+              "cmd": "python3 engineering/agent-harness/skills/agent-harness/scripts/goal_compiler.py --sample",
+              "expect_exit": 0,
+              "kind": "sample"
+            }
+          ]
+        },
+        {
+          "script": "engineering/agent-harness/skills/agent-harness/scripts/harness_manifest_builder.py",
+          "wired": true,
+          "supports_sample": true,
+          "verification": [
+            {
+              "cmd": "python3 engineering/agent-harness/skills/agent-harness/scripts/harness_manifest_builder.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            },
+            {
+              "cmd": "python3 engineering/agent-harness/skills/agent-harness/scripts/harness_manifest_builder.py --sample",
+              "expect_exit": 0,
+              "kind": "sample"
+            }
+          ]
+        },
+        {
+          "script": "engineering/agent-harness/skills/agent-harness/scripts/loop_controller.py",
+          "wired": true,
+          "supports_sample": true,
+          "verification": [
+            {
+              "cmd": "python3 engineering/agent-harness/skills/agent-harness/scripts/loop_controller.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            },
+            {
+              "cmd": "python3 engineering/agent-harness/skills/agent-harness/scripts/loop_controller.py --sample",
+              "expect_exit": 0,
+              "kind": "sample"
+            }
+          ]
+        }
+      ],
+      "agentic_signals": {
+        "goal_intake": true,
+        "refusal_gate": true,
+        "verification": true,
+        "loop_discipline": true,
+        "close_out": true
+      },
+      "references": [
+        "agentic_loop_canon.md",
+        "domain_harness_design.md",
+        "verification_discipline.md"
+      ]
+    },
+    {
+      "name": "agent-memory",
+      "path": "engineering/agent-memory/skills/agent-memory",
+      "description": "Use when an agent keeps relearning the same correction, CLAUDE.md has grown unreadable, or you need to trace where a remembered rule came from. Promotes facts through four tiers only on recurrence across sessions and days, with memory_promote.py and a human adopt step.",
+      "tools": [
+        {
+          "script": "engineering/agent-memory/skills/agent-memory/scripts/memory_core.py",
+          "wired": false,
+          "supports_sample": false,
+          "verification": [
+            {
+              "cmd": "python3 engineering/agent-memory/skills/agent-memory/scripts/memory_core.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            }
+          ]
+        },
+        {
+          "script": "engineering/agent-memory/skills/agent-memory/scripts/memory_extract.py",
+          "wired": false,
+          "supports_sample": true,
+          "verification": [
+            {
+              "cmd": "python3 engineering/agent-memory/skills/agent-memory/scripts/memory_extract.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            },
+            {
+              "cmd": "python3 engineering/agent-memory/skills/agent-memory/scripts/memory_extract.py --sample",
+              "expect_exit": 0,
+              "kind": "sample"
+            }
+          ]
+        },
+        {
+          "script": "engineering/agent-memory/skills/agent-memory/scripts/memory_inspect.py",
+          "wired": true,
+          "supports_sample": true,
+          "verification": [
+            {
+              "cmd": "python3 engineering/agent-memory/skills/agent-memory/scripts/memory_inspect.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            },
+            {
+              "cmd": "python3 engineering/agent-memory/skills/agent-memory/scripts/memory_inspect.py --sample",
+              "expect_exit": 0,
+              "kind": "sample"
+            }
+          ]
+        },
+        {
+          "script": "engineering/agent-memory/skills/agent-memory/scripts/memory_promote.py",
+          "wired": true,
+          "supports_sample": true,
+          "verification": [
+            {
+              "cmd": "python3 engineering/agent-memory/skills/agent-memory/scripts/memory_promote.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            },
+            {
+              "cmd": "python3 engineering/agent-memory/skills/agent-memory/scripts/memory_promote.py --sample",
+              "expect_exit": 0,
+              "kind": "sample"
+            }
+          ]
+        },
+        {
+          "script": "engineering/agent-memory/skills/agent-memory/scripts/validate_examples.py",
+          "wired": false,
+          "supports_sample": false,
+          "verification": [
+            {
+              "cmd": "python3 engineering/agent-memory/skills/agent-memory/scripts/validate_examples.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            }
+          ]
+        }
+      ],
+      "agentic_signals": {
+        "goal_intake": true,
+        "refusal_gate": true,
+        "verification": false,
+        "loop_discipline": true,
+        "close_out": false
+      },
+      "references": [
+        "hook_capture_discipline.md",
+        "promotion_gate_design.md",
+        "tiered_memory_canon.md"
+      ]
+    },
+    {
+      "name": "agent-regression-evals",
+      "path": "engineering/agent-regression-evals/skills/agent-regression-evals",
+      "description": "Use before shipping any agent, prompt, model or tool change, or when a pass-rate drop needs a verdict. Runs repeated trials, gates candidate vs baseline with paired statistics in regression_gate.py, checks tool-call trajectories and finds flaky cases.",
+      "tools": [
+        {
+          "script": "engineering/agent-regression-evals/skills/agent-regression-evals/scripts/flake_detector.py",
+          "wired": true,
+          "supports_sample": true,
+          "verification": [
+            {
+              "cmd": "python3 engineering/agent-regression-evals/skills/agent-regression-evals/scripts/flake_detector.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            },
+            {
+              "cmd": "python3 engineering/agent-regression-evals/skills/agent-regression-evals/scripts/flake_detector.py --sample",
+              "expect_exit": 0,
+              "kind": "sample"
+            }
+          ]
+        },
+        {
+          "script": "engineering/agent-regression-evals/skills/agent-regression-evals/scripts/regression_gate.py",
+          "wired": true,
+          "supports_sample": true,
+          "verification": [
+            {
+              "cmd": "python3 engineering/agent-regression-evals/skills/agent-regression-evals/scripts/regression_gate.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            },
+            {
+              "cmd": "python3 engineering/agent-regression-evals/skills/agent-regression-evals/scripts/regression_gate.py --sample",
+              "expect_exit": 0,
+              "kind": "sample"
+            }
+          ]
+        },
+        {
+          "script": "engineering/agent-regression-evals/skills/agent-regression-evals/scripts/trajectory_checker.py",
+          "wired": true,
+          "supports_sample": true,
+          "verification": [
+            {
+              "cmd": "python3 engineering/agent-regression-evals/skills/agent-regression-evals/scripts/trajectory_checker.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            },
+            {
+              "cmd": "python3 engineering/agent-regression-evals/skills/agent-regression-evals/scripts/trajectory_checker.py --sample",
+              "expect_exit": 0,
+              "kind": "sample"
+            }
+          ]
+        }
+      ],
+      "agentic_signals": {
+        "goal_intake": false,
+        "refusal_gate": true,
+        "verification": true,
+        "loop_discipline": true,
+        "close_out": false
+      },
+      "references": [
+        "eval_statistics.md",
+        "flaky_cases_and_quarantine.md",
+        "trajectory_grading.md"
+      ]
+    },
+    {
+      "name": "agenthub",
+      "path": "engineering/agenthub/skills/agenthub",
+      "description": "Use when a task should be attempted by several agents in parallel and the best result kept (code speed, copy variants, research angles). Spawns N agents in git worktrees, ranks results by metric or judge with result_ranker.py and merges the winner.",
+      "tools": [
+        {
+          "script": "engineering/agenthub/skills/agenthub/scripts/board_manager.py",
+          "wired": true,
+          "supports_sample": false,
+          "verification": [
+            {
+              "cmd": "python3 engineering/agenthub/skills/agenthub/scripts/board_manager.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            }
+          ]
+        },
+        {
+          "script": "engineering/agenthub/skills/agenthub/scripts/dag_analyzer.py",
+          "wired": true,
+          "supports_sample": false,
+          "verification": [
+            {
+              "cmd": "python3 engineering/agenthub/skills/agenthub/scripts/dag_analyzer.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            }
+          ]
+        },
+        {
+          "script": "engineering/agenthub/skills/agenthub/scripts/dry_run.py",
+          "wired": false,
+          "supports_sample": false,
+          "verification": [
+            {
+              "cmd": "python3 engineering/agenthub/skills/agenthub/scripts/dry_run.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            }
+          ]
+        },
+        {
+          "script": "engineering/agenthub/skills/agenthub/scripts/hub_init.py",
+          "wired": true,
+          "supports_sample": false,
+          "verification": [
+            {
+              "cmd": "python3 engineering/agenthub/skills/agenthub/scripts/hub_init.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            }
+          ]
+        },
+        {
+          "script": "engineering/agenthub/skills/agenthub/scripts/result_ranker.py",
+          "wired": true,
+          "supports_sample": false,
+          "verification": [
+            {
+              "cmd": "python3 engineering/agenthub/skills/agenthub/scripts/result_ranker.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            }
+          ]
+        },
+        {
+          "script": "engineering/agenthub/skills/agenthub/scripts/session_manager.py",
+          "wired": true,
+          "supports_sample": false,
+          "verification": [
+            {
+              "cmd": "python3 engineering/agenthub/skills/agenthub/scripts/session_manager.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            }
+          ]
+        }
+      ],
+      "agentic_signals": {
+        "goal_intake": false,
+        "refusal_gate": false,
+        "verification": true,
+        "loop_discipline": true,
+        "close_out": false
+      },
+      "references": [
+        "agent-templates.md",
+        "coordination-strategies.md",
+        "dag-patterns.md"
+      ]
+    },
+    {
+      "name": "board",
+      "path": "engineering/agenthub/skills/board",
+      "description": "Use to post or read messages on the AgentHub coordination board between competing agents.",
+      "tools": [],
+      "agentic_signals": {
+        "goal_intake": false,
+        "refusal_gate": false,
+        "verification": false,
+        "loop_discipline": false,
+        "close_out": false
+      },
+      "references": []
+    },
+    {
+      "name": "eval",
+      "path": "engineering/agenthub/skills/eval",
+      "description": "Use to score and pick a winner among finished AgentHub agents by metric or judge.",
+      "tools": [],
+      "agentic_signals": {
+        "goal_intake": false,
+        "refusal_gate": false,
+        "verification": false,
+        "loop_discipline": false,
+        "close_out": false
+      },
+      "references": []
+    },
+    {
+      "name": "hub-init",
+      "path": "engineering/agenthub/skills/hub-init",
+      "description": "Use for /hub-init, or to start an AgentHub competition: task, agent count and evaluation criteria.",
+      "tools": [],
+      "agentic_signals": {
+        "goal_intake": false,
+        "refusal_gate": false,
+        "verification": false,
+        "loop_discipline": false,
+        "close_out": false
+      },
+      "references": []
+    },
+    {
+      "name": "hub-run",
+      "path": "engineering/agenthub/skills/hub-run",
+      "description": "Use for /hub-run, or to run a whole AgentHub competition end to end: init, baseline, spawn, eval and merge.",
+      "tools": [],
+      "agentic_signals": {
+        "goal_intake": false,
+        "refusal_gate": false,
+        "verification": false,
+        "loop_discipline": false,
+        "close_out": false
+      },
+      "references": []
+    },
+    {
+      "name": "hub-status",
+      "path": "engineering/agenthub/skills/hub-status",
+      "description": "Use for /hub-status, or to check AgentHub agent progress, branches and DAG state.",
+      "tools": [],
+      "agentic_signals": {
+        "goal_intake": false,
+        "refusal_gate": false,
+        "verification": false,
+        "loop_discipline": false,
+        "close_out": false
+      },
+      "references": []
+    },
+    {
+      "name": "merge",
+      "path": "engineering/agenthub/skills/merge",
+      "description": "Use to land the winning AgentHub branch, archive the others and clean up worktrees.",
+      "tools": [],
+      "agentic_signals": {
+        "goal_intake": false,
+        "refusal_gate": false,
+        "verification": false,
+        "loop_discipline": false,
+        "close_out": false
+      },
+      "references": []
+    },
+    {
+      "name": "spawn",
+      "path": "engineering/agenthub/skills/spawn",
+      "description": "Use to launch the competing agents for an initialized AgentHub session in isolated worktrees.",
+      "tools": [],
+      "agentic_signals": {
+        "goal_intake": false,
+        "refusal_gate": false,
+        "verification": true,
+        "loop_discipline": true,
+        "close_out": false
+      },
+      "references": []
+    },
+    {
+      "name": "ar-resume",
+      "path": "engineering/autoresearch-agent/skills/ar-resume",
+      "description": "Use for /ar-resume, or to continue a paused autoresearch experiment from its branch and results history.",
+      "tools": [],
+      "agentic_signals": {
+        "goal_intake": false,
+        "refusal_gate": false,
+        "verification": false,
+        "loop_discipline": true,
+        "close_out": false
+      },
+      "references": []
+    },
+    {
+      "name": "ar-run",
+      "path": "engineering/autoresearch-agent/skills/ar-run",
+      "description": "Use for /ar-run, or to run one manual autoresearch iteration: edit, evaluate, keep or discard.",
+      "tools": [],
+      "agentic_signals": {
+        "goal_intake": false,
+        "refusal_gate": false,
+        "verification": false,
+        "loop_discipline": true,
+        "close_out": false
+      },
+      "references": []
+    },
+    {
+      "name": "ar-status",
+      "path": "engineering/autoresearch-agent/skills/ar-status",
+      "description": "Use for /ar-status, or to see an autoresearch experiment's results, active loops and progress.",
+      "tools": [],
+      "agentic_signals": {
+        "goal_intake": false,
+        "refusal_gate": false,
+        "verification": false,
+        "loop_discipline": false,
+        "close_out": false
+      },
+      "references": []
+    },
+    {
+      "name": "autoresearch-agent",
+      "path": "engineering/autoresearch-agent/skills/autoresearch-agent",
+      "description": "Use when a file should be improved against a measurable metric (speed, bundle size, pass rate, prompt or headline score), before hand-tuning it. Loops edit, run_experiment.py, keep or git reset on a fixed evaluator; needs an eval command and a git repo.",
+      "tools": [
+        {
+          "script": "engineering/autoresearch-agent/skills/autoresearch-agent/scripts/log_results.py",
+          "wired": true,
+          "supports_sample": false,
+          "verification": [
+            {
+              "cmd": "python3 engineering/autoresearch-agent/skills/autoresearch-agent/scripts/log_results.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            }
+          ]
+        },
+        {
+          "script": "engineering/autoresearch-agent/skills/autoresearch-agent/scripts/run_experiment.py",
+          "wired": true,
+          "supports_sample": false,
+          "verification": [
+            {
+              "cmd": "python3 engineering/autoresearch-agent/skills/autoresearch-agent/scripts/run_experiment.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            }
+          ]
+        },
+        {
+          "script": "engineering/autoresearch-agent/skills/autoresearch-agent/scripts/setup_experiment.py",
+          "wired": true,
+          "supports_sample": false,
+          "verification": [
+            {
+              "cmd": "python3 engineering/autoresearch-agent/skills/autoresearch-agent/scripts/setup_experiment.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            }
+          ]
+        }
+      ],
+      "agentic_signals": {
+        "goal_intake": true,
+        "refusal_gate": false,
+        "verification": true,
+        "loop_discipline": true,
+        "close_out": false
+      },
+      "references": [
+        "experiment-domains.md",
+        "program-template.md"
+      ]
+    },
+    {
+      "name": "ar-loop",
+      "path": "engineering/autoresearch-agent/skills/ar-loop",
+      "description": "Use for /ar-loop, or to run an autoresearch experiment on a schedule (10 min to monthly) with CronCreate.",
+      "tools": [],
+      "agentic_signals": {
+        "goal_intake": false,
+        "refusal_gate": false,
+        "verification": false,
+        "loop_discipline": true,
+        "close_out": false
+      },
+      "references": []
+    },
+    {
+      "name": "setup",
+      "path": "engineering/autoresearch-agent/skills/setup",
+      "description": "Use for /autoresearch-agent:setup, or to start a new autoresearch experiment: target, eval command, metric, direction, evaluator.",
+      "tools": [],
+      "agentic_signals": {
+        "goal_intake": false,
+        "refusal_gate": false,
+        "verification": true,
+        "loop_discipline": false,
+        "close_out": false
+      },
+      "references": []
+    },
+    {
+      "name": "behuman",
+      "path": "engineering/behuman/skills/behuman",
+      "description": "Use when the user asks for less robotic, more human replies ('be real', 'talk like a person', 'mirror mode'), or the conversation is emotionally heavy (grief, job loss, fear). Drops lists and hedging for a direct, warm voice. Not for code or factual lookups.",
+      "tools": [],
+      "agentic_signals": {
+        "goal_intake": false,
+        "refusal_gate": false,
+        "verification": true,
+        "loop_discipline": true,
+        "close_out": false
+      },
+      "references": [
+        "api-integration.md"
+      ]
+    },
+    {
+      "name": "book-to-skill",
+      "path": "engineering/book-to-skill/skills/book-to-skill",
+      "description": "Use when turning a book, docs folder or spec collection (PDF, EPUB, DOCX, HTML, Markdown) into an agent skill, before summarizing it by hand. Extracts with extract_document.py, compiles chapters, glossary and cheatsheet, validates with book_skill_validator.py and enforces a rights gate.",
+      "tools": [
+        {
+          "script": "engineering/book-to-skill/skills/book-to-skill/scripts/book_skill_validator.py",
+          "wired": true,
+          "supports_sample": true,
+          "verification": [
+            {
+              "cmd": "python3 engineering/book-to-skill/skills/book-to-skill/scripts/book_skill_validator.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            },
+            {
+              "cmd": "python3 engineering/book-to-skill/skills/book-to-skill/scripts/book_skill_validator.py --sample",
+              "expect_exit": 0,
+              "kind": "sample"
+            }
+          ]
+        },
+        {
+          "script": "engineering/book-to-skill/skills/book-to-skill/scripts/extract_document.py",
+          "wired": true,
+          "supports_sample": true,
+          "verification": [
+            {
+              "cmd": "python3 engineering/book-to-skill/skills/book-to-skill/scripts/extract_document.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            },
+            {
+              "cmd": "python3 engineering/book-to-skill/skills/book-to-skill/scripts/extract_document.py --sample",
+              "expect_exit": 0,
+              "kind": "sample"
+            }
+          ]
+        },
+        {
+          "script": "engineering/book-to-skill/skills/book-to-skill/scripts/skill_plugin_emitter.py",
+          "wired": true,
+          "supports_sample": true,
+          "verification": [
+            {
+              "cmd": "python3 engineering/book-to-skill/skills/book-to-skill/scripts/skill_plugin_emitter.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            },
+            {
+              "cmd": "python3 engineering/book-to-skill/skills/book-to-skill/scripts/skill_plugin_emitter.py --sample",
+              "expect_exit": 0,
+              "kind": "sample"
+            }
+          ]
+        },
+        {
+          "script": "engineering/book-to-skill/skills/book-to-skill/scripts/token_budget_estimator.py",
+          "wired": true,
+          "supports_sample": true,
+          "verification": [
+            {
+              "cmd": "python3 engineering/book-to-skill/skills/book-to-skill/scripts/token_budget_estimator.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            },
+            {
+              "cmd": "python3 engineering/book-to-skill/skills/book-to-skill/scripts/token_budget_estimator.py --sample",
+              "expect_exit": 0,
+              "kind": "sample"
+            }
+          ]
+        }
+      ],
+      "agentic_signals": {
+        "goal_intake": true,
+        "refusal_gate": true,
+        "verification": true,
+        "loop_discipline": true,
+        "close_out": false
+      },
+      "references": [
+        "conversion_workflow.md",
+        "document_extraction_pipeline.md",
+        "knowledge_extraction_canon.md",
+        "progressive_disclosure_budgets.md",
+        "rights_and_provenance.md"
+      ]
+    },
+    {
+      "name": "boost-asio-pro",
+      "path": "engineering/boost-asio-pro",
+      "description": "Use for any C++ networking code with Boost.Asio or standalone Asio (TCP/UDP, SSL, timers, strands, io_context, co_spawn, awaitable, completion handlers), before writing or reviewing it. Applies lifetime, strand and cancellation rules that avoid the classic async bugs.",
+      "tools": [],
+      "agentic_signals": {
+        "goal_intake": false,
+        "refusal_gate": false,
+        "verification": true,
+        "loop_discipline": true,
+        "close_out": true
+      },
+      "references": [
+        "build.md",
+        "classic-boost.md",
+        "coroutines.md",
+        "pre-cpp20.md",
+        "ssl.md"
+      ]
+    },
+    {
+      "name": "caveman",
+      "path": "engineering/caveman/skills/caveman",
+      "description": "> Ultra-compressed communication mode. Cuts token usage ~75% by dropping filler, articles, and pleasantries while keeping full technical accuracy. Use when user says \"caveman mode\", \"talk like caveman\", \"use caveman\", \"less tokens\", \"be brief\", or invokes /caveman.",
+      "tools": [
+        {
+          "script": "engineering/caveman/skills/caveman/scripts/caveman_compressor.py",
+          "wired": false,
+          "supports_sample": false,
+          "verification": [
+            {
+              "cmd": "python3 engineering/caveman/skills/caveman/scripts/caveman_compressor.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            }
+          ]
+        },
+        {
+          "script": "engineering/caveman/skills/caveman/scripts/caveman_lint.py",
+          "wired": false,
+          "supports_sample": false,
+          "verification": [
+            {
+              "cmd": "python3 engineering/caveman/skills/caveman/scripts/caveman_lint.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            }
+          ]
+        },
+        {
+          "script": "engineering/caveman/skills/caveman/scripts/token_savings_estimator.py",
+          "wired": false,
+          "supports_sample": false,
+          "verification": [
+            {
+              "cmd": "python3 engineering/caveman/skills/caveman/scripts/token_savings_estimator.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            }
+          ]
+        }
+      ],
+      "agentic_signals": {
+        "goal_intake": false,
+        "refusal_gate": false,
+        "verification": true,
+        "loop_discipline": false,
+        "close_out": false
+      },
+      "references": [
+        "companion_tooling.md",
+        "compression_principles.md",
+        "when_caveman_backfires.md"
+      ]
+    },
+    {
+      "name": "chaos-engineering",
+      "path": "engineering/chaos-engineering/skills/chaos-engineering",
+      "description": "Use before running a chaos experiment, gameday or fault injection, or after one to write it up. Designs it with steady state and abort criteria in experiment_designer.py, sizes the blast radius with blast_radius_calculator.py and drafts the postmortem.",
+      "tools": [
+        {
+          "script": "engineering/chaos-engineering/skills/chaos-engineering/scripts/blast_radius_calculator.py",
+          "wired": true,
+          "supports_sample": true,
+          "verification": [
+            {
+              "cmd": "python3 engineering/chaos-engineering/skills/chaos-engineering/scripts/blast_radius_calculator.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            },
+            {
+              "cmd": "python3 engineering/chaos-engineering/skills/chaos-engineering/scripts/blast_radius_calculator.py --sample",
+              "expect_exit": 0,
+              "kind": "sample"
+            }
+          ]
+        },
+        {
+          "script": "engineering/chaos-engineering/skills/chaos-engineering/scripts/experiment_designer.py",
+          "wired": true,
+          "supports_sample": false,
+          "verification": [
+            {
+              "cmd": "python3 engineering/chaos-engineering/skills/chaos-engineering/scripts/experiment_designer.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            }
+          ]
+        },
+        {
+          "script": "engineering/chaos-engineering/skills/chaos-engineering/scripts/experiment_postmortem.py",
+          "wired": true,
+          "supports_sample": false,
+          "verification": [
+            {
+              "cmd": "python3 engineering/chaos-engineering/skills/chaos-engineering/scripts/experiment_postmortem.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            }
+          ]
+        }
+      ],
+      "agentic_signals": {
+        "goal_intake": false,
+        "refusal_gate": false,
+        "verification": true,
+        "loop_discipline": true,
+        "close_out": false
+      },
+      "references": [
+        "attack_taxonomy.md",
+        "chaos_principles.md",
+        "experiment_design.md",
+        "tooling_landscape.md"
+      ]
+    },
+    {
+      "name": "claude-coach",
+      "path": "engineering/claude-coach/skills/claude-coach",
+      "description": "Use when the user wants to get better at using Claude ('coach me', 'teach me Claude tricks', 'make me a power user'). Rates their prompts with prompt_rater.py and surfaces one relevant power-user tip per turn after activation.",
+      "tools": [
+        {
+          "script": "engineering/claude-coach/skills/claude-coach/scripts/cheat_code_filter.py",
+          "wired": true,
+          "supports_sample": true,
+          "verification": [
+            {
+              "cmd": "python3 engineering/claude-coach/skills/claude-coach/scripts/cheat_code_filter.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            },
+            {
+              "cmd": "python3 engineering/claude-coach/skills/claude-coach/scripts/cheat_code_filter.py --sample",
+              "expect_exit": 0,
+              "kind": "sample"
+            }
+          ]
+        },
+        {
+          "script": "engineering/claude-coach/skills/claude-coach/scripts/coach_tip_classifier.py",
+          "wired": true,
+          "supports_sample": true,
+          "verification": [
+            {
+              "cmd": "python3 engineering/claude-coach/skills/claude-coach/scripts/coach_tip_classifier.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            },
+            {
+              "cmd": "python3 engineering/claude-coach/skills/claude-coach/scripts/coach_tip_classifier.py --sample",
+              "expect_exit": 0,
+              "kind": "sample"
+            }
+          ]
+        },
+        {
+          "script": "engineering/claude-coach/skills/claude-coach/scripts/prompt_rater.py",
+          "wired": true,
+          "supports_sample": true,
+          "verification": [
+            {
+              "cmd": "python3 engineering/claude-coach/skills/claude-coach/scripts/prompt_rater.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            },
+            {
+              "cmd": "python3 engineering/claude-coach/skills/claude-coach/scripts/prompt_rater.py --sample",
+              "expect_exit": 0,
+              "kind": "sample"
+            }
+          ]
+        }
+      ],
+      "agentic_signals": {
+        "goal_intake": false,
+        "refusal_gate": false,
+        "verification": false,
+        "loop_discipline": true,
+        "close_out": false
+      },
+      "references": [
+        "cheat-codes.md",
+        "coaching-rules.md"
+      ]
+    },
+    {
+      "name": "code-tour",
+      "path": "engineering/code-tour/skills/code-tour",
+      "description": "Use when asked for a CodeTour .tour file or a step-by-step code walkthrough (onboarding, architecture, PR review, how X works). Writes persona-targeted steps that link to real files and line numbers, checked to exist.",
+      "tools": [],
+      "agentic_signals": {
+        "goal_intake": false,
+        "refusal_gate": false,
+        "verification": true,
+        "loop_discipline": false,
+        "close_out": false
+      },
+      "references": []
+    },
+    {
+      "name": "coding-agent-rollout",
+      "path": "engineering/coding-agent-rollout/skills/coding-agent-rollout",
+      "description": "Use when rolling Claude Code out to a team or reviewing a rollout: shared or managed settings, MCP and plugin approval, layered CLAUDE.md, adoption. Lints settings with settings_linter.py, inventories MCP servers and plugins, and audits CLAUDE.md layering.",
+      "tools": [
+        {
+          "script": "engineering/coding-agent-rollout/skills/coding-agent-rollout/scripts/adoption_tracker.py",
+          "wired": true,
+          "supports_sample": true,
+          "verification": [
+            {
+              "cmd": "python3 engineering/coding-agent-rollout/skills/coding-agent-rollout/scripts/adoption_tracker.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            },
+            {
+              "cmd": "python3 engineering/coding-agent-rollout/skills/coding-agent-rollout/scripts/adoption_tracker.py --sample",
+              "expect_exit": 0,
+              "kind": "sample"
+            }
+          ]
+        },
+        {
+          "script": "engineering/coding-agent-rollout/skills/coding-agent-rollout/scripts/claude_md_layering_audit.py",
+          "wired": true,
+          "supports_sample": true,
+          "verification": [
+            {
+              "cmd": "python3 engineering/coding-agent-rollout/skills/coding-agent-rollout/scripts/claude_md_layering_audit.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            },
+            {
+              "cmd": "python3 engineering/coding-agent-rollout/skills/coding-agent-rollout/scripts/claude_md_layering_audit.py --sample",
+              "expect_exit": 0,
+              "kind": "sample"
+            }
+          ]
+        },
+        {
+          "script": "engineering/coding-agent-rollout/skills/coding-agent-rollout/scripts/mcp_plugin_inventory.py",
+          "wired": true,
+          "supports_sample": true,
+          "verification": [
+            {
+              "cmd": "python3 engineering/coding-agent-rollout/skills/coding-agent-rollout/scripts/mcp_plugin_inventory.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            },
+            {
+              "cmd": "python3 engineering/coding-agent-rollout/skills/coding-agent-rollout/scripts/mcp_plugin_inventory.py --sample",
+              "expect_exit": 0,
+              "kind": "sample"
+            }
+          ]
+        },
+        {
+          "script": "engineering/coding-agent-rollout/skills/coding-agent-rollout/scripts/settings_linter.py",
+          "wired": true,
+          "supports_sample": true,
+          "verification": [
+            {
+              "cmd": "python3 engineering/coding-agent-rollout/skills/coding-agent-rollout/scripts/settings_linter.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            },
+            {
+              "cmd": "python3 engineering/coding-agent-rollout/skills/coding-agent-rollout/scripts/settings_linter.py --sample",
+              "expect_exit": 0,
+              "kind": "sample"
+            }
+          ]
+        }
+      ],
+      "agentic_signals": {
+        "goal_intake": false,
+        "refusal_gate": true,
+        "verification": true,
+        "loop_discipline": false,
+        "close_out": false
+      },
+      "references": [
+        "mcp_and_plugin_governance.md",
+        "memory_and_adoption.md",
+        "settings_and_permissions.md"
+      ]
+    },
+    {
+      "name": "collab-proof",
+      "path": "engineering/collab-proof/skills/collab-proof",
+      "description": "Use for /collab-proof or a session retrospective on what Claude contributed versus what the user drove. Builds an evidence-backed split of the session's decisions and work.",
+      "tools": [],
+      "agentic_signals": {
+        "goal_intake": false,
+        "refusal_gate": false,
+        "verification": false,
+        "loop_discipline": false,
+        "close_out": false
+      },
+      "references": [
+        "ai-collaboration-evidence.md",
+        "developer-portfolio-proof.md",
+        "session-documentation-patterns.md",
+        "tamper-evident-proof.md"
+      ]
+    },
+    {
+      "name": "data-quality-auditor",
+      "path": "engineering/data-quality-auditor/skills/data-quality-auditor",
+      "description": "Use before analysis or model training on any dataset, or when asked to profile data or hunt missing values and outliers. Profiles it with data_profiler.py, missing_value_analyzer.py and outlier_detector.py and writes a remediation plan.",
+      "tools": [
+        {
+          "script": "engineering/data-quality-auditor/skills/data-quality-auditor/scripts/data_profiler.py",
+          "wired": true,
+          "supports_sample": false,
+          "verification": [
+            {
+              "cmd": "python3 engineering/data-quality-auditor/skills/data-quality-auditor/scripts/data_profiler.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            }
+          ]
+        },
+        {
+          "script": "engineering/data-quality-auditor/skills/data-quality-auditor/scripts/missing_value_analyzer.py",
+          "wired": true,
+          "supports_sample": false,
+          "verification": [
+            {
+              "cmd": "python3 engineering/data-quality-auditor/skills/data-quality-auditor/scripts/missing_value_analyzer.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            }
+          ]
+        },
+        {
+          "script": "engineering/data-quality-auditor/skills/data-quality-auditor/scripts/outlier_detector.py",
+          "wired": true,
+          "supports_sample": false,
+          "verification": [
+            {
+              "cmd": "python3 engineering/data-quality-auditor/skills/data-quality-auditor/scripts/outlier_detector.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            }
+          ]
+        }
+      ],
+      "agentic_signals": {
+        "goal_intake": false,
+        "refusal_gate": false,
+        "verification": true,
+        "loop_discipline": true,
+        "close_out": false
+      },
+      "references": [
+        "data-quality-concepts.md"
+      ]
+    },
+    {
+      "name": "deep-learning-book",
+      "path": "engineering/deep-learning-book/skills/deep-learning-book",
+      "description": "Use when studying or applying Goodfellow, Bengio and Courville's Deep Learning, or asking if its advice still holds. Indexes all 20 chapters with a 2016-to-2026 delta, plans reading paths with reading_path_planner.py and diagnoses training failures with training_diagnostics.py.",
+      "tools": [
+        {
+          "script": "engineering/deep-learning-book/skills/deep-learning-book/scripts/capacity_planner.py",
+          "wired": true,
+          "supports_sample": true,
+          "verification": [
+            {
+              "cmd": "python3 engineering/deep-learning-book/skills/deep-learning-book/scripts/capacity_planner.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            },
+            {
+              "cmd": "python3 engineering/deep-learning-book/skills/deep-learning-book/scripts/capacity_planner.py --sample",
+              "expect_exit": 0,
+              "kind": "sample"
+            }
+          ]
+        },
+        {
+          "script": "engineering/deep-learning-book/skills/deep-learning-book/scripts/model_arithmetic.py",
+          "wired": true,
+          "supports_sample": true,
+          "verification": [
+            {
+              "cmd": "python3 engineering/deep-learning-book/skills/deep-learning-book/scripts/model_arithmetic.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            },
+            {
+              "cmd": "python3 engineering/deep-learning-book/skills/deep-learning-book/scripts/model_arithmetic.py --sample",
+              "expect_exit": 0,
+              "kind": "sample"
+            }
+          ]
+        },
+        {
+          "script": "engineering/deep-learning-book/skills/deep-learning-book/scripts/reading_path_planner.py",
+          "wired": true,
+          "supports_sample": true,
+          "verification": [
+            {
+              "cmd": "python3 engineering/deep-learning-book/skills/deep-learning-book/scripts/reading_path_planner.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            },
+            {
+              "cmd": "python3 engineering/deep-learning-book/skills/deep-learning-book/scripts/reading_path_planner.py --sample",
+              "expect_exit": 0,
+              "kind": "sample"
+            }
+          ]
+        },
+        {
+          "script": "engineering/deep-learning-book/skills/deep-learning-book/scripts/training_diagnostics.py",
+          "wired": true,
+          "supports_sample": true,
+          "verification": [
+            {
+              "cmd": "python3 engineering/deep-learning-book/skills/deep-learning-book/scripts/training_diagnostics.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            },
+            {
+              "cmd": "python3 engineering/deep-learning-book/skills/deep-learning-book/scripts/training_diagnostics.py --sample",
+              "expect_exit": 0,
+              "kind": "sample"
+            }
+          ]
+        }
+      ],
+      "agentic_signals": {
+        "goal_intake": false,
+        "refusal_gate": false,
+        "verification": true,
+        "loop_discipline": false,
+        "close_out": false
+      },
+      "references": [
+        "book_to_2026_delta.md",
+        "prerequisite_map.md",
+        "rights_and_use.md",
+        "study_method_canon.md"
+      ]
+    },
+    {
+      "name": "demo-video",
+      "path": "engineering/demo-video/skills/demo-video",
+      "description": "Use when asked for a demo video, product walkthrough, feature showcase or GIF from screenshots or scene descriptions. Orchestrates playwright, ffmpeg and edge-tts to render it.",
+      "tools": [],
+      "agentic_signals": {
+        "goal_intake": true,
+        "refusal_gate": false,
+        "verification": true,
+        "loop_discipline": false,
+        "close_out": false
+      },
+      "references": [
+        "scene-design-system.md"
+      ]
+    },
+    {
+      "name": "docker-development",
+      "path": "engineering/docker-development/skills/docker-development",
+      "description": "Use for any Dockerfile or docker-compose file to write, optimize or review, before editing it. Checks layers, caching, size and security with dockerfile_analyzer.py and validates compose files with compose_validator.py.",
+      "tools": [
+        {
+          "script": "engineering/docker-development/skills/docker-development/scripts/compose_validator.py",
+          "wired": true,
+          "supports_sample": false,
+          "verification": [
+            {
+              "cmd": "python3 engineering/docker-development/skills/docker-development/scripts/compose_validator.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            }
+          ]
+        },
+        {
+          "script": "engineering/docker-development/skills/docker-development/scripts/dockerfile_analyzer.py",
+          "wired": true,
+          "supports_sample": false,
+          "verification": [
+            {
+              "cmd": "python3 engineering/docker-development/skills/docker-development/scripts/dockerfile_analyzer.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            }
+          ]
+        }
+      ],
+      "agentic_signals": {
+        "goal_intake": false,
+        "refusal_gate": false,
+        "verification": true,
+        "loop_discipline": false,
+        "close_out": false
+      },
+      "references": [
+        "compose-patterns.md",
+        "dockerfile-best-practices.md"
+      ]
+    },
+    {
+      "name": "feature-flags-architect",
+      "path": "engineering/feature-flags-architect/skills/feature-flags-architect",
+      "description": "Use before adding, rolling out or retiring a feature flag or kill switch, or when flag debt piles up. Plans the rollout with rollout_planner.py, finds stale flags with flag_debt_scanner.py and audits kill switches with kill_switch_audit.py.",
+      "tools": [
+        {
+          "script": "engineering/feature-flags-architect/skills/feature-flags-architect/scripts/flag_debt_scanner.py",
+          "wired": true,
+          "supports_sample": false,
+          "verification": [
+            {
+              "cmd": "python3 engineering/feature-flags-architect/skills/feature-flags-architect/scripts/flag_debt_scanner.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            }
+          ]
+        },
+        {
+          "script": "engineering/feature-flags-architect/skills/feature-flags-architect/scripts/kill_switch_audit.py",
+          "wired": true,
+          "supports_sample": false,
+          "verification": [
+            {
+              "cmd": "python3 engineering/feature-flags-architect/skills/feature-flags-architect/scripts/kill_switch_audit.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            }
+          ]
+        },
+        {
+          "script": "engineering/feature-flags-architect/skills/feature-flags-architect/scripts/rollout_planner.py",
+          "wired": true,
+          "supports_sample": false,
+          "verification": [
+            {
+              "cmd": "python3 engineering/feature-flags-architect/skills/feature-flags-architect/scripts/rollout_planner.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            }
+          ]
+        }
+      ],
+      "agentic_signals": {
+        "goal_intake": false,
+        "refusal_gate": false,
+        "verification": true,
+        "loop_discipline": true,
+        "close_out": false
+      },
+      "references": [
+        "flag_lifecycle.md",
+        "flag_taxonomy.md",
+        "provider_comparison.md",
+        "rollout_strategies.md"
+      ]
+    },
+    {
+      "name": "grill-me",
+      "path": "engineering/grill-me/skills/grill-me",
+      "description": "Interview the user relentlessly about a plan or design until reaching shared understanding, resolving each branch of the decision tree. Use when user wants to stress-test a plan, get grilled on their design, or mentions \"grill me\".",
+      "tools": [
+        {
+          "script": "engineering/grill-me/skills/grill-me/scripts/decision_tree_extractor.py",
+          "wired": true,
+          "supports_sample": false,
+          "verification": [
+            {
+              "cmd": "python3 engineering/grill-me/skills/grill-me/scripts/decision_tree_extractor.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            }
+          ]
+        },
+        {
+          "script": "engineering/grill-me/skills/grill-me/scripts/grill_session_tracker.py",
+          "wired": true,
+          "supports_sample": false,
+          "verification": [
+            {
+              "cmd": "python3 engineering/grill-me/skills/grill-me/scripts/grill_session_tracker.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            }
+          ]
+        },
+        {
+          "script": "engineering/grill-me/skills/grill-me/scripts/question_generator.py",
+          "wired": true,
+          "supports_sample": false,
+          "verification": [
+            {
+              "cmd": "python3 engineering/grill-me/skills/grill-me/scripts/question_generator.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            }
+          ]
+        }
+      ],
+      "agentic_signals": {
+        "goal_intake": false,
+        "refusal_gate": false,
+        "verification": false,
+        "loop_discipline": true,
+        "close_out": false
+      },
+      "references": [
+        "companion_tooling.md",
+        "forcing_question_patterns.md",
+        "when_to_stop_grilling.md"
+      ]
+    },
+    {
+      "name": "grill-with-docs",
+      "path": "engineering/grill-with-docs/skills/grill-with-docs",
+      "description": "Use when a plan should be stress-tested against the project's own docs (CONTEXT.md glossary, docs/adr decisions), or the user says 'grill with docs'. Scans ADRs with adr_scanner.py and updates the docs inline as terms and decisions settle.",
+      "tools": [
+        {
+          "script": "engineering/grill-with-docs/skills/grill-with-docs/scripts/adr_scanner.py",
+          "wired": true,
+          "supports_sample": true,
+          "verification": [
+            {
+              "cmd": "python3 engineering/grill-with-docs/skills/grill-with-docs/scripts/adr_scanner.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            },
+            {
+              "cmd": "python3 engineering/grill-with-docs/skills/grill-with-docs/scripts/adr_scanner.py --sample",
+              "expect_exit": 0,
+              "kind": "sample"
+            }
+          ]
+        },
+        {
+          "script": "engineering/grill-with-docs/skills/grill-with-docs/scripts/context_md_linter.py",
+          "wired": true,
+          "supports_sample": true,
+          "verification": [
+            {
+              "cmd": "python3 engineering/grill-with-docs/skills/grill-with-docs/scripts/context_md_linter.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            },
+            {
+              "cmd": "python3 engineering/grill-with-docs/skills/grill-with-docs/scripts/context_md_linter.py --sample",
+              "expect_exit": 0,
+              "kind": "sample"
+            }
+          ]
+        },
+        {
+          "script": "engineering/grill-with-docs/skills/grill-with-docs/scripts/glossary_code_consistency.py",
+          "wired": true,
+          "supports_sample": true,
+          "verification": [
+            {
+              "cmd": "python3 engineering/grill-with-docs/skills/grill-with-docs/scripts/glossary_code_consistency.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            },
+            {
+              "cmd": "python3 engineering/grill-with-docs/skills/grill-with-docs/scripts/glossary_code_consistency.py --sample",
+              "expect_exit": 0,
+              "kind": "sample"
+            }
+          ]
+        }
+      ],
+      "agentic_signals": {
+        "goal_intake": false,
+        "refusal_gate": false,
+        "verification": false,
+        "loop_discipline": true,
+        "close_out": false
+      },
+      "references": [
+        "adr_practice.md",
+        "context_md_as_artifact.md",
+        "ubiquitous_language.md"
+      ]
+    },
+    {
+      "name": "handoff",
+      "path": "engineering/handoff/skills/handoff",
+      "description": "Compact the current conversation into a handoff document for another agent to pick up, referencing existing artifacts (PRDs, plans, ADRs, issues, commits, diffs) by path or URL instead of duplicating them. Use whenever the user wants to hand off to a fresh agent, is ending a session mid-task, asks for a handoff doc or a summary of state, decisions and next steps for the next session, or starts a new session that picks up prior work.",
+      "tools": [
+        {
+          "script": "engineering/handoff/skills/handoff/scripts/artifact_deduplicator.py",
+          "wired": false,
+          "supports_sample": false,
+          "verification": [
+            {
+              "cmd": "python3 engineering/handoff/skills/handoff/scripts/artifact_deduplicator.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            }
+          ]
+        },
+        {
+          "script": "engineering/handoff/skills/handoff/scripts/handoff_template_generator.py",
+          "wired": false,
+          "supports_sample": false,
+          "verification": [
+            {
+              "cmd": "python3 engineering/handoff/skills/handoff/scripts/handoff_template_generator.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            }
+          ]
+        },
+        {
+          "script": "engineering/handoff/skills/handoff/scripts/skill_recommender.py",
+          "wired": false,
+          "supports_sample": false,
+          "verification": [
+            {
+              "cmd": "python3 engineering/handoff/skills/handoff/scripts/skill_recommender.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            }
+          ]
+        }
+      ],
+      "agentic_signals": {
+        "goal_intake": false,
+        "refusal_gate": false,
+        "verification": false,
+        "loop_discipline": false,
+        "close_out": true
+      },
+      "references": [
+        "companion_tooling.md",
+        "deduplication_discipline.md",
+        "handoff_structure.md",
+        "next_session_skill_matching.md"
+      ]
+    },
+    {
+      "name": "helm-chart-builder",
+      "path": "engineering/helm-chart-builder/skills/helm-chart-builder",
+      "description": "Use for any Helm chart to create, review or harden (values.yaml, templates, subcharts, RBAC, pod security), before editing it. Analyzes the chart with chart_analyzer.py and validates values with values_validator.py.",
+      "tools": [
+        {
+          "script": "engineering/helm-chart-builder/skills/helm-chart-builder/scripts/chart_analyzer.py",
+          "wired": true,
+          "supports_sample": false,
+          "verification": [
+            {
+              "cmd": "python3 engineering/helm-chart-builder/skills/helm-chart-builder/scripts/chart_analyzer.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            }
+          ]
+        },
+        {
+          "script": "engineering/helm-chart-builder/skills/helm-chart-builder/scripts/values_validator.py",
+          "wired": true,
+          "supports_sample": false,
+          "verification": [
+            {
+              "cmd": "python3 engineering/helm-chart-builder/skills/helm-chart-builder/scripts/values_validator.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            }
+          ]
+        }
+      ],
+      "agentic_signals": {
+        "goal_intake": false,
+        "refusal_gate": false,
+        "verification": true,
+        "loop_discipline": true,
+        "close_out": false
+      },
+      "references": [
+        "chart-patterns.md",
+        "values-design.md"
+      ]
+    },
+    {
+      "name": "hivemind",
+      "path": "engineering/hivemind",
+      "description": "Use when delegating grunt work to free opencode workers instead of spending Claude tokens: one worker or a scout, coder and tester swarm in worktrees. Triggers on 'spawn a worker', 'swarm', 'delegate to opencode' or /oc.",
+      "tools": [],
+      "agentic_signals": {
+        "goal_intake": false,
+        "refusal_gate": true,
+        "verification": true,
+        "loop_discipline": true,
+        "close_out": false
+      },
+      "references": []
+    },
+    {
+      "name": "human-gate",
+      "path": "engineering/human-gate/skills/human-gate",
+      "description": "Use before shipping anything that needs human sign-off (a plan, spec, report, page, migration or irreversible action). Builds a review page with review_page_builder.py and runs human_gate.py, which refuses to close with an open blocker or no named reviewer.",
+      "tools": [
+        {
+          "script": "engineering/human-gate/skills/human-gate/scripts/feedback_parser.py",
+          "wired": true,
+          "supports_sample": true,
+          "verification": [
+            {
+              "cmd": "python3 engineering/human-gate/skills/human-gate/scripts/feedback_parser.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            },
+            {
+              "cmd": "python3 engineering/human-gate/skills/human-gate/scripts/feedback_parser.py --sample",
+              "expect_exit": 0,
+              "kind": "sample"
+            }
+          ]
+        },
+        {
+          "script": "engineering/human-gate/skills/human-gate/scripts/human_gate.py",
+          "wired": true,
+          "supports_sample": true,
+          "verification": [
+            {
+              "cmd": "python3 engineering/human-gate/skills/human-gate/scripts/human_gate.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            },
+            {
+              "cmd": "python3 engineering/human-gate/skills/human-gate/scripts/human_gate.py --sample",
+              "expect_exit": 0,
+              "kind": "sample"
+            }
+          ]
+        },
+        {
+          "script": "engineering/human-gate/skills/human-gate/scripts/review_page_builder.py",
+          "wired": true,
+          "supports_sample": true,
+          "verification": [
+            {
+              "cmd": "python3 engineering/human-gate/skills/human-gate/scripts/review_page_builder.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            },
+            {
+              "cmd": "python3 engineering/human-gate/skills/human-gate/scripts/review_page_builder.py --sample",
+              "expect_exit": 0,
+              "kind": "sample"
+            }
+          ]
+        }
+      ],
+      "agentic_signals": {
+        "goal_intake": true,
+        "refusal_gate": true,
+        "verification": true,
+        "loop_discipline": true,
+        "close_out": false
+      },
+      "references": [
+        "feedback_batching.md",
+        "human_in_the_loop_canon.md",
+        "review_loop_discipline.md"
+      ]
+    },
+    {
+      "name": "karpathy-coder",
+      "path": "engineering/karpathy-coder/skills/karpathy-coder",
+      "description": "Use before committing or while reviewing a diff, or when code may be overbuilt. Checks it against Karpathy's four principles with complexity_checker.py, diff_surgeon.py and assumption_linter.py: surface assumptions, keep it simple, change surgically, verify goals.",
+      "tools": [
+        {
+          "script": "engineering/karpathy-coder/skills/karpathy-coder/scripts/assumption_linter.py",
+          "wired": true,
+          "supports_sample": false,
+          "verification": [
+            {
+              "cmd": "python3 engineering/karpathy-coder/skills/karpathy-coder/scripts/assumption_linter.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            }
+          ]
+        },
+        {
+          "script": "engineering/karpathy-coder/skills/karpathy-coder/scripts/complexity_checker.py",
+          "wired": true,
+          "supports_sample": false,
+          "verification": [
+            {
+              "cmd": "python3 engineering/karpathy-coder/skills/karpathy-coder/scripts/complexity_checker.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            }
+          ]
+        },
+        {
+          "script": "engineering/karpathy-coder/skills/karpathy-coder/scripts/diff_surgeon.py",
+          "wired": true,
+          "supports_sample": false,
+          "verification": [
+            {
+              "cmd": "python3 engineering/karpathy-coder/skills/karpathy-coder/scripts/diff_surgeon.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            }
+          ]
+        },
+        {
+          "script": "engineering/karpathy-coder/skills/karpathy-coder/scripts/goal_verifier.py",
+          "wired": true,
+          "supports_sample": false,
+          "verification": [
+            {
+              "cmd": "python3 engineering/karpathy-coder/skills/karpathy-coder/scripts/goal_verifier.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            }
+          ]
+        }
+      ],
+      "agentic_signals": {
+        "goal_intake": false,
+        "refusal_gate": false,
+        "verification": true,
+        "loop_discipline": true,
+        "close_out": false
+      },
+      "references": [
+        "anti-patterns.md",
+        "enforcement-patterns.md",
+        "karpathy-principles.md"
+      ]
+    },
+    {
+      "name": "kubernetes-operator",
+      "path": "engineering/kubernetes-operator/skills/kubernetes-operator",
+      "description": "Use when building a Kubernetes operator or CRD (controller-runtime, kubebuilder, operator-sdk, KOPF), before writing the controller. Validates CRDs with crd_validator.py, lints reconcile loops with reconcile_lint.py and scores OperatorHub capability level.",
+      "tools": [
+        {
+          "script": "engineering/kubernetes-operator/skills/kubernetes-operator/scripts/crd_validator.py",
+          "wired": true,
+          "supports_sample": false,
+          "verification": [
+            {
+              "cmd": "python3 engineering/kubernetes-operator/skills/kubernetes-operator/scripts/crd_validator.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            }
+          ]
+        },
+        {
+          "script": "engineering/kubernetes-operator/skills/kubernetes-operator/scripts/operator_capability_audit.py",
+          "wired": true,
+          "supports_sample": false,
+          "verification": [
+            {
+              "cmd": "python3 engineering/kubernetes-operator/skills/kubernetes-operator/scripts/operator_capability_audit.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            }
+          ]
+        },
+        {
+          "script": "engineering/kubernetes-operator/skills/kubernetes-operator/scripts/reconcile_lint.py",
+          "wired": true,
+          "supports_sample": false,
+          "verification": [
+            {
+              "cmd": "python3 engineering/kubernetes-operator/skills/kubernetes-operator/scripts/reconcile_lint.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            }
+          ]
+        }
+      ],
+      "agentic_signals": {
+        "goal_intake": false,
+        "refusal_gate": false,
+        "verification": true,
+        "loop_discipline": false,
+        "close_out": false
+      },
+      "references": [
+        "crd_design.md",
+        "operator_pattern.md",
+        "reconcile_loop.md",
+        "tooling_landscape.md"
+      ]
+    },
+    {
+      "name": "llm-cost-optimizer",
+      "path": "engineering/llm-cost-optimizer/skills/llm-cost-optimizer",
+      "description": "Use whenever an LLM feature is being built or its costs come up (model choice, prompt caching, token limits, per-feature spend). Sets routing, caching, max_tokens and cost logging before launch rather than after the bill.",
+      "tools": [],
+      "agentic_signals": {
+        "goal_intake": false,
+        "refusal_gate": false,
+        "verification": false,
+        "loop_discipline": true,
+        "close_out": true
+      },
+      "references": []
+    },
+    {
+      "name": "llm-wiki",
+      "path": "engineering/llm-wiki/skills/llm-wiki",
+      "description": "Use when building or maintaining an Obsidian second brain that an LLM keeps up to date, or when ingesting a paper, article or book into it. Ingests with ingest_source.py, maintains index and links and checks the vault with lint_wiki.py.",
+      "tools": [
+        {
+          "script": "engineering/llm-wiki/skills/llm-wiki/scripts/append_log.py",
+          "wired": true,
+          "supports_sample": false,
+          "verification": [
+            {
+              "cmd": "python3 engineering/llm-wiki/skills/llm-wiki/scripts/append_log.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            }
+          ]
+        },
+        {
+          "script": "engineering/llm-wiki/skills/llm-wiki/scripts/export_marp.py",
+          "wired": true,
+          "supports_sample": false,
+          "verification": [
+            {
+              "cmd": "python3 engineering/llm-wiki/skills/llm-wiki/scripts/export_marp.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            }
+          ]
+        },
+        {
+          "script": "engineering/llm-wiki/skills/llm-wiki/scripts/graph_analyzer.py",
+          "wired": true,
+          "supports_sample": false,
+          "verification": [
+            {
+              "cmd": "python3 engineering/llm-wiki/skills/llm-wiki/scripts/graph_analyzer.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            }
+          ]
+        },
+        {
+          "script": "engineering/llm-wiki/skills/llm-wiki/scripts/ingest_source.py",
+          "wired": true,
+          "supports_sample": false,
+          "verification": [
+            {
+              "cmd": "python3 engineering/llm-wiki/skills/llm-wiki/scripts/ingest_source.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            }
+          ]
+        },
+        {
+          "script": "engineering/llm-wiki/skills/llm-wiki/scripts/init_vault.py",
+          "wired": true,
+          "supports_sample": false,
+          "verification": [
+            {
+              "cmd": "python3 engineering/llm-wiki/skills/llm-wiki/scripts/init_vault.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            }
+          ]
+        },
+        {
+          "script": "engineering/llm-wiki/skills/llm-wiki/scripts/lint_wiki.py",
+          "wired": true,
+          "supports_sample": false,
+          "verification": [
+            {
+              "cmd": "python3 engineering/llm-wiki/skills/llm-wiki/scripts/lint_wiki.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            }
+          ]
+        },
+        {
+          "script": "engineering/llm-wiki/skills/llm-wiki/scripts/update_index.py",
+          "wired": true,
+          "supports_sample": false,
+          "verification": [
+            {
+              "cmd": "python3 engineering/llm-wiki/skills/llm-wiki/scripts/update_index.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            }
+          ]
+        },
+        {
+          "script": "engineering/llm-wiki/skills/llm-wiki/scripts/wiki_search.py",
+          "wired": true,
+          "supports_sample": false,
+          "verification": [
+            {
+              "cmd": "python3 engineering/llm-wiki/skills/llm-wiki/scripts/wiki_search.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            }
+          ]
+        }
+      ],
+      "agentic_signals": {
+        "goal_intake": false,
+        "refusal_gate": false,
+        "verification": false,
+        "loop_discipline": false,
+        "close_out": false
+      },
+      "references": [
+        "cross-tool-setup.md",
+        "ingest-workflow.md",
+        "lint-workflow.md",
+        "memex-principles.md",
+        "obsidian-setup.md",
+        "page-formats.md",
+        "query-workflow.md",
+        "wiki-schema.md"
+      ]
+    },
+    {
+      "name": "memory-engineering",
+      "path": "engineering/memory-engineering/skills/memory-engineering",
+      "description": "Use before adding memory to an agent or when a memory store keeps growing (long context vs RAG vs graph vs agentic memory, what to expire). Prices the design with memory_cost_profiler.py and refuses one without a forgetting policy via forgetting_policy_linter.py.",
+      "tools": [
+        {
+          "script": "engineering/memory-engineering/skills/memory-engineering/scripts/forgetting_policy_linter.py",
+          "wired": true,
+          "supports_sample": true,
+          "verification": [
+            {
+              "cmd": "python3 engineering/memory-engineering/skills/memory-engineering/scripts/forgetting_policy_linter.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            },
+            {
+              "cmd": "python3 engineering/memory-engineering/skills/memory-engineering/scripts/forgetting_policy_linter.py --sample",
+              "expect_exit": 0,
+              "kind": "sample"
+            }
+          ]
+        },
+        {
+          "script": "engineering/memory-engineering/skills/memory-engineering/scripts/memory_architecture_picker.py",
+          "wired": true,
+          "supports_sample": true,
+          "verification": [
+            {
+              "cmd": "python3 engineering/memory-engineering/skills/memory-engineering/scripts/memory_architecture_picker.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            },
+            {
+              "cmd": "python3 engineering/memory-engineering/skills/memory-engineering/scripts/memory_architecture_picker.py --sample",
+              "expect_exit": 0,
+              "kind": "sample"
+            }
+          ]
+        },
+        {
+          "script": "engineering/memory-engineering/skills/memory-engineering/scripts/memory_cost_profiler.py",
+          "wired": true,
+          "supports_sample": true,
+          "verification": [
+            {
+              "cmd": "python3 engineering/memory-engineering/skills/memory-engineering/scripts/memory_cost_profiler.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            },
+            {
+              "cmd": "python3 engineering/memory-engineering/skills/memory-engineering/scripts/memory_cost_profiler.py --sample",
+              "expect_exit": 0,
+              "kind": "sample"
+            }
+          ]
+        },
+        {
+          "script": "engineering/memory-engineering/skills/memory-engineering/scripts/memory_density_auditor.py",
+          "wired": true,
+          "supports_sample": true,
+          "verification": [
+            {
+              "cmd": "python3 engineering/memory-engineering/skills/memory-engineering/scripts/memory_density_auditor.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            },
+            {
+              "cmd": "python3 engineering/memory-engineering/skills/memory-engineering/scripts/memory_density_auditor.py --sample",
+              "expect_exit": 0,
+              "kind": "sample"
+            }
+          ]
+        }
+      ],
+      "agentic_signals": {
+        "goal_intake": true,
+        "refusal_gate": true,
+        "verification": true,
+        "loop_discipline": true,
+        "close_out": false
+      },
+      "references": [
+        "forgetting_policy_design.md",
+        "memory_control_and_governance.md",
+        "memory_cost_canon.md",
+        "what_to_keep.md"
+      ]
+    },
+    {
+      "name": "minimalist",
+      "path": "engineering/minimalist",
+      "description": "Use when asked to avoid over-engineering, cut dependencies or write the least code. Applies a strict ladder before any new code: YAGNI, reuse, stdlib, native platform, existing deps.",
+      "tools": [],
+      "agentic_signals": {
+        "goal_intake": false,
+        "refusal_gate": false,
+        "verification": false,
+        "loop_discipline": true,
+        "close_out": false
+      },
+      "references": []
+    },
+    {
+      "name": "prompt-governance",
+      "path": "engineering/prompt-governance/skills/prompt-governance",
+      "description": "Use when prompts run in production and need versioning, a registry, A/B tests, regression checks or an eval pipeline. Sets up the release process for prompts; single-prompt quality: senior-prompt-engineer.",
+      "tools": [],
+      "agentic_signals": {
+        "goal_intake": true,
+        "refusal_gate": false,
+        "verification": true,
+        "loop_discipline": true,
+        "close_out": false
+      },
+      "references": []
+    },
+    {
+      "name": "security-guidance",
+      "path": "engineering/security-guidance/skills/security-guidance",
+      "description": "Use when installing or tuning the PreToolUse security hook that warns before Claude writes command injection, XSS, SQL injection, unsafe deserialization, eval or GitHub Actions injection. Warns once per file and rule; ENABLE_SECURITY_REMINDER=0 turns it off.",
+      "tools": [],
+      "agentic_signals": {
+        "goal_intake": false,
+        "refusal_gate": true,
+        "verification": false,
+        "loop_discipline": false,
+        "close_out": false
+      },
+      "references": [
+        "pretooluse_hook_canon.md"
+      ]
+    },
+    {
+      "name": "skill-retro",
+      "path": "engineering/skill-retro/skills/skill-retro",
+      "description": "Use when the user wants their skills graded from real session history, asks which installed skills actually work, or wants evidence-backed skill edits. Collects local sessions with collect_sessions.py, scores them against two rubrics and gates edits with score_aggregator.py.",
+      "tools": [
+        {
+          "script": "engineering/skill-retro/skills/skill-retro/scripts/collect_sessions.py",
+          "wired": true,
+          "supports_sample": true,
+          "verification": [
+            {
+              "cmd": "python3 engineering/skill-retro/skills/skill-retro/scripts/collect_sessions.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            },
+            {
+              "cmd": "python3 engineering/skill-retro/skills/skill-retro/scripts/collect_sessions.py --sample",
+              "expect_exit": 0,
+              "kind": "sample"
+            }
+          ]
+        },
+        {
+          "script": "engineering/skill-retro/skills/skill-retro/scripts/render_report.py",
+          "wired": true,
+          "supports_sample": true,
+          "verification": [
+            {
+              "cmd": "python3 engineering/skill-retro/skills/skill-retro/scripts/render_report.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            },
+            {
+              "cmd": "python3 engineering/skill-retro/skills/skill-retro/scripts/render_report.py --sample",
+              "expect_exit": 0,
+              "kind": "sample"
+            }
+          ]
+        },
+        {
+          "script": "engineering/skill-retro/skills/skill-retro/scripts/score_aggregator.py",
+          "wired": true,
+          "supports_sample": true,
+          "verification": [
+            {
+              "cmd": "python3 engineering/skill-retro/skills/skill-retro/scripts/score_aggregator.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            },
+            {
+              "cmd": "python3 engineering/skill-retro/skills/skill-retro/scripts/score_aggregator.py --sample",
+              "expect_exit": 0,
+              "kind": "sample"
+            }
+          ]
+        }
+      ],
+      "agentic_signals": {
+        "goal_intake": false,
+        "refusal_gate": true,
+        "verification": true,
+        "loop_discipline": false,
+        "close_out": true
+      },
+      "references": [
+        "session_mining_privacy.md",
+        "skill_edit_governance.md",
+        "transcript_scoring_canon.md"
+      ]
+    },
+    {
+      "name": "skillopt-sleep",
+      "path": "engineering/skillopt-sleep/skills/skillopt-sleep",
+      "description": "Use when the user wants their Claude agent to self-improve from past usage, asks about a nightly/offline 'sleep' or 'dream' cycle, memory/skill consolidation, or says things like 'make my agent better the more I use it', 'review my past sessions', 'learn my preferences', 'consolidate what you learned', 'run the sleep cycle', or wants to schedule offline self-optimization. Drives the skillopt_sleep engine: harvest past sessions \u2192 mine recurring tasks \u2192 replay offline \u2192 consolidate validated CLAUDE.md and SKILL.md behind a held-out gate.",
+      "tools": [],
+      "agentic_signals": {
+        "goal_intake": false,
+        "refusal_gate": true,
+        "verification": false,
+        "loop_discipline": true,
+        "close_out": false
+      },
+      "references": []
+    },
+    {
+      "name": "agent-designer",
+      "path": "engineering/skills/agent-designer",
+      "description": "Use when designing a multi-agent system (supervisor, swarm, pipeline), writing agent tool schemas, or reading agent run logs for cost, latency or failure bottlenecks. Not for Claude Code workflow files (workflow-builder).",
+      "tools": [
+        {
+          "script": "engineering/skills/agent-designer/agent_evaluator.py",
+          "wired": true,
+          "supports_sample": false,
+          "verification": [
+            {
+              "cmd": "python3 engineering/skills/agent-designer/agent_evaluator.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            }
+          ]
+        },
+        {
+          "script": "engineering/skills/agent-designer/agent_planner.py",
+          "wired": true,
+          "supports_sample": false,
+          "verification": [
+            {
+              "cmd": "python3 engineering/skills/agent-designer/agent_planner.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            }
+          ]
+        },
+        {
+          "script": "engineering/skills/agent-designer/tool_schema_generator.py",
+          "wired": true,
+          "supports_sample": false,
+          "verification": [
+            {
+              "cmd": "python3 engineering/skills/agent-designer/tool_schema_generator.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            }
+          ]
+        }
+      ],
+      "agentic_signals": {
+        "goal_intake": false,
+        "refusal_gate": false,
+        "verification": true,
+        "loop_discipline": true,
+        "close_out": true
+      },
+      "references": [
+        "agent_architecture_patterns.md",
+        "evaluation_methodology.md",
+        "tool_design_best_practices.md"
+      ]
+    },
+    {
+      "name": "agent-regression-evals",
+      "path": "engineering/skills/agent-regression-evals",
+      "description": "Use before shipping any agent, prompt, model or tool change, or when a pass-rate drop needs a verdict. Runs repeated trials, gates candidate vs baseline with paired statistics in regression_gate.py, checks tool-call trajectories and finds flaky cases.",
+      "tools": [
+        {
+          "script": "engineering/skills/agent-regression-evals/scripts/flake_detector.py",
+          "wired": true,
+          "supports_sample": true,
+          "verification": [
+            {
+              "cmd": "python3 engineering/skills/agent-regression-evals/scripts/flake_detector.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            },
+            {
+              "cmd": "python3 engineering/skills/agent-regression-evals/scripts/flake_detector.py --sample",
+              "expect_exit": 0,
+              "kind": "sample"
+            }
+          ]
+        },
+        {
+          "script": "engineering/skills/agent-regression-evals/scripts/regression_gate.py",
+          "wired": true,
+          "supports_sample": true,
+          "verification": [
+            {
+              "cmd": "python3 engineering/skills/agent-regression-evals/scripts/regression_gate.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            },
+            {
+              "cmd": "python3 engineering/skills/agent-regression-evals/scripts/regression_gate.py --sample",
+              "expect_exit": 0,
+              "kind": "sample"
+            }
+          ]
+        },
+        {
+          "script": "engineering/skills/agent-regression-evals/scripts/trajectory_checker.py",
+          "wired": true,
+          "supports_sample": true,
+          "verification": [
+            {
+              "cmd": "python3 engineering/skills/agent-regression-evals/scripts/trajectory_checker.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            },
+            {
+              "cmd": "python3 engineering/skills/agent-regression-evals/scripts/trajectory_checker.py --sample",
+              "expect_exit": 0,
+              "kind": "sample"
+            }
+          ]
+        }
+      ],
+      "agentic_signals": {
+        "goal_intake": false,
+        "refusal_gate": true,
+        "verification": true,
+        "loop_discipline": true,
+        "close_out": false
+      },
+      "references": [
+        "eval_statistics.md",
+        "flaky_cases_and_quarantine.md",
+        "trajectory_grading.md"
+      ]
+    },
+    {
+      "name": "agent-workflow-designer",
+      "path": "engineering/skills/agent-workflow-designer",
+      "description": "Use when architecting a multi-step LLM or agent pipeline, choosing single vs multi-agent, or fixing context bloat and broken handoffs. Scaffolds the pattern, handoff contracts and failure handling with workflow_scaffolder.py.",
+      "tools": [
+        {
+          "script": "engineering/skills/agent-workflow-designer/scripts/workflow_scaffolder.py",
+          "wired": true,
+          "supports_sample": false,
+          "verification": [
+            {
+              "cmd": "python3 engineering/skills/agent-workflow-designer/scripts/workflow_scaffolder.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            }
+          ]
+        }
+      ],
+      "agentic_signals": {
+        "goal_intake": false,
+        "refusal_gate": false,
+        "verification": false,
+        "loop_discipline": true,
+        "close_out": true
+      },
+      "references": [
+        "workflow-patterns.md"
+      ]
+    },
+    {
+      "name": "api-design-reviewer",
+      "path": "engineering/skills/api-design-reviewer",
+      "description": "Use for any PR or spec that adds or changes REST endpoints, before approving it. Lints conventions with api_linter.py, detects breaking changes with breaking_change_detector.py and scores the design with api_scorecard.py.",
+      "tools": [
+        {
+          "script": "engineering/skills/api-design-reviewer/scripts/api_linter.py",
+          "wired": true,
+          "supports_sample": true,
+          "verification": [
+            {
+              "cmd": "python3 engineering/skills/api-design-reviewer/scripts/api_linter.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            },
+            {
+              "cmd": "python3 engineering/skills/api-design-reviewer/scripts/api_linter.py --sample",
+              "expect_exit": 0,
+              "kind": "sample"
+            }
+          ]
+        },
+        {
+          "script": "engineering/skills/api-design-reviewer/scripts/api_scorecard.py",
+          "wired": true,
+          "supports_sample": false,
+          "verification": [
+            {
+              "cmd": "python3 engineering/skills/api-design-reviewer/scripts/api_scorecard.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            }
+          ]
+        },
+        {
+          "script": "engineering/skills/api-design-reviewer/scripts/breaking_change_detector.py",
+          "wired": true,
+          "supports_sample": false,
+          "verification": [
+            {
+              "cmd": "python3 engineering/skills/api-design-reviewer/scripts/breaking_change_detector.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            }
+          ]
+        }
+      ],
+      "agentic_signals": {
+        "goal_intake": false,
+        "refusal_gate": true,
+        "verification": false,
+        "loop_discipline": true,
+        "close_out": false
+      },
+      "references": [
+        "api_antipatterns.md",
+        "rest_design_rules.md"
+      ]
+    },
+    {
+      "name": "api-test-suite-builder",
+      "path": "engineering/skills/api-test-suite-builder",
+      "description": "Use when asked to write API, integration or contract tests for REST endpoints. Builds the suite from the routes: happy paths, auth, validation errors and edge cases per endpoint.",
+      "tools": [],
+      "agentic_signals": {
+        "goal_intake": false,
+        "refusal_gate": false,
+        "verification": true,
+        "loop_discipline": false,
+        "close_out": false
+      },
+      "references": [
+        "example-test-files.md"
+      ]
+    },
+    {
+      "name": "browser-automation",
+      "path": "engineering/skills/browser-automation",
+      "description": "Use for browser automation, scraping, form filling or structured extraction from web pages. Builds scrapers with scraping_toolkit.py and form flows with form_automation_builder.py. Browser testing: playwright-pro.",
+      "tools": [
+        {
+          "script": "engineering/skills/browser-automation/scripts/anti_detection_checker.py",
+          "wired": true,
+          "supports_sample": false,
+          "verification": [
+            {
+              "cmd": "python3 engineering/skills/browser-automation/scripts/anti_detection_checker.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            }
+          ]
+        },
+        {
+          "script": "engineering/skills/browser-automation/scripts/form_automation_builder.py",
+          "wired": true,
+          "supports_sample": false,
+          "verification": [
+            {
+              "cmd": "python3 engineering/skills/browser-automation/scripts/form_automation_builder.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            }
+          ]
+        },
+        {
+          "script": "engineering/skills/browser-automation/scripts/scraping_toolkit.py",
+          "wired": true,
+          "supports_sample": false,
+          "verification": [
+            {
+              "cmd": "python3 engineering/skills/browser-automation/scripts/scraping_toolkit.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            }
+          ]
+        }
+      ],
+      "agentic_signals": {
+        "goal_intake": true,
+        "refusal_gate": false,
+        "verification": true,
+        "loop_discipline": true,
+        "close_out": false
+      },
+      "references": [
+        "anti_detection_patterns.md",
+        "data_extraction_recipes.md",
+        "playwright_browser_api.md"
+      ]
+    },
+    {
+      "name": "changelog-generator",
+      "path": "engineering/skills/changelog-generator",
+      "description": "Use when cutting a release, writing CHANGELOG.md or deciding the next version from commits, before writing notes by hand. Lints commits with commit_linter.py, picks the semver bump with version_bumper.py and renders notes with generate_changelog.py.",
+      "tools": [
+        {
+          "script": "engineering/skills/changelog-generator/scripts/commit_linter.py",
+          "wired": true,
+          "supports_sample": false,
+          "verification": [
+            {
+              "cmd": "python3 engineering/skills/changelog-generator/scripts/commit_linter.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            }
+          ]
+        },
+        {
+          "script": "engineering/skills/changelog-generator/scripts/generate_changelog.py",
+          "wired": true,
+          "supports_sample": false,
+          "verification": [
+            {
+              "cmd": "python3 engineering/skills/changelog-generator/scripts/generate_changelog.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            }
+          ]
+        },
+        {
+          "script": "engineering/skills/changelog-generator/scripts/version_bumper.py",
+          "wired": true,
+          "supports_sample": false,
+          "verification": [
+            {
+              "cmd": "python3 engineering/skills/changelog-generator/scripts/version_bumper.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            }
+          ]
+        }
+      ],
+      "agentic_signals": {
+        "goal_intake": false,
+        "refusal_gate": false,
+        "verification": false,
+        "loop_discipline": false,
+        "close_out": false
+      },
+      "references": [
+        "changelog-formatting-guide.md",
+        "ci-integration.md",
+        "hotfix-procedures.md",
+        "monorepo-strategy.md"
+      ]
+    },
+    {
+      "name": "chaos-engineering",
+      "path": "engineering/skills/chaos-engineering",
+      "description": "Use before running a chaos experiment, gameday or fault injection, or after one to write it up. Designs it with steady state and abort criteria in experiment_designer.py, sizes the blast radius with blast_radius_calculator.py and drafts the postmortem.",
+      "tools": [
+        {
+          "script": "engineering/skills/chaos-engineering/scripts/blast_radius_calculator.py",
+          "wired": true,
+          "supports_sample": true,
+          "verification": [
+            {
+              "cmd": "python3 engineering/skills/chaos-engineering/scripts/blast_radius_calculator.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            },
+            {
+              "cmd": "python3 engineering/skills/chaos-engineering/scripts/blast_radius_calculator.py --sample",
+              "expect_exit": 0,
+              "kind": "sample"
+            }
+          ]
+        },
+        {
+          "script": "engineering/skills/chaos-engineering/scripts/experiment_designer.py",
+          "wired": true,
+          "supports_sample": false,
+          "verification": [
+            {
+              "cmd": "python3 engineering/skills/chaos-engineering/scripts/experiment_designer.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            }
+          ]
+        },
+        {
+          "script": "engineering/skills/chaos-engineering/scripts/experiment_postmortem.py",
+          "wired": true,
+          "supports_sample": false,
+          "verification": [
+            {
+              "cmd": "python3 engineering/skills/chaos-engineering/scripts/experiment_postmortem.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            }
+          ]
+        }
+      ],
+      "agentic_signals": {
+        "goal_intake": false,
+        "refusal_gate": false,
+        "verification": true,
+        "loop_discipline": true,
+        "close_out": false
+      },
+      "references": [
+        "attack_taxonomy.md",
+        "chaos_principles.md",
+        "experiment_design.md",
+        "tooling_landscape.md"
+      ]
+    },
+    {
+      "name": "ci-cd-pipeline-builder",
+      "path": "engineering/skills/ci-cd-pipeline-builder",
+      "description": "Use when setting up or refactoring CI/CD for a repo, before writing workflow YAML. Detects the stack with stack_detector.py and generates the pipeline with pipeline_generator.py.",
+      "tools": [
+        {
+          "script": "engineering/skills/ci-cd-pipeline-builder/scripts/pipeline_generator.py",
+          "wired": true,
+          "supports_sample": false,
+          "verification": [
+            {
+              "cmd": "python3 engineering/skills/ci-cd-pipeline-builder/scripts/pipeline_generator.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            }
+          ]
+        },
+        {
+          "script": "engineering/skills/ci-cd-pipeline-builder/scripts/stack_detector.py",
+          "wired": true,
+          "supports_sample": false,
+          "verification": [
+            {
+              "cmd": "python3 engineering/skills/ci-cd-pipeline-builder/scripts/stack_detector.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            }
+          ]
+        }
+      ],
+      "agentic_signals": {
+        "goal_intake": false,
+        "refusal_gate": false,
+        "verification": true,
+        "loop_discipline": false,
+        "close_out": false
+      },
+      "references": [
+        "deployment-gates.md",
+        "github-actions-templates.md",
+        "gitlab-ci-templates.md",
+        "pipeline-design-notes.md"
+      ]
+    },
+    {
+      "name": "codebase-onboarding",
+      "path": "engineering/skills/codebase-onboarding",
+      "description": "Use when someone is new to a repo or a tech lead needs an architecture brief, before writing docs by hand. Maps the codebase with codebase_analyzer.py and produces onboarding docs.",
+      "tools": [
+        {
+          "script": "engineering/skills/codebase-onboarding/scripts/codebase_analyzer.py",
+          "wired": true,
+          "supports_sample": false,
+          "verification": [
+            {
+              "cmd": "python3 engineering/skills/codebase-onboarding/scripts/codebase_analyzer.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            }
+          ]
+        }
+      ],
+      "agentic_signals": {
+        "goal_intake": false,
+        "refusal_gate": false,
+        "verification": true,
+        "loop_discipline": false,
+        "close_out": true
+      },
+      "references": [
+        "onboarding-template.md",
+        "output-format-templates.md"
+      ]
+    },
+    {
+      "name": "coding-agent-rollout",
+      "path": "engineering/skills/coding-agent-rollout",
+      "description": "Use when rolling Claude Code out to a team or reviewing a rollout: shared or managed settings, MCP and plugin approval, layered CLAUDE.md, adoption. Lints settings with settings_linter.py, inventories MCP servers and plugins, and audits CLAUDE.md layering.",
+      "tools": [
+        {
+          "script": "engineering/skills/coding-agent-rollout/scripts/adoption_tracker.py",
+          "wired": true,
+          "supports_sample": true,
+          "verification": [
+            {
+              "cmd": "python3 engineering/skills/coding-agent-rollout/scripts/adoption_tracker.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            },
+            {
+              "cmd": "python3 engineering/skills/coding-agent-rollout/scripts/adoption_tracker.py --sample",
+              "expect_exit": 0,
+              "kind": "sample"
+            }
+          ]
+        },
+        {
+          "script": "engineering/skills/coding-agent-rollout/scripts/claude_md_layering_audit.py",
+          "wired": true,
+          "supports_sample": true,
+          "verification": [
+            {
+              "cmd": "python3 engineering/skills/coding-agent-rollout/scripts/claude_md_layering_audit.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            },
+            {
+              "cmd": "python3 engineering/skills/coding-agent-rollout/scripts/claude_md_layering_audit.py --sample",
+              "expect_exit": 0,
+              "kind": "sample"
+            }
+          ]
+        },
+        {
+          "script": "engineering/skills/coding-agent-rollout/scripts/mcp_plugin_inventory.py",
+          "wired": true,
+          "supports_sample": true,
+          "verification": [
+            {
+              "cmd": "python3 engineering/skills/coding-agent-rollout/scripts/mcp_plugin_inventory.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            },
+            {
+              "cmd": "python3 engineering/skills/coding-agent-rollout/scripts/mcp_plugin_inventory.py --sample",
+              "expect_exit": 0,
+              "kind": "sample"
+            }
+          ]
+        },
+        {
+          "script": "engineering/skills/coding-agent-rollout/scripts/settings_linter.py",
+          "wired": true,
+          "supports_sample": true,
+          "verification": [
+            {
+              "cmd": "python3 engineering/skills/coding-agent-rollout/scripts/settings_linter.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            },
+            {
+              "cmd": "python3 engineering/skills/coding-agent-rollout/scripts/settings_linter.py --sample",
+              "expect_exit": 0,
+              "kind": "sample"
+            }
+          ]
+        }
+      ],
+      "agentic_signals": {
+        "goal_intake": false,
+        "refusal_gate": true,
+        "verification": true,
+        "loop_discipline": false,
+        "close_out": false
+      },
+      "references": [
+        "mcp_and_plugin_governance.md",
+        "memory_and_adoption.md",
+        "settings_and_permissions.md"
+      ]
+    },
+    {
+      "name": "database-designer",
+      "path": "engineering/skills/database-designer",
+      "description": "Use when designing a database schema, choosing SQL vs NoSQL, modeling relationships or planning a data migration, before writing DDL. Applies normalization, index strategy and a database selection decision tree.",
+      "tools": [
+        {
+          "script": "engineering/skills/database-designer/index_optimizer.py",
+          "wired": true,
+          "supports_sample": false,
+          "verification": [
+            {
+              "cmd": "python3 engineering/skills/database-designer/index_optimizer.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            }
+          ]
+        },
+        {
+          "script": "engineering/skills/database-designer/migration_generator.py",
+          "wired": true,
+          "supports_sample": false,
+          "verification": [
+            {
+              "cmd": "python3 engineering/skills/database-designer/migration_generator.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            }
+          ]
+        },
+        {
+          "script": "engineering/skills/database-designer/schema_analyzer.py",
+          "wired": true,
+          "supports_sample": false,
+          "verification": [
+            {
+              "cmd": "python3 engineering/skills/database-designer/schema_analyzer.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            }
+          ]
+        }
+      ],
+      "agentic_signals": {
+        "goal_intake": false,
+        "refusal_gate": false,
+        "verification": true,
+        "loop_discipline": true,
+        "close_out": false
+      },
+      "references": [
+        "database-design-reference.md",
+        "database_selection_decision_tree.md",
+        "index_strategy_patterns.md",
+        "normalization_guide.md"
+      ]
+    },
+    {
+      "name": "database-schema-designer",
+      "path": "engineering/skills/database-schema-designer",
+      "description": "Use when asked for an ERD, table relationships, normalization or a schema migration plan. Produces the ERD and normalized DDL with migration steps.",
+      "tools": [],
+      "agentic_signals": {
+        "goal_intake": false,
+        "refusal_gate": false,
+        "verification": false,
+        "loop_discipline": false,
+        "close_out": false
+      },
+      "references": [
+        "full-schema-examples.md"
+      ]
+    },
+    {
+      "name": "dependency-auditor",
+      "path": "engineering/skills/dependency-auditor",
+      "description": "Use before a release, during a CVE investigation, before a major version bump or for a license review. Scans dependencies with dep_scanner.py, checks licenses with license_checker.py and plans safe upgrades with upgrade_planner.py.",
+      "tools": [
+        {
+          "script": "engineering/skills/dependency-auditor/scripts/dep_scanner.py",
+          "wired": true,
+          "supports_sample": false,
+          "verification": [
+            {
+              "cmd": "python3 engineering/skills/dependency-auditor/scripts/dep_scanner.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            }
+          ]
+        },
+        {
+          "script": "engineering/skills/dependency-auditor/scripts/license_checker.py",
+          "wired": true,
+          "supports_sample": false,
+          "verification": [
+            {
+              "cmd": "python3 engineering/skills/dependency-auditor/scripts/license_checker.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            }
+          ]
+        },
+        {
+          "script": "engineering/skills/dependency-auditor/scripts/upgrade_planner.py",
+          "wired": true,
+          "supports_sample": false,
+          "verification": [
+            {
+              "cmd": "python3 engineering/skills/dependency-auditor/scripts/upgrade_planner.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            }
+          ]
+        }
+      ],
+      "agentic_signals": {
+        "goal_intake": false,
+        "refusal_gate": false,
+        "verification": true,
+        "loop_discipline": false,
+        "close_out": false
+      },
+      "references": [
+        "dependency_management_best_practices.md",
+        "license_compatibility_matrix.md",
+        "vulnerability_assessment_guide.md"
+      ]
+    },
+    {
+      "name": "engineering-advanced-skills",
+      "path": "engineering/skills/engineering-advanced-skills",
+      "description": "Use when looking for which advanced engineering skill fits a task (agents, RAG, MCP, CI/CD, databases, observability, release, reliability). Lists them and routes to one.",
+      "tools": [],
+      "agentic_signals": {
+        "goal_intake": false,
+        "refusal_gate": false,
+        "verification": false,
+        "loop_discipline": true,
+        "close_out": true
+      },
+      "references": []
+    },
+    {
+      "name": "env-secrets-manager",
+      "path": "engineering/skills/env-secrets-manager",
+      "description": "Use when auditing .env files, planning credential rotation, chasing a missing env var in production or hardening a repo against leaked secrets. Scans for committed secrets and drift with env_auditor.py.",
+      "tools": [
+        {
+          "script": "engineering/skills/env-secrets-manager/scripts/env_auditor.py",
+          "wired": true,
+          "supports_sample": false,
+          "verification": [
+            {
+              "cmd": "python3 engineering/skills/env-secrets-manager/scripts/env_auditor.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            }
+          ]
+        }
+      ],
+      "agentic_signals": {
+        "goal_intake": false,
+        "refusal_gate": false,
+        "verification": true,
+        "loop_discipline": false,
+        "close_out": false
+      },
+      "references": [
+        "secret-patterns.md",
+        "validation-detection-rotation.md"
+      ]
+    },
+    {
+      "name": "feature-flags-architect",
+      "path": "engineering/skills/feature-flags-architect",
+      "description": "Use before adding, rolling out or retiring a feature flag or kill switch, or when flag debt piles up. Plans the rollout with rollout_planner.py, finds stale flags with flag_debt_scanner.py and audits kill switches with kill_switch_audit.py.",
+      "tools": [
+        {
+          "script": "engineering/skills/feature-flags-architect/scripts/flag_debt_scanner.py",
+          "wired": true,
+          "supports_sample": false,
+          "verification": [
+            {
+              "cmd": "python3 engineering/skills/feature-flags-architect/scripts/flag_debt_scanner.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            }
+          ]
+        },
+        {
+          "script": "engineering/skills/feature-flags-architect/scripts/kill_switch_audit.py",
+          "wired": true,
+          "supports_sample": false,
+          "verification": [
+            {
+              "cmd": "python3 engineering/skills/feature-flags-architect/scripts/kill_switch_audit.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            }
+          ]
+        },
+        {
+          "script": "engineering/skills/feature-flags-architect/scripts/rollout_planner.py",
+          "wired": true,
+          "supports_sample": false,
+          "verification": [
+            {
+              "cmd": "python3 engineering/skills/feature-flags-architect/scripts/rollout_planner.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            }
+          ]
+        }
+      ],
+      "agentic_signals": {
+        "goal_intake": false,
+        "refusal_gate": false,
+        "verification": true,
+        "loop_discipline": true,
+        "close_out": false
+      },
+      "references": [
+        "flag_lifecycle.md",
+        "flag_taxonomy.md",
+        "provider_comparison.md",
+        "rollout_strategies.md"
+      ]
+    },
+    {
+      "name": "focused-fix",
+      "path": "engineering/skills/focused-fix",
+      "description": "Use when a whole feature or module is broken and needs fixing end to end ('make X work', 'the Y module is broken'). Maps every file and dependency of the area before changing anything. Single quick bug fixes do not need it.",
+      "tools": [],
+      "agentic_signals": {
+        "goal_intake": false,
+        "refusal_gate": false,
+        "verification": true,
+        "loop_discipline": true,
+        "close_out": true
+      },
+      "references": []
+    },
+    {
+      "name": "full-page-screenshot",
+      "path": "engineering/skills/full-page-screenshot",
+      "description": "Use when asked for a full-page or long screenshot of a web page. Captures SPA scroll containers, lazy images and very tall pages through Chrome DevTools Protocol with no extra dependencies.",
+      "tools": [],
+      "agentic_signals": {
+        "goal_intake": false,
+        "refusal_gate": false,
+        "verification": true,
+        "loop_discipline": true,
+        "close_out": false
+      },
+      "references": []
+    },
+    {
+      "name": "git-worktree-manager",
+      "path": "engineering/skills/git-worktree-manager",
+      "description": "Use when running several branches or agents in parallel on one repo. Creates worktrees with isolated ports and env via worktree_manager.py and removes stale ones with worktree_cleanup.py.",
+      "tools": [
+        {
+          "script": "engineering/skills/git-worktree-manager/scripts/worktree_cleanup.py",
+          "wired": true,
+          "supports_sample": false,
+          "verification": [
+            {
+              "cmd": "python3 engineering/skills/git-worktree-manager/scripts/worktree_cleanup.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            }
+          ]
+        },
+        {
+          "script": "engineering/skills/git-worktree-manager/scripts/worktree_manager.py",
+          "wired": true,
+          "supports_sample": false,
+          "verification": [
+            {
+              "cmd": "python3 engineering/skills/git-worktree-manager/scripts/worktree_manager.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            }
+          ]
+        }
+      ],
+      "agentic_signals": {
+        "goal_intake": false,
+        "refusal_gate": false,
+        "verification": true,
+        "loop_discipline": false,
+        "close_out": false
+      },
+      "references": [
+        "docker-compose-patterns.md",
+        "port-allocation-strategy.md"
+      ]
+    },
+    {
+      "name": "interview-system-designer",
+      "path": "engineering/skills/interview-system-designer",
+      "description": "Use when designing a hiring loop, competency matrix, scoring rubric or question bank, or checking interviewer calibration. Plans the loop per role with interview_planner.py.",
+      "tools": [
+        {
+          "script": "engineering/skills/interview-system-designer/scripts/interview_planner.py",
+          "wired": true,
+          "supports_sample": false,
+          "verification": [
+            {
+              "cmd": "python3 engineering/skills/interview-system-designer/scripts/interview_planner.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            }
+          ]
+        },
+        {
+          "script": "engineering/skills/interview-system-designer/hiring_calibrator.py",
+          "wired": false,
+          "supports_sample": false,
+          "verification": [
+            {
+              "cmd": "python3 engineering/skills/interview-system-designer/hiring_calibrator.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            }
+          ]
+        },
+        {
+          "script": "engineering/skills/interview-system-designer/loop_designer.py",
+          "wired": false,
+          "supports_sample": false,
+          "verification": [
+            {
+              "cmd": "python3 engineering/skills/interview-system-designer/loop_designer.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            }
+          ]
+        },
+        {
+          "script": "engineering/skills/interview-system-designer/question_bank_generator.py",
+          "wired": false,
+          "supports_sample": false,
+          "verification": [
+            {
+              "cmd": "python3 engineering/skills/interview-system-designer/question_bank_generator.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            }
+          ]
+        }
+      ],
+      "agentic_signals": {
+        "goal_intake": false,
+        "refusal_gate": false,
+        "verification": true,
+        "loop_discipline": false,
+        "close_out": false
+      },
+      "references": [
+        "bias_mitigation_checklist.md",
+        "competency_matrix_templates.md",
+        "debrief_facilitation_guide.md",
+        "interview-frameworks.md"
+      ]
+    },
+    {
+      "name": "kubernetes-operator",
+      "path": "engineering/skills/kubernetes-operator",
+      "description": "Use when building a Kubernetes operator or CRD (controller-runtime, kubebuilder, operator-sdk, KOPF), before writing the controller. Validates CRDs with crd_validator.py, lints reconcile loops with reconcile_lint.py and scores OperatorHub capability level.",
+      "tools": [
+        {
+          "script": "engineering/skills/kubernetes-operator/scripts/crd_validator.py",
+          "wired": true,
+          "supports_sample": false,
+          "verification": [
+            {
+              "cmd": "python3 engineering/skills/kubernetes-operator/scripts/crd_validator.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            }
+          ]
+        },
+        {
+          "script": "engineering/skills/kubernetes-operator/scripts/operator_capability_audit.py",
+          "wired": true,
+          "supports_sample": false,
+          "verification": [
+            {
+              "cmd": "python3 engineering/skills/kubernetes-operator/scripts/operator_capability_audit.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            }
+          ]
+        },
+        {
+          "script": "engineering/skills/kubernetes-operator/scripts/reconcile_lint.py",
+          "wired": true,
+          "supports_sample": false,
+          "verification": [
+            {
+              "cmd": "python3 engineering/skills/kubernetes-operator/scripts/reconcile_lint.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            }
+          ]
+        }
+      ],
+      "agentic_signals": {
+        "goal_intake": false,
+        "refusal_gate": false,
+        "verification": true,
+        "loop_discipline": false,
+        "close_out": false
+      },
+      "references": [
+        "crd_design.md",
+        "operator_pattern.md",
+        "reconcile_loop.md",
+        "tooling_landscape.md"
+      ]
+    },
+    {
+      "name": "mcp-server-builder",
+      "path": "engineering/skills/mcp-server-builder",
+      "description": "Use when exposing an API as an MCP server or scaffolding a new MCP server in Python or TypeScript, before hand-writing tool wrappers. Generates tools from OpenAPI with openapi_to_mcp.py and validates them with mcp_validator.py.",
+      "tools": [
+        {
+          "script": "engineering/skills/mcp-server-builder/scripts/mcp_validator.py",
+          "wired": true,
+          "supports_sample": false,
+          "verification": [
+            {
+              "cmd": "python3 engineering/skills/mcp-server-builder/scripts/mcp_validator.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            }
+          ]
+        },
+        {
+          "script": "engineering/skills/mcp-server-builder/scripts/openapi_to_mcp.py",
+          "wired": true,
+          "supports_sample": false,
+          "verification": [
+            {
+              "cmd": "python3 engineering/skills/mcp-server-builder/scripts/openapi_to_mcp.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            }
+          ]
+        }
+      ],
+      "agentic_signals": {
+        "goal_intake": false,
+        "refusal_gate": false,
+        "verification": true,
+        "loop_discipline": true,
+        "close_out": false
+      },
+      "references": [
+        "openapi-extraction-guide.md",
+        "production-hardening-guide.md",
+        "python-server-template.md",
+        "typescript-server-template.md",
+        "validation-checklist.md"
+      ]
+    },
+    {
+      "name": "migration-architect",
+      "path": "engineering/skills/migration-architect",
+      "description": "Use before planning any database, schema, service or data migration, especially zero-downtime ones. Generates a phased plan, a compatibility check and rollback scripts with migration_planner.py, compatibility_checker.py and rollback_generator.py.",
+      "tools": [
+        {
+          "script": "engineering/skills/migration-architect/scripts/compatibility_checker.py",
+          "wired": true,
+          "supports_sample": false,
+          "verification": [
+            {
+              "cmd": "python3 engineering/skills/migration-architect/scripts/compatibility_checker.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            }
+          ]
+        },
+        {
+          "script": "engineering/skills/migration-architect/scripts/migration_planner.py",
+          "wired": true,
+          "supports_sample": false,
+          "verification": [
+            {
+              "cmd": "python3 engineering/skills/migration-architect/scripts/migration_planner.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            }
+          ]
+        },
+        {
+          "script": "engineering/skills/migration-architect/scripts/rollback_generator.py",
+          "wired": true,
+          "supports_sample": false,
+          "verification": [
+            {
+              "cmd": "python3 engineering/skills/migration-architect/scripts/rollback_generator.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            }
+          ]
+        }
+      ],
+      "agentic_signals": {
+        "goal_intake": false,
+        "refusal_gate": false,
+        "verification": true,
+        "loop_discipline": true,
+        "close_out": false
+      },
+      "references": [
+        "data_reconciliation_strategies.md",
+        "migration_patterns_catalog.md",
+        "zero_downtime_techniques.md"
+      ]
+    },
+    {
+      "name": "monorepo-navigator",
+      "path": "engineering/skills/monorepo-navigator",
+      "description": "Use for Turborepo, Nx, pnpm-workspace or Lerna setup, affected-only builds, remote caching or a multi-repo to monorepo move. Maps packages and the dependency graph with monorepo_analyzer.py.",
+      "tools": [
+        {
+          "script": "engineering/skills/monorepo-navigator/scripts/monorepo_analyzer.py",
+          "wired": true,
+          "supports_sample": false,
+          "verification": [
+            {
+              "cmd": "python3 engineering/skills/monorepo-navigator/scripts/monorepo_analyzer.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            }
+          ]
+        }
+      ],
+      "agentic_signals": {
+        "goal_intake": false,
+        "refusal_gate": false,
+        "verification": true,
+        "loop_discipline": false,
+        "close_out": false
+      },
+      "references": [
+        "monorepo-patterns.md",
+        "monorepo-tooling-reference.md"
+      ]
+    },
+    {
+      "name": "observability-designer",
+      "path": "engineering/skills/observability-designer",
+      "description": "Use when adding metrics, logs and traces to a service, fixing noisy alerts or designing dashboards. Designs SLIs with slo_designer.py, tunes alerts with alert_optimizer.py and generates dashboards with dashboard_generator.py.",
+      "tools": [
+        {
+          "script": "engineering/skills/observability-designer/scripts/alert_optimizer.py",
+          "wired": true,
+          "supports_sample": false,
+          "verification": [
+            {
+              "cmd": "python3 engineering/skills/observability-designer/scripts/alert_optimizer.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            }
+          ]
+        },
+        {
+          "script": "engineering/skills/observability-designer/scripts/dashboard_generator.py",
+          "wired": true,
+          "supports_sample": false,
+          "verification": [
+            {
+              "cmd": "python3 engineering/skills/observability-designer/scripts/dashboard_generator.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            }
+          ]
+        },
+        {
+          "script": "engineering/skills/observability-designer/scripts/slo_designer.py",
+          "wired": true,
+          "supports_sample": false,
+          "verification": [
+            {
+              "cmd": "python3 engineering/skills/observability-designer/scripts/slo_designer.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            }
+          ]
+        }
+      ],
+      "agentic_signals": {
+        "goal_intake": false,
+        "refusal_gate": false,
+        "verification": true,
+        "loop_discipline": true,
+        "close_out": false
+      },
+      "references": [
+        "alert_design_patterns.md",
+        "dashboard_best_practices.md",
+        "slo_cookbook.md"
+      ]
+    },
+    {
+      "name": "performance-profiler",
+      "path": "engineering/skills/performance-profiler",
+      "description": "Use for a slow endpoint, memory leak, CPU spike, large bundle or performance budget in Node.js, Python or Go, before optimizing. Measures before and after with performance_profiler.py, flamegraphs and k6 load tests.",
+      "tools": [
+        {
+          "script": "engineering/skills/performance-profiler/scripts/performance_profiler.py",
+          "wired": true,
+          "supports_sample": false,
+          "verification": [
+            {
+              "cmd": "python3 engineering/skills/performance-profiler/scripts/performance_profiler.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            }
+          ]
+        }
+      ],
+      "agentic_signals": {
+        "goal_intake": false,
+        "refusal_gate": false,
+        "verification": true,
+        "loop_discipline": true,
+        "close_out": false
+      },
+      "references": [
+        "optimization-playbook.md",
+        "profiling-recipes.md"
+      ]
+    },
+    {
+      "name": "pr-review-expert",
+      "path": "engineering/skills/pr-review-expert",
+      "description": "Use when asked to review a pull request or diff for correctness, security and quality. Reviews the change file by file with a severity-ranked checklist.",
+      "tools": [],
+      "agentic_signals": {
+        "goal_intake": false,
+        "refusal_gate": false,
+        "verification": true,
+        "loop_discipline": false,
+        "close_out": false
+      },
+      "references": []
+    },
+    {
+      "name": "rag-architect",
+      "path": "engineering/skills/rag-architect",
+      "description": "Use when designing a RAG pipeline, choosing chunk size, embedding model or vector database, or measuring retrieval quality (precision@k, recall@k, NDCG). Gives sized recommendations and an evaluation plan against ground truth.",
+      "tools": [
+        {
+          "script": "engineering/skills/rag-architect/chunking_optimizer.py",
+          "wired": true,
+          "supports_sample": false,
+          "verification": [
+            {
+              "cmd": "python3 engineering/skills/rag-architect/chunking_optimizer.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            }
+          ]
+        },
+        {
+          "script": "engineering/skills/rag-architect/rag_pipeline_designer.py",
+          "wired": true,
+          "supports_sample": false,
+          "verification": [
+            {
+              "cmd": "python3 engineering/skills/rag-architect/rag_pipeline_designer.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            }
+          ]
+        },
+        {
+          "script": "engineering/skills/rag-architect/retrieval_evaluator.py",
+          "wired": true,
+          "supports_sample": false,
+          "verification": [
+            {
+              "cmd": "python3 engineering/skills/rag-architect/retrieval_evaluator.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            }
+          ]
+        }
+      ],
+      "agentic_signals": {
+        "goal_intake": false,
+        "refusal_gate": true,
+        "verification": true,
+        "loop_discipline": true,
+        "close_out": false
+      },
+      "references": [
+        "chunking_strategies_comparison.md",
+        "embedding_model_benchmark.md",
+        "rag_evaluation_framework.md"
+      ]
+    },
+    {
+      "name": "runbook-generator",
+      "path": "engineering/skills/runbook-generator",
+      "description": "Use when a service needs runbooks for deploy, incident response, maintenance or rollback, before launch. Generates them per environment with runbook_generator.py.",
+      "tools": [
+        {
+          "script": "engineering/skills/runbook-generator/scripts/runbook_generator.py",
+          "wired": true,
+          "supports_sample": false,
+          "verification": [
+            {
+              "cmd": "python3 engineering/skills/runbook-generator/scripts/runbook_generator.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            }
+          ]
+        }
+      ],
+      "agentic_signals": {
+        "goal_intake": false,
+        "refusal_gate": false,
+        "verification": true,
+        "loop_discipline": false,
+        "close_out": false
+      },
+      "references": [
+        "runbook-templates.md"
+      ]
+    },
+    {
+      "name": "secrets-vault-manager",
+      "path": "engineering/skills/secrets-vault-manager",
+      "description": "Use when setting up HashiCorp Vault, AWS Secrets Manager, Azure Key Vault or GCP Secret Manager, rotating secrets or auditing secret access. Generates config with vault_config_generator.py, plans rotation with rotation_planner.py and analyzes audit logs.",
+      "tools": [
+        {
+          "script": "engineering/skills/secrets-vault-manager/scripts/audit_log_analyzer.py",
+          "wired": true,
+          "supports_sample": true,
+          "verification": [
+            {
+              "cmd": "python3 engineering/skills/secrets-vault-manager/scripts/audit_log_analyzer.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            },
+            {
+              "cmd": "python3 engineering/skills/secrets-vault-manager/scripts/audit_log_analyzer.py --sample",
+              "expect_exit": 0,
+              "kind": "sample"
+            }
+          ]
+        },
+        {
+          "script": "engineering/skills/secrets-vault-manager/scripts/rotation_planner.py",
+          "wired": true,
+          "supports_sample": false,
+          "verification": [
+            {
+              "cmd": "python3 engineering/skills/secrets-vault-manager/scripts/rotation_planner.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            }
+          ]
+        },
+        {
+          "script": "engineering/skills/secrets-vault-manager/scripts/vault_config_generator.py",
+          "wired": true,
+          "supports_sample": false,
+          "verification": [
+            {
+              "cmd": "python3 engineering/skills/secrets-vault-manager/scripts/vault_config_generator.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            }
+          ]
+        }
+      ],
+      "agentic_signals": {
+        "goal_intake": false,
+        "refusal_gate": true,
+        "verification": true,
+        "loop_discipline": true,
+        "close_out": false
+      },
+      "references": [
+        "cloud_secret_stores.md",
+        "emergency_procedures.md",
+        "vault_patterns.md"
+      ]
+    },
+    {
+      "name": "self-eval",
+      "path": "engineering/skills/self-eval",
+      "description": "Use after finishing a task, review or session to grade the work honestly. Scores it on two axes, forces a devil's-advocate pass against score inflation and keeps scores across sessions.",
+      "tools": [],
+      "agentic_signals": {
+        "goal_intake": true,
+        "refusal_gate": false,
+        "verification": false,
+        "loop_discipline": false,
+        "close_out": false
+      },
+      "references": []
+    },
+    {
+      "name": "ship-gate",
+      "path": "engineering/skills/ship-gate",
+      "description": "> Pre-production audit that scans a codebase for security, database, deployment, code quality, AI/LLM, dependency, frontend, and observability issues. Intercepts deploy commands and blocks until critical items pass. Stack-agnostic. Use for \"run ship gate\", \"am I ready to ship\", \"pre-launch audit\", \"can I deploy\", \"push to production\", \"go live checklist\", \"preflight check\". Not for CI/CD setup or infra provisioning.",
+      "tools": [
+        {
+          "script": "engineering/skills/ship-gate/scripts/ship_gate_scanner.py",
+          "wired": false,
+          "supports_sample": false,
+          "verification": [
+            {
+              "cmd": "python3 engineering/skills/ship-gate/scripts/ship_gate_scanner.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            }
+          ]
+        }
+      ],
+      "agentic_signals": {
+        "goal_intake": false,
+        "refusal_gate": false,
+        "verification": true,
+        "loop_discipline": true,
+        "close_out": false
+      },
+      "references": [
+        "checks.md",
+        "patterns.md"
+      ]
+    },
+    {
+      "name": "skill-security-auditor",
+      "path": "engineering/skills/skill-security-auditor",
+      "description": "> Security audit and vulnerability scanner for AI agent skills before installation. Use when: (1) evaluating a skill from an untrusted source, (2) auditing a skill directory or git repo URL for malicious code, (3) pre-install security gate for Claude Code plugins, OpenClaw skills, or Codex skills, (4) scanning Python scripts for dangerous patterns like os.system, eval, subprocess, network exfiltration, (5) detecting prompt injection in SKILL.md files, (6) checking dependency supply chain risks, (7) verifying file system access stays within skill boundaries.",
+      "tools": [
+        {
+          "script": "engineering/skills/skill-security-auditor/scripts/skill_security_auditor.py",
+          "wired": true,
+          "supports_sample": false,
+          "verification": [
+            {
+              "cmd": "python3 engineering/skills/skill-security-auditor/scripts/skill_security_auditor.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            }
+          ]
+        }
+      ],
+      "agentic_signals": {
+        "goal_intake": false,
+        "refusal_gate": true,
+        "verification": true,
+        "loop_discipline": false,
+        "close_out": false
+      },
+      "references": [
+        "threat-model.md"
+      ]
+    },
+    {
+      "name": "skill-tester",
+      "path": "engineering/skills/skill-tester",
+      "description": "Use when authoring or auditing a skill in this ecosystem, before release. Validates structure with skill_validator.py, runs its scripts with script_tester.py and grades quality and security with quality_scorer.py and security_scorer.py.",
+      "tools": [
+        {
+          "script": "engineering/skills/skill-tester/scripts/quality_scorer.py",
+          "wired": true,
+          "supports_sample": false,
+          "verification": [
+            {
+              "cmd": "python3 engineering/skills/skill-tester/scripts/quality_scorer.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            }
+          ]
+        },
+        {
+          "script": "engineering/skills/skill-tester/scripts/script_tester.py",
+          "wired": true,
+          "supports_sample": false,
+          "verification": [
+            {
+              "cmd": "python3 engineering/skills/skill-tester/scripts/script_tester.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            }
+          ]
+        },
+        {
+          "script": "engineering/skills/skill-tester/scripts/security_scorer.py",
+          "wired": true,
+          "supports_sample": false,
+          "verification": [
+            {
+              "cmd": "python3 engineering/skills/skill-tester/scripts/security_scorer.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            }
+          ]
+        },
+        {
+          "script": "engineering/skills/skill-tester/scripts/skill_validator.py",
+          "wired": true,
+          "supports_sample": false,
+          "verification": [
+            {
+              "cmd": "python3 engineering/skills/skill-tester/scripts/skill_validator.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            }
+          ]
+        }
+      ],
+      "agentic_signals": {
+        "goal_intake": false,
+        "refusal_gate": false,
+        "verification": true,
+        "loop_discipline": true,
+        "close_out": false
+      },
+      "references": [
+        "quality-scoring-rubric.md",
+        "skill-structure-specification.md",
+        "tier-requirements-matrix.md"
+      ]
+    },
+    {
+      "name": "sample-text-processor",
+      "path": "engineering/skills/skill-tester/assets/sample-skill",
+      "description": "Reference BASIC-tier skill used as a fixture by skill-tester. Counts words and characters and applies basic text transformations. Use when validating skill-tester itself or when you need a minimal, known-good skill layout to copy. Not a production skill.",
+      "tools": [
+        {
+          "script": "engineering/skills/skill-tester/assets/sample-skill/scripts/text_processor.py",
+          "wired": true,
+          "supports_sample": false,
+          "verification": [
+            {
+              "cmd": "python3 engineering/skills/skill-tester/assets/sample-skill/scripts/text_processor.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            }
+          ]
+        }
+      ],
+      "agentic_signals": {
+        "goal_intake": false,
+        "refusal_gate": false,
+        "verification": false,
+        "loop_discipline": false,
+        "close_out": false
+      },
+      "references": [
+        "api-reference.md"
+      ]
+    },
+    {
+      "name": "slo-architect",
+      "path": "engineering/skills/slo-architect",
+      "description": "Use when defining or reviewing SLOs, SLIs, error budgets or burn-rate alerts. Designs SLOs with slo_designer.py, computes budgets and multi-window burn-rate thresholds with error_budget_calculator.py and catches common SLO bugs with slo_review.py.",
+      "tools": [
+        {
+          "script": "engineering/skills/slo-architect/scripts/error_budget_calculator.py",
+          "wired": true,
+          "supports_sample": true,
+          "verification": [
+            {
+              "cmd": "python3 engineering/skills/slo-architect/scripts/error_budget_calculator.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            },
+            {
+              "cmd": "python3 engineering/skills/slo-architect/scripts/error_budget_calculator.py --sample",
+              "expect_exit": 0,
+              "kind": "sample"
+            }
+          ]
+        },
+        {
+          "script": "engineering/skills/slo-architect/scripts/slo_designer.py",
+          "wired": true,
+          "supports_sample": false,
+          "verification": [
+            {
+              "cmd": "python3 engineering/skills/slo-architect/scripts/slo_designer.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            }
+          ]
+        },
+        {
+          "script": "engineering/skills/slo-architect/scripts/slo_review.py",
+          "wired": true,
+          "supports_sample": true,
+          "verification": [
+            {
+              "cmd": "python3 engineering/skills/slo-architect/scripts/slo_review.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            },
+            {
+              "cmd": "python3 engineering/skills/slo-architect/scripts/slo_review.py --sample",
+              "expect_exit": 0,
+              "kind": "sample"
+            }
+          ]
+        }
+      ],
+      "agentic_signals": {
+        "goal_intake": false,
+        "refusal_gate": true,
+        "verification": true,
+        "loop_discipline": true,
+        "close_out": true
+      },
+      "references": [
+        "composition.md",
+        "error_budget.md",
+        "sli_design.md",
+        "slo_principles.md"
+      ]
+    },
+    {
+      "name": "spec-driven-workflow",
+      "path": "engineering/skills/spec-driven-workflow",
+      "description": "Use when a feature should be specified before coding (acceptance criteria, spec-first, tests from specs). Writes the spec with spec_generator.py, checks it with spec_validator.py and extracts tests with test_extractor.py.",
+      "tools": [
+        {
+          "script": "engineering/skills/spec-driven-workflow/scripts/spec_generator.py",
+          "wired": true,
+          "supports_sample": false,
+          "verification": [
+            {
+              "cmd": "python3 engineering/skills/spec-driven-workflow/scripts/spec_generator.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            }
+          ]
+        },
+        {
+          "script": "engineering/skills/spec-driven-workflow/scripts/spec_validator.py",
+          "wired": true,
+          "supports_sample": false,
+          "verification": [
+            {
+              "cmd": "python3 engineering/skills/spec-driven-workflow/scripts/spec_validator.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            }
+          ]
+        },
+        {
+          "script": "engineering/skills/spec-driven-workflow/scripts/test_extractor.py",
+          "wired": true,
+          "supports_sample": false,
+          "verification": [
+            {
+              "cmd": "python3 engineering/skills/spec-driven-workflow/scripts/test_extractor.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            }
+          ]
+        }
+      ],
+      "agentic_signals": {
+        "goal_intake": true,
+        "refusal_gate": false,
+        "verification": true,
+        "loop_discipline": true,
+        "close_out": true
+      },
+      "references": [
+        "acceptance_criteria_patterns.md",
+        "bounded_autonomy_rules.md",
+        "spec_format_guide.md"
+      ]
+    },
+    {
+      "name": "sql-database-assistant",
+      "path": "engineering/skills/sql-database-assistant",
+      "description": "Use for writing or optimizing SQL, exploring a schema, generating migrations or working with Prisma, Drizzle, TypeORM or SQLAlchemy. Analyzes queries with query_optimizer.py and schemas with schema_explorer.py.",
+      "tools": [
+        {
+          "script": "engineering/skills/sql-database-assistant/scripts/migration_generator.py",
+          "wired": true,
+          "supports_sample": false,
+          "verification": [
+            {
+              "cmd": "python3 engineering/skills/sql-database-assistant/scripts/migration_generator.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            }
+          ]
+        },
+        {
+          "script": "engineering/skills/sql-database-assistant/scripts/query_optimizer.py",
+          "wired": true,
+          "supports_sample": false,
+          "verification": [
+            {
+              "cmd": "python3 engineering/skills/sql-database-assistant/scripts/query_optimizer.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            }
+          ]
+        },
+        {
+          "script": "engineering/skills/sql-database-assistant/scripts/schema_explorer.py",
+          "wired": true,
+          "supports_sample": false,
+          "verification": [
+            {
+              "cmd": "python3 engineering/skills/sql-database-assistant/scripts/schema_explorer.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            }
+          ]
+        }
+      ],
+      "agentic_signals": {
+        "goal_intake": false,
+        "refusal_gate": false,
+        "verification": true,
+        "loop_discipline": true,
+        "close_out": false
+      },
+      "references": [
+        "optimization_guide.md",
+        "orm_patterns.md",
+        "query_patterns.md"
+      ]
+    },
+    {
+      "name": "tc-tracker",
+      "path": "engineering/skills/tc-tracker",
+      "description": "Use when tracking technical changes as records, or handing work between AI sessions with a change record. Creates, updates and validates change records with tc_create.py, tc_update.py and tc_validator.py.",
+      "tools": [
+        {
+          "script": "engineering/skills/tc-tracker/scripts/tc_create.py",
+          "wired": true,
+          "supports_sample": false,
+          "verification": [
+            {
+              "cmd": "python3 engineering/skills/tc-tracker/scripts/tc_create.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            }
+          ]
+        },
+        {
+          "script": "engineering/skills/tc-tracker/scripts/tc_init.py",
+          "wired": true,
+          "supports_sample": false,
+          "verification": [
+            {
+              "cmd": "python3 engineering/skills/tc-tracker/scripts/tc_init.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            }
+          ]
+        },
+        {
+          "script": "engineering/skills/tc-tracker/scripts/tc_status.py",
+          "wired": true,
+          "supports_sample": false,
+          "verification": [
+            {
+              "cmd": "python3 engineering/skills/tc-tracker/scripts/tc_status.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            }
+          ]
+        },
+        {
+          "script": "engineering/skills/tc-tracker/scripts/tc_update.py",
+          "wired": true,
+          "supports_sample": false,
+          "verification": [
+            {
+              "cmd": "python3 engineering/skills/tc-tracker/scripts/tc_update.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            }
+          ]
+        },
+        {
+          "script": "engineering/skills/tc-tracker/scripts/tc_validator.py",
+          "wired": true,
+          "supports_sample": false,
+          "verification": [
+            {
+              "cmd": "python3 engineering/skills/tc-tracker/scripts/tc_validator.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            }
+          ]
+        }
+      ],
+      "agentic_signals": {
+        "goal_intake": false,
+        "refusal_gate": false,
+        "verification": false,
+        "loop_discipline": false,
+        "close_out": true
+      },
+      "references": [
+        "handoff-format.md",
+        "lifecycle.md",
+        "tc-schema.md"
+      ]
+    },
+    {
+      "name": "tech-debt-tracker",
+      "path": "engineering/skills/tech-debt-tracker",
+      "description": "Use when asked about tech debt, refactoring priority, a cleanup sprint or legacy modernization. Scans the code with debt_scanner.py, ranks items with debt_prioritizer.py and tracks trends with debt_dashboard.py.",
+      "tools": [
+        {
+          "script": "engineering/skills/tech-debt-tracker/scripts/debt_dashboard.py",
+          "wired": true,
+          "supports_sample": false,
+          "verification": [
+            {
+              "cmd": "python3 engineering/skills/tech-debt-tracker/scripts/debt_dashboard.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            }
+          ]
+        },
+        {
+          "script": "engineering/skills/tech-debt-tracker/scripts/debt_prioritizer.py",
+          "wired": true,
+          "supports_sample": false,
+          "verification": [
+            {
+              "cmd": "python3 engineering/skills/tech-debt-tracker/scripts/debt_prioritizer.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            }
+          ]
+        },
+        {
+          "script": "engineering/skills/tech-debt-tracker/scripts/debt_scanner.py",
+          "wired": true,
+          "supports_sample": false,
+          "verification": [
+            {
+              "cmd": "python3 engineering/skills/tech-debt-tracker/scripts/debt_scanner.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            }
+          ]
+        }
+      ],
+      "agentic_signals": {
+        "goal_intake": false,
+        "refusal_gate": false,
+        "verification": true,
+        "loop_discipline": true,
+        "close_out": false
+      },
+      "references": [
+        "debt-classification-taxonomy.md",
+        "debt-frameworks.md",
+        "prioritization-framework.md",
+        "stakeholder-communication-templates.md"
+      ]
+    },
+    {
+      "name": "slo-architect",
+      "path": "engineering/slo-architect/skills/slo-architect",
+      "description": "Use when defining or reviewing SLOs, SLIs, error budgets or burn-rate alerts. Designs SLOs with slo_designer.py, computes budgets and multi-window burn-rate thresholds with error_budget_calculator.py and catches common SLO bugs with slo_review.py.",
+      "tools": [
+        {
+          "script": "engineering/slo-architect/skills/slo-architect/scripts/error_budget_calculator.py",
+          "wired": true,
+          "supports_sample": true,
+          "verification": [
+            {
+              "cmd": "python3 engineering/slo-architect/skills/slo-architect/scripts/error_budget_calculator.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            },
+            {
+              "cmd": "python3 engineering/slo-architect/skills/slo-architect/scripts/error_budget_calculator.py --sample",
+              "expect_exit": 0,
+              "kind": "sample"
+            }
+          ]
+        },
+        {
+          "script": "engineering/slo-architect/skills/slo-architect/scripts/slo_designer.py",
+          "wired": true,
+          "supports_sample": false,
+          "verification": [
+            {
+              "cmd": "python3 engineering/slo-architect/skills/slo-architect/scripts/slo_designer.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            }
+          ]
+        },
+        {
+          "script": "engineering/slo-architect/skills/slo-architect/scripts/slo_review.py",
+          "wired": true,
+          "supports_sample": true,
+          "verification": [
+            {
+              "cmd": "python3 engineering/slo-architect/skills/slo-architect/scripts/slo_review.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            },
+            {
+              "cmd": "python3 engineering/slo-architect/skills/slo-architect/scripts/slo_review.py --sample",
+              "expect_exit": 0,
+              "kind": "sample"
+            }
+          ]
+        }
+      ],
+      "agentic_signals": {
+        "goal_intake": false,
+        "refusal_gate": true,
+        "verification": true,
+        "loop_discipline": true,
+        "close_out": true
+      },
+      "references": [
+        "composition.md",
+        "error_budget.md",
+        "sli_design.md",
+        "slo_principles.md"
+      ]
+    },
+    {
+      "name": "spinning-up-deep-rl",
+      "path": "engineering/spinning-up-deep-rl/skills/spinning-up-deep-rl",
+      "description": "Use when learning or applying deep RL from OpenAI's Spinning Up: MDPs, policy gradients, VPG, TRPO, PPO, DDPG, TD3, SAC, debugging RL code that fails silently, or multi-seed experiments. Indexes the 20 chapters for on-demand reading.",
+      "tools": [],
+      "agentic_signals": {
+        "goal_intake": false,
+        "refusal_gate": false,
+        "verification": true,
+        "loop_discipline": true,
+        "close_out": true
+      },
+      "references": []
+    },
+    {
+      "name": "statistical-analyst",
+      "path": "engineering/statistical-analyst/skills/statistical-analyst",
+      "description": "Use when checking whether a difference is real (A/B results, hypothesis tests) or sizing an experiment, before declaring a winner. Runs tests with hypothesis_tester.py, intervals with confidence_interval.py and sample sizes with sample_size_calculator.py.",
+      "tools": [
+        {
+          "script": "engineering/statistical-analyst/skills/statistical-analyst/scripts/confidence_interval.py",
+          "wired": true,
+          "supports_sample": false,
+          "verification": [
+            {
+              "cmd": "python3 engineering/statistical-analyst/skills/statistical-analyst/scripts/confidence_interval.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            }
+          ]
+        },
+        {
+          "script": "engineering/statistical-analyst/skills/statistical-analyst/scripts/hypothesis_tester.py",
+          "wired": true,
+          "supports_sample": false,
+          "verification": [
+            {
+              "cmd": "python3 engineering/statistical-analyst/skills/statistical-analyst/scripts/hypothesis_tester.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            }
+          ]
+        },
+        {
+          "script": "engineering/statistical-analyst/skills/statistical-analyst/scripts/sample_size_calculator.py",
+          "wired": true,
+          "supports_sample": false,
+          "verification": [
+            {
+              "cmd": "python3 engineering/statistical-analyst/skills/statistical-analyst/scripts/sample_size_calculator.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            }
+          ]
+        }
+      ],
+      "agentic_signals": {
+        "goal_intake": false,
+        "refusal_gate": false,
+        "verification": true,
+        "loop_discipline": false,
+        "close_out": false
+      },
+      "references": [
+        "statistical-testing-concepts.md"
+      ]
+    },
+    {
+      "name": "strict-api",
+      "path": "engineering/strict-api",
+      "description": "Use when the user says 'no hallucinations', 'verify APIs' or 'don't invent functions', or code depends on a library version you have not checked. Requires proof that every method, import and variable exists in the installed version before using it.",
+      "tools": [],
+      "agentic_signals": {
+        "goal_intake": false,
+        "refusal_gate": false,
+        "verification": true,
+        "loop_discipline": false,
+        "close_out": false
+      },
+      "references": []
+    },
+    {
+      "name": "terraform-patterns",
+      "path": "engineering/terraform-patterns/skills/terraform-patterns",
+      "description": "Use for any Terraform module, state backend, provider setup or IaC security review, before editing .tf files. Analyzes modules with tf_module_analyzer.py and scans for misconfigurations with tf_security_scanner.py.",
+      "tools": [
+        {
+          "script": "engineering/terraform-patterns/skills/terraform-patterns/scripts/tf_module_analyzer.py",
+          "wired": true,
+          "supports_sample": false,
+          "verification": [
+            {
+              "cmd": "python3 engineering/terraform-patterns/skills/terraform-patterns/scripts/tf_module_analyzer.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            }
+          ]
+        },
+        {
+          "script": "engineering/terraform-patterns/skills/terraform-patterns/scripts/tf_security_scanner.py",
+          "wired": true,
+          "supports_sample": false,
+          "verification": [
+            {
+              "cmd": "python3 engineering/terraform-patterns/skills/terraform-patterns/scripts/tf_security_scanner.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            }
+          ]
+        }
+      ],
+      "agentic_signals": {
+        "goal_intake": false,
+        "refusal_gate": false,
+        "verification": true,
+        "loop_discipline": true,
+        "close_out": false
+      },
+      "references": [
+        "module-patterns.md",
+        "state-management.md"
+      ]
+    },
+    {
+      "name": "universal-scraping-architect",
+      "path": "engineering/universal-scraping-architect/skills/universal-scraping-architect",
+      "description": "Use for web scraping, crawling, document extraction or API parsing pipelines that must validate what they extract. Builds the extractor with Firecrawl or local Python and checks output with validate_extraction.py.",
+      "tools": [
+        {
+          "script": "engineering/universal-scraping-architect/skills/universal-scraping-architect/scripts/firecrawl_example.py",
+          "wired": true,
+          "supports_sample": true,
+          "verification": [
+            {
+              "cmd": "python3 engineering/universal-scraping-architect/skills/universal-scraping-architect/scripts/firecrawl_example.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            },
+            {
+              "cmd": "python3 engineering/universal-scraping-architect/skills/universal-scraping-architect/scripts/firecrawl_example.py --sample",
+              "expect_exit": 0,
+              "kind": "sample"
+            }
+          ]
+        },
+        {
+          "script": "engineering/universal-scraping-architect/skills/universal-scraping-architect/scripts/local_bs4_example.py",
+          "wired": true,
+          "supports_sample": true,
+          "verification": [
+            {
+              "cmd": "python3 engineering/universal-scraping-architect/skills/universal-scraping-architect/scripts/local_bs4_example.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            },
+            {
+              "cmd": "python3 engineering/universal-scraping-architect/skills/universal-scraping-architect/scripts/local_bs4_example.py --sample",
+              "expect_exit": 0,
+              "kind": "sample"
+            }
+          ]
+        },
+        {
+          "script": "engineering/universal-scraping-architect/skills/universal-scraping-architect/scripts/validate_extraction.py",
+          "wired": true,
+          "supports_sample": false,
+          "verification": [
+            {
+              "cmd": "python3 engineering/universal-scraping-architect/skills/universal-scraping-architect/scripts/validate_extraction.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            }
+          ]
+        }
+      ],
+      "agentic_signals": {
+        "goal_intake": true,
+        "refusal_gate": true,
+        "verification": true,
+        "loop_discipline": true,
+        "close_out": false
+      },
+      "references": [
+        "firecrawl-technical-guide.md",
+        "local-extraction-patterns.md",
+        "scraping-ethics-security.md"
+      ]
+    },
+    {
+      "name": "workflow-builder",
+      "path": "engineering/workflow-builder/skills/workflow-builder",
+      "description": "Use when writing or running a Claude Code Workflow-tool script (.js in .claude/workflows/) for fan-out, pipeline, loop or judge-panel sub-agents. Gathers intent with workflow_intake.py, scaffolds with scaffold_workflow.py and validates with validate_workflow.py.",
+      "tools": [
+        {
+          "script": "engineering/workflow-builder/skills/workflow-builder/scripts/scaffold_workflow.py",
+          "wired": true,
+          "supports_sample": true,
+          "verification": [
+            {
+              "cmd": "python3 engineering/workflow-builder/skills/workflow-builder/scripts/scaffold_workflow.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            },
+            {
+              "cmd": "python3 engineering/workflow-builder/skills/workflow-builder/scripts/scaffold_workflow.py --sample",
+              "expect_exit": 0,
+              "kind": "sample"
+            }
+          ]
+        },
+        {
+          "script": "engineering/workflow-builder/skills/workflow-builder/scripts/validate_workflow.py",
+          "wired": true,
+          "supports_sample": true,
+          "verification": [
+            {
+              "cmd": "python3 engineering/workflow-builder/skills/workflow-builder/scripts/validate_workflow.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            },
+            {
+              "cmd": "python3 engineering/workflow-builder/skills/workflow-builder/scripts/validate_workflow.py --sample",
+              "expect_exit": 0,
+              "kind": "sample"
+            }
+          ]
+        },
+        {
+          "script": "engineering/workflow-builder/skills/workflow-builder/scripts/workflow_intake.py",
+          "wired": true,
+          "supports_sample": true,
+          "verification": [
+            {
+              "cmd": "python3 engineering/workflow-builder/skills/workflow-builder/scripts/workflow_intake.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            },
+            {
+              "cmd": "python3 engineering/workflow-builder/skills/workflow-builder/scripts/workflow_intake.py --sample",
+              "expect_exit": 0,
+              "kind": "sample"
+            }
+          ]
+        }
+      ],
+      "agentic_signals": {
+        "goal_intake": true,
+        "refusal_gate": true,
+        "verification": true,
+        "loop_discipline": true,
+        "close_out": false
+      },
+      "references": [
+        "api_reference.md",
+        "decision_and_intake_guide.md",
+        "orchestration_patterns.md"
+      ]
+    },
+    {
+      "name": "write-a-skill",
+      "path": "engineering/write-a-skill/skills/write-a-skill",
+      "description": "Create new agent skills with proper structure, progressive disclosure, and bundled resources. Use when user wants to create, write, build, or author a new skill.",
+      "tools": [
+        {
+          "script": "engineering/write-a-skill/skills/write-a-skill/scripts/_skill_frontmatter.py",
+          "wired": false,
+          "supports_sample": false,
+          "verification": [
+            {
+              "cmd": "python3 engineering/write-a-skill/skills/write-a-skill/scripts/_skill_frontmatter.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            }
+          ]
+        },
+        {
+          "script": "engineering/write-a-skill/skills/write-a-skill/scripts/skill_description_validator.py",
+          "wired": false,
+          "supports_sample": false,
+          "verification": [
+            {
+              "cmd": "python3 engineering/write-a-skill/skills/write-a-skill/scripts/skill_description_validator.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            }
+          ]
+        },
+        {
+          "script": "engineering/write-a-skill/skills/write-a-skill/scripts/skill_review_checklist_runner.py",
+          "wired": true,
+          "supports_sample": false,
+          "verification": [
+            {
+              "cmd": "python3 engineering/write-a-skill/skills/write-a-skill/scripts/skill_review_checklist_runner.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            }
+          ]
+        },
+        {
+          "script": "engineering/write-a-skill/skills/write-a-skill/scripts/skill_structure_validator.py",
+          "wired": false,
+          "supports_sample": false,
+          "verification": [
+            {
+              "cmd": "python3 engineering/write-a-skill/skills/write-a-skill/scripts/skill_structure_validator.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            }
+          ]
+        }
+      ],
+      "agentic_signals": {
+        "goal_intake": false,
+        "refusal_gate": false,
+        "verification": true,
+        "loop_discipline": false,
+        "close_out": false
+      },
+      "references": [
+        "companion_tooling.md",
+        "description_design_patterns.md",
+        "progressive_disclosure_principles.md",
+        "quality_gates_for_skills.md"
+      ]
+    },
+    {
+      "name": "zero-hallucination-coder",
+      "path": "engineering/zero-hallucination-coder/skills/zero-hallucination-coder",
+      "description": "Use before high-stakes or multi-file coding (auth, databases, migrations), or when asked to plan carefully and avoid invented APIs. Runs discuss, map, decompose, execute and verify, checking every import and API exists. Not for trivial edits.",
+      "tools": [],
+      "agentic_signals": {
+        "goal_intake": true,
+        "refusal_gate": true,
+        "verification": true,
+        "loop_discipline": true,
+        "close_out": true
+      },
+      "references": []
+    }
+  ]
+}

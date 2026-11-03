@@ -1,0 +1,487 @@
+{
+  "schema": "agent-harness/manifest.v1",
+  "domain": "marketing",
+  "skill_count": 7,
+  "loop_defaults": {
+    "max_attempts_per_task": 3,
+    "max_loop_iterations": 12,
+    "escalate_on": [
+      "attempts_exhausted",
+      "no_verification_available",
+      "destructive_or_irreversible_action",
+      "goal_drift_detected"
+    ]
+  },
+  "skills": [
+    {
+      "name": "landing",
+      "path": "marketing/landing/skills/landing",
+      "description": "Use when asked for a premium single-file HTML landing page with 3D CSS, GSAP scroll effects and parallax. Locks positioning in a short intake, validates the palette with brand_palette_validator.py and the output with html_validator.py.",
+      "tools": [
+        {
+          "script": "marketing/landing/skills/landing/scripts/brand_palette_validator.py",
+          "wired": true,
+          "supports_sample": true,
+          "verification": [
+            {
+              "cmd": "python3 marketing/landing/skills/landing/scripts/brand_palette_validator.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            },
+            {
+              "cmd": "python3 marketing/landing/skills/landing/scripts/brand_palette_validator.py --sample",
+              "expect_exit": 0,
+              "kind": "sample"
+            }
+          ]
+        },
+        {
+          "script": "marketing/landing/skills/landing/scripts/html_validator.py",
+          "wired": true,
+          "supports_sample": true,
+          "verification": [
+            {
+              "cmd": "python3 marketing/landing/skills/landing/scripts/html_validator.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            },
+            {
+              "cmd": "python3 marketing/landing/skills/landing/scripts/html_validator.py --sample",
+              "expect_exit": 0,
+              "kind": "sample"
+            }
+          ]
+        },
+        {
+          "script": "marketing/landing/skills/landing/scripts/kebab_slug_generator.py",
+          "wired": true,
+          "supports_sample": true,
+          "verification": [
+            {
+              "cmd": "python3 marketing/landing/skills/landing/scripts/kebab_slug_generator.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            },
+            {
+              "cmd": "python3 marketing/landing/skills/landing/scripts/kebab_slug_generator.py --sample",
+              "expect_exit": 0,
+              "kind": "sample"
+            }
+          ]
+        }
+      ],
+      "agentic_signals": {
+        "goal_intake": true,
+        "refusal_gate": true,
+        "verification": false,
+        "loop_discipline": true,
+        "close_out": false
+      },
+      "references": [
+        "brand_system_design.md",
+        "gsap_animation_patterns.md",
+        "single_file_html_discipline.md"
+      ]
+    },
+    {
+      "name": "linkedin-analytics",
+      "path": "marketing/linkedin/skills/linkedin-analytics",
+      "description": "Use when someone asks why their LinkedIn reach dropped, which posts worked, whether a pattern is real or how to test one. Analyzes posts with post_performance_analyzer.py, mines patterns with pattern_miner.py and plans tests with experiment_planner.py.",
+      "tools": [
+        {
+          "script": "marketing/linkedin/skills/linkedin-analytics/scripts/experiment_planner.py",
+          "wired": true,
+          "supports_sample": true,
+          "verification": [
+            {
+              "cmd": "python3 marketing/linkedin/skills/linkedin-analytics/scripts/experiment_planner.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            },
+            {
+              "cmd": "python3 marketing/linkedin/skills/linkedin-analytics/scripts/experiment_planner.py --sample",
+              "expect_exit": 0,
+              "kind": "sample"
+            }
+          ]
+        },
+        {
+          "script": "marketing/linkedin/skills/linkedin-analytics/scripts/pattern_miner.py",
+          "wired": true,
+          "supports_sample": true,
+          "verification": [
+            {
+              "cmd": "python3 marketing/linkedin/skills/linkedin-analytics/scripts/pattern_miner.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            },
+            {
+              "cmd": "python3 marketing/linkedin/skills/linkedin-analytics/scripts/pattern_miner.py --sample",
+              "expect_exit": 0,
+              "kind": "sample"
+            }
+          ]
+        },
+        {
+          "script": "marketing/linkedin/skills/linkedin-analytics/scripts/post_performance_analyzer.py",
+          "wired": true,
+          "supports_sample": true,
+          "verification": [
+            {
+              "cmd": "python3 marketing/linkedin/skills/linkedin-analytics/scripts/post_performance_analyzer.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            },
+            {
+              "cmd": "python3 marketing/linkedin/skills/linkedin-analytics/scripts/post_performance_analyzer.py --sample",
+              "expect_exit": 0,
+              "kind": "sample"
+            }
+          ]
+        }
+      ],
+      "agentic_signals": {
+        "goal_intake": false,
+        "refusal_gate": true,
+        "verification": true,
+        "loop_discipline": false,
+        "close_out": false
+      },
+      "references": [
+        "evidence_thresholds.md",
+        "linkedin_metrics_canon.md"
+      ]
+    },
+    {
+      "name": "linkedin-content",
+      "path": "marketing/linkedin/skills/linkedin-content",
+      "description": "Use when writing, editing or reviewing a LinkedIn post (story, how-to, carousel, video script, poll) or repurposing content into posts. Picks the format with format_picker.py and lints with post_linter.py.",
+      "tools": [
+        {
+          "script": "marketing/linkedin/skills/linkedin-content/scripts/format_picker.py",
+          "wired": true,
+          "supports_sample": true,
+          "verification": [
+            {
+              "cmd": "python3 marketing/linkedin/skills/linkedin-content/scripts/format_picker.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            },
+            {
+              "cmd": "python3 marketing/linkedin/skills/linkedin-content/scripts/format_picker.py --sample",
+              "expect_exit": 0,
+              "kind": "sample"
+            }
+          ]
+        },
+        {
+          "script": "marketing/linkedin/skills/linkedin-content/scripts/post_linter.py",
+          "wired": true,
+          "supports_sample": true,
+          "verification": [
+            {
+              "cmd": "python3 marketing/linkedin/skills/linkedin-content/scripts/post_linter.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            },
+            {
+              "cmd": "python3 marketing/linkedin/skills/linkedin-content/scripts/post_linter.py --sample",
+              "expect_exit": 0,
+              "kind": "sample"
+            }
+          ]
+        },
+        {
+          "script": "marketing/linkedin/skills/linkedin-content/scripts/repurpose_splitter.py",
+          "wired": true,
+          "supports_sample": true,
+          "verification": [
+            {
+              "cmd": "python3 marketing/linkedin/skills/linkedin-content/scripts/repurpose_splitter.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            },
+            {
+              "cmd": "python3 marketing/linkedin/skills/linkedin-content/scripts/repurpose_splitter.py --sample",
+              "expect_exit": 0,
+              "kind": "sample"
+            }
+          ]
+        }
+      ],
+      "agentic_signals": {
+        "goal_intake": false,
+        "refusal_gate": true,
+        "verification": true,
+        "loop_discipline": true,
+        "close_out": false
+      },
+      "references": [
+        "accessibility_and_inclusion.md",
+        "hook_and_fold_mechanics.md",
+        "post_formats_canon.md",
+        "repurposing_discipline.md"
+      ]
+    },
+    {
+      "name": "linkedin-engagement",
+      "path": "marketing/linkedin/skills/linkedin-engagement",
+      "description": "Use for LinkedIn comments, connection notes, DMs or outreach plans, or checking outreach volume is safe. Plans targets with comment_target_planner.py, drafts notes with outreach_message_builder.py and checks limits with outreach_volume_guard.py.",
+      "tools": [
+        {
+          "script": "marketing/linkedin/skills/linkedin-engagement/scripts/comment_target_planner.py",
+          "wired": true,
+          "supports_sample": true,
+          "verification": [
+            {
+              "cmd": "python3 marketing/linkedin/skills/linkedin-engagement/scripts/comment_target_planner.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            },
+            {
+              "cmd": "python3 marketing/linkedin/skills/linkedin-engagement/scripts/comment_target_planner.py --sample",
+              "expect_exit": 0,
+              "kind": "sample"
+            }
+          ]
+        },
+        {
+          "script": "marketing/linkedin/skills/linkedin-engagement/scripts/outreach_message_builder.py",
+          "wired": true,
+          "supports_sample": true,
+          "verification": [
+            {
+              "cmd": "python3 marketing/linkedin/skills/linkedin-engagement/scripts/outreach_message_builder.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            },
+            {
+              "cmd": "python3 marketing/linkedin/skills/linkedin-engagement/scripts/outreach_message_builder.py --sample",
+              "expect_exit": 0,
+              "kind": "sample"
+            }
+          ]
+        },
+        {
+          "script": "marketing/linkedin/skills/linkedin-engagement/scripts/outreach_volume_guard.py",
+          "wired": true,
+          "supports_sample": true,
+          "verification": [
+            {
+              "cmd": "python3 marketing/linkedin/skills/linkedin-engagement/scripts/outreach_volume_guard.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            },
+            {
+              "cmd": "python3 marketing/linkedin/skills/linkedin-engagement/scripts/outreach_volume_guard.py --sample",
+              "expect_exit": 0,
+              "kind": "sample"
+            }
+          ]
+        }
+      ],
+      "agentic_signals": {
+        "goal_intake": false,
+        "refusal_gate": true,
+        "verification": true,
+        "loop_discipline": true,
+        "close_out": false
+      },
+      "references": [
+        "comment_strategy.md",
+        "outreach_ethics_and_benchmarks.md"
+      ]
+    },
+    {
+      "name": "linkedin-profile",
+      "path": "marketing/linkedin/skills/linkedin-profile",
+      "description": "Use when auditing or rewriting a LinkedIn profile (headline, About, experience, Featured). Scores the headline with headline_scorer.py, audits completeness with profile_completeness_auditor.py and drafts About with about_section_builder.py.",
+      "tools": [
+        {
+          "script": "marketing/linkedin/skills/linkedin-profile/scripts/about_section_builder.py",
+          "wired": true,
+          "supports_sample": true,
+          "verification": [
+            {
+              "cmd": "python3 marketing/linkedin/skills/linkedin-profile/scripts/about_section_builder.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            },
+            {
+              "cmd": "python3 marketing/linkedin/skills/linkedin-profile/scripts/about_section_builder.py --sample",
+              "expect_exit": 0,
+              "kind": "sample"
+            }
+          ]
+        },
+        {
+          "script": "marketing/linkedin/skills/linkedin-profile/scripts/headline_scorer.py",
+          "wired": true,
+          "supports_sample": true,
+          "verification": [
+            {
+              "cmd": "python3 marketing/linkedin/skills/linkedin-profile/scripts/headline_scorer.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            },
+            {
+              "cmd": "python3 marketing/linkedin/skills/linkedin-profile/scripts/headline_scorer.py --sample",
+              "expect_exit": 0,
+              "kind": "sample"
+            }
+          ]
+        },
+        {
+          "script": "marketing/linkedin/skills/linkedin-profile/scripts/profile_completeness_auditor.py",
+          "wired": true,
+          "supports_sample": true,
+          "verification": [
+            {
+              "cmd": "python3 marketing/linkedin/skills/linkedin-profile/scripts/profile_completeness_auditor.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            },
+            {
+              "cmd": "python3 marketing/linkedin/skills/linkedin-profile/scripts/profile_completeness_auditor.py --sample",
+              "expect_exit": 0,
+              "kind": "sample"
+            }
+          ]
+        }
+      ],
+      "agentic_signals": {
+        "goal_intake": false,
+        "refusal_gate": true,
+        "verification": true,
+        "loop_discipline": true,
+        "close_out": false
+      },
+      "references": [
+        "headline_and_positioning.md",
+        "profile_architecture.md"
+      ]
+    },
+    {
+      "name": "linkedin-skills",
+      "path": "marketing/linkedin/skills/linkedin-skills",
+      "description": "Use for any organic LinkedIn growth request (strategy, profile, posts, cadence, outreach, analytics). Checks it against LinkedIn's rules with linkedin_policy_gate.py and routes with linkedin_goal_router.py. No automation or scraping.",
+      "tools": [
+        {
+          "script": "marketing/linkedin/skills/linkedin-skills/scripts/linkedin_goal_router.py",
+          "wired": true,
+          "supports_sample": true,
+          "verification": [
+            {
+              "cmd": "python3 marketing/linkedin/skills/linkedin-skills/scripts/linkedin_goal_router.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            },
+            {
+              "cmd": "python3 marketing/linkedin/skills/linkedin-skills/scripts/linkedin_goal_router.py --sample",
+              "expect_exit": 0,
+              "kind": "sample"
+            }
+          ]
+        },
+        {
+          "script": "marketing/linkedin/skills/linkedin-skills/scripts/linkedin_policy_gate.py",
+          "wired": true,
+          "supports_sample": true,
+          "verification": [
+            {
+              "cmd": "python3 marketing/linkedin/skills/linkedin-skills/scripts/linkedin_policy_gate.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            },
+            {
+              "cmd": "python3 marketing/linkedin/skills/linkedin-skills/scripts/linkedin_policy_gate.py --sample",
+              "expect_exit": 0,
+              "kind": "sample"
+            }
+          ]
+        }
+      ],
+      "agentic_signals": {
+        "goal_intake": true,
+        "refusal_gate": true,
+        "verification": true,
+        "loop_discipline": false,
+        "close_out": false
+      },
+      "references": [
+        "linkedin_platform_canon.md",
+        "policy_and_account_safety.md"
+      ]
+    },
+    {
+      "name": "linkedin-strategy",
+      "path": "marketing/linkedin/skills/linkedin-strategy",
+      "description": "Use when someone needs a LinkedIn plan rather than a post: content pillars, positioning, a sustainable cadence or a newsletter decision. Runs positioning_brief.py, cadence_planner.py and newsletter_planner.py.",
+      "tools": [
+        {
+          "script": "marketing/linkedin/skills/linkedin-strategy/scripts/cadence_planner.py",
+          "wired": true,
+          "supports_sample": true,
+          "verification": [
+            {
+              "cmd": "python3 marketing/linkedin/skills/linkedin-strategy/scripts/cadence_planner.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            },
+            {
+              "cmd": "python3 marketing/linkedin/skills/linkedin-strategy/scripts/cadence_planner.py --sample",
+              "expect_exit": 0,
+              "kind": "sample"
+            }
+          ]
+        },
+        {
+          "script": "marketing/linkedin/skills/linkedin-strategy/scripts/newsletter_planner.py",
+          "wired": true,
+          "supports_sample": true,
+          "verification": [
+            {
+              "cmd": "python3 marketing/linkedin/skills/linkedin-strategy/scripts/newsletter_planner.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            },
+            {
+              "cmd": "python3 marketing/linkedin/skills/linkedin-strategy/scripts/newsletter_planner.py --sample",
+              "expect_exit": 0,
+              "kind": "sample"
+            }
+          ]
+        },
+        {
+          "script": "marketing/linkedin/skills/linkedin-strategy/scripts/positioning_brief.py",
+          "wired": true,
+          "supports_sample": true,
+          "verification": [
+            {
+              "cmd": "python3 marketing/linkedin/skills/linkedin-strategy/scripts/positioning_brief.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            },
+            {
+              "cmd": "python3 marketing/linkedin/skills/linkedin-strategy/scripts/positioning_brief.py --sample",
+              "expect_exit": 0,
+              "kind": "sample"
+            }
+          ]
+        }
+      ],
+      "agentic_signals": {
+        "goal_intake": false,
+        "refusal_gate": true,
+        "verification": true,
+        "loop_discipline": true,
+        "close_out": false
+      },
+      "references": [
+        "cadence_and_consistency.md",
+        "newsletter_playbook.md",
+        "objective_to_pillars.md"
+      ]
+    }
+  ]
+}

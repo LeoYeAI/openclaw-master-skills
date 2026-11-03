@@ -1,0 +1,451 @@
+{
+  "schema": "agent-harness/manifest.v1",
+  "domain": "business-operations",
+  "skill_count": 7,
+  "loop_defaults": {
+    "max_attempts_per_task": 3,
+    "max_loop_iterations": 12,
+    "escalate_on": [
+      "attempts_exhausted",
+      "no_verification_available",
+      "destructive_or_irreversible_action",
+      "goal_drift_detected"
+    ]
+  },
+  "skills": [
+    {
+      "name": "business-operations-skills",
+      "path": "business-operations/skills/business-operations-skills",
+      "description": "Use when an internal operations request needs routing (process, vendors, capacity, internal comms, SOPs, procurement): 'where's the bottleneck', 'vendor health'. Lists the BizOps skills and routes to one.",
+      "tools": [],
+      "agentic_signals": {
+        "goal_intake": true,
+        "refusal_gate": false,
+        "verification": false,
+        "loop_discipline": true,
+        "close_out": true
+      },
+      "references": []
+    },
+    {
+      "name": "capacity-planner",
+      "path": "business-operations/skills/capacity-planner",
+      "description": "Use when sizing an ops or support team, building a headcount plan or checking utilization risk. Models queues with Erlang C in capacity_modeler.py, analyzes utilization with utilization_analyzer.py and orders hires with hiring_sequencer.py.",
+      "tools": [
+        {
+          "script": "business-operations/skills/capacity-planner/scripts/capacity_modeler.py",
+          "wired": true,
+          "supports_sample": true,
+          "verification": [
+            {
+              "cmd": "python3 business-operations/skills/capacity-planner/scripts/capacity_modeler.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            },
+            {
+              "cmd": "python3 business-operations/skills/capacity-planner/scripts/capacity_modeler.py --sample",
+              "expect_exit": 0,
+              "kind": "sample"
+            }
+          ]
+        },
+        {
+          "script": "business-operations/skills/capacity-planner/scripts/hiring_sequencer.py",
+          "wired": true,
+          "supports_sample": true,
+          "verification": [
+            {
+              "cmd": "python3 business-operations/skills/capacity-planner/scripts/hiring_sequencer.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            },
+            {
+              "cmd": "python3 business-operations/skills/capacity-planner/scripts/hiring_sequencer.py --sample",
+              "expect_exit": 0,
+              "kind": "sample"
+            }
+          ]
+        },
+        {
+          "script": "business-operations/skills/capacity-planner/scripts/utilization_analyzer.py",
+          "wired": true,
+          "supports_sample": true,
+          "verification": [
+            {
+              "cmd": "python3 business-operations/skills/capacity-planner/scripts/utilization_analyzer.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            },
+            {
+              "cmd": "python3 business-operations/skills/capacity-planner/scripts/utilization_analyzer.py --sample",
+              "expect_exit": 0,
+              "kind": "sample"
+            }
+          ]
+        }
+      ],
+      "agentic_signals": {
+        "goal_intake": true,
+        "refusal_gate": false,
+        "verification": true,
+        "loop_discipline": true,
+        "close_out": false
+      },
+      "references": [
+        "capacity_anti_patterns.md",
+        "ops_workforce_planning_canon.md",
+        "queueing_theory_canon.md"
+      ]
+    },
+    {
+      "name": "internal-comms",
+      "path": "business-operations/skills/internal-comms",
+      "description": "Use when announcing a reorg, tool rollout, policy change, leadership change, layoff or acquisition internally. Builds the announcement with change_announcement_builder.py and sequences it with comms_calendar_builder.py.",
+      "tools": [
+        {
+          "script": "business-operations/skills/internal-comms/scripts/change_announcement_builder.py",
+          "wired": true,
+          "supports_sample": true,
+          "verification": [
+            {
+              "cmd": "python3 business-operations/skills/internal-comms/scripts/change_announcement_builder.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            },
+            {
+              "cmd": "python3 business-operations/skills/internal-comms/scripts/change_announcement_builder.py --sample",
+              "expect_exit": 0,
+              "kind": "sample"
+            }
+          ]
+        },
+        {
+          "script": "business-operations/skills/internal-comms/scripts/comms_calendar_builder.py",
+          "wired": true,
+          "supports_sample": true,
+          "verification": [
+            {
+              "cmd": "python3 business-operations/skills/internal-comms/scripts/comms_calendar_builder.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            },
+            {
+              "cmd": "python3 business-operations/skills/internal-comms/scripts/comms_calendar_builder.py --sample",
+              "expect_exit": 0,
+              "kind": "sample"
+            }
+          ]
+        },
+        {
+          "script": "business-operations/skills/internal-comms/scripts/comms_template_filler.py",
+          "wired": true,
+          "supports_sample": true,
+          "verification": [
+            {
+              "cmd": "python3 business-operations/skills/internal-comms/scripts/comms_template_filler.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            },
+            {
+              "cmd": "python3 business-operations/skills/internal-comms/scripts/comms_template_filler.py --sample",
+              "expect_exit": 0,
+              "kind": "sample"
+            }
+          ]
+        }
+      ],
+      "agentic_signals": {
+        "goal_intake": true,
+        "refusal_gate": false,
+        "verification": true,
+        "loop_discipline": false,
+        "close_out": true
+      },
+      "references": [
+        "announcement_anti_patterns.md",
+        "change_management_canon.md",
+        "internal_comms_canon.md"
+      ]
+    },
+    {
+      "name": "knowledge-ops",
+      "path": "business-operations/skills/knowledge-ops",
+      "description": "Use when writing, checking or cleaning up SOPs and runbooks. Generates them with sop_generator.py, checks 5W2H completeness and links with runbook_validator.py and ingests an existing knowledge base with kb_ingester.py.",
+      "tools": [
+        {
+          "script": "business-operations/skills/knowledge-ops/scripts/kb_ingester.py",
+          "wired": true,
+          "supports_sample": true,
+          "verification": [
+            {
+              "cmd": "python3 business-operations/skills/knowledge-ops/scripts/kb_ingester.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            },
+            {
+              "cmd": "python3 business-operations/skills/knowledge-ops/scripts/kb_ingester.py --sample",
+              "expect_exit": 0,
+              "kind": "sample"
+            }
+          ]
+        },
+        {
+          "script": "business-operations/skills/knowledge-ops/scripts/runbook_validator.py",
+          "wired": true,
+          "supports_sample": true,
+          "verification": [
+            {
+              "cmd": "python3 business-operations/skills/knowledge-ops/scripts/runbook_validator.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            },
+            {
+              "cmd": "python3 business-operations/skills/knowledge-ops/scripts/runbook_validator.py --sample",
+              "expect_exit": 0,
+              "kind": "sample"
+            }
+          ]
+        },
+        {
+          "script": "business-operations/skills/knowledge-ops/scripts/sop_generator.py",
+          "wired": true,
+          "supports_sample": true,
+          "verification": [
+            {
+              "cmd": "python3 business-operations/skills/knowledge-ops/scripts/sop_generator.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            },
+            {
+              "cmd": "python3 business-operations/skills/knowledge-ops/scripts/sop_generator.py --sample",
+              "expect_exit": 0,
+              "kind": "sample"
+            }
+          ]
+        }
+      ],
+      "agentic_signals": {
+        "goal_intake": true,
+        "refusal_gate": true,
+        "verification": true,
+        "loop_discipline": true,
+        "close_out": true
+      },
+      "references": [
+        "5w2h_sop_canon.md",
+        "kb_hygiene_anti_patterns.md",
+        "runbook_canon.md"
+      ]
+    },
+    {
+      "name": "process-mapper",
+      "path": "business-operations/skills/process-mapper",
+      "description": "Use when documenting an end-to-end business process (procurement, onboarding, handoffs) and finding where work waits. Maps it with process_documenter.py, measures stages with cycle_time_analyzer.py and finds bottlenecks with bottleneck_detector.py.",
+      "tools": [
+        {
+          "script": "business-operations/skills/process-mapper/scripts/bottleneck_detector.py",
+          "wired": true,
+          "supports_sample": true,
+          "verification": [
+            {
+              "cmd": "python3 business-operations/skills/process-mapper/scripts/bottleneck_detector.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            },
+            {
+              "cmd": "python3 business-operations/skills/process-mapper/scripts/bottleneck_detector.py --sample",
+              "expect_exit": 0,
+              "kind": "sample"
+            }
+          ]
+        },
+        {
+          "script": "business-operations/skills/process-mapper/scripts/cycle_time_analyzer.py",
+          "wired": true,
+          "supports_sample": true,
+          "verification": [
+            {
+              "cmd": "python3 business-operations/skills/process-mapper/scripts/cycle_time_analyzer.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            },
+            {
+              "cmd": "python3 business-operations/skills/process-mapper/scripts/cycle_time_analyzer.py --sample",
+              "expect_exit": 0,
+              "kind": "sample"
+            }
+          ]
+        },
+        {
+          "script": "business-operations/skills/process-mapper/scripts/process_documenter.py",
+          "wired": true,
+          "supports_sample": true,
+          "verification": [
+            {
+              "cmd": "python3 business-operations/skills/process-mapper/scripts/process_documenter.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            },
+            {
+              "cmd": "python3 business-operations/skills/process-mapper/scripts/process_documenter.py --sample",
+              "expect_exit": 0,
+              "kind": "sample"
+            }
+          ]
+        }
+      ],
+      "agentic_signals": {
+        "goal_intake": true,
+        "refusal_gate": false,
+        "verification": true,
+        "loop_discipline": true,
+        "close_out": true
+      },
+      "references": [
+        "bottleneck_anti_patterns.md",
+        "bpmn_essentials.md",
+        "lean_six_sigma_canon.md"
+      ]
+    },
+    {
+      "name": "procurement-optimizer",
+      "path": "business-operations/skills/procurement-optimizer",
+      "description": "Use for a SaaS audit, category spend review or supplier consolidation. Categorizes spend with spend_categorizer.py, finds slow purchasing with purchasing_cycle_analyzer.py and sizes consolidation with supplier_consolidation.py.",
+      "tools": [
+        {
+          "script": "business-operations/skills/procurement-optimizer/scripts/purchasing_cycle_analyzer.py",
+          "wired": true,
+          "supports_sample": true,
+          "verification": [
+            {
+              "cmd": "python3 business-operations/skills/procurement-optimizer/scripts/purchasing_cycle_analyzer.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            },
+            {
+              "cmd": "python3 business-operations/skills/procurement-optimizer/scripts/purchasing_cycle_analyzer.py --sample",
+              "expect_exit": 0,
+              "kind": "sample"
+            }
+          ]
+        },
+        {
+          "script": "business-operations/skills/procurement-optimizer/scripts/spend_categorizer.py",
+          "wired": true,
+          "supports_sample": true,
+          "verification": [
+            {
+              "cmd": "python3 business-operations/skills/procurement-optimizer/scripts/spend_categorizer.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            },
+            {
+              "cmd": "python3 business-operations/skills/procurement-optimizer/scripts/spend_categorizer.py --sample",
+              "expect_exit": 0,
+              "kind": "sample"
+            }
+          ]
+        },
+        {
+          "script": "business-operations/skills/procurement-optimizer/scripts/supplier_consolidation.py",
+          "wired": true,
+          "supports_sample": true,
+          "verification": [
+            {
+              "cmd": "python3 business-operations/skills/procurement-optimizer/scripts/supplier_consolidation.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            },
+            {
+              "cmd": "python3 business-operations/skills/procurement-optimizer/scripts/supplier_consolidation.py --sample",
+              "expect_exit": 0,
+              "kind": "sample"
+            }
+          ]
+        }
+      ],
+      "agentic_signals": {
+        "goal_intake": true,
+        "refusal_gate": true,
+        "verification": true,
+        "loop_discipline": true,
+        "close_out": false
+      },
+      "references": [
+        "procurement_anti_patterns.md",
+        "saas_management_canon.md",
+        "spend_management_canon.md"
+      ]
+    },
+    {
+      "name": "vendor-management",
+      "path": "business-operations/skills/vendor-management",
+      "description": "Use when scoring or auditing vendors: scorecards, SLA compliance and service credits, third-party risk tier or a tier-1 vendor review. Runs vendor_scorer.py, sla_compliance_tracker.py and vendor_risk_classifier.py.",
+      "tools": [
+        {
+          "script": "business-operations/skills/vendor-management/scripts/sla_compliance_tracker.py",
+          "wired": true,
+          "supports_sample": true,
+          "verification": [
+            {
+              "cmd": "python3 business-operations/skills/vendor-management/scripts/sla_compliance_tracker.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            },
+            {
+              "cmd": "python3 business-operations/skills/vendor-management/scripts/sla_compliance_tracker.py --sample",
+              "expect_exit": 0,
+              "kind": "sample"
+            }
+          ]
+        },
+        {
+          "script": "business-operations/skills/vendor-management/scripts/vendor_risk_classifier.py",
+          "wired": true,
+          "supports_sample": true,
+          "verification": [
+            {
+              "cmd": "python3 business-operations/skills/vendor-management/scripts/vendor_risk_classifier.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            },
+            {
+              "cmd": "python3 business-operations/skills/vendor-management/scripts/vendor_risk_classifier.py --sample",
+              "expect_exit": 0,
+              "kind": "sample"
+            }
+          ]
+        },
+        {
+          "script": "business-operations/skills/vendor-management/scripts/vendor_scorer.py",
+          "wired": true,
+          "supports_sample": true,
+          "verification": [
+            {
+              "cmd": "python3 business-operations/skills/vendor-management/scripts/vendor_scorer.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            },
+            {
+              "cmd": "python3 business-operations/skills/vendor-management/scripts/vendor_scorer.py --sample",
+              "expect_exit": 0,
+              "kind": "sample"
+            }
+          ]
+        }
+      ],
+      "agentic_signals": {
+        "goal_intake": true,
+        "refusal_gate": false,
+        "verification": true,
+        "loop_discipline": true,
+        "close_out": false
+      },
+      "references": [
+        "sla_design_patterns.md",
+        "vendor_management_canon.md",
+        "vendor_risk_anti_patterns.md"
+      ]
+    }
+  ]
+}

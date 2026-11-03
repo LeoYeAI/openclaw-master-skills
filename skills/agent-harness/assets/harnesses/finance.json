@@ -1,0 +1,451 @@
+{
+  "schema": "agent-harness/manifest.v1",
+  "domain": "finance",
+  "skill_count": 8,
+  "loop_defaults": {
+    "max_attempts_per_task": 3,
+    "max_loop_iterations": 12,
+    "escalate_on": [
+      "attempts_exhausted",
+      "no_verification_available",
+      "destructive_or_irreversible_action",
+      "goal_drift_detected"
+    ]
+  },
+  "skills": [
+    {
+      "name": "business-investment-advisor",
+      "path": "finance/business-investment-advisor/skills/business-investment-advisor",
+      "description": "Use when deciding whether a capital expense is worth it (equipment, property, an acquisition, hiring, technology), or for ROI, IRR, NPV, payback, build vs buy or lease vs buy.",
+      "tools": [],
+      "agentic_signals": {
+        "goal_intake": true,
+        "refusal_gate": false,
+        "verification": false,
+        "loop_discipline": true,
+        "close_out": false
+      },
+      "references": []
+    },
+    {
+      "name": "month-end-close",
+      "path": "finance/month-end-close/skills/month-end-close",
+      "description": "Use when running, planning or speeding up a month-end (or quarter-end) close \u2014 building or reviewing the close checklist and calendar, reconciling a bank statement or sub-ledger to the general ledger, writing or reviewing flux (variance) explanations, or finding why the close takes too many days. Orders close tasks by dependency and finds the critical path, proves each reconciliation and ages what is left, and refuses to sign off material fluctuations explained with boilerplate.",
+      "tools": [
+        {
+          "script": "finance/month-end-close/skills/month-end-close/scripts/close_calendar_planner.py",
+          "wired": true,
+          "supports_sample": true,
+          "verification": [
+            {
+              "cmd": "python3 finance/month-end-close/skills/month-end-close/scripts/close_calendar_planner.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            },
+            {
+              "cmd": "python3 finance/month-end-close/skills/month-end-close/scripts/close_calendar_planner.py --sample",
+              "expect_exit": 0,
+              "kind": "sample"
+            }
+          ]
+        },
+        {
+          "script": "finance/month-end-close/skills/month-end-close/scripts/flux_analyzer.py",
+          "wired": true,
+          "supports_sample": true,
+          "verification": [
+            {
+              "cmd": "python3 finance/month-end-close/skills/month-end-close/scripts/flux_analyzer.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            },
+            {
+              "cmd": "python3 finance/month-end-close/skills/month-end-close/scripts/flux_analyzer.py --sample",
+              "expect_exit": 0,
+              "kind": "sample"
+            }
+          ]
+        },
+        {
+          "script": "finance/month-end-close/skills/month-end-close/scripts/reconciliation_matcher.py",
+          "wired": true,
+          "supports_sample": true,
+          "verification": [
+            {
+              "cmd": "python3 finance/month-end-close/skills/month-end-close/scripts/reconciliation_matcher.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            },
+            {
+              "cmd": "python3 finance/month-end-close/skills/month-end-close/scripts/reconciliation_matcher.py --sample",
+              "expect_exit": 0,
+              "kind": "sample"
+            }
+          ]
+        }
+      ],
+      "agentic_signals": {
+        "goal_intake": false,
+        "refusal_gate": true,
+        "verification": true,
+        "loop_discipline": true,
+        "close_out": false
+      },
+      "references": [
+        "close_calendar_and_benchmarks.md",
+        "flux_analysis_and_materiality.md",
+        "reconciliation_standards.md"
+      ]
+    },
+    {
+      "name": "finance-skills",
+      "path": "finance/skills/finance-skills",
+      "description": "Use when a finance request needs routing between financial-analyst (ratios, DCF, variance, forecasts), saas-metrics-coach (ARR, churn, CAC, LTV, NRR) and month-end-close.",
+      "tools": [],
+      "agentic_signals": {
+        "goal_intake": false,
+        "refusal_gate": false,
+        "verification": false,
+        "loop_discipline": true,
+        "close_out": false
+      },
+      "references": []
+    },
+    {
+      "name": "financial-analyst",
+      "path": "finance/skills/financial-analyst",
+      "description": "Use for financial statement analysis, DCF valuation, budget variance or rolling forecasts. Runs ratio_calculator.py, dcf_valuation.py, budget_variance_analyzer.py and forecast_builder.py.",
+      "tools": [
+        {
+          "script": "finance/skills/financial-analyst/scripts/budget_variance_analyzer.py",
+          "wired": true,
+          "supports_sample": false,
+          "verification": [
+            {
+              "cmd": "python3 finance/skills/financial-analyst/scripts/budget_variance_analyzer.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            }
+          ]
+        },
+        {
+          "script": "finance/skills/financial-analyst/scripts/dcf_valuation.py",
+          "wired": true,
+          "supports_sample": false,
+          "verification": [
+            {
+              "cmd": "python3 finance/skills/financial-analyst/scripts/dcf_valuation.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            }
+          ]
+        },
+        {
+          "script": "finance/skills/financial-analyst/scripts/forecast_builder.py",
+          "wired": true,
+          "supports_sample": false,
+          "verification": [
+            {
+              "cmd": "python3 finance/skills/financial-analyst/scripts/forecast_builder.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            }
+          ]
+        },
+        {
+          "script": "finance/skills/financial-analyst/scripts/ratio_calculator.py",
+          "wired": true,
+          "supports_sample": false,
+          "verification": [
+            {
+              "cmd": "python3 finance/skills/financial-analyst/scripts/ratio_calculator.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            }
+          ]
+        }
+      ],
+      "agentic_signals": {
+        "goal_intake": false,
+        "refusal_gate": false,
+        "verification": false,
+        "loop_discipline": true,
+        "close_out": false
+      },
+      "references": [
+        "financial-ratios-guide.md",
+        "forecasting-best-practices.md",
+        "industry-adaptations.md",
+        "valuation-methodology.md"
+      ]
+    },
+    {
+      "name": "month-end-close",
+      "path": "finance/skills/month-end-close",
+      "description": "Use when running, planning or speeding up a month-end (or quarter-end) close \u2014 building or reviewing the close checklist and calendar, reconciling a bank statement or sub-ledger to the general ledger, writing or reviewing flux (variance) explanations, or finding why the close takes too many days. Orders close tasks by dependency and finds the critical path, proves each reconciliation and ages what is left, and refuses to sign off material fluctuations explained with boilerplate.",
+      "tools": [
+        {
+          "script": "finance/skills/month-end-close/scripts/close_calendar_planner.py",
+          "wired": true,
+          "supports_sample": true,
+          "verification": [
+            {
+              "cmd": "python3 finance/skills/month-end-close/scripts/close_calendar_planner.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            },
+            {
+              "cmd": "python3 finance/skills/month-end-close/scripts/close_calendar_planner.py --sample",
+              "expect_exit": 0,
+              "kind": "sample"
+            }
+          ]
+        },
+        {
+          "script": "finance/skills/month-end-close/scripts/flux_analyzer.py",
+          "wired": true,
+          "supports_sample": true,
+          "verification": [
+            {
+              "cmd": "python3 finance/skills/month-end-close/scripts/flux_analyzer.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            },
+            {
+              "cmd": "python3 finance/skills/month-end-close/scripts/flux_analyzer.py --sample",
+              "expect_exit": 0,
+              "kind": "sample"
+            }
+          ]
+        },
+        {
+          "script": "finance/skills/month-end-close/scripts/reconciliation_matcher.py",
+          "wired": true,
+          "supports_sample": true,
+          "verification": [
+            {
+              "cmd": "python3 finance/skills/month-end-close/scripts/reconciliation_matcher.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            },
+            {
+              "cmd": "python3 finance/skills/month-end-close/scripts/reconciliation_matcher.py --sample",
+              "expect_exit": 0,
+              "kind": "sample"
+            }
+          ]
+        }
+      ],
+      "agentic_signals": {
+        "goal_intake": false,
+        "refusal_gate": true,
+        "verification": true,
+        "loop_discipline": true,
+        "close_out": false
+      },
+      "references": [
+        "close_calendar_and_benchmarks.md",
+        "flux_analysis_and_materiality.md",
+        "reconciliation_standards.md"
+      ]
+    },
+    {
+      "name": "passive-deal-screener",
+      "path": "finance/skills/passive-deal-screener",
+      "description": "Use when a passive investor shares a private deal (syndication, preferred equity, bridge fund, private credit) to screen as an LP. Stress-tests it, computes fee drag with fee_drag_calculator.py and compares terms with benchmark_comparator.py.",
+      "tools": [
+        {
+          "script": "finance/skills/passive-deal-screener/scripts/benchmark_comparator.py",
+          "wired": true,
+          "supports_sample": false,
+          "verification": [
+            {
+              "cmd": "python3 finance/skills/passive-deal-screener/scripts/benchmark_comparator.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            }
+          ]
+        },
+        {
+          "script": "finance/skills/passive-deal-screener/scripts/fee_drag_calculator.py",
+          "wired": true,
+          "supports_sample": false,
+          "verification": [
+            {
+              "cmd": "python3 finance/skills/passive-deal-screener/scripts/fee_drag_calculator.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            }
+          ]
+        }
+      ],
+      "agentic_signals": {
+        "goal_intake": false,
+        "refusal_gate": false,
+        "verification": true,
+        "loop_discipline": false,
+        "close_out": false
+      },
+      "references": [
+        "01-asset-class-norms.md",
+        "02-fee-stack-library.md",
+        "03-red-flag-library.md",
+        "04-question-bank.md",
+        "05-benchmark-returns.md",
+        "data"
+      ]
+    },
+    {
+      "name": "saas-metrics-coach",
+      "path": "finance/skills/saas-metrics-coach",
+      "description": "Use when someone shares SaaS revenue or customer numbers, or asks about ARR, MRR, churn, LTV, CAC, NRR or how their SaaS is doing. Computes metrics with metrics_calculator.py, quick ratio and unit economics.",
+      "tools": [
+        {
+          "script": "finance/skills/saas-metrics-coach/scripts/metrics_calculator.py",
+          "wired": true,
+          "supports_sample": false,
+          "verification": [
+            {
+              "cmd": "python3 finance/skills/saas-metrics-coach/scripts/metrics_calculator.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            }
+          ]
+        },
+        {
+          "script": "finance/skills/saas-metrics-coach/scripts/quick_ratio_calculator.py",
+          "wired": true,
+          "supports_sample": false,
+          "verification": [
+            {
+              "cmd": "python3 finance/skills/saas-metrics-coach/scripts/quick_ratio_calculator.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            }
+          ]
+        },
+        {
+          "script": "finance/skills/saas-metrics-coach/scripts/unit_economics_simulator.py",
+          "wired": true,
+          "supports_sample": false,
+          "verification": [
+            {
+              "cmd": "python3 finance/skills/saas-metrics-coach/scripts/unit_economics_simulator.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            }
+          ]
+        }
+      ],
+      "agentic_signals": {
+        "goal_intake": false,
+        "refusal_gate": false,
+        "verification": false,
+        "loop_discipline": true,
+        "close_out": false
+      },
+      "references": [
+        "benchmarks.md",
+        "formulas.md"
+      ]
+    },
+    {
+      "name": "stock-analysis",
+      "path": "finance/skills/stock-analysis",
+      "description": "Use when asked to analyze, research or value a listed stock or company (US, global, NSE or BSE). Verifies data with verify_data.py, computes ratios, scores and valuation, and checks the report with lint_report.py.",
+      "tools": [
+        {
+          "script": "finance/skills/stock-analysis/scripts/lint_report.py",
+          "wired": true,
+          "supports_sample": false,
+          "verification": [
+            {
+              "cmd": "python3 finance/skills/stock-analysis/scripts/lint_report.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            }
+          ]
+        },
+        {
+          "script": "finance/skills/stock-analysis/scripts/ratios.py",
+          "wired": true,
+          "supports_sample": false,
+          "verification": [
+            {
+              "cmd": "python3 finance/skills/stock-analysis/scripts/ratios.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            }
+          ]
+        },
+        {
+          "script": "finance/skills/stock-analysis/scripts/score.py",
+          "wired": true,
+          "supports_sample": false,
+          "verification": [
+            {
+              "cmd": "python3 finance/skills/stock-analysis/scripts/score.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            }
+          ]
+        },
+        {
+          "script": "finance/skills/stock-analysis/scripts/valuation.py",
+          "wired": true,
+          "supports_sample": false,
+          "verification": [
+            {
+              "cmd": "python3 finance/skills/stock-analysis/scripts/valuation.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            }
+          ]
+        },
+        {
+          "script": "finance/skills/stock-analysis/scripts/verify_data.py",
+          "wired": true,
+          "supports_sample": false,
+          "verification": [
+            {
+              "cmd": "python3 finance/skills/stock-analysis/scripts/verify_data.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            }
+          ]
+        }
+      ],
+      "agentic_signals": {
+        "goal_intake": true,
+        "refusal_gate": false,
+        "verification": true,
+        "loop_discipline": true,
+        "close_out": false
+      },
+      "references": [
+        "01-data-sourcing.md",
+        "02-core-factors.md",
+        "03-earnings-quality.md",
+        "04-balance-sheet-and-cashflow.md",
+        "05-returns-and-dupont.md",
+        "06-valuation.md",
+        "07-forensic-red-flags.md",
+        "08-governance.md",
+        "09-risk-and-macro.md",
+        "10-peer-set.md",
+        "11-scoring-rubric.md",
+        "12-report-template.md",
+        "13-situations.md",
+        "14-accounting-comparability.md",
+        "15-document-diligence.md",
+        "16-market-mechanics-and-tax.md",
+        "17-process-and-epistemics.md",
+        "18-forensic-mode.md",
+        "19-ipo-mode.md",
+        "20-challenge-pass.md",
+        "21-data-integrity-tools.md",
+        "sectors"
+      ]
+    }
+  ]
+}

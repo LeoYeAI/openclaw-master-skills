@@ -3,6 +3,47 @@
 每次更新的详细发布说明。
 
 
+## v0.22.5 — 2026-11-03
+
+### 🚀 日更：新增 100 个 Skills，总计 3003
+
+来源：头部技能仓库（obra/superpowers、addyosmani/agent-skills、wshobson/agents 等），按质量规则筛选（SKILL.md 800B-30KB、完整 YAML 元数据、有效 description）。
+
+#### 部分新增亮点（前 30 个）
+- `skill-security-auditor` — Use before installing any skill or plugin from an untrusted source, or when asked if a skill is safe. Scans scripts, SKI
+- `async-python-patterns` — Master Python asyncio, concurrent programming, and async/await patterns for high-performance applications. Use when buil
+- `block-no-verify-hook` — Configure a PreToolUse hook to prevent AI agents from skipping git pre-commit hooks with --no-verify and other bypass fl
+- `agent-harness` — Use when an agent should drive a goal in one of this repo's domains to a verified close, before starting the work. Compi
+- `security-guidance` — Use when installing or tuning the PreToolUse security hook that warns before Claude writes command injection, XSS, SQL i
+- `cs-webinar-marketer` — Webinar & virtual-event marketing specialist agent. Use when planning, promoting, running, or rescuing a webinar, virtua
+- `defi-protocol-templates` — Implement DeFi protocols with production-ready templates for staking, AMMs, governance, and flash loans. Use when buildi
+- `free-tools` — When the user wants to plan, evaluate, or build a free tool for marketing purposes — lead generation, SEO value, or bran
+- `team-communication-protocols` — Structured messaging protocols for agent team communication including message type selection, plan approval, shutdown pr
+- `python-background-jobs` — Python background job patterns including task queues, workers, and event-driven architecture. Use when implementing asyn
+- `ai-act-readiness` — Use for /compliance-os:ai-act-readiness, or EU AI Act readiness questions during AI-system intake or before EU deploymen
+- `pybamm` — Simulates lithium-ion battery charge, discharge and rest experiments with PyBaMM, records parameter-set provenance, chec
+- `hard-call` — Use for a decision where every option hurts (layoff vs down round, killing a loved product). Runs 10/10/10 and regret mi
+- `skillopt-sleep` — Use when the user wants their Claude agent to self-improve from past usage, asks about a nightly/offline 'sleep' or 'dre
+- `grill-with-docs` — Use when a plan should be stress-tested against the project's own docs (CONTEXT.md glossary, docs/adr decisions), or the
+- `pennylane` — Builds and differentiates PennyLane quantum circuits, hybrid PyTorch or JAX models, molecular VQE and QAOA workflows. Us
+- `visual-design-foundations` — Apply typography, color theory, spacing systems, and iconography principles to create cohesive visual designs. Use when 
+- `k8s-security-policies` — Implement Kubernetes security policies including NetworkPolicy, PodSecurityPolicy, and RBAC for production-grade securit
+- `slo-implementation` — Define and implement Service Level Indicators (SLIs) and Service Level Objectives (SLOs) with error budgets and alerting
+- `angular-migration` — Migrate from AngularJS to Angular using hybrid mode, incremental component rewriting, and dependency injection updates. 
+- `schema` — When the user wants to add, fix, or optimize schema markup and structured data on their site. Also use when the user men
+- `cro` — When the user wants to optimize, improve, or increase conversions on any marketing page or form — including homepage, la
+- `uv-package-manager` — Master the uv package manager for fast Python dependency management, virtual environments, and modern Python project wor
+- `python-observability` — Python observability patterns including structured logging, metrics, and distributed tracing. Use when adding logging, i
+- `ml-pipeline-workflow` — Build end-to-end MLOps pipelines from data preparation through model training, validation, and production deployment. Us
+- `startup-metrics-framework` — Track, calculate, and optimize key performance metrics for SaaS, marketplace, consumer, and B2B startups from seed throu
+- `github-actions-templates` — Create production-ready GitHub Actions workflows for automated testing, building, and deploying applications. Use when s
+- `python-resource-management` — Python resource management with context managers, cleanup patterns, and streaming. Use when managing connections, file h
+- `financial-analyst` — Use for financial statement analysis, DCF valuation, budget variance or rolling forecasts. Runs ratio_calculator.py, dcf
+- `diagnosing-superpowers` — Use when a superpowers session went wrong and your human partner wants to know why — repeated work, ignored plans, stumb
+
+---
+
+
 ## v0.22.4 — 2026-11-02
 
 ### 🚀 日更：新增 100 个 Skills，总计 2903

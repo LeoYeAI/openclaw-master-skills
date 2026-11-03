@@ -1,0 +1,413 @@
+{
+  "schema": "agent-harness/manifest.v1",
+  "domain": "agent-launcher",
+  "skill_count": 6,
+  "loop_defaults": {
+    "max_attempts_per_task": 3,
+    "max_loop_iterations": 12,
+    "escalate_on": [
+      "attempts_exhausted",
+      "no_verification_available",
+      "destructive_or_irreversible_action",
+      "goal_drift_detected"
+    ]
+  },
+  "skills": [
+    {
+      "name": "agent-launcher-orchestrator",
+      "path": "agent-launcher/skills/agent-launcher-orchestrator",
+      "description": "Use when someone wants to build, launch, grade or schedule a Claude Managed Agent in their own Anthropic account ('build me an agent', 'run this nightly'). Reads the session goal, routes with goal_router.py and compiles the loop with loop_compiler.py.",
+      "tools": [
+        {
+          "script": "agent-launcher/skills/agent-launcher-orchestrator/scripts/goal_router.py",
+          "wired": true,
+          "supports_sample": true,
+          "verification": [
+            {
+              "cmd": "python3 agent-launcher/skills/agent-launcher-orchestrator/scripts/goal_router.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            },
+            {
+              "cmd": "python3 agent-launcher/skills/agent-launcher-orchestrator/scripts/goal_router.py --sample",
+              "expect_exit": 0,
+              "kind": "sample"
+            }
+          ]
+        },
+        {
+          "script": "agent-launcher/skills/agent-launcher-orchestrator/scripts/goal_state.py",
+          "wired": true,
+          "supports_sample": true,
+          "verification": [
+            {
+              "cmd": "python3 agent-launcher/skills/agent-launcher-orchestrator/scripts/goal_state.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            },
+            {
+              "cmd": "python3 agent-launcher/skills/agent-launcher-orchestrator/scripts/goal_state.py --sample",
+              "expect_exit": 0,
+              "kind": "sample"
+            }
+          ]
+        },
+        {
+          "script": "agent-launcher/skills/agent-launcher-orchestrator/scripts/loop_compiler.py",
+          "wired": true,
+          "supports_sample": true,
+          "verification": [
+            {
+              "cmd": "python3 agent-launcher/skills/agent-launcher-orchestrator/scripts/loop_compiler.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            },
+            {
+              "cmd": "python3 agent-launcher/skills/agent-launcher-orchestrator/scripts/loop_compiler.py --sample",
+              "expect_exit": 0,
+              "kind": "sample"
+            }
+          ]
+        }
+      ],
+      "agentic_signals": {
+        "goal_intake": true,
+        "refusal_gate": true,
+        "verification": true,
+        "loop_discipline": true,
+        "close_out": true
+      },
+      "references": []
+    },
+    {
+      "name": "grade-iterate",
+      "path": "agent-launcher/skills/grade-iterate",
+      "description": "Use when a launched managed agent needs grading against a rubric and improving ('grade my agent', 'is it good enough'). Builds the outcome with outcome_builder.py, reads verdicts with verdict_reader.py and runs held-back evals from eval_scaffold.py.",
+      "tools": [
+        {
+          "script": "agent-launcher/skills/grade-iterate/scripts/eval_scaffold.py",
+          "wired": true,
+          "supports_sample": true,
+          "verification": [
+            {
+              "cmd": "python3 agent-launcher/skills/grade-iterate/scripts/eval_scaffold.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            },
+            {
+              "cmd": "python3 agent-launcher/skills/grade-iterate/scripts/eval_scaffold.py --sample",
+              "expect_exit": 0,
+              "kind": "sample"
+            }
+          ]
+        },
+        {
+          "script": "agent-launcher/skills/grade-iterate/scripts/outcome_builder.py",
+          "wired": true,
+          "supports_sample": true,
+          "verification": [
+            {
+              "cmd": "python3 agent-launcher/skills/grade-iterate/scripts/outcome_builder.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            },
+            {
+              "cmd": "python3 agent-launcher/skills/grade-iterate/scripts/outcome_builder.py --sample",
+              "expect_exit": 0,
+              "kind": "sample"
+            }
+          ]
+        },
+        {
+          "script": "agent-launcher/skills/grade-iterate/scripts/verdict_reader.py",
+          "wired": true,
+          "supports_sample": true,
+          "verification": [
+            {
+              "cmd": "python3 agent-launcher/skills/grade-iterate/scripts/verdict_reader.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            },
+            {
+              "cmd": "python3 agent-launcher/skills/grade-iterate/scripts/verdict_reader.py --sample",
+              "expect_exit": 0,
+              "kind": "sample"
+            }
+          ]
+        }
+      ],
+      "agentic_signals": {
+        "goal_intake": true,
+        "refusal_gate": true,
+        "verification": false,
+        "loop_discipline": true,
+        "close_out": false
+      },
+      "references": []
+    },
+    {
+      "name": "interview",
+      "path": "agent-launcher/skills/interview",
+      "description": "Use when someone has an agent idea to scope before launch ('help me scope an agent'). Interviews them about the one job and writes a build sheet with build_sheet_builder.py, checked by primitives_validator.py; no API key needed.",
+      "tools": [
+        {
+          "script": "agent-launcher/skills/interview/scripts/build_sheet_builder.py",
+          "wired": true,
+          "supports_sample": true,
+          "verification": [
+            {
+              "cmd": "python3 agent-launcher/skills/interview/scripts/build_sheet_builder.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            },
+            {
+              "cmd": "python3 agent-launcher/skills/interview/scripts/build_sheet_builder.py --sample",
+              "expect_exit": 0,
+              "kind": "sample"
+            }
+          ]
+        },
+        {
+          "script": "agent-launcher/skills/interview/scripts/interview_planner.py",
+          "wired": true,
+          "supports_sample": true,
+          "verification": [
+            {
+              "cmd": "python3 agent-launcher/skills/interview/scripts/interview_planner.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            },
+            {
+              "cmd": "python3 agent-launcher/skills/interview/scripts/interview_planner.py --sample",
+              "expect_exit": 0,
+              "kind": "sample"
+            }
+          ]
+        },
+        {
+          "script": "agent-launcher/skills/interview/scripts/primitives_validator.py",
+          "wired": true,
+          "supports_sample": true,
+          "verification": [
+            {
+              "cmd": "python3 agent-launcher/skills/interview/scripts/primitives_validator.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            },
+            {
+              "cmd": "python3 agent-launcher/skills/interview/scripts/primitives_validator.py --sample",
+              "expect_exit": 0,
+              "kind": "sample"
+            }
+          ]
+        }
+      ],
+      "agentic_signals": {
+        "goal_intake": true,
+        "refusal_gate": true,
+        "verification": false,
+        "loop_discipline": false,
+        "close_out": false
+      },
+      "references": []
+    },
+    {
+      "name": "run-without-you",
+      "path": "agent-launcher/skills/run-without-you",
+      "description": "Use when a graded managed agent should run on a schedule, on an event trigger or on demand ('run it every morning'). Validates cron with cron_validator.py and builds the deployment with deployment_builder.py.",
+      "tools": [
+        {
+          "script": "agent-launcher/skills/run-without-you/scripts/cron_validator.py",
+          "wired": true,
+          "supports_sample": true,
+          "verification": [
+            {
+              "cmd": "python3 agent-launcher/skills/run-without-you/scripts/cron_validator.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            },
+            {
+              "cmd": "python3 agent-launcher/skills/run-without-you/scripts/cron_validator.py --sample",
+              "expect_exit": 0,
+              "kind": "sample"
+            }
+          ]
+        },
+        {
+          "script": "agent-launcher/skills/run-without-you/scripts/deployment_builder.py",
+          "wired": true,
+          "supports_sample": true,
+          "verification": [
+            {
+              "cmd": "python3 agent-launcher/skills/run-without-you/scripts/deployment_builder.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            },
+            {
+              "cmd": "python3 agent-launcher/skills/run-without-you/scripts/deployment_builder.py --sample",
+              "expect_exit": 0,
+              "kind": "sample"
+            }
+          ]
+        },
+        {
+          "script": "agent-launcher/skills/run-without-you/scripts/next_directions_writer.py",
+          "wired": true,
+          "supports_sample": true,
+          "verification": [
+            {
+              "cmd": "python3 agent-launcher/skills/run-without-you/scripts/next_directions_writer.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            },
+            {
+              "cmd": "python3 agent-launcher/skills/run-without-you/scripts/next_directions_writer.py --sample",
+              "expect_exit": 0,
+              "kind": "sample"
+            }
+          ]
+        }
+      ],
+      "agentic_signals": {
+        "goal_intake": true,
+        "refusal_gate": true,
+        "verification": false,
+        "loop_discipline": true,
+        "close_out": false
+      },
+      "references": []
+    },
+    {
+      "name": "stage-launch",
+      "path": "agent-launcher/skills/stage-launch",
+      "description": "Use when a managed-agent build sheet is ready to launch ('launch it', 'deploy the agent'). Generates and validates API payloads with payload_generator.py and payload_validator.py and writes a resumable curl script with launch_script_writer.py that uses the user's own key.",
+      "tools": [
+        {
+          "script": "agent-launcher/skills/stage-launch/scripts/launch_script_writer.py",
+          "wired": true,
+          "supports_sample": true,
+          "verification": [
+            {
+              "cmd": "python3 agent-launcher/skills/stage-launch/scripts/launch_script_writer.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            },
+            {
+              "cmd": "python3 agent-launcher/skills/stage-launch/scripts/launch_script_writer.py --sample",
+              "expect_exit": 0,
+              "kind": "sample"
+            }
+          ]
+        },
+        {
+          "script": "agent-launcher/skills/stage-launch/scripts/payload_generator.py",
+          "wired": true,
+          "supports_sample": true,
+          "verification": [
+            {
+              "cmd": "python3 agent-launcher/skills/stage-launch/scripts/payload_generator.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            },
+            {
+              "cmd": "python3 agent-launcher/skills/stage-launch/scripts/payload_generator.py --sample",
+              "expect_exit": 0,
+              "kind": "sample"
+            }
+          ]
+        },
+        {
+          "script": "agent-launcher/skills/stage-launch/scripts/payload_validator.py",
+          "wired": true,
+          "supports_sample": true,
+          "verification": [
+            {
+              "cmd": "python3 agent-launcher/skills/stage-launch/scripts/payload_validator.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            },
+            {
+              "cmd": "python3 agent-launcher/skills/stage-launch/scripts/payload_validator.py --sample",
+              "expect_exit": 0,
+              "kind": "sample"
+            }
+          ]
+        }
+      ],
+      "agentic_signals": {
+        "goal_intake": true,
+        "refusal_gate": true,
+        "verification": false,
+        "loop_discipline": true,
+        "close_out": false
+      },
+      "references": []
+    },
+    {
+      "name": "wrap-up",
+      "path": "agent-launcher/skills/wrap-up",
+      "description": "Use when closing out a launched managed agent ('wrap up', 'what do I own now'). Inventories primitives with primitives_inventory.py, regenerates the overview with overview_page.py and suggests next upgrades with upgrade_suggester.py.",
+      "tools": [
+        {
+          "script": "agent-launcher/skills/wrap-up/scripts/overview_page.py",
+          "wired": true,
+          "supports_sample": true,
+          "verification": [
+            {
+              "cmd": "python3 agent-launcher/skills/wrap-up/scripts/overview_page.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            },
+            {
+              "cmd": "python3 agent-launcher/skills/wrap-up/scripts/overview_page.py --sample",
+              "expect_exit": 0,
+              "kind": "sample"
+            }
+          ]
+        },
+        {
+          "script": "agent-launcher/skills/wrap-up/scripts/primitives_inventory.py",
+          "wired": true,
+          "supports_sample": true,
+          "verification": [
+            {
+              "cmd": "python3 agent-launcher/skills/wrap-up/scripts/primitives_inventory.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            },
+            {
+              "cmd": "python3 agent-launcher/skills/wrap-up/scripts/primitives_inventory.py --sample",
+              "expect_exit": 0,
+              "kind": "sample"
+            }
+          ]
+        },
+        {
+          "script": "agent-launcher/skills/wrap-up/scripts/upgrade_suggester.py",
+          "wired": true,
+          "supports_sample": true,
+          "verification": [
+            {
+              "cmd": "python3 agent-launcher/skills/wrap-up/scripts/upgrade_suggester.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            },
+            {
+              "cmd": "python3 agent-launcher/skills/wrap-up/scripts/upgrade_suggester.py --sample",
+              "expect_exit": 0,
+              "kind": "sample"
+            }
+          ]
+        }
+      ],
+      "agentic_signals": {
+        "goal_intake": true,
+        "refusal_gate": true,
+        "verification": false,
+        "loop_discipline": false,
+        "close_out": false
+      },
+      "references": []
+    }
+  ]
+}

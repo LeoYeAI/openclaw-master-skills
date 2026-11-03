@@ -1,0 +1,521 @@
+{
+  "schema": "agent-harness/manifest.v1",
+  "domain": "commercial",
+  "skill_count": 8,
+  "loop_defaults": {
+    "max_attempts_per_task": 3,
+    "max_loop_iterations": 12,
+    "escalate_on": [
+      "attempts_exhausted",
+      "no_verification_available",
+      "destructive_or_irreversible_action",
+      "goal_drift_detected"
+    ]
+  },
+  "skills": [
+    {
+      "name": "channel-economics",
+      "path": "commercial/skills/channel-economics",
+      "description": "Use for a direct vs partner channel review: fully loaded cost to serve, channel ROI and the best channel mix under constraints. Runs cost_to_serve_calculator.py, channel_roi_analyzer.py and channel_mix_optimizer.py.",
+      "tools": [
+        {
+          "script": "commercial/skills/channel-economics/scripts/channel_mix_optimizer.py",
+          "wired": true,
+          "supports_sample": true,
+          "verification": [
+            {
+              "cmd": "python3 commercial/skills/channel-economics/scripts/channel_mix_optimizer.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            },
+            {
+              "cmd": "python3 commercial/skills/channel-economics/scripts/channel_mix_optimizer.py --sample",
+              "expect_exit": 0,
+              "kind": "sample"
+            }
+          ]
+        },
+        {
+          "script": "commercial/skills/channel-economics/scripts/channel_roi_analyzer.py",
+          "wired": true,
+          "supports_sample": true,
+          "verification": [
+            {
+              "cmd": "python3 commercial/skills/channel-economics/scripts/channel_roi_analyzer.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            },
+            {
+              "cmd": "python3 commercial/skills/channel-economics/scripts/channel_roi_analyzer.py --sample",
+              "expect_exit": 0,
+              "kind": "sample"
+            }
+          ]
+        },
+        {
+          "script": "commercial/skills/channel-economics/scripts/cost_to_serve_calculator.py",
+          "wired": true,
+          "supports_sample": true,
+          "verification": [
+            {
+              "cmd": "python3 commercial/skills/channel-economics/scripts/cost_to_serve_calculator.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            },
+            {
+              "cmd": "python3 commercial/skills/channel-economics/scripts/cost_to_serve_calculator.py --sample",
+              "expect_exit": 0,
+              "kind": "sample"
+            }
+          ]
+        }
+      ],
+      "agentic_signals": {
+        "goal_intake": true,
+        "refusal_gate": false,
+        "verification": true,
+        "loop_discipline": false,
+        "close_out": false
+      },
+      "references": [
+        "channel_anti_patterns.md",
+        "channel_economics_canon.md",
+        "cost_to_serve_canon.md"
+      ]
+    },
+    {
+      "name": "commercial-forecaster",
+      "path": "commercial/skills/commercial-forecaster",
+      "description": "Use when building a bookings, ARR, pipeline or NRR forecast, or a commit, best-case and pipeline board number. Forecasts with bookings_forecaster.py, projects cohorts with cohort_arr_projector.py and scores stage confidence with funnel_confidence_scorer.py, showing every conversion assumption.",
+      "tools": [
+        {
+          "script": "commercial/skills/commercial-forecaster/scripts/bookings_forecaster.py",
+          "wired": true,
+          "supports_sample": true,
+          "verification": [
+            {
+              "cmd": "python3 commercial/skills/commercial-forecaster/scripts/bookings_forecaster.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            },
+            {
+              "cmd": "python3 commercial/skills/commercial-forecaster/scripts/bookings_forecaster.py --sample",
+              "expect_exit": 0,
+              "kind": "sample"
+            }
+          ]
+        },
+        {
+          "script": "commercial/skills/commercial-forecaster/scripts/cohort_arr_projector.py",
+          "wired": true,
+          "supports_sample": true,
+          "verification": [
+            {
+              "cmd": "python3 commercial/skills/commercial-forecaster/scripts/cohort_arr_projector.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            },
+            {
+              "cmd": "python3 commercial/skills/commercial-forecaster/scripts/cohort_arr_projector.py --sample",
+              "expect_exit": 0,
+              "kind": "sample"
+            }
+          ]
+        },
+        {
+          "script": "commercial/skills/commercial-forecaster/scripts/funnel_confidence_scorer.py",
+          "wired": true,
+          "supports_sample": true,
+          "verification": [
+            {
+              "cmd": "python3 commercial/skills/commercial-forecaster/scripts/funnel_confidence_scorer.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            },
+            {
+              "cmd": "python3 commercial/skills/commercial-forecaster/scripts/funnel_confidence_scorer.py --sample",
+              "expect_exit": 0,
+              "kind": "sample"
+            }
+          ]
+        }
+      ],
+      "agentic_signals": {
+        "goal_intake": true,
+        "refusal_gate": true,
+        "verification": true,
+        "loop_discipline": true,
+        "close_out": false
+      },
+      "references": [
+        "cohort_analysis_canon.md",
+        "forecast_anti_patterns.md",
+        "saas_forecasting_canon.md"
+      ]
+    },
+    {
+      "name": "commercial-policy",
+      "path": "commercial/skills/commercial-policy",
+      "description": "Use when writing or revising discount rules: discount matrix, approver thresholds, exception flows and the deal framework sales works under. Builds the matrix with discount_matrix_builder.py, routes exceptions with exception_router.py and checks the policy with policy_linter.py.",
+      "tools": [
+        {
+          "script": "commercial/skills/commercial-policy/scripts/discount_matrix_builder.py",
+          "wired": true,
+          "supports_sample": true,
+          "verification": [
+            {
+              "cmd": "python3 commercial/skills/commercial-policy/scripts/discount_matrix_builder.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            },
+            {
+              "cmd": "python3 commercial/skills/commercial-policy/scripts/discount_matrix_builder.py --sample",
+              "expect_exit": 0,
+              "kind": "sample"
+            }
+          ]
+        },
+        {
+          "script": "commercial/skills/commercial-policy/scripts/exception_router.py",
+          "wired": true,
+          "supports_sample": true,
+          "verification": [
+            {
+              "cmd": "python3 commercial/skills/commercial-policy/scripts/exception_router.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            },
+            {
+              "cmd": "python3 commercial/skills/commercial-policy/scripts/exception_router.py --sample",
+              "expect_exit": 0,
+              "kind": "sample"
+            }
+          ]
+        },
+        {
+          "script": "commercial/skills/commercial-policy/scripts/policy_linter.py",
+          "wired": true,
+          "supports_sample": true,
+          "verification": [
+            {
+              "cmd": "python3 commercial/skills/commercial-policy/scripts/policy_linter.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            },
+            {
+              "cmd": "python3 commercial/skills/commercial-policy/scripts/policy_linter.py --sample",
+              "expect_exit": 0,
+              "kind": "sample"
+            }
+          ]
+        }
+      ],
+      "agentic_signals": {
+        "goal_intake": true,
+        "refusal_gate": false,
+        "verification": true,
+        "loop_discipline": false,
+        "close_out": false
+      },
+      "references": [
+        "discount_governance_canon.md",
+        "policy_anti_patterns.md",
+        "policy_design_canon.md"
+      ]
+    },
+    {
+      "name": "commercial-skills",
+      "path": "commercial/skills/commercial-skills",
+      "description": "Use when a commercial request needs routing (pricing, deal review, discounts, partners, channels, policy, RFPs, forecasts): 'review this deal', 'should we discount'. Lists the commercial skills and routes to one.",
+      "tools": [],
+      "agentic_signals": {
+        "goal_intake": true,
+        "refusal_gate": false,
+        "verification": true,
+        "loop_discipline": true,
+        "close_out": false
+      },
+      "references": []
+    },
+    {
+      "name": "deal-desk",
+      "path": "commercial/skills/deal-desk",
+      "description": "Use before closing a deal that needs a discount beyond AE authority, has a redlined MSA or unclear per-deal economics. Scores it with deal_scorer.py, names approvers with discount_approval_router.py and flags risky terms with terms_redliner.py. Never auto-approves.",
+      "tools": [
+        {
+          "script": "commercial/skills/deal-desk/scripts/deal_scorer.py",
+          "wired": true,
+          "supports_sample": true,
+          "verification": [
+            {
+              "cmd": "python3 commercial/skills/deal-desk/scripts/deal_scorer.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            },
+            {
+              "cmd": "python3 commercial/skills/deal-desk/scripts/deal_scorer.py --sample",
+              "expect_exit": 0,
+              "kind": "sample"
+            }
+          ]
+        },
+        {
+          "script": "commercial/skills/deal-desk/scripts/discount_approval_router.py",
+          "wired": true,
+          "supports_sample": true,
+          "verification": [
+            {
+              "cmd": "python3 commercial/skills/deal-desk/scripts/discount_approval_router.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            },
+            {
+              "cmd": "python3 commercial/skills/deal-desk/scripts/discount_approval_router.py --sample",
+              "expect_exit": 0,
+              "kind": "sample"
+            }
+          ]
+        },
+        {
+          "script": "commercial/skills/deal-desk/scripts/terms_redliner.py",
+          "wired": true,
+          "supports_sample": true,
+          "verification": [
+            {
+              "cmd": "python3 commercial/skills/deal-desk/scripts/terms_redliner.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            },
+            {
+              "cmd": "python3 commercial/skills/deal-desk/scripts/terms_redliner.py --sample",
+              "expect_exit": 0,
+              "kind": "sample"
+            }
+          ]
+        }
+      ],
+      "agentic_signals": {
+        "goal_intake": true,
+        "refusal_gate": true,
+        "verification": true,
+        "loop_discipline": true,
+        "close_out": false
+      },
+      "references": [
+        "contract_landmines.md",
+        "deal_desk_canon.md",
+        "discount_economics.md"
+      ]
+    },
+    {
+      "name": "partnerships-architect",
+      "path": "commercial/skills/partnerships-architect",
+      "description": "Use when deciding whether to sign a partner, at which tier (referral, reseller, OEM, SI, alliance), with what joint GTM and revshare. Runs partner_tier_classifier.py, revshare_modeler.py and joint_gtm_planner.py.",
+      "tools": [
+        {
+          "script": "commercial/skills/partnerships-architect/scripts/joint_gtm_planner.py",
+          "wired": true,
+          "supports_sample": true,
+          "verification": [
+            {
+              "cmd": "python3 commercial/skills/partnerships-architect/scripts/joint_gtm_planner.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            },
+            {
+              "cmd": "python3 commercial/skills/partnerships-architect/scripts/joint_gtm_planner.py --sample",
+              "expect_exit": 0,
+              "kind": "sample"
+            }
+          ]
+        },
+        {
+          "script": "commercial/skills/partnerships-architect/scripts/partner_tier_classifier.py",
+          "wired": true,
+          "supports_sample": true,
+          "verification": [
+            {
+              "cmd": "python3 commercial/skills/partnerships-architect/scripts/partner_tier_classifier.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            },
+            {
+              "cmd": "python3 commercial/skills/partnerships-architect/scripts/partner_tier_classifier.py --sample",
+              "expect_exit": 0,
+              "kind": "sample"
+            }
+          ]
+        },
+        {
+          "script": "commercial/skills/partnerships-architect/scripts/revshare_modeler.py",
+          "wired": true,
+          "supports_sample": true,
+          "verification": [
+            {
+              "cmd": "python3 commercial/skills/partnerships-architect/scripts/revshare_modeler.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            },
+            {
+              "cmd": "python3 commercial/skills/partnerships-architect/scripts/revshare_modeler.py --sample",
+              "expect_exit": 0,
+              "kind": "sample"
+            }
+          ]
+        }
+      ],
+      "agentic_signals": {
+        "goal_intake": true,
+        "refusal_gate": false,
+        "verification": true,
+        "loop_discipline": true,
+        "close_out": false
+      },
+      "references": [
+        "channel_partner_canon.md",
+        "joint_gtm_canon.md",
+        "partnership_anti_patterns.md"
+      ]
+    },
+    {
+      "name": "pricing-strategist",
+      "path": "commercial/skills/pricing-strategist",
+      "description": "Use when choosing or revisiting pricing: seat, usage, value-based, freemium or hybrid, Van Westendorp willingness-to-pay analysis, or Good/Better/Best tiers. Runs pricing_model_picker.py, wtp_analyzer.py and packaging_designer.py and returns a range, not one number.",
+      "tools": [
+        {
+          "script": "commercial/skills/pricing-strategist/scripts/packaging_designer.py",
+          "wired": true,
+          "supports_sample": true,
+          "verification": [
+            {
+              "cmd": "python3 commercial/skills/pricing-strategist/scripts/packaging_designer.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            },
+            {
+              "cmd": "python3 commercial/skills/pricing-strategist/scripts/packaging_designer.py --sample",
+              "expect_exit": 0,
+              "kind": "sample"
+            }
+          ]
+        },
+        {
+          "script": "commercial/skills/pricing-strategist/scripts/pricing_model_picker.py",
+          "wired": true,
+          "supports_sample": true,
+          "verification": [
+            {
+              "cmd": "python3 commercial/skills/pricing-strategist/scripts/pricing_model_picker.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            },
+            {
+              "cmd": "python3 commercial/skills/pricing-strategist/scripts/pricing_model_picker.py --sample",
+              "expect_exit": 0,
+              "kind": "sample"
+            }
+          ]
+        },
+        {
+          "script": "commercial/skills/pricing-strategist/scripts/wtp_analyzer.py",
+          "wired": true,
+          "supports_sample": true,
+          "verification": [
+            {
+              "cmd": "python3 commercial/skills/pricing-strategist/scripts/wtp_analyzer.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            },
+            {
+              "cmd": "python3 commercial/skills/pricing-strategist/scripts/wtp_analyzer.py --sample",
+              "expect_exit": 0,
+              "kind": "sample"
+            }
+          ]
+        }
+      ],
+      "agentic_signals": {
+        "goal_intake": true,
+        "refusal_gate": false,
+        "verification": true,
+        "loop_discipline": false,
+        "close_out": false
+      },
+      "references": [
+        "packaging_anti_patterns.md",
+        "saas_pricing_canon.md",
+        "van_westendorp_methodology.md"
+      ]
+    },
+    {
+      "name": "rfp-responder",
+      "path": "commercial/skills/rfp-responder",
+      "description": "Use when an RFP, RFI, RFQ or security or vendor questionnaire arrives. Parses mandatory vs weighted requirements with rfp_parser.py, drafts proof-point answers with response_drafter.py and estimates win chance with winrate_predictor.py.",
+      "tools": [
+        {
+          "script": "commercial/skills/rfp-responder/scripts/response_drafter.py",
+          "wired": true,
+          "supports_sample": true,
+          "verification": [
+            {
+              "cmd": "python3 commercial/skills/rfp-responder/scripts/response_drafter.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            },
+            {
+              "cmd": "python3 commercial/skills/rfp-responder/scripts/response_drafter.py --sample",
+              "expect_exit": 0,
+              "kind": "sample"
+            }
+          ]
+        },
+        {
+          "script": "commercial/skills/rfp-responder/scripts/rfp_parser.py",
+          "wired": true,
+          "supports_sample": true,
+          "verification": [
+            {
+              "cmd": "python3 commercial/skills/rfp-responder/scripts/rfp_parser.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            },
+            {
+              "cmd": "python3 commercial/skills/rfp-responder/scripts/rfp_parser.py --sample",
+              "expect_exit": 0,
+              "kind": "sample"
+            }
+          ]
+        },
+        {
+          "script": "commercial/skills/rfp-responder/scripts/winrate_predictor.py",
+          "wired": true,
+          "supports_sample": true,
+          "verification": [
+            {
+              "cmd": "python3 commercial/skills/rfp-responder/scripts/winrate_predictor.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            },
+            {
+              "cmd": "python3 commercial/skills/rfp-responder/scripts/winrate_predictor.py --sample",
+              "expect_exit": 0,
+              "kind": "sample"
+            }
+          ]
+        }
+      ],
+      "agentic_signals": {
+        "goal_intake": true,
+        "refusal_gate": true,
+        "verification": true,
+        "loop_discipline": true,
+        "close_out": false
+      },
+      "references": [
+        "rfp_anti_patterns.md",
+        "rfp_strategy_canon.md",
+        "shipley_method_canon.md"
+      ]
+    }
+  ]
+}

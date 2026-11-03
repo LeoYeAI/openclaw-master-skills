@@ -1,0 +1,377 @@
+{
+  "schema": "agent-harness/manifest.v1",
+  "domain": "project-management",
+  "skill_count": 9,
+  "loop_defaults": {
+    "max_attempts_per_task": 3,
+    "max_loop_iterations": 12,
+    "escalate_on": [
+      "attempts_exhausted",
+      "no_verification_available",
+      "destructive_or_irreversible_action",
+      "goal_drift_detected"
+    ]
+  },
+  "skills": [
+    {
+      "name": "atlassian-admin",
+      "path": "project-management/skills/atlassian-admin",
+      "description": "Use for Atlassian org administration: Jira or Confluence users and groups, permissions, SSO, marketplace apps or security policy. Audits permissions with permission_audit_tool.py.",
+      "tools": [
+        {
+          "script": "project-management/skills/atlassian-admin/scripts/permission_audit_tool.py",
+          "wired": false,
+          "supports_sample": false,
+          "verification": [
+            {
+              "cmd": "python3 project-management/skills/atlassian-admin/scripts/permission_audit_tool.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            }
+          ]
+        }
+      ],
+      "agentic_signals": {
+        "goal_intake": false,
+        "refusal_gate": false,
+        "verification": true,
+        "loop_discipline": false,
+        "close_out": true
+      },
+      "references": [
+        "security-hardening-guide.md",
+        "user-provisioning-checklist.md"
+      ]
+    },
+    {
+      "name": "atlassian-templates",
+      "path": "project-management/skills/atlassian-templates",
+      "description": "Use when creating or changing Jira or Confluence templates, blueprints or page layouts for reuse across the org. Scaffolds them with template_scaffolder.py.",
+      "tools": [
+        {
+          "script": "project-management/skills/atlassian-templates/scripts/template_scaffolder.py",
+          "wired": true,
+          "supports_sample": false,
+          "verification": [
+            {
+              "cmd": "python3 project-management/skills/atlassian-templates/scripts/template_scaffolder.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            }
+          ]
+        }
+      ],
+      "agentic_signals": {
+        "goal_intake": false,
+        "refusal_gate": false,
+        "verification": true,
+        "loop_discipline": true,
+        "close_out": true
+      },
+      "references": [
+        "governance-framework.md",
+        "template-design-patterns.md"
+      ]
+    },
+    {
+      "name": "confluence-expert",
+      "path": "project-management/skills/confluence-expert",
+      "description": "Use when building or restructuring a Confluence space: page hierarchy, permissions, templates, Jira macros or a content audit. Generates structure with space_structure_generator.py and audits with content_audit_analyzer.py.",
+      "tools": [
+        {
+          "script": "project-management/skills/confluence-expert/scripts/content_audit_analyzer.py",
+          "wired": true,
+          "supports_sample": false,
+          "verification": [
+            {
+              "cmd": "python3 project-management/skills/confluence-expert/scripts/content_audit_analyzer.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            }
+          ]
+        },
+        {
+          "script": "project-management/skills/confluence-expert/scripts/space_structure_generator.py",
+          "wired": true,
+          "supports_sample": false,
+          "verification": [
+            {
+              "cmd": "python3 project-management/skills/confluence-expert/scripts/space_structure_generator.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            }
+          ]
+        }
+      ],
+      "agentic_signals": {
+        "goal_intake": false,
+        "refusal_gate": false,
+        "verification": true,
+        "loop_discipline": false,
+        "close_out": true
+      },
+      "references": [
+        "macro-cheat-sheet.md",
+        "space-architecture-patterns.md",
+        "templates.md"
+      ]
+    },
+    {
+      "name": "jira-expert",
+      "path": "project-management/skills/jira-expert",
+      "description": "Use for Jira configuration and queries: JQL, workflows, custom fields, automation, dashboards. Builds JQL with jql_query_builder.py and checks workflows with workflow_validator.py.",
+      "tools": [
+        {
+          "script": "project-management/skills/jira-expert/scripts/jql_query_builder.py",
+          "wired": true,
+          "supports_sample": false,
+          "verification": [
+            {
+              "cmd": "python3 project-management/skills/jira-expert/scripts/jql_query_builder.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            }
+          ]
+        },
+        {
+          "script": "project-management/skills/jira-expert/scripts/workflow_validator.py",
+          "wired": true,
+          "supports_sample": false,
+          "verification": [
+            {
+              "cmd": "python3 project-management/skills/jira-expert/scripts/workflow_validator.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            }
+          ]
+        }
+      ],
+      "agentic_signals": {
+        "goal_intake": false,
+        "refusal_gate": false,
+        "verification": true,
+        "loop_discipline": false,
+        "close_out": true
+      },
+      "references": [
+        "AUTOMATION.md",
+        "WORKFLOWS.md",
+        "automation-examples.md",
+        "jql-examples.md"
+      ]
+    },
+    {
+      "name": "meeting-analyzer",
+      "path": "project-management/skills/meeting-analyzer",
+      "description": "Use when the user shares meeting transcripts (.vtt, .srt, .txt, Otter, Granola, Zoom) or asks how they come across in meetings. Measures speaking ratio, filler words and avoidance patterns and gives coaching.",
+      "tools": [],
+      "agentic_signals": {
+        "goal_intake": false,
+        "refusal_gate": false,
+        "verification": false,
+        "loop_discipline": false,
+        "close_out": false
+      },
+      "references": []
+    },
+    {
+      "name": "pm-skills",
+      "path": "project-management/skills/pm-skills",
+      "description": "Use when a delivery request needs routing across the project-management skills (sprints, portfolio health, Jira, Confluence, comms), or to run a delivery loop. Routes with pm_goal_router.py, bridges Jira data with jira_snapshot_bridge.py and gates with delivery_loop_gate.py.",
+      "tools": [
+        {
+          "script": "project-management/skills/pm-skills/scripts/delivery_loop_gate.py",
+          "wired": true,
+          "supports_sample": true,
+          "verification": [
+            {
+              "cmd": "python3 project-management/skills/pm-skills/scripts/delivery_loop_gate.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            },
+            {
+              "cmd": "python3 project-management/skills/pm-skills/scripts/delivery_loop_gate.py --sample",
+              "expect_exit": 0,
+              "kind": "sample"
+            }
+          ]
+        },
+        {
+          "script": "project-management/skills/pm-skills/scripts/jira_snapshot_bridge.py",
+          "wired": true,
+          "supports_sample": true,
+          "verification": [
+            {
+              "cmd": "python3 project-management/skills/pm-skills/scripts/jira_snapshot_bridge.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            },
+            {
+              "cmd": "python3 project-management/skills/pm-skills/scripts/jira_snapshot_bridge.py --sample",
+              "expect_exit": 0,
+              "kind": "sample"
+            }
+          ]
+        },
+        {
+          "script": "project-management/skills/pm-skills/scripts/pm_goal_router.py",
+          "wired": true,
+          "supports_sample": true,
+          "verification": [
+            {
+              "cmd": "python3 project-management/skills/pm-skills/scripts/pm_goal_router.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            },
+            {
+              "cmd": "python3 project-management/skills/pm-skills/scripts/pm_goal_router.py --sample",
+              "expect_exit": 0,
+              "kind": "sample"
+            }
+          ]
+        }
+      ],
+      "agentic_signals": {
+        "goal_intake": true,
+        "refusal_gate": true,
+        "verification": true,
+        "loop_discipline": true,
+        "close_out": true
+      },
+      "references": [
+        "agentic_delivery_governance.md",
+        "flow_forecasting_canon.md",
+        "pm_loop_playbook.md"
+      ]
+    },
+    {
+      "name": "scrum-master",
+      "path": "project-management/skills/scrum-master",
+      "description": "Use for sprint and team analytics: velocity forecasts, sprint health, retrospectives, burndown or blockers. Forecasts with velocity_analyzer.py (Monte Carlo), scores with sprint_health_scorer.py and tracks retro actions with retrospective_analyzer.py.",
+      "tools": [
+        {
+          "script": "project-management/skills/scrum-master/scripts/retrospective_analyzer.py",
+          "wired": true,
+          "supports_sample": false,
+          "verification": [
+            {
+              "cmd": "python3 project-management/skills/scrum-master/scripts/retrospective_analyzer.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            }
+          ]
+        },
+        {
+          "script": "project-management/skills/scrum-master/scripts/sprint_health_scorer.py",
+          "wired": true,
+          "supports_sample": false,
+          "verification": [
+            {
+              "cmd": "python3 project-management/skills/scrum-master/scripts/sprint_health_scorer.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            }
+          ]
+        },
+        {
+          "script": "project-management/skills/scrum-master/scripts/velocity_analyzer.py",
+          "wired": true,
+          "supports_sample": false,
+          "verification": [
+            {
+              "cmd": "python3 project-management/skills/scrum-master/scripts/velocity_analyzer.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            }
+          ]
+        }
+      ],
+      "agentic_signals": {
+        "goal_intake": false,
+        "refusal_gate": false,
+        "verification": false,
+        "loop_discipline": false,
+        "close_out": true
+      },
+      "references": [
+        "retro-formats.md",
+        "team-dynamics-framework.md",
+        "velocity-forecasting-guide.md"
+      ]
+    },
+    {
+      "name": "senior-pm",
+      "path": "project-management/skills/senior-pm",
+      "description": "Use for project or portfolio management: plans, status reports, risk registers, capacity or executive reporting on multi-workstream programs. Runs project_health_dashboard.py, risk_matrix_analyzer.py and resource_capacity_planner.py.",
+      "tools": [
+        {
+          "script": "project-management/skills/senior-pm/scripts/project_health_dashboard.py",
+          "wired": true,
+          "supports_sample": false,
+          "verification": [
+            {
+              "cmd": "python3 project-management/skills/senior-pm/scripts/project_health_dashboard.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            }
+          ]
+        },
+        {
+          "script": "project-management/skills/senior-pm/scripts/resource_capacity_planner.py",
+          "wired": true,
+          "supports_sample": false,
+          "verification": [
+            {
+              "cmd": "python3 project-management/skills/senior-pm/scripts/resource_capacity_planner.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            }
+          ]
+        },
+        {
+          "script": "project-management/skills/senior-pm/scripts/risk_matrix_analyzer.py",
+          "wired": true,
+          "supports_sample": false,
+          "verification": [
+            {
+              "cmd": "python3 project-management/skills/senior-pm/scripts/risk_matrix_analyzer.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            }
+          ]
+        }
+      ],
+      "agentic_signals": {
+        "goal_intake": false,
+        "refusal_gate": false,
+        "verification": false,
+        "loop_discipline": true,
+        "close_out": true
+      },
+      "references": [
+        "portfolio-kpis.md",
+        "portfolio-prioritization-models.md",
+        "risk-management-framework.md"
+      ]
+    },
+    {
+      "name": "team-communications",
+      "path": "project-management/skills/team-communications",
+      "description": "Use for any internal communication: 3P updates, weekly or status reports, newsletters, FAQs, incident reports, leadership updates ('write my update'). Drafts it in the right format for the audience.",
+      "tools": [],
+      "agentic_signals": {
+        "goal_intake": true,
+        "refusal_gate": false,
+        "verification": false,
+        "loop_discipline": false,
+        "close_out": false
+      },
+      "references": [
+        "3p-updates.md",
+        "company-newsletter.md",
+        "faq-answers.md",
+        "general-comms.md"
+      ]
+    }
+  ]
+}

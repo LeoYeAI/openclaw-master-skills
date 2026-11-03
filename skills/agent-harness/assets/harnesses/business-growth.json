@@ -1,0 +1,220 @@
+{
+  "schema": "agent-harness/manifest.v1",
+  "domain": "business-growth",
+  "skill_count": 5,
+  "loop_defaults": {
+    "max_attempts_per_task": 3,
+    "max_loop_iterations": 12,
+    "escalate_on": [
+      "attempts_exhausted",
+      "no_verification_available",
+      "destructive_or_irreversible_action",
+      "goal_drift_detected"
+    ]
+  },
+  "skills": [
+    {
+      "name": "business-growth-skills",
+      "path": "business-growth/skills/business-growth-skills",
+      "description": "Use when a growth request needs routing between customer-success-manager, sales-engineer, revenue-operations and contract-and-proposal-writer.",
+      "tools": [],
+      "agentic_signals": {
+        "goal_intake": true,
+        "refusal_gate": false,
+        "verification": false,
+        "loop_discipline": false,
+        "close_out": false
+      },
+      "references": []
+    },
+    {
+      "name": "contract-and-proposal-writer",
+      "path": "business-growth/skills/contract-and-proposal-writer",
+      "description": "Use when drafting a freelance contract, proposal, SOW, NDA or MSA for US, EU, UK or DACH jurisdictions. Writes structured Markdown with docx conversion steps; not legal advice.",
+      "tools": [],
+      "agentic_signals": {
+        "goal_intake": false,
+        "refusal_gate": false,
+        "verification": false,
+        "loop_discipline": true,
+        "close_out": false
+      },
+      "references": []
+    },
+    {
+      "name": "customer-success-manager",
+      "path": "business-growth/skills/customer-success-manager",
+      "description": "Use when reviewing customer accounts for health, churn risk or expansion. Scores health with health_score_calculator.py, churn with churn_risk_analyzer.py and upsell with expansion_opportunity_scorer.py.",
+      "tools": [
+        {
+          "script": "business-growth/skills/customer-success-manager/scripts/churn_risk_analyzer.py",
+          "wired": true,
+          "supports_sample": false,
+          "verification": [
+            {
+              "cmd": "python3 business-growth/skills/customer-success-manager/scripts/churn_risk_analyzer.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            }
+          ]
+        },
+        {
+          "script": "business-growth/skills/customer-success-manager/scripts/expansion_opportunity_scorer.py",
+          "wired": true,
+          "supports_sample": false,
+          "verification": [
+            {
+              "cmd": "python3 business-growth/skills/customer-success-manager/scripts/expansion_opportunity_scorer.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            }
+          ]
+        },
+        {
+          "script": "business-growth/skills/customer-success-manager/scripts/health_score_calculator.py",
+          "wired": true,
+          "supports_sample": true,
+          "verification": [
+            {
+              "cmd": "python3 business-growth/skills/customer-success-manager/scripts/health_score_calculator.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            },
+            {
+              "cmd": "python3 business-growth/skills/customer-success-manager/scripts/health_score_calculator.py --sample",
+              "expect_exit": 0,
+              "kind": "sample"
+            }
+          ]
+        }
+      ],
+      "agentic_signals": {
+        "goal_intake": false,
+        "refusal_gate": false,
+        "verification": true,
+        "loop_discipline": true,
+        "close_out": false
+      },
+      "references": [
+        "cs-metrics-benchmarks.md",
+        "cs-playbooks.md",
+        "health-scoring-framework.md"
+      ]
+    },
+    {
+      "name": "revenue-operations",
+      "path": "business-growth/skills/revenue-operations",
+      "description": "Use for pipeline coverage, forecast accuracy or GTM efficiency (magic number, CAC payback). Runs pipeline_analyzer.py, forecast_accuracy_tracker.py and gtm_efficiency_calculator.py.",
+      "tools": [
+        {
+          "script": "business-growth/skills/revenue-operations/scripts/forecast_accuracy_tracker.py",
+          "wired": true,
+          "supports_sample": false,
+          "verification": [
+            {
+              "cmd": "python3 business-growth/skills/revenue-operations/scripts/forecast_accuracy_tracker.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            }
+          ]
+        },
+        {
+          "script": "business-growth/skills/revenue-operations/scripts/gtm_efficiency_calculator.py",
+          "wired": true,
+          "supports_sample": false,
+          "verification": [
+            {
+              "cmd": "python3 business-growth/skills/revenue-operations/scripts/gtm_efficiency_calculator.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            }
+          ]
+        },
+        {
+          "script": "business-growth/skills/revenue-operations/scripts/pipeline_analyzer.py",
+          "wired": true,
+          "supports_sample": true,
+          "verification": [
+            {
+              "cmd": "python3 business-growth/skills/revenue-operations/scripts/pipeline_analyzer.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            },
+            {
+              "cmd": "python3 business-growth/skills/revenue-operations/scripts/pipeline_analyzer.py --sample",
+              "expect_exit": 0,
+              "kind": "sample"
+            }
+          ]
+        }
+      ],
+      "agentic_signals": {
+        "goal_intake": false,
+        "refusal_gate": false,
+        "verification": true,
+        "loop_discipline": false,
+        "close_out": false
+      },
+      "references": [
+        "gtm-efficiency-benchmarks.md",
+        "pipeline-management-framework.md",
+        "revops-metrics-guide.md"
+      ]
+    },
+    {
+      "name": "sales-engineer",
+      "path": "business-growth/skills/sales-engineer",
+      "description": "Use for pre-sales work: RFP coverage gaps, competitive feature matrices or planning and scoring a proof of concept. Runs rfp_response_analyzer.py, competitive_matrix_builder.py and poc_planner.py.",
+      "tools": [
+        {
+          "script": "business-growth/skills/sales-engineer/scripts/competitive_matrix_builder.py",
+          "wired": true,
+          "supports_sample": false,
+          "verification": [
+            {
+              "cmd": "python3 business-growth/skills/sales-engineer/scripts/competitive_matrix_builder.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            }
+          ]
+        },
+        {
+          "script": "business-growth/skills/sales-engineer/scripts/poc_planner.py",
+          "wired": true,
+          "supports_sample": false,
+          "verification": [
+            {
+              "cmd": "python3 business-growth/skills/sales-engineer/scripts/poc_planner.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            }
+          ]
+        },
+        {
+          "script": "business-growth/skills/sales-engineer/scripts/rfp_response_analyzer.py",
+          "wired": true,
+          "supports_sample": false,
+          "verification": [
+            {
+              "cmd": "python3 business-growth/skills/sales-engineer/scripts/rfp_response_analyzer.py --help",
+              "expect_exit": 0,
+              "kind": "smoke"
+            }
+          ]
+        }
+      ],
+      "agentic_signals": {
+        "goal_intake": false,
+        "refusal_gate": false,
+        "verification": true,
+        "loop_discipline": false,
+        "close_out": true
+      },
+      "references": [
+        "competitive-positioning-framework.md",
+        "poc-best-practices.md",
+        "rfp-response-guide.md"
+      ]
+    }
+  ]
+}
