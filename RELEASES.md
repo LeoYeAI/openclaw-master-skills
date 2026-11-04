@@ -3,6 +3,47 @@
 每次更新的详细发布说明。
 
 
+## v0.22.6 — 2026-11-04
+
+### 🚀 日更：新增 100 个 Skills，总计 3103
+
+来源：头部技能仓库（obra/superpowers、addyosmani/agent-skills、wshobson/agents 等），按质量规则筛选（SKILL.md 800B-30KB、完整 YAML 元数据、有效 description）。
+
+#### 部分新增亮点（前 30 个）
+- `hermes-tweet` — Install and operate Hermes Tweet, a Hermes Agent plugin for X/Twitter research, timeline reading, tweet analysis, and ap
+- `incident-runbook-templates` — Create structured incident response runbooks with step-by-step procedures, escalation paths, and recovery actions. Use t
+- `full-page-screenshot` — Use when asked for a full-page or long screenshot of a web page. Captures SPA scroll containers, lazy images and very ta
+- `finance-lead` — Startup CFO who builds models that survive contact with reality. Handles fundraising, unit economics, pricing, burn rate
+- `grounded-vault` — Use when maintaining a durable Markdown knowledge store that agents compile from sources, when every number or quote in 
+- `ponytail-audit` — Quality audit of a whole repo: bugs, security holes, what breaks under real load, risky code without tests, slow paths, 
+- `agent-regression-evals` — Use before shipping any agent, prompt, model or tool change, or when a pass-rate drop needs a verdict. Runs repeated tri
+- `monorepo-management` — Master monorepo management with Turborepo, Nx, and pnpm workspaces to build efficient, scalable multi-package repositori
+- `agent-run-forensics` — Use when asked why an agent did something, what a past session or run changed, whether tests really passed, or to verify
+- `devops-engineer` — Builds infrastructure that scales without babysitting. Automates everything worth automating. Monitors before it breaks.
+- `c-level-agents` — Use when the founder wants a virtual executive team or a /c-level-agents command. Lists the 13 C-suite agents and 21 com
+- `superself` — Use when a project keeps its state in Superself (a `<!-- superself:begin` block in AGENTS.md or CLAUDE.md, or `self setu
+- `aims-audit` — ISO 42001 AI readiness check. Use before a stage 1 or internal audit, or /compliance-os:aims-audit.
+- `tailwind-design-system` — Build scalable design systems with Tailwind CSS v4, design tokens, component libraries, and responsive patterns. Use whe
+- `workflow-builder` — Use when writing or running a Claude Code Workflow-tool script (.js in .claude/workflows/) for fan-out, pipeline, loop o
+- `i18n-localization` — Use when adding UI text, adding or shipping a language, reviewing translation files, or building i18n into an app. Check
+- `linkedin-skills` — Use for any organic LinkedIn growth request (strategy, profile, posts, cadence, outreach, analytics). Checks it against 
+- `multi-reviewer-patterns` — Coordinate parallel code reviews across multiple quality dimensions with finding deduplication, severity calibration, an
+- `cco-review` — Challenge a churn, retention, segment or CS hiring plan. Use whenever asked or /c-level-agents:cco-review.
+- `linkedin-content` — Write, edit or review a LinkedIn post: story, how-to, carousel, video script or poll. Use whenever the user wants a Link
+- `bats-testing-patterns` — Master Bash Automated Testing System (Bats) for comprehensive shell script testing. Use when writing tests for shell scr
+- `apple-hig-expert` — Use when designing or reviewing iOS, macOS, watchOS or visionOS UI against Apple's Human Interface Guidelines, including
+- `coding-agent-rollout` — Roll out Claude Code to a team: shared or managed settings, MCP and plugin approval, layered CLAUDE.md, adoption. Use wh
+- `ponytail-review` — Quality review of a change: is the logic right, is it safe, does it hold under real load, is risky code tested, is it fa
+- `commit-craft` — Turn a mix of changes into clean, reviewable commits with good messages, blocking staged secrets and .env files. Use whe
+- `cdo-review` — Use for /c-level-agents:cdo-review, or to challenge a plan touching training-data rights, data architecture or data mone
+- `universal-scraping-architect` — Scrape websites, crawl pages, extract documents or parse APIs, and validate what was extracted, via Firecrawl or local P
+- `linkedin-engagement` — Use for LinkedIn comments, connection notes, DMs or outreach plans, or checking outreach volume is safe. Plans targets w
+- `demo-video` — Use when asked for a demo video, product walkthrough, feature showcase or GIF from screenshots or scene descriptions. Or
+- `linkedin-analytics` — Use when someone asks why their LinkedIn reach dropped, which posts worked, whether a pattern is real or how to test one
+
+---
+
+
 ## v0.22.5 — 2026-11-03
 
 ### 🚀 日更：新增 100 个 Skills，总计 3003

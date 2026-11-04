@@ -1,0 +1,118 @@
+---
+name: "c-level-agents"
+description: "Use when the founder wants a virtual executive team or a /c-level-agents command. Lists the 13 C-suite agents and 21 commands and routes multi-role decisions."
+license: MIT
+metadata:
+  version: 1.0.0
+  author: Alireza Rezvani
+  category: c-level
+  domain: executive-orchestration
+  updated: 2026-05-12
+  agents: cs-cfo-advisor, cs-cmo-advisor, cs-cro-advisor, cs-cpo-advisor, cs-coo-advisor, cs-chro-advisor, cs-ciso-advisor, cs-general-counsel-advisor, cs-cdo-advisor, cs-caio-advisor, cs-cco-advisor, cs-vpe-advisor, cs-chief-of-staff
+  commands: cs-office-hours, cs-cfo-review, cs-cmo-review, cs-cpo-review, cs-cro-review, cs-cto-review, cs-ciso-review, cs-gc-review, cs-cdo-review, cs-caio-review, cs-cco-review, cs-vpe-review, cs-brief, cs-boardroom, cs-decide, cs-execute, cs-post-mortem, cs-founder-mode, cs-onboard, cs-cross-eval, cs-freeze
+---
+
+# c-level-agents — Founder-Mode Executive Team
+
+A virtual C-suite delivered through slash commands and persona agents.
+
+## Keywords
+
+founder mode, virtual c-suite, executive team, boardroom, office hours, cfo review, cmo review, strategic sprint, decision logging, cross-model consensus, persona agents, chief of staff, forcing questions
+
+## What This Plugin Provides
+
+### 13 cs-* Agents (in `agents/`)
+
+Each agent wraps an existing c-level skill and adds:
+- A distinct cognitive voice (numerate skeptic, narrative-first, etc.)
+- Forcing questions specific to the role
+- Workflow orchestration tied to skill Python tools
+- Output template: Bottom Line → What → Why → How to Act → Your Decision
+
+See `../../references/persona-voices.md` for voice specs.
+
+### 21 /c-level-agents:* Slash Commands (in `skills/`)
+
+**Forcing-question office hours (12):**
+- `/c-level-agents:office-hours` — YC-style 6-question intake
+- `/c-level-agents:cfo-review` — unit economics, runway, dilution
+- `/c-level-agents:cmo-review` — ICP, CAC payback, positioning
+- `/c-level-agents:cpo-review` — RICE, JTBD, North Star, PMF
+- `/c-level-agents:cro-review` — pipeline coverage, win rate, NRR
+- `/c-level-agents:cto-review` — architecture risk, scaling cliff
+- `/c-level-agents:ciso-review` — threat model, blast radius, compliance
+- `/c-level-agents:gc-review` — contracts, IP, regulatory, term sheets
+- `/c-level-agents:cdo-review` — training-data rights, data products, data assets
+- `/c-level-agents:caio-review` — model selection, evals, AI risk, AI costs
+- `/c-level-agents:cco-review` — GRR/NRR decomposition, churn root cause, CS coverage
+- `/c-level-agents:vpe-review` — DORA metrics, cycle time, eng hiring funnel, team structure
+
+**Strategic sprint pipeline (5):**
+- `/c-level-agents:brief` → `/c-level-agents:boardroom` → `/c-level-agents:decide` → `/c-level-agents:execute` → `/c-level-agents:post-mortem`
+
+**Meta + safety (4):**
+- `/c-level-agents:founder-mode` — auto-routes to the right C-role
+- `/cs-onboard` — founder interview → `company-context.md`
+- `/c-level-agents:cross-eval` — multi-model consensus
+- `/c-level-agents:freeze` — cooldown lock on a decision
+
+## Quick Start
+
+```
+/cs-onboard                          # populate company context first
+/c-level-agents:office-hours "should we hire a VP Sales?"
+/c-level-agents:founder-mode "runway pressure"   # auto-routes to CFO
+/c-level-agents:boardroom briefs/pricing-v3.md   # full panel
+```
+
+## Architecture
+
+```
+User question
+   │
+   ├─ Single-role? → cs-{role}-advisor agent
+   │                     ↓
+   │                  /cs-{role}-review command (forcing Qs)
+   │                     ↓
+   │                  Skill tools + references
+   │                     ↓
+   │                  Bottom Line + Memo
+   │
+   └─ Multi-role?  → /c-level-agents:boardroom
+                        ↓
+                     6-phase deliberation (Phase 2 isolation)
+                        ↓
+                     /c-level-agents:decide → decision-logger (two-layer memory)
+                        ↓
+                     /c-level-agents:execute → 90-day plan
+```
+
+## Integration Points
+
+- **Existing 33 c-level skills** — wrapped, not replaced
+- **decision-logger** — every `/c-level-agents:decide` writes here
+- **chief-of-staff** — routing layer the agent orchestrates
+- **board-meeting** — protocol the `/c-level-agents:boardroom` command runs
+- **llm-wiki** — optional persistent memory bridge (see `../../references/llm-wiki-bridge.md`)
+- **executive-mentor** — adversarial `/executive-mentor:*` commands stack cleanly on top
+
+## Design Principles
+
+1. **Voice is bookended, analysis is neutral.**
+2. **Artifacts over chat.** Every command produces a Markdown artifact the next command consumes.
+3. **Phase 2 isolation in boardroom.** Independent thinking before cross-examination.
+4. **Graceful degradation.** `/c-level-agents:cross-eval` falls back to Claude-only.
+5. **No paid dependencies.** All Python tools are stdlib-only.
+
+## References
+
+- [persona-voices.md](../../references/persona-voices.md)
+- [llm-wiki-bridge.md](../../references/llm-wiki-bridge.md)
+- [Existing executive-mentor sibling](${CLAUDE_PLUGIN_ROOT}/vendor/c-level-advisor/executive-mentor/executive-mentor/SKILL.md)
+
+---
+
+**Version:** 1.0.0
+**Last Updated:** 2026-05-12
+**Status:** Production Ready
