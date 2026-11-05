@@ -3,6 +3,47 @@
 每次更新的详细发布说明。
 
 
+## v0.22.7 — 2026-11-05
+
+### 🚀 日更：新增 100 个 Skills，总计 3203
+
+来源：头部技能仓库（obra/superpowers、addyosmani/agent-skills、wshobson/agents 等），按质量规则筛选（SKILL.md 800B-30KB、完整 YAML 元数据、有效 description）。
+
+#### 部分新增亮点（前 30 个）
+- `taste-skill` — tasteskill 2.5.0, the anti-slop frontend skill. Builds professional company websites at the level of figma.com and x.ai:
+- `execute` — Use for /c-level-agents:execute, or to turn an approved decision into a 90-day plan with weekly milestones and owners.
+- `changelog-automation` — Automate changelog generation from commits, PRs, and releases following Keep a Changelog format. Use when setting up rel
+- `threat-mitigation-mapping` — Map identified threats to appropriate security controls and mitigations. Use when prioritizing security investments, cre
+- `cto-review` — Challenge an architecture bet, 10x scaling plan or rebuild vs buy. Use whenever asked or /c-level-agents:cto-review.
+- `cfo-review` — Challenge a plan that spends real money: hiring wave, raise, channel budget. Use whenever asked or /c-level-agents:cfo-r
+- `spawn` — Launch the competing agents in isolated worktrees. Use when an AgentHub session is set up.
+- `dbt-transformation-patterns` — Master dbt (data build tool) for analytics engineering with model organization, testing, documentation, and incremental 
+- `remember` — Save something important to auto-memory with a timestamp and context. Use whenever the user says remember this, note it 
+- `cmo-review` — Use for /c-level-agents:cmo-review, or to challenge positioning, ICP, messaging or channel mix before a launch.
+- `ciso-review` — Challenge a plan touching customer data, compliance or prod access. Use when asked or /c-level-agents:ciso-review.
+- `ponytail-help` — Quick reference for ponytail levels, skills and commands. One-shot display. Use for /ponytail-help, "ponytail help", "ho
+- `cpo-review` — Challenge a roadmap, PMF claim or feature kill. Use whenever asked or /c-level-agents:cpo-review.
+- `minimalist` — Write the least code: no over-engineering, fewer dependencies. Use whenever the user wants it simpler; applies a ladder 
+- `spark-optimization` — Optimize Apache Spark jobs with partitioning, caching, shuffle optimization, and memory tuning. Use when improving Spark
+- `airflow-dag-patterns` — Build production Apache Airflow DAGs with best practices for operators, sensors, testing, and deployment. Use when creat
+- `cro-review` — Challenge a forecast, win-rate drop or sales hires. Use whenever asked or /c-level-agents:cro-review.
+- `ra-qm-skills` — Router for regulatory and quality skills: ISO 13485, MDR, FDA, ISO 14971, CAPA, ISO 27001, ISO 42001, EU AI Act, GDPR, S
+- `k8s-manifest-generator` — Create production-ready Kubernetes manifests for Deployments, Services, ConfigMaps, and Secrets following best practices
+- `c-level-skills` — Find which C-level advisor fits a question: 14 C-suite roles, board meetings, culture, M&A. Use whenever the user asks w
+- `handoff` — Compact the current conversation into a handoff document for another agent to pick up, referencing existing artifacts (P
+- `pw-review` — Use when reviewing Playwright tests for quality ('review tests', 'audit tests', 'playwright best practices check').
+- `fix` — Diagnose and fix a failing or flaky Playwright test. Use whenever a test fails, passes only sometimes, breaks intermitte
+- `setup` — Use for /autoresearch-agent:setup, or to start a new autoresearch experiment: target, eval command, metric, direction, e
+- `prd` — Gated PRD generation — interrogates problem, user, and metric before drafting; refuses to draft on unknowns. Usage: /prd
+- `grill-me` — Interview the user relentlessly about a plan or design until reaching shared understanding, resolving each branch of the
+- `memory-status` — Health check of agent auto-memory: line counts, topic files, capacity, stale entries and what to prune. Use whenever the
+- `report` — Summarize Playwright results. Use whenever the user asks how tests went, for a test report or status.
+- `cs-karpathy-reviewer` — Reviews staged git changes against Karpathy's 4 coding principles. Runs complexity_checker on changed files, diff_surgeo
+- `embedding-strategies` — Select and optimize embedding models for semantic search and RAG applications. Use when choosing embedding models, imple
+
+---
+
+
 ## v0.22.6 — 2026-11-04
 
 ### 🚀 日更：新增 100 个 Skills，总计 3103
