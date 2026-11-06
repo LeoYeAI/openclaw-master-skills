@@ -3,6 +3,30 @@
 每次更新的详细发布说明。
 
 
+## v0.22.8 — 2026-11-06
+
+### 🚀 日更：新增 13 个 Skills，总计 3216
+
+来源：头部技能仓库（obra/superpowers、addyosmani/agent-skills、wshobson/agents 等），按质量规则筛选（SKILL.md 800B-30KB、完整 YAML 元数据、有效 description）。
+
+#### 部分新增亮点（前 30 个）
+- `cs-engineer-grill` — Cross-role engineering grill — Matt Pocock 7 questions per role × 3 roles (fullstack / frontend / backend) = up to 21 fo
+- `cs-backend-review` — Backend engineering review — walks the 7 Matt Pocock forcing questions (read/write ratio + QPS, tenancy, sync vs async, 
+- `cs-frontend-review` — Frontend engineering review — walks the 7 Matt Pocock forcing questions (device, LCP target, rendering, bundle budget, S
+- `cs-fullstack-review` — Fullstack engineering review — walks the 7 Matt Pocock forcing questions, picks the profile, forks into POWERFUL special
+- `chaos-experiment` — Interactive wizard to design and validate a chaos engineering experiment
+- `slo-design` — Interactive wizard to design an SLO with SLI, target, error budget, and burn-rate alerts
+- `flag-cleanup` — Run the quarterly feature-flag cleanup workflow on the current repo
+- `operator-audit` — Run the full Kubernetes Operator audit (CRD + reconcile + capability) on the current repo
+- `changelog` — Generate changelogs from git history and validate conventional commits. Usage: /changelog <generate|lint> [options]" arg
+- `pipeline` — Detect stack and generate CI/CD pipeline configs. Usage: /pipeline <detect|generate> [options]" argument-hint: "<detect|
+- `persona` — Generate data-driven user personas for UX research and product design. Usage: /persona generate [options]
+- `rice` — RICE feature prioritization with scoring and capacity planning. Usage: /rice prioritize <features.csv> [options]
+- `okr` — Generate OKR cascades from company strategy to team objectives. Usage: /okr generate <strategy>
+
+---
+
+
 ## v0.22.7 — 2026-11-05
 
 ### 🚀 日更：新增 100 个 Skills，总计 3203
