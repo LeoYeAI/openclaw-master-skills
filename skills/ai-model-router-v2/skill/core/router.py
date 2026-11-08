@@ -161,6 +161,7 @@ class RouterCore:
             self.models = [
                 Model("ollama:llama3:8b", "Llama 3 8B", "Ollama", "local", 0, 35),
                 Model("anthropic:claude-haiku-4", "Claude Haiku 4", "Anthropic", "cloud", 3, 60, requires_api_key=True, api_key_env="ANTHROPIC_API_KEY"),
+                Model("minimax:MiniMax-M2.7", "MiniMax M2.7", "MiniMax", "cloud", 3, 85, requires_api_key=True, api_key_env="MINIMAX_API_KEY"),
             ]
             self.primary_id = self.models[0].id
             self.secondary_id = self.models[1].id
