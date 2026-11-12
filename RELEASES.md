@@ -3,6 +3,19 @@
 每次更新的详细发布说明。
 
 
+## v0.22.9 — 2026-11-12
+
+### 🚀 日更：新增 2 个 Skills，总计 3218
+
+来源：头部技能仓库（obra/superpowers、addyosmani/agent-skills、wshobson/agents 等），按质量规则筛选（SKILL.md 800B-30KB、完整 YAML 元数据、有效 description）。
+
+#### 部分新增亮点（前 30 个）
+- `medical-device-software` — Use for any question about the software inside a medical device, SaMD or regulated health app - which IEC 62304 safety c
+- `cra-readiness` — Use when a company that sells software, connected devices or firmware in the EU asks whether the Cyber Resilience Act (C
+
+---
+
+
 ## v0.22.8 — 2026-11-06
 
 ### 🚀 日更：新增 13 个 Skills，总计 3216
