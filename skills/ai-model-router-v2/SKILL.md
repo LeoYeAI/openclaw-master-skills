@@ -54,6 +54,34 @@ Your Request → Analyze → Select Model
 | CLI interface | ✓ |
 | **Core code size** | **~200 lines** |
 
+## MiniMax Provider
+
+The cloud registry lists [MiniMax's current text models](https://platform.minimax.io/docs/guides/models-intro)
+with Flash first. Existing primary/secondary selections, custom or legacy model IDs,
+and conversation history remain unchanged. The router returns a model selection;
+it does not send inference requests or configure API credentials.
+
+| Model | Context | Input | Thinking | Standard price (in/out $/M) |
+|-------|---------|-------|----------|-----------------------------|
+| MiniMax M3.1 Flash | 1,000,000 | text, image, video | adaptive only | 0.15 / 0.60 |
+| MiniMax M3 | 1,000,000 | text, image, video | adaptive, disabled | 0.30 / 1.20 (up to 512k input); 0.60 / 2.40 (above 512k) |
+
+Flash supports up to 524,288 output tokens and reasoning efforts `low`, `medium`,
+`high`, `xhigh`, and `max` (default). Disabled thinking and `none` effort are not
+supported. M3 ignores effort; its thinking default depends on the downstream API.
+Cache-read prices are $0.015/M for Flash and $0.06/M or $0.12/M for M3's respective
+input tiers; cache-write pricing is unspecified. M3 priority pricing is 1.5x
+standard; Flash does not support `service_tier`. See the
+[API reference](https://platform.minimax.io/docs/api-reference/text-anthropic-api)
+and [pricing](https://platform.minimax.io/docs/guides/pricing-paygo).
+
+Both an OpenAI-compatible and an Anthropic-compatible endpoint are available per region:
+
+| Region | OpenAI base URL | Anthropic base URL |
+|--------|-----------------|--------------------|
+| Global (`global_en`) | `https://api.minimax.io/v1` | `https://api.minimax.io/anthropic` |
+| China (`cn_zh`) | `https://api.minimaxi.com/v1` | `https://api.minimaxi.com/anthropic` |
+
 ## CLI
 
 ```bash

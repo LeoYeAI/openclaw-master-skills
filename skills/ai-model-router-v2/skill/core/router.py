@@ -17,9 +17,15 @@ New features retained:
 import json
 import os
 import re
+import sys
 from dataclasses import dataclass, asdict
 from pathlib import Path
 from typing import Optional, Literal, Callable
+
+
+# Make sibling modules available for the documented standalone CLI command.
+if __package__ in (None, ""):
+    sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 
 @dataclass
