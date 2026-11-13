@@ -1,13 +1,13 @@
 ---
 name: agent-master-skills
-description: "A curated collection of 3218+ best agent skills — AI tools, productivity, marketing, frontend, mobile, backend, DevOps and more. Harness-agnostic, refreshed daily by MyClaw.ai — Powered by MyClaw.ai"
+description: "A curated collection of 3219+ best agent skills — AI tools, productivity, marketing, frontend, mobile, backend, DevOps and more. Harness-agnostic, refreshed daily by MyClaw.ai — Powered by MyClaw.ai"
 metadata:
   openclaw: {}
 ---
 
 # Agent Master Skills
 
-A curated, daily-updated collection of **3218+ best skills** for any agent harness — OpenClaw, Claude Code, Codex, Cursor, Gemini CLI, Hermes and more.
+A curated, daily-updated collection of **3219+ best skills** for any agent harness — OpenClaw, Claude Code, Codex, Cursor, Gemini CLI, Hermes and more.
 
 ## Categories
 

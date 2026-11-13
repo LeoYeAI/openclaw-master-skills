@@ -3,7 +3,7 @@
 # 🧠 Agent Master Skills
 
 <a href="https://myclaw.ai"><img src="https://img.shields.io/badge/Powered%20by-MyClaw.ai-blue?style=for-the-badge" /></a>
-<img src="https://img.shields.io/badge/Skills-3218%2B-orange?style=for-the-badge" alt="3218+ Compétences" />
+<img src="https://img.shields.io/badge/Skills-3219%2B-orange?style=for-the-badge" alt="3219+ Compétences" />
 <img src="https://img.shields.io/badge/Mis%20à%20jour-Chaque%20semaine-green?style=for-the-badge" />
 
 **Langues :**

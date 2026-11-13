@@ -3,6 +3,18 @@
 每次更新的详细发布说明。
 
 
+## v0.22.10 — 2026-11-13
+
+### 🚀 日更：新增 1 个 Skills，总计 3219
+
+来源：头部技能仓库（obra/superpowers、addyosmani/agent-skills、wshobson/agents 等），按质量规则筛选（SKILL.md 800B-30KB、完整 YAML 元数据、有效 description）。
+
+#### 部分新增亮点（前 30 个）
+- `cinematic-shot-prompting` — Use when creating camera movement, cinematic angles, or motion prompts for AI video generators like Runway Gen-3, Kling,
+
+---
+
+
 ## v0.22.9 — 2026-11-12
 
 ### 🚀 日更：新增 2 个 Skills，总计 3218
