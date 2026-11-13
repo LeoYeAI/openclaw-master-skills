@@ -227,15 +227,29 @@ python scripts/music/generate_music.py \
 
 | User intent | Script to use |
 |-------------|---------------|
-| Default / no special request | `scripts/video/generate_video.py` (single segment, **10s, 768P**) |
-| User explicitly asks for "long video", "multi-scene", "story", or duration > 10s | `scripts/video/generate_long_video.py` (multi-segment) |
+| Default / no special request | `scripts/video/generate_video.py` (single segment, **MiniMax-H3, 10s, 2K**) |
+| User explicitly asks for "long video", "multi-scene", "story", or duration > 15s | `scripts/video/generate_long_video.py` (multi-segment) |
 
-**Default behavior:** Always use single-segment `generate_video.py` with **duration 10s and resolution 768P** unless the user explicitly asks for a long video, multi-scene video, or specifies a total duration exceeding 10 seconds. Do NOT automatically split into multiple segments — a single 10s video is the standard output. Only use `generate_long_video.py` when the user clearly needs multi-scene or longer content.
+**Default behavior:** Use single-segment `generate_video.py` with MiniMax-H3, duration 10s and resolution 2K. It supports integer durations from 4 to 15 seconds. Use `generate_long_video.py` for multi-scene or longer content; that script retains its legacy model defaults.
 
 Entry point (single video): `scripts/video/generate_video.py`
 Entry point (long/multi-scene): `scripts/video/generate_long_video.py`
 
 ### Video Model Constraints (MUST follow)
+
+The standalone CLI defaults to **MiniMax-H3** for every mode, with **2K** output
+and an integer duration of **4–15 seconds**. A non-empty prompt (at most 7000
+characters) is required for all H3 modes. Use `--region global_en` for the global
+API or `--region cn_zh` (default) for the China API. H3 uses the v2 content API;
+explicit legacy models continue to use v1.
+
+H3 text-to-video defaults to `--ratio 16:9`; image and reference modes default
+to `adaptive`. In ref mode, `--subject-image` and/or `--reference-video` can be
+combined with `--reference-audio`; video/audio inputs must be public URLs.
+Frame and reference inputs cannot be mixed. `--aigc-watermark` is China-only;
+`--prompt-optimizer` and `--fast-pretreatment` are legacy-only options.
+
+The following constraints apply when selecting an explicit legacy model:
 
 **Duration limits by model and resolution:**
 
@@ -286,17 +300,17 @@ Before calling any video generation script, you MUST optimize the user's prompt 
 6. **For multi-segment long videos**: Each segment's prompt must be self-contained and optimized individually. The i2v segments (segment 2+) should describe motion/change relative to the previous segment's ending frame.
 
 ```bash
-# Text-to-video (default: 10s, 768P)
+# Text-to-video (default: MiniMax-H3, 10s, 2K)
 python scripts/video/generate_video.py \
   --mode t2v \
   --prompt "A golden retriever puppy bounds toward the camera on a sunlit grass path, [跟随] tracking shot, warm golden hour, shallow depth of field, joyful" \
   --output minimax-output/puppy.mp4
 
-# Text-to-video with 1080P (must use --duration 6)
+# Explicit legacy model with 1080P (must use --duration 6)
 python scripts/video/generate_video.py \
   --mode t2v \
   --prompt "A golden retriever puppy bounds toward the camera" \
-  --duration 6 --resolution 1080P \
+  --model MiniMax-Hailuo-2.3 --duration 6 --resolution 1080P \
   --output minimax-output/puppy_hd.mp4
 
 # Image-to-video (prompt focuses on MOTION, not image content)
@@ -306,13 +320,14 @@ python scripts/video/generate_video.py \
   --first-frame photo.jpg \
   --output minimax-output/animated.mp4
 
-# Start-end frame interpolation (sef mode uses MiniMax-Hailuo-02)
+# Start-end frame interpolation with MiniMax-H3
 python scripts/video/generate_video.py \
   --mode sef \
+  --prompt "The camera moves smoothly from the opening frame to the ending frame" \
   --first-frame start.jpg --last-frame end.jpg \
   --output minimax-output/transition.mp4
 
-# Subject reference (face consistency, ref mode uses S2V-01, 6s only)
+# Subject reference with MiniMax-H3
 python scripts/video/generate_video.py \
   --mode ref \
   --prompt "A young woman in a white dress walks slowly through a sunlit garden, [跟随] smooth tracking, warm natural lighting, cinematic depth of field" \
@@ -382,10 +397,10 @@ python scripts/video/generate_template_video.py \
 
 | Mode | Default Model | Default Duration | Default Resolution | Notes |
 |------|--------------|-----------------|-------------------|-------|
-| t2v | MiniMax-Hailuo-2.3 | 10s | 768P | Latest text-to-video |
-| i2v | MiniMax-Hailuo-2.3 | 10s | 768P | Latest image-to-video |
-| sef | MiniMax-Hailuo-02 | 6s | 768P | Start-end frame |
-| ref | S2V-01 | 6s | 720P | Subject reference, 6s only |
+| t2v | MiniMax-H3 | 10s | 2K | Text-to-video, default ratio 16:9 |
+| i2v | MiniMax-H3 | 10s | 2K | First frame |
+| sef | MiniMax-H3 | 10s | 2K | Start-end frames |
+| ref | MiniMax-H3 | 10s | 2K | Reference image/video with optional audio |
 
 ## Media Tools (Audio/Video Processing)
 

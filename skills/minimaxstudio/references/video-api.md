@@ -1,6 +1,34 @@
 # MiniMax Video Generation API Documentation
 
-## API Endpoints
+## MiniMax-H3 (v2)
+
+The standalone `generate_video.py` CLI defaults to MiniMax-H3: 2K output,
+integer duration 4–15 seconds, and a required prompt of at most 7000 characters.
+
+| Region flag | Create endpoint |
+|-------------|-----------------|
+| `global_en` | `https://api.minimax.io/v2/video_generation` |
+| `cn_zh` (default) | `https://api.minimaxi.com/v2/video_generation` |
+
+POST a body with `model`, `content`, `resolution`, and `duration`. Text uses
+`{"type":"text","text":"A bird flying over the sea"}`. Media uses a nested URL,
+for example `{"type":"image_url","image_url":{"url":"https://example.com/frame.png"},"role":"first_frame"}`.
+Frame roles are `first_frame` / `last_frame`; reference roles are
+`reference_image` / `reference_video` / `reference_audio`. Do not mix frame and
+reference roles. Reference audio requires an image or video reference. The total
+request body must not exceed 64 MB.
+
+Poll `GET /v2/query/video_generation/{task_id}` on the selected region. Read
+`task.status` (`queued`, `running`, `succeeded`, `failed`, `cancelled`). On success,
+download `task.content.url` directly; v2 does not require a v1 file retrieval.
+Failures include `task.error`. `callback_url` is optional, and `aigc_watermark`
+is supported only in the China region.
+
+See the official [create](https://platform.minimax.io/docs/api-reference/video-generation-v2-create)
+and [query](https://platform.minimax.io/docs/api-reference/video-generation-v2-query)
+references for the v2 wire format.
+
+## Legacy API Endpoints
 
 | Endpoint | Method | Description |
 |----------|--------|-------------|
@@ -15,7 +43,7 @@
 
 ---
 
-## Video Generation Models
+## Legacy Video Generation Models
 
 ### Text-to-Video (T2V) Models
 | Model | Resolution | Duration | Notes |
@@ -48,7 +76,7 @@
 
 ---
 
-## Request Parameters
+## Legacy Request Parameters
 
 ### Common Parameters (All Modes)
 | Parameter | Type | Required | Default | Description |
@@ -104,7 +132,7 @@ Combine for simultaneous: `[左摇,上升]` (max 3). Sequential: `...[推进], t
 
 ---
 
-## Response
+## Legacy Response
 
 **Query status:** `Preparing`, `Queueing`, `Processing`, `Success`, `Fail`
 
